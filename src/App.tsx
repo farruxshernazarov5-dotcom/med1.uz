@@ -15,6 +15,7 @@ import CategoryArticlesPage from "./pages/CategoryArticlesPage";
 import ClinicsPage from "./pages/ClinicsPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
 import MedTechPage from "./pages/MedTechPage";
+import MedTechDetailPage from "./pages/MedTechDetailPage";
 import NewsPage from "./pages/NewsPage";
 import DiagnosticsPage from "./pages/DiagnosticsPage";
 import PharmaciesPage from "./pages/PharmaciesPage";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/articles/:categoryId/:slug" element={<ArticleDetailPage />} />
           <Route path="/clinics" element={<ClinicsPage />} />
           <Route path="/med-tech" element={<MedTechPage />} />
+          <Route path="/med-tech/:equipmentId" element={<MedTechDetailPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/news/:newsId" element={<NewsDetailPage />} />
           <Route path="/diagnostics" element={<DiagnosticsPage />} />
