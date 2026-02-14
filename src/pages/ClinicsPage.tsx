@@ -16,6 +16,23 @@ import {
   clinicMedicalTerms,
   type Clinic,
 } from "@/data/clinics";
+import clinicPrivateImg from "@/assets/clinic-private.jpg";
+import clinicStateImg from "@/assets/clinic-state.jpg";
+import clinicPolyclinicImg from "@/assets/clinic-polyclinic.jpg";
+import doctorMaleImg from "@/assets/doctor-male.jpg";
+import doctorFemaleImg from "@/assets/doctor-female.jpg";
+
+const getClinicImage = (type: Clinic["type"]) => {
+  if (type === "xususiy") return clinicPrivateImg;
+  if (type === "davlat") return clinicStateImg;
+  return clinicPolyclinicImg;
+};
+
+const getSpecialistPhoto = (name: string) => {
+  return name.includes("va") || name.includes("ova") || name.includes("ina") || name.includes("ira") || name.includes("iza") || name.includes("oira")
+    ? doctorFemaleImg
+    : doctorMaleImg;
+};
 
 // ==================== LOGO TICKER ====================
 const LogoTicker = () => (
@@ -63,9 +80,7 @@ const MedTermsBanner = ({ terms }: { terms: typeof clinicMedicalTerms }) => {
 // ==================== SPECIALIST CARD ====================
 const SpecialistCard = ({ specialist }: { specialist: Clinic["specialists"][0] }) => (
   <div className="flex items-center gap-3 bg-muted/40 rounded-xl p-3">
-    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-      <Users className="w-6 h-6 text-primary" />
-    </div>
+    <img src={getSpecialistPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
     <div className="flex-1 min-w-0">
       <p className="font-semibold text-sm text-foreground truncate">{specialist.name}</p>
       <p className="text-xs text-muted-foreground">{specialist.specialty}</p>
@@ -102,10 +117,14 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Clinic Image */}
+      <div className="h-40 overflow-hidden">
+        <img src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover" />
+      </div>
       {/* Header */}
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 -mt-10 relative z-10 shadow-md bg-card">
             <span className="text-sm font-bold text-primary">{clinic.logo}</span>
           </div>
           <div className="flex-1 min-w-0">
