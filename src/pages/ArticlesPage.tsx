@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import SectionLayout from "@/components/SectionLayout";
 import { FileText, ArrowRight, Search, X } from "lucide-react";
-import { articleCategories, totalArticleCategories } from "@/data/articles";
+import { articleCategories, totalArticleCategories, getCategoryArticleCount } from "@/data/articles";
 
 const ArticlesPage = () => {
   const [search, setSearch] = useState("");
@@ -41,7 +41,7 @@ const ArticlesPage = () => {
         {filtered.map((cat, i) => (
           <Link
             key={cat.id}
-            to={`/articles/${cat.id}/${cat.article.slug}`}
+            to={getCategoryArticleCount(cat.id) > 1 ? `/articles/${cat.id}` : `/articles/${cat.id}/${cat.article.slug}`}
             className="group relative bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 animate-fade-up"
             style={{ animationDelay: `${i * 0.05}s` }}
           >
@@ -60,8 +60,13 @@ const ArticlesPage = () => {
                 <p className="text-[11px] text-primary/70 italic leading-relaxed mb-2 line-clamp-2">{cat.quote}</p>
               )}
               <p className="text-xs text-muted-foreground leading-relaxed mb-2 line-clamp-2">{cat.article.title}</p>
+              {getCategoryArticleCount(cat.id) > 1 && (
+                <span className="inline-block text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full mb-2">
+                  {getCategoryArticleCount(cat.id)} ta maqola
+                </span>
+              )}
               <div className="flex items-center text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                Maqolani o'qish <ArrowRight className="w-3 h-3 ml-1" />
+                {getCategoryArticleCount(cat.id) > 1 ? "Maqolalarni ko'rish" : "Maqolani o'qish"} <ArrowRight className="w-3 h-3 ml-1" />
               </div>
             </div>
           </Link>
