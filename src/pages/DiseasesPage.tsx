@@ -69,6 +69,11 @@ const DiseasesPage = () => {
               <span className="text-xs text-primary font-semibold">{currentCategory.diseases.length} ta kasallik</span>
             </div>
           </div>
+          {currentCategory.quote && (
+            <div className="mb-6 p-4 rounded-xl bg-primary/5 border border-primary/10">
+              <p className="text-sm text-primary italic leading-relaxed">{currentCategory.quote}</p>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentCategory.diseases.map((disease, i) => (
               <div
@@ -118,7 +123,10 @@ const DiseasesPage = () => {
               </div>
               <div className="p-4">
                 <h3 className="font-heading font-semibold text-foreground text-base mb-1">{cat.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">{cat.subtitle}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">{cat.subtitle}</p>
+                {cat.quote && (
+                  <p className="text-[11px] text-primary/70 italic leading-relaxed mb-2 line-clamp-2">{cat.quote}</p>
+                )}
                 <div className="flex items-center text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                   Batafsil ko'rish <ArrowRight className="w-3 h-3 ml-1" />
                 </div>
