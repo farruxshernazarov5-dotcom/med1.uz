@@ -747,9 +747,23 @@ export const articleCategories: ArticleCategory[] = [
 
 export const totalArticleCategories = articleCategories.length;
 
+import { ophthalmologyArticles } from "./ophthalmologyArticles";
+
+export function getCategoryArticleCount(categoryId: string): number {
+  if (categoryId === "oftalmologiya") return ophthalmologyArticles.length;
+  return 1;
+}
+
 export function findArticle(categoryId: string, slug: string): { category: ArticleCategory; article: Article } | null {
   const category = articleCategories.find((c) => c.id === categoryId);
   if (!category) return null;
+  
+  if (categoryId === "oftalmologiya") {
+    const article = ophthalmologyArticles.find((a) => a.slug === slug);
+    if (!article) return null;
+    return { category, article };
+  }
+  
   if (category.article.slug !== slug) return null;
   return { category, article: category.article };
 }
