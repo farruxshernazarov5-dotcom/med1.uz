@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import MedicinePage from "./pages/MedicinePage";
 import HealthPage from "./pages/HealthPage";
 import DiseasesPage from "./pages/DiseasesPage";
+import DiseaseDetailPage from "./pages/DiseaseDetailPage";
 import ArticlesPage from "./pages/ArticlesPage";
 import ClinicsPage from "./pages/ClinicsPage";
 import MedTechPage from "./pages/MedTechPage";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/medicine" element={<MedicinePage />} />
           <Route path="/health" element={<HealthPage />} />
           <Route path="/diseases" element={<DiseasesPage />} />
+          <Route path="/diseases/:categoryId/:slug" element={<DiseaseDetailPage />} />
           <Route path="/articles" element={<ArticlesPage />} />
           <Route path="/clinics" element={<ClinicsPage />} />
           <Route path="/med-tech" element={<MedTechPage />} />
