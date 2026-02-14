@@ -10,7 +10,7 @@ import eyeComputer from "@/assets/eye-computer.jpg";
 import eyeOncology from "@/assets/eye-oncology.jpg";
 import type { Article } from "./articles";
 
-const author = "Shernazarov Farrux Farkhadovich, oftalmolog";
+const author = "Shernazarov Farrukh Farkhadovich, oftalmolog";
 
 export const ophthalmologyArticles: Article[] = [
   {
