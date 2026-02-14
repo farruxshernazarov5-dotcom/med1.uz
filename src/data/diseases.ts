@@ -8,9 +8,24 @@ import catEye from "@/assets/cat-eye.jpg";
 import catDental from "@/assets/cat-dental.jpg";
 import catOncology from "@/assets/cat-oncology.jpg";
 import catGastro from "@/assets/cat-gastro.jpg";
-import anatomyImg from "@/assets/medicine-anatomy.jpg";
-import researchImg from "@/assets/medicine-research.jpg";
-import pillsImg from "@/assets/medicine-pills.jpg";
+import catDermatology from "@/assets/cat-dermatology.jpg";
+import catLor from "@/assets/cat-lor.jpg";
+import catPulmonology from "@/assets/cat-pulmonology.jpg";
+import catGynecology from "@/assets/cat-gynecology.jpg";
+import catEndocrinology from "@/assets/cat-endocrinology.jpg";
+import catPsychiatry from "@/assets/cat-psychiatry.jpg";
+import catRheumatology from "@/assets/cat-rheumatology.jpg";
+import catMammology from "@/assets/cat-mammology.jpg";
+import catOrthopedics from "@/assets/cat-orthopedics.jpg";
+import catUrology from "@/assets/cat-urology.jpg";
+import catParasitology from "@/assets/cat-parasitology.jpg";
+import catSymptoms from "@/assets/cat-symptoms.jpg";
+import catHematology from "@/assets/cat-hematology.jpg";
+import catVirology from "@/assets/cat-virology.jpg";
+import catVenereology from "@/assets/cat-venereology.jpg";
+import catProctology from "@/assets/cat-proctology.jpg";
+import catAndrology from "@/assets/cat-andrology.jpg";
+import catTraumatology from "@/assets/cat-traumatology.jpg";
 
 export type Disease = {
   name: string;
@@ -21,6 +36,7 @@ export type DiseaseCategory = {
   id: string;
   title: string;
   subtitle: string;
+  quote: string;
   image: string;
   diseases: Disease[];
 };
@@ -30,6 +46,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "allergiya",
     title: "Allergik reaktsiyalar",
     subtitle: "Allergik kasalliklar va immunitet buzilishlari",
+    quote: "\"Allergiya — organizmning noto'g'ri javobidir, uni tushunish davolashning birinchi qadami.\"",
     image: catAllergy,
     diseases: [
       { name: "Eshakemi (urtikariya)", desc: "Klinik shakllari, alomatlari, tashxislash va davolash" },
@@ -50,7 +67,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "simptom",
     title: "Alohida kasallik alomatlari",
     subtitle: "Ko'p uchraydigan kasallik belgilari va alomatlari",
-    image: researchImg,
+    quote: "\"Alomatlarni bilish — kasallikni erta aniqlash kaliti.\"",
+    image: catSymptoms,
     diseases: [
       { name: "Bosh og'rig'i", desc: "Bosh og'rig'ining turlari, sabablari va davolash" },
       { name: "Bosh aylanishi", desc: "Vestibular buzilishlar va muvozanat yo'qolishi" },
@@ -70,7 +88,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "andrologiya",
     title: "Andrologiya",
     subtitle: "Erkaklar salomatligi va reproduktiv tizim kasalliklari",
-    image: anatomyImg,
+    quote: "\"Erkak salomatligi — oilaning mustahkamligi.\"",
+    image: catAndrology,
     diseases: [
       { name: "Prostatit", desc: "Prostata bezining yallig'lanishi — sabablari va davolash" },
       { name: "Prostata adenomasi", desc: "Prostata bezining sifatli giperplaziyasi" },
@@ -88,6 +107,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "nevrologiya",
     title: "Asab tizimi kasalliklari",
     subtitle: "Nevrologik kasalliklar va miya buzilishlari",
+    quote: "\"Miya — organizmning bosh shtabi, uni asrash eng muhim vazifa.\"",
     image: catNeurology,
     diseases: [
       { name: "Insult (qon quyilishi)", desc: "Miya qon aylanishining o'tkir buzilishi" },
@@ -108,7 +128,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "dermatologiya",
     title: "Dermatologiya",
     subtitle: "Teri, tirnoq va soch kasalliklari",
-    image: catAllergy,
+    quote: "\"Teri — tananing ko'zgusi, u ichki salomatlikni aks ettiradi.\"",
+    image: catDermatology,
     diseases: [
       { name: "Psoriaz (Temiratki)", desc: "Surunkali autoimmun teri kasalligi" },
       { name: "Ekzema", desc: "Terining yallig'lanishi va qichishishi" },
@@ -128,7 +149,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "endokrinologiya",
     title: "Endokrinologiya",
     subtitle: "Gormonlar va ichki sekretsiya bezlari kasalliklari",
-    image: pillsImg,
+    quote: "\"Gormonlar — tananing yashirin boshqaruvchilari.\"",
+    image: catEndocrinology,
     diseases: [
       { name: "Qandli diabet (1-tip)", desc: "Insulin yetishmasligi — autoimmun kasallik" },
       { name: "Qandli diabet (2-tip)", desc: "Insulinga chidamlilik — metabolik kasallik" },
@@ -148,7 +170,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "ginekologiya",
     title: "Ginekologik kasalliklar",
     subtitle: "Ayollar salomatligi va reproduktiv tizim",
-    image: researchImg,
+    quote: "\"Ayol salomatligi — kelajak avlodning poydevori.\"",
+    image: catGynecology,
     diseases: [
       { name: "Endometrioz", desc: "Bachadon ichki qavatining noto'g'ri o'sishi" },
       { name: "Mioma", desc: "Bachadondagi sifatli o'sma" },
@@ -168,6 +191,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "infektsion",
     title: "Infektsion kasalliklar",
     subtitle: "Yuqumli va infektsion kasalliklar",
+    quote: "\"Gigiena — infektsiyadan himoyalanishning eng oddiy va samarali usuli.\"",
     image: catInfectious,
     diseases: [
       { name: "Salmonellyoz", desc: "Salmonella bakteriyalari keltirib chiqaradigan kasallik" },
@@ -188,7 +212,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "venerik",
     title: "Jinsiy kasalliklar",
     subtitle: "Jinsiy yo'l bilan yuqadigan infektsiyalar (JYYI)",
-    image: catInfectious,
+    quote: "\"Ehtiyotkorlik va bilim — eng yaxshi himoya vositasi.\"",
+    image: catVenereology,
     diseases: [
       { name: "Sifilis", desc: "Treponema pallidum bakteriyasi keltirib chiqaradi" },
       { name: "Gonoreya (So'zak)", desc: "Neisseria gonorrhoeae bakteriyasi bilan yuqadi" },
@@ -206,7 +231,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "lor",
     title: "LOR",
     subtitle: "Quloq, burun va tomoq kasalliklari",
-    image: catAllergy,
+    quote: "\"Eshitish, nafas olish va gapirish — hayot sifatining asosi.\"",
+    image: catLor,
     diseases: [
       { name: "Quloq kasalliklari", desc: "Tashqi, o'rta va ichki quloq kasalliklari" },
       { name: "Otit", desc: "Quloqning yallig'lanishi — o'tkir va surunkali" },
@@ -226,7 +252,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "mammologiya",
     title: "Mammologiya",
     subtitle: "Ko'krak bezi kasalliklari va diagnostikasi",
-    image: researchImg,
+    quote: "\"Muntazam tekshiruv — sog'lom kelajak garovi.\"",
+    image: catMammology,
     diseases: [
       { name: "Ko'krak bezi fibroadenomasi", desc: "Sifatli o'sma — tashxis va davolash" },
       { name: "Mastopatiya", desc: "Ko'krak bezi to'qimasi o'zgarishi" },
@@ -242,6 +269,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "onkologiya",
     title: "Onkologiya",
     subtitle: "O'smalar va saraton kasalliklari",
+    quote: "\"Erta tashxis — hayot saqlovchi qadam.\"",
     image: catOncology,
     diseases: [
       { name: "Oshqozon saratoni", desc: "Oshqozon shilliq qavati epiteliy o'smasi" },
@@ -262,7 +290,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "ortopediya",
     title: "Ortopediya",
     subtitle: "Suyak-bo'g'im tizimi kasalliklari",
-    image: catSurgery,
+    quote: "\"Harakatdagi erkinlik — suyak-bo'g'im salomatligiga bog'liq.\"",
+    image: catOrthopedics,
     diseases: [
       { name: "Artroz", desc: "Bo'g'im tog'ayining degenerativ buzilishi" },
       { name: "Artrit", desc: "Bo'g'imlarning yallig'lanishi" },
@@ -282,6 +311,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "gastroenterologiya",
     title: "Gastroenterologiya",
     subtitle: "Oshqozon-ichak trakti kasalliklari",
+    quote: "\"Sog'lom ovqatlanish — sog'lom oshqozonning asosi.\"",
     image: catGastro,
     diseases: [
       { name: "Gastrit", desc: "Oshqozon shilliq qavatining yallig'lanishi" },
@@ -302,7 +332,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "parazitar",
     title: "Parazitar kasalliklar",
     subtitle: "Parazitar kasalliklar va gijjalar",
-    image: catInfectious,
+    quote: "\"Toza qo'l va toza suv — parazitlarga qarshi eng kuchli qurol.\"",
+    image: catParasitology,
     diseases: [
       { name: "Askaridoz", desc: "Askarida gijjasi bilan zararlаnish" },
       { name: "Enterobioz", desc: "Ignasomon gijja — bolalarda ko'p uchraydi" },
@@ -320,6 +351,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "pediatriya",
     title: "Pediatriya",
     subtitle: "Bolalar kasalliklari va profilaktikasi",
+    quote: "\"Bolalar salomatligi — millatning kelajagi.\"",
     image: catPediatrics,
     diseases: [
       { name: "Bolalar shamollashi", desc: "ARVI — bolalardagi eng ko'p uchraydigan kasallik" },
@@ -340,7 +372,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "proktologiya",
     title: "Proktologiya",
     subtitle: "To'g'ri ichak va anal soha kasalliklari",
-    image: catGastro,
+    quote: "\"Uyalmaslik kerak — o'z vaqtida murojaat qilish sog'liq garovi.\"",
+    image: catProctology,
     diseases: [
       { name: "Gemorroy (Bavosil)", desc: "Anal venalarning varikoz kengayishi" },
       { name: "Anal yoriq", desc: "To'g'ri ichak shilliq qavatining yorilishi" },
@@ -356,7 +389,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "pulmonologiya",
     title: "Pulmonologiya",
     subtitle: "O'pka va nafas yo'llari kasalliklari",
-    image: catAllergy,
+    quote: "\"Har bir nafas — hayot in'omi, o'pkangizni asrang.\"",
+    image: catPulmonology,
     diseases: [
       { name: "Zotiljam (Pnevmoniya)", desc: "O'pka to'qimasining yallig'lanishi" },
       { name: "Bronxit", desc: "Bronxlarning yallig'lanishi — o'tkir va surunkali" },
@@ -374,7 +408,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "qon-kasalliklari",
     title: "Qon kasalliklari",
     subtitle: "Gematologiya va qon tizimi buzilishlari",
-    image: catCardiology,
+    quote: "\"Qon — hayot daryosi, uni sog'lom saqlash barchaning burchi.\"",
+    image: catHematology,
     diseases: [
       { name: "Anemiya (Kamqonlik)", desc: "Qonda gemoglobin miqdorining kamayishi" },
       { name: "Temir tanqisligi anemiyasi", desc: "Eng ko'p tarqalgan anemiya turi" },
@@ -392,7 +427,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "revmatologiya",
     title: "Revmatologiya",
     subtitle: "Bo'g'im va biriktiruvchi to'qima kasalliklari",
-    image: anatomyImg,
+    quote: "\"Bo'g'imlar sog'lom bo'lsa — hayot faol bo'ladi.\"",
+    image: catRheumatology,
     diseases: [
       { name: "Revmatoid artrit", desc: "Autoimmun bo'g'im yallig'lanishi" },
       { name: "Tizimli qizil lupus", desc: "Autoimmun biriktiruvchi to'qima kasalligi" },
@@ -410,7 +446,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "psixiatriya",
     title: "Ruhiy kasalliklar",
     subtitle: "Psixiatriya va ruhiy salomatlik buzilishlari",
-    image: catNeurology,
+    quote: "\"Ruhiy salomatlik — jismoniy salomatlik kabi muhim.\"",
+    image: catPsychiatry,
     diseases: [
       { name: "Depressiya", desc: "Surunkali kayfiyat pasayligi va qiziqish yo'qolishi" },
       { name: "Shizofreniya", desc: "Og'ir ruhiy kasallik — gallyutsinatsiya" },
@@ -428,6 +465,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "stomatologiya",
     title: "Stomatologiya",
     subtitle: "Tish va og'iz bo'shlig'i kasalliklari",
+    quote: "\"Sog'lom tishlar — chiroyli tabassum va yaxshi hazm qilishning asosi.\"",
     image: catDental,
     diseases: [
       { name: "Kariyes", desc: "Tish qattiq to'qimalarining buzilishi" },
@@ -448,7 +486,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "travmatologiya",
     title: "Travmatologiya",
     subtitle: "Shikastlanishlar va jarohatlarga tibbiy yordam",
-    image: catSurgery,
+    quote: "\"Birinchi yordam bilimi — har bir insonga zarur.\"",
+    image: catTraumatology,
     diseases: [
       { name: "Suyak sinishi", desc: "Fraktura — suyaklarning sinishi turlari" },
       { name: "Chiqish", desc: "Bo'g'im chiqishi — lyuksatsiya" },
@@ -466,7 +505,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "urologiya",
     title: "Urologiya",
     subtitle: "Siydik yo'llari va buyrak kasalliklari",
-    image: anatomyImg,
+    quote: "\"Buyrak — tananing tabiiy filtri, uni ehtiyot qiling.\"",
+    image: catUrology,
     diseases: [
       { name: "Buyrak tosh kasalligi", desc: "Nefrolitiaz — buyrakda tosh hosil bo'lishi" },
       { name: "Piyelonefrit", desc: "Buyrak jomchasi va to'qimasining yallig'lanishi" },
@@ -486,7 +526,8 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "virusli",
     title: "Virusli kasalliklar",
     subtitle: "Viruslar keltirib chiqaradigan kasalliklar",
-    image: catInfectious,
+    quote: "\"Viruslarni bilish — ulardan himoyalanishning birinchi qadami.\"",
+    image: catVirology,
     diseases: [
       { name: "Koronavirus (COVID-19)", desc: "SARS-CoV-2 virusi — JSST ko'rsatmalari" },
       { name: "Gripp", desc: "Influenza viruslari — mavsumiy gripp" },
@@ -506,6 +547,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "xirurgiya",
     title: "Xirurgik kasalliklar",
     subtitle: "Jarrohlik amaliyotlari va operatsiyalar",
+    quote: "\"Jarroh qo'li — shifo qo'li.\"",
     image: catSurgery,
     diseases: [
       { name: "Gangrena (Qorason)", desc: "Tirik to'qimalarning nekrozi" },
@@ -524,6 +566,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "yurak-tomir",
     title: "Yurak-qon tomir kasalliklari",
     subtitle: "Kardiologik kasalliklar va profilaktika",
+    quote: "\"Yurak sog'lom bo'lsa — butun tana sog'lom.\"",
     image: catCardiology,
     diseases: [
       { name: "Yurak kasalliklari", desc: "Yurak-tomir tizimi patologiyalari guruhi" },
@@ -544,6 +587,7 @@ export const diseaseCategories: DiseaseCategory[] = [
     id: "oftalmologiya",
     title: "Oftalmologiya",
     subtitle: "Ko'z kasalliklari va ko'rish buzilishlari",
+    quote: "\"Ko'z — dunyoni ko'rish oynasi, uni asrang.\"",
     image: catEye,
     diseases: [
       { name: "Katarakta", desc: "Ko'z gavharining loylanishi" },
