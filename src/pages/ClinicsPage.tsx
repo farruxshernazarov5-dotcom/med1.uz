@@ -21,10 +21,12 @@ import clinicStateImg from "@/assets/clinic-state.jpg";
 import clinicPolyclinicImg from "@/assets/clinic-polyclinic.jpg";
 import doctorMaleImg from "@/assets/doctor-male.jpg";
 import doctorFemaleImg from "@/assets/doctor-female.jpg";
+import clinicEmergencyImg from "@/assets/clinic-emergency.jpg";
 
 const getClinicImage = (type: Clinic["type"]) => {
   if (type === "xususiy") return clinicPrivateImg;
   if (type === "davlat") return clinicStateImg;
+  if (type === "103") return clinicEmergencyImg;
   return clinicPolyclinicImg;
 };
 
@@ -130,8 +132,8 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
           <div className="flex-1 min-w-0">
             <CardTitle className="text-base leading-tight">{clinic.name}</CardTitle>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <Badge variant={clinic.type === "davlat" ? "default" : clinic.type === "xususiy" ? "secondary" : "outline"} className="text-[10px]">
-                {clinic.type === "davlat" ? "Davlat" : clinic.type === "xususiy" ? "Xususiy" : "Poliklinika"}
+              <Badge variant={clinic.type === "davlat" ? "default" : clinic.type === "xususiy" ? "secondary" : clinic.type === "103" ? "destructive" : "outline"} className="text-[10px]">
+                {clinic.type === "davlat" ? "Davlat" : clinic.type === "xususiy" ? "Xususiy" : clinic.type === "103" ? "103 Tez yordam" : "Poliklinika"}
               </Badge>
               <span className="flex items-center gap-0.5 text-xs text-amber-500">
                 <Star className="w-3 h-3 fill-current" /> {clinic.rating}
@@ -379,6 +381,7 @@ const ClinicsPage = () => {
       if (activeTab === "davlat" && c.type !== "davlat") return false;
       if (activeTab === "xususiy" && c.type !== "xususiy") return false;
       if (activeTab === "poliklinika" && c.type !== "poliklinika") return false;
+      if (activeTab === "103" && c.type !== "103") return false;
 
       // Search
       if (search) {
@@ -448,6 +451,7 @@ const ClinicsPage = () => {
           <TabsTrigger value="davlat">Davlat</TabsTrigger>
           <TabsTrigger value="xususiy">Xususiy</TabsTrigger>
           <TabsTrigger value="poliklinika">Poliklinikalar</TabsTrigger>
+          <TabsTrigger value="103">103 Markazlari</TabsTrigger>
         </TabsList>
       </Tabs>
 
