@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, BookOpen, Brain, Heart, Microscope, Dna, ArrowRight, Quote, Sparkles } from "lucide-react";
+import DiseaseClassification from "@/components/DiseaseClassification";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MedicalTermModal from "@/components/MedicalTermModal";
@@ -166,6 +167,10 @@ const MedicinePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Disease Classification A/B/C/D */}
+      <DiseaseClassification />
+
 
       {/* A-Z Encyclopedia */}
       <section className="py-16 bg-background">
