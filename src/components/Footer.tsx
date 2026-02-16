@@ -35,11 +35,11 @@ const Footer = () => {
           <div>
             <h4 className="font-heading font-semibold mb-4">Ma'lumot</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/60">
-              {["Biz haqimizda", "Hamkorlik", "Maxfiylik siyosati", "Foydalanish shartlari"].map((item) => (
-                <li key={item}>
-                  <Link to="/" className="hover:text-primary-foreground transition-colors">{item}</Link>
-                </li>
-              ))}
+              <li><Link to="/about" className="hover:text-primary-foreground transition-colors">Biz haqimizda</Link></li>
+              <li><Link to="/services" className="hover:text-primary-foreground transition-colors">Xizmatlarimiz</Link></li>
+              <li><Link to="/user-guide" className="hover:text-primary-foreground transition-colors">Foydalanish shartlari</Link></li>
+              <li><Link to="/user-guide" className="hover:text-primary-foreground transition-colors">Maxfiylik siyosati</Link></li>
+              <li><Link to="/user-guide" className="hover:text-primary-foreground transition-colors">Qo'llanma</Link></li>
             </ul>
           </div>
 
