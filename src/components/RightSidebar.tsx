@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { Info, Briefcase, Phone, Megaphone } from "lucide-react";
+import { Info, Briefcase, Phone, BookOpen, Megaphone } from "lucide-react";
 
 const rightMenuItems = [
   { icon: Info, label: "Biz haqimizda", href: "/about" },
   { icon: Briefcase, label: "Xizmatlarimiz", href: "/services" },
+  { icon: BookOpen, label: "Qo'llanma", href: "/user-guide" },
   { icon: Phone, label: "Aloqa", href: "/contact" },
 ];
 
