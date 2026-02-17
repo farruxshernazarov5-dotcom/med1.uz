@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToHome from "@/components/BackToHome";
 
 interface SectionLayoutProps {
   title: string;
@@ -26,7 +27,10 @@ const SectionLayout = ({ title, subtitle, icon, children }: SectionLayoutProps) 
           </div>
         </div>
       </section>
-      <main className="container mx-auto px-4 py-12">{children}</main>
+      <main className="container mx-auto px-4 py-12">
+        <BackToHome current={title} />
+        {children}
+      </main>
       <Footer />
     </div>
   );
