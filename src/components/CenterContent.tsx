@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { Building2, Wrench, Activity, Pill, Droplets, Baby, Megaphone } from "lucide-react";
+import AppointmentBooking from "@/components/AppointmentBooking";
+import ServiceRegistration from "@/components/ServiceRegistration";
 
 const quickLinks = [
   { icon: Building2, label: "Klinikalar", href: "/clinics", gradient: "from-primary to-secondary" },
@@ -13,6 +15,12 @@ const quickLinks = [
 const CenterContent = () => {
   return (
     <div className="space-y-4">
+      {/* Appointment & Registration Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <AppointmentBooking />
+        <ServiceRegistration />
+      </div>
+
       {/* Quick Links Grid */}
       <div className="bg-card rounded-2xl border border-border shadow-card p-5">
         <h3 className="font-heading font-bold text-foreground mb-4 text-sm uppercase tracking-wider">

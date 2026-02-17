@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, BookOpen, Brain, Heart, Microscope, Dna, ArrowRight, Quote, Sparkles } from "lucide-react";
 import DiseaseClassification from "@/components/DiseaseClassification";
 import Header from "@/components/Header";
+import BackToHome from "@/components/BackToHome";
 import Footer from "@/components/Footer";
 import MedicalTermModal from "@/components/MedicalTermModal";
 import { termsByLetter, alphabet, totalTermsCount, medicalQuotes, type MedicalTerm } from "@/data/medicalTerms";
@@ -103,9 +104,10 @@ const MedicinePage = () => {
         </div>
       </section>
 
-      {/* Quotes */}
+      {/* Breadcrumb + Quotes */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
+          <BackToHome current="Tibbiyot" />
           <div className="max-w-3xl mx-auto">
             <div className="bg-card rounded-3xl border border-border p-8 md:p-10 shadow-card relative overflow-hidden">
               <div className="absolute top-6 right-8 text-primary/10"><Quote className="w-20 h-20" /></div>
