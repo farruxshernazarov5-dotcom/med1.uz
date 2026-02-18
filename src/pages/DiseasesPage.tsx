@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import SectionLayout from "@/components/SectionLayout";
+import Breadcrumb from "@/components/Breadcrumb";
 import { Stethoscope, ArrowRight, ArrowLeft, Search, X } from "lucide-react";
 import { diseaseCategories, totalDiseaseCategories, totalDiseases } from "@/data/diseases";
 
@@ -23,6 +25,13 @@ const DiseasesPage = () => {
       subtitle={`${totalDiseaseCategories} ta yo'nalish, ${totalDiseases}+ kasallik haqida batafsil ma'lumot`}
       icon={<Stethoscope className="w-7 h-7 text-primary-foreground" />}
     >
+      {/* Breadcrumb */}
+      <Breadcrumb items={
+        selectedCategory && currentCategory
+          ? [{ label: "Kasalliklar", href: "/diseases" }, { label: currentCategory.title }]
+          : [{ label: "Kasalliklar" }]
+      } />
+
       {/* Search */}
       <div className="relative max-w-md mb-8">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -30,10 +39,7 @@ const DiseasesPage = () => {
           type="text"
           placeholder="Kasallik yoki bo'lim nomi izlash..."
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setSelectedCategory(null);
-          }}
+          onChange={(e) => { setSearch(e.target.value); setSelectedCategory(null); }}
           className="w-full pl-10 pr-10 py-3 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
         {search && (
@@ -43,20 +49,14 @@ const DiseasesPage = () => {
         )}
       </div>
 
-      {/* Back button when viewing a category */}
       {selectedCategory && currentCategory && (
         <div className="mb-6">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className="flex items-center gap-2 text-primary hover:underline font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Barcha bo'limlarga qaytish
+          <button onClick={() => setSelectedCategory(null)} className="flex items-center gap-2 text-primary hover:underline font-medium">
+            <ArrowLeft className="w-4 h-4" /> Barcha bo'limlarga qaytish
           </button>
         </div>
       )}
 
-      {/* Category detail view */}
       {selectedCategory && currentCategory ? (
         <div className="animate-fade-up">
           <div className="flex items-center gap-4 mb-6">
@@ -76,9 +76,10 @@ const DiseasesPage = () => {
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {currentCategory.diseases.map((disease, i) => (
-              <div
-                key={disease.name}
-                className="bg-card rounded-xl border border-border p-4 hover:shadow-card-hover hover:border-primary/30 transition-all cursor-pointer animate-fade-up"
+              <Link
+                key={disease.slug}
+                to={`/diseases/${currentCategory.id}/${disease.slug}`}
+                className="bg-card rounded-xl border border-border p-4 hover:shadow-card-hover hover:border-primary/30 transition-all animate-fade-up"
                 style={{ animationDelay: `${i * 0.04}s` }}
               >
                 <div className="flex items-start gap-3">
@@ -90,30 +91,21 @@ const DiseasesPage = () => {
                     <p className="text-xs text-muted-foreground leading-relaxed">{disease.desc}</p>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       ) : (
-        /* Categories grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filteredCategories.map((cat, i) => (
             <div
               key={cat.id}
-              onClick={() => {
-                setSelectedCategory(cat.id);
-                setSearch("");
-              }}
+              onClick={() => { setSelectedCategory(cat.id); setSearch(""); }}
               className="group relative bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 cursor-pointer animate-fade-up"
               style={{ animationDelay: `${i * 0.05}s` }}
             >
               <div className="relative h-40 overflow-hidden">
-                <img
-                  src={cat.image}
-                  alt={cat.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
+                <img src={cat.image} alt={cat.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
                 <div className="absolute bottom-3 right-3">
                   <span className="bg-card/90 backdrop-blur-sm text-foreground text-xs font-semibold px-3 py-1 rounded-full">
@@ -124,9 +116,7 @@ const DiseasesPage = () => {
               <div className="p-4">
                 <h3 className="font-heading font-semibold text-foreground text-base mb-1">{cat.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-2">{cat.subtitle}</p>
-                {cat.quote && (
-                  <p className="text-[11px] text-primary/70 italic leading-relaxed mb-2 line-clamp-2">{cat.quote}</p>
-                )}
+                {cat.quote && <p className="text-[11px] text-primary/70 italic leading-relaxed mb-2 line-clamp-2">{cat.quote}</p>}
                 <div className="flex items-center text-primary text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                   Batafsil ko'rish <ArrowRight className="w-3 h-3 ml-1" />
                 </div>
@@ -134,9 +124,7 @@ const DiseasesPage = () => {
             </div>
           ))}
           {filteredCategories.length === 0 && (
-            <div className="col-span-full text-center py-12 text-muted-foreground">
-              "{search}" bo'yicha natija topilmadi
-            </div>
+            <div className="col-span-full text-center py-12 text-muted-foreground">"{search}" bo'yicha natija topilmadi</div>
           )}
         </div>
       )}
