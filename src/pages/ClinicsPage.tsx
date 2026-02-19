@@ -196,6 +196,27 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* Description */}
             <p className="text-sm text-muted-foreground">{clinic.description}</p>
 
+            {/* Website */}
+            {clinic.website && (
+              <div>
+                <a href={clinic.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline font-medium">
+                  🌐 Veb-saytga o'tish
+                </a>
+              </div>
+            )}
+
+            {/* Services */}
+            {clinic.services && clinic.services.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Xizmatlar</h4>
+                <div className="flex flex-wrap gap-1">
+                  {clinic.services.map((s) => (
+                    <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* All specialties */}
             <div>
               <h4 className="text-sm font-semibold text-foreground mb-2">Barcha yo'nalishlar</h4>
