@@ -7,6 +7,9 @@ import RightSidebar from "@/components/RightSidebar";
 import ContactLocationSection from "@/components/ContactLocationSection";
 import AISearchSection from "@/components/AISearchSection";
 import AIChatbot from "@/components/AIChatbot";
+import HomeNewsSection from "@/components/HomeNewsSection";
+import HomeSectionsPreview from "@/components/HomeSectionsPreview";
+import AnimatedBackground from "@/components/AnimatedBackground";
 
 const Index = () => {
   return (
@@ -18,8 +21,9 @@ const Index = () => {
       <AISearchSection />
 
       {/* Main 3-column layout */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
+      <section className="py-8 relative">
+        <AnimatedBackground variant="medical" />
+        <div className="container mx-auto px-4 relative">
           <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_260px] gap-5">
             <aside className="hidden lg:block">
               <div className="sticky top-20">
@@ -37,6 +41,17 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* All Sections Preview */}
+      <HomeSectionsPreview />
+
+      {/* News Section with animation */}
+      <div className="relative">
+        <AnimatedBackground variant="waves" />
+        <div className="relative">
+          <HomeNewsSection />
+        </div>
+      </div>
 
       <ContactLocationSection />
       <Footer />
