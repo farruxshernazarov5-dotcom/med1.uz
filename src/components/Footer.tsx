@@ -40,6 +40,7 @@ const Footer = () => {
               <li><Link to="/user-guide" className="hover:text-primary-foreground transition-colors">Foydalanish shartlari</Link></li>
               <li><Link to="/user-guide" className="hover:text-primary-foreground transition-colors">Maxfiylik siyosati</Link></li>
               <li><Link to="/user-guide" className="hover:text-primary-foreground transition-colors">Qo'llanma</Link></li>
+              <li><Link to="/sitemap" className="hover:text-primary-foreground transition-colors">Sayt xaritasi</Link></li>
             </ul>
           </div>
 
