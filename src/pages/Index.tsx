@@ -22,7 +22,7 @@ const Index = () => {
 
       {/* Main 3-column layout */}
       <section className="py-8 relative">
-        <AnimatedBackground variant="medical" />
+        <AnimatedBackground variant="dna" />
         <div className="container mx-auto px-4 relative">
           <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_260px] gap-5">
             <aside className="hidden lg:block">
@@ -47,7 +47,7 @@ const Index = () => {
 
       {/* News Section with animation */}
       <div className="relative">
-        <AnimatedBackground variant="waves" />
+        <AnimatedBackground variant="heartbeat" />
         <div className="relative">
           <HomeNewsSection />
         </div>
