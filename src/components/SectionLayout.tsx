@@ -9,7 +9,7 @@ interface SectionLayoutProps {
   subtitle: string;
   icon: ReactNode;
   children: ReactNode;
-  bgVariant?: "medical" | "pulse" | "waves" | "particles";
+  bgVariant?: "medical" | "pulse" | "waves" | "particles" | "dna" | "heartbeat" | "cells";
 }
 
 const SectionLayout = ({ title, subtitle, icon, children, bgVariant = "particles" }: SectionLayoutProps) => {
