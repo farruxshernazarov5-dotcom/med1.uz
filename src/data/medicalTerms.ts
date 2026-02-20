@@ -11,6 +11,16 @@ import termsLM from "./terms/terms-l-m";
 import termsNP from "./terms/terms-n-p";
 import termsQS from "./terms/terms-q-s";
 import termsTZ from "./terms/terms-t-z";
+import termsAExtra from "./terms/terms-a-extra";
+import termsBExtra from "./terms/terms-b-extra";
+import termsCDExtra from "./terms/terms-cd-extra";
+import termsEFExtra from "./terms/terms-ef-extra";
+import termsGHExtra from "./terms/terms-gh-extra";
+import termsIKExtra from "./terms/terms-ik-extra";
+import termsLMExtra from "./terms/terms-lm-extra";
+import termsNPExtra from "./terms/terms-np-extra";
+import termsQSExtra from "./terms/terms-qs-extra";
+import termsTZExtra from "./terms/terms-tz-extra";
 
 export const medicalCategories = [
   "Kasallik",
@@ -79,6 +89,16 @@ const allTerms: MedicalTerm[] = [
   ...termsNP,
   ...termsQS,
   ...termsTZ,
+  ...termsAExtra,
+  ...termsBExtra,
+  ...termsCDExtra,
+  ...termsEFExtra,
+  ...termsGHExtra,
+  ...termsIKExtra,
+  ...termsLMExtra,
+  ...termsNPExtra,
+  ...termsQSExtra,
+  ...termsTZExtra,
 ];
 
 // Group by first letter
