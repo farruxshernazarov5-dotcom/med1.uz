@@ -9,6 +9,7 @@ import AISearchSection from "@/components/AISearchSection";
 import AIChatbot from "@/components/AIChatbot";
 import HomeNewsSection from "@/components/HomeNewsSection";
 import HomeSectionsPreview from "@/components/HomeSectionsPreview";
+import HomeArticlesPreview from "@/components/HomeArticlesPreview";
 import AnimatedBackground from "@/components/AnimatedBackground";
 
 const Index = () => {
@@ -44,6 +45,9 @@ const Index = () => {
 
       {/* All Sections Preview */}
       <HomeSectionsPreview />
+
+      {/* Articles Preview */}
+      <HomeArticlesPreview />
 
       {/* News Section with animation */}
       <div className="relative">

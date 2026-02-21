@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Info, Briefcase, Phone, BookOpen, Megaphone } from "lucide-react";
+import { Info, Briefcase, Phone, BookOpen } from "lucide-react";
+import AdBanner from "@/components/AdBanner";
 
 const rightMenuItems = [
   { icon: Info, label: "Biz haqimizda", href: "/about" },
@@ -31,24 +32,11 @@ const RightSidebar = () => {
         </ul>
       </nav>
 
-      {/* Ad Space */}
-      <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden">
-        <div className="bg-accent/50 px-4 py-2 border-b border-border">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Megaphone className="w-3 h-3" />
-            <span>Reklama</span>
-          </div>
-        </div>
-        <div className="h-[280px] flex items-center justify-center bg-muted/30 p-4">
-          <div className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-accent mx-auto mb-3 flex items-center justify-center">
-              <Megaphone className="w-8 h-8 text-primary" />
-            </div>
-            <p className="text-sm font-heading font-semibold text-foreground mb-1">Reklama joyi</p>
-            <p className="text-xs text-muted-foreground">300×250</p>
-          </div>
-        </div>
-      </div>
+      {/* Ad Banner */}
+      <AdBanner variant={0} />
+
+      {/* Second Ad */}
+      <AdBanner variant={1} />
     </div>
   );
 };
