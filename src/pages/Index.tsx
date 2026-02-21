@@ -11,11 +11,13 @@ import HomeNewsSection from "@/components/HomeNewsSection";
 import HomeSectionsPreview from "@/components/HomeSectionsPreview";
 import HomeArticlesPreview from "@/components/HomeArticlesPreview";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import SectionTicker from "@/components/SectionTicker";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <SectionTicker />
       <HeroSection />
 
       {/* AI Search Section */}
