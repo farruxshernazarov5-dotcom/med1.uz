@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToHome from "@/components/BackToHome";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import AdBanner from "@/components/AdBanner";
 
 interface SectionLayoutProps {
   title: string;
@@ -35,6 +36,13 @@ const SectionLayout = ({ title, subtitle, icon, children, bgVariant = "particles
         <div className="relative">
           <BackToHome current={title} />
           {children}
+
+          {/* Global Ad Banner */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <AdBanner variant={0} />
+            <AdBanner variant={1} />
+            <AdBanner variant={2} />
+          </div>
         </div>
       </main>
       <Footer />

@@ -7,6 +7,7 @@ import {
   Shield, Heart, Target, Zap, CheckCircle2, ArrowRight,
   Cpu, Database, Globe, TrendingUp, ChevronRight
 } from "lucide-react";
+import AdBanner from "@/components/AdBanner";
 
 const mainServices = [
   {
@@ -351,6 +352,17 @@ const ServicesPage = () => {
                 <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Ad Banners */}
+      <section className="py-8 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <AdBanner variant={0} />
+            <AdBanner variant={1} />
+            <AdBanner variant={2} />
           </div>
         </div>
       </section>

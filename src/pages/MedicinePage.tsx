@@ -4,6 +4,7 @@ import DiseaseClassification from "@/components/DiseaseClassification";
 import Header from "@/components/Header";
 import BackToHome from "@/components/BackToHome";
 import Footer from "@/components/Footer";
+import AdBanner from "@/components/AdBanner";
 import MedicalTermModal from "@/components/MedicalTermModal";
 import { termsByLetter, alphabet, totalTermsCount, medicalQuotes, type MedicalTerm } from "@/data/medicalTerms";
 import medicineHero from "@/assets/medicine-hero.jpg";
@@ -285,6 +286,17 @@ const MedicinePage = () => {
                 <p className="text-primary-foreground/70 text-sm mt-1">Abu Ali Ibn Sino</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ad Banners */}
+      <section className="py-8 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <AdBanner variant={0} />
+            <AdBanner variant={1} />
+            <AdBanner variant={2} />
           </div>
         </div>
       </section>
