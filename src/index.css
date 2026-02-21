@@ -167,6 +167,10 @@
   .animate-slide-right {
     animation: slide-right 0.5s ease-out forwards;
   }
+
+  .animate-ticker {
+    animation: ticker 30s linear infinite;
+  }
 }
 
 @keyframes float {
@@ -192,4 +196,9 @@
 @keyframes slide-right {
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
