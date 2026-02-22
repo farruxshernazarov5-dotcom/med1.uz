@@ -30,6 +30,7 @@ const tickerSections = [
   { icon: Droplets, label: "Qon banklari", href: "/blood-banks", image: bloodDonation, count: "120+", gradient: "from-medical-red to-medical-purple" },
   { icon: Baby, label: "Tug'ruqxonalar", href: "/maternity", image: maternityHospital, count: "200+", gradient: "from-medical-purple to-medical-red" },
   { icon: Eye, label: "Oftalmologiya", href: "/articles/oftalmologiya", image: eyeCataract, count: "400+", gradient: "from-primary to-medical-purple" },
+  { icon: Eye, label: "Kosmetologiya", href: "/cosmetology", image: eyeCataract, count: "50+", gradient: "from-medical-purple to-secondary" },
 ];
 
 const TickerItem = ({ section }: { section: typeof tickerSections[0] }) => {
