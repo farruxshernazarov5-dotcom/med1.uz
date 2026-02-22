@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
+import logoImg from "@/assets/logo.png";
 
 const navItems = [
   { label: "Tibbiyot", href: "/medicine" },
@@ -42,9 +43,7 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-hero-gradient flex items-center justify-center">
-                <span className="font-heading font-bold text-primary-foreground text-lg">M</span>
-              </div>
+              <img src={logoImg} alt="Med1.uz logotipi" className="w-10 h-10 rounded-xl object-contain" />
               <span className="font-heading font-bold text-xl text-foreground">
                 Med1<span className="text-gradient">.uz</span>
               </span>
