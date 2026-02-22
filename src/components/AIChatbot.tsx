@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import allTerms from "@/data/medicalTerms";
+import { diseaseCategories } from "@/data/diseases";
+import { articleCategories } from "@/data/articles";
 
 interface Message {
   role: "user" | "assistant";
@@ -11,23 +14,65 @@ const quickQuestions = [
   "Bosh og'rig'ining sabablari nima?",
   "Qandli diabet belgilari",
   "Grippda nima qilish kerak?",
-  "Bolalarda isitma tushirish",
+  "Kosmetologiya xizmatlari",
 ];
 
-// Simple local AI responses (no backend needed)
+// Search site content for relevant answers
+const searchSiteContent = (query: string): string | null => {
+  const q = query.toLowerCase();
+
+  // Search encyclopedia terms
+  const matchedTerm = allTerms.find(
+    (t) => q.includes(t.term.toLowerCase()) || t.term.toLowerCase().includes(q) ||
+    t.shortDesc.toLowerCase().includes(q)
+  );
+  if (matchedTerm) {
+    let response = `📖 **${matchedTerm.term}** (${matchedTerm.category})\n\n${matchedTerm.fullDesc}`;
+    if (matchedTerm.treatment) response += `\n\n💊 **Davolash:** ${matchedTerm.treatment}`;
+    if (matchedTerm.prevention) response += `\n\n🛡️ **Profilaktika:** ${matchedTerm.prevention}`;
+    if (matchedTerm.recommendations) response += `\n\n📋 **Tavsiya:** ${matchedTerm.recommendations}`;
+    response += `\n\n📚 Manba: ${matchedTerm.source}`;
+    response += `\n\n🔗 Batafsil: /medicine bo'limida ko'ring`;
+    return response;
+  }
+
+  // Search diseases
+  for (const cat of diseaseCategories) {
+    const disease = cat.diseases.find(
+      (d) => q.includes(d.name.toLowerCase()) || d.name.toLowerCase().includes(q)
+    );
+    if (disease) {
+      return `🏥 **${disease.name}**\n\n${disease.desc}\n\n🔗 Batafsil: /diseases/${cat.id}/${disease.slug}`;
+    }
+  }
+
+  // Search articles
+  const matchedArticle = articleCategories.find(
+    (c) => q.includes(c.title.toLowerCase()) || c.article.title.toLowerCase().includes(q)
+  );
+  if (matchedArticle) {
+    return `📄 **${matchedArticle.article.title}**\n\n${matchedArticle.article.summary}\n\n🔗 Batafsil: /articles/${matchedArticle.id}/${matchedArticle.article.slug}`;
+  }
+
+  return null;
+};
+
 const getAIResponse = (message: string): string => {
   const lower = message.toLowerCase();
+
+  // First try to find in site content
+  const siteResult = searchSiteContent(lower);
+  if (siteResult) return siteResult + "\n\n⚠️ Tibbiy maslahat uchun shifokorga murojaat qiling.";
+
+  if (lower.includes("kosmetologiya") || lower.includes("botoks") || lower.includes("filler"))
+    return "✨ Kosmetologiya bo'limida zamonaviy estetik xizmatlar haqida batafsil ma'lumot:\n\n• Botoks in'ektsiyasi\n• Dermal fillerlar\n• Lazer epilyatsiya\n• Kimyoviy piling\n• Mezoterapiya\n• PRP terapiya\n\n🔗 /cosmetology sahifasida to'liq ma'lumot. ⚠️ Faqat malakali shifokor xizmatidan foydalaning.";
   if (lower.includes("bosh og'ri") || lower.includes("bosh ogri"))
-    return "Bosh og'rig'ining asosiy sabablari: stress, uyqu yetishmasligi, gipertoniya, migren, ko'z charchashi. Agar og'riq muntazam bo'lsa, shifokorga murojaat qiling. ⚠️ Ushbu ma'lumot faqat umumiy xarakterga ega va tibbiy maslahat o'rnini bosmaydi.";
+    return "Bosh og'rig'ining asosiy sabablari: stress, uyqu yetishmasligi, gipertoniya, migren, ko'z charchashi.\n\n🔗 /medicine bo'limida 'Migren', 'Sefalalgiya' atamalarini ko'ring.\n⚠️ Og'riq muntazam bo'lsa shifokorga murojaat qiling.";
   if (lower.includes("diabet") || lower.includes("qand"))
-    return "Qandli diabetning asosiy belgilari: tez-tez chanqash, ko'p siydik ajratish, vazn yo'qotish, ko'rish xiralashishi, yaralar sekin bitishi. Tekshiruv uchun endokrinologga murojaat qiling. ⚠️ O'z-o'zini davolashdan saqlaning.";
-  if (lower.includes("gripp") || lower.includes("shamollash"))
-    return "Grippda: ko'p suyuqlik iching, dam oling, isitma 38.5°C dan oshsa paratsetamol qabul qiling. 3 kundan keyin yaxshilanmasa shifokorga murojaat qiling. ⚠️ Bu umumiy tavsiya, shifokor maslahati o'rnini bosmaydi.";
-  if (lower.includes("isitma") || lower.includes("harorat"))
-    return "Bolalarda isitma: 38°C dan oshsa paratsetamol yoki ibuprofen bering. Kiyimni yengillating, xonani shamollating, ko'p suyuqlik bering. 39°C dan oshsa yoki 3 kundan ortiq davom etsa tez yordam chaqiring. ⚠️ Shifokorga murojaat tavsiya etiladi.";
+    return "Qandli diabetning asosiy belgilari: chanqash, ko'p siydik, vazn yo'qotish, ko'rish xiralashishi.\n\n🔗 /diseases bo'limida Endokrinologiya bo'limini ko'ring.\n⚠️ Endokrinologga murojaat tavsiya etiladi.";
   if (lower.includes("salom") || lower.includes("assalom"))
-    return "Assalomu alaykum! Men Med1.uz AI yordamchisiman. Sizga kasalliklar, simptomlar yoki tibbiy masalalar bo'yicha umumiy ma'lumot bera olaman. Qanday yordam kerak?";
-  return "Rahmat savolingiz uchun! Men sizga kasalliklar, simptomlar va sog'liqni saqlash bo'yicha umumiy ma'lumot bera olaman. Aniqroq savol bering yoki bo'limlarimizni ko'ring: /diseases, /health, /articles. ⚠️ Tibbiy maslahat uchun shifokorga murojaat qiling.";
+    return "Assalomu alaykum! 👋 Men Med1.uz AI yordamchisiman. Sizga 2,000+ tibbiy atama, kasalliklar va maqolalar bo'yicha ma'lumot bera olaman. Qanday yordam kerak?";
+  return "Rahmat savolingiz uchun! Men 2,000+ tibbiy atama va kasalliklar bo'yicha ma'lumot bera olaman. Aniqroq so'z yozing (masalan: 'angina', 'gastrit', 'botoks'). Bo'limlar: /diseases, /medicine, /cosmetology ⚠️ Shifokorga murojaat qiling.";
 };
 
 const AIChatbot = () => {

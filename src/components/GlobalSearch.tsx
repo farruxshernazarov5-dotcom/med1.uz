@@ -6,6 +6,7 @@ import { articleCategories } from "@/data/articles";
 import { diseaseCategories } from "@/data/diseases";
 import { clinics } from "@/data/clinics";
 import { newsItems } from "@/data/news";
+import allTerms from "@/data/medicalTerms";
 
 type SearchResult = {
   title: string;
@@ -104,7 +105,20 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
       }
     });
 
-    return found.slice(0, 20);
+    // Encyclopedia terms
+    allTerms.forEach((t) => {
+      if (t.term.toLowerCase().includes(q) || t.shortDesc.toLowerCase().includes(q)) {
+        found.push({
+          title: t.term,
+          description: t.shortDesc,
+          href: `/medicine`,
+          category: "Ensiklopediya",
+          icon: <BookOpen className="w-4 h-4" />,
+        });
+      }
+    });
+
+    return found.slice(0, 25);
   }, [query]);
 
   const handleSelect = useCallback(

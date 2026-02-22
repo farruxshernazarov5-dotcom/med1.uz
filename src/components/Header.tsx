@@ -17,6 +17,7 @@ const navItems = [
   { label: "Dorixonalar", href: "/pharmacies" },
   { label: "Qon banklari", href: "/blood-banks" },
   { label: "Tug'ruqxonalar", href: "/maternity" },
+  { label: "Kosmetologiya", href: "/cosmetology" },
 ];
 
 const languages = ["UZ", "RU", "EN"];

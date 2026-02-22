@@ -25,6 +25,7 @@ import AboutPage from "./pages/AboutPage";
 import ServicesPage from "./pages/ServicesPage";
 import UserGuidePage from "./pages/UserGuidePage";
 import SitemapPage from "./pages/SitemapPage";
+import CosmetologyPage from "./pages/CosmetologyPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/pharmacies" element={<PharmaciesPage />} />
           <Route path="/blood-banks" element={<BloodBanksPage />} />
           <Route path="/maternity" element={<MaternityPage />} />
+          <Route path="/cosmetology" element={<CosmetologyPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/user-guide" element={<UserGuidePage />} />
