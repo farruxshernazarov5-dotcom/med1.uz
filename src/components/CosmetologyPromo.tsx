@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
-import { Sparkles, ArrowRight, Star, Zap, Shield } from "lucide-react";
+import { Sparkles, ArrowRight, Star, Zap, Shield, Heart } from "lucide-react";
 import cosmetologyBanner1 from "@/assets/cosmetology-banner1.jpg";
 import cosmetologyBanner2 from "@/assets/cosmetology-banner2.jpg";
 import cosmetologyBanner3 from "@/assets/cosmetology-banner3.jpg";
+import cosmetologyHappy1 from "@/assets/cosmetology-happy1.jpg";
+import cosmetologyHappy2 from "@/assets/cosmetology-happy2.jpg";
+import cosmetologyHappy3 from "@/assets/cosmetology-happy3.jpg";
+import cosmetologyHappy4 from "@/assets/cosmetology-happy4.jpg";
 import { useState, useEffect } from "react";
 
 const slides = [
@@ -191,6 +195,42 @@ const CosmetologyPromo = () => {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Happy clients gallery */}
+        <div className="mt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Heart className="w-4 h-4 text-primary" />
+            <h3 className="font-heading font-semibold text-sm text-foreground">Mamnun mijozlarimiz</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { img: cosmetologyHappy1, label: "Professional mutaxassis" },
+              { img: cosmetologyHappy2, label: "Mamnun mijoz" },
+              { img: cosmetologyHappy3, label: "Xizmatdan keyin" },
+              { img: cosmetologyHappy4, label: "Go'zallik natijasi" },
+            ].map((item, i) => (
+              <Link
+                key={i}
+                to="/cosmetology"
+                className="relative rounded-xl overflow-hidden group aspect-[16/10]"
+              >
+                <img
+                  src={item.img}
+                  alt={item.label}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+                <div className="absolute bottom-2 left-3 right-3">
+                  <p className="text-[11px] font-medium text-white">{item.label}</p>
+                </div>
+                <div className="absolute top-2 right-2 bg-primary/80 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ArrowRight className="w-3 h-3 text-primary-foreground" />
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>

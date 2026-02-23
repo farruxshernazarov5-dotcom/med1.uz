@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Clock, DollarSign, CheckCircle, ArrowRight, BookOpen, Stethoscope, Star, Shield, Zap } from "lucide-react";
+import { Sparkles, Clock, DollarSign, CheckCircle, ArrowRight, BookOpen, Stethoscope, Star, Shield, Zap, Heart } from "lucide-react";
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import { cosmetologyServices, cosmetologyInfo } from "@/data/cosmetology";
+import cosmetologyHappy1 from "@/assets/cosmetology-happy1.jpg";
+import cosmetologyHappy2 from "@/assets/cosmetology-happy2.jpg";
+import cosmetologyHappy3 from "@/assets/cosmetology-happy3.jpg";
+import cosmetologyHappy4 from "@/assets/cosmetology-happy4.jpg";
 
 const CosmetologyPage = () => {
   return (
@@ -121,6 +125,38 @@ const CosmetologyPage = () => {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Happy clients gallery */}
+      <div className="mb-10">
+        <h3 className="font-heading font-bold text-xl text-foreground mb-4 flex items-center gap-2">
+          <Heart className="w-5 h-5 text-primary" />
+          Mamnun mijozlarimiz
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { img: cosmetologyHappy1, label: "Professional kosmetolog", quote: "Eng yaxshi mutaxassislar" },
+            { img: cosmetologyHappy2, label: "Mamnun mijoz", quote: "Ajoyib natija!" },
+            { img: cosmetologyHappy3, label: "Xizmatdan so'ng", quote: "Rahmat, tavsiya qilaman" },
+            { img: cosmetologyHappy4, label: "Go'zallik natijasi", quote: "Kutganimdan ham yaxshi" },
+          ].map((item, i) => (
+            <div key={i} className="bg-card rounded-2xl border border-border shadow-card overflow-hidden group hover:shadow-card-hover transition-all">
+              <div className="relative h-48 overflow-hidden">
+                <img
+                  src={item.img}
+                  alt={item.label}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+              </div>
+              <div className="p-3 text-center">
+                <p className="text-sm font-semibold text-foreground">{item.label}</p>
+                <p className="text-xs text-primary italic mt-0.5">"{item.quote}"</p>
               </div>
             </div>
           ))}
