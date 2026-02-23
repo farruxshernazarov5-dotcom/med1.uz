@@ -70,8 +70,9 @@ const HomeArticlesPreview = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {extra.map((cat) => (
-              <div
+             <Link
                 key={cat.id}
+                to={`/articles/${cat.id}`}
                 className="group bg-card rounded-2xl border border-border shadow-card overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="relative h-36 overflow-hidden">
@@ -123,7 +124,7 @@ const HomeArticlesPreview = () => {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

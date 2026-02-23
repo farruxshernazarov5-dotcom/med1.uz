@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import BackToHome from "@/components/BackToHome";
 import Footer from "@/components/Footer";
 import AdBanner from "@/components/AdBanner";
+import Breadcrumb from "@/components/Breadcrumb";
 import MedicalTermModal from "@/components/MedicalTermModal";
 import { termsByLetter, alphabet, totalTermsCount, medicalQuotes, type MedicalTerm } from "@/data/medicalTerms";
 import medicineHero from "@/assets/medicine-hero.jpg";
@@ -108,6 +109,7 @@ const MedicinePage = () => {
       {/* Breadcrumb + Quotes */}
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
+          <Breadcrumb items={[{ label: "Tibbiyot" }]} />
           <BackToHome current="Tibbiyot" />
           <div className="max-w-3xl mx-auto">
             <div className="bg-card rounded-3xl border border-border p-8 md:p-10 shadow-card relative overflow-hidden">
