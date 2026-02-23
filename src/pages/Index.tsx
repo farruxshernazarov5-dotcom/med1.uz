@@ -12,6 +12,7 @@ import HomeSectionsPreview from "@/components/HomeSectionsPreview";
 import HomeArticlesPreview from "@/components/HomeArticlesPreview";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import SectionTicker from "@/components/SectionTicker";
+import CosmetologyPromo from "@/components/CosmetologyPromo";
 
 const Index = () => {
   return (
@@ -44,6 +45,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Cosmetology Promo Section */}
+      <CosmetologyPromo />
 
       {/* All Sections Preview */}
       <HomeSectionsPreview />

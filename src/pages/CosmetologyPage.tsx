@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles, Clock, DollarSign, CheckCircle, ArrowRight, BookOpen, Stethoscope, Star, Shield, Zap } from "lucide-react";
 import SectionLayout from "@/components/SectionLayout";
+import Breadcrumb from "@/components/Breadcrumb";
 import { cosmetologyServices, cosmetologyInfo } from "@/data/cosmetology";
 
 const CosmetologyPage = () => {
@@ -11,6 +12,9 @@ const CosmetologyPage = () => {
       icon={<Sparkles className="w-7 h-7 text-primary-foreground" />}
       bgVariant="waves"
     >
+      {/* Breadcrumb */}
+      <Breadcrumb items={[{ label: "Kosmetologiya" }]} />
+
       {/* Hero Description */}
       <div className="mb-10">
         <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden">

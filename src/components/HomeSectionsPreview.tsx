@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   BookOpen, Heart, Stethoscope, FileText, Building2, Wrench,
-  Newspaper, Activity, Pill, Droplets, Baby, ArrowRight, Eye
+  Newspaper, Activity, Pill, Droplets, Baby, ArrowRight, Eye, Sparkles
 } from "lucide-react";
 
 import medicinePills from "@/assets/medicine-pills.jpg";
@@ -16,6 +16,7 @@ import pharmInterior from "@/assets/pharm-interior.jpg";
 import bloodDonation from "@/assets/blood-donation.jpg";
 import maternityHospital from "@/assets/maternity-hospital.jpg";
 import eyeCataract from "@/assets/eye-cataract.jpg";
+import cosmetologyHero from "@/assets/cosmetology-hero.jpg";
 
 const sections = [
   {
@@ -78,6 +79,11 @@ const sections = [
     href: "/articles/oftalmologiya", gradient: "from-primary to-medical-purple", count: "400+", image: eyeCataract,
     floatingIcons: ["👁️", "🔍", "👓"],
   },
+  {
+    icon: Sparkles, label: "Kosmetologiya", desc: "Zamonaviy estetik tibbiyot xizmatlari",
+    href: "/cosmetology", gradient: "from-medical-purple to-primary", count: "50+", image: cosmetologyHero,
+    floatingIcons: ["✨", "💉", "💎"],
+  },
 ];
 
 const FloatingEmoji = ({ emoji, index }: { emoji: string; index: number }) => {
@@ -116,7 +122,7 @@ const HomeSectionsPreview = () => {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-4">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse-slow" />
-            <span className="text-sm font-medium text-primary">12 ta asosiy bo'lim</span>
+            <span className="text-sm font-medium text-primary">13 ta asosiy bo'lim</span>
           </div>
           <h2 className="font-heading font-bold text-2xl md:text-3xl text-foreground mb-2">
             Barcha bo'limlar
