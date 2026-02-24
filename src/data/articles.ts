@@ -37,6 +37,7 @@ export type Article = {
   content: string[];
   author: string;
   date: string;
+  category?: string;
 };
 
 export type ArticleCategory = {
