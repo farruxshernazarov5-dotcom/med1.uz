@@ -2,6 +2,8 @@ import { useParams, Link } from "react-router-dom";
 import { findArticle, getCategoryArticleCount } from "@/data/articles";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ShareButton from "@/components/ShareButton";
+import ArticleContent from "@/components/ArticleContent";
 import { ArrowLeft, User, Calendar, BookOpen } from "lucide-react";
 
 const ArticleDetailPage = () => {
@@ -55,12 +57,12 @@ const ArticleDetailPage = () => {
             <img src={article.image} alt={article.title} className="w-full h-64 object-cover" />
           </div>
           <p className="text-muted-foreground italic mb-8 text-lg">{article.summary}</p>
-          <div className="space-y-5">
-            {article.content.map((paragraph, i) => (
-              <p key={i} className="text-foreground leading-relaxed">{paragraph}</p>
-            ))}
-          </div>
-          <div className="mt-10 p-4 rounded-xl bg-accent border border-border">
+          
+          <ArticleContent content={article.content} />
+
+          <ShareButton title={article.title} className="mt-8" />
+
+          <div className="mt-8 p-4 rounded-xl bg-accent border border-border">
             <p className="text-xs text-muted-foreground flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               Ushbu maqola faqat ma'lumot berish maqsadida yozilgan. Davolash uchun mutaxassisga murojaat qiling.

@@ -1,5 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { BookOpen, Stethoscope, Shield, Lightbulb, AlertTriangle, Info } from "lucide-react";
+import { BookOpen, Stethoscope, Shield, Lightbulb, AlertTriangle, Info, Link as LinkIcon, Check } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import type { MedicalTerm } from "@/data/medicalTerms";
 
 interface MedicalTermModalProps {
@@ -21,7 +23,19 @@ const Section = ({ icon: Icon, title, content, color }: { icon: any; title: stri
 );
 
 const MedicalTermModal = ({ term, open, onOpenChange }: MedicalTermModalProps) => {
+  const [copied, setCopied] = useState(false);
+
   if (!term) return null;
+
+  const shareLink = `${window.location.origin}/medicine?term=${encodeURIComponent(term.term)}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(shareLink).then(() => {
+      setCopied(true);
+      toast.success("Atama havolasi nusxalandi!");
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -56,45 +70,37 @@ const MedicalTermModal = ({ term, open, onOpenChange }: MedicalTermModalProps) =
             <p className="text-sm text-muted-foreground leading-relaxed">{term.fullDesc}</p>
           </div>
 
-          {/* Origin */}
           {term.origin && (
-            <Section
-              icon={Info}
-              title="Kelib chiqishi"
-              content={term.origin}
-              color="bg-blue-500"
-            />
+            <Section icon={Info} title="Kelib chiqishi" content={term.origin} color="bg-blue-500" />
           )}
-
-          {/* Treatment */}
           {term.treatment && (
-            <Section
-              icon={Stethoscope}
-              title="Davolash usullari"
-              content={term.treatment}
-              color="bg-emerald-500"
-            />
+            <Section icon={Stethoscope} title="Davolash usullari" content={term.treatment} color="bg-emerald-500" />
           )}
-
-          {/* Prevention */}
           {term.prevention && (
-            <Section
-              icon={Shield}
-              title="Oldini olish"
-              content={term.prevention}
-              color="bg-amber-500"
-            />
+            <Section icon={Shield} title="Oldini olish" content={term.prevention} color="bg-amber-500" />
+          )}
+          {term.recommendations && (
+            <Section icon={Lightbulb} title="Tavsiyalar" content={term.recommendations} color="bg-purple-500" />
           )}
 
-          {/* Recommendations */}
-          {term.recommendations && (
-            <Section
-              icon={Lightbulb}
-              title="Tavsiyalar"
-              content={term.recommendations}
-              color="bg-purple-500"
-            />
-          )}
+          {/* Share link */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={copyLink}
+              className="text-xs bg-accent px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors flex items-center gap-1"
+            >
+              {copied ? <Check className="w-3 h-3" /> : <LinkIcon className="w-3 h-3" />}
+              {copied ? "Nusxalandi" : "Atama havolasini nusxalash"}
+            </button>
+            <a
+              href={`https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(term.term + " — " + term.shortDesc)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs bg-accent px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors"
+            >
+              Telegram
+            </a>
+          </div>
 
           {/* Source */}
           <div className="flex items-start gap-2 p-4 rounded-xl bg-muted/50 border border-border">
@@ -103,7 +109,7 @@ const MedicalTermModal = ({ term, open, onOpenChange }: MedicalTermModalProps) =
               <p className="text-xs font-semibold text-muted-foreground mb-0.5">Ma'lumot manbasi</p>
               <p className="text-xs text-muted-foreground/80">{term.source}</p>
               <p className="text-[10px] text-muted-foreground/60 mt-1 italic">
-                Ushbu ma'lumotlar faqat ta'lim maqsadida taqdim etilgan. O'z-o'zini davolashdan qoching va shifokorga murojaat qiling.
+                Ushbu ma'lumotlar faqat ta'lim maqsadida. O'z-o'zini davolashdan qoching va shifokorga murojaat qiling.
               </p>
             </div>
           </div>

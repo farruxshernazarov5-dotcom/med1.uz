@@ -2,7 +2,8 @@ import { useParams, Link } from "react-router-dom";
 import { newsItems, newsCategories } from "@/data/news";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Clock, ExternalLink, BookOpen, Share2, ArrowRight } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
+import { ArrowLeft, Clock, ExternalLink, BookOpen, ArrowRight } from "lucide-react";
 
 const NewsDetailPage = () => {
   const { newsId } = useParams();
@@ -64,17 +65,7 @@ const NewsDetailPage = () => {
             ))}
           </div>
 
-          {/* Share */}
-          <div className="mt-8 flex items-center gap-3">
-            <Share2 className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Ulashish:</span>
-            <a href={`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(item.title)}`} target="_blank" rel="noopener noreferrer" className="text-xs bg-accent px-3 py-1 rounded-full hover:bg-primary/10 transition-colors">
-              Telegram
-            </a>
-            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(item.title)}&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="text-xs bg-accent px-3 py-1 rounded-full hover:bg-primary/10 transition-colors">
-              Twitter
-            </a>
-          </div>
+          <ShareButton title={item.title} className="mt-8" />
 
           <div className="mt-8 p-4 rounded-xl bg-accent border border-border">
             <p className="text-xs text-muted-foreground flex items-center gap-2">
@@ -83,7 +74,6 @@ const NewsDetailPage = () => {
             </p>
           </div>
 
-          {/* Related News */}
           {related.length > 0 && (
             <div className="mt-12">
               <h3 className="font-heading text-lg font-bold text-foreground mb-4">O'xshash yangiliklar</h3>
