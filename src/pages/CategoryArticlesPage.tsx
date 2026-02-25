@@ -1,10 +1,8 @@
 import { useParams, Link } from "react-router-dom";
-import { articleCategories } from "@/data/articles";
-import { ophthalmologyArticles } from "@/data/ophthalmologyArticles";
+import { articleCategories, getAllArticlesForCategory } from "@/data/articles";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ArrowLeft, ArrowRight, User, Calendar, FileText } from "lucide-react";
-import type { Article } from "@/data/articles";
 
 const CategoryArticlesPage = () => {
   const { categoryId } = useParams();
@@ -23,13 +21,7 @@ const CategoryArticlesPage = () => {
     );
   }
 
-  // Get articles for this category
-  let articles: Article[] = [];
-  if (categoryId === "oftalmologiya") {
-    articles = ophthalmologyArticles;
-  } else {
-    articles = [category.article];
-  }
+  const articles = getAllArticlesForCategory(categoryId || "");
 
   return (
     <div className="min-h-screen bg-background">
