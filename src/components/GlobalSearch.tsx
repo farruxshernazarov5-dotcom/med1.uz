@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, X, FileText, Stethoscope, Building2, Newspaper, BookOpen, Heart, Activity, Pill, Droplets, Baby, Wrench, ArrowRight } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { articleCategories } from "@/data/articles";
+import { newArticles } from "@/data/new_articles/allArticles";
 import { diseaseCategories } from "@/data/diseases";
 import { clinics } from "@/data/clinics";
 import { newsItems } from "@/data/news";
@@ -101,6 +102,20 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
           href: `/news/${n.id}`,
           category: "Yangiliklar",
           icon: <Newspaper className="w-4 h-4" />,
+        });
+      }
+    });
+
+    // New articles (100 ta)
+    newArticles.forEach((a) => {
+      if (a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q)) {
+        const catId = a.category || "tanlangan";
+        found.push({
+          title: a.title,
+          description: a.summary.slice(0, 80),
+          href: `/articles/${catId}/${a.slug}`,
+          category: "Maqolalar",
+          icon: <FileText className="w-4 h-4" />,
         });
       }
     });

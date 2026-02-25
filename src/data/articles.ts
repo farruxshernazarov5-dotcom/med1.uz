@@ -27,6 +27,7 @@ import catCardiology from "@/assets/cat-cardiology.jpg";
 import catUrology from "@/assets/cat-urology.jpg";
 import catProctology from "@/assets/cat-proctology.jpg";
 import artNarcology from "@/assets/art-narcology.jpg";
+import catPsychiatry from "@/assets/cat-psychiatry.jpg";
 
 export type Article = {
   id: string;
@@ -744,27 +745,100 @@ export const articleCategories: ArticleCategory[] = [
       date: "2022-08-12"
     }
   },
+  {
+    id: "psixiatriya",
+    title: "Psixiatriya",
+    quote: "\"Ruhiy sog'liq — jismoniy sog'liqning ajralmas qismi.\"",
+    image: catPsychiatry,
+    article: {
+      id: "psix-1",
+      title: "Psixiatriya: ruhiy sog'liq va zamonaviy davolash usullari",
+      slug: "psixiatriya-ruhiy-soglik-davolash",
+      image: catPsychiatry,
+      summary: "Depressiya, anxiyete, shizofreniya va boshqa ruhiy kasalliklarning zamonaviy tashxisi va davolash usullari.",
+      content: [
+        "Psixiatriya — ruhiy va xulq-atvor buzilishlarini o'rganadigan tibbiyot sohasi. Dunyo aholisining 25% hayoti davomida biror ruhiy sog'liq muammosiga duch keladi.",
+        "Depressiya — eng keng tarqalgan ruhiy kasallik bo'lib, 280 million kishini qamrab oladi. Kayfiyat tushishi, qiziqishlarning yo'qolishi, uyqu buzilishi asosiy belgilari.",
+        "Anxiyete buzilishlari: umumlashgan anxiyete, panik buzilish, ijtimoiy fobiya va PTSD. Kognitiv-xulq terapiyasi va SSRI preparatlari asosiy davolash usullari.",
+        "Shizofreniya — surunkali og'ir ruhiy kasallik bo'lib, gallyutsinatsiyalar, aqlsizlanish va fikrlash buzilishi bilan kechadi. Antipsixotik dorilar va psixososial reabilitatsiya qo'llaniladi.",
+        "Profilaktika: stressni boshqarish, ijtimoiy aloqalar saqlash, jismoniy faollik, yetarli uyqu va professional yordamga erta murojaat qilish."
+      ],
+      author: "Dr. Kamol Ismoilov, psixiatr",
+      date: "2024-05-10"
+    }
+  },
 ];
 
 export const totalArticleCategories = articleCategories.length;
 
 import { ophthalmologyArticles } from "./ophthalmologyArticles";
+import { newArticles } from "./new_articles/allArticles";
+
+// Map new article category values to existing articleCategories IDs
+const categoryMap: Record<string, string> = {
+  nevrologiya: "nevrologiya",
+  kardiologiya: "kardiologiya",
+  endokrinologiya: "endokrinologiya",
+  gastroenterologiya: "gastroenterologiya",
+  pulmonologiya: "pulmonologiya",
+  urologiya: "urologiya",
+  lor: "lor",
+  revmatologiya: "revmatologiya",
+  dermatologiya: "dermatologiya",
+  stomatologiya: "stomatologiya",
+  oftalmologiya: "oftalmologiya",
+  gematologiya: "gematologiya",
+  proctology: "proktologiya",
+  proktologiya: "proktologiya",
+  yuqumli: "yuqumli",
+  onkologiya: "onkologiya",
+  pediatriya: "pediatriya",
+  ginekologiya: "ginekologiya",
+  allergiya: "allergiya",
+  ortopediya: "ortopediya",
+  jarrohlik: "jarrohlik",
+  mammologiya: "mammologiya",
+  andrologiya: "andrologiya",
+  venereologiya: "venereologiya",
+  parazitologiya: "parazitologiya",
+  virologiya: "virologiya",
+  narkologiya: "narkologiya",
+  psixiatriya: "psixiatriya",
+  travmatologiya: "travmatologiya",
+};
+
+export function getNewArticlesForCategory(categoryId: string): Article[] {
+  return newArticles.filter((a) => {
+    const mapped = a.category ? categoryMap[a.category] : undefined;
+    return mapped === categoryId;
+  });
+}
 
 export function getCategoryArticleCount(categoryId: string): number {
-  if (categoryId === "oftalmologiya") return ophthalmologyArticles.length;
-  return 1;
+  if (categoryId === "oftalmologiya") return ophthalmologyArticles.length + getNewArticlesForCategory("oftalmologiya").length;
+  return 1 + getNewArticlesForCategory(categoryId).length;
+}
+
+export function getAllArticlesForCategory(categoryId: string): Article[] {
+  const category = articleCategories.find((c) => c.id === categoryId);
+  if (!category) return [];
+  
+  let articles: Article[] = [];
+  if (categoryId === "oftalmologiya") {
+    articles = [...ophthalmologyArticles];
+  } else {
+    articles = [category.article];
+  }
+  
+  return [...articles, ...getNewArticlesForCategory(categoryId)];
 }
 
 export function findArticle(categoryId: string, slug: string): { category: ArticleCategory; article: Article } | null {
   const category = articleCategories.find((c) => c.id === categoryId);
   if (!category) return null;
   
-  if (categoryId === "oftalmologiya") {
-    const article = ophthalmologyArticles.find((a) => a.slug === slug);
-    if (!article) return null;
-    return { category, article };
-  }
-  
-  if (category.article.slug !== slug) return null;
-  return { category, article: category.article };
+  const allArticles = getAllArticlesForCategory(categoryId);
+  const article = allArticles.find((a) => a.slug === slug);
+  if (!article) return null;
+  return { category, article };
 }
