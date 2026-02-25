@@ -3,6 +3,7 @@ import { findDisease } from "@/data/diseases";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
+import ShareButton from "@/components/ShareButton";
 import { Stethoscope, Shield, Lightbulb, BookOpen, AlertTriangle } from "lucide-react";
 
 const DiseaseDetailPage = () => {
@@ -84,6 +85,8 @@ const DiseaseDetailPage = () => {
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">{disease.recommendations}</p>
           </div>
+
+          <ShareButton title={disease.name} className="mt-4" />
 
           <div className="flex items-start gap-2 p-4 rounded-xl bg-muted/50 border border-border">
             <Shield className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
