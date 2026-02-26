@@ -28,14 +28,14 @@ const slides = [
 ];
 
 const services = [
-  { label: "Botoks", icon: "💉" },
-  { label: "Fillerlar", icon: "✨" },
-  { label: "Lazer epilyatsiya", icon: "⚡" },
-  { label: "Kimyoviy piling", icon: "🧪" },
-  { label: "Mezoterapiya", icon: "💧" },
-  { label: "Plazmolifting", icon: "🩸" },
-  { label: "RF lifting", icon: "📡" },
-  { label: "Lazer resurfacing", icon: "🔬" },
+  { label: "Botoks", icon: "💉", id: "botoks" },
+  { label: "Fillerlar", icon: "✨", id: "filler" },
+  { label: "Lazer epilyatsiya", icon: "⚡", id: "lazer-epilyatsiya" },
+  { label: "Kimyoviy piling", icon: "🧪", id: "kimyoviy-piling" },
+  { label: "Mezoterapiya", icon: "💧", id: "mezoterapiya" },
+  { label: "Plazmolifting", icon: "🩸", id: "plazmolifting" },
+  { label: "RF lifting", icon: "📡", id: "rf-lifting" },
+  { label: "Lazer resurfacing", icon: "🔬", id: "lazer-yuz" },
 ];
 
 const CosmetologyPromo = () => {
@@ -121,7 +121,7 @@ const CosmetologyPromo = () => {
                 {services.map((s) => (
                   <Link
                     key={s.label}
-                    to="/cosmetology"
+                    to={`/cosmetology#${s.id}`}
                     className="flex items-center gap-2 bg-accent/50 hover:bg-accent rounded-lg px-3 py-2 transition-colors group"
                   >
                     <span className="text-base">{s.icon}</span>

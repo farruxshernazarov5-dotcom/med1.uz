@@ -3,6 +3,7 @@ import { Sparkles, Clock, DollarSign, CheckCircle, ArrowRight, BookOpen, Stethos
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import { cosmetologyServices, cosmetologyInfo } from "@/data/cosmetology";
+import ShareButton from "@/components/ShareButton";
 import cosmetologyHappy1 from "@/assets/cosmetology-happy1.jpg";
 import cosmetologyHappy2 from "@/assets/cosmetology-happy2.jpg";
 import cosmetologyHappy3 from "@/assets/cosmetology-happy3.jpg";
@@ -18,6 +19,7 @@ const CosmetologyPage = () => {
     >
       {/* Breadcrumb */}
       <Breadcrumb items={[{ label: "Kosmetologiya" }]} />
+      <ShareButton title="Kosmetologiya — Med1.uz" className="mb-6" />
 
       {/* Hero Description */}
       <div className="mb-10">
@@ -77,7 +79,8 @@ const CosmetologyPage = () => {
           {cosmetologyServices.map((service) => (
             <div
               key={service.id}
-              className="bg-card rounded-2xl border border-border shadow-card overflow-hidden hover:shadow-card-hover transition-shadow"
+              id={service.id}
+              className="bg-card rounded-2xl border border-border shadow-card overflow-hidden hover:shadow-card-hover transition-shadow scroll-mt-20"
             >
               <div className="p-6">
                 <div className="flex items-start justify-between gap-4 mb-4">

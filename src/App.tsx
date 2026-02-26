@@ -13,6 +13,7 @@ import ArticlesPage from "./pages/ArticlesPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 import CategoryArticlesPage from "./pages/CategoryArticlesPage";
 import ClinicsPage from "./pages/ClinicsPage";
+import ClinicDetailPage from "./pages/ClinicDetailPage";
 import NewsDetailPage from "./pages/NewsDetailPage";
 import MedTechPage from "./pages/MedTechPage";
 import MedTechDetailPage from "./pages/MedTechDetailPage";
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/articles/:categoryId" element={<CategoryArticlesPage />} />
           <Route path="/articles/:categoryId/:slug" element={<ArticleDetailPage />} />
           <Route path="/clinics" element={<ClinicsPage />} />
+          <Route path="/clinics/:clinicId" element={<ClinicDetailPage />} />
           <Route path="/med-tech" element={<MedTechPage />} />
           <Route path="/med-tech/:equipmentId" element={<MedTechDetailPage />} />
           <Route path="/news" element={<NewsPage />} />
