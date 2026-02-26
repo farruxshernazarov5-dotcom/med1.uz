@@ -164,23 +164,37 @@ const ClinicDetailPage = () => {
         </Card>
       )}
 
-      {/* Coordinates map placeholder */}
+      {/* Google Map */}
       {clinic.coordinates && (
         <Card className="mb-6">
           <CardContent className="p-5">
             <h3 className="font-heading font-bold text-lg text-foreground mb-3 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-primary" /> Xaritada joylashuvi
             </h3>
-            <a
-              href={`https://www.google.com/maps?q=${clinic.coordinates.lat},${clinic.coordinates.lng}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-accent/50 rounded-xl p-6 text-center hover:bg-accent transition-colors"
-            >
-              <MapPin className="w-10 h-10 text-primary mx-auto mb-2" />
-              <p className="text-sm text-primary font-medium">Google Xaritada ochish →</p>
-              <p className="text-xs text-muted-foreground mt-1">{clinic.coordinates.lat.toFixed(4)}, {clinic.coordinates.lng.toFixed(4)}</p>
-            </a>
+            <div className="rounded-xl overflow-hidden border border-border">
+              <iframe
+                title={`${clinic.name} joylashuvi`}
+                width="100%"
+                height="350"
+                style={{ border: 0 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1500!2d${clinic.coordinates.lng}!3d${clinic.coordinates.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1`}
+              />
+            </div>
+            <div className="flex items-center justify-between mt-3">
+              <p className="text-xs text-muted-foreground">
+                📍 {clinic.coordinates.lat.toFixed(6)}, {clinic.coordinates.lng.toFixed(6)}
+              </p>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${clinic.coordinates.lat},${clinic.coordinates.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-primary font-medium hover:underline flex items-center gap-1"
+              >
+                <MapPin className="w-3 h-3" /> Yo'nalish olish →
+              </a>
+            </div>
           </CardContent>
         </Card>
       )}

@@ -201,6 +201,34 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* Description */}
             <p className="text-sm text-muted-foreground">{clinic.description}</p>
 
+            {/* Google Map */}
+            {clinic.coordinates && (
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
+                  <MapPin className="w-4 h-4 text-primary" /> Xaritada
+                </h4>
+                <div className="rounded-xl overflow-hidden border border-border">
+                  <iframe
+                    title={`${clinic.name} joylashuvi`}
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1500!2d${clinic.coordinates.lng}!3d${clinic.coordinates.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2s!4v1`}
+                  />
+                </div>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${clinic.coordinates.lat},${clinic.coordinates.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-2"
+                >
+                  <MapPin className="w-3 h-3" /> Yo'nalish olish →
+                </a>
+              </div>
+            )}
+
             {/* Website */}
             {clinic.website && (
               <div>
@@ -233,14 +261,16 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             </div>
 
             {/* All amenities */}
-            <div>
-              <h4 className="text-sm font-semibold text-foreground mb-2">Qulayliklar</h4>
-              <div className="flex flex-wrap gap-1">
-                {clinic.amenities.map((a) => (
-                  <span key={a} className="text-[10px] bg-accent text-accent-foreground px-2 py-1 rounded-full">{a}</span>
-                ))}
+            {clinic.amenities.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Qulayliklar</h4>
+                <div className="flex flex-wrap gap-1">
+                  {clinic.amenities.map((a) => (
+                    <span key={a} className="text-[10px] bg-accent text-accent-foreground px-2 py-1 rounded-full">{a}</span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* All phones */}
             {clinic.phone.length > 1 && (
@@ -279,6 +309,13 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
                 </div>
               </div>
             )}
+
+            {/* Detail page link */}
+            <Link to={`/clinics/${clinic.id}`} className="block">
+              <Button variant="default" size="sm" className="w-full">
+                To'liq ma'lumot →
+              </Button>
+            </Link>
 
             {/* Review Form Toggle */}
             <Button variant="outline" size="sm" onClick={() => setShowReviewForm(!showReviewForm)} className="w-full">
