@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import SectionLayout from "@/components/SectionLayout";
 import { Building2, Search, MapPin, Phone, Star, Clock, Shield, ChevronDown, ChevronUp, UserPlus, MessageSquare, Filter, X, Stethoscope, Award, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +17,8 @@ import {
   clinicMedicalTerms,
   type Clinic,
 } from "@/data/clinics";
+import { externalClinics } from "@/data/clinicsExternal";
+import ShareButton from "@/components/ShareButton";
 import clinicPrivateImg from "@/assets/clinic-private.jpg";
 import clinicStateImg from "@/assets/clinic-state.jpg";
 import clinicPolyclinicImg from "@/assets/clinic-polyclinic.jpg";
@@ -119,10 +122,10 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      {/* Clinic Image */}
-      <div className="h-40 overflow-hidden">
-        <img src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover" />
-      </div>
+      {/* Clinic Image - links to detail */}
+      <Link to={`/clinics/${clinic.id}`} className="block h-40 overflow-hidden">
+        <img src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+      </Link>
       {/* Header */}
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
@@ -130,7 +133,9 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             <span className="text-sm font-bold text-primary">{clinic.logo}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-base leading-tight">{clinic.name}</CardTitle>
+            <Link to={`/clinics/${clinic.id}`} className="hover:text-primary transition-colors">
+              <CardTitle className="text-base leading-tight">{clinic.name}</CardTitle>
+            </Link>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <Badge variant={clinic.type === "davlat" ? "default" : clinic.type === "xususiy" ? "secondary" : clinic.type === "103" ? "destructive" : "outline"} className="text-[10px]">
                 {clinic.type === "davlat" ? "Davlat" : clinic.type === "xususiy" ? "Xususiy" : clinic.type === "103" ? "103 Tez yordam" : "Poliklinika"}
@@ -395,9 +400,10 @@ const ClinicsPage = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const allClinics = useMemo(() => [...clinics, ...externalClinics], []);
 
   const filteredClinics = useMemo(() => {
-    return clinics.filter((c) => {
+    return allClinics.filter((c) => {
       // Tab filter
       if (activeTab === "davlat" && c.type !== "davlat") return false;
       if (activeTab === "xususiy" && c.type !== "xususiy") return false;
@@ -449,10 +455,10 @@ const ClinicsPage = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Jami klinikalar", value: clinics.length, icon: Building2 },
+          { label: "Jami klinikalar", value: allClinics.length, icon: Building2 },
           { label: "Yo'nalishlar", value: `${clinicSpecialties.length}+`, icon: Stethoscope },
           { label: "Viloyatlar", value: regions.length, icon: MapPin },
-          { label: "Mutaxassislar", value: clinics.reduce((a, c) => a + c.specialists.length, 0) + "+", icon: Users },
+          { label: "Mutaxassislar", value: allClinics.reduce((a, c) => a + c.specialists.length, 0) + "+", icon: Users },
         ].map((s) => (
           <Card key={s.label} className="text-center p-4">
             <s.icon className="w-6 h-6 text-primary mx-auto mb-2" />

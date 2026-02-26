@@ -6,6 +6,7 @@ import { articleCategories } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import { diseaseCategories } from "@/data/diseases";
 import { clinics } from "@/data/clinics";
+import { externalClinics } from "@/data/clinicsExternal";
 import { newsItems } from "@/data/news";
 import allTerms from "@/data/medicalTerms";
 
@@ -80,13 +81,14 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
       });
     });
 
-    // Clinics
-    clinics.forEach((c) => {
+    // Clinics (existing + external)
+    const allClinics = [...clinics, ...externalClinics];
+    allClinics.forEach((c) => {
       if (c.name.toLowerCase().includes(q) || c.specialties.some((s) => s.toLowerCase().includes(q))) {
         found.push({
           title: c.name,
           description: c.address,
-          href: "/clinics",
+          href: `/clinics/${c.id}`,
           category: "Klinikalar",
           icon: <Building2 className="w-4 h-4" />,
         });
