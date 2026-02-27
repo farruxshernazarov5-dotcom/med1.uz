@@ -9,6 +9,11 @@ import { articlesPart7 } from "./part7";
 import { articlesPart8 } from "./part8";
 import { articlesPart9 } from "./part9";
 import { articlesPart10 } from "./part10";
+import { articlesPart11 } from "./part11";
+import { articlesPart12 } from "./part12";
+import { articlesPart13 } from "./part13";
+import { articlesPart14 } from "./part14";
+import { articlesPart15 } from "./part15";
 
 export const newArticles: Article[] = [
   ...articlesPart1,
@@ -21,4 +26,9 @@ export const newArticles: Article[] = [
   ...articlesPart8,
   ...articlesPart9,
   ...articlesPart10,
+  ...articlesPart11,
+  ...articlesPart12,
+  ...articlesPart13,
+  ...articlesPart14,
+  ...articlesPart15,
 ];
