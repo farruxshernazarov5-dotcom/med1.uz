@@ -108,7 +108,7 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
       }
     });
 
-    // New articles (100 ta)
+    // New articles
     newArticles.forEach((a) => {
       if (a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q)) {
         const catId = a.category || "tanlangan";
@@ -122,13 +122,13 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
       }
     });
 
-    // Encyclopedia terms
+    // Encyclopedia terms (deep-link to exact term)
     allTerms.forEach((t) => {
       if (t.term.toLowerCase().includes(q) || t.shortDesc.toLowerCase().includes(q)) {
         found.push({
           title: t.term,
           description: t.shortDesc,
-          href: `/medicine`,
+          href: `/medicine?term=${encodeURIComponent(t.term)}`,
           category: "Ensiklopediya",
           icon: <BookOpen className="w-4 h-4" />,
         });

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, BookOpen, Brain, Heart, Microscope, Dna, ArrowRight, Quote, Sparkles } from "lucide-react";
 import DiseaseClassification from "@/components/DiseaseClassification";
 import Header from "@/components/Header";
@@ -21,6 +22,7 @@ const categories = [
 ];
 
 const MedicinePage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeLetter, setActiveLetter] = useState("A");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeQuote, setActiveQuote] = useState(0);
@@ -28,8 +30,9 @@ const MedicinePage = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const currentTerms = termsByLetter[activeLetter] || [];
+  const allTermsFlat = useMemo(() => Object.values(termsByLetter).flat(), []);
   const filteredTerms = searchQuery
-    ? Object.values(termsByLetter).flat().filter(
+    ? allTermsFlat.filter(
         (t) =>
           t.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
           t.shortDesc.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,9 +40,35 @@ const MedicinePage = () => {
       )
     : currentTerms;
 
+  useEffect(() => {
+    const termFromUrl = searchParams.get("term");
+    if (!termFromUrl) return;
+
+    const decoded = decodeURIComponent(termFromUrl).toLowerCase();
+    const matched = allTermsFlat.find((t) => t.term.toLowerCase() === decoded);
+    if (!matched) return;
+
+    const firstLetter = matched.term.charAt(0).toUpperCase();
+    setActiveLetter(firstLetter);
+    setSelectedTerm(matched);
+    setModalOpen(true);
+  }, [allTermsFlat, searchParams]);
+
   const handleTermClick = (term: MedicalTerm) => {
+    setSearchParams({ term: term.term });
     setSelectedTerm(term);
     setModalOpen(true);
+  };
+
+  const handleModalOpenChange = (open: boolean) => {
+    setModalOpen(open);
+    if (!open) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete("term");
+        return next;
+      });
+    }
   };
 
   return (
@@ -306,7 +335,7 @@ const MedicinePage = () => {
       <Footer />
 
       {/* Term Detail Modal */}
-      <MedicalTermModal term={selectedTerm} open={modalOpen} onOpenChange={setModalOpen} />
+      <MedicalTermModal term={selectedTerm} open={modalOpen} onOpenChange={handleModalOpenChange} />
     </div>
   );
 };
