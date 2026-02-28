@@ -776,6 +776,7 @@ import { newArticles } from "./new_articles/allArticles";
 
 // Map new article category values to existing articleCategories IDs
 const categoryMap: Record<string, string> = {
+  tanlangan: "tanlangan",
   nevrologiya: "nevrologiya",
   kardiologiya: "kardiologiya",
   endokrinologiya: "endokrinologiya",

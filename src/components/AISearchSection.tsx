@@ -12,7 +12,7 @@ const popularSearches = [
 
 const AISearchSection = () => {
   const [query, setQuery] = useState("");
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<{ text: string; link: string } | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = () => {
@@ -23,15 +23,30 @@ const AISearchSection = () => {
     setTimeout(() => {
       const lower = query.toLowerCase();
       if (lower.includes("bosh og'ri") || lower.includes("bosh ogri"))
-        setResult("Bosh og'rig'i — eng ko'p uchraydigan sog'liq shikoyatlaridan biri. Asosiy sabablari: stress, uyqu yetishmasligi, migren, gipertoniya. Batafsil ma'lumot uchun Kasalliklar bo'limiga o'ting.");
+        setResult({
+          text: "Bosh og'rig'i — eng ko'p uchraydigan sog'liq shikoyatlaridan biri. Asosiy sabablari: stress, uyqu yetishmasligi, migren, gipertoniya.",
+          link: "/medicine?term=Migren",
+        });
       else if (lower.includes("diabet") || lower.includes("qand"))
-        setResult("Qandli diabet — qondagi glyukoza darajasining doimiy ko'tarilishi. I va II tiplari mavjud. Asosiy belgilari: chanqash, tez-tez siydik ajratish, vazn yo'qotish. Endokrinologiya bo'limida batafsil.");
+        setResult({
+          text: "Qandli diabet — qondagi glyukoza darajasining doimiy ko'tarilishi. Asosiy belgilari: chanqash, tez-tez siydik ajratish, vazn yo'qotish.",
+          link: "/diseases",
+        });
       else if (lower.includes("paratsetamol"))
-        setResult("Paratsetamol — og'riq qoldiruvchi va isitmani tushiruvchi dori vositasi. Kattalar uchun bir martalik doza: 500-1000 mg. Kunlik maksimal doza: 4 g. Dorixonalar bo'limida narxlarni solishtiring.");
+        setResult({
+          text: "Paratsetamol — og'riq qoldiruvchi va isitmani tushiruvchi dori vositasi. Kunlik maksimal doza: 4 g.",
+          link: "/medicine?term=Paratsetamol",
+        });
       else if (lower.includes("klinika") || lower.includes("toshkent"))
-        setResult("Toshkent shahridagi yetakchi klinikalar: davlat va xususiy tibbiyot muassasalari. Yo'nalish, joylashuv va narxlar bo'yicha qidiring. Klinikalar katalogimizda batafsil.");
+        setResult({
+          text: "Klinikalar bo'limida yo'nalish, geolokatsiya va aloqa ma'lumotlari bilan to'liq ro'yxat mavjud.",
+          link: "/clinics",
+        });
       else
-        setResult(`"${query}" bo'yicha qidiruv natijalari: Kasalliklar, dori vositalari va klinikalar bo'limlarimizda batafsil ma'lumot topishingiz mumkin. Chap menyudan kerakli bo'limni tanlang.`);
+        setResult({
+          text: `"${query}" bo'yicha eng yaqin bo'limga yo'naltirish: kasalliklar, ensiklopediya va maqolalar bo'limidan qidiring.`,
+          link: `/medicine?term=${encodeURIComponent(query)}`,
+        });
       setIsSearching(false);
     }, 1200);
   };
@@ -93,13 +108,13 @@ const AISearchSection = () => {
                     <Brain className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-foreground leading-relaxed mb-3">{result}</p>
+                    <p className="text-sm text-foreground leading-relaxed mb-3">{result.text}</p>
                     <div className="flex flex-wrap gap-2">
+                      <Link to={result.link} className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
+                        To'g'ridan-to'g'ri ochish <ArrowRight className="w-3 h-3" />
+                      </Link>
                       <Link to="/diseases" className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
                         Kasalliklar <ArrowRight className="w-3 h-3" />
-                      </Link>
-                      <Link to="/pharmacies" className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
-                        Dorixonalar <ArrowRight className="w-3 h-3" />
                       </Link>
                       <Link to="/clinics" className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
                         Klinikalar <ArrowRight className="w-3 h-3" />

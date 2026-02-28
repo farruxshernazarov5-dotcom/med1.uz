@@ -108,7 +108,7 @@ const HomeArticlesPreview = () => {
                     {cat.linkedEncyclopediaTerms.slice(0, 2).map((term) => (
                       <Link
                         key={term}
-                        to="/medicine"
+                        to={`/medicine?term=${encodeURIComponent(term)}`}
                         className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full hover:bg-primary/20 transition-colors"
                       >
                         <BookOpen className="w-2.5 h-2.5" />
