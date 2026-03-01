@@ -24,6 +24,8 @@ import termsTZExtra from "./terms/terms-tz-extra";
 import termsExtra500_1 from "./terms/terms-extra-500-1";
 import termsExtra500_2 from "./terms/terms-extra-500-2";
 import termsExtra500_3 from "./terms/terms-extra-500-3";
+import termsExtra500_4 from "./terms/terms-extra-500-4";
+import termsExtra500_5 from "./terms/terms-extra-500-5";
 
 export const medicalCategories = [
   "Kasallik",
@@ -105,6 +107,8 @@ const allTerms: MedicalTerm[] = [
   ...termsExtra500_1,
   ...termsExtra500_2,
   ...termsExtra500_3,
+  ...termsExtra500_4,
+  ...termsExtra500_5,
 ];
 
 // Group by first letter

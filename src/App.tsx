@@ -27,6 +27,7 @@ import ServicesPage from "./pages/ServicesPage";
 import UserGuidePage from "./pages/UserGuidePage";
 import SitemapPage from "./pages/SitemapPage";
 import CosmetologyPage from "./pages/CosmetologyPage";
+import TermDetailPage from "./pages/TermDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
+          <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
           <Route path="/health" element={<HealthPage />} />
           <Route path="/diseases" element={<DiseasesPage />} />
           <Route path="/diseases/:categoryId/:slug" element={<DiseaseDetailPage />} />

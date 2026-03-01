@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Search, BookOpen, Brain, Heart, Microscope, Dna, ArrowRight, Quote, Sparkles } from "lucide-react";
 import DiseaseClassification from "@/components/DiseaseClassification";
 import Header from "@/components/Header";
