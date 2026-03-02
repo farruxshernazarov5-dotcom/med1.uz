@@ -808,6 +808,12 @@ const categoryMap: Record<string, string> = {
   travmatologiya: "travmatologiya",
 };
 
+export function getCategoryIdForArticle(article: Article): string {
+  const cat = article.category ? categoryMap[article.category] : undefined;
+  if (cat && articleCategories.some(c => c.id === cat)) return cat;
+  return "tanlangan";
+}
+
 export function getNewArticlesForCategory(categoryId: string): Article[] {
   return newArticles.filter((a) => {
     const mapped = a.category ? categoryMap[a.category] : undefined;
