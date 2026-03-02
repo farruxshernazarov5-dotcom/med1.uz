@@ -18,18 +18,25 @@ const summarize = (content: string[]): string => {
 };
 
 const CATEGORY_RULES: Array<{ category: string; image: ImageKey; keywords: string[] }> = [
-  { category: "gematologiya", image: "hematology", keywords: ["gemofili", "mieloma"] },
-  { category: "onkologiya", image: "oncology", keywords: ["osteosarkoma", "xolangiokarsinoma", "sarkoma", "karsinoma"] },
-  { category: "nevrologiya", image: "neurology", keywords: ["narkolepsiya", "parkinson", "epilepsiya", "ensefalit", "meningit", "al'sxaymer", "als", "guillain", "miasteniya"] },
-  { category: "endokrinologiya", image: "endocrinology", keywords: ["addison", "kush", "akromegaliya", "gipotireoz", "gipertireoz", "feoxromotsitoma"] },
-  { category: "revmatologiya", image: "rheumatology", keywords: ["sklerodermiya", "bo'richa", "revmatoid", "podagra", "fibromiyalgiya"] },
-  { category: "gastroenterologiya", image: "gastro", keywords: ["seliak", "peritonit", "xolera"] },
-  { category: "yuqumli", image: "infectious", keywords: ["poliomielit", "difteriya", "qizamiq", "bo'kacha", "ko'k yo'tal", "tetanos", "quturish", "brutsellyoz", "leptospiroz", "dengue"] },
+  { category: "gematologiya", image: "hematology", keywords: ["gemofili", "mieloma", "trombositopeniya", "leykoz", "anemiya", "polisitemiya"] },
+  { category: "onkologiya", image: "oncology", keywords: ["osteosarkoma", "xolangiokarsinoma", "sarkoma", "karsinoma", "limfoma", "melanoma"] },
+  { category: "nevrologiya", image: "neurology", keywords: ["narkolepsiya", "parkinson", "epilepsiya", "ensefalit", "meningit", "al'sxaymer", "als", "guillain", "miasteniya", "migren", "insult", "skleroz"] },
+  { category: "endokrinologiya", image: "endocrinology", keywords: ["addison", "kush", "akromegaliya", "gipotireoz", "gipertireoz", "feoxromotsitoma", "tireoidit", "giperparatireoz", "gipotireoz"] },
+  { category: "revmatologiya", image: "rheumatology", keywords: ["sklerodermiya", "bo'richa", "revmatoid", "podagra", "fibromiyalgiya", "osteoporoz"] },
+  { category: "gastroenterologiya", image: "gastro", keywords: ["seliak", "peritonit", "xolera", "gepatit", "sirroz", "pankreatit", "reflyuks", "GERD", "tseliakiya", "qabziyat", "ich ketishi", "kolit"] },
+  { category: "yuqumli", image: "infectious", keywords: ["poliomielit", "difteriya", "qizamiq", "bo'kacha", "ko'k yo'tal", "tetanos", "quturish", "brutsellyoz", "leptospiroz", "dengue", "pnevmoniya", "gripp"] },
   { category: "parazitologiya", image: "parasitology", keywords: ["leyshmanioz", "malyariya", "toksoplazmoz", "exinokokkoz", "askaridoz"] },
-  { category: "pediatriya", image: "pediatrics", keywords: ["fenilketonuriya", "sistik fibroz"] },
-  { category: "kardiologiya", image: "cardiology", keywords: ["gemoxromatoz"] },
-  { category: "urologiya", image: "urology", keywords: ["vilson"] },
-  { category: "pulmonologiya", image: "pulmonology", keywords: ["surunkali charchoq sindromi"] },
+  { category: "pediatriya", image: "pediatrics", keywords: ["fenilketonuriya", "sistik fibroz", "rachit", "autizm", "DEHB"] },
+  { category: "kardiologiya", image: "cardiology", keywords: ["gemoxromatoz", "aritmiya", "yurak yetishmovchiligi"] },
+  { category: "urologiya", image: "urology", keywords: ["vilson", "buyrak", "prostata", "siydik", "prostatit", "nefrotik", "BPH"] },
+  { category: "pulmonologiya", image: "pulmonology", keywords: ["surunkali charchoq sindromi", "SO'UK", "obstruktiv", "bronxial astma", "pnevmotoraks", "o'pka fibrozi"] },
+  { category: "dermatologiya", image: "dermatology", keywords: ["vitiligo", "psoriaz", "ekzema", "dermatit", "akne", "gerpetik", "zamburug'"] },
+  { category: "oftalmologiya", image: "eye", keywords: ["katarakta", "glaukoma", "kon'yunktivit", "retina", "to'r parda", "miopiya"] },
+  { category: "lor", image: "lor", keywords: ["otit", "sinuzit", "tonzillit", "faringit", "laringit", "burun"] },
+  { category: "ginekologiya", image: "gynecology", keywords: ["endometrioz", "polikistik", "mastit", "bachadon", "preeklamsiya", "eklamsiya", "mioma", "PCOS"] },
+  { category: "psixiatriya", image: "psychiatry", keywords: ["depressiv", "shizofreniya", "bipolyar", "anxiyete", "OKB", "PTSD", "fobiya", "panik"] },
+  { category: "ortopediya", image: "orthopedics", keywords: ["skolioz", "osteoxondroz", "disk churra", "menisk", "bursit"] },
+  { category: "travmatologiya", image: "traumatology", keywords: ["sinish", "chiqish", "travma"] },
 ];
 
 const inferCategory = (title: string, body: string) => {
