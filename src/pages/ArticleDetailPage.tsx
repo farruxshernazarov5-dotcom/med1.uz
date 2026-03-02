@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { findArticle, getCategoryArticleCount, getAllArticlesForCategory, articleCategories } from "@/data/articles";
+import { findArticle, getCategoryArticleCount, getAllArticlesForCategory, articleCategories, getCategoryIdForArticle } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import { newsItems } from "@/data/news";
 import Header from "@/components/Header";
@@ -159,8 +159,7 @@ const ArticleDetailPage = () => {
                 </h3>
                 <div className="space-y-3">
                   {recommended.map((a) => {
-                    const cat = articleCategories.find(c => c.id === a.category || c.id === "tanlangan");
-                    const catId = cat?.id || "tanlangan";
+                    const catId = getCategoryIdForArticle(a);
                     return (
                       <Link
                         key={a.id}
