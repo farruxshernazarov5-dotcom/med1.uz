@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
+import { useAuth } from "@/hooks/useAuth";
 import logoImg from "@/assets/logo.png";
 
 const navItems = [
@@ -26,6 +27,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("UZ");
   const [searchOpen, setSearchOpen] = useState(false);
+  const { user, profile, signOut } = useAuth();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -94,9 +96,18 @@ const Header = () => {
                 ))}
               </div>
 
-              <Button variant="default" size="sm" className="hidden sm:flex bg-hero-gradient hover:opacity-90 text-primary-foreground border-0">
-                Kirish
-              </Button>
+              {user ? (
+                <div className="hidden sm:flex items-center gap-2">
+                  <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
+                    <Link to="/dashboard"><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
+                </div>
+              ) : (
+                <Button asChild variant="default" size="sm" className="hidden sm:flex bg-hero-gradient hover:opacity-90 text-primary-foreground border-0">
+                  <Link to="/auth">Kirish</Link>
+                </Button>
+              )}
 
               <button className="lg:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -121,7 +132,15 @@ const Header = () => {
                     </button>
                   ))}
                 </div>
-                <Button className="flex-1 bg-hero-gradient text-primary-foreground border-0">Kirish</Button>
+                {user ? (
+                  <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
+                    <Link to="/dashboard" onClick={() => setIsOpen(false)}>Panel</Link>
+                  </Button>
+                ) : (
+                  <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
+                    <Link to="/auth" onClick={() => setIsOpen(false)}>Kirish</Link>
+                  </Button>
+                )}
               </div>
             </nav>
           )}

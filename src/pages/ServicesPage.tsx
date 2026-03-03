@@ -8,7 +8,7 @@ import {
   Cpu, Database, Globe, TrendingUp, ChevronRight
 } from "lucide-react";
 import AdBanner from "@/components/AdBanner";
-
+import PricingSection from "@/components/PricingSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
@@ -303,6 +303,9 @@ const ServicesPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Pricing Plans */}
+      <PricingSection />
 
       {/* Summary */}
       <section className="py-16 bg-dark-gradient text-primary-foreground">
