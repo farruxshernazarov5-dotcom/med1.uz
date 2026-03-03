@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MedicinePage from "./pages/MedicinePage";
@@ -28,17 +29,21 @@ import UserGuidePage from "./pages/UserGuidePage";
 import SitemapPage from "./pages/SitemapPage";
 import CosmetologyPage from "./pages/CosmetologyPage";
 import TermDetailPage from "./pages/TermDetailPage";
+import AuthPage from "./pages/AuthPage";
+import DashboardPage from "./pages/DashboardPage";
+import BookingPage from "./pages/BookingPage";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
           <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
           <Route path="/health" element={<HealthPage />} />
@@ -58,6 +63,9 @@ const App = () => (
           <Route path="/blood-banks" element={<BloodBanksPage />} />
           <Route path="/maternity" element={<MaternityPage />} />
           <Route path="/cosmetology" element={<CosmetologyPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/booking" element={<BookingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/user-guide" element={<UserGuidePage />} />
@@ -66,6 +74,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+  </AuthProvider>
   </QueryClientProvider>
 );
 
