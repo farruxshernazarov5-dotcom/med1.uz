@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
-  Settings, Stethoscope, Trash2, CheckCircle, XCircle
+  Stethoscope, CheckCircle, XCircle, Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ClinicProfileEditor from "./ClinicProfileEditor";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -20,9 +21,8 @@ const ClinicDashboard = () => {
   const [doctors, setDoctors] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"overview" | "services" | "doctors" | "appointments">("overview");
+  const [tab, setTab] = useState<"overview" | "profile" | "services" | "doctors" | "appointments">("overview");
 
-  // Forms
   const [newService, setNewService] = useState({ name: "", description: "", price: "", duration_minutes: "30" });
   const [newDoctor, setNewDoctor] = useState({ full_name: "", specialty: "", experience_years: "", consultation_price: "", bio: "" });
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
@@ -65,37 +65,29 @@ const ClinicDashboard = () => {
   const addService = async () => {
     if (!clinic || !newService.name || !newService.price) return;
     const { error } = await supabase.from("clinic_services").insert({
-      clinic_id: clinic.id,
-      name: newService.name,
-      description: newService.description,
-      price: Number(newService.price),
-      duration_minutes: Number(newService.duration_minutes) || 30,
+      clinic_id: clinic.id, name: newService.name, description: newService.description,
+      price: Number(newService.price), duration_minutes: Number(newService.duration_minutes) || 30,
     });
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     else {
       toast({ title: "✅ Xizmat qo'shildi!" });
       setNewService({ name: "", description: "", price: "", duration_minutes: "30" });
-      setServiceDialogOpen(false);
-      fetchData();
+      setServiceDialogOpen(false); fetchData();
     }
   };
 
   const addDoctor = async () => {
     if (!clinic || !newDoctor.full_name || !newDoctor.specialty) return;
     const { error } = await supabase.from("doctors").insert({
-      clinic_id: clinic.id,
-      full_name: newDoctor.full_name,
-      specialty: newDoctor.specialty,
+      clinic_id: clinic.id, full_name: newDoctor.full_name, specialty: newDoctor.specialty,
       experience_years: Number(newDoctor.experience_years) || 0,
-      consultation_price: Number(newDoctor.consultation_price) || 0,
-      bio: newDoctor.bio,
+      consultation_price: Number(newDoctor.consultation_price) || 0, bio: newDoctor.bio,
     });
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     else {
       toast({ title: "✅ Shifokor qo'shildi!" });
       setNewDoctor({ full_name: "", specialty: "", experience_years: "", consultation_price: "", bio: "" });
-      setDoctorDialogOpen(false);
-      fetchData();
+      setDoctorDialogOpen(false); fetchData();
     }
   };
 
@@ -122,6 +114,7 @@ const ClinicDashboard = () => {
 
   const tabs = [
     { id: "overview", label: "Umumiy", icon: Building2 },
+    { id: "profile", label: "Profil", icon: Settings },
     { id: "services", label: "Xizmatlar", icon: DollarSign },
     { id: "doctors", label: "Shifokorlar", icon: Stethoscope },
     { id: "appointments", label: "Qabullar", icon: Calendar },
@@ -140,7 +133,6 @@ const ClinicDashboard = () => {
         <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="w-4 h-4" /></Button>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 bg-muted rounded-xl p-1 mb-6 overflow-x-auto">
         {tabs.map((t) => (
           <button
@@ -171,6 +163,11 @@ const ClinicDashboard = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Profile Editor */}
+      {tab === "profile" && (
+        <ClinicProfileEditor clinic={clinic} onSaved={fetchData} />
       )}
 
       {/* Services */}

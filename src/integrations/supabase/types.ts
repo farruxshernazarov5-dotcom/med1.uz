@@ -87,6 +87,41 @@ export type Database = {
           },
         ]
       }
+      clinic_photos: {
+        Row: {
+          caption: string | null
+          clinic_id: string
+          created_at: string
+          id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          clinic_id: string
+          created_at?: string
+          id?: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_photos_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_services: {
         Row: {
           clinic_id: string
@@ -250,42 +285,63 @@ export type Database = {
       registered_clinics: {
         Row: {
           address: string | null
+          amenities: string[] | null
+          category: string | null
           created_at: string
           description: string | null
           email: string | null
           id: string
           is_active: boolean | null
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           name: string
           owner_id: string
           phone: string | null
+          specialties: string[] | null
           updated_at: string
+          website: string | null
+          working_hours: Json | null
         }
         Insert: {
           address?: string | null
+          amenities?: string[] | null
+          category?: string | null
           created_at?: string
           description?: string | null
           email?: string | null
           id?: string
           is_active?: boolean | null
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           name: string
           owner_id: string
           phone?: string | null
+          specialties?: string[] | null
           updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
         }
         Update: {
           address?: string | null
+          amenities?: string[] | null
+          category?: string | null
           created_at?: string
           description?: string | null
           email?: string | null
           id?: string
           is_active?: boolean | null
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           name?: string
           owner_id?: string
           phone?: string | null
+          specialties?: string[] | null
           updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
         }
         Relationships: []
       }
