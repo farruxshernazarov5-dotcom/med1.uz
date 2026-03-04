@@ -165,7 +165,9 @@ export type Database = {
       }
       doctors: {
         Row: {
+          avg_rating: number | null
           bio: string | null
+          certificates: string[] | null
           clinic_id: string
           consultation_price: number | null
           created_at: string
@@ -174,10 +176,14 @@ export type Database = {
           id: string
           is_active: boolean | null
           photo_url: string | null
+          review_count: number | null
+          schedule: Json | null
           specialty: string
         }
         Insert: {
+          avg_rating?: number | null
           bio?: string | null
+          certificates?: string[] | null
           clinic_id: string
           consultation_price?: number | null
           created_at?: string
@@ -186,10 +192,14 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           photo_url?: string | null
+          review_count?: number | null
+          schedule?: Json | null
           specialty: string
         }
         Update: {
+          avg_rating?: number | null
           bio?: string | null
+          certificates?: string[] | null
           clinic_id?: string
           consultation_price?: number | null
           created_at?: string
@@ -198,6 +208,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           photo_url?: string | null
+          review_count?: number | null
+          schedule?: Json | null
           specialty?: string
         }
         Relationships: [
@@ -344,6 +356,64 @@ export type Database = {
           working_hours?: Json | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          appointment_id: string | null
+          clinic_id: string
+          comment: string | null
+          created_at: string
+          doctor_id: string | null
+          id: string
+          is_approved: boolean | null
+          patient_id: string
+          rating: number
+        }
+        Insert: {
+          appointment_id?: string | null
+          clinic_id: string
+          comment?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          id?: string
+          is_approved?: boolean | null
+          patient_id: string
+          rating: number
+        }
+        Update: {
+          appointment_id?: string | null
+          clinic_id?: string
+          comment?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          id?: string
+          is_approved?: boolean | null
+          patient_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
