@@ -8,17 +8,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
   Building2, Stethoscope, Calendar, Clock, User, Phone,
-  CheckCircle, ArrowLeft, ArrowRight, DollarSign
+  CheckCircle, ArrowLeft, ArrowRight, DollarSign, Star, MapPin
 } from "lucide-react";
 
-const timeSlots = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00",
-];
+const DAY_MAP: Record<number, string> = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri", 6: "sat", 0: "sun" };
+
+const generateTimeSlots = (start: string, end: string, intervalMin = 30): string[] => {
+  const slots: string[] = [];
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let cur = sh * 60 + sm;
+  const endMin = eh * 60 + em;
+  while (cur < endMin) {
+    const h = Math.floor(cur / 60).toString().padStart(2, "0");
+    const m = (cur % 60).toString().padStart(2, "0");
+    slots.push(`${h}:${m}`);
+    cur += intervalMin;
+  }
+  return slots;
+};
 
 const BookingPage = () => {
   const { user, profile, loading: authLoading } = useAuth();
@@ -26,18 +39,14 @@ const BookingPage = () => {
   const [clinics, setClinics] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const [form, setForm] = useState({
-    clinic_id: "",
-    doctor_id: "",
-    service_id: "",
-    date: "",
-    time: "",
-    patient_name: "",
-    patient_phone: "",
-    notes: "",
+    clinic_id: "", doctor_id: "", service_id: "",
+    date: "", time: "",
+    patient_name: "", patient_phone: "", notes: "",
   });
 
   useEffect(() => {
@@ -56,6 +65,37 @@ const BookingPage = () => {
     }
   }, [form.clinic_id]);
 
+  // Fetch booked slots when date changes
+  useEffect(() => {
+    if (form.clinic_id && form.date) {
+      const fetchBooked = async () => {
+        const query = supabase
+          .from("appointments")
+          .select("appointment_time, doctor_id")
+          .eq("clinic_id", form.clinic_id)
+          .eq("appointment_date", form.date)
+          .in("status", ["pending", "confirmed"]);
+
+        if (form.doctor_id) query.eq("doctor_id", form.doctor_id);
+
+        const { data } = await query;
+        setBookedSlots(new Set((data || []).map((a) => a.appointment_time?.slice(0, 5))));
+      };
+      fetchBooked();
+
+      // Realtime for booked slots
+      const channel = supabase
+        .channel("booking-slots")
+        .on("postgres_changes", {
+          event: "*", schema: "public", table: "appointments",
+          filter: `clinic_id=eq.${form.clinic_id}`,
+        }, () => fetchBooked())
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
+    }
+  }, [form.clinic_id, form.date, form.doctor_id]);
+
   useEffect(() => {
     if (profile) {
       setForm((p) => ({
@@ -72,6 +112,29 @@ const BookingPage = () => {
   const selectedDoctor = doctors.find((d) => d.id === form.doctor_id);
   const selectedService = services.find((s) => s.id === form.service_id);
   const totalPrice = Number(selectedService?.price || 0) + Number(selectedDoctor?.consultation_price || 0);
+
+  // Generate available time slots based on doctor schedule or default
+  const getAvailableSlots = (): string[] => {
+    if (!form.date) return [];
+    const dayOfWeek = new Date(form.date).getDay();
+    const dayKey = DAY_MAP[dayOfWeek];
+
+    if (selectedDoctor?.schedule && (selectedDoctor.schedule as any)[dayKey]?.active) {
+      const sched = (selectedDoctor.schedule as any)[dayKey];
+      return generateTimeSlots(sched.start, sched.end);
+    }
+
+    // Default slots
+    return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+      "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
+  };
+
+  const availableSlots = getAvailableSlots();
+  const isDoctorWorkDay = () => {
+    if (!form.date || !selectedDoctor?.schedule) return true;
+    const dayKey = DAY_MAP[new Date(form.date).getDay()];
+    return (selectedDoctor.schedule as any)[dayKey]?.active !== false;
+  };
 
   const handleSubmit = async () => {
     if (!user || !form.clinic_id || !form.date || !form.time || !form.patient_name || !form.patient_phone) {
@@ -92,12 +155,8 @@ const BookingPage = () => {
       notes: form.notes,
     });
     setSubmitting(false);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
-      setSuccess(true);
-      toast({ title: "✅ Qabulga muvaffaqiyatli yozildingiz!" });
-    }
+    if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+    else { setSuccess(true); toast({ title: "✅ Qabulga muvaffaqiyatli yozildingiz!" }); }
   };
 
   const today = new Date().toISOString().split("T")[0];
@@ -154,7 +213,6 @@ const BookingPage = () => {
               <div className="text-center py-12 bg-card rounded-2xl border border-border">
                 <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground">Hozircha ro'yxatdan o'tgan klinikalar yo'q</p>
-                <p className="text-xs text-muted-foreground mt-2">Klinikalar tez orada qo'shiladi</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-3">
@@ -167,7 +225,16 @@ const BookingPage = () => {
                     )}
                   >
                     <p className="font-semibold text-foreground">{c.name}</p>
-                    <p className="text-xs text-muted-foreground">{c.address || "Manzil ko'rsatilmagan"}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin className="w-3 h-3" /> {c.address || "Manzil ko'rsatilmagan"}
+                    </p>
+                    {(c.specialties as string[])?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {(c.specialties as string[]).slice(0, 4).map((s) => (
+                          <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>
+                        ))}
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -189,14 +256,35 @@ const BookingPage = () => {
                   {doctors.map((d) => (
                     <button
                       key={d.id}
-                      onClick={() => setForm((p) => ({ ...p, doctor_id: d.id }))}
+                      onClick={() => setForm((p) => ({ ...p, doctor_id: p.doctor_id === d.id ? "" : d.id }))}
                       className={cn("text-left bg-card rounded-xl border p-3 transition-all",
                         form.doctor_id === d.id ? "border-primary bg-primary/5" : "border-border"
                       )}
                     >
-                      <p className="font-semibold text-foreground text-sm">{d.full_name}</p>
-                      <p className="text-xs text-muted-foreground">{d.specialty} • {d.experience_years} yil</p>
-                      {d.consultation_price > 0 && <p className="text-xs font-bold text-primary mt-1">{Number(d.consultation_price).toLocaleString()} so'm</p>}
+                      <div className="flex items-center gap-2">
+                        {d.photo_url ? (
+                          <img src={d.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Stethoscope className="w-4 h-4 text-primary" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground text-sm truncate">{d.full_name}</p>
+                          <p className="text-xs text-muted-foreground">{d.specialty} • {d.experience_years} yil</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        {d.avg_rating > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                            <span className="text-xs font-bold text-foreground">{Number(d.avg_rating).toFixed(1)}</span>
+                          </div>
+                        )}
+                        {d.consultation_price > 0 && (
+                          <span className="text-xs font-bold text-primary">{Number(d.consultation_price).toLocaleString()} so'm</span>
+                        )}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -210,7 +298,7 @@ const BookingPage = () => {
                   {services.map((s) => (
                     <button
                       key={s.id}
-                      onClick={() => setForm((p) => ({ ...p, service_id: s.id }))}
+                      onClick={() => setForm((p) => ({ ...p, service_id: p.service_id === s.id ? "" : s.id }))}
                       className={cn("w-full text-left bg-card rounded-xl border p-3 transition-all flex justify-between items-center",
                         form.service_id === s.id ? "border-primary bg-primary/5" : "border-border"
                       )}
@@ -240,7 +328,7 @@ const BookingPage = () => {
           </div>
         )}
 
-        {/* Step 3: Date & Time */}
+        {/* Step 3: Date & Time with real-time availability */}
         {step === 3 && (
           <div>
             <h2 className="font-heading text-lg font-bold text-foreground mb-4 flex items-center gap-2">
@@ -249,23 +337,45 @@ const BookingPage = () => {
 
             <div className="mb-6">
               <Label className="text-xs font-medium">Sana *</Label>
-              <Input type="date" value={form.date} min={today} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))} className="mt-1" />
+              <Input type="date" value={form.date} min={today} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value, time: "" }))} className="mt-1" />
             </div>
 
-            <div className="mb-6">
-              <Label className="text-xs font-medium mb-2 block">Vaqt *</Label>
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                {timeSlots.map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setForm((p) => ({ ...p, time: t }))}
-                    className={cn("py-2 px-3 text-sm font-medium rounded-lg border transition-all",
-                      form.time === t ? "border-primary bg-primary text-primary-foreground" : "border-border text-foreground hover:border-primary/30"
-                    )}
-                  >{t}</button>
-                ))}
+            {form.date && !isDoctorWorkDay() && (
+              <div className="bg-destructive/10 text-destructive rounded-xl p-4 mb-4 text-sm">
+                ⚠️ Tanlangan shifokor bu kunda qabul qilmaydi. Iltimos, boshqa kun tanlang yoki shifokorni o'zgartiring.
               </div>
-            </div>
+            )}
+
+            {form.date && isDoctorWorkDay() && (
+              <div className="mb-6">
+                <Label className="text-xs font-medium mb-2 block">Vaqt * <span className="text-muted-foreground">(real vaqtda yangilanadi)</span></Label>
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                  {availableSlots.map((t) => {
+                    const isBooked = bookedSlots.has(t);
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => !isBooked && setForm((p) => ({ ...p, time: t }))}
+                        disabled={isBooked}
+                        className={cn("py-2 px-3 text-sm font-medium rounded-lg border transition-all relative",
+                          isBooked ? "border-border bg-muted text-muted-foreground cursor-not-allowed line-through opacity-50" :
+                          form.time === t ? "border-primary bg-primary text-primary-foreground" :
+                          "border-border text-foreground hover:border-primary/30"
+                        )}
+                      >
+                        {t}
+                        {isBooked && <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />}
+                      </button>
+                    );
+                  })}
+                </div>
+                {bookedSlots.size > 0 && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    🔴 Chizilgan vaqtlar band. Bo'sh vaqtlardan tanlang.
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="flex gap-3">
               <Button variant="outline" onClick={() => setStep(2)}><ArrowLeft className="w-4 h-4 mr-1" /> Orqaga</Button>
@@ -296,7 +406,6 @@ const BookingPage = () => {
               </div>
             </div>
 
-            {/* Summary */}
             <div className="bg-card rounded-xl border border-border p-4 mb-6 space-y-2">
               <h3 className="font-heading font-bold text-foreground text-sm">Qabul ma'lumotlari</h3>
               <div className="text-sm space-y-1">
