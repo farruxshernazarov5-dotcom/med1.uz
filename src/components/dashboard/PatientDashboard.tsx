@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LogOut, User, Calendar, Heart, Star, Bell, Activity, Settings } from "lucide-react";
+import { LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,13 +10,19 @@ import PatientFavorites from "./PatientFavorites";
 import PatientReviews from "./PatientReviews";
 import PatientHealth from "./PatientHealth";
 import PatientNotifications from "./PatientNotifications";
+import PatientDocuments from "./PatientDocuments";
+import PatientNearby from "./PatientNearby";
+import PatientMedicalHistory from "./PatientMedicalHistory";
 
 const tabs = [
   { id: "appointments", label: "Qabullar", icon: Calendar },
-  { id: "profile", label: "Profil", icon: User },
+  { id: "nearby", label: "Yaqin xizmatlar", icon: MapPin },
+  { id: "history", label: "Tibbiy tarix", icon: FolderOpen },
+  { id: "documents", label: "Hujjatlar", icon: FileText },
   { id: "health", label: "Sog'liq", icon: Activity },
   { id: "reviews", label: "Sharhlar", icon: Star },
   { id: "favorites", label: "Sevimlilar", icon: Heart },
+  { id: "profile", label: "Profil", icon: User },
   { id: "notifications", label: "Xabarlar", icon: Bell },
 ] as const;
 
@@ -76,10 +82,13 @@ const PatientDashboard = () => {
       {/* Tab content */}
       <div className="min-h-[400px]">
         {activeTab === "appointments" && <PatientAppointments />}
-        {activeTab === "profile" && <PatientProfileEditor />}
+        {activeTab === "nearby" && <PatientNearby />}
+        {activeTab === "history" && <PatientMedicalHistory />}
+        {activeTab === "documents" && <PatientDocuments />}
         {activeTab === "health" && <PatientHealth />}
         {activeTab === "reviews" && <PatientReviews />}
         {activeTab === "favorites" && <PatientFavorites />}
+        {activeTab === "profile" && <PatientProfileEditor />}
         {activeTab === "notifications" && <PatientNotifications />}
       </div>
     </div>
