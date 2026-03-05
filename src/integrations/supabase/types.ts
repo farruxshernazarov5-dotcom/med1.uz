@@ -281,6 +281,45 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_records: {
+        Row: {
+          attachments: string[] | null
+          clinic_name: string | null
+          created_at: string
+          description: string | null
+          doctor_name: string | null
+          id: string
+          record_date: string
+          record_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          clinic_name?: string | null
+          created_at?: string
+          description?: string | null
+          doctor_name?: string | null
+          id?: string
+          record_date?: string
+          record_type?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          attachments?: string[] | null
+          clinic_name?: string | null
+          created_at?: string
+          description?: string | null
+          doctor_name?: string | null
+          id?: string
+          record_date?: string
+          record_type?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
