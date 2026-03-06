@@ -27,6 +27,8 @@ import { articlesPart25 } from "./part25";
 import { articlesPart26 } from "./part26";
 import { articlesPart27 } from "./part27";
 import { articlesPart28 } from "./part28";
+import { articlesPart29 } from "./part29";
+import { articlesPart30 } from "./part30";
 
 export const newArticles: Article[] = [
   ...articlesPart1,
@@ -57,4 +59,6 @@ export const newArticles: Article[] = [
   ...articlesPart26,
   ...articlesPart27,
   ...articlesPart28,
+  ...articlesPart29,
+  ...articlesPart30,
 ];
