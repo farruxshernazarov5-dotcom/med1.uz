@@ -281,6 +281,33 @@ export type Database = {
         }
         Relationships: []
       }
+      login_history: {
+        Row: {
+          id: string
+          ip_address: string | null
+          login_at: string
+          success: boolean
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          login_at?: string
+          success?: boolean
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          login_at?: string
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       medical_records: {
         Row: {
           attachments: string[] | null
@@ -434,13 +461,17 @@ export type Database = {
           description: string | null
           email: string | null
           id: string
+          iin: string | null
+          inn: string | null
           is_active: boolean | null
           latitude: number | null
+          logo_external_url: string | null
           logo_url: string | null
           longitude: number | null
           name: string
           owner_id: string
           phone: string | null
+          social_links: Json | null
           specialties: string[] | null
           updated_at: string
           website: string | null
@@ -454,13 +485,17 @@ export type Database = {
           description?: string | null
           email?: string | null
           id?: string
+          iin?: string | null
+          inn?: string | null
           is_active?: boolean | null
           latitude?: number | null
+          logo_external_url?: string | null
           logo_url?: string | null
           longitude?: number | null
           name: string
           owner_id: string
           phone?: string | null
+          social_links?: Json | null
           specialties?: string[] | null
           updated_at?: string
           website?: string | null
@@ -474,13 +509,17 @@ export type Database = {
           description?: string | null
           email?: string | null
           id?: string
+          iin?: string | null
+          inn?: string | null
           is_active?: boolean | null
           latitude?: number | null
+          logo_external_url?: string | null
           logo_url?: string | null
           longitude?: number | null
           name?: string
           owner_id?: string
           phone?: string | null
+          social_links?: Json | null
           specialties?: string[] | null
           updated_at?: string
           website?: string | null

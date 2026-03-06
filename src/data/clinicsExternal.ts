@@ -1,4 +1,5 @@
 import rawClinics from "./clinics-external.json";
+import rawClinics2 from "./clinics-external-2.json";
 import { type Clinic } from "./clinics";
 
 interface RawClinic {
@@ -54,10 +55,10 @@ function mapClinicType(type: string | null): Clinic["type"] {
   return "xususiy";
 }
 
-export const externalClinics: Clinic[] = (rawClinics as RawClinic[]).map((raw) => {
+function mapRawClinic(raw: RawClinic): Clinic {
   const cleanedName = cleanName(raw.name);
   const slug = slugify(cleanedName) || `clinic-${raw.external_id}`;
-  
+
   return {
     id: `ext-${slug}`,
     name: cleanedName,
@@ -81,5 +82,20 @@ export const externalClinics: Clinic[] = (rawClinics as RawClinic[]).map((raw) =
     coordinates: raw.latitude && raw.longitude ? { lat: raw.latitude, lng: raw.longitude } : undefined,
     website: raw.socials?.Website || raw.website || undefined,
     services: raw.services || [],
+    logoUrl: raw.logo_url || undefined,
+    socialLinks: raw.socials || undefined,
   };
-});
+}
+
+// Merge both datasets and deduplicate by external_id
+const allRaw = [...(rawClinics as RawClinic[]), ...(rawClinics2 as RawClinic[])];
+const seen = new Set<number>();
+const uniqueRaw: RawClinic[] = [];
+for (const raw of allRaw) {
+  if (!seen.has(raw.external_id)) {
+    seen.add(raw.external_id);
+    uniqueRaw.push(raw);
+  }
+}
+
+export const externalClinics: Clinic[] = uniqueRaw.map(mapRawClinic);

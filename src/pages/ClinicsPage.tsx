@@ -129,8 +129,12 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
       {/* Header */}
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 -mt-10 relative z-10 shadow-md bg-card">
-            <span className="text-sm font-bold text-primary">{clinic.logo}</span>
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 -mt-10 relative z-10 shadow-md bg-card overflow-hidden">
+            {clinic.logoUrl ? (
+              <img src={clinic.logoUrl} alt={clinic.name} className="w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <span className="text-sm font-bold text-primary">{clinic.logo}</span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <Link to={`/clinics/${clinic.id}`} className="hover:text-primary transition-colors">
@@ -354,78 +358,13 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
 
 // ==================== ADD CLINIC FORM ====================
 const AddClinicForm = () => {
-  const [open, setOpen] = useState(false);
-
   return (
     <div className="mb-8">
-      <Button onClick={() => setOpen(!open)} variant="outline" className="w-full md:w-auto">
-        <UserPlus className="w-4 h-4 mr-2" /> Klinika qo'shish / Ro'yxatdan o'tkazish
-      </Button>
-
-      {open && (
-        <Card className="mt-4 animate-fade-in">
-          <CardHeader>
-            <CardTitle className="text-lg">Yangi klinika ro'yxatdan o'tkazish</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label>Klinika nomi *</Label>
-                <Input placeholder="Masalan: Shifo Med Center" />
-              </div>
-              <div>
-                <Label>Klinika turi *</Label>
-                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                  <option value="">Tanlang</option>
-                  <option value="davlat">Davlat</option>
-                  <option value="xususiy">Xususiy</option>
-                  <option value="poliklinika">Poliklinika</option>
-                </select>
-              </div>
-              <div>
-                <Label>Viloyat *</Label>
-                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                  <option value="">Tanlang</option>
-                  {regions.map((r) => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label>Shahar/Tuman *</Label>
-                <Input placeholder="Shahar yoki tuman nomi" />
-              </div>
-              <div>
-                <Label>Manzil *</Label>
-                <Input placeholder="To'liq manzil" />
-              </div>
-              <div>
-                <Label>Mo'ljal</Label>
-                <Input placeholder="Masalan: Metro bekati yonida" />
-              </div>
-              <div>
-                <Label>Telefon *</Label>
-                <Input placeholder="+998 XX XXX-XX-XX" />
-              </div>
-              <div>
-                <Label>Ish vaqti</Label>
-                <Input placeholder="08:00 - 18:00" />
-              </div>
-            </div>
-            <div>
-              <Label>Qisqacha tavsif</Label>
-              <Textarea placeholder="Klinika haqida qisqacha ma'lumot..." rows={3} />
-            </div>
-            <div>
-              <Label>Yo'nalishlar (vergul bilan ajrating)</Label>
-              <Textarea placeholder="Kardiologiya, Nevrologiya, Terapiya..." rows={2} />
-            </div>
-            <Button className="w-full md:w-auto">
-              <Shield className="w-4 h-4 mr-2" /> Ro'yxatdan o'tkazish
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      <Link to="/clinic-register">
+        <Button variant="outline" className="w-full md:w-auto">
+          <UserPlus className="w-4 h-4 mr-2" /> Klinika qo'shish / Ro'yxatdan o'tkazish
+        </Button>
+      </Link>
     </div>
   );
 };

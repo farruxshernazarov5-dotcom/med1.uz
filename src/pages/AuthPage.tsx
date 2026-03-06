@@ -7,12 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, Shield, User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
   { value: "clinic", label: "Klinika", icon: Building2, desc: "Klinikani boshqarish" },
+];
+
+const PASSWORD_RULES = [
+  { label: "Kamida 8 belgi", test: (p: string) => p.length >= 8 },
+  { label: "Katta harf (A-Z)", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "Kichik harf (a-z)", test: (p: string) => /[a-z]/.test(p) },
+  { label: "Raqam (0-9)", test: (p: string) => /\d/.test(p) },
+  { label: "Maxsus belgi (!@#$...)", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
 const AuthPage = () => {
@@ -25,6 +33,8 @@ const AuthPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +51,11 @@ const AuthPage = () => {
     } else {
       if (!fullName.trim()) {
         toast({ title: "Iltimos, ismingizni kiriting", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+      if (!passwordStrong) {
+        toast({ title: "Parol yetarlicha kuchli emas", variant: "destructive" });
         setSubmitting(false);
         return;
       }
@@ -149,9 +164,41 @@ const AuthPage = () => {
                 </div>
               </div>
 
-              <Button type="submit" disabled={submitting} className="w-full bg-hero-gradient text-primary-foreground border-0 h-11">
+              {/* Password strength indicator */}
+              {mode === "register" && password.length > 0 && (
+                <div className="space-y-1 p-3 bg-muted/30 rounded-xl">
+                  <p className="text-xs font-semibold text-foreground mb-1">Parol kuchlilik talablari:</p>
+                  {PASSWORD_RULES.map((rule) => {
+                    const pass = rule.test(password);
+                    return (
+                      <div key={rule.label} className="flex items-center gap-2">
+                        {pass ? (
+                          <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                        ) : (
+                          <XCircle className="w-3.5 h-3.5 text-destructive" />
+                        )}
+                        <span className={cn("text-xs", pass ? "text-foreground" : "text-muted-foreground")}>
+                          {rule.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={submitting || (mode === "register" && !passwordStrong)}
+                className="w-full bg-hero-gradient text-primary-foreground border-0 h-11"
+              >
                 {submitting ? "Kutilmoqda..." : mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}
               </Button>
+
+              {mode === "register" && role === "clinic" && (
+                <p className="text-xs text-center text-muted-foreground">
+                  Ro'yxatdan o'tgandan so'ng klinika ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
+                </p>
+              )}
             </form>
 
             {mode === "login" && (
