@@ -32,6 +32,7 @@ import TermDetailPage from "./pages/TermDetailPage";
 import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import BookingPage from "./pages/BookingPage";
+import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
 
 const queryClient = new QueryClient();
 
