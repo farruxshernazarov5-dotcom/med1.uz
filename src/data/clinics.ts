@@ -41,6 +41,8 @@ export interface Clinic {
   coordinates?: { lat: number; lng: number };
   website?: string;
   services?: string[];
+  logoUrl?: string;
+  socialLinks?: Record<string, string | null> | null;
 }
 
 // ==================== O'ZBEKISTON VILOYATLARI ====================
