@@ -109,6 +109,24 @@ const ClinicDetailPage = () => {
                 </a>
               </div>
             )}
+            {/* Social Links */}
+            {clinic.socialLinks && Object.entries(clinic.socialLinks).filter(([, v]) => v).length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {Object.entries(clinic.socialLinks)
+                  .filter(([key, val]) => val && key !== "Website")
+                  .map(([key, val]) => (
+                    <a
+                      key={key}
+                      href={val!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs bg-accent text-accent-foreground px-3 py-1.5 rounded-full hover:bg-accent/80 transition-colors"
+                    >
+                      {key}
+                    </a>
+                  ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
