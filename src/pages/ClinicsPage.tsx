@@ -129,8 +129,12 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
       {/* Header */}
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 -mt-10 relative z-10 shadow-md bg-card">
-            <span className="text-sm font-bold text-primary">{clinic.logo}</span>
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 -mt-10 relative z-10 shadow-md bg-card overflow-hidden">
+            {clinic.logoUrl ? (
+              <img src={clinic.logoUrl} alt={clinic.name} className="w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <span className="text-sm font-bold text-primary">{clinic.logo}</span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <Link to={`/clinics/${clinic.id}`} className="hover:text-primary transition-colors">
