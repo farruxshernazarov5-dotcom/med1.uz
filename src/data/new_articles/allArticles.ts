@@ -29,6 +29,14 @@ import { articlesPart27 } from "./part27";
 import { articlesPart28 } from "./part28";
 import { articlesPart29 } from "./part29";
 import { articlesPart30 } from "./part30";
+import { articlesPart31 } from "./part31";
+import { articlesPart32 } from "./part32";
+import { articlesPart33 } from "./part33";
+import { articlesPart34 } from "./part34";
+import { articlesPart35 } from "./part35";
+import { articlesPart36 } from "./part36";
+import { articlesPart37 } from "./part37";
+import { articlesPart38 } from "./part38";
 
 export const newArticles: Article[] = [
   ...articlesPart1,
@@ -61,4 +69,12 @@ export const newArticles: Article[] = [
   ...articlesPart28,
   ...articlesPart29,
   ...articlesPart30,
+  ...articlesPart31,
+  ...articlesPart32,
+  ...articlesPart33,
+  ...articlesPart34,
+  ...articlesPart35,
+  ...articlesPart36,
+  ...articlesPart37,
+  ...articlesPart38,
 ];
