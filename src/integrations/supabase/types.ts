@@ -87,6 +87,192 @@ export type Database = {
           },
         ]
       }
+      blood_banks_registered: {
+        Row: {
+          additional_phone: string | null
+          address: string
+          available_blood_types: string[] | null
+          city: string
+          created_at: string
+          director_name: string | null
+          email: string | null
+          emergency_contact: string | null
+          id: string
+          inn: string | null
+          is_active: boolean | null
+          latitude: number | null
+          license_document_url: string | null
+          license_number: string | null
+          longitude: number | null
+          name: string
+          org_type: string
+          owner_id: string
+          phone: string
+          region: string
+          storage_capacity: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          additional_phone?: string | null
+          address: string
+          available_blood_types?: string[] | null
+          city: string
+          created_at?: string
+          director_name?: string | null
+          email?: string | null
+          emergency_contact?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          license_document_url?: string | null
+          license_number?: string | null
+          longitude?: number | null
+          name: string
+          org_type?: string
+          owner_id: string
+          phone: string
+          region: string
+          storage_capacity?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          additional_phone?: string | null
+          address?: string
+          available_blood_types?: string[] | null
+          city?: string
+          created_at?: string
+          director_name?: string | null
+          email?: string | null
+          emergency_contact?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          license_document_url?: string | null
+          license_number?: string | null
+          longitude?: number | null
+          name?: string
+          org_type?: string
+          owner_id?: string
+          phone?: string
+          region?: string
+          storage_capacity?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      blood_donations: {
+        Row: {
+          blood_bank_id: string
+          created_at: string
+          donation_date: string
+          donor_id: string
+          id: string
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          blood_bank_id: string
+          created_at?: string
+          donation_date?: string
+          donor_id: string
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Update: {
+          blood_bank_id?: string
+          created_at?: string
+          donation_date?: string
+          donor_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blood_donations_blood_bank_id_fkey"
+            columns: ["blood_bank_id"]
+            isOneToOne: false
+            referencedRelation: "blood_banks_registered"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blood_donations_donor_id_fkey"
+            columns: ["donor_id"]
+            isOneToOne: false
+            referencedRelation: "blood_donors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blood_donors: {
+        Row: {
+          blood_group: string
+          city: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          full_name: string
+          gender: string
+          id: string
+          is_active: boolean | null
+          last_donation_date: string | null
+          medical_restrictions: string | null
+          passport_id: string | null
+          phone: string
+          region: string | null
+          rh_factor: string
+          updated_at: string
+          user_id: string | null
+          weight: number | null
+        }
+        Insert: {
+          blood_group: string
+          city?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          full_name: string
+          gender?: string
+          id?: string
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          medical_restrictions?: string | null
+          passport_id?: string | null
+          phone: string
+          region?: string | null
+          rh_factor?: string
+          updated_at?: string
+          user_id?: string | null
+          weight?: number | null
+        }
+        Update: {
+          blood_group?: string
+          city?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string
+          gender?: string
+          id?: string
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          medical_restrictions?: string | null
+          passport_id?: string | null
+          phone?: string
+          region?: string | null
+          rh_factor?: string
+          updated_at?: string
+          user_id?: string | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
       clinic_photos: {
         Row: {
           caption: string | null
@@ -454,17 +640,21 @@ export type Database = {
       }
       registered_clinics: {
         Row: {
+          additional_phone: string | null
           address: string | null
           amenities: string[] | null
           category: string | null
           created_at: string
           description: string | null
+          director_name: string | null
           email: string | null
           id: string
           iin: string | null
           inn: string | null
           is_active: boolean | null
           latitude: number | null
+          legal_name: string | null
+          license_number: string | null
           logo_external_url: string | null
           logo_url: string | null
           longitude: number | null
@@ -473,22 +663,27 @@ export type Database = {
           phone: string | null
           social_links: Json | null
           specialties: string[] | null
+          telegram: string | null
           updated_at: string
           website: string | null
           working_hours: Json | null
         }
         Insert: {
+          additional_phone?: string | null
           address?: string | null
           amenities?: string[] | null
           category?: string | null
           created_at?: string
           description?: string | null
+          director_name?: string | null
           email?: string | null
           id?: string
           iin?: string | null
           inn?: string | null
           is_active?: boolean | null
           latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
           logo_external_url?: string | null
           logo_url?: string | null
           longitude?: number | null
@@ -497,22 +692,27 @@ export type Database = {
           phone?: string | null
           social_links?: Json | null
           specialties?: string[] | null
+          telegram?: string | null
           updated_at?: string
           website?: string | null
           working_hours?: Json | null
         }
         Update: {
+          additional_phone?: string | null
           address?: string | null
           amenities?: string[] | null
           category?: string | null
           created_at?: string
           description?: string | null
+          director_name?: string | null
           email?: string | null
           id?: string
           iin?: string | null
           inn?: string | null
           is_active?: boolean | null
           latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
           logo_external_url?: string | null
           logo_url?: string | null
           longitude?: number | null
@@ -521,6 +721,7 @@ export type Database = {
           phone?: string | null
           social_links?: Json | null
           specialties?: string[] | null
+          telegram?: string | null
           updated_at?: string
           website?: string | null
           working_hours?: Json | null
