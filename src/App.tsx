@@ -50,6 +50,7 @@ import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
 import SmartSearchPage from "./pages/SmartSearchPage";
 import AIDiagnostikaPage from "./pages/AIDiagnostikaPage";
 import AIRadiologyPage from "./pages/AIRadiologyPage";
+import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
 import FloatingAISearch from "./components/FloatingAISearch";
 
 const queryClient = new QueryClient();
