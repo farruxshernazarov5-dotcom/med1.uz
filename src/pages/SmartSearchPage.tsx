@@ -673,6 +673,96 @@ const SmartSearchPage = () => {
                   </ResultSection>
                 )}
 
+                {/* News */}
+                {result.localNews?.length > 0 && (
+                  <ResultSection title="Yangiliklar" icon={<Newspaper className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localNews.slice(0, 4).map((n: any, i: number) => (
+                        <Link key={i} to={`/news/${n.id}`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground line-clamp-1">{n.title}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{n.summary?.slice(0, 80)}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Pharmacies */}
+                {result.localPharmacies?.length > 0 && (
+                  <ResultSection title="Dorixonalar" icon={<Pill className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localPharmacies.slice(0, 4).map((p: any) => (
+                        <Link key={p.id} to={`/pharmacies`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{p.name}</p>
+                            <p className="text-xs text-muted-foreground">{p.region} · {p.address}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Diagnostics */}
+                {result.localDiagnostics?.length > 0 && (
+                  <ResultSection title="Diagnostika markazlari" icon={<Activity className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localDiagnostics.slice(0, 4).map((d: any) => (
+                        <Link key={d.id} to={`/diagnostics`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{d.name}</p>
+                            <p className="text-xs text-muted-foreground">{d.region} · {d.type}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Maternity */}
+                {result.localMaternity?.length > 0 && (
+                  <ResultSection title="Tug'ruqxonalar" icon={<Baby className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localMaternity.slice(0, 4).map((m: any) => (
+                        <Link key={m.id} to={`/maternity`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{m.name}</p>
+                            <p className="text-xs text-muted-foreground">{m.region} · {m.type}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Health Tips */}
+                {result.localHealthTips?.length > 0 && (
+                  <ResultSection title="Sog'liq maslahatlar" icon={<Lightbulb className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localHealthTips.slice(0, 4).map((t: any, i: number) => (
+                        <Link key={i} to="/health"
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{t.title}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{t.category} · {t.text?.slice(0, 60)}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
                 {result.totalResults === 0 && (
                   <div className="text-center py-12">
                     <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
