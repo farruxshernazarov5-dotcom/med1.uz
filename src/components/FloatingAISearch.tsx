@@ -20,9 +20,7 @@ const FloatingAISearch = () => {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Don't show on home page (already has search) or smart-search page
-  const hiddenPaths = ["/", "/smart-search"];
-  const shouldHide = hiddenPaths.includes(location.pathname);
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
