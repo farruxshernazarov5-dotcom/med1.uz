@@ -123,7 +123,8 @@ const App = () => (
              <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
               <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
                <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
-               <Route path="/ai-cosmetology" element={<AICosmetologyPage />} />
+                <Route path="/ai-cosmetology" element={<AICosmetologyPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
              <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
