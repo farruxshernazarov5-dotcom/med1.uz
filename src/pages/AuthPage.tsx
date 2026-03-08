@@ -216,22 +216,11 @@ const AuthPage = () => {
         setSubmitting(false);
         return;
       }
-      const { error } = await signUp(email, password, fullName, role);
+      const verifiedPhone = regPhoneVerified ? regPhone.replace(/\s/g, "") : "";
+      const { error } = await signUp(email, password, fullName, role, verifiedPhone);
       if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
-        // Save verified phone to profile if verified
-        if (regPhoneVerified) {
-          const cleanPhone = regPhone.replace(/\s/g, "");
-          // Update will happen after email confirmation via trigger, but we store in telegram_otp
-          // The phone will be linked when user confirms email and logs in
-          setTimeout(async () => {
-            const { data: { session: sess } } = await supabase.auth.getSession();
-            if (sess?.user) {
-              await supabase.from("profiles").update({ phone: cleanPhone }).eq("user_id", sess.user.id);
-            }
-          }, 1000);
-        }
         toast({ 
           title: "✅ Ro'yxatdan o'tdingiz!", 
           description: regPhoneVerified 
