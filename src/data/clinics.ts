@@ -970,7 +970,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/international-allergy-center",
+    website: undefined,
     services: ["Laboratoriya diagnostikasi", "Allergik testlar", "Yevropa standartlari"],
   },
   {
