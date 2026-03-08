@@ -132,7 +132,4 @@ const SkincareDashboard = ({ scanHistory, latestResult, onNewScan }: Props) => {
   );
 };
 
-// Need this import for the icon used in empty state
-import { Scan } from "lucide-react";
-
 export default SkincareDashboard;
