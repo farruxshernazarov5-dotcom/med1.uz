@@ -147,7 +147,7 @@ function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: st
 
   // Search diagnostic types
   const matchedDiagTypes = diagnosticTypes.filter(dt =>
-    matchesAny(dt.title || dt.name || "") || matchesAny(dt.description || "")
+    matchesAny(dt.name || "") || matchesAny(dt.shortDescription || "") || matchesAny(dt.fullDescription || "")
   );
   // Add matched diagnostic type info to diagnostics results
   if (matchedDiagTypes.length > 0 && matchedDiagnostics.length === 0) {
