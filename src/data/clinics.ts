@@ -1016,7 +1016,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/mds-servis",
+    website: undefined,
     services: ["Rentgen", "Tomografiya", "UZI", "Dopplerografiya", "EKG", "Gastroskopiya", "Kolonoskopiya", "Laboratoriya (400+ tahlil)"],
   },
   {
