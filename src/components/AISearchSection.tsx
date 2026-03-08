@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Brain, Search, ArrowRight, Sparkles, Stethoscope, Pill, Building2 } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Brain, Search, ArrowRight, Sparkles, Stethoscope, Pill, Building2, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const popularSearches = [
   { label: "Bosh og'rig'i", icon: Brain },
