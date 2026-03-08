@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera, Link2, FlaskConical, Search, MapPin } from "lucide-react";
+import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera, Link2, FlaskConical, Search, MapPin, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
