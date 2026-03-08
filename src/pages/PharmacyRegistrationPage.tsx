@@ -210,7 +210,7 @@ const PharmacyRegistrationPage = () => {
                 <div><Label>Viloyat *</Label>
                   <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={form.region} onChange={e => { set("region", e.target.value); set("city", ""); }}>
                     <option value="">Tanlang</option>
-                    {uzbekistanRegions.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
+                    {uzbekistanRegions.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
                   </select>
                 </div>
                 {districts.length > 0 && (
