@@ -609,13 +609,26 @@ const AIHealthRiskPage = () => {
                 </div>
               </div>
 
-              <Button variant="outline" size="lg" onClick={handleReset} className="w-full">
-                <RefreshCcw className="w-4 h-4 mr-2" /> Qaytadan tekshirish
-              </Button>
-
-              <div className="bg-muted rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground">⚠️ AI prognozi yakuniy tashxis emas. Profilaktika maqsadida foydalaning va shifokorga murojaat qiling.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={() => downloadAIReport({
+                  title: "Sog'liq Xavfi Prognozi",
+                  serviceType: "AI Kasallik Prognozi",
+                  riskLevel: result.overallHealth === "concerning" ? "Yuqori" : result.overallHealth === "moderate" ? "O'rtacha" : "Normal",
+                  sections: [
+                    { heading: "Umumiy holat", content: result.overallHealth === "good" ? "Yaxshi" : result.overallHealth === "moderate" ? "O'rtacha" : "E'tiborli" },
+                    { heading: "Xavflar", content: result.risks.map(r => `${r.disease} (${r.category}): ${r.riskPercent}% — ${r.riskLevel}`).join("\n") },
+                    { heading: "Tavsiyalar", content: result.recommendations.join("\n") },
+                    ...(result.warningSignsToWatch?.length ? [{ heading: "Ogohlantirish belgilari", content: result.warningSignsToWatch.join("\n") }] : []),
+                  ],
+                })} variant="outline" className="flex-1">
+                  <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
+                </Button>
+                <Button variant="outline" size="lg" onClick={handleReset} className="flex-1">
+                  <RefreshCcw className="w-4 h-4 mr-2" /> Qaytadan tekshirish
+                </Button>
               </div>
+
+              <MedicalDisclaimer />
             </div>
           )}
         </div>
