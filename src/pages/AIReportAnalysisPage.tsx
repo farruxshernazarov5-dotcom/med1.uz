@@ -496,6 +496,34 @@ const AIReportAnalysisPage = () => {
                 </ul>
               </div>
 
+              {/* Find specialist & clinic */}
+              <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-5">
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  Mos shifokor va klinika toping
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Tavsiya etilgan mutaxassis: <strong className="text-foreground">{analysis.suggestedSpecialist}</strong>
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Link to={`/doctors?specialty=${encodeURIComponent(analysis.suggestedSpecialist)}`} className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <Search className="w-4 h-4 mr-2" /> Shifokor qidirish
+                    </Button>
+                  </Link>
+                  <Link to="/clinics" className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <MapPin className="w-4 h-4 mr-2" /> Yaqin klinikalar
+                    </Button>
+                  </Link>
+                  <Link to="/diagnostics" className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <FlaskConical className="w-4 h-4 mr-2" /> Diagnostika markazlari
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 {user && (
