@@ -42,6 +42,8 @@ import AIDoctorChatPage from "./pages/AIDoctorChatPage";
 import AIReportAnalysisPage from "./pages/AIReportAnalysisPage";
 import AIHealthRiskPage from "./pages/AIHealthRiskPage";
 import AIServicesPage from "./pages/AIServicesPage";
+import MaternityRegistrationPage from "./pages/MaternityRegistrationPage";
+import CosmetologyRegistrationPage from "./pages/CosmetologyRegistrationPage";
 
 const queryClient = new QueryClient();
 
