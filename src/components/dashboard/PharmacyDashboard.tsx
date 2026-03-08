@@ -170,7 +170,7 @@ const PharmacyDashboard = () => {
                       <p className="text-xs text-muted-foreground">{o.customer_phone} · {new Date(o.created_at).toLocaleDateString("uz-UZ")}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="text-emerald-600 border-emerald-300" onClick={() => updateOrderStatus(o.id, "confirmed")}>
+                      <Button size="sm" variant="outline" className="text-primary border-primary/30" onClick={() => updateOrderStatus(o.id, "confirmed")}>
                         <CheckCircle className="w-3.5 h-3.5" />
                       </Button>
                       <Button size="sm" variant="outline" className="text-destructive border-destructive/30" onClick={() => updateOrderStatus(o.id, "cancelled")}>
