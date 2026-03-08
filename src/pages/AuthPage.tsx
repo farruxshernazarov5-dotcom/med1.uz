@@ -114,7 +114,6 @@ const AuthPage = () => {
       if (data?.error) {
         toast({ title: "Xatolik", description: data.error, variant: "destructive" });
       } else if (data?.has_account && data?.hashed_token) {
-        // Use the magic link token to sign in
         const { error: verifyErr } = await supabase.auth.verifyOtp({
           token_hash: data.hashed_token,
           type: "magiclink",
@@ -132,6 +131,57 @@ const AuthPage = () => {
         });
         setMode("register");
         setOtpSent(false);
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  // Registration phone OTP handlers
+  const handleRegPhoneSendOtp = async () => {
+    const cleanPhone = regPhone.replace(/\s/g, "");
+    if (cleanPhone.length < 13) {
+      toast({ title: "Telefon raqamini to'liq kiriting", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-otp/send-otp", {
+        body: { phone: cleanPhone },
+      });
+      if (error) throw error;
+      if (data?.error === "not_linked") {
+        toast({
+          title: "Telegram bot bilan ulanmagan",
+          description: "Avval @Med1uzOTP_Bot ga telefon raqamingizni yuboring, keyin qayta urinib ko'ring.",
+          variant: "destructive",
+        });
+      } else if (data?.success) {
+        setRegOtpSent(true);
+        toast({ title: "Telegram kod yuborildi", description: `${cleanPhone} raqamiga Telegram orqali kod yuborildi` });
+      } else {
+        toast({ title: "Xatolik", description: data?.message || "Noma'lum xatolik", variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  const handleRegPhoneVerifyOtp = async () => {
+    setSubmitting(true);
+    try {
+      const cleanPhone = regPhone.replace(/\s/g, "");
+      const { data, error } = await supabase.functions.invoke("telegram-otp/verify-otp", {
+        body: { phone: cleanPhone, otp: regOtpCode },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Xatolik", description: data.error, variant: "destructive" });
+      } else if (data?.verified) {
+        setRegPhoneVerified(true);
+        toast({ title: "✅ Telefon tasdiqlandi!", description: "Endi ro'yxatdan o'tishni yakunlang." });
       }
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
