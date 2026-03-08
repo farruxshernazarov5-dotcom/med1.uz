@@ -46,15 +46,21 @@ const AuthPage = () => {
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Phone auth state
+  // Phone auth state (login)
   const [phone, setPhone] = useState("+998");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
 
+  // Phone verification during registration
+  const [regPhone, setRegPhone] = useState("+998");
+  const [regOtpSent, setRegOtpSent] = useState(false);
+  const [regOtpCode, setRegOtpCode] = useState("");
+  const [regPhoneVerified, setRegPhoneVerified] = useState(false);
+
   const { signIn, signUp, signInWithPhone, verifyPhoneOtp, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
 
-  const passwordStrong = mode === "register" && authMethod === "email" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
+  const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleGoogleSignIn = async () => {
     setSubmitting(true);
@@ -108,7 +114,6 @@ const AuthPage = () => {
       if (data?.error) {
         toast({ title: "Xatolik", description: data.error, variant: "destructive" });
       } else if (data?.has_account && data?.hashed_token) {
-        // Use the magic link token to sign in
         const { error: verifyErr } = await supabase.auth.verifyOtp({
           token_hash: data.hashed_token,
           type: "magiclink",
@@ -126,6 +131,57 @@ const AuthPage = () => {
         });
         setMode("register");
         setOtpSent(false);
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  // Registration phone OTP handlers
+  const handleRegPhoneSendOtp = async () => {
+    const cleanPhone = regPhone.replace(/\s/g, "");
+    if (cleanPhone.length < 13) {
+      toast({ title: "Telefon raqamini to'liq kiriting", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-otp/send-otp", {
+        body: { phone: cleanPhone },
+      });
+      if (error) throw error;
+      if (data?.error === "not_linked") {
+        toast({
+          title: "Telegram bot bilan ulanmagan",
+          description: "Avval @Med1uzOTP_Bot ga telefon raqamingizni yuboring, keyin qayta urinib ko'ring.",
+          variant: "destructive",
+        });
+      } else if (data?.success) {
+        setRegOtpSent(true);
+        toast({ title: "Telegram kod yuborildi", description: `${cleanPhone} raqamiga Telegram orqali kod yuborildi` });
+      } else {
+        toast({ title: "Xatolik", description: data?.message || "Noma'lum xatolik", variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  const handleRegPhoneVerifyOtp = async () => {
+    setSubmitting(true);
+    try {
+      const cleanPhone = regPhone.replace(/\s/g, "");
+      const { data, error } = await supabase.functions.invoke("telegram-otp/verify-otp", {
+        body: { phone: cleanPhone, otp: regOtpCode },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Xatolik", description: data.error, variant: "destructive" });
+      } else if (data?.verified) {
+        setRegPhoneVerified(true);
+        toast({ title: "✅ Telefon tasdiqlandi!", description: "Endi ro'yxatdan o'tishni yakunlang." });
       }
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
@@ -164,7 +220,24 @@ const AuthPage = () => {
       if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." });
+        // Save verified phone to profile if verified
+        if (regPhoneVerified) {
+          const cleanPhone = regPhone.replace(/\s/g, "");
+          // Update will happen after email confirmation via trigger, but we store in telegram_otp
+          // The phone will be linked when user confirms email and logs in
+          setTimeout(async () => {
+            const { data: { session: sess } } = await supabase.auth.getSession();
+            if (sess?.user) {
+              await supabase.from("profiles").update({ phone: cleanPhone }).eq("user_id", sess.user.id);
+            }
+          }, 1000);
+        }
+        toast({ 
+          title: "✅ Ro'yxatdan o'tdingiz!", 
+          description: regPhoneVerified 
+            ? "Emailingizni tasdiqlang. Telefon raqamingiz saqlandi." 
+            : "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." 
+        });
         setMode("login");
       }
     }
@@ -457,6 +530,108 @@ const AuthPage = () => {
                         </div>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Phone verification for registration */}
+                {mode === "register" && (
+                  <div className="space-y-3 p-4 rounded-xl border border-border bg-muted/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#0088cc] to-[#0077b5] flex items-center justify-center">
+                          <Send className="w-3 h-3 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-foreground">Telegram orqali telefon tasdiqlash</p>
+                          <p className="text-[10px] text-muted-foreground">Ixtiyoriy, lekin tavsiya etiladi</p>
+                        </div>
+                      </div>
+                      {regPhoneVerified && (
+                        <div className="flex items-center gap-1 text-primary">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-[10px] font-bold">Tasdiqlangan</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {!regPhoneVerified && !regOtpSent && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Avval{" "}
+                        <a href="https://t.me/Med1uzOTP_Bot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline">
+                          @Med1uzOTP_Bot
+                        </a>
+                        {" "}ga telefon raqamingizni yuboring, keyin pastda kiriting.
+                      </p>
+                    )}
+
+                    {!regPhoneVerified && (
+                      <>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            type="tel"
+                            value={regPhone}
+                            onChange={(e) => setRegPhone(e.target.value)}
+                            placeholder="+998 90 123 45 67"
+                            className="pl-10 h-9 text-sm"
+                            disabled={regOtpSent}
+                          />
+                        </div>
+
+                        {regOtpSent && (
+                          <div>
+                            <Input
+                              type="text"
+                              value={regOtpCode}
+                              onChange={(e) => setRegOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                              placeholder="● ● ● ● ● ●"
+                              className="text-center text-lg tracking-[0.4em] font-mono h-10"
+                              maxLength={6}
+                            />
+                            <p className="text-[10px] text-muted-foreground mt-1 text-center">Kod 5 daqiqa ichida amal qiladi</p>
+                          </div>
+                        )}
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={submitting}
+                          className="w-full gap-1.5 h-8 text-xs"
+                          onClick={regOtpSent ? handleRegPhoneVerifyOtp : handleRegPhoneSendOtp}
+                        >
+                          {submitting ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : regOtpSent ? (
+                            <CheckCircle className="w-3 h-3" />
+                          ) : (
+                            <Send className="w-3 h-3" />
+                          )}
+                          {regOtpSent ? "Kodni tasdiqlash" : "Telegram kod yuborish"}
+                        </Button>
+
+                        {regOtpSent && (
+                          <div className="flex items-center justify-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => { setRegOtpSent(false); setRegOtpCode(""); }}
+                              className="text-[10px] text-muted-foreground font-medium hover:text-foreground transition-colors"
+                            >
+                              Raqamni o'zgartirish
+                            </button>
+                            <span className="text-muted-foreground/30">|</span>
+                            <button
+                              type="button"
+                              onClick={handleRegPhoneSendOtp}
+                              disabled={submitting}
+                              className="text-[10px] text-primary font-semibold hover:underline"
+                            >
+                              Qayta yuborish
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 )}
 
