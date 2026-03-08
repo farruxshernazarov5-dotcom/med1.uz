@@ -34,6 +34,7 @@ import DashboardPage from "./pages/DashboardPage";
 import BookingPage from "./pages/BookingPage";
 import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
 import VendorRegistrationPage from "./pages/VendorRegistrationPage";
+import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
 
 const queryClient = new QueryClient();
 
