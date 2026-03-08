@@ -37,6 +37,7 @@ import VendorRegistrationPage from "./pages/VendorRegistrationPage";
 import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import SymptomCheckerPage from "./pages/SymptomCheckerPage";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/user-guide" element={<UserGuidePage />} />
           <Route path="/sitemap" element={<SitemapPage />} />
+          <Route path="/symptom-checker" element={<SymptomCheckerPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
