@@ -639,7 +639,7 @@ const AuthPage = () => {
 
                 {mode === "register" && role !== "patient" && (
                   <p className="text-xs text-center text-muted-foreground">
-                    Ro'yxatdan o'tgandan so'ng {role === "clinic" ? "klinika" : role === "diagnostics" ? "diagnostika markazi" : "medtexnika"} ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
+                    Ro'yxatdan o'tgandan so'ng {role === "clinic" ? "klinika" : role === "diagnostics" ? "diagnostika markazi" : role === "maternity" ? "tug'ruqxona" : role === "cosmetology" ? "kosmetologiya markazi" : "medtexnika"} ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
                   </p>
                 )}
               </form>
