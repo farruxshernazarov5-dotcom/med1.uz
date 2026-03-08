@@ -82,7 +82,7 @@ const AuthPage = () => {
       if (data?.error === "not_linked") {
         toast({
           title: "Telegram bot bilan ulanmagan",
-          description: "Avval @Med1UzBot ga telefon raqamingizni yuboring, keyin qayta urinib ko'ring.",
+          description: "Avval @Med1uzOTP_Bot ga telefon raqamingizni yuboring, keyin qayta urinib ko'ring.",
           variant: "destructive",
         });
       } else if (data?.success) {
