@@ -635,7 +635,7 @@ const AuthPage = () => {
                   </div>
                 )}
 
-
+                <Button
                   type="submit"
                   disabled={submitting || (mode === "register" && !passwordStrong)}
                   className="w-full bg-hero-gradient text-primary-foreground border-0 h-11"
