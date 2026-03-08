@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
@@ -248,7 +248,7 @@ const AuthPage = () => {
                     authMethod === "phone" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
                   )}
                 >
-                  <Phone className="w-3.5 h-3.5" /> Telefon
+                  <MessageCircle className="w-3.5 h-3.5" /> Telegram
                 </button>
               </div>
             )}
