@@ -993,7 +993,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/m-clinic",
+    website: undefined,
     services: ["KT", "MRT 3.0", "Diagnostika", "Laboratoriya", "Bolalar klinikasi"],
   },
   {
