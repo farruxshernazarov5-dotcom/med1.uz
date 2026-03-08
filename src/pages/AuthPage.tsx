@@ -55,7 +55,11 @@ const AuthPage = () => {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Xush kelibsiz!" });
-        navigate("/dashboard");
+        // Redirect based on user role after short delay to let role load
+        setTimeout(() => {
+          const redirectRole = currentUserRole || "patient";
+          navigate(ROLE_REDIRECT[redirectRole] || "/dashboard");
+        }, 500);
       }
     } else {
       if (!fullName.trim()) {
