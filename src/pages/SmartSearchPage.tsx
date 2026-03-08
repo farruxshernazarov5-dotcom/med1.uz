@@ -118,7 +118,7 @@ function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: st
 
   // Search news
   const matchedNews = newsItems.filter(n =>
-    matchesAny(n.title) || matchesAny(n.summary || "") || matchesAny(n.content || "")
+    matchesAny(n.title) || matchesAny(n.summary || "") || (Array.isArray(n.content) ? n.content.some((c: string) => matchesAny(c)) : false)
   ).slice(0, 20);
 
   // Search health tips
