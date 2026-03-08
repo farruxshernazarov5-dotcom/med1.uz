@@ -1476,6 +1476,139 @@ export type Database = {
         }
         Relationships: []
       }
+      pregnancy_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          log_type: string
+          notes: string | null
+          pregnancy_id: string
+          user_id: string
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          log_type?: string
+          notes?: string | null
+          pregnancy_id: string
+          user_id: string
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          log_type?: string
+          notes?: string | null
+          pregnancy_id?: string
+          user_id?: string
+          value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pregnancy_logs_pregnancy_id_fkey"
+            columns: ["pregnancy_id"]
+            isOneToOne: false
+            referencedRelation: "pregnancy_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pregnancy_profiles: {
+        Row: {
+          blood_type: string | null
+          confirmed_week: number | null
+          created_at: string
+          edd: string
+          height_cm: number | null
+          id: string
+          is_active: boolean | null
+          lmp_date: string
+          notes: string | null
+          previous_pregnancies: number | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          blood_type?: string | null
+          confirmed_week?: number | null
+          created_at?: string
+          edd: string
+          height_cm?: number | null
+          id?: string
+          is_active?: boolean | null
+          lmp_date: string
+          notes?: string | null
+          previous_pregnancies?: number | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          blood_type?: string | null
+          confirmed_week?: number | null
+          created_at?: string
+          edd?: string
+          height_cm?: number | null
+          id?: string
+          is_active?: boolean | null
+          lmp_date?: string
+          notes?: string | null
+          previous_pregnancies?: number | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      pregnancy_reminders: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_completed: boolean | null
+          pregnancy_id: string
+          reminder_date: string
+          reminder_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean | null
+          pregnancy_id: string
+          reminder_date: string
+          reminder_type?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean | null
+          pregnancy_id?: string
+          reminder_date?: string
+          reminder_type?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pregnancy_reminders_pregnancy_id_fkey"
+            columns: ["pregnancy_id"]
+            isOneToOne: false
+            referencedRelation: "pregnancy_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
