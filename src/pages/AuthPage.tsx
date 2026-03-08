@@ -68,29 +68,67 @@ const AuthPage = () => {
   };
 
   const handlePhoneSendOtp = async () => {
-    if (phone.length < 13) {
+    const cleanPhone = phone.replace(/\s/g, "");
+    if (cleanPhone.length < 13) {
       toast({ title: "Telefon raqamini to'liq kiriting", variant: "destructive" });
       return;
     }
     setSubmitting(true);
-    const { error } = await signInWithPhone(phone);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
-      setOtpSent(true);
-      toast({ title: "SMS kod yuborildi", description: `${phone} raqamiga tasdiqlash kodi yuborildi` });
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-otp/send-otp", {
+        body: { phone: cleanPhone },
+      });
+      if (error) throw error;
+      if (data?.error === "not_linked") {
+        toast({
+          title: "Telegram bot bilan ulanmagan",
+          description: "Avval @Med1UzBot ga telefon raqamingizni yuboring, keyin qayta urinib ko'ring.",
+          variant: "destructive",
+        });
+      } else if (data?.success) {
+        setOtpSent(true);
+        toast({ title: "Telegram kod yuborildi", description: `${cleanPhone} raqamiga Telegram orqali kod yuborildi` });
+      } else {
+        toast({ title: "Xatolik", description: data?.message || "Noma'lum xatolik", variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
 
   const handlePhoneVerifyOtp = async () => {
     setSubmitting(true);
-    const { error } = await verifyPhoneOtp(phone, otpCode);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Xush kelibsiz!" });
-      navigate("/dashboard");
+    try {
+      const cleanPhone = phone.replace(/\s/g, "");
+      const { data, error } = await supabase.functions.invoke("telegram-otp/verify-otp", {
+        body: { phone: cleanPhone, otp: otpCode },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Xatolik", description: data.error, variant: "destructive" });
+      } else if (data?.has_account && data?.hashed_token) {
+        // Use the magic link token to sign in
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          token_hash: data.hashed_token,
+          type: "magiclink",
+        });
+        if (verifyErr) {
+          toast({ title: "Xatolik", description: verifyErr.message, variant: "destructive" });
+        } else {
+          toast({ title: "Xush kelibsiz!" });
+          navigate("/dashboard");
+        }
+      } else {
+        toast({
+          title: "Kod tasdiqlandi",
+          description: "Bu raqam bilan bog'langan hisob topilmadi. Email orqali ro'yxatdan o'ting.",
+        });
+        setMode("register");
+        setOtpSent(false);
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
