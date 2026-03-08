@@ -39,8 +39,9 @@ const Index = () => {
               <CenterContent />
             </main>
             <aside className="hidden lg:block">
-              <div className="sticky top-20">
+              <div className="sticky top-20 space-y-4">
                 <RightSidebar />
+                <HealthDashboardWidget />
               </div>
             </aside>
           </div>
