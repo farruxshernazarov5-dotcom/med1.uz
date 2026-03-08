@@ -9,10 +9,11 @@ const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI laboratoriya analiz natija
 
 MUHIM QOIDALAR:
 1. Foydalanuvchi bergan analiz ko'rsatkichlarini tahlil qil
-2. Har bir ko'rsatkichni normal qiymatlar bilan solishtir
-3. Ehtimoliy muammolarni aniqla
-4. TASHXIS QOYMA - faqat tahlil va tavsiya ber
-5. O'zbek tilida javob ber
+2. Agar rasm yuborilgan bo'lsa, rasmdan analiz ko'rsatkichlarini o'qi (OCR)
+3. Har bir ko'rsatkichni normal qiymatlar bilan solishtir
+4. Ehtimoliy muammolarni aniqla
+5. TASHXIS QOYMA - faqat tahlil va tavsiya ber
+6. O'zbek tilida javob ber
 
 JAVOBNI FAQAT quyidagi JSON formatda ber:
 {
@@ -36,7 +37,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { reportText, reportType, patientAge, patientGender } = await req.json();
+    const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -44,7 +45,34 @@ serve(async (req) => {
     userMessage += `Analiz turi: ${reportType || "Umumiy"}\n`;
     if (patientAge) userMessage += `Bemor yoshi: ${patientAge}\n`;
     if (patientGender) userMessage += `Bemor jinsi: ${patientGender}\n`;
-    userMessage += `\nAnaliz natijalari:\n${reportText}\n\nIltimos, yuqoridagi ko'rsatkichlarni tahlil qilib JSON formatda javob ber.`;
+
+    // Build messages array
+    const messages: any[] = [
+      { role: "system", content: SYSTEM_PROMPT },
+    ];
+
+    if (imageBase64 && imageMimeType) {
+      // Vision request - send image for OCR
+      messages.push({
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: userMessage + `\nUshbu rasmda laboratoriya analiz natijalari bor. Rasmdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`,
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:${imageMimeType};base64,${imageBase64}`,
+            },
+          },
+        ],
+      });
+    } else {
+      // Text-only request
+      userMessage += `\nAnaliz natijalari:\n${reportText}\n\nIltimos, yuqoridagi ko'rsatkichlarni tahlil qilib JSON formatda javob ber.`;
+      messages.push({ role: "user", content: userMessage });
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -53,17 +81,14 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: userMessage },
-        ],
+        model: "google/gemini-2.5-flash",
+        messages,
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi." }), {
+        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Biroz kutib qayta urinib ko'ring." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
