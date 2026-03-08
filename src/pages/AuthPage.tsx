@@ -46,15 +46,21 @@ const AuthPage = () => {
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Phone auth state
+  // Phone auth state (login)
   const [phone, setPhone] = useState("+998");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
 
+  // Phone verification during registration
+  const [regPhone, setRegPhone] = useState("+998");
+  const [regOtpSent, setRegOtpSent] = useState(false);
+  const [regOtpCode, setRegOtpCode] = useState("");
+  const [regPhoneVerified, setRegPhoneVerified] = useState(false);
+
   const { signIn, signUp, signInWithPhone, verifyPhoneOtp, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
 
-  const passwordStrong = mode === "register" && authMethod === "email" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
+  const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleGoogleSignIn = async () => {
     setSubmitting(true);
