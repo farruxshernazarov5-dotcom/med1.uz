@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Sparkles, Brain, Stethoscope, Pill, Building2, Mic, MicOff } from "lucide-react";
+import { Search, X, Sparkles, Brain, Stethoscope, Pill, Building2, Mic, MicOff, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -20,9 +20,7 @@ const FloatingAISearch = () => {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Don't show on home page (already has search) or smart-search page
-  const hiddenPaths = ["/", "/smart-search"];
-  const shouldHide = hiddenPaths.includes(location.pathname);
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -72,11 +70,20 @@ const FloatingAISearch = () => {
     navigate(`/smart-search?q=${encodeURIComponent(query.trim())}`);
   };
 
-  if (shouldHide) return null;
-
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Home Button - shown on all pages except home */}
+      {!isHome && (
+        <button
+          onClick={() => navigate("/")}
+          className="fixed bottom-40 right-6 z-50 w-12 h-12 rounded-full bg-card border border-border text-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center group"
+          title="Bosh sahifaga qaytish"
+        >
+          <Home className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+        </button>
+      )}
+
+      {/* Floating AI Search Button */}
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-hero-gradient text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center group"
