@@ -71,6 +71,15 @@ export default {
           orange: "hsl(var(--medical-orange))",
           purple: "hsl(var(--medical-purple))",
         },
+        /* Professional Color System */
+        tech: {
+          deep: "hsl(213, 73%, 15%)",      /* #0A2540 */
+          mid: "hsl(216, 59%, 26%)",        /* #1B3A6B */
+          electric: "hsl(214, 84%, 56%)",   /* #2F80ED */
+          purple: "hsl(250, 100%, 69%)",    /* #7B61FF */
+          success: "hsl(145, 63%, 42%)",    /* #27AE60 */
+          warning: "hsl(32, 87%, 62%)",     /* #F2994A */
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
