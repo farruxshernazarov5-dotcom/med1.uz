@@ -533,6 +533,235 @@ export type Database = {
         }
         Relationships: []
       }
+      medtech_order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id: string
+          quantity?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medtech_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medtech_orders: {
+        Row: {
+          buyer_address: string | null
+          buyer_email: string | null
+          buyer_id: string
+          buyer_name: string
+          buyer_phone: string
+          buyer_type: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          status: string
+          total_amount: number | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          buyer_address?: string | null
+          buyer_email?: string | null
+          buyer_id: string
+          buyer_name: string
+          buyer_phone: string
+          buyer_type?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          buyer_address?: string | null
+          buyer_email?: string | null
+          buyer_id?: string
+          buyer_name?: string
+          buyer_phone?: string
+          buyer_type?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_orders_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medtech_products: {
+        Row: {
+          category: string
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          photos: string[] | null
+          price: number | null
+          specifications: Json | null
+          stock_quantity: number | null
+          updated_at: string
+          vendor_id: string
+          view_count: number | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          photos?: string[] | null
+          price?: number | null
+          specifications?: Json | null
+          stock_quantity?: number | null
+          updated_at?: string
+          vendor_id: string
+          view_count?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          photos?: string[] | null
+          price?: number | null
+          specifications?: Json | null
+          stock_quantity?: number | null
+          updated_at?: string
+          vendor_id?: string
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medtech_vendors: {
+        Row: {
+          activity_type: string
+          address: string
+          catalog_url: string | null
+          categories: string[] | null
+          certificates: string[] | null
+          city: string | null
+          company_name: string
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          inn: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          logo_url: string | null
+          owner_id: string
+          phone: string
+          region: string | null
+          telegram: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          activity_type?: string
+          address: string
+          catalog_url?: string | null
+          categories?: string[] | null
+          certificates?: string[] | null
+          city?: string | null
+          company_name: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          inn: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          owner_id: string
+          phone: string
+          region?: string | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          activity_type?: string
+          address?: string
+          catalog_url?: string | null
+          categories?: string[] | null
+          certificates?: string[] | null
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          inn?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          owner_id?: string
+          phone?: string
+          region?: string | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -818,7 +1047,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "patient" | "clinic" | "admin"
+      app_role: "patient" | "clinic" | "admin" | "vendor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -946,7 +1175,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["patient", "clinic", "admin"],
+      app_role: ["patient", "clinic", "admin", "vendor"],
     },
   },
 } as const

@@ -33,6 +33,7 @@ import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import BookingPage from "./pages/BookingPage";
 import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
+import VendorRegistrationPage from "./pages/VendorRegistrationPage";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/clinic-register" element={<ClinicRegistrationPage />} />
+          <Route path="/vendor-register" element={<VendorRegistrationPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/user-guide" element={<UserGuidePage />} />
