@@ -349,6 +349,145 @@ export type Database = {
           },
         ]
       }
+      cosmetology_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          center_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          service_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          center_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          center_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          patient_name?: string
+          patient_phone?: string
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_appointments_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_photos: {
+        Row: {
+          caption: string | null
+          center_id: string
+          created_at: string
+          id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          center_id: string
+          created_at?: string
+          id?: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          center_id?: string
+          created_at?: string
+          id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_photos_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_services: {
+        Row: {
+          category: string | null
+          center_id: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+        }
+        Insert: {
+          category?: string | null
+          center_id: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number
+        }
+        Update: {
+          category?: string | null
+          center_id?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_services_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diagnostics_appointments: {
         Row: {
           appointment_date: string
@@ -1229,6 +1368,93 @@ export type Database = {
           name?: string
           owner_id?: string
           phone?: string | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: []
+      }
+      registered_cosmetology: {
+        Row: {
+          additional_phone: string | null
+          address: string | null
+          amenities: string[] | null
+          city: string | null
+          created_at: string
+          description: string | null
+          director_name: string | null
+          email: string | null
+          id: string
+          inn: string | null
+          is_active: boolean | null
+          latitude: number | null
+          legal_name: string | null
+          license_number: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          owner_id: string
+          phone: string | null
+          region: string | null
+          social_links: Json | null
+          specialties: string[] | null
+          telegram: string | null
+          updated_at: string
+          website: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          region?: string | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          region?: string | null
           social_links?: Json | null
           specialties?: string[] | null
           telegram?: string | null
