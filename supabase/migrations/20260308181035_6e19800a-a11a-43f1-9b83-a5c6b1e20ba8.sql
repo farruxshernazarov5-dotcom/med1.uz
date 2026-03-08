@@ -1,0 +1,1 @@
+ALTER TABLE public.platform_plans ADD COLUMN category text NOT NULL DEFAULT 'clinic';
