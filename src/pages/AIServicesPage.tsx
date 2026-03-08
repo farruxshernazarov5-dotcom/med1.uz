@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const aiServices = [
@@ -52,6 +52,14 @@ const aiServices = [
     description: "24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar",
     href: "/ai-health-assistant",
     color: "from-teal-500 to-teal-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Baby,
+    title: "AI Homiladorlik Assistenti",
+    description: "Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari, harakatlar monitoringi va AI tibbiy maslahatlar",
+    href: "/ai-pregnancy",
+    color: "from-pink-500 to-pink-400",
     badge: "Yangi",
   },
 ];
