@@ -23,7 +23,7 @@ import allTerms from "@/data/medicalTerms";
 import { extraArticleCategories } from "@/data/extraArticles";
 import { ophthalmologyArticles } from "@/data/ophthalmologyArticles";
 import { newsItems } from "@/data/news";
-import { healthCategories } from "@/data/healthTips";
+import { healthCategoriesData } from "@/data/healthTips";
 import { cosmetologyServices } from "@/data/cosmetology";
 import { pharmacies } from "@/data/pharmacies";
 import { diagnosticCenters, diagnosticTypes } from "@/data/diagnostics";
