@@ -14,7 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Building2, Phone, Mail, MapPin, Clock, Stethoscope,
   ChevronRight, ChevronLeft, Check, Shield, FileText, Hash,
-  Search, Globe, Loader2, Upload, AlertCircle,
+  Search, Globe, Loader2, Upload, AlertCircle, Camera,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { uzbekistanRegions, getDistrictsByRegion, type District } from "@/data/uzbekistanRegions";
