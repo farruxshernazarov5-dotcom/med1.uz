@@ -17,6 +17,7 @@ const mainServices = [
     title: "AI asosidagi erta diagnostika",
     subtitle: "Sun'iy intellekt yordamida kasalliklarni erta aniqlash",
     color: "from-primary to-secondary",
+    href: "/symptom-checker",
     features: [
       "Foydalanuvchi simptomlarni kiritadi",
       "AI algoritmi ularni tahlil qiladi",
