@@ -65,6 +65,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <FloatingAISearch />
+          <FloatingAIPanel />
           <Routes>
             <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
