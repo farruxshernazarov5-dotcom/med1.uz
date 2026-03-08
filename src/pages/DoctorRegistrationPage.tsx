@@ -153,6 +153,7 @@ const DoctorRegistrationPage = () => {
       address: form.address,
       region: form.region,
       city: form.city,
+      social_links: form.social_links,
     });
 
     if (error) {
