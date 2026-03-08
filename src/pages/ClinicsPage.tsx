@@ -550,16 +550,66 @@ const ClinicsPage = () => {
       )}
 
       {/* Results count */}
-      <p className="text-sm text-muted-foreground mb-4">
-        {filteredClinics.length} ta klinika topildi
-      </p>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          {filteredClinics.length} ta klinika topildi
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setGroupBySpecialty(!groupBySpecialty)}
+            className={cn(
+              "px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
+              groupBySpecialty ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Stethoscope className="w-3 h-3 inline mr-1" />
+            {groupBySpecialty ? "Guruh: Yo'nalish" : "Yo'nalish bo'yicha guruhlash"}
+          </button>
+        </div>
+      </div>
 
       {/* Clinics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredClinics.map((clinic) => (
-          <ClinicCard key={clinic.id} clinic={clinic} />
-        ))}
-      </div>
+      {groupBySpecialty ? (
+        <div className="space-y-8">
+          {(() => {
+            const groups: Record<string, typeof filteredClinics> = {};
+            filteredClinics.forEach((c) => {
+              const tags = c.directionTags?.length ? c.directionTags : (c.specialties.length ? [c.specialties[0]] : ["Boshqa"]);
+              tags.forEach((tag) => {
+                if (!groups[tag]) groups[tag] = [];
+                groups[tag].push(c);
+              });
+            });
+            return Object.entries(groups)
+              .sort((a, b) => b[1].length - a[1].length)
+              .map(([tag, tagClinics]) => (
+                <div key={tag}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-tech-electric flex items-center justify-center">
+                      <Stethoscope className="w-4 h-4 text-primary-foreground" />
+                    </div>
+                    <h3 className="font-heading text-lg font-bold text-foreground">{tag}</h3>
+                    <Badge variant="secondary" className="text-xs">{tagClinics.length} ta</Badge>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {tagClinics.slice(0, 6).map((clinic) => (
+                      <ClinicCard key={clinic.id} clinic={clinic} />
+                    ))}
+                  </div>
+                  {tagClinics.length > 6 && (
+                    <p className="text-sm text-muted-foreground mt-3">va yana {tagClinics.length - 6} ta...</p>
+                  )}
+                </div>
+              ));
+          })()}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredClinics.map((clinic) => (
+            <ClinicCard key={clinic.id} clinic={clinic} />
+          ))}
+        </div>
+      )}
 
       {filteredClinics.length === 0 && (
         <div className="text-center py-16">
