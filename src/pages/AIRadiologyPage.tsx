@@ -569,11 +569,7 @@ const AIRadiologyPage = () => {
                 </div>
               )}
 
-              <div className="bg-muted rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  ⚠️ {analysis.disclaimer || "AI tahlili yakuniy tashxis emas. Natijalarni radiolog bilan muhokama qiling."}
-                </p>
-              </div>
+              <MedicalDisclaimer />
             </div>
           )}
         </div>
