@@ -1245,6 +1245,201 @@ export type Database = {
         }
         Relationships: []
       }
+      pharmacy_order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          product_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          product_id: string
+          quantity?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_orders: {
+        Row: {
+          created_at: string
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string | null
+          delivery_type: string | null
+          id: string
+          notes: string | null
+          pharmacy_id: string
+          status: string
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          delivery_address?: string | null
+          delivery_type?: string | null
+          id?: string
+          notes?: string | null
+          pharmacy_id: string
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_address?: string | null
+          delivery_type?: string | null
+          id?: string
+          notes?: string | null
+          pharmacy_id?: string
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_orders_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          pharmacy_id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          pharmacy_id: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          pharmacy_id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_photos_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_products: {
+        Row: {
+          category: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          dosage: string | null
+          drug_type: string | null
+          id: string
+          is_active: boolean | null
+          is_available: boolean | null
+          manufacturer: string | null
+          name: string
+          pharmacy_id: string
+          photo_url: string | null
+          price: number | null
+          requires_prescription: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          dosage?: string | null
+          drug_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_available?: boolean | null
+          manufacturer?: string | null
+          name: string
+          pharmacy_id: string
+          photo_url?: string | null
+          price?: number | null
+          requires_prescription?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          dosage?: string | null
+          drug_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_available?: boolean | null
+          manufacturer?: string | null
+          name?: string
+          pharmacy_id?: string
+          photo_url?: string | null
+          price?: number | null
+          requires_prescription?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_products_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_plans: {
         Row: {
           created_at: string
@@ -1674,6 +1869,111 @@ export type Database = {
         }
         Relationships: []
       }
+      registered_pharmacies: {
+        Row: {
+          additional_phone: string | null
+          address: string | null
+          amenities: string[] | null
+          avg_rating: number | null
+          city: string | null
+          created_at: string
+          description: string | null
+          director_name: string | null
+          email: string | null
+          founded_year: number | null
+          has_delivery: boolean | null
+          id: string
+          inn: string | null
+          is_24h: boolean | null
+          is_active: boolean | null
+          latitude: number | null
+          legal_name: string | null
+          license_number: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          owner_id: string
+          pharmacy_type: string
+          phone: string | null
+          region: string | null
+          review_count: number | null
+          social_links: Json | null
+          specialties: string[] | null
+          telegram: string | null
+          updated_at: string
+          website: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          avg_rating?: number | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          founded_year?: number | null
+          has_delivery?: boolean | null
+          id?: string
+          inn?: string | null
+          is_24h?: boolean | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          owner_id: string
+          pharmacy_type?: string
+          phone?: string | null
+          region?: string | null
+          review_count?: number | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          avg_rating?: number | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          founded_year?: number | null
+          has_delivery?: boolean | null
+          id?: string
+          inn?: string | null
+          is_24h?: boolean | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          owner_id?: string
+          pharmacy_type?: string
+          phone?: string | null
+          region?: string | null
+          review_count?: number | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           appointment_id: string | null
@@ -1806,6 +2106,7 @@ export type Database = {
         | "maternity"
         | "cosmetology"
         | "doctor"
+        | "pharmacy"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1942,6 +2243,7 @@ export const Constants = {
         "maternity",
         "cosmetology",
         "doctor",
+        "pharmacy",
       ],
     },
   },
