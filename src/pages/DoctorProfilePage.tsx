@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import {
   Stethoscope, Star, MapPin, Clock, Phone, Mail, Globe,
   Award, Calendar, Building2, MessageCircle, ChevronLeft,
-  Send, GraduationCap, Languages
+  Send, GraduationCap, Languages, Instagram, Facebook, Youtube
 } from "lucide-react";
 
 const DAYS = [
