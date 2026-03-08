@@ -56,6 +56,7 @@ import FloatingAIPanel from "./components/FloatingAIPanel";
 import PartnershipPage from "./pages/PartnershipPage";
 import ReportVerificationPage from "./pages/ReportVerificationPage";
 import PharmacyRegistrationPage from "./pages/PharmacyRegistrationPage";
+import AIPregnancyPage from "./pages/AIPregnancyPage";
 const queryClient = new QueryClient();
 
 const App = () => (
