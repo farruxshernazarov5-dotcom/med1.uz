@@ -87,6 +87,98 @@ export type Database = {
           },
         ]
       }
+      baby_growth_logs: {
+        Row: {
+          baby_id: string
+          created_at: string
+          head_cm: number | null
+          height_cm: number | null
+          id: string
+          log_date: string
+          notes: string | null
+          user_id: string
+          weight_g: number | null
+        }
+        Insert: {
+          baby_id: string
+          created_at?: string
+          head_cm?: number | null
+          height_cm?: number | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          user_id: string
+          weight_g?: number | null
+        }
+        Update: {
+          baby_id?: string
+          created_at?: string
+          head_cm?: number | null
+          height_cm?: number | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          user_id?: string
+          weight_g?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_growth_logs_baby_id_fkey"
+            columns: ["baby_id"]
+            isOneToOne: false
+            referencedRelation: "baby_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      baby_profiles: {
+        Row: {
+          baby_name: string
+          birth_date: string
+          birth_height_cm: number | null
+          birth_type: string
+          birth_weight_g: number | null
+          created_at: string
+          gender: string
+          hospital_name: string | null
+          id: string
+          is_active: boolean | null
+          mother_health_notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_name?: string
+          birth_date: string
+          birth_height_cm?: number | null
+          birth_type?: string
+          birth_weight_g?: number | null
+          created_at?: string
+          gender?: string
+          hospital_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          mother_health_notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_name?: string
+          birth_date?: string
+          birth_height_cm?: number | null
+          birth_type?: string
+          birth_weight_g?: number | null
+          created_at?: string
+          gender?: string
+          hospital_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          mother_health_notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       blood_banks_registered: {
         Row: {
           additional_phone: string | null
@@ -1476,6 +1568,47 @@ export type Database = {
         }
         Relationships: []
       }
+      postnatal_logs: {
+        Row: {
+          baby_id: string
+          created_at: string
+          id: string
+          log_date: string
+          log_type: string
+          notes: string | null
+          user_id: string
+          value: Json | null
+        }
+        Insert: {
+          baby_id: string
+          created_at?: string
+          id?: string
+          log_date?: string
+          log_type?: string
+          notes?: string | null
+          user_id: string
+          value?: Json | null
+        }
+        Update: {
+          baby_id?: string
+          created_at?: string
+          id?: string
+          log_date?: string
+          log_type?: string
+          notes?: string | null
+          user_id?: string
+          value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "postnatal_logs_baby_id_fkey"
+            columns: ["baby_id"]
+            isOneToOne: false
+            referencedRelation: "baby_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pregnancy_logs: {
         Row: {
           created_at: string
@@ -2215,6 +2348,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vaccination_records: {
+        Row: {
+          actual_date: string | null
+          baby_id: string
+          created_at: string
+          id: string
+          is_completed: boolean | null
+          notes: string | null
+          scheduled_date: string
+          user_id: string
+          vaccine_name: string
+        }
+        Insert: {
+          actual_date?: string | null
+          baby_id: string
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          notes?: string | null
+          scheduled_date: string
+          user_id: string
+          vaccine_name: string
+        }
+        Update: {
+          actual_date?: string | null
+          baby_id?: string
+          created_at?: string
+          id?: string
+          is_completed?: boolean | null
+          notes?: string | null
+          scheduled_date?: string
+          user_id?: string
+          vaccine_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vaccination_records_baby_id_fkey"
+            columns: ["baby_id"]
+            isOneToOne: false
+            referencedRelation: "baby_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
