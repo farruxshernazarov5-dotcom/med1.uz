@@ -113,6 +113,7 @@ const App = () => (
            <Route path="/ai-radiology" element={<AIRadiologyPage />} />
            <Route path="/ai-health-assistant" element={<AIHealthAssistantPage />} />
            <Route path="/smart-search" element={<SmartSearchPage />} />
+           <Route path="/partnership" element={<PartnershipPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
