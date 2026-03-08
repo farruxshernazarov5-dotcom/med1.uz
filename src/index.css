@@ -144,12 +144,38 @@
     background-image: var(--gradient-hero);
   }
 
+  .text-gradient-ai {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-ai);
+  }
+
   .bg-hero-gradient {
     background-image: var(--gradient-hero);
   }
 
   .bg-dark-gradient {
     background-image: var(--gradient-dark);
+  }
+
+  .bg-ai-gradient {
+    background-image: var(--gradient-ai);
+  }
+
+  /* Glassmorphism Cards */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+  }
+
+  .glass-card-strong {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
   }
 
   .shadow-card {
@@ -162,6 +188,27 @@
 
   .shadow-hero {
     box-shadow: var(--shadow-hero);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-glow-sm {
+    box-shadow: 0 0 20px hsl(250 100% 69% / 0.2);
+  }
+
+  /* Status Colors */
+  .status-success {
+    @apply text-medical-green;
+  }
+
+  .status-warning {
+    @apply text-medical-orange;
+  }
+
+  .status-danger {
+    @apply text-medical-red;
   }
 
   .animate-float {
@@ -187,6 +234,15 @@
   .animate-ticker {
     animation: ticker 30s linear infinite;
   }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px hsl(250 100% 69% / 0.3); }
+  50% { box-shadow: 0 0 40px hsl(250 100% 69% / 0.5); }
 }
 
 @keyframes float {
