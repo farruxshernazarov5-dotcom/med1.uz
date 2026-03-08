@@ -494,7 +494,7 @@ const ClinicsPage = () => {
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-muted/30 rounded-2xl border border-border animate-fade-in">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-muted/30 rounded-2xl border border-border animate-fade-in">
           <div>
             <Label className="text-sm font-semibold mb-2 block">Viloyat bo'yicha</Label>
             <select
@@ -518,6 +518,19 @@ const ClinicsPage = () => {
               <option value="">Barcha yo'nalishlar</option>
               {clinicSpecialties.map((s) => (
                 <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label className="text-sm font-semibold mb-2 block">Tibbiy yo'nalish ({directionTags.length} ta)</Label>
+            <select
+              value={selectedDirection}
+              onChange={(e) => setSelectedDirection(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Barcha yo'nalishlar</option>
+              {directionTags.map((t) => (
+                <option key={t} value={t}>{t}</option>
               ))}
             </select>
           </div>
