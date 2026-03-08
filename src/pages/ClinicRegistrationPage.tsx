@@ -291,6 +291,29 @@ const ClinicRegistrationPage = () => {
                     </div>
                     <FieldError field="type" />
                   </div>
+                  {/* Logo Upload */}
+                  <div>
+                    <Label className="flex items-center gap-2"><Camera className="w-4 h-4" /> Klinika logotipi</Label>
+                    <p className="text-xs text-muted-foreground mb-2">PNG, JPG, SVG, WEBP — 5 MB gacha</p>
+                    <div className="flex items-center gap-4">
+                      {logoPreview ? (
+                        <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-primary/30">
+                          <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                          <button onClick={() => { setLogoFile(null); setLogoPreview(""); }} className="absolute top-1 right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs">✕</button>
+                        </div>
+                      ) : (
+                        <label className="w-20 h-20 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 transition-colors">
+                          <Upload className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-[10px] text-muted-foreground mt-1">Yuklash</span>
+                          <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="hidden" onChange={handleLogoSelect} />
+                        </label>
+                      )}
+                      <div className="text-xs text-muted-foreground">
+                        <p>Logotip klinika kartasida ko'rsatiladi</p>
+                        <p>Tavsiya: 200×200 px, shaffof fon</p>
+                      </div>
+                    </div>
+                  </div>
                   <div>
                     <Label>Klinika tavsifi</Label>
                     <Textarea value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Klinika haqida qisqacha..." rows={3} className="mt-1" />
