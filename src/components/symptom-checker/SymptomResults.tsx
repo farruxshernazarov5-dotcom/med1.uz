@@ -1,12 +1,14 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   AlertTriangle, ShieldCheck, Activity, RefreshCcw,
-  Stethoscope, Building2, CheckCircle2, Phone
+  Stethoscope, Building2, CheckCircle2, Phone, MapPin
 } from "lucide-react";
 import type { SymptomAnalysis, DiseaseResult } from "./types";
+import RecommendedClinics from "./RecommendedClinics";
 
 const riskConfig = {
   high: { label: "Yuqori xavf", color: "bg-destructive text-destructive-foreground", icon: AlertTriangle, bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800" },
@@ -22,6 +24,16 @@ interface Props {
 const SymptomResults = ({ analysis, onReset }: Props) => {
   const risk = riskConfig[analysis.riskLevel] || riskConfig.low;
   const RiskIcon = risk.icon;
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {} // silently fail
+      );
+    }
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -74,6 +86,11 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
         </div>
       </div>
 
+      {/* Recommended clinics */}
+      {analysis.diseases.length > 0 && (
+        <RecommendedClinics diseases={analysis.diseases} userLocation={userLocation} />
+      )}
+
       {/* Recommendations */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -94,7 +111,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Link to="/clinics">
           <Button className="w-full bg-hero-gradient text-primary-foreground" size="lg">
-            <Building2 className="w-4 h-4 mr-2" /> Klinika topish
+            <Building2 className="w-4 h-4 mr-2" /> Barcha klinikalar
           </Button>
         </Link>
         <Button variant="outline" size="lg" onClick={onReset}>
