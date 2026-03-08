@@ -13,7 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save, ArrowLeft,
-  ArrowRight, Check, User, GraduationCap, Phone, Mail, MapPin, Globe, Languages
+  ArrowRight, Check, User, GraduationCap, Phone, Mail, MapPin, Globe, Languages,
+  Instagram, Facebook, Youtube, Send as SendIcon
 } from "lucide-react";
 
 const SPECIALTIES = [
@@ -70,6 +71,7 @@ const DoctorRegistrationPage = () => {
     address: "",
     region: "",
     city: "",
+    social_links: { telegram: "", instagram: "", facebook: "", youtube: "", website: "" } as Record<string, string>,
   });
 
   const updateField = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
@@ -151,6 +153,7 @@ const DoctorRegistrationPage = () => {
       address: form.address,
       region: form.region,
       city: form.city,
+      social_links: form.social_links,
     });
 
     if (error) {
@@ -357,6 +360,33 @@ const DoctorRegistrationPage = () => {
                   <div>
                     <Label className="text-xs">Shahar</Label>
                     <Input value={form.city} onChange={(e) => updateField("city", e.target.value)} className="mt-1" />
+                  </div>
+                </div>
+
+                {/* Social Links */}
+                <div>
+                  <Label className="text-xs flex items-center gap-1 mb-2"><Globe className="w-3 h-3" /> Ijtimoiy tarmoqlar</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">Telegram</Label>
+                      <Input value={form.social_links.telegram || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, telegram: e.target.value } }))} className="mt-1" placeholder="@username" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">Instagram</Label>
+                      <Input value={form.social_links.instagram || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, instagram: e.target.value } }))} className="mt-1" placeholder="@username" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">Facebook</Label>
+                      <Input value={form.social_links.facebook || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, facebook: e.target.value } }))} className="mt-1" placeholder="Sahifa" />
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-muted-foreground">YouTube</Label>
+                      <Input value={form.social_links.youtube || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, youtube: e.target.value } }))} className="mt-1" placeholder="Kanal" />
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-[10px] text-muted-foreground">Veb-sayt</Label>
+                      <Input value={form.social_links.website || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, website: e.target.value } }))} className="mt-1" placeholder="https://" />
+                    </div>
                   </div>
                 </div>
               </div>
