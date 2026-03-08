@@ -13,6 +13,7 @@ import HomeArticlesPreview from "@/components/HomeArticlesPreview";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import SectionTicker from "@/components/SectionTicker";
 import CosmetologyPromo from "@/components/CosmetologyPromo";
+import HealthDashboardWidget from "@/components/HealthDashboardWidget";
 
 const Index = () => {
   return (
@@ -38,8 +39,9 @@ const Index = () => {
               <CenterContent />
             </main>
             <aside className="hidden lg:block">
-              <div className="sticky top-20">
+              <div className="sticky top-20 space-y-4">
                 <RightSidebar />
+                <HealthDashboardWidget />
               </div>
             </aside>
           </div>
