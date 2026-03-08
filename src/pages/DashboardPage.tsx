@@ -8,6 +8,7 @@ import DiagnosticsDashboard from "@/components/dashboard/DiagnosticsDashboard";
 import MaternityDashboard from "@/components/dashboard/MaternityDashboard";
 import CosmetologyDashboard from "@/components/dashboard/CosmetologyDashboard";
 import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
+import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -35,6 +36,7 @@ const DashboardPage = () => {
         {userRole === "maternity" && <MaternityDashboard />}
         {userRole === "cosmetology" && <CosmetologyDashboard />}
         {userRole === "doctor" && <DoctorDashboard />}
+        {userRole === "pharmacy" && <PharmacyDashboard />}
         {(!userRole || userRole === "patient") && <PatientDashboard />}
       </div>
       <Footer />

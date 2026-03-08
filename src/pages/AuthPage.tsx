@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope, Pill } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
@@ -20,6 +20,7 @@ const roles = [
   { value: "vendor", label: "Medtexnika", icon: Package, desc: "Medtexnika sotuvchisi" },
   { value: "maternity", label: "Tug'ruqxona", icon: Baby, desc: "Tug'ruqxona boshqarish" },
   { value: "cosmetology", label: "Kosmetologiya", icon: Sparkles, desc: "Kosmetologiya markazi" },
+  { value: "pharmacy", label: "Dorixona", icon: Pill, desc: "Dorixona boshqarish" },
 ];
 
 const ROLE_REDIRECT: Record<string, string> = {
@@ -30,6 +31,7 @@ const ROLE_REDIRECT: Record<string, string> = {
   vendor: "/vendor-register",
   maternity: "/maternity-register",
   cosmetology: "/cosmetology-register",
+  pharmacy: "/pharmacy-register",
 };
 
 const PASSWORD_RULES = [
@@ -661,7 +663,7 @@ const AuthPage = () => {
 
                 {mode === "register" && role !== "patient" && (
                   <p className="text-xs text-center text-muted-foreground">
-                    Ro'yxatdan o'tgandan so'ng {role === "clinic" ? "klinika" : role === "diagnostics" ? "diagnostika markazi" : role === "maternity" ? "tug'ruqxona" : role === "cosmetology" ? "kosmetologiya markazi" : "medtexnika"} ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
+                    Ro'yxatdan o'tgandan so'ng {role === "clinic" ? "klinika" : role === "diagnostics" ? "diagnostika markazi" : role === "maternity" ? "tug'ruqxona" : role === "cosmetology" ? "kosmetologiya markazi" : role === "pharmacy" ? "dorixona" : "medtexnika"} ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
                   </p>
                 )}
               </form>
