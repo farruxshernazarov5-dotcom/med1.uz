@@ -12,6 +12,9 @@ MUHIM QOIDALAR:
 2. TASHXIS QOYMA - faqat xavf baholash va tavsiya ber
 3. O'zbek tilida javob ber
 4. Profilaktika choralari tavsiya qil
+5. Har bir kasallik xavfi uchun ICD-10 kodini ko'rsat
+6. WHO xavf baholash mezonlariga amal qil
+7. Ilmiy dalillarga asoslanib prognoz ber
 
 JAVOBNI FAQAT quyidagi JSON formatda ber:
 {
@@ -21,14 +24,20 @@ JAVOBNI FAQAT quyidagi JSON formatda ber:
       "riskPercent": 25,
       "riskLevel": "high|medium|low",
       "factors": ["Xavf omili 1", "Omil 2"],
-      "prevention": ["Oldini olish chorasi 1"]
+      "prevention": ["Oldini olish chorasi 1"],
+      "icd10Code": "E11",
+      "clinicalBasis": "Ilmiy asos"
     }
   ],
   "overallHealth": "good|moderate|concerning",
   "bmi": { "value": 24.5, "category": "Normal" },
   "recommendations": ["Umumiy tavsiya 1", "Tavsiya 2"],
   "lifestyleScore": 72,
-  "suggestedCheckups": ["Tekshiruv 1", "Tekshiruv 2"]
+  "suggestedCheckups": ["Tekshiruv 1", "Tekshiruv 2"],
+  "riskFactorAnalysis": "Umumiy xavf omillari tahlili",
+  "preventiveScreening": [
+    {"test": "Tekshiruv nomi", "frequency": "Yiliga 1 marta", "reason": "Sababi"}
+  ]
 }`;
 
 serve(async (req) => {
