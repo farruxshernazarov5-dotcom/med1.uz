@@ -13,6 +13,7 @@ import HomeArticlesPreview from "@/components/HomeArticlesPreview";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import SectionTicker from "@/components/SectionTicker";
 import CosmetologyPromo from "@/components/CosmetologyPromo";
+import HealthDashboardWidget from "@/components/HealthDashboardWidget";
 
 const Index = () => {
   return (
