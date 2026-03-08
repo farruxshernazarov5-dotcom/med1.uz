@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera } from "lucide-react";
+import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera, Link2, FlaskConical, Search, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
@@ -16,8 +16,11 @@ interface Indicator {
   name: string;
   value: string;
   normalRange: string;
+  unit?: string;
   status: "normal" | "high" | "low" | "critical";
   interpretation: string;
+  possibleCauses?: string[];
+  relatedICD10?: string;
 }
 
 interface ReportAnalysis {
@@ -27,6 +30,8 @@ interface ReportAnalysis {
   recommendations: string[];
   urgentAttention: boolean;
   suggestedSpecialist: string;
+  panelCorrelations?: string[];
+  followUpTests?: string[];
 }
 
 const REPORT_TYPES = [
@@ -403,11 +408,55 @@ const AIReportAnalysisPage = () => {
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <span>Natija: <strong className="text-foreground">{ind.value}</strong></span>
                             <span>Normal: {ind.normalRange}</span>
+                            {ind.unit && <span>Birlik: {ind.unit}</span>}
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">{ind.interpretation}</p>
+                          {ind.possibleCauses && ind.possibleCauses.length > 0 && (
+                            <div className="mt-1.5 flex flex-wrap gap-1">
+                              {ind.possibleCauses.map((cause, ci) => (
+                                <Badge key={ci} variant="secondary" className="text-[10px]">{cause}</Badge>
+                              ))}
+                            </div>
+                          )}
+                          {ind.relatedICD10 && (
+                            <p className="text-[10px] text-muted-foreground/70 mt-1">ICD-10: <code className="bg-muted px-1 rounded">{ind.relatedICD10}</code></p>
+                          )}
                         </div>
                       );
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* Panel Correlations */}
+              {analysis.panelCorrelations && analysis.panelCorrelations.length > 0 && (
+                <div className="bg-card border border-border rounded-xl p-5">
+                  <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Link2 className="w-5 h-5 text-primary" />
+                    Ko'rsatkichlar o'rtasidagi bog'liqlik
+                  </h3>
+                  <ul className="space-y-2">
+                    {analysis.panelCorrelations.map((c, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 mt-2" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Follow-up Tests */}
+              {analysis.followUpTests && analysis.followUpTests.length > 0 && (
+                <div className="bg-card border border-border rounded-xl p-5">
+                  <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <FlaskConical className="w-5 h-5 text-green-600" />
+                    Qo'shimcha tavsiya etilgan tahlillar
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {analysis.followUpTests.map((t, i) => (
+                      <Badge key={i} variant="outline" className="text-xs">{t}</Badge>
+                    ))}
                   </div>
                 </div>
               )}
@@ -444,6 +493,34 @@ const AIReportAnalysisPage = () => {
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              {/* Find specialist & clinic */}
+              <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-5">
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  Mos shifokor va klinika toping
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Tavsiya etilgan mutaxassis: <strong className="text-foreground">{analysis.suggestedSpecialist}</strong>
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Link to={`/doctors?specialty=${encodeURIComponent(analysis.suggestedSpecialist)}`} className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <Search className="w-4 h-4 mr-2" /> Shifokor qidirish
+                    </Button>
+                  </Link>
+                  <Link to="/clinics" className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <MapPin className="w-4 h-4 mr-2" /> Yaqin klinikalar
+                    </Button>
+                  </Link>
+                  <Link to="/diagnostics" className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <FlaskConical className="w-4 h-4 mr-2" /> Diagnostika markazlari
+                    </Button>
+                  </Link>
+                </div>
               </div>
 
               {/* Action buttons */}
