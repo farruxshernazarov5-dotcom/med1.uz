@@ -53,14 +53,23 @@ interface SearchResult {
   localArticles: any[];
   localDiseases: any[];
   localTerms: any[];
+  localNews: any[];
+  localHealthTips: any[];
+  localPharmacies: any[];
+  localDiagnostics: any[];
+  localMaternity: any[];
+  localBloodBanks: any[];
+  localMedtech: any[];
+  localCosmetology: any[];
 }
 
-// Local search helper
+// Local search helper — searches ALL platform data
 function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: string[] = []) {
   const q = query.toLowerCase();
   const allSearchTerms = [q, ...aiKeywords.map(k => k.toLowerCase()), ...aiSpecialties.map(s => s.toLowerCase())];
 
   const matchesAny = (text: string) => {
+    if (!text) return false;
     const t = text.toLowerCase();
     return allSearchTerms.some(term => t.includes(term));
   };
@@ -83,40 +92,107 @@ function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: st
     for (const d of cat.diseases) {
       if (matchesAny(d.name) || matchesAny(d.desc) || matchesAny(d.fullDesc || "") || matchesAny(cat.title)) {
         matchedDiseases.push({
-          category: cat.title,
-          categoryId: cat.id,
-          name: d.name,
-          slug: d.slug,
-          desc: d.desc,
+          category: cat.title, categoryId: cat.id, name: d.name, slug: d.slug, desc: d.desc,
         });
       }
     }
   }
 
-  // Search articles
+  // Search ALL articles (base + new + extra + ophthalmology)
   const allArticles: Article[] = [
     ...articleCategories.map(c => c.article),
     ...newArticles,
+    ...extraArticleCategories.map(c => c.article),
+    ...ophthalmologyArticles,
   ];
   const matchedArticles = allArticles.filter(a =>
-    matchesAny(a.title) ||
-    matchesAny(a.summary || "") ||
-    matchesAny(a.category || "")
+    matchesAny(a.title) || matchesAny(a.summary || "") || matchesAny(a.category || "") ||
+    a.content?.some((p: string) => matchesAny(p))
+  ).slice(0, 30);
+
+  // Search medical terms (4000+)
+  const matchedTerms = allTerms.filter(t =>
+    matchesAny(t.term) || matchesAny(t.shortDesc || "") || matchesAny(t.fullDesc || "") ||
+    matchesAny(t.category || "") || matchesAny(t.treatment || "") || matchesAny(t.prevention || "")
+  ).slice(0, 30);
+
+  // Search news
+  const matchedNews = newsItems.filter(n =>
+    matchesAny(n.title) || matchesAny(n.summary || "") || matchesAny(n.content || "")
   ).slice(0, 20);
 
-  // Search medical terms
-  const matchedTerms = allTerms.filter(t =>
-    matchesAny(t.term) ||
-    matchesAny(t.shortDesc || "") ||
-    matchesAny(t.fullDesc || "") ||
-    matchesAny(t.category || "")
+  // Search health tips
+  const matchedHealthTips: { category: string; title: string; text: string }[] = [];
+  for (const cat of healthCategoriesData) {
+    for (const tip of cat.tips) {
+      if (matchesAny(tip.title) || matchesAny(tip.text) || matchesAny(cat.title)) {
+        matchedHealthTips.push({ category: cat.title, title: tip.title, text: tip.text });
+      }
+    }
+  }
+
+  // Search pharmacies
+  const matchedPharmacies = pharmacies.filter(p =>
+    matchesAny(p.name) || matchesAny(p.address || "") || matchesAny(p.description || "") ||
+    matchesAny(p.region || "") || matchesAny(p.city || "") ||
+    p.services?.some((s: any) => matchesAny(s.name || ""))
+  ).slice(0, 20);
+
+  // Search diagnostic centers
+  const matchedDiagnostics = diagnosticCenters.filter(d =>
+    matchesAny(d.name) || matchesAny(d.address || "") || matchesAny(d.region || "") ||
+    matchesAny(d.city || "") || matchesAny(d.description || "") ||
+    d.services?.some((s: any) => matchesAny(s.name || ""))
+  ).slice(0, 20);
+
+  // Search diagnostic types
+  const matchedDiagTypes = diagnosticTypes.filter(dt =>
+    matchesAny(dt.title || dt.name || "") || matchesAny(dt.description || "")
+  );
+  // Add matched diagnostic type info to diagnostics results
+  if (matchedDiagTypes.length > 0 && matchedDiagnostics.length === 0) {
+    // If query matches a type but no center, show all centers
+    const allCenters = diagnosticCenters.slice(0, 10);
+    matchedDiagnostics.push(...allCenters.filter(c => !matchedDiagnostics.find((m: any) => m.id === c.id)));
+  }
+
+  // Search maternity hospitals
+  const matchedMaternity = maternityHospitals.filter(m =>
+    matchesAny(m.name) || matchesAny(m.address || "") || matchesAny(m.region || "") ||
+    matchesAny(m.city || "") || matchesAny(m.description || "") ||
+    m.services?.some((s: any) => matchesAny(s.name || ""))
+  ).slice(0, 20);
+
+  // Search blood banks
+  const matchedBloodBanks = bloodBanks.filter(b =>
+    matchesAny(b.name) || matchesAny(b.address || "") || matchesAny(b.region || "") ||
+    matchesAny(b.city || "") || matchesAny(b.description || "")
+  ).slice(0, 20);
+
+  // Search medtech equipment
+  const matchedMedtech = medTechEquipment.filter(m =>
+    matchesAny(m.name) || matchesAny(m.category || "") || matchesAny(m.description || "") ||
+    matchesAny(m.manufacturer || "") || matchesAny(m.usage || "")
+  ).slice(0, 20);
+
+  // Search cosmetology services
+  const matchedCosmetology = cosmetologyServices.filter(c =>
+    matchesAny(c.title || "") || matchesAny(c.description || "")
   ).slice(0, 20);
 
   return {
     localClinics: matchedClinics,
-    localDiseases: matchedDiseases.slice(0, 20),
+    localDiseases: matchedDiseases.slice(0, 30),
     localArticles: matchedArticles,
     localTerms: matchedTerms,
+    localNews: matchedNews,
+    localHealthTips: matchedHealthTips.slice(0, 20),
+    localPharmacies: matchedPharmacies,
+    localDiagnostics: matchedDiagnostics.slice(0, 20),
+    localMaternity: matchedMaternity,
+    localBloodBanks: matchedBloodBanks,
+    localMedtech: matchedMedtech,
+    localCosmetology: matchedCosmetology,
   };
 }
 
