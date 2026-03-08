@@ -19,3 +19,5 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.medical-knowledge]
     verify_jwt = false
+  [functions.ai-health-assistant]
+    verify_jwt = false

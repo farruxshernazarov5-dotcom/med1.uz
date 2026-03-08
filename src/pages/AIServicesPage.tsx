@@ -46,6 +46,14 @@ const aiServices = [
     color: "from-violet-500 to-violet-400",
     badge: "Yangi",
   },
+  {
+    icon: UserCheck,
+    title: "AI Sog'liq Assistenti",
+    description: "24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar",
+    href: "/ai-health-assistant",
+    color: "from-teal-500 to-teal-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (
