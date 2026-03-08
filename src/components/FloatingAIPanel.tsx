@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Brain, X, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Sparkles, Baby,
+  Brain, X, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Sparkles, Baby, Palette,
 } from "lucide-react";
 
 const AI_SERVICES = [
