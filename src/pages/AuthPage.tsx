@@ -253,9 +253,19 @@ const AuthPage = () => {
               </div>
             )}
 
-            {/* Phone auth (login only) */}
+            {/* Phone auth via Telegram (login only) */}
             {mode === "login" && authMethod === "phone" && (
               <div className="space-y-4">
+                {!otpSent && (
+                  <div className="p-3 bg-muted/40 rounded-xl text-xs text-muted-foreground space-y-2">
+                    <p className="font-semibold text-foreground flex items-center gap-1.5">
+                      <Send className="w-3.5 h-3.5 text-primary" /> Telegram orqali kirish
+                    </p>
+                    <p>1. <a href="https://t.me/Med1UzBot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline">@Med1UzBot</a> ga o'ting</p>
+                    <p>2. Botga telefon raqamingizni yuboring (masalan: +998901234567)</p>
+                    <p>3. Pastda telefon raqamni kiritib "Telegram kod yuborish" tugmasini bosing</p>
+                  </div>
+                )}
                 <div>
                   <Label className="text-xs">Telefon raqam</Label>
                   <div className="relative mt-1">
@@ -273,7 +283,7 @@ const AuthPage = () => {
 
                 {otpSent && (
                   <div>
-                    <Label className="text-xs">SMS kod</Label>
+                    <Label className="text-xs">Telegram kod</Label>
                     <Input
                       type="text"
                       value={otpCode}
@@ -292,7 +302,7 @@ const AuthPage = () => {
                   onClick={otpSent ? handlePhoneVerifyOtp : handlePhoneSendOtp}
                 >
                   {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {otpSent ? "Tasdiqlash" : "SMS kod yuborish"}
+                  {otpSent ? "Tasdiqlash" : "Telegram kod yuborish"}
                 </Button>
 
                 {otpSent && (
