@@ -7,13 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
   { value: "clinic", label: "Klinika", icon: Building2, desc: "Klinikani boshqarish" },
+  { value: "diagnostics", label: "Diagnostika", icon: Microscope, desc: "Diagnostika markazi" },
+  { value: "vendor", label: "Medtexnika", icon: Package, desc: "Medtexnika sotuvchisi" },
 ];
+
+const ROLE_REDIRECT: Record<string, string> = {
+  patient: "/dashboard",
+  clinic: "/clinic-register",
+  diagnostics: "/diagnostics-register",
+  vendor: "/vendor-register",
+};
 
 const PASSWORD_RULES = [
   { label: "Kamida 8 belgi", test: (p: string) => p.length >= 8 },
@@ -31,7 +40,7 @@ const AuthPage = () => {
   const [role, setRole] = useState("patient");
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
 
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
@@ -46,7 +55,11 @@ const AuthPage = () => {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Xush kelibsiz!" });
-        navigate("/dashboard");
+        // Redirect based on user role after short delay to let role load
+        setTimeout(() => {
+          const redirectRole = currentUserRole || "patient";
+          navigate(ROLE_REDIRECT[redirectRole] || "/dashboard");
+        }, 500);
       }
     } else {
       if (!fullName.trim()) {
@@ -63,7 +76,8 @@ const AuthPage = () => {
       if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Emailingizni tasdiqlang" });
+        toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." });
+        setMode("login");
       }
     }
     setSubmitting(false);
@@ -194,9 +208,9 @@ const AuthPage = () => {
                 {submitting ? "Kutilmoqda..." : mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}
               </Button>
 
-              {mode === "register" && role === "clinic" && (
+              {mode === "register" && role !== "patient" && (
                 <p className="text-xs text-center text-muted-foreground">
-                  Ro'yxatdan o'tgandan so'ng klinika ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
+                  Ro'yxatdan o'tgandan so'ng {role === "clinic" ? "klinika" : role === "diagnostics" ? "diagnostika markazi" : "medtexnika"} ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
                 </p>
               )}
             </form>
