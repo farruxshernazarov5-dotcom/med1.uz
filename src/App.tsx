@@ -38,6 +38,10 @@ import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import SymptomCheckerPage from "./pages/SymptomCheckerPage";
+import AIDoctorChatPage from "./pages/AIDoctorChatPage";
+import AIReportAnalysisPage from "./pages/AIReportAnalysisPage";
+import AIHealthRiskPage from "./pages/AIHealthRiskPage";
+import AIServicesPage from "./pages/AIServicesPage";
 
 const queryClient = new QueryClient();
 
