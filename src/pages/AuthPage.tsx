@@ -72,7 +72,8 @@ const AuthPage = () => {
       if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Emailingizni tasdiqlang" });
+        toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." });
+        setMode("login");
       }
     }
     setSubmitting(false);
