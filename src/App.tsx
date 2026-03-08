@@ -37,6 +37,7 @@ import VendorRegistrationPage from "./pages/VendorRegistrationPage";
 import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import SymptomCheckerPage from "./pages/SymptomCheckerPage";
 
 const queryClient = new QueryClient();
 
