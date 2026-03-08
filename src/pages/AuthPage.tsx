@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils";
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
   { value: "clinic", label: "Klinika", icon: Building2, desc: "Klinikani boshqarish" },
-  { value: "diagnostics", label: "Diagnostika", icon: Building2, desc: "Diagnostika markazi" },
-  { value: "vendor", label: "Medtexnika", icon: Building2, desc: "Medtexnika sotuvchisi" },
+  { value: "diagnostics", label: "Diagnostika", icon: Microscope, desc: "Diagnostika markazi" },
+  { value: "vendor", label: "Medtexnika", icon: Package, desc: "Medtexnika sotuvchisi" },
 ];
 
 const ROLE_REDIRECT: Record<string, string> = {
