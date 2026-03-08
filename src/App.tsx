@@ -116,6 +116,8 @@ const App = () => (
            <Route path="/smart-search" element={<SmartSearchPage />} />
             <Route path="/partnership" element={<PartnershipPage />} />
             <Route path="/report/:reportId" element={<ReportVerificationPage />} />
+            <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
+            <Route path="*" element={<NotFound />} />
            <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
