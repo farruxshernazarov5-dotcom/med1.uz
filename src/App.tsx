@@ -59,6 +59,7 @@ import PharmacyRegistrationPage from "./pages/PharmacyRegistrationPage";
 import AIPregnancyPage from "./pages/AIPregnancyPage";
 import AIBabyCarePage from "./pages/AIBabyCarePage";
 import AICosmetologyPage from "./pages/AICosmetologyPage";
+import PricingPage from "./pages/PricingPage";
 const queryClient = new QueryClient();
 
 const App = () => (
