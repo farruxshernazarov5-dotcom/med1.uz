@@ -7,3 +7,9 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.symptom-checker]
     verify_jwt = false
+  [functions.ai-doctor-chat]
+    verify_jwt = false
+  [functions.ai-report-analysis]
+    verify_jwt = false
+  [functions.ai-health-risk]
+    verify_jwt = false
