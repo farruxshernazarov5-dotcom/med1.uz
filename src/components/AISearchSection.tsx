@@ -78,6 +78,14 @@ const AISearchSection = () => {
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
                 />
               </div>
+              <Button
+                onClick={startVoiceSearch}
+                disabled={isListening}
+                className={`rounded-xl transition-all ${isListening ? "bg-destructive text-destructive-foreground animate-pulse" : "bg-accent text-accent-foreground hover:bg-accent/80"}`}
+                title="Ovozli qidiruv"
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </Button>
               <Button onClick={handleSearch} disabled={!query.trim()} className="bg-hero-gradient text-primary-foreground border-0 px-6 rounded-xl hover:opacity-90">
                 Qidirish
               </Button>

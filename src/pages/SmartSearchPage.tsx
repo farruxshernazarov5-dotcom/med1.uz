@@ -189,6 +189,14 @@ const SmartSearchPage = () => {
                 />
               </div>
               <Button
+                onClick={startVoiceSearch}
+                disabled={isListening}
+                className={`p-4 h-auto rounded-xl shadow-lg transition-all ${isListening ? "bg-destructive text-destructive-foreground animate-pulse" : "bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30"}`}
+                title="Ovozli qidiruv"
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </Button>
+              <Button
                 onClick={() => handleSearch()}
                 disabled={isSearching || query.trim().length < 2}
                 className="px-6 py-4 h-auto rounded-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-medium shadow-lg"
