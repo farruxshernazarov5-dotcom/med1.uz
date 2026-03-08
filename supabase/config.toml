@@ -15,5 +15,7 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.ai-smart-search]
     verify_jwt = false
+  [functions.ai-radiology]
+    verify_jwt = false
   [functions.medical-knowledge]
     verify_jwt = false

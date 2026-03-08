@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const aiServices = [
@@ -36,6 +36,14 @@ const aiServices = [
     description: "Hayot tarzingiz va sog'liq ma'lumotlaringiz asosida kelajakdagi kasallik xavflarini baholang",
     href: "/ai-health-risk",
     color: "from-rose-500 to-rose-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Eye,
+    title: "AI Rentgen Tahlili",
+    description: "Rentgen tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi",
+    href: "/ai-radiology",
+    color: "from-violet-500 to-violet-400",
     badge: "Yangi",
   },
 ];
