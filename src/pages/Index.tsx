@@ -71,7 +71,7 @@ const Index = () => {
 
       <ContactLocationSection />
       <Footer />
-      <FloatingAIPanel />
+      
     </div>
   );
 };

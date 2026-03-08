@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Navigation, Building2, Star, Clock, Filter, Phone, ChevronDown, Locate } from "lucide-react";
+import { MapPin, Navigation, Building2, Clock, Filter, Phone, Locate, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { clinics as localClinics } from "@/data/clinics";
+import { externalClinics } from "@/data/clinicsExternal";
 
 type ServiceType = "all" | "clinic" | "pharmacy" | "diagnostic" | "lab";
 
@@ -25,15 +27,31 @@ const calcDistance = (lat1: number, lon1: number, lat2: number, lon2: number) =>
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
+// Merge all clinic sources into a unified shape
+interface UnifiedClinic {
+  id: string;
+  name: string;
+  address: string;
+  phone: string | null;
+  category: string;
+  specialties: string[];
+  latitude: number | null;
+  longitude: number | null;
+  logo_url: string | null;
+  working_hours: any;
+  source: "registered" | "local" | "external";
+  linkTo: string;
+}
+
 const PatientNearby = () => {
   const { user } = useAuth();
-  const [clinics, setClinics] = useState<any[]>([]);
+  const [registeredClinics, setRegisteredClinics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [filter, setFilter] = useState<ServiceType>("all");
-  const [sortBy, setSortBy] = useState<"distance" | "rating">("distance");
-  const mapRef = useRef<HTMLDivElement>(null);
+  const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
 
   useEffect(() => {
     supabase
@@ -41,7 +59,7 @@ const PatientNearby = () => {
       .select("id, name, address, phone, category, specialties, amenities, latitude, longitude, working_hours, logo_url")
       .eq("is_active", true)
       .then(({ data }) => {
-        setClinics(data || []);
+        setRegisteredClinics(data || []);
         setLoading(false);
       });
   }, []);
@@ -54,7 +72,6 @@ const PatientNearby = () => {
         setLocating(false);
       },
       () => {
-        // Default to Tashkent if denied
         setUserLocation({ lat: 41.2995, lng: 69.2401 });
         setLocating(false);
       },
@@ -62,27 +79,106 @@ const PatientNearby = () => {
     );
   };
 
-  useEffect(() => {
-    getLocation();
-  }, []);
+  useEffect(() => { getLocation(); }, []);
 
-  const clinicsWithDistance = clinics
-    .filter((c) => {
-      if (filter === "all") return true;
-      const cat = (c.category || "").toLowerCase();
-      if (filter === "clinic") return cat.includes("klinika") || cat.includes("xususiy") || cat.includes("davlat") || !cat;
-      if (filter === "pharmacy") return cat.includes("dorixona") || cat.includes("apteka");
-      if (filter === "diagnostic") return cat.includes("diagnostika") || cat.includes("markaz");
-      if (filter === "lab") return cat.includes("laboratoriya") || cat.includes("lab");
+  // Merge all sources
+  const allClinics = useMemo<UnifiedClinic[]>(() => {
+    const result: UnifiedClinic[] = [];
+
+    // Registered clinics (from DB)
+    registeredClinics.forEach((c) => {
+      result.push({
+        id: c.id,
+        name: c.name,
+        address: c.address || "",
+        phone: c.phone,
+        category: c.category || "klinika",
+        specialties: c.specialties || [],
+        latitude: c.latitude,
+        longitude: c.longitude,
+        logo_url: c.logo_url,
+        working_hours: c.working_hours,
+        source: "registered",
+        linkTo: `/clinics/${c.id}`,
+      });
+    });
+
+    // Local clinics (from data/clinics.ts)
+    localClinics.forEach((c) => {
+      result.push({
+        id: c.id,
+        name: c.name,
+        address: c.address,
+        phone: c.phone?.[0] || null,
+        category: c.type || "klinika",
+        specialties: c.specialties || [],
+        latitude: c.coordinates?.lat || null,
+        longitude: c.coordinates?.lng || null,
+        logo_url: c.logoUrl || null,
+        working_hours: null,
+        source: "local",
+        linkTo: `/clinics/${c.id}`,
+      });
+    });
+
+    // External clinics (from data/clinicsExternal.ts)
+    externalClinics.forEach((c) => {
+      result.push({
+        id: c.id,
+        name: c.name,
+        address: c.address,
+        phone: c.phone?.[0] || null,
+        category: c.type || "klinika",
+        specialties: c.specialties || [],
+        latitude: c.coordinates?.lat || null,
+        longitude: c.coordinates?.lng || null,
+        logo_url: c.logoUrl || null,
+        working_hours: null,
+        source: "external",
+        linkTo: `/clinics/${c.id}`,
+      });
+    });
+
+    // Deduplicate by name
+    const seen = new Set<string>();
+    return result.filter((c) => {
+      const key = c.name.toLowerCase().trim();
+      if (seen.has(key)) return false;
+      seen.add(key);
       return true;
-    })
-    .map((c) => ({
-      ...c,
-      distance: userLocation && c.latitude && c.longitude
-        ? calcDistance(userLocation.lat, userLocation.lng, c.latitude, c.longitude)
-        : 999,
-    }))
-    .sort((a, b) => (sortBy === "distance" ? a.distance - b.distance : 0));
+    });
+  }, [registeredClinics]);
+
+  // Collect unique specialties
+  const allSpecialties = useMemo(() => {
+    const set = new Set<string>();
+    allClinics.forEach((c) => c.specialties.forEach((s) => set.add(s)));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "uz"));
+  }, [allClinics]);
+
+  const clinicsWithDistance = useMemo(() => {
+    return allClinics
+      .filter((c) => {
+        if (filter === "all") return true;
+        const cat = (c.category || "").toLowerCase();
+        if (filter === "clinic") return cat.includes("klinika") || cat.includes("xususiy") || cat.includes("davlat") || !cat;
+        if (filter === "pharmacy") return cat.includes("dorixona") || cat.includes("apteka");
+        if (filter === "diagnostic") return cat.includes("diagnostika") || cat.includes("markaz");
+        if (filter === "lab") return cat.includes("laboratoriya") || cat.includes("lab");
+        return true;
+      })
+      .filter((c) => {
+        if (!selectedSpecialty) return true;
+        return c.specialties.some((s) => s.toLowerCase().includes(selectedSpecialty.toLowerCase()));
+      })
+      .map((c) => ({
+        ...c,
+        distance: userLocation && c.latitude && c.longitude
+          ? calcDistance(userLocation.lat, userLocation.lng, c.latitude, c.longitude)
+          : 999,
+      }))
+      .sort((a, b) => sortBy === "distance" ? a.distance - b.distance : a.name.localeCompare(b.name, "uz"));
+  }, [allClinics, filter, selectedSpecialty, userLocation, sortBy]);
 
   const is24h = (wh: any) => {
     if (!wh) return false;
@@ -99,7 +195,7 @@ const PatientNearby = () => {
         </Button>
       </div>
 
-      {/* Map embed */}
+      {/* Map */}
       {userLocation && (
         <div className="rounded-2xl overflow-hidden border border-border mb-6 shadow-card">
           <iframe
@@ -114,7 +210,7 @@ const PatientNearby = () => {
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-4">
         {(Object.keys(serviceLabels) as ServiceType[]).map((key) => (
           <button
             key={key}
@@ -129,26 +225,59 @@ const PatientNearby = () => {
         ))}
         <div className="ml-auto">
           <button
-            onClick={() => setSortBy(sortBy === "distance" ? "rating" : "distance")}
+            onClick={() => setSortBy(sortBy === "distance" ? "name" : "distance")}
             className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-muted text-muted-foreground hover:text-foreground"
           >
-            <Filter className="w-3 h-3" /> {sortBy === "distance" ? "Masofa" : "Reyting"}
+            <Filter className="w-3 h-3" /> {sortBy === "distance" ? "Masofa" : "Nomi"}
           </button>
         </div>
       </div>
 
-      {/* Quick stats */}
+      {/* Specialty filter */}
+      {allSpecialties.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Stethoscope className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">Yo'nalish bo'yicha filtrlash:</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+            <button
+              onClick={() => setSelectedSpecialty("")}
+              className={cn(
+                "px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
+                !selectedSpecialty ? "bg-tech-purple text-white" : "bg-muted text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Hammasi
+            </button>
+            {allSpecialties.slice(0, 30).map((s) => (
+              <button
+                key={s}
+                onClick={() => setSelectedSpecialty(s === selectedSpecialty ? "" : s)}
+                className={cn(
+                  "px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
+                  selectedSpecialty === s ? "bg-tech-purple text-white" : "bg-muted text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Stats */}
       {userLocation && clinicsWithDistance.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
-            { label: "Eng yaqin klinika", value: clinicsWithDistance[0]?.name?.slice(0, 20), sub: `${clinicsWithDistance[0]?.distance?.toFixed(1)} km`, icon: Building2 },
-            { label: "24/7 xizmatlar", value: clinicsWithDistance.filter((c) => is24h(c.working_hours)).length + " ta", sub: "Doimo ochiq", icon: Clock },
-            { label: "Jami topildi", value: clinicsWithDistance.length + " ta", sub: "Faol muassasalar", icon: MapPin },
+            { label: "Jami topildi", value: clinicsWithDistance.length + " ta", sub: "Faol muassasalar", icon: Building2 },
             { label: "Yaqin atrofda", value: clinicsWithDistance.filter((c) => c.distance < 5).length + " ta", sub: "5 km ichida", icon: Navigation },
+            { label: "Eng yaqin", value: clinicsWithDistance[0]?.name?.slice(0, 18), sub: `${clinicsWithDistance[0]?.distance < 999 ? clinicsWithDistance[0]?.distance?.toFixed(1) + " km" : "—"}`, icon: MapPin },
+            { label: "24/7 xizmatlar", value: clinicsWithDistance.filter((c) => is24h(c.working_hours)).length + " ta", sub: "Doimo ochiq", icon: Clock },
           ].map((s) => (
             <div key={s.label} className="bg-card rounded-xl border border-border p-4 shadow-card">
               <s.icon className="w-5 h-5 text-primary mb-2" />
-              <p className="text-lg font-bold text-foreground">{s.value}</p>
+              <p className="text-lg font-bold text-foreground truncate">{s.value}</p>
               <p className="text-[10px] text-muted-foreground">{s.label}</p>
             </div>
           ))}
@@ -165,10 +294,10 @@ const PatientNearby = () => {
         </div>
       ) : (
         <div className="space-y-3">
-          {clinicsWithDistance.slice(0, 20).map((c) => (
+          {clinicsWithDistance.slice(0, 30).map((c) => (
             <Link
-              key={c.id}
-              to={`/clinics/${c.id}`}
+              key={c.id + c.source}
+              to={c.linkTo}
               className="block bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-4">
@@ -185,6 +314,9 @@ const PatientNearby = () => {
                     {is24h(c.working_hours) && (
                       <Badge className="bg-green-100 text-green-800 text-[10px]">24/7</Badge>
                     )}
+                    {c.source === "registered" && (
+                      <Badge className="bg-tech-purple/10 text-tech-purple text-[10px]">✓ Hamkor</Badge>
+                    )}
                   </div>
                   {c.address && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -196,6 +328,9 @@ const PatientNearby = () => {
                       {c.specialties.slice(0, 3).map((s: string) => (
                         <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{s}</span>
                       ))}
+                      {c.specialties.length > 3 && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">+{c.specialties.length - 3}</span>
+                      )}
                     </div>
                   )}
                 </div>
@@ -212,6 +347,12 @@ const PatientNearby = () => {
               </div>
             </Link>
           ))}
+          {clinicsWithDistance.length > 30 && (
+            <p className="text-center text-sm text-muted-foreground py-4">
+              va yana {clinicsWithDistance.length - 30} ta muassasa...
+              <Link to="/clinics" className="text-primary ml-1 hover:underline">Barchasini ko'rish →</Link>
+            </p>
+          )}
         </div>
       )}
     </div>
