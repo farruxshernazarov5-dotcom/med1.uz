@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope, Pill } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
