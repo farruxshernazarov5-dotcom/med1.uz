@@ -445,25 +445,45 @@ const AuthPage = () => {
                 {mode === "register" && (
                   <>
                     <div>
-                      <Label className="text-xs font-medium">Rol tanlang</Label>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                        {roles.map((r) => (
-                          <button
-                            key={r.value}
-                            type="button"
-                            onClick={() => setRole(r.value)}
-                            className={cn(
-                              "flex flex-col items-center gap-1 p-3 rounded-xl border transition-all text-center",
-                              role === r.value
-                                ? "border-primary bg-primary/5 text-primary"
-                                : "border-border hover:border-primary/30 text-foreground"
-                            )}
-                          >
-                            <r.icon className="w-5 h-5" />
-                            <span className="text-xs font-semibold">{r.label}</span>
-                            <span className="text-[10px] text-muted-foreground">{r.desc}</span>
-                          </button>
-                        ))}
+                      <Label className="text-xs font-medium mb-2 block">Rol tanlang</Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-2">
+                        {roles.map((r) => {
+                          const isSelected = role === r.value;
+                          return (
+                            <button
+                              key={r.value}
+                              type="button"
+                              onClick={() => setRole(r.value)}
+                              className={cn(
+                                "group relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 text-center overflow-hidden",
+                                isSelected
+                                  ? "border-primary bg-primary/5 shadow-md scale-[1.02]"
+                                  : "border-border/60 hover:border-primary/40 hover:bg-accent/30 hover:shadow-sm"
+                              )}
+                            >
+                              {isSelected && (
+                                <div className="absolute top-1.5 right-1.5">
+                                  <CheckCircle className="w-4 h-4 text-primary" />
+                                </div>
+                              )}
+                              <div className={cn(
+                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200",
+                                isSelected
+                                  ? "bg-hero-gradient text-primary-foreground shadow-sm"
+                                  : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+                              )}>
+                                <r.icon className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <span className={cn(
+                                  "text-xs font-bold block leading-tight",
+                                  isSelected ? "text-primary" : "text-foreground"
+                                )}>{r.label}</span>
+                                <span className="text-[10px] text-muted-foreground leading-tight mt-0.5 block">{r.desc}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                     <div>
