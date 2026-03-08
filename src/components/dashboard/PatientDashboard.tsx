@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen } from "lucide-react";
+import { LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,11 +13,13 @@ import PatientNotifications from "./PatientNotifications";
 import PatientDocuments from "./PatientDocuments";
 import PatientNearby from "./PatientNearby";
 import PatientMedicalHistory from "./PatientMedicalHistory";
+import PatientAIHistory from "./PatientAIHistory";
 
 const tabs = [
   { id: "appointments", label: "Qabullar", icon: Calendar },
   { id: "nearby", label: "Yaqin xizmatlar", icon: MapPin },
   { id: "history", label: "Tibbiy tarix", icon: FolderOpen },
+  { id: "ai-history", label: "AI tahlillar", icon: Brain },
   { id: "documents", label: "Hujjatlar", icon: FileText },
   { id: "health", label: "Sog'liq", icon: Activity },
   { id: "reviews", label: "Sharhlar", icon: Star },
@@ -84,6 +86,7 @@ const PatientDashboard = () => {
         {activeTab === "appointments" && <PatientAppointments />}
         {activeTab === "nearby" && <PatientNearby />}
         {activeTab === "history" && <PatientMedicalHistory />}
+        {activeTab === "ai-history" && <PatientAIHistory />}
         {activeTab === "documents" && <PatientDocuments />}
         {activeTab === "health" && <PatientHealth />}
         {activeTab === "reviews" && <PatientReviews />}
