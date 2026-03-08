@@ -38,6 +38,14 @@ const aiServices = [
     color: "from-rose-500 to-rose-400",
     badge: "Yangi",
   },
+  {
+    icon: Eye,
+    title: "AI Rentgen Tahlili",
+    description: "Rentgen tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi",
+    href: "/ai-radiology",
+    color: "from-violet-500 to-violet-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (

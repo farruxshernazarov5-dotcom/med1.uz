@@ -106,6 +106,7 @@ const App = () => (
            <Route path="/ai-report-analysis" element={<AIReportAnalysisPage />} />
            <Route path="/ai-health-risk" element={<AIHealthRiskPage />} />
            <Route path="/ai-diagnostika" element={<AIDiagnostikaPage />} />
+           <Route path="/ai-radiology" element={<AIRadiologyPage />} />
            <Route path="/smart-search" element={<SmartSearchPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
