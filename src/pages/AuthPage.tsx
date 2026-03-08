@@ -17,6 +17,8 @@ const roles = [
   { value: "clinic", label: "Klinika", icon: Building2, desc: "Klinikani boshqarish" },
   { value: "diagnostics", label: "Diagnostika", icon: Microscope, desc: "Diagnostika markazi" },
   { value: "vendor", label: "Medtexnika", icon: Package, desc: "Medtexnika sotuvchisi" },
+  { value: "maternity", label: "Tug'ruqxona", icon: Baby, desc: "Tug'ruqxona boshqarish" },
+  { value: "cosmetology", label: "Kosmetologiya", icon: Sparkles, desc: "Kosmetologiya markazi" },
 ];
 
 const ROLE_REDIRECT: Record<string, string> = {
@@ -24,6 +26,8 @@ const ROLE_REDIRECT: Record<string, string> = {
   clinic: "/clinic-register",
   diagnostics: "/diagnostics-register",
   vendor: "/vendor-register",
+  maternity: "/maternity-register",
+  cosmetology: "/cosmetology-register",
 };
 
 const PASSWORD_RULES = [
