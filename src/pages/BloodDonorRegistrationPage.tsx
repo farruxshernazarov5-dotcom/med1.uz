@@ -151,7 +151,7 @@ const BloodDonorRegistrationPage = () => {
                       <select required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={form.bloodGroup} onChange={e => setForm({...form, bloodGroup: e.target.value})}>
                         <option value="">Tanlang</option>
-                        {BLOOD_GROUPS.map(bg => <option key={bt} value={bg}>{bg}</option>)}
+                        {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
                       </select>
                     </div>
                     <div>
