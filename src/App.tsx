@@ -48,6 +48,7 @@ import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfilePage from "./pages/DoctorProfilePage";
 import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
 import SmartSearchPage from "./pages/SmartSearchPage";
+import FloatingAISearch from "./components/FloatingAISearch";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <FloatingAISearch />
           <Routes>
             <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
