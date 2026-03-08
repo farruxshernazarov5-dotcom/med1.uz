@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, X, Sparkles, Brain, Stethoscope, Pill, Building2, Mic, MicOff } from "lucide-react";
+import { Search, X, Sparkles, Brain, Stethoscope, Pill, Building2, Mic, MicOff, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
