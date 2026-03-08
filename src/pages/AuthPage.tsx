@@ -257,17 +257,55 @@ const AuthPage = () => {
             {mode === "login" && authMethod === "phone" && (
               <div className="space-y-4">
                 {!otpSent && (
-                  <div className="p-3 bg-muted/40 rounded-xl text-xs text-muted-foreground space-y-2">
-                    <p className="font-semibold text-foreground flex items-center gap-1.5">
-                      <Send className="w-3.5 h-3.5 text-primary" /> Telegram orqali kirish
-                    </p>
-                    <p>1. <a href="https://t.me/Med1UzBot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline">@Med1UzBot</a> ga o'ting</p>
-                    <p>2. Botga telefon raqamingizni yuboring (masalan: +998901234567)</p>
-                    <p>3. Pastda telefon raqamni kiritib "Telegram kod yuborish" tugmasini bosing</p>
+                  <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <div className="relative space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0088cc] to-[#0077b5] flex items-center justify-center shadow-sm">
+                          <Send className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-foreground">Telegram orqali kirish</p>
+                          <p className="text-[10px] text-muted-foreground">Xavfsiz va tez autentifikatsiya</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2 text-xs text-muted-foreground">
+                        <div className="flex items-start gap-2">
+                          <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+                          <span>
+                            <a href="https://t.me/Med1uzOTP_Bot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline inline-flex items-center gap-1">
+                              @Med1uzOTP_Bot
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                            {" "}ga o'ting va <code className="bg-muted px-1 py-0.5 rounded text-[10px]">/start</code> bosing
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+                          <span>Botga telefon raqamingizni yuboring<br/><code className="bg-muted px-1 py-0.5 rounded text-[10px]">+998901234567</code></span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>
+                          <span>Pastda raqamni kiritib "Telegram kod yuborish" tugmasini bosing</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
+
+                {otpSent && (
+                  <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-xl border border-primary/20">
+                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                      <MessageCircle className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <p className="text-xs text-foreground">
+                      <span className="font-semibold">Telegram</span>ga 6 raqamli kod yuborildi
+                    </p>
+                  </div>
+                )}
+
                 <div>
-                  <Label className="text-xs">Telefon raqam</Label>
+                  <Label className="text-xs font-medium">Telefon raqam</Label>
                   <div className="relative mt-1">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -283,36 +321,54 @@ const AuthPage = () => {
 
                 {otpSent && (
                   <div>
-                    <Label className="text-xs">Telegram kod</Label>
+                    <Label className="text-xs font-medium">Tasdiqlash kodi</Label>
                     <Input
                       type="text"
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                      placeholder="123456"
-                      className="text-center text-lg tracking-widest font-mono"
+                      placeholder="● ● ● ● ● ●"
+                      className="text-center text-xl tracking-[0.5em] font-mono h-12 mt-1"
                       maxLength={6}
                     />
+                    <p className="text-[10px] text-muted-foreground mt-1 text-center">Kod 5 daqiqa ichida amal qiladi</p>
                   </div>
                 )}
 
                 <Button
                   type="button"
                   disabled={submitting}
-                  className="w-full bg-hero-gradient text-primary-foreground border-0 h-11"
+                  className="w-full bg-hero-gradient text-primary-foreground border-0 h-11 gap-2"
                   onClick={otpSent ? handlePhoneVerifyOtp : handlePhoneSendOtp}
                 >
-                  {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {otpSent ? "Tasdiqlash" : "Telegram kod yuborish"}
+                  {submitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : otpSent ? (
+                    <CheckCircle className="w-4 h-4" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  {submitting ? "Kutilmoqda..." : otpSent ? "Kodni tasdiqlash" : "Telegram kod yuborish"}
                 </Button>
 
                 {otpSent && (
-                  <button
-                    type="button"
-                    onClick={() => { setOtpSent(false); setOtpCode(""); }}
-                    className="text-xs text-primary font-semibold hover:underline w-full text-center"
-                  >
-                    Raqamni o'zgartirish
-                  </button>
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setOtpSent(false); setOtpCode(""); }}
+                      className="text-xs text-muted-foreground font-medium hover:text-foreground transition-colors"
+                    >
+                      Raqamni o'zgartirish
+                    </button>
+                    <span className="text-muted-foreground/30">|</span>
+                    <button
+                      type="button"
+                      onClick={handlePhoneSendOtp}
+                      disabled={submitting}
+                      className="text-xs text-primary font-semibold hover:underline"
+                    >
+                      Qayta yuborish
+                    </button>
+                  </div>
                 )}
               </div>
             )}
