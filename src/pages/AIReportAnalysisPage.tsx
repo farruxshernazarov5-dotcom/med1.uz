@@ -16,8 +16,11 @@ interface Indicator {
   name: string;
   value: string;
   normalRange: string;
+  unit?: string;
   status: "normal" | "high" | "low" | "critical";
   interpretation: string;
+  possibleCauses?: string[];
+  relatedICD10?: string;
 }
 
 interface ReportAnalysis {
@@ -27,6 +30,8 @@ interface ReportAnalysis {
   recommendations: string[];
   urgentAttention: boolean;
   suggestedSpecialist: string;
+  panelCorrelations?: string[];
+  followUpTests?: string[];
 }
 
 const REPORT_TYPES = [
