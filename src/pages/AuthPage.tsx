@@ -248,7 +248,7 @@ const AuthPage = () => {
                     authMethod === "phone" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
                   )}
                 >
-                  <Phone className="w-3.5 h-3.5" /> Telefon
+                  <MessageCircle className="w-3.5 h-3.5" /> Telegram
                 </button>
               </div>
             )}
