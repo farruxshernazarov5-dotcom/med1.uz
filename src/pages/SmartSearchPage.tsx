@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Search, MapPin, Star, Clock, Phone, Brain, Building2, Stethoscope,
   AlertTriangle, ArrowRight, Loader2, Filter, SlidersHorizontal,
-  Navigation, Activity, Pill, ChevronRight, Sparkles, History, X, Heart
+  Navigation, Activity, Pill, ChevronRight, Sparkles, History, X, Heart, Mic, MicOff
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
