@@ -175,6 +175,18 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
           <span>{clinic.workingHours}</span>
         </div>
 
+        {/* Direction Tags */}
+        {clinic.directionTags && clinic.directionTags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {clinic.directionTags.slice(0, 3).map((t) => (
+              <Badge key={t} variant="default" className="text-[10px]">{t}</Badge>
+            ))}
+            {clinic.directionTags.length > 3 && (
+              <Badge variant="default" className="text-[10px]">+{clinic.directionTags.length - 3}</Badge>
+            )}
+          </div>
+        )}
+
         {/* Specialties */}
         <div className="flex flex-wrap gap-1">
           {clinic.specialties.slice(0, 4).map((s) => (
