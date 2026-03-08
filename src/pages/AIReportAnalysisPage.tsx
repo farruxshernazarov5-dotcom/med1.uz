@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera, Link2, FlaskConical, Search, MapPin } from "lucide-react";
+import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera, Link2, FlaskConical, Search, MapPin, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import { downloadAIReport } from "@/utils/downloadAIReport";
 
 interface Indicator {
   name: string;
@@ -525,6 +527,21 @@ const AIReportAnalysisPage = () => {
 
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={() => downloadAIReport({
+                  title: "Analiz Natijalari Tahlili",
+                  serviceType: "Laboratoriya Analiz Tahlili",
+                  riskLevel: analysis.urgentAttention ? "Yuqori" : "Normal",
+                  suggestedSpecialist: analysis.suggestedSpecialist,
+                  sections: [
+                    { heading: "Umumiy xulosa", content: analysis.summary },
+                    ...(analysis.indicators.length > 0 ? [{ heading: "Ko'rsatkichlar", content: analysis.indicators.map(ind => `${ind.name}: ${ind.value} (Normal: ${ind.normalRange}) — ${ind.interpretation}`).join("\n") }] : []),
+                    ...(analysis.concerns.length > 0 ? [{ heading: "Ehtimoliy muammolar", content: analysis.concerns.join("\n") }] : []),
+                    { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
+                    ...(analysis.followUpTests?.length ? [{ heading: "Qo'shimcha tahlillar", content: analysis.followUpTests.join(", ") }] : []),
+                  ],
+                })} variant="outline" className="flex-1">
+                  <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
+                </Button>
                 {user && (
                   <Button onClick={handleSaveToHistory} disabled={isSaving} className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
@@ -543,11 +560,7 @@ const AIReportAnalysisPage = () => {
                 </div>
               )}
 
-              <div className="bg-muted rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  ⚠️ AI tahlili tibbiy tashxis emas. Natijalarni malakali shifokor bilan muhokama qiling.
-                </p>
-              </div>
+              <MedicalDisclaimer />
             </div>
           )}
         </div>

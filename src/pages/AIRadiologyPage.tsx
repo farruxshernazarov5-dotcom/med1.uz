@@ -10,11 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Loader2, AlertTriangle, CheckCircle2, Image, X, Save, Camera, Upload,
   RefreshCcw, Activity, Stethoscope, MapPin, Search, Eye, Bone, Heart,
-  ShieldAlert, FlaskConical, Brain, Scan,
+  ShieldAlert, FlaskConical, Brain, Scan, Download,
 } from "lucide-react";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import { downloadAIReport } from "@/utils/downloadAIReport";
 
 interface AnatomicalStructure {
   name: string;
@@ -534,6 +537,20 @@ const AIRadiologyPage = () => {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={() => downloadAIReport({
+                  title: "Radiologiya Tahlili",
+                  serviceType: `AI ${scanLabel} Tahlili`,
+                  riskLevel: analysis.overallAssessment.riskLevel === "critical" ? "Yuqori" : analysis.overallAssessment.riskLevel === "attention" ? "O'rtacha" : "Normal",
+                  suggestedSpecialist: analysis.suggestedSpecialist,
+                  sections: [
+                    { heading: "Umumiy baholash", content: analysis.overallAssessment.summary },
+                    ...(analysis.findings.length > 0 ? [{ heading: "Topilmalar", content: analysis.findings.map(f => `${f.location}: ${f.description} (${f.severity})`).join("\n") }] : []),
+                    { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
+                    ...(analysis.followUpStudies?.length ? [{ heading: "Qo'shimcha tekshiruvlar", content: analysis.followUpStudies.join(", ") }] : []),
+                  ],
+                })} variant="outline" className="flex-1">
+                  <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
+                </Button>
                 {user && (
                   <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
@@ -552,11 +569,7 @@ const AIRadiologyPage = () => {
                 </div>
               )}
 
-              <div className="bg-muted rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  ⚠️ {analysis.disclaimer || "AI tahlili yakuniy tashxis emas. Natijalarni radiolog bilan muhokama qiling."}
-                </p>
-              </div>
+              <MedicalDisclaimer />
             </div>
           )}
         </div>
