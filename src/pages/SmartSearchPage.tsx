@@ -20,6 +20,16 @@ import { diseaseCategories } from "@/data/diseases";
 import { articleCategories, type Article } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import allTerms from "@/data/medicalTerms";
+import { extraArticleCategories } from "@/data/extraArticles";
+import { ophthalmologyArticles } from "@/data/ophthalmologyArticles";
+import { newsItems } from "@/data/news";
+import { healthCategories } from "@/data/healthTips";
+import { cosmetologyServices } from "@/data/cosmetology";
+import { pharmacies } from "@/data/pharmacies";
+import { diagnosticCenters, diagnosticTypes } from "@/data/diagnostics";
+import { maternityHospitals } from "@/data/maternity";
+import { bloodBanks } from "@/data/bloodBanks";
+import { medTechEquipment } from "@/data/medtech";
 
 interface SearchResult {
   aiAnalysis: {
