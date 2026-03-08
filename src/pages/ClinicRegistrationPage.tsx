@@ -60,6 +60,9 @@ const ClinicRegistrationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [innChecking, setInnChecking] = useState(false);
   const [innResult, setInnResult] = useState<any>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string>("");
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -82,6 +85,29 @@ const ClinicRegistrationPage = () => {
     services: "",
     workingHours: Object.fromEntries(DAYS.map(d => [d, d === "Yakshanba" ? "Dam olish" : "09:00 - 18:00"])),
   });
+
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Rasm 5 MB dan katta bo'lmasligi kerak", variant: "destructive" });
+      return;
+    }
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
+
+  const uploadLogo = async (clinicId: string): Promise<string | null> => {
+    if (!logoFile) return null;
+    setLogoUploading(true);
+    const ext = logoFile.name.split(".").pop();
+    const path = `${clinicId}/logo.${ext}`;
+    const { error } = await supabase.storage.from("clinic-photos").upload(path, logoFile, { upsert: true });
+    setLogoUploading(false);
+    if (error) { console.error("Logo upload error:", error); return null; }
+    const { data: urlData } = supabase.storage.from("clinic-photos").getPublicUrl(path);
+    return urlData.publicUrl;
+  };
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
