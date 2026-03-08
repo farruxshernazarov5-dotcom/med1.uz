@@ -11,7 +11,7 @@ import {
   Search, MapPin, Star, Clock, Phone, Brain, Building2, Stethoscope,
   AlertTriangle, ArrowRight, Loader2, Filter, SlidersHorizontal,
   Navigation, Activity, Pill, ChevronRight, Sparkles, History, X, Heart, Mic, MicOff,
-  BookOpen, HeartPulse, FileText
+  BookOpen, HeartPulse, FileText, Newspaper, Lightbulb, Cross, Baby, Droplets, Cpu, Palette
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { externalClinics } from "@/data/clinicsExternal";
