@@ -164,6 +164,7 @@ const DoctorDashboard = () => {
       address: form.address,
       region: form.region,
       city: form.city,
+      social_links: form.social_links,
     }).eq("id", doctor.id);
 
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
