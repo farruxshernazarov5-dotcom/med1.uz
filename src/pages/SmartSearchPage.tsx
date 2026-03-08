@@ -97,7 +97,8 @@ function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: st
   // Search medical terms
   const matchedTerms = allTerms.filter(t =>
     matchesAny(t.term) ||
-    matchesAny(t.definition || "") ||
+    matchesAny(t.shortDesc || "") ||
+    matchesAny(t.fullDesc || "") ||
     matchesAny(t.category || "")
   ).slice(0, 20);
 
