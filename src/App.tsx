@@ -51,8 +51,10 @@ import SmartSearchPage from "./pages/SmartSearchPage";
 import AIDiagnostikaPage from "./pages/AIDiagnostikaPage";
 import AIRadiologyPage from "./pages/AIRadiologyPage";
 import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
+import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
 import FloatingAISearch from "./components/FloatingAISearch";
-
+import FloatingAIPanel from "./components/FloatingAIPanel";
+import PartnershipPage from "./pages/PartnershipPage";
 const queryClient = new QueryClient();
 
 const App = () => (
