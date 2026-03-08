@@ -901,7 +901,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/de-factum-laboratories",
+    website: undefined,
     services: ["Mutaxassis maslahati", "Laboratoriya", "Apparat diagnostikasi"],
   },
   {
