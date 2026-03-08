@@ -8,7 +8,7 @@ interface AuthContextType {
   loading: boolean;
   userRole: string | null;
   profile: { full_name: string; phone: string; avatar_url: string } | null;
-  signUp: (email: string, password: string, fullName: string, role?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, role?: string, phone?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   verifyPhoneOtp: (phone: string, token: string) => Promise<{ error: any }>;
