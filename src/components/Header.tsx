@@ -12,6 +12,7 @@ const navItems = [
   { label: "Kasalliklar", href: "/diseases" },
   { label: "Maqolalar", href: "/articles" },
   { label: "Klinikalar", href: "/clinics" },
+  { label: "🤖 AI xizmatlar", href: "/ai-services" },
   { label: "Med texnika", href: "/med-tech" },
   { label: "Yangiliklar", href: "/news" },
   { label: "Diagnostika", href: "/diagnostics" },
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Qon banklari", href: "/blood-banks" },
   { label: "Tug'ruqxonalar", href: "/maternity" },
   { label: "Kosmetologiya", href: "/cosmetology" },
+  { label: "Hamkorlik", href: "/partnership" },
 ];
 
 const languages = ["UZ", "RU", "EN"];

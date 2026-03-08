@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   BookOpen, Heart, Stethoscope, FileText, Building2, Wrench,
-  Newspaper, Activity, Pill, Droplets, Baby, Eye
+  Newspaper, Activity, Pill, Droplets, Baby, Eye, Brain, Handshake
 } from "lucide-react";
 
 const menuItems = [
@@ -10,6 +10,7 @@ const menuItems = [
   { icon: Stethoscope, label: "Kasalliklar", href: "/diseases", gradient: "from-medical-red to-medical-orange" },
   { icon: FileText, label: "Maqolalar", href: "/articles", gradient: "from-medical-purple to-primary" },
   { icon: Building2, label: "Klinikalar", href: "/clinics", gradient: "from-primary to-medical-blue" },
+  { icon: Brain, label: "AI xizmatlar", href: "/ai-services", gradient: "from-tech-purple to-tech-electric" },
   { icon: Wrench, label: "Med texnika", href: "/med-tech", gradient: "from-medical-teal to-medical-green" },
   { icon: Newspaper, label: "Yangiliklar", href: "/news", gradient: "from-medical-orange to-medical-red" },
   { icon: Activity, label: "Diagnostika", href: "/diagnostics", gradient: "from-medical-blue to-primary" },
@@ -17,6 +18,7 @@ const menuItems = [
   { icon: Droplets, label: "Qon banklari", href: "/blood-banks", gradient: "from-medical-red to-medical-purple" },
   { icon: Baby, label: "Tug'ruqxonalar", href: "/maternity", gradient: "from-medical-purple to-primary" },
   { icon: Eye, label: "Oftalmologiya", href: "/articles/oftalmologiya", gradient: "from-primary to-medical-purple" },
+  { icon: Handshake, label: "Hamkorlik", href: "/partnership", gradient: "from-tech-success to-primary" },
 ];
 
 const LeftMenu = () => {

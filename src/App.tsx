@@ -52,7 +52,8 @@ import AIDiagnostikaPage from "./pages/AIDiagnostikaPage";
 import AIRadiologyPage from "./pages/AIRadiologyPage";
 import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
 import FloatingAISearch from "./components/FloatingAISearch";
-
+import FloatingAIPanel from "./components/FloatingAIPanel";
+import PartnershipPage from "./pages/PartnershipPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -63,6 +64,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <FloatingAISearch />
+          <FloatingAIPanel />
           <Routes>
             <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
@@ -110,6 +112,7 @@ const App = () => (
            <Route path="/ai-radiology" element={<AIRadiologyPage />} />
            <Route path="/ai-health-assistant" element={<AIHealthAssistantPage />} />
            <Route path="/smart-search" element={<SmartSearchPage />} />
+           <Route path="/partnership" element={<PartnershipPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
