@@ -11,10 +11,12 @@ import { Progress } from "@/components/ui/progress";
 import {
   HeartPulse, Loader2, AlertTriangle, CheckCircle2, Shield, Activity,
   RefreshCcw, TrendingUp, Stethoscope, Brain, Utensils, Dumbbell,
-  Moon, Flame, Eye, Search, Building2
+  Moon, Flame, Eye, Search, Building2, Download
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import { downloadAIReport } from "@/utils/downloadAIReport";
 
 interface RiskItem {
   disease: string;
