@@ -297,8 +297,7 @@ function generateReportHTML(data: ReportData): string {
   }
 </style></head><body>
 
-<div class="watermark">MED1.UZ</div>
-<div class="watermark-pattern"></div>
+<div class="watermark-logo"></div>
 
 <div class="page-wrapper">
 <div class="content">
