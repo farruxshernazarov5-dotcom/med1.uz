@@ -30,9 +30,27 @@ Deno.serve(async (req) => {
   }
 
   const url = new URL(req.url);
-  const path = url.pathname.split("/").pop();
+  const pathParts = url.pathname.split("/");
+  const lastPart = pathParts[pathParts.length - 1];
+  // The function name is telegram-otp, so paths will be like /telegram-otp, /telegram-otp/send-otp, etc.
+  // When called as supabase.functions.invoke("telegram-otp/send-otp"), lastPart = "send-otp"
+  const path = lastPart === "telegram-otp" ? "root" : lastPart;
 
   try {
+    // Setup webhook endpoint - call this once to register
+    if (path === "setup-webhook") {
+      const webhookUrl = `${SUPABASE_URL}/functions/v1/telegram-otp/webhook`;
+      const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: webhookUrl }),
+      });
+      const data = await res.json();
+      return new Response(JSON.stringify(data), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Telegram webhook handler
     if (path === "webhook" && req.method === "POST") {
       const update = await req.json();
@@ -42,7 +60,6 @@ Deno.serve(async (req) => {
       const chatId = message.chat.id;
       const text = message.text.trim();
 
-      // /start command with phone
       if (text.startsWith("/start")) {
         await sendTelegramMessage(chatId,
           "🏥 <b>Med1.uz - Telegram orqali kirish</b>\n\n" +
@@ -53,10 +70,8 @@ Deno.serve(async (req) => {
         return new Response("ok");
       }
 
-      // Phone number received
-      if (text.startsWith("+998") && text.length >= 13) {
+      if (text.startsWith("+998") && text.replace(/\s/g, "").length >= 13) {
         const phone = text.replace(/\s/g, "");
-        // Save/update chat_id for this phone
         const { error } = await supabase.from("telegram_otp").upsert(
           { phone, chat_id: chatId, is_verified: false, updated_at: new Date().toISOString() },
           { onConflict: "phone" }
@@ -65,21 +80,17 @@ Deno.serve(async (req) => {
           await sendTelegramMessage(chatId, "❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
         } else {
           await sendTelegramMessage(chatId,
-            `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\n` +
-            "Endi saytda \"Telegram kod yuborish\" tugmasini bosing."
+            `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\nEndi saytda "Telegram kod yuborish" tugmasini bosing.`
           );
         }
         return new Response("ok");
       }
 
-      // Unknown command
-      await sendTelegramMessage(chatId,
-        "📱 Telefon raqamingizni yuboring:\n<code>+998901234567</code>"
-      );
+      await sendTelegramMessage(chatId, "📱 Telefon raqamingizni yuboring:\n<code>+998901234567</code>");
       return new Response("ok");
     }
 
-    // Send OTP to user via Telegram
+    // Send OTP
     if (path === "send-otp" && req.method === "POST") {
       const { phone } = await req.json();
       if (!phone) {
@@ -88,30 +99,21 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Check if phone has chat_id
       const { data: record } = await supabase
-        .from("telegram_otp")
-        .select("chat_id")
-        .eq("phone", phone)
-        .maybeSingle();
+        .from("telegram_otp").select("chat_id").eq("phone", phone).maybeSingle();
 
       if (!record?.chat_id) {
         return new Response(JSON.stringify({
           error: "not_linked",
-          message: "Bu telefon raqam Telegram botga ulanmagan. Avval @Med1UzBot ga telefon raqamingizni yuboring."
-        }), {
-          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+          message: "Bu telefon raqam Telegram botga ulanmagan."
+        }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
       const otp = generateOTP();
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
       await supabase.from("telegram_otp").update({
-        otp_code: otp,
-        otp_expires_at: expiresAt,
-        is_verified: false,
-        updated_at: new Date().toISOString(),
+        otp_code: otp, otp_expires_at: expiresAt, is_verified: false, updated_at: new Date().toISOString(),
       }).eq("phone", phone);
 
       await sendTelegramMessage(record.chat_id,
@@ -133,79 +135,49 @@ Deno.serve(async (req) => {
       }
 
       const { data: record } = await supabase
-        .from("telegram_otp")
-        .select("otp_code, otp_expires_at")
-        .eq("phone", phone)
-        .maybeSingle();
+        .from("telegram_otp").select("otp_code, otp_expires_at").eq("phone", phone).maybeSingle();
 
       if (!record || record.otp_code !== otp) {
         return new Response(JSON.stringify({ error: "Noto'g'ri kod" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
       if (new Date(record.otp_expires_at) < new Date()) {
         return new Response(JSON.stringify({ error: "Kod muddati tugagan" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      // Mark verified
       await supabase.from("telegram_otp").update({
-        is_verified: true,
-        otp_code: null,
-        updated_at: new Date().toISOString(),
+        is_verified: true, otp_code: null, updated_at: new Date().toISOString(),
       }).eq("phone", phone);
 
-      // Check if user with this phone exists in profiles, sign them in
+      // Find user by phone in profiles
       const { data: profile } = await supabase
-        .from("profiles")
-        .select("user_id")
-        .eq("phone", phone)
-        .maybeSingle();
+        .from("profiles").select("user_id").eq("phone", phone).maybeSingle();
 
       if (profile?.user_id) {
-        // Generate a magic link / session for the user
-        const { data: authData, error: authError } = await supabase.auth.admin.generateLink({
-          type: "magiclink",
-          email: "", // we'll look up the email
-        });
-
-        // Get user email
         const { data: userData } = await supabase.auth.admin.getUserById(profile.user_id);
         if (userData?.user?.email) {
           const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
             type: "magiclink",
             email: userData.user.email,
           });
-
           if (linkData && !linkError) {
-            // Extract token from the link
-            const linkUrl = new URL(linkData.properties.action_link);
-            const token_hash = linkUrl.searchParams.get("token") || linkUrl.hash;
-
             return new Response(JSON.stringify({
-              success: true,
-              verified: true,
-              has_account: true,
+              success: true, verified: true, has_account: true,
               email: userData.user.email,
-              action_link: linkData.properties.action_link,
               hashed_token: linkData.properties.hashed_token,
-            }), {
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            });
+            }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
           }
         }
       }
 
       return new Response(JSON.stringify({
-        success: true,
-        verified: true,
-        has_account: false,
-        message: "Kod tasdiqlandi. Lekin bu raqam bilan bog'langan hisob topilmadi."
-      }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+        success: true, verified: true, has_account: false,
+        message: "Kod tasdiqlandi. Bu raqam bilan hisob topilmadi."
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     return new Response(JSON.stringify({ error: "Not found" }), {
