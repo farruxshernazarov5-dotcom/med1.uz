@@ -854,6 +854,59 @@ const SmartSearchPage = () => {
                 ))}
                 {allServicesCount === 0 && <EmptyState />}
               </TabsContent>
+
+              {/* More tab */}
+              <TabsContent value="more" className="space-y-4 mt-4">
+                {result.localNews?.map((n: any, i: number) => (
+                  <Link key={`news-${i}`} to={`/news/${n.id}`} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground line-clamp-1">📰 {n.title}</p><p className="text-xs text-muted-foreground line-clamp-1">{n.summary?.slice(0, 80)}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  </Link>
+                ))}
+                {result.localHealthTips?.map((t: any, i: number) => (
+                  <Link key={`tip-${i}`} to="/health" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground">💡 {t.title}</p><p className="text-xs text-muted-foreground line-clamp-1">{t.category} · {t.text?.slice(0, 60)}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  </Link>
+                ))}
+                {result.localPharmacies?.map((p: any) => (
+                  <Link key={`ph-${p.id}`} to="/pharmacies" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">💊 {p.name}</p><p className="text-xs text-muted-foreground">{p.region} · {p.address}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localDiagnostics?.map((d: any) => (
+                  <Link key={`diag-${d.id}`} to="/diagnostics" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">🔬 {d.name}</p><p className="text-xs text-muted-foreground">{d.region} · {d.type}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localMaternity?.map((m: any) => (
+                  <Link key={`mat-${m.id}`} to="/maternity" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">👶 {m.name}</p><p className="text-xs text-muted-foreground">{m.region}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localBloodBanks?.map((b: any) => (
+                  <Link key={`bb-${b.id}`} to="/blood-banks" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">🩸 {b.name}</p><p className="text-xs text-muted-foreground">{b.region} · {b.address}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localMedtech?.map((m: any) => (
+                  <Link key={`mt-${m.id}`} to={`/medtech/${m.id}`} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">🏥 {m.name}</p><p className="text-xs text-muted-foreground">{m.category} · {m.manufacturer}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localCosmetology?.map((c: any, i: number) => (
+                  <Link key={`cos-${i}`} to="/cosmetology" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">✨ {c.title}</p><p className="text-xs text-muted-foreground line-clamp-1">{c.description?.slice(0, 80)}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {allExtraCount === 0 && <EmptyState />}
+              </TabsContent>
             </Tabs>
 
             {/* AI Suggestions */}
