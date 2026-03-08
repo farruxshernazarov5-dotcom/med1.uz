@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const aiServices = [
@@ -44,6 +44,14 @@ const aiServices = [
     description: "Rentgen, MRT va KT tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi",
     href: "/ai-radiology",
     color: "from-violet-500 to-violet-400",
+    badge: "Yangi",
+  },
+  {
+    icon: UserCheck,
+    title: "AI Sog'liq Assistenti",
+    description: "24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar",
+    href: "/ai-health-assistant",
+    color: "from-teal-500 to-teal-400",
     badge: "Yangi",
   },
 ];
