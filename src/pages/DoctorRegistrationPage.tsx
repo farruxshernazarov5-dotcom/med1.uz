@@ -71,6 +71,7 @@ const DoctorRegistrationPage = () => {
     address: "",
     region: "",
     city: "",
+    social_links: { telegram: "", instagram: "", facebook: "", youtube: "", website: "" } as Record<string, string>,
   });
 
   const updateField = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
