@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import PatientDashboard from "@/components/dashboard/PatientDashboard";
 import ClinicDashboard from "@/components/dashboard/ClinicDashboard";
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
+import VendorDashboard from "@/components/dashboard/VendorDashboard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
