@@ -11,7 +11,7 @@ import {
   Search, MapPin, Star, Clock, Phone, Brain, Building2, Stethoscope,
   AlertTriangle, ArrowRight, Loader2, Filter, SlidersHorizontal,
   Navigation, Activity, Pill, ChevronRight, Sparkles, History, X, Heart, Mic, MicOff,
-  BookOpen, HeartPulse, FileText
+  BookOpen, HeartPulse, FileText, Newspaper, Lightbulb, Cross, Baby, Droplets, Cpu, Palette
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { externalClinics } from "@/data/clinicsExternal";
@@ -20,6 +20,16 @@ import { diseaseCategories } from "@/data/diseases";
 import { articleCategories, type Article } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import allTerms from "@/data/medicalTerms";
+import { extraArticleCategories } from "@/data/extraArticles";
+import { ophthalmologyArticles } from "@/data/ophthalmologyArticles";
+import { newsItems } from "@/data/news";
+import { healthCategoriesData } from "@/data/healthTips";
+import { cosmetologyServices } from "@/data/cosmetology";
+import { pharmacies } from "@/data/pharmacies";
+import { diagnosticCenters, diagnosticTypes } from "@/data/diagnostics";
+import { maternityHospitals } from "@/data/maternity";
+import { bloodBanks } from "@/data/bloodBanks";
+import { medTechEquipment } from "@/data/medtech";
 
 interface SearchResult {
   aiAnalysis: {
@@ -43,14 +53,23 @@ interface SearchResult {
   localArticles: any[];
   localDiseases: any[];
   localTerms: any[];
+  localNews: any[];
+  localHealthTips: any[];
+  localPharmacies: any[];
+  localDiagnostics: any[];
+  localMaternity: any[];
+  localBloodBanks: any[];
+  localMedtech: any[];
+  localCosmetology: any[];
 }
 
-// Local search helper
+// Local search helper — searches ALL platform data
 function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: string[] = []) {
   const q = query.toLowerCase();
   const allSearchTerms = [q, ...aiKeywords.map(k => k.toLowerCase()), ...aiSpecialties.map(s => s.toLowerCase())];
 
   const matchesAny = (text: string) => {
+    if (!text) return false;
     const t = text.toLowerCase();
     return allSearchTerms.some(term => t.includes(term));
   };
@@ -73,40 +92,107 @@ function searchLocal(query: string, aiKeywords: string[] = [], aiSpecialties: st
     for (const d of cat.diseases) {
       if (matchesAny(d.name) || matchesAny(d.desc) || matchesAny(d.fullDesc || "") || matchesAny(cat.title)) {
         matchedDiseases.push({
-          category: cat.title,
-          categoryId: cat.id,
-          name: d.name,
-          slug: d.slug,
-          desc: d.desc,
+          category: cat.title, categoryId: cat.id, name: d.name, slug: d.slug, desc: d.desc,
         });
       }
     }
   }
 
-  // Search articles
+  // Search ALL articles (base + new + extra + ophthalmology)
   const allArticles: Article[] = [
     ...articleCategories.map(c => c.article),
     ...newArticles,
+    ...extraArticleCategories.map(c => c.article),
+    ...ophthalmologyArticles,
   ];
   const matchedArticles = allArticles.filter(a =>
-    matchesAny(a.title) ||
-    matchesAny(a.summary || "") ||
-    matchesAny(a.category || "")
+    matchesAny(a.title) || matchesAny(a.summary || "") || matchesAny(a.category || "") ||
+    a.content?.some((p: string) => matchesAny(p))
+  ).slice(0, 30);
+
+  // Search medical terms (4000+)
+  const matchedTerms = allTerms.filter(t =>
+    matchesAny(t.term) || matchesAny(t.shortDesc || "") || matchesAny(t.fullDesc || "") ||
+    matchesAny(t.category || "") || matchesAny(t.treatment || "") || matchesAny(t.prevention || "")
+  ).slice(0, 30);
+
+  // Search news
+  const matchedNews = newsItems.filter(n =>
+    matchesAny(n.title) || matchesAny(n.summary || "") || (Array.isArray(n.content) ? n.content.some((c: string) => matchesAny(c)) : false)
   ).slice(0, 20);
 
-  // Search medical terms
-  const matchedTerms = allTerms.filter(t =>
-    matchesAny(t.term) ||
-    matchesAny(t.shortDesc || "") ||
-    matchesAny(t.fullDesc || "") ||
-    matchesAny(t.category || "")
+  // Search health tips
+  const matchedHealthTips: { category: string; title: string; text: string }[] = [];
+  for (const cat of healthCategoriesData) {
+    for (const tip of cat.tips) {
+      if (matchesAny(tip.title) || matchesAny(tip.text) || matchesAny(cat.title)) {
+        matchedHealthTips.push({ category: cat.title, title: tip.title, text: tip.text });
+      }
+    }
+  }
+
+  // Search pharmacies
+  const matchedPharmacies = pharmacies.filter(p =>
+    matchesAny(p.name) || matchesAny(p.address || "") || matchesAny(p.description || "") ||
+    matchesAny(p.region || "") || matchesAny(p.city || "") ||
+    p.services?.some((s: any) => matchesAny(s.name || ""))
+  ).slice(0, 20);
+
+  // Search diagnostic centers
+  const matchedDiagnostics = diagnosticCenters.filter(d =>
+    matchesAny(d.name) || matchesAny(d.address || "") || matchesAny(d.region || "") ||
+    matchesAny(d.city || "") || matchesAny(d.description || "") ||
+    d.services?.some((s: any) => matchesAny(s.name || ""))
+  ).slice(0, 20);
+
+  // Search diagnostic types
+  const matchedDiagTypes = diagnosticTypes.filter(dt =>
+    matchesAny(dt.name || "") || matchesAny(dt.shortDescription || "") || matchesAny(dt.fullDescription || "")
+  );
+  // Add matched diagnostic type info to diagnostics results
+  if (matchedDiagTypes.length > 0 && matchedDiagnostics.length === 0) {
+    // If query matches a type but no center, show all centers
+    const allCenters = diagnosticCenters.slice(0, 10);
+    matchedDiagnostics.push(...allCenters.filter(c => !matchedDiagnostics.find((m: any) => m.id === c.id)));
+  }
+
+  // Search maternity hospitals
+  const matchedMaternity = maternityHospitals.filter(m =>
+    matchesAny(m.name) || matchesAny(m.address || "") || matchesAny(m.region || "") ||
+    matchesAny(m.city || "") || matchesAny(m.description || "") ||
+    m.services?.some((s: any) => matchesAny(s.name || ""))
+  ).slice(0, 20);
+
+  // Search blood banks
+  const matchedBloodBanks = bloodBanks.filter(b =>
+    matchesAny(b.name) || matchesAny(b.address || "") || matchesAny(b.region || "") ||
+    matchesAny(b.city || "") || matchesAny(b.description || "")
+  ).slice(0, 20);
+
+  // Search medtech equipment
+  const matchedMedtech = medTechEquipment.filter(m =>
+    matchesAny(m.name) || matchesAny(m.category || "") || matchesAny(m.description || "") ||
+    matchesAny(m.manufacturer || "") || matchesAny(m.usage || "")
+  ).slice(0, 20);
+
+  // Search cosmetology services
+  const matchedCosmetology = cosmetologyServices.filter(c =>
+    matchesAny(c.title || "") || matchesAny(c.description || "")
   ).slice(0, 20);
 
   return {
     localClinics: matchedClinics,
-    localDiseases: matchedDiseases.slice(0, 20),
+    localDiseases: matchedDiseases.slice(0, 30),
     localArticles: matchedArticles,
     localTerms: matchedTerms,
+    localNews: matchedNews,
+    localHealthTips: matchedHealthTips.slice(0, 20),
+    localPharmacies: matchedPharmacies,
+    localDiagnostics: matchedDiagnostics.slice(0, 20),
+    localMaternity: matchedMaternity,
+    localBloodBanks: matchedBloodBanks,
+    localMedtech: matchedMedtech,
+    localCosmetology: matchedCosmetology,
   };
 }
 
@@ -213,10 +299,12 @@ const SmartSearchPage = () => {
         (aiData?.doctors?.length || 0) +
         (aiData?.diagnosticsServices?.length || 0) +
         (aiData?.clinicServices?.length || 0) +
-        local.localClinics.length +
-        local.localArticles.length +
-        local.localDiseases.length +
-        local.localTerms.length;
+        local.localClinics.length + local.localArticles.length +
+        local.localDiseases.length + local.localTerms.length +
+        local.localNews.length + local.localHealthTips.length +
+        local.localPharmacies.length + local.localDiagnostics.length +
+        local.localMaternity.length + local.localBloodBanks.length +
+        local.localMedtech.length + local.localCosmetology.length;
 
       setResult({
         aiAnalysis,
@@ -225,14 +313,14 @@ const SmartSearchPage = () => {
         diagnosticsServices: aiData?.diagnosticsServices || [],
         clinicServices: aiData?.clinicServices || [],
         totalResults,
-        localClinics: local.localClinics,
-        localArticles: local.localArticles,
-        localDiseases: local.localDiseases,
-        localTerms: local.localTerms,
+        ...local,
       });
     } catch (err: any) {
       // Even if AI fails, show local results
       const local = searchLocal(q);
+      const totalLocal = local.localClinics.length + local.localArticles.length + local.localDiseases.length + local.localTerms.length +
+        local.localNews.length + local.localHealthTips.length + local.localPharmacies.length + local.localDiagnostics.length +
+        local.localMaternity.length + local.localBloodBanks.length + local.localMedtech.length + local.localCosmetology.length;
       setResult({
         aiAnalysis: {
           searchType: "clinic", keywords: [q], matchedSpecialties: [], matchedServices: [],
@@ -240,7 +328,7 @@ const SmartSearchPage = () => {
           searchSuggestions: [], aiSummary: `"${q}" bo'yicha qidiruv natijalari`,
         },
         clinics: [], doctors: [], diagnosticsServices: [], clinicServices: [],
-        totalResults: local.localClinics.length + local.localArticles.length + local.localDiseases.length + local.localTerms.length,
+        totalResults: totalLocal,
         ...local,
       });
     } finally {
@@ -271,6 +359,10 @@ const SmartSearchPage = () => {
   // Computed counts
   const allClinicsCount = (result?.clinics?.length || 0) + (result?.localClinics?.length || 0);
   const allServicesCount = (result?.diagnosticsServices?.length || 0) + (result?.clinicServices?.length || 0);
+  const allExtraCount = (result?.localNews?.length || 0) + (result?.localHealthTips?.length || 0) +
+    (result?.localPharmacies?.length || 0) + (result?.localDiagnostics?.length || 0) +
+    (result?.localMaternity?.length || 0) + (result?.localBloodBanks?.length || 0) +
+    (result?.localMedtech?.length || 0) + (result?.localCosmetology?.length || 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -436,7 +528,7 @@ const SmartSearchPage = () => {
 
             {/* Tabbed Results */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full justify-start overflow-x-auto">
+              <TabsList className="w-full justify-start overflow-x-auto flex-wrap gap-1">
                 <TabsTrigger value="all" className="text-xs">
                   Barchasi ({result.totalResults})
                 </TabsTrigger>
@@ -458,6 +550,11 @@ const SmartSearchPage = () => {
                 <TabsTrigger value="services" className="text-xs">
                   <Pill className="w-3 h-3 mr-1" /> Xizmatlar ({allServicesCount})
                 </TabsTrigger>
+                {allExtraCount > 0 && (
+                  <TabsTrigger value="more" className="text-xs">
+                    <Sparkles className="w-3 h-3 mr-1" /> Boshqa ({allExtraCount})
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               {/* All results */}
@@ -576,6 +673,96 @@ const SmartSearchPage = () => {
                   </ResultSection>
                 )}
 
+                {/* News */}
+                {result.localNews?.length > 0 && (
+                  <ResultSection title="Yangiliklar" icon={<Newspaper className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localNews.slice(0, 4).map((n: any, i: number) => (
+                        <Link key={i} to={`/news/${n.id}`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground line-clamp-1">{n.title}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{n.summary?.slice(0, 80)}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Pharmacies */}
+                {result.localPharmacies?.length > 0 && (
+                  <ResultSection title="Dorixonalar" icon={<Pill className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localPharmacies.slice(0, 4).map((p: any) => (
+                        <Link key={p.id} to={`/pharmacies`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{p.name}</p>
+                            <p className="text-xs text-muted-foreground">{p.region} · {p.address}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Diagnostics */}
+                {result.localDiagnostics?.length > 0 && (
+                  <ResultSection title="Diagnostika markazlari" icon={<Activity className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localDiagnostics.slice(0, 4).map((d: any) => (
+                        <Link key={d.id} to={`/diagnostics`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{d.name}</p>
+                            <p className="text-xs text-muted-foreground">{d.region} · {d.type}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Maternity */}
+                {result.localMaternity?.length > 0 && (
+                  <ResultSection title="Tug'ruqxonalar" icon={<Baby className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localMaternity.slice(0, 4).map((m: any) => (
+                        <Link key={m.id} to={`/maternity`}
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{m.name}</p>
+                            <p className="text-xs text-muted-foreground">{m.region} · {m.type}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
+                {/* Health Tips */}
+                {result.localHealthTips?.length > 0 && (
+                  <ResultSection title="Sog'liq maslahatlar" icon={<Lightbulb className="w-4 h-4 text-primary" />}>
+                    <div className="grid gap-2">
+                      {result.localHealthTips.slice(0, 4).map((t: any, i: number) => (
+                        <Link key={i} to="/health"
+                          className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{t.title}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{t.category} · {t.text?.slice(0, 60)}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
+                  </ResultSection>
+                )}
+
                 {result.totalResults === 0 && (
                   <div className="text-center py-12">
                     <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
@@ -666,6 +853,59 @@ const SmartSearchPage = () => {
                   </div>
                 ))}
                 {allServicesCount === 0 && <EmptyState />}
+              </TabsContent>
+
+              {/* More tab */}
+              <TabsContent value="more" className="space-y-4 mt-4">
+                {result.localNews?.map((n: any, i: number) => (
+                  <Link key={`news-${i}`} to={`/news/${n.id}`} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground line-clamp-1">📰 {n.title}</p><p className="text-xs text-muted-foreground line-clamp-1">{n.summary?.slice(0, 80)}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  </Link>
+                ))}
+                {result.localHealthTips?.map((t: any, i: number) => (
+                  <Link key={`tip-${i}`} to="/health" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div className="flex-1 min-w-0"><p className="text-sm font-medium text-foreground">💡 {t.title}</p><p className="text-xs text-muted-foreground line-clamp-1">{t.category} · {t.text?.slice(0, 60)}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  </Link>
+                ))}
+                {result.localPharmacies?.map((p: any) => (
+                  <Link key={`ph-${p.id}`} to="/pharmacies" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">💊 {p.name}</p><p className="text-xs text-muted-foreground">{p.region} · {p.address}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localDiagnostics?.map((d: any) => (
+                  <Link key={`diag-${d.id}`} to="/diagnostics" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">🔬 {d.name}</p><p className="text-xs text-muted-foreground">{d.region} · {d.type}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localMaternity?.map((m: any) => (
+                  <Link key={`mat-${m.id}`} to="/maternity" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">👶 {m.name}</p><p className="text-xs text-muted-foreground">{m.region}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localBloodBanks?.map((b: any) => (
+                  <Link key={`bb-${b.id}`} to="/blood-banks" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">🩸 {b.name}</p><p className="text-xs text-muted-foreground">{b.region} · {b.address}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localMedtech?.map((m: any) => (
+                  <Link key={`mt-${m.id}`} to={`/medtech/${m.id}`} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">🏥 {m.name}</p><p className="text-xs text-muted-foreground">{m.category} · {m.manufacturer}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {result.localCosmetology?.map((c: any, i: number) => (
+                  <Link key={`cos-${i}`} to="/cosmetology" className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
+                    <div><p className="text-sm font-medium text-foreground">✨ {c.title}</p><p className="text-xs text-muted-foreground line-clamp-1">{c.description?.slice(0, 80)}</p></div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+                {allExtraCount === 0 && <EmptyState />}
               </TabsContent>
             </Tabs>
 
