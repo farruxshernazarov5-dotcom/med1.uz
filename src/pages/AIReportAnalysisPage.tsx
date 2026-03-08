@@ -1,0 +1,282 @@
+import { useState } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Breadcrumb from "@/components/Breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+interface Indicator {
+  name: string;
+  value: string;
+  normalRange: string;
+  status: "normal" | "high" | "low" | "critical";
+  interpretation: string;
+}
+
+interface ReportAnalysis {
+  indicators: Indicator[];
+  summary: string;
+  concerns: string[];
+  recommendations: string[];
+  urgentAttention: boolean;
+  suggestedSpecialist: string;
+}
+
+const REPORT_TYPES = [
+  "Umumiy qon tahlili",
+  "Bioximik qon tahlili",
+  "Siydik tahlili",
+  "Gormonlar tahlili",
+  "Lipid profili",
+  "Jigar funktsiyasi",
+  "Buyrak funktsiyasi",
+  "Qand (glyukoza)",
+  "Tireoid gormonlari",
+  "Boshqa",
+];
+
+const statusConfig = {
+  normal: { icon: CheckCircle2, label: "Normal", color: "text-green-600", bg: "bg-green-50 dark:bg-green-950/30" },
+  high: { icon: ArrowUp, label: "Yuqori", color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/30" },
+  low: { icon: ArrowDown, label: "Past", color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
+  critical: { icon: AlertTriangle, label: "Xavfli", color: "text-red-600", bg: "bg-red-50 dark:bg-red-950/30" },
+};
+
+const AIReportAnalysisPage = () => {
+  const [step, setStep] = useState<"input" | "results">("input");
+  const [isLoading, setIsLoading] = useState(false);
+  const [reportText, setReportText] = useState("");
+  const [reportType, setReportType] = useState("");
+  const [patientAge, setPatientAge] = useState("");
+  const [patientGender, setPatientGender] = useState("");
+  const [analysis, setAnalysis] = useState<ReportAnalysis | null>(null);
+
+  const handleAnalyze = async () => {
+    if (!reportText.trim()) return;
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-report-analysis", {
+        body: { reportText, reportType, patientAge, patientGender },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setAnalysis(data);
+      setStep("results");
+    } catch (err: any) {
+      toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setStep("input");
+    setAnalysis(null);
+    setReportText("");
+    setReportType("");
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <Breadcrumb items={[
+        { label: "Bosh sahifa", href: "/" },
+        { label: "AI Xizmatlar", href: "/ai-services" },
+        { label: "Analiz Tahlili" },
+      ]} />
+
+      <section className="relative py-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
+        <div className="container mx-auto px-4 relative text-center max-w-3xl">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
+            <FileText className="w-4 h-4" />
+            AI Report Analysis
+          </div>
+          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-3">
+            Laboratoriya natijalarini <span className="text-primary">AI tahlili</span>
+          </h1>
+          <p className="text-muted-foreground text-sm">Analiz natijalaringizni kiriting — AI tizimi ko'rsatkichlarni tahlil qilib, tushuntirish beradi</p>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-8 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              <strong>Ogohlantirish:</strong> AI tahlili tibbiy tashxis emas. Natijalarni shifokor bilan muhokama qiling.
+            </p>
+          </div>
+
+          {step === "input" && (
+            <div className="space-y-6">
+              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-primary" />
+                  Analiz turini tanlang
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {REPORT_TYPES.map((t) => (
+                    <Badge key={t} variant={reportType === t ? "default" : "outline"}
+                      className="cursor-pointer" onClick={() => setReportType(t)}>
+                      {reportType === t ? "✓ " : ""}{t}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                <h3 className="font-semibold text-foreground">Bemor ma'lumotlari (ixtiyoriy)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Yosh</label>
+                    <Input type="number" placeholder="25" value={patientAge} onChange={(e) => setPatientAge(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Jins</label>
+                    <div className="flex gap-2">
+                      {[{ v: "male", l: "Erkak" }, { v: "female", l: "Ayol" }].map((g) => (
+                        <Button key={g.v} variant={patientGender === g.v ? "default" : "outline"} size="sm" className="flex-1" onClick={() => setPatientGender(g.v)}>
+                          {g.l}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-xl p-5 space-y-3">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary" />
+                  Analiz natijalarini kiriting
+                </h3>
+                <p className="text-xs text-muted-foreground">Har bir ko'rsatkichni nomi va qiymati bilan yozing. Masalan: "Gemoglobin - 140 g/l, Leykotsitlar - 5.2 x10^9/l"</p>
+                <Textarea
+                  placeholder="Analiz natijalarini shu yerga ko'chiring yoki yozing..."
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                  rows={8}
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <Button onClick={handleAnalyze} disabled={!reportText.trim() || isLoading}
+                className="w-full bg-hero-gradient text-primary-foreground h-12 text-base font-semibold" size="lg">
+                {isLoading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Tahlil qilinmoqda...</> : <><FileText className="w-5 h-5 mr-2" /> AI Tahlilni boshlash</>}
+              </Button>
+            </div>
+          )}
+
+          {step === "results" && analysis && (
+            <div className="space-y-6">
+              {analysis.urgentAttention && (
+                <div className="bg-red-50 dark:bg-red-950/40 border-2 border-red-300 dark:border-red-700 rounded-xl p-5">
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className="w-6 h-6 text-destructive" />
+                    <div>
+                      <h3 className="font-bold text-destructive">Diqqat! Ba'zi ko'rsatkichlar xavfli darajada</h3>
+                      <p className="text-sm text-red-700 dark:text-red-300">Tezda shifokorga murojaat qilishingiz tavsiya etiladi.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Summary */}
+              <div className="bg-card border border-border rounded-xl p-5">
+                <h3 className="font-semibold text-foreground mb-3">Umumiy xulosa</h3>
+                <p className="text-sm text-muted-foreground">{analysis.summary}</p>
+                <div className="mt-3 flex items-center gap-2">
+                  <Stethoscope className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">Tavsiya etilgan mutaxassis: {analysis.suggestedSpecialist}</span>
+                </div>
+              </div>
+
+              {/* Indicators */}
+              {analysis.indicators.length > 0 && (
+                <div className="bg-card border border-border rounded-xl p-5">
+                  <h3 className="font-semibold text-foreground mb-4">Ko'rsatkichlar tahlili</h3>
+                  <div className="space-y-3">
+                    {analysis.indicators.map((ind, i) => {
+                      const sc = statusConfig[ind.status] || statusConfig.normal;
+                      const Icon = sc.icon;
+                      return (
+                        <div key={i} className={`border rounded-lg p-3 ${sc.bg}`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-sm text-foreground">{ind.name}</span>
+                            <div className="flex items-center gap-1.5">
+                              <Icon className={`w-4 h-4 ${sc.color}`} />
+                              <Badge variant="outline" className={`text-xs ${sc.color}`}>{sc.label}</Badge>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span>Natija: <strong className="text-foreground">{ind.value}</strong></span>
+                            <span>Normal: {ind.normalRange}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{ind.interpretation}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Concerns */}
+              {analysis.concerns.length > 0 && (
+                <div className="bg-card border border-border rounded-xl p-5">
+                  <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-500" />
+                    Ehtimoliy muammolar
+                  </h3>
+                  <ul className="space-y-2">
+                    {analysis.concerns.map((c, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <Minus className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Recommendations */}
+              <div className="bg-card border border-border rounded-xl p-5">
+                <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-secondary" />
+                  Tavsiyalar
+                </h3>
+                <ul className="space-y-2">
+                  {analysis.recommendations.map((r, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="w-5 h-5 rounded-full bg-secondary/20 text-secondary flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">{i + 1}</span>
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <Button variant="outline" size="lg" onClick={handleReset} className="w-full">
+                <RefreshCcw className="w-4 h-4 mr-2" /> Qaytadan tahlil qilish
+              </Button>
+
+              <div className="bg-muted rounded-xl p-4 text-center">
+                <p className="text-xs text-muted-foreground">
+                  ⚠️ AI tahlili tibbiy tashxis emas. Natijalarni malakali shifokor bilan muhokama qiling.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default AIReportAnalysisPage;
