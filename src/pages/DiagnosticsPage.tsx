@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import SectionLayout from "@/components/SectionLayout";
 import { Activity, Search, MapPin, Phone, Star, Clock, ChevronDown, ChevronUp, UserPlus, MessageSquare, Filter, X, Stethoscope, Award, Users, DollarSign, Info, AlertTriangle, CheckCircle2, ExternalLink } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -394,6 +395,8 @@ const CenterCard = ({ center }: { center: DiagnosticCenter }) => {
 // ==================== ADD CENTER FORM ====================
 const AddCenterForm = () => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div className="mb-8">
       <Button onClick={() => setOpen(!open)} variant="outline" className="w-full md:w-auto">
@@ -428,7 +431,9 @@ const AddCenterForm = () => {
             </div>
             <div><Label>Qisqacha tavsif</Label><Textarea placeholder="Markaz haqida..." rows={3} /></div>
             <div><Label>Diagnostika turlari (vergul bilan ajrating)</Label><Textarea placeholder="MRT, KT, UZI, Laboratoriya..." rows={2} /></div>
-            <Button className="w-full md:w-auto"><Activity className="w-4 h-4 mr-2" /> Ro'yxatdan o'tkazish</Button>
+            <Button className="w-full md:w-auto" onClick={() => navigate("/diagnostics-register")}>
+              <Activity className="w-4 h-4 mr-2" /> Ro'yxatdan o'tkazish
+            </Button>
           </CardContent>
         </Card>
       )}
