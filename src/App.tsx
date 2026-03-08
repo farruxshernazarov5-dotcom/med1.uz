@@ -119,8 +119,9 @@ const App = () => (
             <Route path="/partnership" element={<PartnershipPage />} />
             <Route path="/report/:reportId" element={<ReportVerificationPage />} />
              <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
-             <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
-            <Route path="*" element={<NotFound />} />
+              <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
+              <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
+             <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
