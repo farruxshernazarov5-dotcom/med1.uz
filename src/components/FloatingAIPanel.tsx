@@ -21,7 +21,7 @@ const FloatingAIPanel = () => {
   const location = useLocation();
 
   // Hide on AI pages themselves
-  const isOnAIPage = ["/ai-services", "/symptom-checker", "/ai-doctor-chat", "/ai-report-analysis", "/ai-health-risk", "/ai-radiology", "/ai-health-assistant", "/ai-pregnancy", "/ai-baby-care"].some(
+  const isOnAIPage = ["/ai-services", "/symptom-checker", "/ai-doctor-chat", "/ai-report-analysis", "/ai-health-risk", "/ai-radiology", "/ai-health-assistant", "/ai-pregnancy", "/ai-baby-care", "/ai-cosmetology"].some(
     (p) => location.pathname.startsWith(p)
   );
 

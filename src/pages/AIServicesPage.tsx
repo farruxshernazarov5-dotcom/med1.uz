@@ -70,6 +70,14 @@ const aiServices = [
     color: "from-amber-500 to-amber-400",
     badge: "Yangi",
   },
+  {
+    icon: Palette,
+    title: "AI Kosmetologiya Assistenti",
+    description: "Teri tahlili, individual parvarish rejasi, kosmetologik muolajalar tavsiyasi va professional dermatologik maslahatlar",
+    href: "/ai-cosmetology",
+    color: "from-violet-500 to-violet-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (
