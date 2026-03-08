@@ -47,6 +47,7 @@ import CosmetologyRegistrationPage from "./pages/CosmetologyRegistrationPage";
 import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfilePage from "./pages/DoctorProfilePage";
 import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
+import SmartSearchPage from "./pages/SmartSearchPage";
 
 const queryClient = new QueryClient();
 
