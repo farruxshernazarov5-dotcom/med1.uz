@@ -54,19 +54,21 @@ function generateReportHTML(data: ReportData): string {
     overflow:hidden;
   }
 
-  /* Watermark - repeating logo pattern */
+   /* Watermark - center logo */
   .watermark-logo{
     position:fixed;
-    top:0;left:0;right:0;bottom:0;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
     pointer-events:none;
     z-index:0;
     user-select:none;
+    width:420px;
+    height:420px;
     background-image:url('/images/med1-logo-watermark.png');
-    background-repeat:repeat;
-    background-size:140px 140px;
-    opacity:0.06;
-    transform:rotate(-20deg) scale(1.3);
-    transform-origin:center center;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+    opacity:0.08;
   }
 
   .content{position:relative;z-index:1;}
