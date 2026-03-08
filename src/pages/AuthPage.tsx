@@ -446,7 +446,7 @@ const AuthPage = () => {
                   <>
                     <div>
                       <Label className="text-xs font-medium">Rol tanlang</Label>
-                      <div className="grid grid-cols-3 gap-2 mt-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                         {roles.map((r) => (
                           <button
                             key={r.value}
