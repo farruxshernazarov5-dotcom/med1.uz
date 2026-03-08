@@ -878,7 +878,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/citymed",
+    website: undefined,
     services: ["Gastrofibroskopiya", "UZI", "MSKT", "Rentgenografiya", "MRT", "Laboratoriya", "HIPEC", "Fizioterapiya"],
   },
   {
