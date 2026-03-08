@@ -14,7 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Building2, Phone, Mail, MapPin, Clock, Stethoscope,
   ChevronRight, ChevronLeft, Check, Shield, FileText, Hash,
-  Search, Globe, Loader2, Upload, AlertCircle,
+  Search, Globe, Loader2, Upload, AlertCircle, Camera,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { uzbekistanRegions, getDistrictsByRegion, type District } from "@/data/uzbekistanRegions";
@@ -60,6 +60,9 @@ const ClinicRegistrationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [innChecking, setInnChecking] = useState(false);
   const [innResult, setInnResult] = useState<any>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string>("");
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -82,6 +85,29 @@ const ClinicRegistrationPage = () => {
     services: "",
     workingHours: Object.fromEntries(DAYS.map(d => [d, d === "Yakshanba" ? "Dam olish" : "09:00 - 18:00"])),
   });
+
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Rasm 5 MB dan katta bo'lmasligi kerak", variant: "destructive" });
+      return;
+    }
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
+
+  const uploadLogo = async (clinicId: string): Promise<string | null> => {
+    if (!logoFile) return null;
+    setLogoUploading(true);
+    const ext = logoFile.name.split(".").pop();
+    const path = `${clinicId}/logo.${ext}`;
+    const { error } = await supabase.storage.from("clinic-photos").upload(path, logoFile, { upsert: true });
+    setLogoUploading(false);
+    if (error) { console.error("Logo upload error:", error); return null; }
+    const { data: urlData } = supabase.storage.from("clinic-photos").getPublicUrl(path);
+    return urlData.publicUrl;
+  };
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -170,7 +196,7 @@ const ClinicRegistrationPage = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("registered_clinics").insert({
+    const { data: clinicData, error } = await supabase.from("registered_clinics").insert({
       name: form.name.trim(),
       category: form.type,
       address: `${form.region}, ${form.city}, ${form.fullAddress}`,
@@ -188,10 +214,17 @@ const ClinicRegistrationPage = () => {
       owner_id: user.id,
       latitude: form.latitude ? parseFloat(form.latitude) : null,
       longitude: form.longitude ? parseFloat(form.longitude) : null,
-    } as any);
+    } as any).select("id").single();
     if (error) {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
+      // Upload logo if selected
+      if (logoFile && clinicData?.id) {
+        const logoUrl = await uploadLogo(clinicData.id);
+        if (logoUrl) {
+          await supabase.from("registered_clinics").update({ logo_url: logoUrl }).eq("id", clinicData.id);
+        }
+      }
       toast({ title: "✅ Klinika muvaffaqiyatli ro'yxatdan o'tkazildi!" });
       navigate("/dashboard");
     }
@@ -264,6 +297,29 @@ const ClinicRegistrationPage = () => {
                       ))}
                     </div>
                     <FieldError field="type" />
+                  </div>
+                  {/* Logo Upload */}
+                  <div>
+                    <Label className="flex items-center gap-2"><Camera className="w-4 h-4" /> Klinika logotipi</Label>
+                    <p className="text-xs text-muted-foreground mb-2">PNG, JPG, SVG, WEBP — 5 MB gacha</p>
+                    <div className="flex items-center gap-4">
+                      {logoPreview ? (
+                        <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-primary/30">
+                          <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                          <button onClick={() => { setLogoFile(null); setLogoPreview(""); }} className="absolute top-1 right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs">✕</button>
+                        </div>
+                      ) : (
+                        <label className="w-20 h-20 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/40 transition-colors">
+                          <Upload className="w-5 h-5 text-muted-foreground" />
+                          <span className="text-[10px] text-muted-foreground mt-1">Yuklash</span>
+                          <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="hidden" onChange={handleLogoSelect} />
+                        </label>
+                      )}
+                      <div className="text-xs text-muted-foreground">
+                        <p>Logotip klinika kartasida ko'rsatiladi</p>
+                        <p>Tavsiya: 200×200 px, shaffof fon</p>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <Label>Klinika tavsifi</Label>

@@ -73,13 +73,40 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(clinic.logo_url || "");
+  const [logoUploading, setLogoUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
 
   // Load photos
   useState(() => {
     supabase.from("clinic_photos").select("*").eq("clinic_id", clinic.id).order("sort_order")
       .then(({ data }) => setPhotos(data || []));
   });
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Logotip 5 MB dan katta bo'lmasligi kerak", variant: "destructive" });
+      return;
+    }
+    setLogoUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${clinic.id}/logo.${ext}`;
+    const { error } = await supabase.storage.from("clinic-photos").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Logotip yuklashda xatolik", description: error.message, variant: "destructive" });
+      setLogoUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("clinic-photos").getPublicUrl(path);
+    const newUrl = urlData.publicUrl;
+    await supabase.from("registered_clinics").update({ logo_url: newUrl }).eq("id", clinic.id);
+    setLogoUrl(newUrl);
+    setLogoUploading(false);
+    toast({ title: "✅ Logotip yuklandi!" });
+  };
 
   const updateField = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -165,6 +192,34 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
 
   return (
     <div className="space-y-8">
+      {/* Logo Upload */}
+      <section>
+        <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2">
+          <Camera className="w-5 h-5 text-primary" /> Klinika logotipi
+        </h3>
+        <div className="flex items-center gap-6">
+          <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-border bg-muted flex items-center justify-center">
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+            ) : (
+              <Building2 className="w-8 h-8 text-muted-foreground" />
+            )}
+          </div>
+          <div className="space-y-2">
+            <Button variant="outline" size="sm" onClick={() => logoRef.current?.click()} disabled={logoUploading}>
+              {logoUploading ? (
+                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full mr-2" />
+              ) : (
+                <Camera className="w-4 h-4 mr-2" />
+              )}
+              {logoUrl ? "Logotipni o'zgartirish" : "Logotip yuklash"}
+            </Button>
+            <p className="text-xs text-muted-foreground">PNG, JPG, SVG, WEBP — 5 MB gacha. Tavsiya: 200×200 px</p>
+          </div>
+          <input ref={logoRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" className="hidden" onChange={handleLogoUpload} />
+        </div>
+      </section>
+
       {/* Basic Info */}
       <section>
         <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2">
