@@ -924,7 +924,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/doctor-d",
+    website: undefined,
     services: ["Laboratoriya (300+ tahlil)", "Endoskopiya", "UZI", "Rentgen", "Genetik tekshiruv", "Allergoproba", "Uyga chaqirish xizmati"],
   },
   {
