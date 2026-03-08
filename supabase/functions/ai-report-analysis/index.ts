@@ -52,13 +52,18 @@ serve(async (req) => {
     ];
 
     if (imageBase64 && imageMimeType) {
-      // Vision request - send image for OCR
+      // Vision/document request - send file for OCR
+      const isPdf = imageMimeType === "application/pdf";
+      const instructionText = isPdf
+        ? `\nUshbu PDF hujjatda laboratoriya analiz natijalari bor. Hujjatdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`
+        : `\nUshbu rasmda laboratoriya analiz natijalari bor. Rasmdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`;
+      
       messages.push({
         role: "user",
         content: [
           {
             type: "text",
-            text: userMessage + `\nUshbu rasmda laboratoriya analiz natijalari bor. Rasmdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`,
+            text: userMessage + instructionText,
           },
           {
             type: "image_url",
