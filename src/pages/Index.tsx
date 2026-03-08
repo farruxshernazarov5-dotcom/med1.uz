@@ -14,6 +14,7 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import SectionTicker from "@/components/SectionTicker";
 import CosmetologyPromo from "@/components/CosmetologyPromo";
 import HealthDashboardWidget from "@/components/HealthDashboardWidget";
+import PartnerClinics from "@/components/PartnerClinics";
 
 const Index = () => {
   return (
@@ -50,6 +51,9 @@ const Index = () => {
 
       {/* Cosmetology Promo Section */}
       <CosmetologyPromo />
+
+      {/* Partner Clinics */}
+      <PartnerClinics />
 
       {/* All Sections Preview */}
       <HomeSectionsPreview />
