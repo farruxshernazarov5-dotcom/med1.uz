@@ -632,52 +632,82 @@ export type Database = {
       }
       doctors: {
         Row: {
+          address: string | null
           avg_rating: number | null
           bio: string | null
           certificates: string[] | null
-          clinic_id: string
+          city: string | null
+          clinic_id: string | null
           consultation_price: number | null
           created_at: string
+          education: string | null
+          email: string | null
           experience_years: number | null
           full_name: string
           id: string
           is_active: boolean | null
+          languages: string[] | null
+          online_consultation: boolean | null
+          phone: string | null
           photo_url: string | null
+          region: string | null
           review_count: number | null
           schedule: Json | null
+          social_links: Json | null
           specialty: string
+          user_id: string | null
         }
         Insert: {
+          address?: string | null
           avg_rating?: number | null
           bio?: string | null
           certificates?: string[] | null
-          clinic_id: string
+          city?: string | null
+          clinic_id?: string | null
           consultation_price?: number | null
           created_at?: string
+          education?: string | null
+          email?: string | null
           experience_years?: number | null
           full_name: string
           id?: string
           is_active?: boolean | null
+          languages?: string[] | null
+          online_consultation?: boolean | null
+          phone?: string | null
           photo_url?: string | null
+          region?: string | null
           review_count?: number | null
           schedule?: Json | null
+          social_links?: Json | null
           specialty: string
+          user_id?: string | null
         }
         Update: {
+          address?: string | null
           avg_rating?: number | null
           bio?: string | null
           certificates?: string[] | null
-          clinic_id?: string
+          city?: string | null
+          clinic_id?: string | null
           consultation_price?: number | null
           created_at?: string
+          education?: string | null
+          email?: string | null
           experience_years?: number | null
           full_name?: string
           id?: string
           is_active?: boolean | null
+          languages?: string[] | null
+          online_consultation?: boolean | null
+          phone?: string | null
           photo_url?: string | null
+          region?: string | null
           review_count?: number | null
           schedule?: Json | null
+          social_links?: Json | null
           specialty?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1775,6 +1805,7 @@ export type Database = {
         | "diagnostics"
         | "maternity"
         | "cosmetology"
+        | "doctor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1910,6 +1941,7 @@ export const Constants = {
         "diagnostics",
         "maternity",
         "cosmetology",
+        "doctor",
       ],
     },
   },

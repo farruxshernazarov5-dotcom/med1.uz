@@ -44,6 +44,9 @@ import AIHealthRiskPage from "./pages/AIHealthRiskPage";
 import AIServicesPage from "./pages/AIServicesPage";
 import MaternityRegistrationPage from "./pages/MaternityRegistrationPage";
 import CosmetologyRegistrationPage from "./pages/CosmetologyRegistrationPage";
+import DoctorsPage from "./pages/DoctorsPage";
+import DoctorProfilePage from "./pages/DoctorProfilePage";
+import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +86,9 @@ const App = () => (
            <Route path="/diagnostics-register" element={<DiagnosticsRegistrationPage />} />
            <Route path="/maternity-register" element={<MaternityRegistrationPage />} />
            <Route path="/cosmetology-register" element={<CosmetologyRegistrationPage />} />
+           <Route path="/doctor-register" element={<DoctorRegistrationPage />} />
+           <Route path="/doctors" element={<DoctorsPage />} />
+           <Route path="/doctors/:doctorId" element={<DoctorProfilePage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/about" element={<AboutPage />} />

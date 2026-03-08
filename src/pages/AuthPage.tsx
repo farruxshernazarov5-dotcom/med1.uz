@@ -9,11 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
+  { value: "doctor", label: "Shifokor", icon: Stethoscope, desc: "Professional profil yaratish" },
   { value: "clinic", label: "Klinika", icon: Building2, desc: "Klinikani boshqarish" },
   { value: "diagnostics", label: "Diagnostika", icon: Microscope, desc: "Diagnostika markazi" },
   { value: "vendor", label: "Medtexnika", icon: Package, desc: "Medtexnika sotuvchisi" },
@@ -23,6 +24,7 @@ const roles = [
 
 const ROLE_REDIRECT: Record<string, string> = {
   patient: "/dashboard",
+  doctor: "/doctor-register",
   clinic: "/clinic-register",
   diagnostics: "/diagnostics-register",
   vendor: "/vendor-register",
