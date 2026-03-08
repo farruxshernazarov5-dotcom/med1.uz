@@ -5,46 +5,76 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI sog'liq xavfi prognoz tizimisan. Foydalanuvchining sog'liq ma'lumotlari asosida kelajakdagi kasallik xavflarini baholaysan.
+const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI Predictive Diagnostics tizimisan. Foydalanuvchining barcha sog'liq ma'lumotlarini chuqur tahlil qilib, kasallik xavfi prognozini berasan.
 
 MUHIM QOIDALAR:
-1. Foydalanuvchi ma'lumotlari asosida xavf prognozini ber
-2. TASHXIS QOYMA - faqat xavf baholash va tavsiya ber
-3. O'zbek tilida javob ber
-4. Profilaktika choralari tavsiya qil
-5. Har bir kasallik xavfi uchun ICD-10 kodini ko'rsat
-6. WHO xavf baholash mezonlariga amal qil
-7. Ilmiy dalillarga asoslanib prognoz ber
+1. TASHXIS QOYMA — faqat xavf baholash va profilaktika tavsiya qil
+2. O'zbek tilida javob ber
+3. Ilmiy dalillarga asoslan (WHO, AHA, NICE guidelines)
+4. Har bir kasallik xavfiga ICD-10 kodi qo'sh
+5. Risk score 0-100 oralig'ida bo'lsin
+6. Kasallik kategoriyalari: yurak-qon tomir, metabolik, onkologik, nevrologik, nafas yo'llari, hazm tizimi
+7. Har bir xavf omili uchun ilmiy asos ko'rsat
+8. Profilaktik skrining tavsiyalarini batafsil ber
+9. Foydalanuvchining yoshi, jinsi, BMI, oilaviy tarix, hayot tarzi — barchasini hisobga ol
+10. Sog'liq indeksini hisoblashda 5 ta parametrni baholash: yurak, metabolik, nevrologik, jismoniy, umumiy
 
 JAVOBNI FAQAT quyidagi JSON formatda ber:
 {
   "risks": [
     {
       "disease": "Kasallik nomi",
+      "category": "cardiovascular|metabolic|oncologic|neurologic|respiratory|digestive",
       "riskPercent": 25,
       "riskLevel": "high|medium|low",
+      "riskScore": 35,
       "factors": ["Xavf omili 1", "Omil 2"],
       "prevention": ["Oldini olish chorasi 1"],
-      "icd10Code": "E11",
-      "clinicalBasis": "Ilmiy asos"
+      "icd10Code": "I25",
+      "clinicalBasis": "Ilmiy asos va WHO/AHA mezonlariga ko'ra...",
+      "suggestedSpecialist": "Kardiolog",
+      "timeframe": "5 yil ichida",
+      "modifiable": true
     }
   ],
   "overallHealth": "good|moderate|concerning",
-  "bmi": { "value": 24.5, "category": "Normal" },
+  "overallRiskScore": 42,
+  "bmi": { "value": 24.5, "category": "Normal", "interpretation": "BMI normal chegarada" },
+  "healthIndex": {
+    "cardiovascular": 75,
+    "metabolic": 80,
+    "neurologic": 90,
+    "physical": 65,
+    "overall": 77
+  },
   "recommendations": ["Umumiy tavsiya 1", "Tavsiya 2"],
   "lifestyleScore": 72,
+  "lifestyleBreakdown": {
+    "nutrition": 60,
+    "exercise": 70,
+    "sleep": 80,
+    "stress": 50,
+    "habits": 75
+  },
   "suggestedCheckups": ["Tekshiruv 1", "Tekshiruv 2"],
-  "riskFactorAnalysis": "Umumiy xavf omillari tahlili",
+  "riskFactorAnalysis": "Umumiy xavf omillari tahlili matni",
   "preventiveScreening": [
-    {"test": "Tekshiruv nomi", "frequency": "Yiliga 1 marta", "reason": "Sababi"}
-  ]
+    {"test": "Tekshiruv nomi", "frequency": "Yiliga 1 marta", "reason": "Sababi", "priority": "high|medium|low"}
+  ],
+  "dietaryAdvice": ["Ovqatlanish tavsiyasi 1"],
+  "exerciseAdvice": ["Jismoniy mashq tavsiyasi 1"],
+  "warningSignsToWatch": ["Shoshilinch holat belgisi 1"]
 }`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise, existingConditions, familyHistory, diet } = await req.json();
+    const body = await req.json();
+    const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
+      existingConditions, familyHistory, diet, sleepHours, stressLevel,
+      medications, labResults, symptoms } = body;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -57,10 +87,15 @@ serve(async (req) => {
     userMessage += `- Chekish: ${smoking || "noma'lum"}\n`;
     userMessage += `- Alkogol: ${alcohol || "noma'lum"}\n`;
     userMessage += `- Jismoniy faollik: ${exercise || "noma'lum"}\n`;
+    userMessage += `- Uyqu: ${sleepHours ? sleepHours + " soat" : "noma'lum"}\n`;
+    userMessage += `- Stress darajasi: ${stressLevel || "noma'lum"}\n`;
     userMessage += `- Mavjud kasalliklar: ${existingConditions || "yo'q"}\n`;
     userMessage += `- Oilaviy tarix: ${familyHistory || "noma'lum"}\n`;
     userMessage += `- Ovqatlanish: ${diet || "noma'lum"}\n`;
-    userMessage += `\nIltimos, yuqoridagi ma'lumotlar asosida sog'liq xavfi prognozini JSON formatda ber.`;
+    userMessage += `- Qabul qilayotgan dorilar: ${medications || "yo'q"}\n`;
+    userMessage += `- Oxirgi analiz natijalari: ${labResults || "noma'lum"}\n`;
+    userMessage += `- Hozirgi simptomlar: ${symptoms || "yo'q"}\n`;
+    userMessage += `\nIltimos, yuqoridagi barcha ma'lumotlar asosida batafsil kasallik xavfi prognozini JSON formatda ber. Kamida 4-6 ta kasallik xavfini baholash kerak.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -79,7 +114,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi." }), {
+        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Keyinroq urinib ko'ring." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -107,10 +142,18 @@ serve(async (req) => {
       result = {
         risks: [],
         overallHealth: "moderate",
-        bmi: { value: 0, category: "Noma'lum" },
+        overallRiskScore: 50,
+        bmi: { value: 0, category: "Noma'lum", interpretation: "" },
+        healthIndex: { cardiovascular: 50, metabolic: 50, neurologic: 50, physical: 50, overall: 50 },
         recommendations: ["Shifokorga murojaat qiling"],
         lifestyleScore: 50,
+        lifestyleBreakdown: { nutrition: 50, exercise: 50, sleep: 50, stress: 50, habits: 50 },
         suggestedCheckups: [],
+        riskFactorAnalysis: "",
+        preventiveScreening: [],
+        dietaryAdvice: [],
+        exerciseAdvice: [],
+        warningSignsToWatch: [],
       };
     }
 
