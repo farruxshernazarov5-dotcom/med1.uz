@@ -5,7 +5,8 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import {
   Map, BookOpen, Heart, Stethoscope, FileText, Building2,
   Wrench, Newspaper, Activity, Pill, Droplets, Baby, Info,
-  Briefcase, BookMarked, Eye, ArrowRight
+  Briefcase, BookMarked, Eye, ArrowRight, Brain, Bot, Shield,
+  HeartPulse, UserCheck, Users, Sparkles, Handshake, LogIn
 } from "lucide-react";
 
 const sitemapSections = [
@@ -18,22 +19,24 @@ const sitemapSections = [
       { label: "Biz haqimizda", href: "/about" },
       { label: "Xizmatlarimiz", href: "/services" },
       { label: "Foydalanuvchi qo'llanmasi", href: "/user-guide" },
+      { label: "Hamkorlik shartnomasi", href: "/partnership" },
       { label: "Sayt xaritasi", href: "/sitemap" },
     ],
   },
   {
     title: "Tibbiyot ensiklopediyasi",
     icon: BookOpen,
-    gradient: "from-primary to-medical-blue",
+    gradient: "from-primary to-tech-electric",
     links: [
       { label: "Tibbiyot", href: "/medicine" },
       { label: "Salomatlik", href: "/health" },
+      { label: "Kasalliklar katalogi", href: "/diseases" },
     ],
   },
   {
-    title: "Kasalliklar",
+    title: "Kasalliklar yo'nalishlari",
     icon: Stethoscope,
-    gradient: "from-medical-red to-medical-orange",
+    gradient: "from-tech-electric to-tech-purple",
     links: [
       { label: "Barcha kasalliklar", href: "/diseases" },
       { label: "Stomatologiya", href: "/diseases?cat=stomatologiya" },
@@ -41,12 +44,15 @@ const sitemapSections = [
       { label: "Nevrologiya", href: "/diseases?cat=nevrologiya" },
       { label: "Gastroenterologiya", href: "/diseases?cat=gastroenterologiya" },
       { label: "Endokrinologiya", href: "/diseases?cat=endokrinologiya" },
+      { label: "Dermatologiya", href: "/diseases?cat=dermatologiya" },
+      { label: "Urologiya", href: "/diseases?cat=urologiya" },
+      { label: "Ginekologiya", href: "/diseases?cat=ginekologiya" },
     ],
   },
   {
     title: "Maqolalar",
     icon: FileText,
-    gradient: "from-medical-purple to-primary",
+    gradient: "from-tech-purple to-primary",
     links: [
       { label: "Barcha maqolalar", href: "/articles" },
       { label: "Allergiya", href: "/articles/allergiya" },
@@ -54,27 +60,72 @@ const sitemapSections = [
       { label: "Nevrologiya", href: "/articles/nevrologiya" },
       { label: "Kardiologiya", href: "/articles/kardiologiya" },
       { label: "Oftalmologiya", href: "/articles/oftalmologiya" },
+      { label: "Onkologiya", href: "/articles/onkologiya" },
     ],
   },
   {
     title: "Tibbiy muassasalar",
     icon: Building2,
-    gradient: "from-primary to-secondary",
+    gradient: "from-primary to-tech-electric",
     links: [
       { label: "Klinikalar", href: "/clinics" },
       { label: "Diagnostika markazlari", href: "/diagnostics" },
       { label: "Dorixonalar", href: "/pharmacies" },
       { label: "Qon banklari", href: "/blood-banks" },
       { label: "Tug'ruqxonalar", href: "/maternity" },
+      { label: "Kosmetologiya markazlari", href: "/cosmetology" },
+      { label: "Shifokorlar", href: "/doctors" },
+    ],
+  },
+  {
+    title: "AI Sun'iy Intellekt xizmatlari",
+    icon: Brain,
+    gradient: "from-tech-purple to-tech-electric",
+    links: [
+      { label: "Barcha AI xizmatlar", href: "/ai-services" },
+      { label: "AI Erta Diagnostika", href: "/symptom-checker" },
+      { label: "AI Shifokor Chat", href: "/ai-doctor-chat" },
+      { label: "Analiz natijalarini tahlil", href: "/ai-report-analysis" },
+      { label: "Kasallik prognozi", href: "/ai-health-risk" },
+      { label: "AI Radiologiya (MRT/KT)", href: "/ai-radiology" },
+      { label: "AI Sog'liq assistenti", href: "/ai-health-assistant" },
+      { label: "AI Aqlli qidiruv", href: "/smart-search" },
     ],
   },
   {
     title: "Yangiliklar va texnologiya",
     icon: Newspaper,
-    gradient: "from-medical-orange to-medical-red",
+    gradient: "from-tech-electric to-primary",
     links: [
       { label: "Yangiliklar", href: "/news" },
       { label: "Med texnika", href: "/med-tech" },
+    ],
+  },
+  {
+    title: "Ro'yxatdan o'tish",
+    icon: LogIn,
+    gradient: "from-tech-success to-primary",
+    links: [
+      { label: "Foydalanuvchi kirish", href: "/auth" },
+      { label: "Klinika ro'yxatdan o'tish", href: "/clinic-register" },
+      { label: "Diagnostika markaz ro'yxati", href: "/diagnostics-register" },
+      { label: "Tug'ruqxona ro'yxati", href: "/maternity-register" },
+      { label: "Kosmetologiya ro'yxati", href: "/cosmetology-register" },
+      { label: "Shifokor ro'yxati", href: "/doctor-register" },
+      { label: "Medtexnika sotuvchi ro'yxati", href: "/vendor-register" },
+    ],
+  },
+  {
+    title: "Hamkorlik",
+    icon: Handshake,
+    gradient: "from-tech-purple to-tech-success",
+    links: [
+      { label: "Hamkorlik shartnomasi", href: "/partnership" },
+      { label: "Klinikalar uchun", href: "/partnership#clinics" },
+      { label: "Diagnostika uchun", href: "/partnership#diagnostics" },
+      { label: "Dorixonalar uchun", href: "/partnership#pharmacies" },
+      { label: "Shifokorlar uchun", href: "/partnership#doctors" },
+      { label: "Medtexnika uchun", href: "/partnership#medtech" },
     ],
   },
 ];
@@ -121,7 +172,7 @@ const SitemapPage = () => {
               </div>
               <ul className="space-y-1.5">
                 {section.links.map((link) => (
-                  <li key={link.href}>
+                  <li key={link.href + link.label}>
                     <Link
                       to={link.href}
                       className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-accent rounded-lg transition-all group"
