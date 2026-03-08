@@ -265,12 +265,14 @@ function generateReportHTML(data: ReportData): string {
   .footer-left{font-size:11px;color:#94a3b8;line-height:1.8;}
   .footer-left a{color:#0ea5e9;text-decoration:none;font-weight:600;}
   .footer-qr{
-    width:64px;height:64px;
-    background:#e2e8f0;
-    border-radius:8px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:8px;color:#94a3b8;text-align:center;
+    text-align:center;
   }
+  .footer-qr img{
+    width:80px;height:80px;
+    border-radius:8px;
+    border:2px solid #e2e8f0;
+  }
+  .footer-qr p{font-size:9px;color:#94a3b8;margin-top:4px;}
 
   /* Print button */
   .no-print{text-align:center;padding:24px;background:#f8fafc;}
