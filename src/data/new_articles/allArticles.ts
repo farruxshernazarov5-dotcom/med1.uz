@@ -37,6 +37,10 @@ import { articlesPart35 } from "./part35";
 import { articlesPart36 } from "./part36";
 import { articlesPart37 } from "./part37";
 import { articlesPart38 } from "./part38";
+import { articlesPart39 } from "./part39";
+import { articlesPart40 } from "./part40";
+import { articlesPart41 } from "./part41";
+import { articlesPart42 } from "./part42";
 
 export const newArticles: Article[] = [
   ...articlesPart1,
@@ -77,4 +81,8 @@ export const newArticles: Article[] = [
   ...articlesPart36,
   ...articlesPart37,
   ...articlesPart38,
+  ...articlesPart39,
+  ...articlesPart40,
+  ...articlesPart41,
+  ...articlesPart42,
 ];

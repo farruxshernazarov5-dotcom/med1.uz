@@ -175,6 +175,18 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
           <span>{clinic.workingHours}</span>
         </div>
 
+        {/* Direction Tags */}
+        {clinic.directionTags && clinic.directionTags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {clinic.directionTags.slice(0, 3).map((t) => (
+              <Badge key={t} variant="default" className="text-[10px]">{t}</Badge>
+            ))}
+            {clinic.directionTags.length > 3 && (
+              <Badge variant="default" className="text-[10px]">+{clinic.directionTags.length - 3}</Badge>
+            )}
+          </div>
+        )}
+
         {/* Specialties */}
         <div className="flex flex-wrap gap-1">
           {clinic.specialties.slice(0, 4).map((s) => (
@@ -374,9 +386,17 @@ const ClinicsPage = () => {
   const [search, setSearch] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
+  const [selectedDirection, setSelectedDirection] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const allClinics = useMemo(() => [...clinics, ...externalClinics], []);
+
+  // Collect unique direction tags
+  const directionTags = useMemo(() => {
+    const tags = new Set<string>();
+    allClinics.forEach(c => c.directionTags?.forEach(t => tags.add(t)));
+    return Array.from(tags).sort((a, b) => a.localeCompare(b, "uz"));
+  }, [allClinics]);
 
   const filteredClinics = useMemo(() => {
     return allClinics.filter((c) => {
@@ -394,7 +414,8 @@ const ClinicsPage = () => {
           c.address.toLowerCase().includes(q) ||
           c.specialties.some((s) => s.toLowerCase().includes(q)) ||
           c.city.toLowerCase().includes(q) ||
-          c.district.toLowerCase().includes(q);
+          c.district.toLowerCase().includes(q) ||
+          (c.directionTags || []).some(t => t.toLowerCase().includes(q));
         if (!match) return false;
       }
 
@@ -404,17 +425,21 @@ const ClinicsPage = () => {
       // Specialty
       if (selectedSpecialty && !c.specialties.includes(selectedSpecialty)) return false;
 
+      // Direction tag
+      if (selectedDirection && !(c.directionTags || []).includes(selectedDirection)) return false;
+
       return true;
     });
-  }, [search, selectedRegion, selectedSpecialty, activeTab]);
+  }, [search, selectedRegion, selectedSpecialty, selectedDirection, activeTab]);
 
   const clearFilters = () => {
     setSearch("");
     setSelectedRegion("");
     setSelectedSpecialty("");
+    setSelectedDirection("");
   };
 
-  const hasFilters = search || selectedRegion || selectedSpecialty;
+  const hasFilters = search || selectedRegion || selectedSpecialty || selectedDirection;
 
   return (
     <SectionLayout
@@ -481,7 +506,7 @@ const ClinicsPage = () => {
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-muted/30 rounded-2xl border border-border animate-fade-in">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-muted/30 rounded-2xl border border-border animate-fade-in">
           <div>
             <Label className="text-sm font-semibold mb-2 block">Viloyat bo'yicha</Label>
             <select
@@ -505,6 +530,19 @@ const ClinicsPage = () => {
               <option value="">Barcha yo'nalishlar</option>
               {clinicSpecialties.map((s) => (
                 <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label className="text-sm font-semibold mb-2 block">Tibbiy yo'nalish ({directionTags.length} ta)</Label>
+            <select
+              value={selectedDirection}
+              onChange={(e) => setSelectedDirection(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Barcha yo'nalishlar</option>
+              {directionTags.map((t) => (
+                <option key={t} value={t}>{t}</option>
               ))}
             </select>
           </div>

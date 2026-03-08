@@ -43,6 +43,7 @@ export interface Clinic {
   services?: string[];
   logoUrl?: string;
   socialLinks?: Record<string, string | null> | null;
+  directionTags?: string[];
 }
 
 // ==================== O'ZBEKISTON VILOYATLARI ====================
