@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { FileText, Plus, Trash2, Upload, Calendar, Stethoscope, FlaskConical, ClipboardList } from "lucide-react";
+import { FileText, Plus, Trash2, Upload, Calendar, Stethoscope, FlaskConical, ClipboardList, Activity } from "lucide-react";
+import HealthHistoryCharts from "./HealthHistoryCharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
