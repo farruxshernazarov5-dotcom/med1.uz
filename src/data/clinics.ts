@@ -834,7 +834,7 @@ export const clinics: Clinic[] = [
       { id: "r103-7", author: "Atabek J.", rating: 4, date: "2025-01-30", text: "Nukusda tez yordam yaxshi ishlaydi." },
     ],
   },
-  // ==================== TOSHKENT YANGI KLINIKALAR (med24.uz) ====================
+  // ==================== TOSHKENT YANGI KLINIKALAR ====================
   {
     id: "b2b-beautyclinic",
     name: "B2B Beautyclinic",
