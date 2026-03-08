@@ -285,6 +285,73 @@ const DoctorProfilePage = () => {
                 )}
               </div>
 
+              {/* Social Links */}
+              {hasSocials && (
+                <div>
+                  <h2 className="font-heading font-bold text-foreground mb-3 flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-primary" /> Ijtimoiy tarmoqlar
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {socialLinks.telegram && (
+                      <a href={socialLinks.telegram.startsWith("http") ? socialLinks.telegram : `https://t.me/${socialLinks.telegram.replace("@", "")}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[hsl(200,80%,50%)]/10 border border-[hsl(200,80%,50%)]/20 hover:border-[hsl(200,80%,50%)]/40 transition-colors">
+                        <Send className="w-4 h-4 text-[hsl(200,80%,50%)]" />
+                        <span className="text-sm font-medium text-foreground">Telegram</span>
+                      </a>
+                    )}
+                    {socialLinks.instagram && (
+                      <a href={socialLinks.instagram.startsWith("http") ? socialLinks.instagram : `https://instagram.com/${socialLinks.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-500/10 border border-pink-500/20 hover:border-pink-500/40 transition-colors">
+                        <Instagram className="w-4 h-4 text-pink-500" />
+                        <span className="text-sm font-medium text-foreground">Instagram</span>
+                      </a>
+                    )}
+                    {socialLinks.facebook && (
+                      <a href={socialLinks.facebook.startsWith("http") ? socialLinks.facebook : `https://facebook.com/${socialLinks.facebook}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/10 border border-blue-600/20 hover:border-blue-600/40 transition-colors">
+                        <Facebook className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-foreground">Facebook</span>
+                      </a>
+                    )}
+                    {socialLinks.youtube && (
+                      <a href={socialLinks.youtube.startsWith("http") ? socialLinks.youtube : `https://youtube.com/${socialLinks.youtube}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 hover:border-red-500/40 transition-colors">
+                        <Youtube className="w-4 h-4 text-red-500" />
+                        <span className="text-sm font-medium text-foreground">YouTube</span>
+                      </a>
+                    )}
+                    {socialLinks.website && (
+                      <a href={socialLinks.website.startsWith("http") ? socialLinks.website : `https://${socialLinks.website}`} target="_blank" rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors">
+                        <Globe className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">Veb-sayt</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Google Maps */}
+              {mapQuery && (
+                <div>
+                  <h2 className="font-heading font-bold text-foreground mb-3 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-primary" /> Joylashuv
+                  </h2>
+                  <div className="rounded-xl overflow-hidden border border-border h-[220px] bg-muted/30">
+                    <iframe
+                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(mapQuery)}&zoom=14`}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Shifokor joylashuvi"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Clinic */}
               {clinic && (
                 <div>
