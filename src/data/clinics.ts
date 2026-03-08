@@ -1062,7 +1062,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/shox-med-center",
+    website: undefined,
     services: ["UZI", "Rentgen", "MSKT", "EFGDS", "MRA", "MRT", "Laboratoriya", "Statsionar", "Reanimatsiya"],
   },
 ];
