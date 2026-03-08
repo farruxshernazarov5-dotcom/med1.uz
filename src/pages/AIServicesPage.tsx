@@ -54,6 +54,14 @@ const aiServices = [
     color: "from-teal-500 to-teal-400",
     badge: "Yangi",
   },
+  {
+    icon: Baby,
+    title: "AI Homiladorlik Assistenti",
+    description: "Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari, harakatlar monitoringi va AI tibbiy maslahatlar",
+    href: "/ai-pregnancy",
+    color: "from-pink-500 to-pink-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (
