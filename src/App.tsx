@@ -48,6 +48,7 @@ import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfilePage from "./pages/DoctorProfilePage";
 import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
 import SmartSearchPage from "./pages/SmartSearchPage";
+import AIDiagnostikaPage from "./pages/AIDiagnostikaPage";
 import FloatingAISearch from "./components/FloatingAISearch";
 
 const queryClient = new QueryClient();
