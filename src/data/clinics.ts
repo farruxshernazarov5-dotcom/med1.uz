@@ -855,7 +855,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/b2b-beautyclinic",
+    website: undefined,
     services: ["Plastika vek", "Rinoplastika", "Abdominoplastika", "Mammoplastika", "Liposaktsiya", "Soch ko'chirish"],
   },
   {
