@@ -537,6 +537,20 @@ const AIRadiologyPage = () => {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={() => downloadAIReport({
+                  title: "Radiologiya Tahlili",
+                  serviceType: `AI ${scanLabel} Tahlili`,
+                  riskLevel: analysis.overallAssessment.riskLevel === "critical" ? "Yuqori" : analysis.overallAssessment.riskLevel === "attention" ? "O'rtacha" : "Normal",
+                  suggestedSpecialist: analysis.suggestedSpecialist,
+                  sections: [
+                    { heading: "Umumiy baholash", content: analysis.overallAssessment.summary },
+                    ...(analysis.findings.length > 0 ? [{ heading: "Topilmalar", content: analysis.findings.map(f => `${f.location}: ${f.description} (${f.severity})`).join("\n") }] : []),
+                    { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
+                    ...(analysis.followUpStudies?.length ? [{ heading: "Qo'shimcha tekshiruvlar", content: analysis.followUpStudies.join(", ") }] : []),
+                  ],
+                })} variant="outline" className="flex-1">
+                  <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
+                </Button>
                 {user && (
                   <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
