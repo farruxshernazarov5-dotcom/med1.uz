@@ -35,6 +35,8 @@ import BookingPage from "./pages/BookingPage";
 import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
 import VendorRegistrationPage from "./pages/VendorRegistrationPage";
 import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const queryClient = new QueryClient();
 
