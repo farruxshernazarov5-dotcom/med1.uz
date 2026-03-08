@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Loader2, AlertTriangle, CheckCircle2, Image, X, Save, Camera, Upload,
   RefreshCcw, Activity, Stethoscope, MapPin, Search, Eye, Bone, Heart,
-  ShieldAlert, FlaskConical,
+  ShieldAlert, FlaskConical, Brain, Scan,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,6 +31,7 @@ interface Finding {
 
 interface RadiologyAnalysis {
   imageType: string;
+  scanModality?: string;
   imageQuality: string;
   anatomicalStructures: AnatomicalStructure[];
   findings: Finding[];
@@ -46,15 +47,19 @@ interface RadiologyAnalysis {
   disclaimer: string;
 }
 
-const BODY_PARTS = [
-  "Ko'krak qafasi",
-  "Qo'l suyaklari",
-  "Oyoq suyaklari",
-  "Umurtqa pog'onasi",
-  "Bosh suyagi",
-  "Chanoq",
-  "Boshqa",
+type ScanType = "xray" | "mri" | "ct";
+
+const SCAN_TYPES: { value: ScanType; label: string; icon: any; description: string }[] = [
+  { value: "xray", label: "Rentgen", icon: Eye, description: "Ko'krak, suyak, umurtqa rentgenlari" },
+  { value: "mri", label: "MRT (MRI)", icon: Brain, description: "Miya, umurtqa, bo'g'im MRT tasvirlari" },
+  { value: "ct", label: "KT (CT)", icon: Scan, description: "Ko'krak, qorin, bosh KT tasvirlari" },
 ];
+
+const BODY_PARTS_BY_SCAN: Record<ScanType, string[]> = {
+  xray: ["Ko'krak qafasi", "Qo'l suyaklari", "Oyoq suyaklari", "Umurtqa pog'onasi", "Bosh suyagi", "Chanoq", "Boshqa"],
+  mri: ["Miya", "Umurtqa (bo'yin)", "Umurtqa (ko'krak)", "Umurtqa (bel)", "Tizza bo'g'imi", "Yelka bo'g'imi", "Son-chanoq bo'g'imi", "Qorin bo'shligi", "Boshqa"],
+  ct: ["Ko'krak qafasi", "Qorin bo'shligi", "Bosh", "Umurtqa", "Chanoq", "Tomir angiografiya", "Boshqa"],
+};
 
 const severityConfig = {
   normal: { label: "Normal", color: "text-green-600", bg: "bg-green-50 dark:bg-green-950/30", dot: "🟢" },
@@ -76,6 +81,7 @@ const AIRadiologyPage = () => {
   const [step, setStep] = useState<"input" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [scanType, setScanType] = useState<ScanType>("xray");
   const [bodyPart, setBodyPart] = useState("");
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
@@ -127,6 +133,7 @@ const AIRadiologyPage = () => {
       const body = {
         imageBase64: await fileToBase64(uploadedFile),
         imageMimeType: uploadedFile.type,
+        scanType,
         bodyPart,
         patientAge,
         patientGender,
@@ -144,6 +151,8 @@ const AIRadiologyPage = () => {
     }
   };
 
+  const scanLabel = scanType === "mri" ? "MRT" : scanType === "ct" ? "KT" : "Rentgen";
+
   const handleSave = async () => {
     if (!user || !analysis) {
       if (!user) toast({ title: "Tizimga kiring", description: "Natijalarni saqlash uchun ro'yxatdan o'ting", variant: "destructive" });
@@ -154,12 +163,12 @@ const AIRadiologyPage = () => {
       const findingsSummary = analysis.findings.map(f =>
         `${f.location}: ${f.description} (${severityConfig[f.severity]?.dot || ""} ${severityConfig[f.severity]?.label || f.severity})`
       ).join("\n");
-      const description = `${analysis.overallAssessment.summary}\n\n📋 Topilmalar:\n${findingsSummary}\n\n💡 Tavsiyalar: ${analysis.recommendations.join(", ")}\n\n👨‍⚕️ Mutaxassis: ${analysis.suggestedSpecialist}`;
+      const description = `[${scanLabel}] ${analysis.overallAssessment.summary}\n\n📋 Topilmalar:\n${findingsSummary}\n\n💡 Tavsiyalar: ${analysis.recommendations.join(", ")}\n\n👨‍⚕️ Mutaxassis: ${analysis.suggestedSpecialist}`;
 
       const { error } = await supabase.from("medical_records").insert({
         user_id: user.id,
         record_type: "test_result",
-        title: `AI Rentgen: ${bodyPart || "Umumiy"}`,
+        title: `AI ${scanLabel}: ${bodyPart || "Umumiy"}`,
         description,
         doctor_name: "AI Radiologiya",
         clinic_name: "Med1.uz AI",
@@ -183,13 +192,18 @@ const AIRadiologyPage = () => {
     setClinicalInfo("");
   };
 
+  const handleScanTypeChange = (type: ScanType) => {
+    setScanType(type);
+    setBodyPart("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
         { label: "Bosh sahifa", href: "/" },
         { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "Rentgen Tahlili" },
+        { label: "AI Radiologiya" },
       ]} />
 
       {/* Hero */}
@@ -197,13 +211,13 @@ const AIRadiologyPage = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
         <div className="container mx-auto px-4 relative text-center max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Eye className="w-4 h-4" /> AI Radiology Analysis
+            <Eye className="w-4 h-4" /> AI Radiology Pro
           </div>
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-3">
-            Rentgen tasvirlarini <span className="text-primary">AI tahlili</span>
+            Rentgen, MRT va KT tasvirlarini <span className="text-primary">AI tahlili</span>
           </h1>
           <p className="text-muted-foreground text-sm">
-            Rentgen tasviringizni yuklang — AI tizimi patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi
+            Tibbiy tasviringizni yuklang — AI tizimi patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi
           </p>
         </div>
       </section>
@@ -220,13 +234,43 @@ const AIRadiologyPage = () => {
 
           {step === "input" && (
             <div className="space-y-6">
+              {/* Scan type selector */}
+              <div className="bg-card border border-border rounded-xl p-5 space-y-4">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <Scan className="w-5 h-5 text-primary" /> Tekshiruv turini tanlang
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {SCAN_TYPES.map((st) => {
+                    const Icon = st.icon;
+                    const isActive = scanType === st.value;
+                    return (
+                      <button
+                        key={st.value}
+                        onClick={() => handleScanTypeChange(st.value)}
+                        className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all text-center ${
+                          isActive
+                            ? "border-primary bg-primary/5 shadow-sm"
+                            : "border-border hover:border-primary/30 hover:bg-muted/30"
+                        }`}
+                      >
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isActive ? "bg-primary/10" : "bg-muted"}`}>
+                          <Icon className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                        </div>
+                        <span className={`font-semibold text-sm ${isActive ? "text-primary" : "text-foreground"}`}>{st.label}</span>
+                        <span className="text-xs text-muted-foreground">{st.description}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Body part */}
               <div className="bg-card border border-border rounded-xl p-5 space-y-4">
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
                   <Bone className="w-5 h-5 text-primary" /> Tana qismini tanlang
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {BODY_PARTS.map((p) => (
+                  {BODY_PARTS_BY_SCAN[scanType].map((p) => (
                     <Badge key={p} variant={bodyPart === p ? "default" : "outline"}
                       className="cursor-pointer" onClick={() => setBodyPart(p)}>
                       {bodyPart === p ? "✓ " : ""}{p}
@@ -263,7 +307,7 @@ const AIRadiologyPage = () => {
               {/* File upload */}
               <div className="bg-card border border-border rounded-xl p-5 space-y-4">
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
-                  <Upload className="w-5 h-5 text-primary" /> Rentgen tasvirini yuklang
+                  <Upload className="w-5 h-5 text-primary" /> {scanLabel} tasvirini yuklang
                 </h3>
                 {!uploadedFile ? (
                   <div
@@ -278,7 +322,7 @@ const AIRadiologyPage = () => {
                         <Image className="w-8 h-8 text-primary" />
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground text-sm">Rentgen tasvirini shu yerga tashlang yoki bosing</p>
+                        <p className="font-semibold text-foreground text-sm">{scanLabel} tasvirini shu yerga tashlang yoki bosing</p>
                         <p className="text-xs text-muted-foreground mt-1">JPG, PNG, PDF • Maksimal 10MB</p>
                       </div>
                       <div className="flex gap-2 mt-2">
@@ -295,7 +339,7 @@ const AIRadiologyPage = () => {
                   <div className="border border-border rounded-xl p-4 bg-muted/20">
                     <div className="flex items-start gap-4">
                       {filePreview ? (
-                        <img src={filePreview} alt="Rentgen" className="w-32 h-32 object-cover rounded-lg border border-border" />
+                        <img src={filePreview} alt={scanLabel} className="w-32 h-32 object-cover rounded-lg border border-border" />
                       ) : (
                         <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center">
                           <Eye className="w-10 h-10 text-primary" />
@@ -320,7 +364,7 @@ const AIRadiologyPage = () => {
                 disabled={!uploadedFile || isLoading}
                 className="w-full bg-hero-gradient text-primary-foreground h-12 text-base font-semibold" size="lg"
               >
-                {isLoading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" /> AI tahlil qilmoqda...</> : <><Eye className="w-5 h-5 mr-2" /> AI Rentgen tahlilini boshlash</>}
+                {isLoading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" /> AI tahlil qilmoqda...</> : <><Eye className="w-5 h-5 mr-2" /> AI {scanLabel} tahlilini boshlash</>}
               </Button>
             </div>
           )}
@@ -349,6 +393,7 @@ const AIRadiologyPage = () => {
                     <div className="flex items-center gap-3 mb-3">
                       <RiskIcon className={`w-6 h-6 ${rc.color}`} />
                       <h3 className={`font-bold text-lg ${rc.color}`}>{rc.label}</h3>
+                      <Badge variant="secondary" className="text-xs ml-auto">{scanLabel}</Badge>
                     </div>
                     <p className="text-sm text-foreground mb-3">{analysis.overallAssessment.summary}</p>
                     {analysis.overallAssessment.keyFindings.length > 0 && (
@@ -368,8 +413,9 @@ const AIRadiologyPage = () => {
 
               {/* Image info */}
               <div className="bg-card border border-border rounded-xl p-5 flex items-center gap-4">
-                {filePreview && <img src={filePreview} alt="Rentgen" className="w-20 h-20 object-cover rounded-lg border border-border" />}
+                {filePreview && <img src={filePreview} alt={scanLabel} className="w-20 h-20 object-cover rounded-lg border border-border" />}
                 <div>
+                  <p className="text-sm text-muted-foreground">Tekshiruv turi: <strong className="text-foreground">{scanLabel}</strong></p>
                   <p className="text-sm text-muted-foreground">Tasvir turi: <strong className="text-foreground">{analysis.imageType}</strong></p>
                   <p className="text-sm text-muted-foreground">Sifat: <strong className="text-foreground">{analysis.imageQuality}</strong></p>
                 </div>

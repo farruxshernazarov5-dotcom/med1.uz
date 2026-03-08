@@ -40,8 +40,8 @@ const aiServices = [
   },
   {
     icon: Eye,
-    title: "AI Rentgen Tahlili",
-    description: "Rentgen tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi",
+    title: "AI Radiologiya Pro",
+    description: "Rentgen, MRT va KT tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi",
     href: "/ai-radiology",
     color: "from-violet-500 to-violet-400",
     badge: "Yangi",
