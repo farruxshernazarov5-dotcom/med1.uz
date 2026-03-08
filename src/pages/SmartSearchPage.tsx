@@ -318,6 +318,9 @@ const SmartSearchPage = () => {
     } catch (err: any) {
       // Even if AI fails, show local results
       const local = searchLocal(q);
+      const totalLocal = local.localClinics.length + local.localArticles.length + local.localDiseases.length + local.localTerms.length +
+        local.localNews.length + local.localHealthTips.length + local.localPharmacies.length + local.localDiagnostics.length +
+        local.localMaternity.length + local.localBloodBanks.length + local.localMedtech.length + local.localCosmetology.length;
       setResult({
         aiAnalysis: {
           searchType: "clinic", keywords: [q], matchedSpecialties: [], matchedServices: [],
@@ -325,7 +328,7 @@ const SmartSearchPage = () => {
           searchSuggestions: [], aiSummary: `"${q}" bo'yicha qidiruv natijalari`,
         },
         clinics: [], doctors: [], diagnosticsServices: [], clinicServices: [],
-        totalResults: local.localClinics.length + local.localArticles.length + local.localDiseases.length + local.localTerms.length,
+        totalResults: totalLocal,
         ...local,
       });
     } finally {
