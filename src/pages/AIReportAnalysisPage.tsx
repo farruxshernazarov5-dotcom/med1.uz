@@ -114,13 +114,8 @@ const AIReportAnalysisPage = () => {
       let body: any = { reportType, patientAge, patientGender };
 
       if (inputMode === "file" && uploadedFile) {
-        if (uploadedFile.type.startsWith("image/")) {
-          body.imageBase64 = await fileToBase64(uploadedFile);
-          body.imageMimeType = uploadedFile.type;
-        } else {
-          // For PDF, we send text extraction note
-          body.reportText = "PDF fayl yuklandi. Iltimos, foydalanuvchiga analiz natijalarini matn ko'rinishida kiritishni tavsiya eting.";
-        }
+        body.imageBase64 = await fileToBase64(uploadedFile);
+        body.imageMimeType = uploadedFile.type;
       } else {
         body.reportText = reportText;
       }
