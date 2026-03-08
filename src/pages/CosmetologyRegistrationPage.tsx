@@ -14,21 +14,15 @@ import { toast } from "@/hooks/use-toast";
 import {
   Building2, Phone, Mail, MapPin, ChevronRight, ChevronLeft, Check,
   Shield, FileText, Hash, Search, Globe, Loader2, Sparkles, Clock,
+  Camera, Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { uzbekistanRegions, getDistrictsByRegion } from "@/data/uzbekistanRegions";
 
 const COSMETOLOGY_SERVICES = [
-  "Lazer epilatsiya",
-  "Yuz parvarishi",
-  "Dermatologiya",
-  "Estetik muolajalar",
-  "Botoks / Filler",
-  "Ximiyaviy piling",
-  "Mezoterapiya",
-  "Plazmaterapiya (PRP)",
-  "Lazer qayta tiklash",
-  "Tana konturlash",
+  "Lazer epilatsiya", "Yuz parvarishi", "Dermatologiya", "Estetik muolajalar",
+  "Botoks / Filler", "Ximiyaviy piling", "Mezoterapiya", "Plazmaterapiya (PRP)",
+  "Lazer qayta tiklash", "Tana konturlash",
 ];
 
 const PHONE_REGEX = /^\+998\d{9}$/;
@@ -58,12 +52,14 @@ const CosmetologyRegistrationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [innChecking, setInnChecking] = useState(false);
   const [innResult, setInnResult] = useState<any>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState("");
 
   const [form, setForm] = useState({
     name: "", directorName: "", description: "",
     inn: "", legalName: "", licenseNumber: "",
     phone: "+998", additionalPhone: "", email: "", telegram: "", website: "",
-    region: "", city: "", address: "",
+    region: "", city: "", address: "", latitude: "", longitude: "",
     specialties: [] as string[],
     workingHours: {} as Record<string, { open: string; close: string; active: boolean }>,
   });
@@ -78,9 +74,27 @@ const CosmetologyRegistrationPage = () => {
   const updateWorkingHour = (day: string, field: string, value: any) => {
     setForm((p) => ({
       ...p, workingHours: { ...p.workingHours,
-        [day]: { ...p.workingHours[day], open: p.workingHours[day]?.open || "08:00", close: p.workingHours[day]?.close || "18:00", active: p.workingHours[day]?.active ?? true, [field]: value },
+        [day]: { ...p.workingHours[day], open: p.workingHours[day]?.open || "09:00", close: p.workingHours[day]?.close || "19:00", active: p.workingHours[day]?.active ?? true, [field]: value },
       },
     }));
+  };
+
+  const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) { toast({ title: "Fayl hajmi 5MB dan oshmasligi kerak", variant: "destructive" }); return; }
+    setLogoFile(f);
+    setLogoPreview(URL.createObjectURL(f));
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile || !user) return "";
+    const ext = logoFile.name.split(".").pop();
+    const path = `cosmetology-logos/${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("cosmetology-files").upload(path, logoFile);
+    if (error) { toast({ title: "Logo yuklanmadi", variant: "destructive" }); return ""; }
+    const { data } = supabase.storage.from("cosmetology-files").getPublicUrl(path);
+    return data.publicUrl;
   };
 
   const districts = form.region ? getDistrictsByRegion(form.region) : [];
@@ -123,21 +137,26 @@ const CosmetologyRegistrationPage = () => {
   const handleSubmit = async () => {
     if (!user) { toast({ title: "Avval tizimga kiring", variant: "destructive" }); navigate("/auth"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("registered_cosmetology" as any).insert({
-      name: form.name.trim(), inn: form.inn.trim(), phone: form.phone.trim(),
-      additional_phone: form.additionalPhone.trim(), email: form.email.trim(),
-      address: form.address.trim(), region: form.region, city: form.city,
-      description: form.description.trim(), director_name: form.directorName.trim(),
-      legal_name: form.legalName.trim(), license_number: form.licenseNumber.trim(),
-      website: form.website.trim(), telegram: form.telegram.trim(),
-      specialties: form.specialties, working_hours: form.workingHours,
-      owner_id: user.id,
-    } as any);
-    if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); }
-    else {
+    try {
+      const logoUrl = await uploadLogo();
+      const { error } = await supabase.from("registered_cosmetology" as any).insert({
+        name: form.name.trim(), inn: form.inn.trim(), phone: form.phone.trim(),
+        additional_phone: form.additionalPhone.trim(), email: form.email.trim(),
+        address: form.address.trim(), region: form.region, city: form.city,
+        description: form.description.trim(), director_name: form.directorName.trim(),
+        legal_name: form.legalName.trim(), license_number: form.licenseNumber.trim(),
+        website: form.website.trim(), telegram: form.telegram.trim(),
+        specialties: form.specialties, working_hours: form.workingHours,
+        latitude: form.latitude ? parseFloat(form.latitude) : null,
+        longitude: form.longitude ? parseFloat(form.longitude) : null,
+        logo_url: logoUrl, owner_id: user.id,
+      } as any);
+      if (error) throw error;
       await supabase.from("user_roles").update({ role: "cosmetology" as any }).eq("user_id", user.id);
       toast({ title: "✅ Kosmetologiya markazi ro'yxatdan o'tkazildi!" });
       navigate("/dashboard");
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
@@ -186,6 +205,13 @@ const CosmetologyRegistrationPage = () => {
                 <>
                   <div><Label>Markaz nomi *</Label><Input value={form.name} onChange={(e) => update("name", e.target.value)} className="mt-1" /><FieldError field="name" /></div>
                   <div><Label>Direktor F.I.O</Label><Input value={form.directorName} onChange={(e) => update("directorName", e.target.value)} className="mt-1" /></div>
+                  <div>
+                    <Label>Logotip</Label>
+                    <div className="flex items-center gap-4 mt-1">
+                      {logoPreview ? <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border" alt="Logo" /> : <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center"><Camera className="w-6 h-6 text-muted-foreground" /></div>}
+                      <label className="cursor-pointer"><Input type="file" accept="image/*" className="hidden" onChange={handleLogo} /><span className="text-sm text-primary hover:underline flex items-center gap-1"><Upload className="w-4 h-4" /> Yuklash</span></label>
+                    </div>
+                  </div>
                   <div><Label>Markaz haqida</Label><Textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} className="mt-1" /></div>
                 </>
               )}
@@ -238,6 +264,10 @@ const CosmetologyRegistrationPage = () => {
                       {districts.map((d) => <option key={d.name + d.type} value={d.name}>{d.name} ({d.type})</option>)}
                     </select></div>
                   <div><Label>To'liq manzil *</Label><Textarea value={form.address} onChange={(e) => update("address", e.target.value)} rows={2} className="mt-1" /><FieldError field="address" /></div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><Label>Kenglik (Latitude)</Label><Input value={form.latitude} onChange={(e) => update("latitude", e.target.value)} placeholder="41.2995" className="mt-1" /></div>
+                    <div><Label>Uzunlik (Longitude)</Label><Input value={form.longitude} onChange={(e) => update("longitude", e.target.value)} placeholder="69.2401" className="mt-1" /></div>
+                  </div>
                 </>
               )}
 
@@ -292,6 +322,7 @@ const CosmetologyRegistrationPage = () => {
                 <div className="bg-accent/30 border border-accent rounded-xl p-5">
                   <h3 className="font-bold text-foreground mb-3">Ma'lumotlarni tasdiqlang</h3>
                   <div className="space-y-2 text-sm">
+                    {logoPreview && <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border mb-2" alt="Logo" />}
                     <p><span className="text-muted-foreground">Nomi:</span> <strong>{form.name}</strong></p>
                     <p><span className="text-muted-foreground">INN:</span> {form.inn}</p>
                     <p><span className="text-muted-foreground">Telefon:</span> {form.phone}</p>

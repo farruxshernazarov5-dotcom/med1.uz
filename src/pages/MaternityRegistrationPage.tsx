@@ -14,21 +14,15 @@ import { toast } from "@/hooks/use-toast";
 import {
   Building2, Phone, Mail, MapPin, ChevronRight, ChevronLeft, Check,
   Shield, FileText, Hash, Search, Globe, Loader2, Baby, Clock,
+  Camera, Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { uzbekistanRegions, getDistrictsByRegion } from "@/data/uzbekistanRegions";
 
 const MATERNITY_SERVICES = [
-  "Tabiiy tug'ruq",
-  "Kesarcha kesish",
-  "Homiladorlik monitoringi",
-  "Neonatologiya",
-  "UZI tekshiruvi",
-  "Laboratoriya analizlari",
-  "Genetik tekshiruv",
-  "Postnatal parvarish",
-  "VIP palata",
-  "Oilaviy tug'ruq",
+  "Tabiiy tug'ruq", "Kesarcha kesish", "Homiladorlik monitoringi",
+  "Neonatologiya", "UZI tekshiruvi", "Laboratoriya analizlari",
+  "Genetik tekshiruv", "Postnatal parvarish", "VIP palata", "Oilaviy tug'ruq",
 ];
 
 const PHONE_REGEX = /^\+998\d{9}$/;
@@ -45,12 +39,9 @@ const STEPS = [
 ];
 
 const WEEKDAYS = [
-  { key: "mon", label: "Dushanba" },
-  { key: "tue", label: "Seshanba" },
-  { key: "wed", label: "Chorshanba" },
-  { key: "thu", label: "Payshanba" },
-  { key: "fri", label: "Juma" },
-  { key: "sat", label: "Shanba" },
+  { key: "mon", label: "Dushanba" }, { key: "tue", label: "Seshanba" },
+  { key: "wed", label: "Chorshanba" }, { key: "thu", label: "Payshanba" },
+  { key: "fri", label: "Juma" }, { key: "sat", label: "Shanba" },
   { key: "sun", label: "Yakshanba" },
 ];
 
@@ -61,12 +52,14 @@ const MaternityRegistrationPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [innChecking, setInnChecking] = useState(false);
   const [innResult, setInnResult] = useState<any>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState("");
 
   const [form, setForm] = useState({
     name: "", directorName: "", description: "", roomTypes: "",
     inn: "", legalName: "", licenseNumber: "",
     phone: "+998", additionalPhone: "", email: "", telegram: "", website: "",
-    region: "", city: "", address: "",
+    region: "", city: "", address: "", latitude: "", longitude: "",
     specialties: [] as string[],
     workingHours: {} as Record<string, { open: string; close: string; active: boolean }>,
   });
@@ -93,6 +86,24 @@ const MaternityRegistrationPage = () => {
         [day]: { ...p.workingHours[day], open: p.workingHours[day]?.open || "08:00", close: p.workingHours[day]?.close || "18:00", active: p.workingHours[day]?.active ?? true, [field]: value },
       },
     }));
+  };
+
+  const handleLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) { toast({ title: "Fayl hajmi 5MB dan oshmasligi kerak", variant: "destructive" }); return; }
+    setLogoFile(f);
+    setLogoPreview(URL.createObjectURL(f));
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile || !user) return "";
+    const ext = logoFile.name.split(".").pop();
+    const path = `maternity-logos/${user.id}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("maternity-files").upload(path, logoFile);
+    if (error) { toast({ title: "Logo yuklanmadi", variant: "destructive" }); return ""; }
+    const { data } = supabase.storage.from("maternity-files").getPublicUrl(path);
+    return data.publicUrl;
   };
 
   const districts = form.region ? getDistrictsByRegion(form.region) : [];
@@ -150,22 +161,27 @@ const MaternityRegistrationPage = () => {
   const handleSubmit = async () => {
     if (!user) { toast({ title: "Avval tizimga kiring", variant: "destructive" }); navigate("/auth"); return; }
     setSubmitting(true);
-    const { error } = await supabase.from("registered_maternity" as any).insert({
-      name: form.name.trim(), inn: form.inn.trim(), phone: form.phone.trim(),
-      additional_phone: form.additionalPhone.trim(), email: form.email.trim(),
-      address: form.address.trim(), region: form.region, city: form.city,
-      description: form.description.trim(), director_name: form.directorName.trim(),
-      legal_name: form.legalName.trim(), license_number: form.licenseNumber.trim(),
-      website: form.website.trim(), telegram: form.telegram.trim(),
-      specialties: form.specialties, working_hours: form.workingHours,
-      room_types: form.roomTypes.trim(), owner_id: user.id,
-    } as any);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
+    try {
+      const logoUrl = await uploadLogo();
+      const { error } = await supabase.from("registered_maternity" as any).insert({
+        name: form.name.trim(), inn: form.inn.trim(), phone: form.phone.trim(),
+        additional_phone: form.additionalPhone.trim(), email: form.email.trim(),
+        address: form.address.trim(), region: form.region, city: form.city,
+        description: form.description.trim(), director_name: form.directorName.trim(),
+        legal_name: form.legalName.trim(), license_number: form.licenseNumber.trim(),
+        website: form.website.trim(), telegram: form.telegram.trim(),
+        specialties: form.specialties, working_hours: form.workingHours,
+        room_types: form.roomTypes.trim(),
+        latitude: form.latitude ? parseFloat(form.latitude) : null,
+        longitude: form.longitude ? parseFloat(form.longitude) : null,
+        logo_url: logoUrl, owner_id: user.id,
+      } as any);
+      if (error) throw error;
       await supabase.from("user_roles").update({ role: "maternity" as any }).eq("user_id", user.id);
       toast({ title: "✅ Tug'ruqxona muvaffaqiyatli ro'yxatdan o'tkazildi!" });
       navigate("/dashboard");
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
@@ -186,7 +202,6 @@ const MaternityRegistrationPage = () => {
             <p className="text-muted-foreground mt-2">Med1.uz platformasida tug'ruqxona xizmatlaringizni taqdim eting</p>
           </div>
 
-          {/* Progress */}
           <div className="flex items-center justify-center gap-1 mb-8 overflow-x-auto pb-2">
             {STEPS.map((s, i) => (
               <div key={i} className="flex items-center gap-1">
@@ -215,6 +230,13 @@ const MaternityRegistrationPage = () => {
                 <>
                   <div><Label>Tug'ruqxona nomi *</Label><Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Masalan: City Maternity" className="mt-1" /><FieldError field="name" /></div>
                   <div><Label>Direktor F.I.O</Label><Input value={form.directorName} onChange={(e) => update("directorName", e.target.value)} className="mt-1" /></div>
+                  <div>
+                    <Label>Logotip</Label>
+                    <div className="flex items-center gap-4 mt-1">
+                      {logoPreview ? <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border" alt="Logo" /> : <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center"><Camera className="w-6 h-6 text-muted-foreground" /></div>}
+                      <label className="cursor-pointer"><Input type="file" accept="image/*" className="hidden" onChange={handleLogo} /><span className="text-sm text-primary hover:underline flex items-center gap-1"><Upload className="w-4 h-4" /> Yuklash</span></label>
+                    </div>
+                  </div>
                   <div><Label>Haqida</Label><Textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} className="mt-1" /></div>
                   <div><Label>Palata turlari</Label><Textarea value={form.roomTypes} onChange={(e) => update("roomTypes", e.target.value)} placeholder="Standart, Lyuks, VIP..." rows={2} className="mt-1" /></div>
                 </>
@@ -269,6 +291,10 @@ const MaternityRegistrationPage = () => {
                       {districts.map((d) => <option key={d.name + d.type} value={d.name}>{d.name} ({d.type})</option>)}
                     </select></div>
                   <div><Label>To'liq manzil *</Label><Textarea value={form.address} onChange={(e) => update("address", e.target.value)} rows={2} className="mt-1" /><FieldError field="address" /></div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><Label>Kenglik (Latitude)</Label><Input value={form.latitude} onChange={(e) => update("latitude", e.target.value)} placeholder="41.2995" className="mt-1" /></div>
+                    <div><Label>Uzunlik (Longitude)</Label><Input value={form.longitude} onChange={(e) => update("longitude", e.target.value)} placeholder="69.2401" className="mt-1" /></div>
+                  </div>
                 </>
               )}
 
@@ -321,19 +347,18 @@ const MaternityRegistrationPage = () => {
               )}
 
               {step === 6 && (
-                <>
-                  <div className="bg-accent/30 border border-accent rounded-xl p-5">
-                    <h3 className="font-bold text-foreground mb-3">Ma'lumotlarni tasdiqlang</h3>
-                    <div className="space-y-2 text-sm">
-                      <p><span className="text-muted-foreground">Nomi:</span> <strong>{form.name}</strong></p>
-                      <p><span className="text-muted-foreground">INN:</span> {form.inn}</p>
-                      <p><span className="text-muted-foreground">Telefon:</span> {form.phone}</p>
-                      <p><span className="text-muted-foreground">Email:</span> {form.email}</p>
-                      <p><span className="text-muted-foreground">Manzil:</span> {form.region}, {form.city}, {form.address}</p>
-                      <div><span className="text-muted-foreground">Xizmatlar:</span> <div className="flex flex-wrap gap-1 mt-1">{form.specialties.map((s) => <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>)}</div></div>
-                    </div>
+                <div className="bg-accent/30 border border-accent rounded-xl p-5">
+                  <h3 className="font-bold text-foreground mb-3">Ma'lumotlarni tasdiqlang</h3>
+                  <div className="space-y-2 text-sm">
+                    {logoPreview && <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border mb-2" alt="Logo" />}
+                    <p><span className="text-muted-foreground">Nomi:</span> <strong>{form.name}</strong></p>
+                    <p><span className="text-muted-foreground">INN:</span> {form.inn}</p>
+                    <p><span className="text-muted-foreground">Telefon:</span> {form.phone}</p>
+                    <p><span className="text-muted-foreground">Email:</span> {form.email}</p>
+                    <p><span className="text-muted-foreground">Manzil:</span> {form.region}, {form.city}, {form.address}</p>
+                    <div><span className="text-muted-foreground">Xizmatlar:</span> <div className="flex flex-wrap gap-1 mt-1">{form.specialties.map((s) => <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>)}</div></div>
                   </div>
-                </>
+                </div>
               )}
 
               <div className="flex justify-between pt-4">
