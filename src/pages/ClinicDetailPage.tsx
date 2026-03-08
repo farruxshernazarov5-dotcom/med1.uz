@@ -230,6 +230,7 @@ const ClinicDetailPage = () => {
       <p className="text-xs text-muted-foreground text-center mt-6">
         Ma'lumot manbasi: med1.uz — {new Date().getFullYear()}
       </p>
+
     </SectionLayout>
   );
 };

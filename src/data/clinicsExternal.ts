@@ -146,7 +146,10 @@ function mapRawClinic(raw: RawClinic, index: number): Clinic {
     specialists: [],
     reviews: [],
     coordinates: raw.latitude && raw.longitude ? { lat: raw.latitude, lng: raw.longitude } : undefined,
-    website: raw.socials?.Website || raw.website || undefined,
+    website: (() => {
+      const w = raw.socials?.Website || raw.website || "";
+      return w && !w.includes("goldenpages.uz") ? w : undefined;
+    })(),
     services: raw.services || [],
     logoUrl: raw.logo_url || undefined,
     socialLinks: raw.socials || undefined,
