@@ -54,35 +54,19 @@ function generateReportHTML(data: ReportData): string {
     overflow:hidden;
   }
 
-  /* Watermark */
-  .watermark{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%) rotate(-35deg);
-    font-size:120px;
-    font-weight:900;
-    color:rgba(14,165,233,0.04);
-    letter-spacing:8px;
-    white-space:nowrap;
-    pointer-events:none;
-    z-index:0;
-    user-select:none;
-  }
-  .watermark-pattern{
+  /* Watermark - repeating logo pattern */
+  .watermark-logo{
     position:fixed;
     top:0;left:0;right:0;bottom:0;
     pointer-events:none;
     z-index:0;
-    opacity:0.025;
-    background-image:
-      repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 200px,
-        rgba(14,165,233,0.3) 200px,
-        rgba(14,165,233,0.3) 201px
-      );
+    user-select:none;
+    background-image:url('/images/med1-logo-watermark.png');
+    background-repeat:repeat;
+    background-size:140px 140px;
+    opacity:0.06;
+    transform:rotate(-20deg) scale(1.3);
+    transform-origin:center center;
   }
 
   .content{position:relative;z-index:1;}
@@ -313,8 +297,7 @@ function generateReportHTML(data: ReportData): string {
   }
 </style></head><body>
 
-<div class="watermark">MED1.UZ</div>
-<div class="watermark-pattern"></div>
+<div class="watermark-logo"></div>
 
 <div class="page-wrapper">
 <div class="content">
