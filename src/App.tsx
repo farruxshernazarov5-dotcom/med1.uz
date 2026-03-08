@@ -35,6 +35,8 @@ import BookingPage from "./pages/BookingPage";
 import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
 import VendorRegistrationPage from "./pages/VendorRegistrationPage";
 import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +74,8 @@ const App = () => (
           <Route path="/clinic-register" element={<ClinicRegistrationPage />} />
            <Route path="/vendor-register" element={<VendorRegistrationPage />} />
            <Route path="/diagnostics-register" element={<DiagnosticsRegistrationPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/user-guide" element={<UserGuidePage />} />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -216,12 +216,17 @@ const AuthPage = () => {
             </form>
 
             {mode === "login" && (
-              <p className="text-center text-xs text-muted-foreground mt-4">
-                Hisobingiz yo'qmi?{" "}
-                <button onClick={() => setMode("register")} className="text-primary font-semibold hover:underline">
-                  Ro'yxatdan o'ting
-                </button>
-              </p>
+              <div className="text-center mt-4 space-y-2">
+                <Link to="/forgot-password" className="block text-xs text-primary font-semibold hover:underline">
+                  Parolni unutdingizmi?
+                </Link>
+                <p className="text-xs text-muted-foreground">
+                  Hisobingiz yo'qmi?{" "}
+                  <button onClick={() => setMode("register")} className="text-primary font-semibold hover:underline">
+                    Ro'yxatdan o'ting
+                  </button>
+                </p>
+              </div>
             )}
             {mode === "register" && (
               <p className="text-center text-xs text-muted-foreground mt-4">
