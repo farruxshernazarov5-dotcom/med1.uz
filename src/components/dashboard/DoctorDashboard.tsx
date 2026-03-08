@@ -51,6 +51,7 @@ const DoctorDashboard = () => {
     certificates: [] as string[], languages: [] as string[],
     schedule: {} as Record<string, { start: string; end: string; active: boolean }>,
     phone: "", email: "", address: "", region: "", city: "",
+    social_links: { telegram: "", instagram: "", facebook: "", youtube: "", website: "" } as Record<string, string>,
   });
 
   const fetchData = async () => {
