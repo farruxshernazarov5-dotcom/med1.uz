@@ -73,13 +73,40 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(clinic.logo_url || "");
+  const [logoUploading, setLogoUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
 
   // Load photos
   useState(() => {
     supabase.from("clinic_photos").select("*").eq("clinic_id", clinic.id).order("sort_order")
       .then(({ data }) => setPhotos(data || []));
   });
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Logotip 5 MB dan katta bo'lmasligi kerak", variant: "destructive" });
+      return;
+    }
+    setLogoUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${clinic.id}/logo.${ext}`;
+    const { error } = await supabase.storage.from("clinic-photos").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Logotip yuklashda xatolik", description: error.message, variant: "destructive" });
+      setLogoUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("clinic-photos").getPublicUrl(path);
+    const newUrl = urlData.publicUrl;
+    await supabase.from("registered_clinics").update({ logo_url: newUrl }).eq("id", clinic.id);
+    setLogoUrl(newUrl);
+    setLogoUploading(false);
+    toast({ title: "✅ Logotip yuklandi!" });
+  };
 
   const updateField = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
