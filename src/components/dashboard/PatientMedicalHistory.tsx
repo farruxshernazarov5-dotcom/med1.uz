@@ -79,8 +79,25 @@ const PatientMedicalHistory = () => {
   const filtered = filter === "all" ? records : records.filter((r) => r.record_type === filter);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      {/* Health History Charts */}
+      <HealthHistoryCharts />
+
+      {/* AI Upload CTA */}
+      <Link to="/ai-report-analysis" className="block bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-xl p-4 hover:shadow-md transition-shadow">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+            <Activity className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-foreground text-sm">AI Analiz tahlili</p>
+            <p className="text-xs text-muted-foreground">Analiz natijangizni yuklang — AI tahlil qilsin</p>
+          </div>
+          <Upload className="w-5 h-5 text-primary" />
+        </div>
+      </Link>
+
+      <div className="flex items-center justify-between">
         <h2 className="font-heading text-xl font-bold text-foreground">📁 Tibbiy tarix</h2>
         {!showForm && (
           <Button onClick={() => setShowForm(true)} className="bg-hero-gradient text-primary-foreground border-0">
