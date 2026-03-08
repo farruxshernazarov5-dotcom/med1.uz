@@ -27,3 +27,5 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.ai-baby-care]
     verify_jwt = false
+  [functions.ai-cosmetology]
+    verify_jwt = false

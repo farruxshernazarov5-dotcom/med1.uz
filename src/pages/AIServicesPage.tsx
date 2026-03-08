@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const aiServices = [
@@ -68,6 +68,14 @@ const aiServices = [
     description: "Tug'ruqdan keyingi parvarish, chaqaloq rivojlanishi, emlash jadvali va ota-onalar uchun AI maslahatlar",
     href: "/ai-baby-care",
     color: "from-amber-500 to-amber-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Palette,
+    title: "AI Kosmetologiya Assistenti",
+    description: "Teri tahlili, individual parvarish rejasi, kosmetologik muolajalar tavsiyasi va professional dermatologik maslahatlar",
+    href: "/ai-cosmetology",
+    color: "from-violet-500 to-violet-400",
     badge: "Yangi",
   },
 ];

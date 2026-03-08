@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Brain, X, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Sparkles, Baby,
+  Brain, X, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Sparkles, Baby, Palette,
 } from "lucide-react";
 
 const AI_SERVICES = [
@@ -13,6 +13,7 @@ const AI_SERVICES = [
   { icon: UserCheck, title: "Sog'liq Assistenti", href: "/ai-health-assistant", desc: "24/7 AI yordamchi" },
   { icon: Baby, title: "AI Homiladorlik", href: "/ai-pregnancy", desc: "Homiladorlik yordamchisi" },
   { icon: Baby, title: "AI Bola Parvarishi", href: "/ai-baby-care", desc: "Chaqaloq parvarishi" },
+  { icon: Palette, title: "AI Kosmetologiya", href: "/ai-cosmetology", desc: "Teri tahlili va parvarish" },
 ];
 
 const FloatingAIPanel = () => {
@@ -20,7 +21,7 @@ const FloatingAIPanel = () => {
   const location = useLocation();
 
   // Hide on AI pages themselves
-  const isOnAIPage = ["/ai-services", "/symptom-checker", "/ai-doctor-chat", "/ai-report-analysis", "/ai-health-risk", "/ai-radiology", "/ai-health-assistant", "/ai-pregnancy", "/ai-baby-care"].some(
+  const isOnAIPage = ["/ai-services", "/symptom-checker", "/ai-doctor-chat", "/ai-report-analysis", "/ai-health-risk", "/ai-radiology", "/ai-health-assistant", "/ai-pregnancy", "/ai-baby-care", "/ai-cosmetology"].some(
     (p) => location.pathname.startsWith(p)
   );
 
