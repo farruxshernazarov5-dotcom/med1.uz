@@ -62,6 +62,14 @@ const aiServices = [
     color: "from-pink-500 to-pink-400",
     badge: "Yangi",
   },
+  {
+    icon: Baby,
+    title: "AI Bola Parvarishi",
+    description: "Tug'ruqdan keyingi parvarish, chaqaloq rivojlanishi, emlash jadvali va ota-onalar uchun AI maslahatlar",
+    href: "/ai-baby-care",
+    color: "from-amber-500 to-amber-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (
