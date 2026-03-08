@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Search, MapPin, Star, Clock, Phone, Brain, Building2, Stethoscope,
   AlertTriangle, ArrowRight, Loader2, Filter, SlidersHorizontal,
-  Navigation, Activity, Pill, ChevronRight, Sparkles, History, X, Heart
+  Navigation, Activity, Pill, ChevronRight, Sparkles, History, X, Heart, Mic, MicOff
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -43,7 +43,36 @@ const SmartSearchPage = () => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [isListening, setIsListening] = useState(false);
   const { toast } = useToast();
+
+  // Voice recognition
+  const startVoiceSearch = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Xatolik", description: "Brauzeringiz ovozli qidiruvni qo'llab-quvvatlamaydi. Chrome yoki Edge brauzerini ishlating.", variant: "destructive" });
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "uz-UZ";
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast({ title: "Xatolik", description: "Ovoz aniqlanmadi. Qaytadan urinib ko'ring.", variant: "destructive" });
+    };
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      if (event.results[0].isFinal) {
+        handleSearch(transcript);
+      }
+    };
+    recognition.start();
+  }, [toast]);
 
   // Load search history from localStorage
   useEffect(() => {
@@ -159,6 +188,14 @@ const SmartSearchPage = () => {
                   className="w-full pl-12 pr-4 py-4 rounded-xl border-0 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm shadow-lg"
                 />
               </div>
+              <Button
+                onClick={startVoiceSearch}
+                disabled={isListening}
+                className={`p-4 h-auto rounded-xl shadow-lg transition-all ${isListening ? "bg-destructive text-destructive-foreground animate-pulse" : "bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30"}`}
+                title="Ovozli qidiruv"
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </Button>
               <Button
                 onClick={() => handleSearch()}
                 disabled={isSearching || query.trim().length < 2}

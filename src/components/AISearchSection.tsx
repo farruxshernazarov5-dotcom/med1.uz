@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Brain, Search, ArrowRight, Sparkles, Stethoscope, Pill, Building2 } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Brain, Search, ArrowRight, Sparkles, Stethoscope, Pill, Building2, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const popularSearches = [
   { label: "Bosh og'rig'i", icon: Brain },
@@ -12,7 +13,31 @@ const popularSearches = [
 
 const AISearchSection = () => {
   const [query, setQuery] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const startVoiceSearch = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Xatolik", description: "Brauzeringiz ovozli qidiruvni qo'llab-quvvatlamaydi.", variant: "destructive" });
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "uz-UZ";
+    recognition.interimResults = true;
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => { setIsListening(false); };
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      if (event.results[0].isFinal) {
+        navigate(`/smart-search?q=${encodeURIComponent(transcript)}`);
+      }
+    };
+    recognition.start();
+  }, [navigate, toast]);
 
   const handleSearch = () => {
     if (!query.trim()) return;
@@ -53,6 +78,14 @@ const AISearchSection = () => {
                   className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
                 />
               </div>
+              <Button
+                onClick={startVoiceSearch}
+                disabled={isListening}
+                className={`rounded-xl transition-all ${isListening ? "bg-destructive text-destructive-foreground animate-pulse" : "bg-accent text-accent-foreground hover:bg-accent/80"}`}
+                title="Ovozli qidiruv"
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </Button>
               <Button onClick={handleSearch} disabled={!query.trim()} className="bg-hero-gradient text-primary-foreground border-0 px-6 rounded-xl hover:opacity-90">
                 Qidirish
               </Button>
