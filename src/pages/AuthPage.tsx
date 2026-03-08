@@ -533,7 +533,109 @@ const AuthPage = () => {
                   </div>
                 )}
 
-                <Button
+                {/* Phone verification for registration */}
+                {mode === "register" && (
+                  <div className="space-y-3 p-4 rounded-xl border border-border bg-muted/20">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#0088cc] to-[#0077b5] flex items-center justify-center">
+                          <Send className="w-3 h-3 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-foreground">Telegram orqali telefon tasdiqlash</p>
+                          <p className="text-[10px] text-muted-foreground">Ixtiyoriy, lekin tavsiya etiladi</p>
+                        </div>
+                      </div>
+                      {regPhoneVerified && (
+                        <div className="flex items-center gap-1 text-primary">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-[10px] font-bold">Tasdiqlangan</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {!regPhoneVerified && !regOtpSent && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Avval{" "}
+                        <a href="https://t.me/Med1uzOTP_Bot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline">
+                          @Med1uzOTP_Bot
+                        </a>
+                        {" "}ga telefon raqamingizni yuboring, keyin pastda kiriting.
+                      </p>
+                    )}
+
+                    {!regPhoneVerified && (
+                      <>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                          <Input
+                            type="tel"
+                            value={regPhone}
+                            onChange={(e) => setRegPhone(e.target.value)}
+                            placeholder="+998 90 123 45 67"
+                            className="pl-10 h-9 text-sm"
+                            disabled={regOtpSent}
+                          />
+                        </div>
+
+                        {regOtpSent && (
+                          <div>
+                            <Input
+                              type="text"
+                              value={regOtpCode}
+                              onChange={(e) => setRegOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                              placeholder="● ● ● ● ● ●"
+                              className="text-center text-lg tracking-[0.4em] font-mono h-10"
+                              maxLength={6}
+                            />
+                            <p className="text-[10px] text-muted-foreground mt-1 text-center">Kod 5 daqiqa ichida amal qiladi</p>
+                          </div>
+                        )}
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={submitting}
+                          className="w-full gap-1.5 h-8 text-xs"
+                          onClick={regOtpSent ? handleRegPhoneVerifyOtp : handleRegPhoneSendOtp}
+                        >
+                          {submitting ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : regOtpSent ? (
+                            <CheckCircle className="w-3 h-3" />
+                          ) : (
+                            <Send className="w-3 h-3" />
+                          )}
+                          {regOtpSent ? "Kodni tasdiqlash" : "Telegram kod yuborish"}
+                        </Button>
+
+                        {regOtpSent && (
+                          <div className="flex items-center justify-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => { setRegOtpSent(false); setRegOtpCode(""); }}
+                              className="text-[10px] text-muted-foreground font-medium hover:text-foreground transition-colors"
+                            >
+                              Raqamni o'zgartirish
+                            </button>
+                            <span className="text-muted-foreground/30">|</span>
+                            <button
+                              type="button"
+                              onClick={handleRegPhoneSendOtp}
+                              disabled={submitting}
+                              className="text-[10px] text-primary font-semibold hover:underline"
+                            >
+                              Qayta yuborish
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+
                   type="submit"
                   disabled={submitting || (mode === "register" && !passwordStrong)}
                   className="w-full bg-hero-gradient text-primary-foreground border-0 h-11"
