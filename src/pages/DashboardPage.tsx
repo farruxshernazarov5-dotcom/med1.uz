@@ -34,6 +34,7 @@ const DashboardPage = () => {
         {userRole === "diagnostics" && <DiagnosticsDashboard />}
         {userRole === "maternity" && <MaternityDashboard />}
         {userRole === "cosmetology" && <CosmetologyDashboard />}
+        {userRole === "doctor" && <DoctorDashboard />}
         {(!userRole || userRole === "patient") && <PatientDashboard />}
       </div>
       <Footer />
