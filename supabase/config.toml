@@ -3,3 +3,5 @@ project_id = "wiqcfyecdmararxqdmfk"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.telegram-otp]
+    verify_jwt = false

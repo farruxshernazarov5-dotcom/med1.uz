@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2 } from "lucide-react";
+import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const roles = [
@@ -67,29 +68,67 @@ const AuthPage = () => {
   };
 
   const handlePhoneSendOtp = async () => {
-    if (phone.length < 13) {
+    const cleanPhone = phone.replace(/\s/g, "");
+    if (cleanPhone.length < 13) {
       toast({ title: "Telefon raqamini to'liq kiriting", variant: "destructive" });
       return;
     }
     setSubmitting(true);
-    const { error } = await signInWithPhone(phone);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
-      setOtpSent(true);
-      toast({ title: "SMS kod yuborildi", description: `${phone} raqamiga tasdiqlash kodi yuborildi` });
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-otp/send-otp", {
+        body: { phone: cleanPhone },
+      });
+      if (error) throw error;
+      if (data?.error === "not_linked") {
+        toast({
+          title: "Telegram bot bilan ulanmagan",
+          description: "Avval @Med1UzBot ga telefon raqamingizni yuboring, keyin qayta urinib ko'ring.",
+          variant: "destructive",
+        });
+      } else if (data?.success) {
+        setOtpSent(true);
+        toast({ title: "Telegram kod yuborildi", description: `${cleanPhone} raqamiga Telegram orqali kod yuborildi` });
+      } else {
+        toast({ title: "Xatolik", description: data?.message || "Noma'lum xatolik", variant: "destructive" });
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
 
   const handlePhoneVerifyOtp = async () => {
     setSubmitting(true);
-    const { error } = await verifyPhoneOtp(phone, otpCode);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Xush kelibsiz!" });
-      navigate("/dashboard");
+    try {
+      const cleanPhone = phone.replace(/\s/g, "");
+      const { data, error } = await supabase.functions.invoke("telegram-otp/verify-otp", {
+        body: { phone: cleanPhone, otp: otpCode },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Xatolik", description: data.error, variant: "destructive" });
+      } else if (data?.has_account && data?.hashed_token) {
+        // Use the magic link token to sign in
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          token_hash: data.hashed_token,
+          type: "magiclink",
+        });
+        if (verifyErr) {
+          toast({ title: "Xatolik", description: verifyErr.message, variant: "destructive" });
+        } else {
+          toast({ title: "Xush kelibsiz!" });
+          navigate("/dashboard");
+        }
+      } else {
+        toast({
+          title: "Kod tasdiqlandi",
+          description: "Bu raqam bilan bog'langan hisob topilmadi. Email orqali ro'yxatdan o'ting.",
+        });
+        setMode("register");
+        setOtpSent(false);
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
@@ -214,9 +253,19 @@ const AuthPage = () => {
               </div>
             )}
 
-            {/* Phone auth (login only) */}
+            {/* Phone auth via Telegram (login only) */}
             {mode === "login" && authMethod === "phone" && (
               <div className="space-y-4">
+                {!otpSent && (
+                  <div className="p-3 bg-muted/40 rounded-xl text-xs text-muted-foreground space-y-2">
+                    <p className="font-semibold text-foreground flex items-center gap-1.5">
+                      <Send className="w-3.5 h-3.5 text-primary" /> Telegram orqali kirish
+                    </p>
+                    <p>1. <a href="https://t.me/Med1UzBot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline">@Med1UzBot</a> ga o'ting</p>
+                    <p>2. Botga telefon raqamingizni yuboring (masalan: +998901234567)</p>
+                    <p>3. Pastda telefon raqamni kiritib "Telegram kod yuborish" tugmasini bosing</p>
+                  </div>
+                )}
                 <div>
                   <Label className="text-xs">Telefon raqam</Label>
                   <div className="relative mt-1">
@@ -234,7 +283,7 @@ const AuthPage = () => {
 
                 {otpSent && (
                   <div>
-                    <Label className="text-xs">SMS kod</Label>
+                    <Label className="text-xs">Telegram kod</Label>
                     <Input
                       type="text"
                       value={otpCode}
@@ -253,7 +302,7 @@ const AuthPage = () => {
                   onClick={otpSent ? handlePhoneVerifyOtp : handlePhoneSendOtp}
                 >
                   {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {otpSent ? "Tasdiqlash" : "SMS kod yuborish"}
+                  {otpSent ? "Tasdiqlash" : "Telegram kod yuborish"}
                 </Button>
 
                 {otpSent && (
