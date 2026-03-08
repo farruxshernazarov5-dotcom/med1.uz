@@ -217,7 +217,7 @@ const PharmacyRegistrationPage = () => {
                   <div><Label>Tuman / Shahar</Label>
                     <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={form.city} onChange={e => set("city", e.target.value)}>
                       <option value="">Tanlang</option>
-                      {districts.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                      {districts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
                     </select>
                   </div>
                 )}
