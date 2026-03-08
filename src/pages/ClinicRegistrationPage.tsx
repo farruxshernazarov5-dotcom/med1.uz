@@ -196,7 +196,7 @@ const ClinicRegistrationPage = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("registered_clinics").insert({
+    const { data: clinicData, error } = await supabase.from("registered_clinics").insert({
       name: form.name.trim(),
       category: form.type,
       address: `${form.region}, ${form.city}, ${form.fullAddress}`,
@@ -214,10 +214,17 @@ const ClinicRegistrationPage = () => {
       owner_id: user.id,
       latitude: form.latitude ? parseFloat(form.latitude) : null,
       longitude: form.longitude ? parseFloat(form.longitude) : null,
-    } as any);
+    } as any).select("id").single();
     if (error) {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
+      // Upload logo if selected
+      if (logoFile && clinicData?.id) {
+        const logoUrl = await uploadLogo(clinicData.id);
+        if (logoUrl) {
+          await supabase.from("registered_clinics").update({ logo_url: logoUrl }).eq("id", clinicData.id);
+        }
+      }
       toast({ title: "✅ Klinika muvaffaqiyatli ro'yxatdan o'tkazildi!" });
       navigate("/dashboard");
     }
