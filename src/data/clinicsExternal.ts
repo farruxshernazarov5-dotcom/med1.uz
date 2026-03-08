@@ -96,16 +96,41 @@ function inferDirectionTags(specialties: string[], category?: string | null): st
   return tags;
 }
 
+/** Infer region and city from address/category text */
+function inferRegionCity(raw: RawClinic): { region: string; city: string } {
+  const text = [raw.address, raw.category || "", raw.clinic_type || "", ...(raw.specialties || [])].join(" ").toLowerCase();
+  const regionMap: [string, string, string[]][] = [
+    ["Samarqand viloyati", "Samarqand", ["самарканд", "samarqand"]],
+    ["Buxoro viloyati", "Buxoro", ["бухар", "buxoro"]],
+    ["Farg'ona viloyati", "Farg'ona", ["ферган", "farg'ona", "фаргона"]],
+    ["Andijon viloyati", "Andijon", ["андижан", "andijon"]],
+    ["Namangan viloyati", "Namangan", ["наманган", "namangan"]],
+    ["Xorazm viloyati", "Urganch", ["хорезм", "xorazm", "ургенч", "urganch"]],
+    ["Surxondaryo viloyati", "Termiz", ["сурхандар", "surxondaryo", "термез", "termiz"]],
+    ["Qashqadaryo viloyati", "Qarshi", ["кашкадар", "qashqadaryo", "карши", "qarshi"]],
+    ["Navoiy viloyati", "Navoiy", ["навои", "navoiy"]],
+    ["Jizzax viloyati", "Jizzax", ["джизак", "jizzax"]],
+    ["Sirdaryo viloyati", "Guliston", ["сырдар", "sirdaryo", "гулистан", "guliston"]],
+    ["Toshkent viloyati", "Toshkent viloyati", ["ташкентск.*обл", "toshkent viloyat"]],
+    ["Qoraqalpog'iston Respublikasi", "Nukus", ["каракалпак", "qoraqalpog", "нукус", "nukus"]],
+  ];
+  for (const [region, city, keywords] of regionMap) {
+    if (keywords.some(kw => text.includes(kw))) return { region, city };
+  }
+  return { region: "Toshkent shahri", city: "Toshkent" };
+}
+
 function mapRawClinic(raw: RawClinic, index: number): Clinic {
   const cleanedName = cleanName(raw.name);
   const slug = slugify(cleanedName) || `clinic-${raw.id.slice(0, 8)}-${index}`;
+  const { region, city } = inferRegionCity(raw);
 
   return {
     id: `ext-${slug}`,
     name: cleanedName,
     type: mapClinicType(raw.clinic_type, raw.category),
-    region: "Toshkent shahri",
-    city: "Toshkent",
+    region,
+    city,
     district: raw.district || "",
     address: raw.address || "",
     landmark: raw.landmark || "",

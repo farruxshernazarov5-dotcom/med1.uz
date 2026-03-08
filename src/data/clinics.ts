@@ -834,7 +834,7 @@ export const clinics: Clinic[] = [
       { id: "r103-7", author: "Atabek J.", rating: 4, date: "2025-01-30", text: "Nukusda tez yordam yaxshi ishlaydi." },
     ],
   },
-  // ==================== TOSHKENT YANGI KLINIKALAR (med24.uz) ====================
+  // ==================== TOSHKENT YANGI KLINIKALAR ====================
   {
     id: "b2b-beautyclinic",
     name: "B2B Beautyclinic",
@@ -855,7 +855,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/b2b-beautyclinic",
+    website: undefined,
     services: ["Plastika vek", "Rinoplastika", "Abdominoplastika", "Mammoplastika", "Liposaktsiya", "Soch ko'chirish"],
   },
   {
@@ -878,7 +878,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/citymed",
+    website: undefined,
     services: ["Gastrofibroskopiya", "UZI", "MSKT", "Rentgenografiya", "MRT", "Laboratoriya", "HIPEC", "Fizioterapiya"],
   },
   {
@@ -901,7 +901,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/de-factum-laboratories",
+    website: undefined,
     services: ["Mutaxassis maslahati", "Laboratoriya", "Apparat diagnostikasi"],
   },
   {
@@ -924,7 +924,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/doctor-d",
+    website: undefined,
     services: ["Laboratoriya (300+ tahlil)", "Endoskopiya", "UZI", "Rentgen", "Genetik tekshiruv", "Allergoproba", "Uyga chaqirish xizmati"],
   },
   {
@@ -947,7 +947,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/incare-lab-beruni",
+    website: undefined,
     services: ["Tibbiy tahlillar", "Aniq diagnostika"],
   },
   {
@@ -970,7 +970,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/international-allergy-center",
+    website: undefined,
     services: ["Laboratoriya diagnostikasi", "Allergik testlar", "Yevropa standartlari"],
   },
   {
@@ -993,7 +993,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/m-clinic",
+    website: undefined,
     services: ["KT", "MRT 3.0", "Diagnostika", "Laboratoriya", "Bolalar klinikasi"],
   },
   {
@@ -1016,7 +1016,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/mds-servis",
+    website: undefined,
     services: ["Rentgen", "Tomografiya", "UZI", "Dopplerografiya", "EKG", "Gastroskopiya", "Kolonoskopiya", "Laboratoriya (400+ tahlil)"],
   },
   {
@@ -1039,7 +1039,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/medion",
+    website: undefined,
     services: ["UZI", "MRT", "MSKT", "Endoskopiya", "Elektroentsefalografiya", "SPA", "Massaj"],
   },
   {
@@ -1062,7 +1062,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/shox-med-center",
+    website: undefined,
     services: ["UZI", "Rentgen", "MSKT", "EFGDS", "MRA", "MRT", "Laboratoriya", "Statsionar", "Reanimatsiya"],
   },
 ];
