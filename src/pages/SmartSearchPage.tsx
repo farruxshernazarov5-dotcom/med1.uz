@@ -548,7 +548,7 @@ const SmartSearchPage = () => {
                           className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground">{t.term}</p>
-                            <p className="text-xs text-muted-foreground line-clamp-1">{t.category && `${t.category} · `}{t.definition?.slice(0, 80)}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">{t.category && `${t.category} · `}{t.shortDesc?.slice(0, 80)}</p>
                           </div>
                           <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         </Link>
