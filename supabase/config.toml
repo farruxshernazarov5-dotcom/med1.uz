@@ -5,3 +5,5 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.telegram-otp]
     verify_jwt = false
+  [functions.symptom-checker]
+    verify_jwt = false
