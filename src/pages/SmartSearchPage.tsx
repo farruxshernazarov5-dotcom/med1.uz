@@ -499,7 +499,7 @@ const SmartSearchPage = () => {
 
                 {/* Diseases */}
                 {result.localDiseases.length > 0 && (
-                  <ResultSection title="Kasalliklar" icon={<Virus className="w-4 h-4 text-primary" />}
+                  <ResultSection title="Kasalliklar" icon={<HeartPulse className="w-4 h-4 text-primary" />}
                     onMore={result.localDiseases.length > 5 ? () => setActiveTab("diseases") : undefined}
                     moreCount={result.localDiseases.length}>
                     <div className="grid gap-2">
