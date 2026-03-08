@@ -424,9 +424,10 @@ const ClinicsPage = () => {
     setSearch("");
     setSelectedRegion("");
     setSelectedSpecialty("");
+    setSelectedDirection("");
   };
 
-  const hasFilters = search || selectedRegion || selectedSpecialty;
+  const hasFilters = search || selectedRegion || selectedSpecialty || selectedDirection;
 
   return (
     <SectionLayout
