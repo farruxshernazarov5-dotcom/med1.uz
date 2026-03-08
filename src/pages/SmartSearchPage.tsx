@@ -359,6 +359,10 @@ const SmartSearchPage = () => {
   // Computed counts
   const allClinicsCount = (result?.clinics?.length || 0) + (result?.localClinics?.length || 0);
   const allServicesCount = (result?.diagnosticsServices?.length || 0) + (result?.clinicServices?.length || 0);
+  const allExtraCount = (result?.localNews?.length || 0) + (result?.localHealthTips?.length || 0) +
+    (result?.localPharmacies?.length || 0) + (result?.localDiagnostics?.length || 0) +
+    (result?.localMaternity?.length || 0) + (result?.localBloodBanks?.length || 0) +
+    (result?.localMedtech?.length || 0) + (result?.localCosmetology?.length || 0);
 
   return (
     <div className="min-h-screen bg-background">
