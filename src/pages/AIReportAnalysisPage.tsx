@@ -527,6 +527,21 @@ const AIReportAnalysisPage = () => {
 
               {/* Action buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={() => downloadAIReport({
+                  title: "Analiz Natijalari Tahlili",
+                  serviceType: "Laboratoriya Analiz Tahlili",
+                  riskLevel: analysis.urgentAttention ? "Yuqori" : "Normal",
+                  suggestedSpecialist: analysis.suggestedSpecialist,
+                  sections: [
+                    { heading: "Umumiy xulosa", content: analysis.summary },
+                    ...(analysis.indicators.length > 0 ? [{ heading: "Ko'rsatkichlar", content: analysis.indicators.map(ind => `${ind.name}: ${ind.value} (Normal: ${ind.normalRange}) — ${ind.interpretation}`).join("\n") }] : []),
+                    ...(analysis.concerns.length > 0 ? [{ heading: "Ehtimoliy muammolar", content: analysis.concerns.join("\n") }] : []),
+                    { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
+                    ...(analysis.followUpTests?.length ? [{ heading: "Qo'shimcha tahlillar", content: analysis.followUpTests.join(", ") }] : []),
+                  ],
+                })} variant="outline" className="flex-1">
+                  <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
+                </Button>
                 {user && (
                   <Button onClick={handleSaveToHistory} disabled={isSaving} className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
