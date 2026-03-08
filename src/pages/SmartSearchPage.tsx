@@ -43,7 +43,36 @@ const SmartSearchPage = () => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [isListening, setIsListening] = useState(false);
   const { toast } = useToast();
+
+  // Voice recognition
+  const startVoiceSearch = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Xatolik", description: "Brauzeringiz ovozli qidiruvni qo'llab-quvvatlamaydi. Chrome yoki Edge brauzerini ishlating.", variant: "destructive" });
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "uz-UZ";
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast({ title: "Xatolik", description: "Ovoz aniqlanmadi. Qaytadan urinib ko'ring.", variant: "destructive" });
+    };
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      if (event.results[0].isFinal) {
+        handleSearch(transcript);
+      }
+    };
+    recognition.start();
+  }, [toast]);
 
   // Load search history from localStorage
   useEffect(() => {
