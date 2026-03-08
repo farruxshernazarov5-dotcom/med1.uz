@@ -409,7 +409,7 @@ function generateReportHTML(data: ReportData): string {
       Bu hujjat AI tizimi tomonidan avtomatik yaratilgan
     </div>
     <div class="footer-qr">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`https://med1.uz/report/${reportId}`)}&color=0284c7" alt="QR Code" />
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`${window.location.origin}/report/${reportId}`)}&color=0284c7" alt="QR Code" />
       <p>med1.uz</p>
     </div>
   </div>

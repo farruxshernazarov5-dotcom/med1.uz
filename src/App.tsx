@@ -54,6 +54,7 @@ import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
 import PartnershipPage from "./pages/PartnershipPage";
+import ReportVerificationPage from "./pages/ReportVerificationPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -112,8 +113,9 @@ const App = () => (
            <Route path="/ai-radiology" element={<AIRadiologyPage />} />
            <Route path="/ai-health-assistant" element={<AIHealthAssistantPage />} />
            <Route path="/smart-search" element={<SmartSearchPage />} />
-           <Route path="/partnership" element={<PartnershipPage />} />
-          <Route path="*" element={<NotFound />} />
+            <Route path="/partnership" element={<PartnershipPage />} />
+            <Route path="/report/:reportId" element={<ReportVerificationPage />} />
+           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
