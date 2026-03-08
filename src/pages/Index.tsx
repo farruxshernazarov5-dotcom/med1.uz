@@ -6,7 +6,7 @@ import CenterContent from "@/components/CenterContent";
 import RightSidebar from "@/components/RightSidebar";
 import ContactLocationSection from "@/components/ContactLocationSection";
 import AISearchSection from "@/components/AISearchSection";
-import AIChatbot from "@/components/AIChatbot";
+import FloatingAIPanel from "@/components/FloatingAIPanel";
 import HomeNewsSection from "@/components/HomeNewsSection";
 import HomeSectionsPreview from "@/components/HomeSectionsPreview";
 import HomeArticlesPreview from "@/components/HomeArticlesPreview";
