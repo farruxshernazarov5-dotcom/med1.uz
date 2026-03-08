@@ -560,11 +560,7 @@ const AIReportAnalysisPage = () => {
                 </div>
               )}
 
-              <div className="bg-muted rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  ⚠️ AI tahlili tibbiy tashxis emas. Natijalarni malakali shifokor bilan muhokama qiling.
-                </p>
-              </div>
+              <MedicalDisclaimer />
             </div>
           )}
         </div>
