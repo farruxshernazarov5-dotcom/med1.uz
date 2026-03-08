@@ -13,7 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save, ArrowLeft,
-  ArrowRight, Check, User, GraduationCap, Phone, Mail, MapPin, Globe, Languages
+  ArrowRight, Check, User, GraduationCap, Phone, Mail, MapPin, Globe, Languages,
+  Instagram, Facebook, Youtube, Send as SendIcon
 } from "lucide-react";
 
 const SPECIALTIES = [
