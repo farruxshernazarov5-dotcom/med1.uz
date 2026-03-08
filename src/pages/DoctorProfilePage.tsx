@@ -129,6 +129,9 @@ const DoctorProfilePage = () => {
   const activeDays = DAYS.filter((d) => schedule[d.key]?.active);
   const certs = (doctor.certificates as string[]) || [];
   const langs = (doctor.languages as string[]) || [];
+  const socialLinks = (doctor.social_links || {}) as Record<string, string>;
+  const hasSocials = Object.values(socialLinks).some((v) => v?.trim());
+  const mapQuery = [doctor.address, doctor.city, doctor.region].filter(Boolean).join(", ");
 
   return (
     <div className="min-h-screen bg-background">
