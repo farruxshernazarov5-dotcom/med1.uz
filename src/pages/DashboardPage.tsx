@@ -26,6 +26,7 @@ const DashboardPage = () => {
       <div className="container mx-auto px-4 py-8">
         {userRole === "admin" && <AdminDashboard />}
         {userRole === "clinic" && <ClinicDashboard />}
+        {userRole === "vendor" && <VendorDashboard />}
         {(!userRole || userRole === "patient") && <PatientDashboard />}
       </div>
       <Footer />
