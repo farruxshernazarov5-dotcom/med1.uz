@@ -267,7 +267,7 @@ const PharmacyDashboard = () => {
                 {o.notes && <p className="text-xs text-muted-foreground mt-1">{o.notes}</p>}
                 {o.status === "pending" && (
                   <div className="flex gap-2 mt-3">
-                    <Button size="sm" onClick={() => updateOrderStatus(o.id, "confirmed")} className="bg-emerald-600 text-white">Tasdiqlash</Button>
+                    <Button size="sm" onClick={() => updateOrderStatus(o.id, "confirmed")} className="bg-primary text-primary-foreground">Tasdiqlash</Button>
                     <Button size="sm" variant="outline" onClick={() => updateOrderStatus(o.id, "cancelled")}>Bekor qilish</Button>
                   </div>
                 )}
