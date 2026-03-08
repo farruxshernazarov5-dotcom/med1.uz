@@ -528,7 +528,7 @@ const SmartSearchPage = () => {
 
             {/* Tabbed Results */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full justify-start overflow-x-auto">
+              <TabsList className="w-full justify-start overflow-x-auto flex-wrap gap-1">
                 <TabsTrigger value="all" className="text-xs">
                   Barchasi ({result.totalResults})
                 </TabsTrigger>
@@ -550,6 +550,11 @@ const SmartSearchPage = () => {
                 <TabsTrigger value="services" className="text-xs">
                   <Pill className="w-3 h-3 mr-1" /> Xizmatlar ({allServicesCount})
                 </TabsTrigger>
+                {allExtraCount > 0 && (
+                  <TabsTrigger value="more" className="text-xs">
+                    <Sparkles className="w-3 h-3 mr-1" /> Boshqa ({allExtraCount})
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               {/* All results */}
