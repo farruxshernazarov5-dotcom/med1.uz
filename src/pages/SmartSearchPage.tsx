@@ -299,10 +299,12 @@ const SmartSearchPage = () => {
         (aiData?.doctors?.length || 0) +
         (aiData?.diagnosticsServices?.length || 0) +
         (aiData?.clinicServices?.length || 0) +
-        local.localClinics.length +
-        local.localArticles.length +
-        local.localDiseases.length +
-        local.localTerms.length;
+        local.localClinics.length + local.localArticles.length +
+        local.localDiseases.length + local.localTerms.length +
+        local.localNews.length + local.localHealthTips.length +
+        local.localPharmacies.length + local.localDiagnostics.length +
+        local.localMaternity.length + local.localBloodBanks.length +
+        local.localMedtech.length + local.localCosmetology.length;
 
       setResult({
         aiAnalysis,
@@ -311,10 +313,7 @@ const SmartSearchPage = () => {
         diagnosticsServices: aiData?.diagnosticsServices || [],
         clinicServices: aiData?.clinicServices || [],
         totalResults,
-        localClinics: local.localClinics,
-        localArticles: local.localArticles,
-        localDiseases: local.localDiseases,
-        localTerms: local.localTerms,
+        ...local,
       });
     } catch (err: any) {
       // Even if AI fails, show local results
