@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Star, Zap, ArrowRight } from "lucide-react";
+import { CheckCircle2, Star, Zap, ArrowRight, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ const PricingSection = () => {
     supabase
       .from("platform_plans")
       .select("*")
+      .eq("category", "ai")
       .order("sort_order")
       .then(({ data }) => setPlans(data || []));
   }, []);
@@ -24,32 +25,32 @@ const PricingSection = () => {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-accent px-4 py-2 rounded-full text-sm font-medium text-accent-foreground mb-4">
             <Zap className="w-4 h-4" />
-            <span>Klinikalar uchun tariflar</span>
+            <span>AI xizmatlar tariflari</span>
           </div>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
             Xizmat <span className="text-gradient">tariflari</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Klinikangiz uchun eng mos tarifni tanlang va platformadan to'liq foydalaning
+            AI tibbiy xizmatlardan to'liq foydalanish uchun o'zingizga mos tarifni tanlang
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => {
             const features = Array.isArray(plan.features) ? plan.features : [];
             return (
               <div
                 key={plan.id}
                 className={cn(
-                  "bg-card rounded-2xl border p-6 flex flex-col transition-all",
+                  "bg-card rounded-2xl border p-6 flex flex-col transition-all hover:shadow-lg",
                   plan.is_popular
-                    ? "border-primary shadow-lg shadow-primary/10 relative"
+                    ? "border-primary shadow-lg shadow-primary/10 relative scale-[1.02]"
                     : "border-border shadow-card"
                 )}
               >
                 {plan.is_popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                    <span className="inline-flex items-center gap-1 bg-hero-gradient text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
                       <Star className="w-3 h-3" /> Mashhur
                     </span>
                   </div>
@@ -64,7 +65,7 @@ const PricingSection = () => {
                       <span className="text-sm text-muted-foreground"> so'm/oy</span>
                     </>
                   ) : (
-                    <span className="text-xl font-bold text-foreground">Kelishilgan narx</span>
+                    <span className="text-2xl font-bold text-primary">Bepul</span>
                   )}
                 </div>
 
@@ -79,17 +80,23 @@ const PricingSection = () => {
 
                 <Button asChild className={cn(
                   "w-full",
-                  plan.is_popular
-                    ? "bg-hero-gradient text-primary-foreground border-0"
-                    : "variant-outline"
+                  plan.is_popular && "bg-hero-gradient border-0"
                 )} variant={plan.is_popular ? "default" : "outline"}>
-                  <Link to="/auth">
-                    Boshlash <ArrowRight className="w-4 h-4 ml-1" />
+                  <Link to="/pricing">
+                    Batafsil <ArrowRight className="w-4 h-4 ml-1" />
                   </Link>
                 </Button>
               </div>
             );
           })}
+        </div>
+
+        <div className="text-center mt-8">
+          <Button asChild variant="link" className="text-primary">
+            <Link to="/pricing">
+              Barcha tariflarni ko'rish <ArrowRight className="w-4 h-4 ml-1" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
