@@ -447,7 +447,7 @@ const SmartSearchPage = () => {
                   <Stethoscope className="w-3 h-3 mr-1" /> Shifokorlar ({result.doctors.length})
                 </TabsTrigger>
                 <TabsTrigger value="diseases" className="text-xs">
-                  <Virus className="w-3 h-3 mr-1" /> Kasalliklar ({result.localDiseases?.length || 0})
+                  <HeartPulse className="w-3 h-3 mr-1" /> Kasalliklar ({result.localDiseases?.length || 0})
                 </TabsTrigger>
                 <TabsTrigger value="articles" className="text-xs">
                   <BookOpen className="w-3 h-3 mr-1" /> Maqolalar ({result.localArticles?.length || 0})
