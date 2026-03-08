@@ -26,7 +26,7 @@ const ReportVerificationPage = () => {
         <Card className="glass-card border-primary/20 mb-6">
           <CardContent className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+              <CheckCircle className="w-6 h-6 text-emerald-500 flex-shrink-0" />
               <div>
                 <p className="font-semibold text-foreground">Hisobot tasdiqlangan ✓</p>
                 <p className="text-sm text-muted-foreground">
