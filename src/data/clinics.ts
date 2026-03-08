@@ -1039,7 +1039,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/medion",
+    website: undefined,
     services: ["UZI", "MRT", "MSKT", "Endoskopiya", "Elektroentsefalografiya", "SPA", "Massaj"],
   },
   {
