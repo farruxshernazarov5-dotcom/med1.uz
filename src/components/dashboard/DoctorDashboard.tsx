@@ -81,6 +81,13 @@ const DoctorDashboard = () => {
         address: doc.address || "",
         region: doc.region || "",
         city: doc.city || "",
+        social_links: {
+          telegram: (doc.social_links as any)?.telegram || "",
+          instagram: (doc.social_links as any)?.instagram || "",
+          facebook: (doc.social_links as any)?.facebook || "",
+          youtube: (doc.social_links as any)?.youtube || "",
+          website: (doc.social_links as any)?.website || "",
+        },
       });
 
       // Fetch reviews
