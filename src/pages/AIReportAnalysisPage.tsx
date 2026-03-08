@@ -11,6 +11,8 @@ import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Min
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import { downloadAIReport } from "@/utils/downloadAIReport";
 
 interface Indicator {
   name: string;
