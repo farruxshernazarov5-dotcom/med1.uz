@@ -1247,6 +1247,39 @@ export type Database = {
           },
         ]
       }
+      telegram_otp: {
+        Row: {
+          chat_id: number | null
+          created_at: string | null
+          id: string
+          is_verified: boolean | null
+          otp_code: string | null
+          otp_expires_at: string | null
+          phone: string
+          updated_at: string | null
+        }
+        Insert: {
+          chat_id?: number | null
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          otp_code?: string | null
+          otp_expires_at?: string | null
+          phone: string
+          updated_at?: string | null
+        }
+        Update: {
+          chat_id?: number | null
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          otp_code?: string | null
+          otp_expires_at?: string | null
+          phone?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
