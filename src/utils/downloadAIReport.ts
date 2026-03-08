@@ -54,19 +54,21 @@ function generateReportHTML(data: ReportData): string {
     overflow:hidden;
   }
 
-  /* Watermark - repeating logo pattern */
+   /* Watermark - center logo */
   .watermark-logo{
     position:fixed;
-    top:0;left:0;right:0;bottom:0;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
     pointer-events:none;
     z-index:0;
     user-select:none;
+    width:420px;
+    height:420px;
     background-image:url('/images/med1-logo-watermark.png');
-    background-repeat:repeat;
-    background-size:140px 140px;
-    opacity:0.06;
-    transform:rotate(-20deg) scale(1.3);
-    transform-origin:center center;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:contain;
+    opacity:0.08;
   }
 
   .content{position:relative;z-index:1;}
@@ -263,12 +265,14 @@ function generateReportHTML(data: ReportData): string {
   .footer-left{font-size:11px;color:#94a3b8;line-height:1.8;}
   .footer-left a{color:#0ea5e9;text-decoration:none;font-weight:600;}
   .footer-qr{
-    width:64px;height:64px;
-    background:#e2e8f0;
-    border-radius:8px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:8px;color:#94a3b8;text-align:center;
+    text-align:center;
   }
+  .footer-qr img{
+    width:80px;height:80px;
+    border-radius:8px;
+    border:2px solid #e2e8f0;
+  }
+  .footer-qr p{font-size:9px;color:#94a3b8;margin-top:4px;}
 
   /* Print button */
   .no-print{text-align:center;padding:24px;background:#f8fafc;}
@@ -405,7 +409,8 @@ function generateReportHTML(data: ReportData): string {
       Bu hujjat AI tizimi tomonidan avtomatik yaratilgan
     </div>
     <div class="footer-qr">
-      med1.uz<br>🌐
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`https://med1.uz/report/${reportId}`)}&color=0284c7" alt="QR Code" />
+      <p>med1.uz</p>
     </div>
   </div>
 
