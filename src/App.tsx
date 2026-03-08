@@ -48,6 +48,7 @@ import DoctorsPage from "./pages/DoctorsPage";
 import DoctorProfilePage from "./pages/DoctorProfilePage";
 import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
 import SmartSearchPage from "./pages/SmartSearchPage";
+import AIDiagnostikaPage from "./pages/AIDiagnostikaPage";
 import FloatingAISearch from "./components/FloatingAISearch";
 
 const queryClient = new QueryClient();
@@ -103,6 +104,7 @@ const App = () => (
            <Route path="/ai-doctor-chat" element={<AIDoctorChatPage />} />
            <Route path="/ai-report-analysis" element={<AIReportAnalysisPage />} />
            <Route path="/ai-health-risk" element={<AIHealthRiskPage />} />
+           <Route path="/ai-diagnostika" element={<AIDiagnostikaPage />} />
            <Route path="/smart-search" element={<SmartSearchPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
