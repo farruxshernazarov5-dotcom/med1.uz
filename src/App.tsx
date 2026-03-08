@@ -54,6 +54,7 @@ import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
 import PartnershipPage from "./pages/PartnershipPage";
+import ReportVerificationPage from "./pages/ReportVerificationPage";
 const queryClient = new QueryClient();
 
 const App = () => (
