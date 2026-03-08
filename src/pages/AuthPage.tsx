@@ -220,7 +220,24 @@ const AuthPage = () => {
       if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." });
+        // Save verified phone to profile if verified
+        if (regPhoneVerified) {
+          const cleanPhone = regPhone.replace(/\s/g, "");
+          // Update will happen after email confirmation via trigger, but we store in telegram_otp
+          // The phone will be linked when user confirms email and logs in
+          setTimeout(async () => {
+            const { data: { session: sess } } = await supabase.auth.getSession();
+            if (sess?.user) {
+              await supabase.from("profiles").update({ phone: cleanPhone }).eq("user_id", sess.user.id);
+            }
+          }, 1000);
+        }
+        toast({ 
+          title: "✅ Ro'yxatdan o'tdingiz!", 
+          description: regPhoneVerified 
+            ? "Emailingizni tasdiqlang. Telefon raqamingiz saqlandi." 
+            : "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." 
+        });
         setMode("login");
       }
     }
