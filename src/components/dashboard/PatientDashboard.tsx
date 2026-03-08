@@ -86,6 +86,7 @@ const PatientDashboard = () => {
         {activeTab === "appointments" && <PatientAppointments />}
         {activeTab === "nearby" && <PatientNearby />}
         {activeTab === "history" && <PatientMedicalHistory />}
+        {activeTab === "ai-history" && <PatientAIHistory />}
         {activeTab === "documents" && <PatientDocuments />}
         {activeTab === "health" && <PatientHealth />}
         {activeTab === "reviews" && <PatientReviews />}
