@@ -374,9 +374,17 @@ const ClinicsPage = () => {
   const [search, setSearch] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
+  const [selectedDirection, setSelectedDirection] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const allClinics = useMemo(() => [...clinics, ...externalClinics], []);
+
+  // Collect unique direction tags
+  const directionTags = useMemo(() => {
+    const tags = new Set<string>();
+    allClinics.forEach(c => c.directionTags?.forEach(t => tags.add(t)));
+    return Array.from(tags).sort((a, b) => a.localeCompare(b, "uz"));
+  }, [allClinics]);
 
   const filteredClinics = useMemo(() => {
     return allClinics.filter((c) => {
@@ -394,7 +402,8 @@ const ClinicsPage = () => {
           c.address.toLowerCase().includes(q) ||
           c.specialties.some((s) => s.toLowerCase().includes(q)) ||
           c.city.toLowerCase().includes(q) ||
-          c.district.toLowerCase().includes(q);
+          c.district.toLowerCase().includes(q) ||
+          (c.directionTags || []).some(t => t.toLowerCase().includes(q));
         if (!match) return false;
       }
 
@@ -404,9 +413,12 @@ const ClinicsPage = () => {
       // Specialty
       if (selectedSpecialty && !c.specialties.includes(selectedSpecialty)) return false;
 
+      // Direction tag
+      if (selectedDirection && !(c.directionTags || []).includes(selectedDirection)) return false;
+
       return true;
     });
-  }, [search, selectedRegion, selectedSpecialty, activeTab]);
+  }, [search, selectedRegion, selectedSpecialty, selectedDirection, activeTab]);
 
   const clearFilters = () => {
     setSearch("");
