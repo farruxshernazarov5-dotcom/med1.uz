@@ -13,7 +13,31 @@ const popularSearches = [
 
 const AISearchSection = () => {
   const [query, setQuery] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const startVoiceSearch = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: "Xatolik", description: "Brauzeringiz ovozli qidiruvni qo'llab-quvvatlamaydi.", variant: "destructive" });
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "uz-UZ";
+    recognition.interimResults = true;
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => { setIsListening(false); };
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setQuery(transcript);
+      if (event.results[0].isFinal) {
+        navigate(`/smart-search?q=${encodeURIComponent(transcript)}`);
+      }
+    };
+    recognition.start();
+  }, [navigate, toast]);
 
   const handleSearch = () => {
     if (!query.trim()) return;
