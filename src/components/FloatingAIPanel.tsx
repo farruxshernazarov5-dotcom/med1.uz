@@ -13,6 +13,7 @@ const AI_SERVICES = [
   { icon: UserCheck, title: "Sog'liq Assistenti", href: "/ai-health-assistant", desc: "24/7 AI yordamchi" },
   { icon: Baby, title: "AI Homiladorlik", href: "/ai-pregnancy", desc: "Homiladorlik yordamchisi" },
   { icon: Baby, title: "AI Bola Parvarishi", href: "/ai-baby-care", desc: "Chaqaloq parvarishi" },
+  { icon: Palette, title: "AI Kosmetologiya", href: "/ai-cosmetology", desc: "Teri tahlili va parvarish" },
 ];
 
 const FloatingAIPanel = () => {
