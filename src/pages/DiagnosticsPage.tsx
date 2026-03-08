@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import SectionLayout from "@/components/SectionLayout";
 import { Activity, Search, MapPin, Phone, Star, Clock, ChevronDown, ChevronUp, UserPlus, MessageSquare, Filter, X, Stethoscope, Award, Users, DollarSign, Info, AlertTriangle, CheckCircle2, ExternalLink } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
