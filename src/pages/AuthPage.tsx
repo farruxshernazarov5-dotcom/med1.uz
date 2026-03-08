@@ -40,7 +40,7 @@ const AuthPage = () => {
   const [role, setRole] = useState("patient");
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
 
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
