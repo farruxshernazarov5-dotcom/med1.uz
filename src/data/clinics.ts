@@ -947,7 +947,7 @@ export const clinics: Clinic[] = [
     image: "",
     specialists: [],
     reviews: [],
-    website: "https://med24.uz/klinika/incare-lab-beruni",
+    website: undefined,
     services: ["Tibbiy tahlillar", "Aniq diagnostika"],
   },
   {
