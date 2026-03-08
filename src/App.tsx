@@ -34,6 +34,7 @@ import DashboardPage from "./pages/DashboardPage";
 import BookingPage from "./pages/BookingPage";
 import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
 import VendorRegistrationPage from "./pages/VendorRegistrationPage";
+import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
 
 const queryClient = new QueryClient();
 
@@ -69,7 +70,8 @@ const App = () => (
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/clinic-register" element={<ClinicRegistrationPage />} />
-          <Route path="/vendor-register" element={<VendorRegistrationPage />} />
+           <Route path="/vendor-register" element={<VendorRegistrationPage />} />
+           <Route path="/diagnostics-register" element={<DiagnosticsRegistrationPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/user-guide" element={<UserGuidePage />} />

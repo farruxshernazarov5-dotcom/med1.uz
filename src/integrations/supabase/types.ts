@@ -349,6 +349,148 @@ export type Database = {
           },
         ]
       }
+      diagnostics_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          center_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          service_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          center_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          center_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          patient_name?: string
+          patient_phone?: string
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_appointments_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_photos: {
+        Row: {
+          caption: string | null
+          center_id: string
+          created_at: string
+          id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          center_id: string
+          created_at?: string
+          id?: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          center_id?: string
+          created_at?: string
+          id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_photos_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_services: {
+        Row: {
+          category: string
+          center_id: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          preparation_info: string | null
+          price: number
+        }
+        Insert: {
+          category?: string
+          center_id: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          preparation_info?: string | null
+          price?: number
+        }
+        Update: {
+          category?: string
+          center_id?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          preparation_info?: string | null
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_services_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           avg_rating: number | null
@@ -957,6 +1099,96 @@ export type Database = {
         }
         Relationships: []
       }
+      registered_diagnostics: {
+        Row: {
+          additional_phone: string | null
+          address: string | null
+          amenities: string[] | null
+          city: string | null
+          created_at: string
+          description: string | null
+          director_name: string | null
+          email: string | null
+          equipment_info: string | null
+          id: string
+          inn: string | null
+          is_active: boolean | null
+          latitude: number | null
+          legal_name: string | null
+          license_number: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          owner_id: string
+          phone: string | null
+          region: string | null
+          social_links: Json | null
+          specialties: string[] | null
+          telegram: string | null
+          updated_at: string
+          website: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          equipment_info?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          region?: string | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          equipment_info?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          region?: string | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           appointment_id: string | null
@@ -1047,7 +1279,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "patient" | "clinic" | "admin" | "vendor"
+      app_role: "patient" | "clinic" | "admin" | "vendor" | "diagnostics"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1175,7 +1407,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["patient", "clinic", "admin", "vendor"],
+      app_role: ["patient", "clinic", "admin", "vendor", "diagnostics"],
     },
   },
 } as const

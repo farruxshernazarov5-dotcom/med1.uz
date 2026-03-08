@@ -4,6 +4,7 @@ import PatientDashboard from "@/components/dashboard/PatientDashboard";
 import ClinicDashboard from "@/components/dashboard/ClinicDashboard";
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
 import VendorDashboard from "@/components/dashboard/VendorDashboard";
+import DiagnosticsDashboard from "@/components/dashboard/DiagnosticsDashboard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -27,6 +28,7 @@ const DashboardPage = () => {
         {userRole === "admin" && <AdminDashboard />}
         {userRole === "clinic" && <ClinicDashboard />}
         {userRole === "vendor" && <VendorDashboard />}
+        {userRole === "diagnostics" && <DiagnosticsDashboard />}
         {(!userRole || userRole === "patient") && <PatientDashboard />}
       </div>
       <Footer />
