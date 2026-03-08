@@ -59,6 +59,7 @@ import PharmacyRegistrationPage from "./pages/PharmacyRegistrationPage";
 import AIPregnancyPage from "./pages/AIPregnancyPage";
 import AIBabyCarePage from "./pages/AIBabyCarePage";
 import AICosmetologyPage from "./pages/AICosmetologyPage";
+import PricingPage from "./pages/PricingPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -122,7 +123,8 @@ const App = () => (
              <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
               <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
                <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
-               <Route path="/ai-cosmetology" element={<AICosmetologyPage />} />
+                <Route path="/ai-cosmetology" element={<AICosmetologyPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
              <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

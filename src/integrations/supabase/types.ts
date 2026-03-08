@@ -1534,6 +1534,7 @@ export type Database = {
       }
       platform_plans: {
         Row: {
+          category: string
           created_at: string
           description: string | null
           features: Json | null
@@ -1545,6 +1546,7 @@ export type Database = {
           sort_order: number | null
         }
         Insert: {
+          category?: string
           created_at?: string
           description?: string | null
           features?: Json | null
@@ -1556,6 +1558,7 @@ export type Database = {
           sort_order?: number | null
         }
         Update: {
+          category?: string
           created_at?: string
           description?: string | null
           features?: Json | null
