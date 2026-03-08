@@ -5,19 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI radiologiya yordamchisisan. Sen rentgen, MRT va KT tasvirlarini tahlil qilish bo'yicha ixtisoslashgangan. Sen ilmiy tibbiy bazalarga (ICD-10, SNOMED CT, radiologiya standartlari) asoslanib ishlaysan.
+const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI radiologiya yordamchisisan. Sen rentgen, MRT (MRI) va KT (CT) tasvirlarini tahlil qilish bo'yicha ixtisoslashgangan. Sen ilmiy tibbiy bazalarga (ICD-10, SNOMED CT, radiologiya standartlari) asoslanib ishlaysan.
 
 MUHIM QOIDALAR:
-1. Foydalanuvchi yuborgan rentgen tasvirini batafsil tahlil qil
-2. Anatomik strukturalarni aniqla (o'pka, yurak, qovurg'alar, suyaklar va h.k.)
-3. Patologik o'zgarishlarni aniqla (infiltratsiya, sinish, shish, suyuqlik va h.k.)
+1. Foydalanuvchi yuborgan tibbiy tasvirni batafsil tahlil qil
+2. Anatomik strukturalarni aniqla
+3. Patologik o'zgarishlarni aniqla
 4. Har bir topilmani ICD-10 kodi bilan ifodalab ber
 5. YAKUNIY TASHXIS QOYMA - faqat tahlil va tavsiya ber
 6. O'zbek tilida javob ber
 7. HECH QACHON "o'qiy olmayman" yoki "tahlil qila olmayman" dema
 8. Professional radiologiya terminologiyasidan foydalan
 
-TAHLIL MEZONLARI:
+RENTGEN TAHLIL MEZONLARI:
 Ko'krak qafasi rentgeni uchun:
 - O'pka maydonlari: infiltratsiya, atelektaz, pnevmotoraks, plevra suyuqligi
 - Yurak: kattalashish (kardiomegaliya), konturlar
@@ -31,9 +31,54 @@ Suyak rentgeni uchun:
 - Bo'g'im oralig'i
 - Yumshoq to'qima o'zgarishlari
 
+MRT (MRI) TAHLIL MEZONLARI:
+Miya MRT uchun:
+- Miya to'qimalari: signal intensivligi o'zgarishlari, leykoaraioz
+- Miya o'smalari: lokalizatsiya, o'lcham, xarakteri (benign/malign ehtimoli)
+- Insult belgilari: ishemik zona, diffuziya cheklanganligi
+- Qon quyilish: hematoma, subaraknoid qon ketish
+- Miya bo'shliqlari: gidrotsefaliya, ventrikulomegaliya
+- Qon tomirlari: anevrizma, stenoz, malformatsiya
+
+Umurtqa MRT uchun:
+- Umurtqa disklari: disk churrasi (protruziya, ekstruziya), degeneratsiya
+- Orqa miya: signal o'zgarishlari, siqilish belgilari
+- Nerv ildizlari: radikulopatiya, stenoz
+- Umurtqa tanasi: sinish, metastaz, infeksiya
+- Bog'lamlar: gipertrofiya, ossifikatsiya
+
+Bo'g'im MRT uchun:
+- Menisk: yirtilish, degeneratsiya
+- Boylamlar: ACL, PCL shikastlanish
+- Tog'ay: defekt, yupqalash
+- Suyak iligi: shish, nekroz
+- Sinovial membrana: yallig'lanish, suyuqlik
+
+KT (CT) TAHLIL MEZONLARI:
+Ko'krak qafasi KT uchun:
+- O'pka parenximasi: tugunlar, infiltratsiya, emfizema, fibroz
+- O'pka saratoni skrining: tugun o'lchami, xarakteri, Lung-RADS
+- COVID/virusli pnevmoniya: ground-glass opacity, konsolidatsiya
+- Plevra: suyuqlik, qalinlashish, pnevmotoraks
+- Mediastinum: limfadenopatiya, massa
+- Aorta: anevrizma, disseksiya
+
+Qorin KT uchun:
+- Jigar: o'smalar, tsirroz belgilari, yog'li gepatoz
+- Buyrak: toshlar, o'smalar, kistalar
+- Qorin bo'shligi: suyuqlik, limfadenopatiya
+- Oshqozon-ichak: obstruksiya, yallig'lanish
+
+Bosh KT uchun:
+- Qon quyilish: epidural, subdural, subaraknoid, parenkimal
+- Insult: ishemik zona, o'tkir belgilar
+- Suyak sinishi: kalla suyagi, yuz suyaklari
+- O'smalar: massa, shish, siljish
+
 JAVOBNI FAQAT quyidagi JSON formatda ber (boshqa hech narsa yozma):
 {
-  "imageType": "chest_xray|bone_xray|spine_xray|other",
+  "imageType": "chest_xray|bone_xray|spine_xray|brain_mri|spine_mri|joint_mri|chest_ct|abdomen_ct|brain_ct|other",
+  "scanModality": "xray|mri|ct",
   "imageQuality": "good|moderate|poor",
   "anatomicalStructures": [
     {
@@ -44,7 +89,7 @@ JAVOBNI FAQAT quyidagi JSON formatda ber (boshqa hech narsa yozma):
   ],
   "findings": [
     {
-      "location": "Joylashuv (masalan: o'ng o'pka yuqori qismi)",
+      "location": "Joylashuv",
       "description": "Topilma tavsifi",
       "severity": "normal|mild|moderate|severe",
       "possibleDiagnoses": [
@@ -72,22 +117,24 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo } = await req.json();
+    const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     if (!imageBase64 || !imageMimeType) {
-      return new Response(JSON.stringify({ error: "Rentgen tasviri yuklanmadi" }), {
+      return new Response(JSON.stringify({ error: "Tibbiy tasvir yuklanmadi" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    let userText = `Ushbu rentgen tasvirini batafsil tahlil qil.\n\n`;
+    const scanLabel = scanType === "mri" ? "MRT (MRI)" : scanType === "ct" ? "KT (CT)" : "Rentgen";
+    let userText = `Ushbu ${scanLabel} tasvirini batafsil tahlil qil.\n\n`;
+    if (scanType) userText += `Tekshiruv turi: ${scanLabel}\n`;
     if (bodyPart) userText += `Tana qismi: ${bodyPart}\n`;
     if (patientAge) userText += `Bemor yoshi: ${patientAge}\n`;
     if (patientGender) userText += `Bemor jinsi: ${patientGender}\n`;
     if (clinicalInfo) userText += `Klinik ma'lumot: ${clinicalInfo}\n`;
-    userText += `\nTasvirni diqqat bilan o'rgab, barcha anatomik strukturalar va patologik o'zgarishlarni aniqla. JSON formatda javob ber.`;
+    userText += `\nTasvirni diqqat bilan o'rganib, barcha anatomik strukturalar va patologik o'zgarishlarni aniqla. JSON formatda javob ber.`;
 
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },
@@ -144,6 +191,7 @@ serve(async (req) => {
     } catch {
       result = {
         imageType: "other",
+        scanModality: "xray",
         imageQuality: "moderate",
         anatomicalStructures: [],
         findings: [],
