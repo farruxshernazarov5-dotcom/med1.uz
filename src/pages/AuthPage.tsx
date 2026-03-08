@@ -208,9 +208,9 @@ const AuthPage = () => {
                 {submitting ? "Kutilmoqda..." : mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}
               </Button>
 
-              {mode === "register" && role === "clinic" && (
+              {mode === "register" && role !== "patient" && (
                 <p className="text-xs text-center text-muted-foreground">
-                  Ro'yxatdan o'tgandan so'ng klinika ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
+                  Ro'yxatdan o'tgandan so'ng {role === "clinic" ? "klinika" : role === "diagnostics" ? "diagnostika markazi" : "medtexnika"} ma'lumotlarini to'ldirish sahifasiga yo'naltirilasiz
                 </p>
               )}
             </form>
