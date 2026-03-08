@@ -390,6 +390,7 @@ const ClinicsPage = () => {
   const [selectedDirection, setSelectedDirection] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [groupBySpecialty, setGroupBySpecialty] = useState(false);
   const allClinics = useMemo(() => [...clinics, ...externalClinics], []);
 
   // Collect unique direction tags
