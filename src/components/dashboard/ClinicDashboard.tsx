@@ -87,6 +87,7 @@ const ClinicDashboard = () => {
     { id: "doctors" as const, label: "Shifokorlar", icon: Stethoscope },
     { id: "appointments" as const, label: "Qabullar", icon: Calendar },
     { id: "analytics" as const, label: "Analitika", icon: BarChart3 },
+    { id: "subscription" as const, label: "Obuna", icon: Crown },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
