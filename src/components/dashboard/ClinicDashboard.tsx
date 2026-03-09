@@ -125,6 +125,10 @@ const ClinicDashboard = () => {
     { id: "hms-emergency" as const, label: "Tez yordam", icon: Siren },
     { id: "hms-qa" as const, label: "Sifat", icon: ShieldCheck },
     { id: "hms-reports" as const, label: "Hisobotlar", icon: PieChart },
+    { id: "hms-appointment-portal" as const, label: "Onlayn qabul", icon: Globe },
+    { id: "hms-patient-portal" as const, label: "Bemor portal", icon: User },
+    { id: "hms-infection" as const, label: "Infektsiya", icon: ShieldAlert },
+    { id: "hms-schedule" as const, label: "Jadval", icon: CalendarDays },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
