@@ -5,7 +5,9 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2 } from "lucide-react";
+import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2, Shield, Activity } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
 
 type Msg = { role: "user" | "assistant"; content: string };
