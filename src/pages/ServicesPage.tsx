@@ -5,7 +5,7 @@ import {
   Brain, BookOpen, Building2, Activity, Pill, Droplets, Baby,
   UserCheck, Search, Megaphone, Stethoscope, FlaskConical,
   Shield, Heart, Target, Zap, CheckCircle2, ArrowRight,
-  Cpu, Database, Globe, TrendingUp, ChevronRight
+  Cpu, Database, Globe, TrendingUp, ChevronRight, Monitor
 } from "lucide-react";
 import AdBanner from "@/components/AdBanner";
 import PricingSection from "@/components/PricingSection";
@@ -17,6 +17,7 @@ import BloodBankServicesSection from "@/components/BloodBankServicesSection";
 import DoctorServicesSection from "@/components/DoctorServicesSection";
 import AdvertisingServicesSection from "@/components/AdvertisingServicesSection";
 import AIDiagnosticsServicesSection from "@/components/AIDiagnosticsServicesSection";
+import HMSServicesSection from "@/components/HMSServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
@@ -181,6 +182,22 @@ const mainServices = [
     ],
     highlight: "Tibbiy muassasalar uchun samarali marketing vositasi",
   },
+  {
+    id: "hms",
+    icon: Monitor,
+    number: "11",
+    title: "Kasalxona boshqaruv tizimi (HMS)",
+    subtitle: "24+ modulli to'liq raqamli boshqaruv platformasi",
+    color: "from-indigo-500 to-medical-blue",
+    features: [
+      "Bemor kartasi va qabul boshqaruvi",
+      "Laboratoriya va diagnostika moduli",
+      "Buxgalteriya va ish haqi tizimi",
+      "Dorixona va retsept boshqaruvi",
+      "Departament va to'shak nazorati",
+    ],
+    highlight: "Klinikangizning barcha jarayonlarini bitta tizimda boshqaring",
+  },
 ];
 
 const platformFeatures = [
@@ -336,6 +353,9 @@ const ServicesPage = () => {
 
       {/* Advertising & Premium Services */}
       <AdvertisingServicesSection />
+
+      {/* Hospital Management System */}
+      <HMSServicesSection />
 
       {/* Pricing Plans */}
       <PricingSection />

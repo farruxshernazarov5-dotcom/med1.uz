@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown, Microscope, Droplets, Megaphone } from "lucide-react";
+import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown, Microscope, Droplets, Megaphone, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ const categories = [
   { id: "bloodbank", label: "Qon banklari", icon: Droplets, color: "text-red-500" },
   { id: "doctor", label: "Shifokorlar", icon: Building2, color: "text-teal-500" },
   { id: "advertising", label: "Reklama", icon: Megaphone, color: "text-orange-500" },
+  { id: "hms", label: "HMS tizimi", icon: Monitor, color: "text-indigo-500" },
 ];
 
 const PricingPage = () => {
