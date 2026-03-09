@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
-  Stethoscope, CheckCircle, XCircle, Settings, BarChart3
+  Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
+  Crown, Monitor, FlaskConical, Wallet, Pill
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicProfileEditor from "./ClinicProfileEditor";
@@ -14,10 +15,12 @@ import DoctorEditor from "./DoctorEditor";
 import ClinicAnalytics from "./ClinicAnalytics";
 import ClinicServicesManager from "./ClinicServicesManager";
 import ClinicSubscription from "./ClinicSubscription";
+import HMSPatients from "@/components/hms/HMSPatients";
+import HMSLaboratory from "@/components/hms/HMSLaboratory";
+import HMSPayroll from "@/components/hms/HMSPayroll";
+import HMSPharmacy from "@/components/hms/HMSPharmacy";
 
-import { Crown } from "lucide-react";
-
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
