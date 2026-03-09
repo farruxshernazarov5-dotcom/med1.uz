@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import AdBanner from "@/components/AdBanner";
 import PricingSection from "@/components/PricingSection";
+import ClinicServicesSection from "@/components/ClinicServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
