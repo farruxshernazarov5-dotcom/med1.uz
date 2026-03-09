@@ -323,6 +323,10 @@ const CosmetologyDashboard = () => {
           </div>
         </TabsContent>
 
+        <TabsContent value="subscription" className="space-y-4">
+          <CosmetologySubscription />
+        </TabsContent>
+
         <TabsContent value="profile" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="font-heading font-bold text-lg flex items-center gap-2"><Settings className="w-5 h-5 text-primary" /> Profil sozlamalari</h2>

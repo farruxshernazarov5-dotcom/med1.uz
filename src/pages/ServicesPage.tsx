@@ -318,6 +318,9 @@ const ServicesPage = () => {
       {/* Maternity B2B Services */}
       <MaternityServicesSection />
 
+      {/* Cosmetology B2B Services */}
+      <CosmetologyServicesSection />
+
       {/* Pricing Plans */}
       <PricingSection />
 
