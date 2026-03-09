@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const categories = [
   { id: "ai", label: "AI Xizmatlar", icon: Brain, color: "text-primary" },
   { id: "clinic", label: "Klinikalar", icon: Building2, color: "text-blue-500" },
+  { id: "diagnostics", label: "Diagnostika", icon: Microscope, color: "text-cyan-500" },
   { id: "maternity", label: "Tug'ruqxonalar", icon: Baby, color: "text-pink-500" },
   { id: "cosmetology", label: "Kosmetologiya", icon: Sparkles, color: "text-purple-500" },
   { id: "pharmacy", label: "Dorixonalar", icon: Pill, color: "text-green-500" },
