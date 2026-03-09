@@ -361,6 +361,11 @@ const DiagnosticsDashboard = () => {
             </Card>
           </div>
         </TabsContent>
+
+        {/* Subscription Tab */}
+        <TabsContent value="subscription">
+          <DiagnosticsSubscription />
+        </TabsContent>
       </Tabs>
 
       <p className="text-xs text-muted-foreground text-center">Ma'lumot manbasi: med1.uz — {new Date().getFullYear()}</p>
