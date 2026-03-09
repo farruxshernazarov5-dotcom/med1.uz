@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
-  Crown, Monitor, FlaskConical, Wallet, Pill
+  Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicProfileEditor from "./ClinicProfileEditor";
@@ -19,8 +19,12 @@ import HMSPatients from "@/components/hms/HMSPatients";
 import HMSLaboratory from "@/components/hms/HMSLaboratory";
 import HMSPayroll from "@/components/hms/HMSPayroll";
 import HMSPharmacy from "@/components/hms/HMSPharmacy";
+import HMSBeds from "@/components/hms/HMSBeds";
+import HMSDepartments from "@/components/hms/HMSDepartments";
+import HMSCommunication from "@/components/hms/HMSCommunication";
+import HMSFilesAndDonors from "@/components/hms/HMSFilesAndDonors";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -95,6 +99,10 @@ const ClinicDashboard = () => {
     { id: "hms-lab" as const, label: "Laboratoriya", icon: FlaskConical },
     { id: "hms-payroll" as const, label: "Xodimlar/Maosh", icon: Wallet },
     { id: "hms-pharmacy" as const, label: "Dorixona", icon: Pill },
+    { id: "hms-beds" as const, label: "To'shaklar", icon: BedDouble },
+    { id: "hms-departments" as const, label: "Bo'limlar", icon: Building2 },
+    { id: "hms-communication" as const, label: "Aloqa", icon: Bell },
+    { id: "hms-files" as const, label: "Fayllar/Donor", icon: FileText },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
@@ -189,6 +197,10 @@ const ClinicDashboard = () => {
       {tab === "hms-lab" && <HMSLaboratory clinicId={clinic.id} />}
       {tab === "hms-payroll" && <HMSPayroll clinicId={clinic.id} />}
       {tab === "hms-pharmacy" && <HMSPharmacy clinicId={clinic.id} />}
+      {tab === "hms-beds" && <HMSBeds clinicId={clinic.id} />}
+      {tab === "hms-departments" && <HMSDepartments clinicId={clinic.id} />}
+      {tab === "hms-communication" && <HMSCommunication clinicId={clinic.id} />}
+      {tab === "hms-files" && <HMSFilesAndDonors clinicId={clinic.id} />}
     </div>
   );
 };
