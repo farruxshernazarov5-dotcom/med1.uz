@@ -19,8 +19,12 @@ import HMSPatients from "@/components/hms/HMSPatients";
 import HMSLaboratory from "@/components/hms/HMSLaboratory";
 import HMSPayroll from "@/components/hms/HMSPayroll";
 import HMSPharmacy from "@/components/hms/HMSPharmacy";
+import HMSBeds from "@/components/hms/HMSBeds";
+import HMSDepartments from "@/components/hms/HMSDepartments";
+import HMSCommunication from "@/components/hms/HMSCommunication";
+import HMSFilesAndDonors from "@/components/hms/HMSFilesAndDonors";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
