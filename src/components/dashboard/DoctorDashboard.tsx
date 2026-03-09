@@ -12,8 +12,10 @@ import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save,
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
-  Phone, Mail, MapPin, Globe, ExternalLink
+  Phone, Mail, MapPin, Globe, ExternalLink, Crown
 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import DoctorSubscription from "./DoctorSubscription";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
