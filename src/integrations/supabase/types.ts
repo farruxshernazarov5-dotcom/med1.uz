@@ -870,6 +870,47 @@ export type Database = {
         }
         Relationships: []
       }
+      hms_announcements: {
+        Row: {
+          clinic_id: string
+          content: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          priority: string | null
+          target_role: string | null
+          title: string
+        }
+        Insert: {
+          clinic_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          priority?: string | null
+          target_role?: string | null
+          title: string
+        }
+        Update: {
+          clinic_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          priority?: string | null
+          target_role?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_announcements_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hms_attendance: {
         Row: {
           attendance_date: string
@@ -917,6 +958,242 @@ export type Database = {
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "hms_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_beds: {
+        Row: {
+          admitted_at: string | null
+          bed_number: string
+          bed_type: string | null
+          clinic_id: string
+          created_at: string
+          daily_rate: number | null
+          department_id: string | null
+          expected_discharge: string | null
+          floor: string | null
+          id: string
+          notes: string | null
+          patient_id: string | null
+          room_number: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          admitted_at?: string | null
+          bed_number: string
+          bed_type?: string | null
+          clinic_id: string
+          created_at?: string
+          daily_rate?: number | null
+          department_id?: string | null
+          expected_discharge?: string | null
+          floor?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          room_number?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admitted_at?: string | null
+          bed_number?: string
+          bed_type?: string | null
+          clinic_id?: string
+          created_at?: string
+          daily_rate?: number | null
+          department_id?: string | null
+          expected_discharge?: string | null
+          floor?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          room_number?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_beds_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_beds_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "hms_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_beds_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "hms_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_departments: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          description: string | null
+          floor: string | null
+          head_staff_id: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          room_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          description?: string | null
+          floor?: string | null
+          head_staff_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          room_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          description?: string | null
+          floor?: string | null
+          head_staff_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          room_count?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_departments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_departments_head_staff_id_fkey"
+            columns: ["head_staff_id"]
+            isOneToOne: false
+            referencedRelation: "hms_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_donors: {
+        Row: {
+          blood_group: string
+          clinic_id: string
+          created_at: string
+          date_of_birth: string | null
+          donation_count: number | null
+          full_name: string
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          last_donation_date: string | null
+          notes: string | null
+          phone: string
+          rh_factor: string | null
+          updated_at: string
+        }
+        Insert: {
+          blood_group: string
+          clinic_id: string
+          created_at?: string
+          date_of_birth?: string | null
+          donation_count?: number | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          notes?: string | null
+          phone: string
+          rh_factor?: string | null
+          updated_at?: string
+        }
+        Update: {
+          blood_group?: string
+          clinic_id?: string
+          created_at?: string
+          date_of_birth?: string | null
+          donation_count?: number | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          notes?: string | null
+          phone?: string
+          rh_factor?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_donors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_files: {
+        Row: {
+          category: string | null
+          clinic_id: string
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          notes: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_files_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
         ]
@@ -1028,6 +1305,51 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "hms_lab_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_messages: {
+        Row: {
+          channel: string | null
+          clinic_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_name: string
+          sender_staff_id: string | null
+        }
+        Insert: {
+          channel?: string | null
+          clinic_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender_name: string
+          sender_staff_id?: string | null
+        }
+        Update: {
+          channel?: string | null
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender_name?: string
+          sender_staff_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_messages_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_messages_sender_staff_id_fkey"
+            columns: ["sender_staff_id"]
+            isOneToOne: false
+            referencedRelation: "hms_staff"
             referencedColumns: ["id"]
           },
         ]
