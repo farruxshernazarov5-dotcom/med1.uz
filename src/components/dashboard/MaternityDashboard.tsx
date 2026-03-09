@@ -14,6 +14,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import MaternitySubscription from "@/components/dashboard/MaternitySubscription";
 
 interface MaternityCenter {
   id: string; name: string; address: string; phone: string; email: string;
