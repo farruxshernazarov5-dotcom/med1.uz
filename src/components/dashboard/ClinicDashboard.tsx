@@ -8,7 +8,7 @@ import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
   Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart,
-  Scissors, Receipt, Wrench
+  Scissors, Receipt, Wrench, ListOrdered, Siren, ShieldCheck, PieChart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicProfileEditor from "./ClinicProfileEditor";
@@ -28,8 +28,12 @@ import HMSSurgery from "@/components/hms/HMSSurgery";
 import HMSInsurance from "@/components/hms/HMSInsurance";
 import HMSEMR from "@/components/hms/HMSEMR";
 import HMSEquipment from "@/components/hms/HMSEquipment";
+import HMSQueue from "@/components/hms/HMSQueue";
+import HMSEmergency from "@/components/hms/HMSEmergency";
+import HMSQA from "@/components/hms/HMSQA";
+import HMSReports from "@/components/hms/HMSReports";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -112,6 +116,10 @@ const ClinicDashboard = () => {
     { id: "hms-insurance" as const, label: "Moliya", icon: Receipt },
     { id: "hms-emr" as const, label: "EMR", icon: FileText },
     { id: "hms-equipment" as const, label: "Jihozlar", icon: Wrench },
+    { id: "hms-queue" as const, label: "Navbat", icon: ListOrdered },
+    { id: "hms-emergency" as const, label: "Tez yordam", icon: Siren },
+    { id: "hms-qa" as const, label: "Sifat", icon: ShieldCheck },
+    { id: "hms-reports" as const, label: "Hisobotlar", icon: PieChart },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
@@ -214,6 +222,10 @@ const ClinicDashboard = () => {
       {tab === "hms-insurance" && <HMSInsurance clinicId={clinic.id} />}
       {tab === "hms-emr" && <HMSEMR clinicId={clinic.id} />}
       {tab === "hms-equipment" && <HMSEquipment clinicId={clinic.id} />}
+      {tab === "hms-queue" && <HMSQueue clinicId={clinic.id} />}
+      {tab === "hms-emergency" && <HMSEmergency clinicId={clinic.id} />}
+      {tab === "hms-qa" && <HMSQA clinicId={clinic.id} />}
+      {tab === "hms-reports" && <HMSReports clinicId={clinic.id} />}
     </div>
   );
 };
