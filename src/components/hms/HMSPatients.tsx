@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search, User, Phone, Calendar, Edit2, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import HMSDownloadMenu from "./HMSDownloadMenu";
+import type { HMSReportData } from "@/utils/downloadHMSReport";
 
 interface Props {
   clinicId: string;
