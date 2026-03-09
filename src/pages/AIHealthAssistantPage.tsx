@@ -9,8 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2,
   Stethoscope, FileText, HeartPulse, Brain, Shield, Activity,
-  Utensils, Dumbbell, Search, Building2, Moon
+  Utensils, Dumbbell, Search, Building2, Moon, UserCheck
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiAssistantImg from "@/assets/ai-health-assistant.jpg";
 import ReactMarkdown from "react-markdown";
 
 type Msg = { role: "user" | "assistant"; content: string };
