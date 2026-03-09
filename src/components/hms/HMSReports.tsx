@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Users, Calendar, DollarSign, TrendingUp, Activity, Stethoscope, BedDouble } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from "recharts";
+import HMSDownloadMenu from "./HMSDownloadMenu";
+import type { HMSReportData } from "@/utils/downloadHMSReport";
 
 interface Props { clinicId: string; }
 
@@ -15,11 +17,13 @@ const HMSReports = ({ clinicId }: Props) => {
     revenue: 0, labOrders: 0, surgeries: 0, emergencies: 0, complaints: 0,
     monthlyAppts: [] as any[], departmentStats: [] as any[], revenueMonthly: [] as any[]
   });
+  const [clinicName, setClinicName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAll = async () => {
-      const [patRes, docRes, bedRes, apptRes, labRes, surgRes, emRes, compRes, invRes, deptRes] = await Promise.all([
+      const [clinicRes, patRes, docRes, bedRes, apptRes, labRes, surgRes, emRes, compRes, invRes, deptRes] = await Promise.all([
+        supabase.from("registered_clinics").select("name").eq("id", clinicId).single(),
         supabase.from("hms_patients").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId).eq("is_active", true),
         supabase.from("doctors").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId).eq("is_active", true),
         supabase.from("hms_beds").select("id, status").eq("clinic_id", clinicId),
@@ -32,11 +36,11 @@ const HMSReports = ({ clinicId }: Props) => {
         supabase.from("hms_departments").select("id, name").eq("clinic_id", clinicId).eq("is_active", true),
       ]);
 
+      setClinicName(clinicRes.data?.name || "");
       const beds = bedRes.data || [];
       const appts = apptRes.data || [];
       const invoices = invRes.data || [];
 
-      // Monthly appointments
       const monthlyMap: Record<string, number> = {};
       const months = ["Yan", "Fev", "Mar", "Apr", "May", "Iyn", "Iyl", "Avg", "Sen", "Okt", "Noy", "Dek"];
       appts.forEach(a => {
@@ -45,7 +49,6 @@ const HMSReports = ({ clinicId }: Props) => {
       });
       const monthlyAppts = months.map(m => ({ name: m, qabullar: monthlyMap[m] || 0 }));
 
-      // Monthly revenue
       const revMap: Record<string, number> = {};
       invoices.filter(i => i.status === "paid").forEach(i => {
         const m = new Date(i.invoice_date).getMonth();
@@ -53,7 +56,6 @@ const HMSReports = ({ clinicId }: Props) => {
       });
       const revenueMonthly = months.map(m => ({ name: m, daromad: revMap[m] || 0 }));
 
-      // Department bed stats
       const departmentStats = (deptRes.data || []).map(d => {
         const dBeds = beds.filter((b: any) => b.department_id === d.id);
         return { name: d.name.slice(0, 10), jami: dBeds.length, band: dBeds.filter((b: any) => b.status === "occupied").length };
@@ -94,9 +96,33 @@ const HMSReports = ({ clinicId }: Props) => {
     { name: "Boshqa", value: stats.appointments - stats.pendingAppts - stats.completedAppts },
   ].filter(d => d.value > 0);
 
+  // Prepare report data for download
+  const reportData: HMSReportData = {
+    title: "Klinika umumiy hisoboti",
+    moduleType: "HMS Hisobotlar",
+    clinicName,
+    kpiCards: kpiCards.map(k => ({ label: k.label, value: String(k.value) })),
+    sections: [
+      { heading: "Umumiy ko'rsatkichlar", content: `Bemorlar: ${stats.patients}\nShifokorlar: ${stats.doctors}\nTo'shaklar: ${stats.bedsOccupied}/${stats.beds}\nJami qabullar: ${stats.appointments}` },
+      { heading: "Moliyaviy ko'rsatkichlar", content: `Jami daromad: ${stats.revenue.toLocaleString()} so'm\nLaboratoriya: ${stats.labOrders} ta buyurtma\nOperatsiyalar: ${stats.surgeries} ta` },
+    ],
+    tables: stats.monthlyAppts.some(m => m.qabullar > 0) ? [{
+      title: "Oylik qabullar statistikasi",
+      table: {
+        headers: ["Oy", "Qabullar soni"],
+        rows: stats.monthlyAppts.filter(m => m.qabullar > 0).map(m => [m.name, String(m.qabullar)])
+      }
+    }] : undefined,
+  };
+
   return (
     <div>
-      <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2"><BarChart3 className="w-5 h-5 text-primary" /> Hisobotlar va analitika</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-heading text-xl font-bold text-foreground flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-primary" /> Hisobotlar va analitika
+        </h2>
+        <HMSDownloadMenu data={reportData} />
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         {kpiCards.map(k => (
