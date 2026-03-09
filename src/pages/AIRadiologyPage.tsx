@@ -10,8 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   Loader2, AlertTriangle, CheckCircle2, Image, X, Save, Camera, Upload,
   RefreshCcw, Activity, Stethoscope, MapPin, Search, Eye, Bone, Heart,
-  ShieldAlert, FlaskConical, Brain, Scan, Download,
+  ShieldAlert, FlaskConical, Brain, Scan, Download, Shield, Sparkles,
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiRadiologyImg from "@/assets/ai-radiology.jpg";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
