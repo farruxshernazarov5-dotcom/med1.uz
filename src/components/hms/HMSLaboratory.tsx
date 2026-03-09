@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Plus, FlaskConical, Clock, CheckCircle2, X, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import HMSDownloadMenu from "./HMSDownloadMenu";
+import type { HMSReportData } from "@/utils/downloadHMSReport";
 
 interface Props {
   clinicId: string;
