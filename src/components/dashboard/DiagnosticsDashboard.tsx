@@ -13,6 +13,7 @@ import {
   Microscope, Plus, Trash2, Edit, Save, X, Calendar, Users,
   TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2,
 } from "lucide-react";
+import DiagnosticsSubscription from "./DiagnosticsSubscription";
 
 interface DiagCenter {
   id: string;
