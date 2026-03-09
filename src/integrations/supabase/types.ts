@@ -1443,6 +1443,97 @@ export type Database = {
           },
         ]
       }
+      hms_infection_control: {
+        Row: {
+          area: string | null
+          clinic_id: string
+          created_at: string
+          department_id: string | null
+          equipment_name: string | null
+          id: string
+          infection_type: string | null
+          next_sterilization: string | null
+          notes: string | null
+          patient_id: string | null
+          performed_by: string | null
+          quarantine_end: string | null
+          quarantine_start: string | null
+          quarantine_status: string | null
+          record_type: string | null
+          severity: string | null
+          status: string | null
+          sterilization_date: string
+          sterilization_method: string | null
+          updated_at: string
+        }
+        Insert: {
+          area?: string | null
+          clinic_id: string
+          created_at?: string
+          department_id?: string | null
+          equipment_name?: string | null
+          id?: string
+          infection_type?: string | null
+          next_sterilization?: string | null
+          notes?: string | null
+          patient_id?: string | null
+          performed_by?: string | null
+          quarantine_end?: string | null
+          quarantine_start?: string | null
+          quarantine_status?: string | null
+          record_type?: string | null
+          severity?: string | null
+          status?: string | null
+          sterilization_date?: string
+          sterilization_method?: string | null
+          updated_at?: string
+        }
+        Update: {
+          area?: string | null
+          clinic_id?: string
+          created_at?: string
+          department_id?: string | null
+          equipment_name?: string | null
+          id?: string
+          infection_type?: string | null
+          next_sterilization?: string | null
+          notes?: string | null
+          patient_id?: string | null
+          performed_by?: string | null
+          quarantine_end?: string | null
+          quarantine_start?: string | null
+          quarantine_status?: string | null
+          record_type?: string | null
+          severity?: string | null
+          status?: string | null
+          sterilization_date?: string
+          sterilization_method?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_infection_control_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_infection_control_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "hms_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_infection_control_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "hms_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hms_invoices: {
         Row: {
           clinic_id: string
@@ -2192,6 +2283,76 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_staff_schedule: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          end_time: string | null
+          id: string
+          leave_reason: string | null
+          leave_type: string | null
+          notes: string | null
+          schedule_date: string
+          shift_type: string | null
+          staff_id: string
+          start_time: string | null
+          status: string | null
+          substitute_id: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          end_time?: string | null
+          id?: string
+          leave_reason?: string | null
+          leave_type?: string | null
+          notes?: string | null
+          schedule_date: string
+          shift_type?: string | null
+          staff_id: string
+          start_time?: string | null
+          status?: string | null
+          substitute_id?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          end_time?: string | null
+          id?: string
+          leave_reason?: string | null
+          leave_type?: string | null
+          notes?: string | null
+          schedule_date?: string
+          shift_type?: string | null
+          staff_id?: string
+          start_time?: string | null
+          status?: string | null
+          substitute_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_staff_schedule_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_staff_schedule_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "hms_staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_staff_schedule_substitute_id_fkey"
+            columns: ["substitute_id"]
+            isOneToOne: false
+            referencedRelation: "hms_staff"
             referencedColumns: ["id"]
           },
         ]

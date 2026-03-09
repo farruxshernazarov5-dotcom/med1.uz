@@ -8,7 +8,8 @@ import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
   Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart,
-  Scissors, Receipt, Wrench, ListOrdered, Siren, ShieldCheck, PieChart
+  Scissors, Receipt, Wrench, ListOrdered, Siren, ShieldCheck, PieChart,
+  CalendarDays, ShieldAlert, User, Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicProfileEditor from "./ClinicProfileEditor";
@@ -32,8 +33,12 @@ import HMSQueue from "@/components/hms/HMSQueue";
 import HMSEmergency from "@/components/hms/HMSEmergency";
 import HMSQA from "@/components/hms/HMSQA";
 import HMSReports from "@/components/hms/HMSReports";
+import HMSAppointmentPortal from "@/components/hms/HMSAppointmentPortal";
+import HMSPatientPortal from "@/components/hms/HMSPatientPortal";
+import HMSInfection from "@/components/hms/HMSInfection";
+import HMSSchedule from "@/components/hms/HMSSchedule";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports" | "hms-appointment-portal" | "hms-patient-portal" | "hms-infection" | "hms-schedule";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -120,6 +125,10 @@ const ClinicDashboard = () => {
     { id: "hms-emergency" as const, label: "Tez yordam", icon: Siren },
     { id: "hms-qa" as const, label: "Sifat", icon: ShieldCheck },
     { id: "hms-reports" as const, label: "Hisobotlar", icon: PieChart },
+    { id: "hms-appointment-portal" as const, label: "Onlayn qabul", icon: Globe },
+    { id: "hms-patient-portal" as const, label: "Bemor portal", icon: User },
+    { id: "hms-infection" as const, label: "Infektsiya", icon: ShieldAlert },
+    { id: "hms-schedule" as const, label: "Jadval", icon: CalendarDays },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
@@ -226,6 +235,10 @@ const ClinicDashboard = () => {
       {tab === "hms-emergency" && <HMSEmergency clinicId={clinic.id} />}
       {tab === "hms-qa" && <HMSQA clinicId={clinic.id} />}
       {tab === "hms-reports" && <HMSReports clinicId={clinic.id} />}
+      {tab === "hms-appointment-portal" && <HMSAppointmentPortal clinicId={clinic.id} />}
+      {tab === "hms-patient-portal" && <HMSPatientPortal clinicId={clinic.id} />}
+      {tab === "hms-infection" && <HMSInfection clinicId={clinic.id} />}
+      {tab === "hms-schedule" && <HMSSchedule clinicId={clinic.id} />}
     </div>
   );
 };
