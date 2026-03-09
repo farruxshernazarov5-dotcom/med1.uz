@@ -17,8 +17,10 @@ import CosmetologyChat from "@/components/cosmetology/CosmetologyChat";
 import {
   Sparkles, Loader2, Sun, Shield, CalendarCheck,
   Scan, FlaskConical, Heart, Zap, Droplets,
-  FileDown, Building2, BarChart3,
+  FileDown, Building2, BarChart3, Activity, Palette,
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiCosmetologyImg from "@/assets/ai-cosmetology.jpg";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
