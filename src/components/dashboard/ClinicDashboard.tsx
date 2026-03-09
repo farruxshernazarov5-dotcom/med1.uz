@@ -133,6 +133,10 @@ const ClinicDashboard = () => {
     { id: "hms-patient-portal" as const, label: "Bemor portal", icon: User },
     { id: "hms-infection" as const, label: "Infektsiya", icon: ShieldAlert },
     { id: "hms-schedule" as const, label: "Jadval", icon: CalendarDays },
+    { id: "hms-teleconsultation" as const, label: "Telemeditsina", icon: Monitor },
+    { id: "hms-prescription" as const, label: "Retseptlar", icon: Pill },
+    { id: "hms-finance" as const, label: "Moliya", icon: Receipt },
+    { id: "hms-inventory" as const, label: "Ombor", icon: FlaskConical },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
