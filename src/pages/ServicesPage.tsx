@@ -11,6 +11,7 @@ import AdBanner from "@/components/AdBanner";
 import PricingSection from "@/components/PricingSection";
 import ClinicServicesSection from "@/components/ClinicServicesSection";
 import DiagnosticsServicesSection from "@/components/DiagnosticsServicesSection";
+import MaternityServicesSection from "@/components/MaternityServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
