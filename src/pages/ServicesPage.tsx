@@ -306,6 +306,9 @@ const ServicesPage = () => {
         </div>
       </section>
 
+      {/* Clinic B2B Services */}
+      <ClinicServicesSection />
+
       {/* Pricing Plans */}
       <PricingSection />
 

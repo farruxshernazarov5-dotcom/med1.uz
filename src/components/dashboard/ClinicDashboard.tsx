@@ -175,6 +175,8 @@ const ClinicDashboard = () => {
       )}
 
       {tab === "analytics" && <ClinicAnalytics clinicId={clinic.id} />}
+
+      {tab === "subscription" && <ClinicSubscription />}
     </div>
   );
 };
