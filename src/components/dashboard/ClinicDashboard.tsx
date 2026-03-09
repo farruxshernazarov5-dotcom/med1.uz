@@ -15,7 +15,9 @@ import ClinicAnalytics from "./ClinicAnalytics";
 import ClinicServicesManager from "./ClinicServicesManager";
 import ClinicSubscription from "./ClinicSubscription";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics";
+import { Crown } from "lucide-react";
+
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
