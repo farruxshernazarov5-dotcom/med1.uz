@@ -11,8 +11,10 @@ import { Progress } from "@/components/ui/progress";
 import {
   HeartPulse, Loader2, AlertTriangle, CheckCircle2, Shield, Activity,
   RefreshCcw, TrendingUp, Stethoscope, Brain, Utensils, Dumbbell,
-  Moon, Flame, Eye, Search, Building2, Download
+  Moon, Flame, Eye, Search, Building2, Download, Sparkles
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiHealthRiskImg from "@/assets/ai-health-risk.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
