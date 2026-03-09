@@ -168,11 +168,12 @@ const CosmetologyDashboard = () => {
       </div>
 
       <Tabs defaultValue="services">
-        <TabsList className="grid grid-cols-5 w-full max-w-xl">
+        <TabsList className="grid grid-cols-6 w-full max-w-2xl">
           <TabsTrigger value="services">Xizmatlar</TabsTrigger>
           <TabsTrigger value="appointments">Qabullar</TabsTrigger>
           <TabsTrigger value="photos">Rasmlar</TabsTrigger>
           <TabsTrigger value="stats">Statistika</TabsTrigger>
+          <TabsTrigger value="subscription">Obuna</TabsTrigger>
           <TabsTrigger value="profile">Profil</TabsTrigger>
         </TabsList>
 
