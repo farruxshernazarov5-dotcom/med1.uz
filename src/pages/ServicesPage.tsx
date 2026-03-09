@@ -313,6 +313,9 @@ const ServicesPage = () => {
         </div>
       </section>
 
+      {/* AI Diagnostics Services */}
+      <AIDiagnosticsServicesSection />
+
       {/* Clinic B2B Services */}
       <ClinicServicesSection />
 
