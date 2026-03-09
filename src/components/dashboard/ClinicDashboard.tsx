@@ -184,6 +184,11 @@ const ClinicDashboard = () => {
       {tab === "analytics" && <ClinicAnalytics clinicId={clinic.id} />}
 
       {tab === "subscription" && <ClinicSubscription />}
+
+      {tab === "hms-patients" && <HMSPatients clinicId={clinic.id} />}
+      {tab === "hms-lab" && <HMSLaboratory clinicId={clinic.id} />}
+      {tab === "hms-payroll" && <HMSPayroll clinicId={clinic.id} />}
+      {tab === "hms-pharmacy" && <HMSPharmacy clinicId={clinic.id} />}
     </div>
   );
 };
