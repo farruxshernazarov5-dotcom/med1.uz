@@ -15,6 +15,7 @@ import MaternityServicesSection from "@/components/MaternityServicesSection";
 import CosmetologyServicesSection from "@/components/CosmetologyServicesSection";
 import BloodBankServicesSection from "@/components/BloodBankServicesSection";
 import DoctorServicesSection from "@/components/DoctorServicesSection";
+import AdvertisingServicesSection from "@/components/AdvertisingServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
