@@ -81,6 +81,30 @@ const HMSPatients = ({ clinicId }: Props) => {
     p.phone.includes(search)
   );
 
+  // Report data
+  const reportData: HMSReportData = {
+    title: "Bemorlar ro'yxati",
+    moduleType: "HMS Bemorlar",
+    kpiCards: [
+      { label: "Jami bemorlar", value: String(patients.length) },
+      { label: "Erkaklar", value: String(patients.filter(p => p.gender === "male").length) },
+      { label: "Ayollar", value: String(patients.filter(p => p.gender === "female").length) },
+    ],
+    tables: patients.length > 0 ? [{
+      title: "Bemorlar ma'lumotlari",
+      table: {
+        headers: ["Ism", "Telefon", "Tug'ilgan sana", "Jins", "Qon guruhi"],
+        rows: patients.slice(0, 100).map(p => [
+          p.full_name,
+          p.phone,
+          p.date_of_birth || "-",
+          p.gender === "male" ? "Erkak" : "Ayol",
+          p.blood_group || "-"
+        ])
+      }
+    }] : undefined,
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
@@ -95,6 +119,7 @@ const HMSPatients = ({ clinicId }: Props) => {
               className="pl-9 w-full sm:w-60"
             />
           </div>
+          <HMSDownloadMenu data={reportData} />
           <Button onClick={() => { resetForm(); setShowForm(true); }} size="sm">
             <Plus className="w-4 h-4 mr-1" /> Yangi bemor
           </Button>
