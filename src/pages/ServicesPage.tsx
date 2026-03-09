@@ -5,7 +5,7 @@ import {
   Brain, BookOpen, Building2, Activity, Pill, Droplets, Baby,
   UserCheck, Search, Megaphone, Stethoscope, FlaskConical,
   Shield, Heart, Target, Zap, CheckCircle2, ArrowRight,
-  Cpu, Database, Globe, TrendingUp, ChevronRight
+  Cpu, Database, Globe, TrendingUp, ChevronRight, Monitor
 } from "lucide-react";
 import AdBanner from "@/components/AdBanner";
 import PricingSection from "@/components/PricingSection";
