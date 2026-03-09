@@ -182,6 +182,22 @@ const mainServices = [
     ],
     highlight: "Tibbiy muassasalar uchun samarali marketing vositasi",
   },
+  {
+    id: "hms",
+    icon: Monitor,
+    number: "11",
+    title: "Kasalxona boshqaruv tizimi (HMS)",
+    subtitle: "24+ modulli to'liq raqamli boshqaruv platformasi",
+    color: "from-indigo-500 to-medical-blue",
+    features: [
+      "Bemor kartasi va qabul boshqaruvi",
+      "Laboratoriya va diagnostika moduli",
+      "Buxgalteriya va ish haqi tizimi",
+      "Dorixona va retsept boshqaruvi",
+      "Departament va to'shak nazorati",
+    ],
+    highlight: "Klinikangizning barcha jarayonlarini bitta tizimda boshqaring",
+  },
 ];
 
 const platformFeatures = [
