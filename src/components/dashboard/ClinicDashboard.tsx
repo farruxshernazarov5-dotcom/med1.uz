@@ -33,8 +33,12 @@ import HMSQueue from "@/components/hms/HMSQueue";
 import HMSEmergency from "@/components/hms/HMSEmergency";
 import HMSQA from "@/components/hms/HMSQA";
 import HMSReports from "@/components/hms/HMSReports";
+import HMSAppointmentPortal from "@/components/hms/HMSAppointmentPortal";
+import HMSPatientPortal from "@/components/hms/HMSPatientPortal";
+import HMSInfection from "@/components/hms/HMSInfection";
+import HMSSchedule from "@/components/hms/HMSSchedule";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports" | "hms-appointment-portal" | "hms-patient-portal" | "hms-infection" | "hms-schedule";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
