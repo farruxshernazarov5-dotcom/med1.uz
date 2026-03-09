@@ -1443,6 +1443,59 @@ export type Database = {
           },
         ]
       }
+      hms_finance: {
+        Row: {
+          amount: number
+          category: string | null
+          clinic_id: string
+          created_at: string
+          description: string | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          recorded_by: string | null
+          reference_id: string | null
+          transaction_date: string
+          transaction_type: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          recorded_by?: string | null
+          reference_id?: string | null
+          transaction_date?: string
+          transaction_type?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          recorded_by?: string | null
+          reference_id?: string | null
+          transaction_date?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_finance_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hms_infection_control: {
         Row: {
           area: string | null
@@ -1530,6 +1583,77 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "hms_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_inventory: {
+        Row: {
+          category: string | null
+          clinic_id: string
+          created_at: string
+          expiry_date: string | null
+          id: string
+          last_restocked: string | null
+          location: string | null
+          min_quantity: number | null
+          name: string
+          notes: string | null
+          purchase_price: number | null
+          quantity: number
+          sell_price: number | null
+          sku: string | null
+          status: string | null
+          supplier: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          last_restocked?: string | null
+          location?: string | null
+          min_quantity?: number | null
+          name: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          sku?: string | null
+          status?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          last_restocked?: string | null
+          location?: string | null
+          min_quantity?: number | null
+          name?: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          sku?: string | null
+          status?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_inventory_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
         ]
@@ -2438,6 +2562,82 @@ export type Database = {
           },
           {
             foreignKeyName: "hms_surgeries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "hms_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_teleconsultations: {
+        Row: {
+          clinic_id: string
+          consultation_type: string | null
+          created_at: string
+          diagnosis: string | null
+          doctor_id: string | null
+          ended_at: string | null
+          id: string
+          messages: Json | null
+          notes: string | null
+          patient_id: string | null
+          patient_name: string
+          patient_phone: string | null
+          started_at: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          consultation_type?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string | null
+          ended_at?: string | null
+          id?: string
+          messages?: Json | null
+          notes?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          consultation_type?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string | null
+          ended_at?: string | null
+          id?: string
+          messages?: Json | null
+          notes?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          started_at?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_teleconsultations_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_teleconsultations_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_teleconsultations_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "hms_patients"
