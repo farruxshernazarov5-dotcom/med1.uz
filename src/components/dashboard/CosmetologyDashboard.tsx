@@ -14,6 +14,7 @@ import {
   TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
 
 interface CosmetologyCenter {
   id: string; name: string; address: string; phone: string; email: string;
@@ -167,11 +168,12 @@ const CosmetologyDashboard = () => {
       </div>
 
       <Tabs defaultValue="services">
-        <TabsList className="grid grid-cols-5 w-full max-w-xl">
+        <TabsList className="grid grid-cols-6 w-full max-w-2xl">
           <TabsTrigger value="services">Xizmatlar</TabsTrigger>
           <TabsTrigger value="appointments">Qabullar</TabsTrigger>
           <TabsTrigger value="photos">Rasmlar</TabsTrigger>
           <TabsTrigger value="stats">Statistika</TabsTrigger>
+          <TabsTrigger value="subscription">Obuna</TabsTrigger>
           <TabsTrigger value="profile">Profil</TabsTrigger>
         </TabsList>
 
@@ -319,6 +321,10 @@ const CosmetologyDashboard = () => {
               ) : <p className="text-sm text-muted-foreground">Ma'lumot yo'q</p>}
             </CardContent></Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="subscription" className="space-y-4">
+          <CosmetologySubscription />
         </TabsContent>
 
         <TabsContent value="profile" className="space-y-4">
