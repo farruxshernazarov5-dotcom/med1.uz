@@ -13,6 +13,7 @@ import ClinicProfileEditor from "./ClinicProfileEditor";
 import DoctorEditor from "./DoctorEditor";
 import ClinicAnalytics from "./ClinicAnalytics";
 import ClinicServicesManager from "./ClinicServicesManager";
+import ClinicSubscription from "./ClinicSubscription";
 
 type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics";
 
