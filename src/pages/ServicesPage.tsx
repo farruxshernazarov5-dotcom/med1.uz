@@ -14,6 +14,7 @@ import DiagnosticsServicesSection from "@/components/DiagnosticsServicesSection"
 import MaternityServicesSection from "@/components/MaternityServicesSection";
 import CosmetologyServicesSection from "@/components/CosmetologyServicesSection";
 import BloodBankServicesSection from "@/components/BloodBankServicesSection";
+import DoctorServicesSection from "@/components/DoctorServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
@@ -324,6 +325,9 @@ const ServicesPage = () => {
 
       {/* Blood Bank B2B Services */}
       <BloodBankServicesSection />
+
+      {/* Doctor Professional Services */}
+      <DoctorServicesSection />
 
       {/* Pricing Plans */}
       <PricingSection />

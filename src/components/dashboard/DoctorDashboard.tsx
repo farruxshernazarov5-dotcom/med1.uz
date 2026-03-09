@@ -12,8 +12,10 @@ import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save,
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
-  Phone, Mail, MapPin, Globe, ExternalLink
+  Phone, Mail, MapPin, Globe, ExternalLink, Crown
 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import DoctorSubscription from "./DoctorSubscription";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
@@ -193,6 +195,14 @@ const DoctorDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsTrigger value="profile"><Stethoscope className="w-4 h-4 mr-1" /> Profil</TabsTrigger>
+          <TabsTrigger value="reviews"><Star className="w-4 h-4 mr-1" /> Sharhlar</TabsTrigger>
+          <TabsTrigger value="subscription"><Crown className="w-4 h-4 mr-1" /> Obuna</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
@@ -396,30 +406,43 @@ const DoctorDashboard = () => {
         </Button>
       </div>
 
-      {/* Recent Reviews */}
-      {reviews.length > 0 && (
-        <div className="bg-card rounded-2xl border border-border p-5">
-          <h3 className="font-heading font-bold text-foreground mb-4">So'nggi sharhlar</h3>
-          <div className="space-y-3">
-            {reviews.map((rev) => (
-              <div key={rev.id} className="p-3 rounded-xl bg-background border border-border">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={cn("w-3.5 h-3.5", i < rev.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30")} />
-                    ))}
+        </TabsContent>
+
+        <TabsContent value="reviews">
+          {reviews.length > 0 ? (
+            <div className="bg-card rounded-2xl border border-border p-5">
+              <h3 className="font-heading font-bold text-foreground mb-4">Barcha sharhlar</h3>
+              <div className="space-y-3">
+                {reviews.map((rev) => (
+                  <div key={rev.id} className="p-3 rounded-xl bg-background border border-border">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={cn("w-3.5 h-3.5", i < rev.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30")} />
+                        ))}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">{new Date(rev.created_at).toLocaleDateString()}</span>
+                    </div>
+                    {rev.comment && <p className="text-sm text-muted-foreground">{rev.comment}</p>}
+                    <Badge variant={rev.is_approved ? "secondary" : "outline"} className="text-[10px] mt-1">
+                      {rev.is_approved ? "Tasdiqlangan" : "Moderatsiyada"}
+                    </Badge>
                   </div>
-                  <span className="text-[10px] text-muted-foreground">{new Date(rev.created_at).toLocaleDateString()}</span>
-                </div>
-                {rev.comment && <p className="text-sm text-muted-foreground">{rev.comment}</p>}
-                <Badge variant={rev.is_approved ? "secondary" : "outline"} className="text-[10px] mt-1">
-                  {rev.is_approved ? "Tasdiqlangan" : "Moderatsiyada"}
-                </Badge>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p>Hozircha sharhlar yo'q</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="subscription">
+          <DoctorSubscription />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
