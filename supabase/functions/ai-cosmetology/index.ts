@@ -35,31 +35,56 @@ Foydalanuvchi ma'lumotlari:
 - Teri turi: ${skinType || "avtomatik aniqlang"}
 - Yoshi: ${age || "noma'lum"}
 - Ko'rsatilgan muammolar: ${concerns || "ko'rsatilmagan"}
-${photoBase64 ? "- Foydalanuvchi yuz fotosuratini yuklagan. Foto tahlilini amalga oshir." : ""}
 
-QUYIDAGILARNI ANIQ TAHLIL QIL:
+JUDA MUHIM — FOTO TAHLILI QOIDALARI:
+1. Agar foydalanuvchi rasmni yuklagan bo'lsa, FAQAT haqiqiy rasmni tahlil qil.
+2. Rasmda yuzni aniqla (Face Detection). Agar yuz aniqlanmasa, foydalanuvchiga xabar ber:
+   "❌ Yuz aniqlanmadi. Iltimos, yuzingizni to'g'ridan-to'g'ri kameraga qarating va qayta urinib ko'ring."
+3. Rasmni sinchiklab ko'r va quyidagilarni REAL tahlil qil:
+   - Teri rangi va toni
+   - Akne, toshmalar, yallig'lanish belgilari
+   - Pigmentatsiya dog'lari
+   - Ajinlar va chiziqlar (ayniqsa ko'z va peshona atrofida)
+   - Teshiklar (poralar) holati
+   - Teri teksturasi va namligi
+   - Quyosh zarari belgilari
+4. Hech qachon tasodifiy ballar qo'yma — faqat rasmda ko'rgan narsalarga asoslanib baho ber
+5. Agar rasm sifati past bo'lsa yoki yuz yaxshi ko'rinmasa, foydalanuvchiga ayt:
+   "⚠️ Rasm sifati past. Yaxshiroq natija uchun: yaxshi yoritilgan joyda, ko'zoynak va aksessuarlarsiz, yuzni to'g'ridan-to'g'ri kameraga qaratib suratga oling."
+
+RASMDA KO'RGAN NARSALARINGGA ASOSLANIB QUYIDAGILARNI TAHLIL QIL:
 
 ## 🔬 Teri Skaneri Natijalari
 
-### Teri Turi
-Avtomatik aniqlangan teri turini ko'rsat va tushuntir.
+### 📷 Rasm Sifati Tekshiruvi
+| Tekshiruv | Natija |
+|-----------|--------|
+| Yuz aniqlandi | ✅/❌ |
+| Yoritish sifati | Yaxshi/O'rtacha/Past |
+| Rasm aniqligi | Yaxshi/O'rtacha/Past |
 
-### Muammolar Tahlili (har biri uchun 0-10 ball)
-| Ko'rsatkich | Ball | Holat |
-|-------------|------|-------|
-| Akne/toshmalar | X/10 | 🟢/🟡/🔴 |
-| Pigmentatsiya | X/10 | 🟢/🟡/🔴 |
-| Ajinlar | X/10 | 🟢/🟡/🔴 |
-| Qora nuqtalar | X/10 | 🟢/🟡/🔴 |
-| Teri namligi | past/o'rta/yuqori | 🟢/🟡/🔴 |
-| Teshiklar kengligi | tor/o'rta/keng | 🟢/🟡/🔴 |
-| Teri elastikligi | past/o'rta/yuqori | 🟢/🟡/🔴 |
-| Quyosh zarari | X/10 | 🟢/🟡/🔴 |
+### Teri Turi
+Rasmdan aniqlangan teri turini ko'rsat va tushuntir.
+
+### Muammolar Tahlili (har biri uchun 0-10 ball — FAQAT rasmda ko'rgan narsaga asoslanib)
+| Ko'rsatkich | Ball | Holat | Izoh |
+|-------------|------|-------|------|
+| Akne/toshmalar | X/10 | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Pigmentatsiya | X/10 | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Ajinlar | X/10 | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Qora nuqtalar | X/10 | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Teri namligi | past/o'rta/yuqori | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Teshiklar kengligi | tor/o'rta/keng | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Teri elastikligi | past/o'rta/yuqori | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
+| Quyosh zarari | X/10 | 🟢/🟡/🔴 | Rasmda ko'rgan belgilar |
 
 ### 📊 Umumiy Teri Sog'ligi: XX/100
 
 ### 💊 Tavsiya Etilgan Muolajalar
 Har bir aniqlangan muammo uchun mos muolaja tavsiya qil.
+
+### 🧴 Tavsiya Etilgan Mahsulotlar
+Teri turiga mos ingredientlar (niacinamide, salicylic acid, retinol, hyaluronic acid va h.k.) va mahsulot turlari tavsiya qil.
 
 ### 📋 Kundalik Parvarish Rejasi
 Ertalab va kechqurun uchun bosqichma-bosqich.
