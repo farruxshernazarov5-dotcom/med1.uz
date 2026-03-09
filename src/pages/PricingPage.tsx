@@ -17,6 +17,7 @@ const categories = [
   { id: "cosmetology", label: "Kosmetologiya", icon: Sparkles, color: "text-purple-500" },
   { id: "pharmacy", label: "Dorixonalar", icon: Pill, color: "text-green-500" },
   { id: "bloodbank", label: "Qon banklari", icon: Droplets, color: "text-red-500" },
+  { id: "doctor", label: "Shifokorlar", icon: Building2, color: "text-teal-500" },
 ];
 
 const PricingPage = () => {

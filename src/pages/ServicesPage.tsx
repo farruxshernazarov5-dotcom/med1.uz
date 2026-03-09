@@ -326,6 +326,9 @@ const ServicesPage = () => {
       {/* Blood Bank B2B Services */}
       <BloodBankServicesSection />
 
+      {/* Doctor Professional Services */}
+      <DoctorServicesSection />
+
       {/* Pricing Plans */}
       <PricingSection />
 
