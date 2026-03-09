@@ -13,8 +13,11 @@ import ClinicProfileEditor from "./ClinicProfileEditor";
 import DoctorEditor from "./DoctorEditor";
 import ClinicAnalytics from "./ClinicAnalytics";
 import ClinicServicesManager from "./ClinicServicesManager";
+import ClinicSubscription from "./ClinicSubscription";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics";
+import { Crown } from "lucide-react";
+
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -84,6 +87,7 @@ const ClinicDashboard = () => {
     { id: "doctors" as const, label: "Shifokorlar", icon: Stethoscope },
     { id: "appointments" as const, label: "Qabullar", icon: Calendar },
     { id: "analytics" as const, label: "Analitika", icon: BarChart3 },
+    { id: "subscription" as const, label: "Obuna", icon: Crown },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
@@ -171,6 +175,8 @@ const ClinicDashboard = () => {
       )}
 
       {tab === "analytics" && <ClinicAnalytics clinicId={clinic.id} />}
+
+      {tab === "subscription" && <ClinicSubscription />}
     </div>
   );
 };
