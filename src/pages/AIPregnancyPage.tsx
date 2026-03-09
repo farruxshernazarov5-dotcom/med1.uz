@@ -15,8 +15,10 @@ import {
   Baby, Heart, Calendar, MessageSquare, Send, Loader2,
   Activity, Apple, Pill, AlertTriangle, CheckCircle, Clock,
   Plus, ChevronRight, Scale, Ruler, Brain, Eye, Hand,
-  Stethoscope, Bell, Trash2
+  Stethoscope, Bell, Trash2, Shield, Sparkles
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiPregnancyImg from "@/assets/ai-pregnancy.jpg";
 import { cn } from "@/lib/utils";
 
 /* ——— Helpers ——— */
