@@ -19,6 +19,7 @@ const categories = [
   { id: "bloodbank", label: "Qon banklari", icon: Droplets, color: "text-red-500" },
   { id: "doctor", label: "Shifokorlar", icon: Building2, color: "text-teal-500" },
   { id: "advertising", label: "Reklama", icon: Megaphone, color: "text-orange-500" },
+  { id: "hms", label: "HMS tizimi", icon: Monitor, color: "text-indigo-500" },
 ];
 
 const PricingPage = () => {

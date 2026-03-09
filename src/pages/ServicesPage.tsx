@@ -338,6 +338,9 @@ const ServicesPage = () => {
       {/* Advertising & Premium Services */}
       <AdvertisingServicesSection />
 
+      {/* Hospital Management System */}
+      <HMSServicesSection />
+
       {/* Pricing Plans */}
       <PricingSection />
 
