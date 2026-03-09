@@ -17,8 +17,10 @@ import CosmetologyChat from "@/components/cosmetology/CosmetologyChat";
 import {
   Sparkles, Loader2, Sun, Shield, CalendarCheck,
   Scan, FlaskConical, Heart, Zap, Droplets,
-  FileDown, Building2, BarChart3,
+  FileDown, Building2, BarChart3, Activity, Palette,
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiCosmetologyImg from "@/assets/ai-cosmetology.jpg";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -205,20 +207,21 @@ const AICosmetologyPage = () => {
       <Header />
       <Breadcrumb items={[{ label: "Bosh sahifa", href: "/" }, { label: "AI Xizmatlar", href: "/ai-services" }, { label: "AI Kosmetologiya" }]} />
 
+      <AIServiceHero
+        image={aiCosmetologyImg}
+        title="AI Teri Skaneri va Kosmetologiya"
+        subtitle="AI Kosmetologiya Assistenti v2.0"
+        description="Sun'iy intellekt teringiz holatini tahlil qilib, individual parvarish rejasi yaratadi va professional kosmetologiya klinikalarini tavsiya qiladi."
+        icon={<Palette className="w-4 h-4" />}
+        gradient="from-violet-600/90 to-purple-900/80"
+        features={[
+          { icon: <Scan className="w-3.5 h-3.5" />, text: "Teri skaneri" },
+          { icon: <Heart className="w-3.5 h-3.5" />, text: "Parvarish rejasi" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI muolajalar" },
+        ]}
+      />
+
       <main className="container mx-auto px-4 py-8 max-w-5xl">
-        {/* Hero */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-primary">AI Kosmetologiya Assistenti v2.0</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-3">
-            AI Teri Skaneri va Kosmetologiya
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Sun'iy intellekt teringiz holatini tahlil qilib, individual parvarish rejasi yaratadi va professional kosmetologiya klinikalarini tavsiya qiladi
-          </p>
-        </div>
 
         <MedicalDisclaimer className="mb-6" />
 

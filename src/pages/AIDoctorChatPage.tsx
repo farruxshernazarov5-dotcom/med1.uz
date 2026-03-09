@@ -5,7 +5,9 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2 } from "lucide-react";
+import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2, Shield, Activity } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -110,18 +112,21 @@ const AIDoctorChatPage = () => {
         { label: "AI Shifokor Chat" },
       ]} />
 
+      <AIServiceHero
+        image={aiDoctorImg}
+        title="AI Shifokor bilan suhbatlashing"
+        subtitle="AI Tibbiy Maslahatchi"
+        description="Sun'iy intellekt bilan real vaqtda suhbatlashing — sog'liq savollaringizga tezkor va ishonchli javob oling. 24/7 istalgan vaqtda murojaat qiling."
+        icon={<Bot className="w-4 h-4" />}
+        gradient="from-blue-600/90 to-blue-900/80"
+        features={[
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "Xavfsiz suhbat" },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: "Real vaqt javob" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Gemini AI modeli" },
+        ]}
+      />
+
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Bot className="w-4 h-4" />
-            AI Tibbiy Maslahatchi
-          </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
-            AI Shifokor bilan <span className="text-primary">suhbatlashing</span>
-          </h1>
-          <p className="text-muted-foreground text-sm mt-2">Sog'liq bilan bog'liq savollaringizga real vaqtda javob oling</p>
-        </div>
 
         {/* Disclaimer */}
         <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4 flex items-start gap-2">
