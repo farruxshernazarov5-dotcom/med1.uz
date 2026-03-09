@@ -37,6 +37,10 @@ import HMSAppointmentPortal from "@/components/hms/HMSAppointmentPortal";
 import HMSPatientPortal from "@/components/hms/HMSPatientPortal";
 import HMSInfection from "@/components/hms/HMSInfection";
 import HMSSchedule from "@/components/hms/HMSSchedule";
+import HMSTeleconsultation from "@/components/hms/HMSTeleconsultation";
+import HMSPrescription from "@/components/hms/HMSPrescription";
+import HMSFinance from "@/components/hms/HMSFinance";
+import HMSInventory from "@/components/hms/HMSInventory";
 
 type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports" | "hms-appointment-portal" | "hms-patient-portal" | "hms-infection" | "hms-schedule";
 
