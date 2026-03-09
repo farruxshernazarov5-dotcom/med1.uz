@@ -114,6 +114,18 @@ BATAFSIL REJA YARAT:
 Har bir mahsulot turi uchun teri turiga mos ingredientlar tavsiya qil.`;
     }
 
+    let formattedMessages = [...(messages || [])];
+    
+    if (photoBase64 && formattedMessages.length > 0) {
+      const lastMessage = formattedMessages[formattedMessages.length - 1];
+      if (lastMessage.role === "user") {
+        lastMessage.content = [
+          { type: "text", text: typeof lastMessage.content === 'string' ? lastMessage.content : JSON.stringify(lastMessage.content) },
+          { type: "image_url", image_url: { url: photoBase64 } }
+        ];
+      }
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -124,7 +136,7 @@ Har bir mahsulot turi uchun teri turiga mos ingredientlar tavsiya qil.`;
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...(messages || []),
+          ...formattedMessages,
         ],
         stream: true,
       }),
