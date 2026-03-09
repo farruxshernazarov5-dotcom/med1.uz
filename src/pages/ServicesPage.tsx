@@ -13,6 +13,7 @@ import ClinicServicesSection from "@/components/ClinicServicesSection";
 import DiagnosticsServicesSection from "@/components/DiagnosticsServicesSection";
 import MaternityServicesSection from "@/components/MaternityServicesSection";
 import CosmetologyServicesSection from "@/components/CosmetologyServicesSection";
+import BloodBankServicesSection from "@/components/BloodBankServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
