@@ -3,6 +3,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Brain, AlertTriangle, Shield, Activity } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiSymptomImg from "@/assets/ai-symptom-checker.jpg";
 import SymptomInput from "@/components/symptom-checker/SymptomInput";
 import SymptomResults from "@/components/symptom-checker/SymptomResults";
 import FollowUpQuestions from "@/components/symptom-checker/FollowUpQuestions";
