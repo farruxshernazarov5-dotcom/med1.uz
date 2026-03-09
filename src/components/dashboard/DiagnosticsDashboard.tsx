@@ -190,10 +190,11 @@ const DiagnosticsDashboard = () => {
       </div>
 
       <Tabs defaultValue="services">
-        <TabsList className="grid grid-cols-3 w-full max-w-md">
+        <TabsList className="grid grid-cols-4 w-full max-w-lg">
           <TabsTrigger value="services">Xizmatlar</TabsTrigger>
           <TabsTrigger value="appointments">Qabullar</TabsTrigger>
           <TabsTrigger value="stats">Statistika</TabsTrigger>
+          <TabsTrigger value="subscription">Obuna</TabsTrigger>
         </TabsList>
 
         {/* Services Tab */}
