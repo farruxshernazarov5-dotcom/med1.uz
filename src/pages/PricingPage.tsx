@@ -16,6 +16,7 @@ const categories = [
   { id: "maternity", label: "Tug'ruqxonalar", icon: Baby, color: "text-pink-500" },
   { id: "cosmetology", label: "Kosmetologiya", icon: Sparkles, color: "text-purple-500" },
   { id: "pharmacy", label: "Dorixonalar", icon: Pill, color: "text-green-500" },
+  { id: "bloodbank", label: "Qon banklari", icon: Droplets, color: "text-red-500" },
 ];
 
 const PricingPage = () => {
