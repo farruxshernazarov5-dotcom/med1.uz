@@ -222,6 +222,10 @@ const ClinicDashboard = () => {
       {tab === "hms-insurance" && <HMSInsurance clinicId={clinic.id} />}
       {tab === "hms-emr" && <HMSEMR clinicId={clinic.id} />}
       {tab === "hms-equipment" && <HMSEquipment clinicId={clinic.id} />}
+      {tab === "hms-queue" && <HMSQueue clinicId={clinic.id} />}
+      {tab === "hms-emergency" && <HMSEmergency clinicId={clinic.id} />}
+      {tab === "hms-qa" && <HMSQA clinicId={clinic.id} />}
+      {tab === "hms-reports" && <HMSReports clinicId={clinic.id} />}
     </div>
   );
 };
