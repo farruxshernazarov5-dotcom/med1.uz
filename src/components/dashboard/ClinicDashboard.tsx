@@ -23,8 +23,12 @@ import HMSBeds from "@/components/hms/HMSBeds";
 import HMSDepartments from "@/components/hms/HMSDepartments";
 import HMSCommunication from "@/components/hms/HMSCommunication";
 import HMSFilesAndDonors from "@/components/hms/HMSFilesAndDonors";
+import HMSSurgery from "@/components/hms/HMSSurgery";
+import HMSInsurance from "@/components/hms/HMSInsurance";
+import HMSEMR from "@/components/hms/HMSEMR";
+import HMSEquipment from "@/components/hms/HMSEquipment";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
