@@ -37,12 +37,12 @@ const HMSPrescription = ({ clinicId }: Props) => {
     if (!form.patient_name || meds.every(m => !m.name)) { toast({ title: "Bemor va dori nomi majburiy!", variant: "destructive" }); return; }
     const validMeds = meds.filter(m => m.name);
     const validUntil = new Date(); validUntil.setDate(validUntil.getDate() + 30);
-    await supabase.from("hms_prescriptions").insert({
+    await supabase.from("hms_prescriptions").insert([{
       clinic_id: clinicId, patient_name: form.patient_name, doctor_id: form.doctor_id || null,
-      diagnosis: form.diagnosis, medications: validMeds, instructions: form.instructions,
+      diagnosis: form.diagnosis, medications: validMeds as any, instructions: form.instructions,
       notes: form.notes, valid_until: validUntil.toISOString().split("T")[0],
       qr_code: `RX-${Date.now().toString(36).toUpperCase()}`
-    });
+    }]);
     toast({ title: "✅ Retsept yaratildi" }); resetForm(); fetchData();
   };
 
