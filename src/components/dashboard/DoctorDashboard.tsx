@@ -195,6 +195,14 @@ const DoctorDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsTrigger value="profile"><Stethoscope className="w-4 h-4 mr-1" /> Profil</TabsTrigger>
+          <TabsTrigger value="reviews"><Star className="w-4 h-4 mr-1" /> Sharhlar</TabsTrigger>
+          <TabsTrigger value="subscription"><Crown className="w-4 h-4 mr-1" /> Obuna</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
