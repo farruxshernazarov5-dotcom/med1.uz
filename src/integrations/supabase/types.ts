@@ -870,6 +870,516 @@ export type Database = {
         }
         Relationships: []
       }
+      hms_attendance: {
+        Row: {
+          attendance_date: string
+          check_in: string | null
+          check_out: string | null
+          clinic_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          staff_id: string
+          status: string | null
+        }
+        Insert: {
+          attendance_date?: string
+          check_in?: string | null
+          check_out?: string | null
+          clinic_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          staff_id: string
+          status?: string | null
+        }
+        Update: {
+          attendance_date?: string
+          check_in?: string | null
+          check_out?: string | null
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          staff_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_attendance_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_attendance_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "hms_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_lab_orders: {
+        Row: {
+          clinic_id: string
+          completed_at: string | null
+          created_at: string
+          doctor_id: string | null
+          id: string
+          notes: string | null
+          ordered_at: string
+          patient_id: string
+          priority: string | null
+          status: string | null
+          test_category: string | null
+          test_name: string
+        }
+        Insert: {
+          clinic_id: string
+          completed_at?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          id?: string
+          notes?: string | null
+          ordered_at?: string
+          patient_id: string
+          priority?: string | null
+          status?: string | null
+          test_category?: string | null
+          test_name: string
+        }
+        Update: {
+          clinic_id?: string
+          completed_at?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          id?: string
+          notes?: string | null
+          ordered_at?: string
+          patient_id?: string
+          priority?: string | null
+          status?: string | null
+          test_category?: string | null
+          test_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_lab_orders_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_lab_orders_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_lab_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "hms_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_lab_results: {
+        Row: {
+          created_at: string
+          id: string
+          is_abnormal: boolean | null
+          notes: string | null
+          order_id: string
+          parameter_name: string
+          reference_range: string | null
+          unit: string | null
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_abnormal?: boolean | null
+          notes?: string | null
+          order_id: string
+          parameter_name: string
+          reference_range?: string | null
+          unit?: string | null
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_abnormal?: boolean | null
+          notes?: string | null
+          order_id?: string
+          parameter_name?: string
+          reference_range?: string | null
+          unit?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_lab_results_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "hms_lab_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_patients: {
+        Row: {
+          address: string | null
+          allergies: string | null
+          blood_group: string | null
+          chronic_diseases: string | null
+          clinic_id: string
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          emergency_contact: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          insurance_number: string | null
+          is_active: boolean | null
+          notes: string | null
+          passport_id: string | null
+          phone: string
+          rh_factor: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          allergies?: string | null
+          blood_group?: string | null
+          chronic_diseases?: string | null
+          clinic_id: string
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          insurance_number?: string | null
+          is_active?: boolean | null
+          notes?: string | null
+          passport_id?: string | null
+          phone: string
+          rh_factor?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          allergies?: string | null
+          blood_group?: string | null
+          chronic_diseases?: string | null
+          clinic_id?: string
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          insurance_number?: string | null
+          is_active?: boolean | null
+          notes?: string | null
+          passport_id?: string | null
+          phone?: string
+          rh_factor?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_patients_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_payroll: {
+        Row: {
+          base_salary: number | null
+          bonus: number | null
+          clinic_id: string
+          created_at: string
+          deductions: number | null
+          id: string
+          notes: string | null
+          paid_at: string | null
+          period_month: number
+          period_year: number
+          staff_id: string
+          status: string | null
+          total_paid: number | null
+        }
+        Insert: {
+          base_salary?: number | null
+          bonus?: number | null
+          clinic_id: string
+          created_at?: string
+          deductions?: number | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          period_month: number
+          period_year: number
+          staff_id: string
+          status?: string | null
+          total_paid?: number | null
+        }
+        Update: {
+          base_salary?: number | null
+          bonus?: number | null
+          clinic_id?: string
+          created_at?: string
+          deductions?: number | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          period_month?: number
+          period_year?: number
+          staff_id?: string
+          status?: string | null
+          total_paid?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_payroll_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_payroll_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "hms_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_pharmacy_stock: {
+        Row: {
+          batch_number: string | null
+          buy_price: number | null
+          category: string | null
+          clinic_id: string
+          created_at: string
+          drug_name: string
+          expire_date: string | null
+          id: string
+          is_active: boolean | null
+          manufacturer: string | null
+          quantity: number | null
+          sell_price: number | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch_number?: string | null
+          buy_price?: number | null
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          drug_name: string
+          expire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          manufacturer?: string | null
+          quantity?: number | null
+          sell_price?: number | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch_number?: string | null
+          buy_price?: number | null
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          drug_name?: string
+          expire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          manufacturer?: string | null
+          quantity?: number | null
+          sell_price?: number | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_pharmacy_stock_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_prescription_items: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          drug_name: string
+          duration: string | null
+          frequency: string | null
+          id: string
+          notes: string | null
+          prescription_id: string
+          quantity: number | null
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          drug_name: string
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          notes?: string | null
+          prescription_id: string
+          quantity?: number | null
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          drug_name?: string
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          notes?: string | null
+          prescription_id?: string
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_prescription_items_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "hms_prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_prescriptions: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          diagnosis: string | null
+          doctor_id: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          status: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          status?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_prescriptions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_prescriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "hms_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_staff: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          department: string | null
+          email: string | null
+          full_name: string
+          hire_date: string | null
+          id: string
+          is_active: boolean | null
+          phone: string | null
+          role: string
+          salary: number | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          phone?: string | null
+          role?: string
+          salary?: number | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          department?: string | null
+          email?: string | null
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          phone?: string | null
+          role?: string
+          salary?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_staff_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_history: {
         Row: {
           id: string

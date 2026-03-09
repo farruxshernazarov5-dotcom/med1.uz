@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
-  Stethoscope, CheckCircle, XCircle, Settings, BarChart3
+  Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
+  Crown, Monitor, FlaskConical, Wallet, Pill
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicProfileEditor from "./ClinicProfileEditor";
@@ -14,10 +15,12 @@ import DoctorEditor from "./DoctorEditor";
 import ClinicAnalytics from "./ClinicAnalytics";
 import ClinicServicesManager from "./ClinicServicesManager";
 import ClinicSubscription from "./ClinicSubscription";
+import HMSPatients from "@/components/hms/HMSPatients";
+import HMSLaboratory from "@/components/hms/HMSLaboratory";
+import HMSPayroll from "@/components/hms/HMSPayroll";
+import HMSPharmacy from "@/components/hms/HMSPharmacy";
 
-import { Crown } from "lucide-react";
-
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription";
+type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy";
 
 const ClinicDashboard = () => {
   const { user, profile, signOut } = useAuth();
@@ -88,6 +91,10 @@ const ClinicDashboard = () => {
     { id: "appointments" as const, label: "Qabullar", icon: Calendar },
     { id: "analytics" as const, label: "Analitika", icon: BarChart3 },
     { id: "subscription" as const, label: "Obuna", icon: Crown },
+    { id: "hms-patients" as const, label: "Bemorlar", icon: Users },
+    { id: "hms-lab" as const, label: "Laboratoriya", icon: FlaskConical },
+    { id: "hms-payroll" as const, label: "Xodimlar/Maosh", icon: Wallet },
+    { id: "hms-pharmacy" as const, label: "Dorixona", icon: Pill },
   ];
 
   const pendingAppts = appointments.filter((a) => a.status === "pending");
@@ -177,6 +184,11 @@ const ClinicDashboard = () => {
       {tab === "analytics" && <ClinicAnalytics clinicId={clinic.id} />}
 
       {tab === "subscription" && <ClinicSubscription />}
+
+      {tab === "hms-patients" && <HMSPatients clinicId={clinic.id} />}
+      {tab === "hms-lab" && <HMSLaboratory clinicId={clinic.id} />}
+      {tab === "hms-payroll" && <HMSPayroll clinicId={clinic.id} />}
+      {tab === "hms-pharmacy" && <HMSPharmacy clinicId={clinic.id} />}
     </div>
   );
 };
