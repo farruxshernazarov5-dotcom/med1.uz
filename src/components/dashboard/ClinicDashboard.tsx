@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Building2, Users, Calendar, DollarSign, Plus, LogOut,
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
-  Crown, Monitor, FlaskConical, Wallet, Pill
+  Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicProfileEditor from "./ClinicProfileEditor";
