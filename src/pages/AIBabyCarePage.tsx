@@ -17,8 +17,10 @@ import {
   Activity, Apple, Pill, AlertTriangle, CheckCircle, Clock,
   Plus, Scale, Ruler, Brain, Stethoscope, Bell, Trash2,
   Smile, Moon, Thermometer, ShieldCheck, BookOpen, Users,
-  ChevronRight
+  ChevronRight, Shield, Sparkles
 } from "lucide-react";
+import AIServiceHero from "@/components/AIServiceHero";
+import aiBabyCareImg from "@/assets/ai-baby-care.jpg";
 import { cn } from "@/lib/utils";
 
 /* ——— Types ——— */
