@@ -60,6 +60,10 @@ import AIPregnancyPage from "./pages/AIPregnancyPage";
 import AIBabyCarePage from "./pages/AIBabyCarePage";
 import AICosmetologyPage from "./pages/AICosmetologyPage";
 import PricingPage from "./pages/PricingPage";
+import AIDietologPage from "./pages/AIDietologPage";
+import AIPsixologPage from "./pages/AIPsixologPage";
+import AIFarmatsevtPage from "./pages/AIFarmatsevtPage";
+import AIFitnessPage from "./pages/AIFitnessPage";
 const queryClient = new QueryClient();
 
 const App = () => (
