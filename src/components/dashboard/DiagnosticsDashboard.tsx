@@ -13,6 +13,7 @@ import {
   Microscope, Plus, Trash2, Edit, Save, X, Calendar, Users,
   TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2,
 } from "lucide-react";
+import DiagnosticsSubscription from "./DiagnosticsSubscription";
 
 interface DiagCenter {
   id: string;
@@ -190,10 +191,11 @@ const DiagnosticsDashboard = () => {
       </div>
 
       <Tabs defaultValue="services">
-        <TabsList className="grid grid-cols-3 w-full max-w-md">
+        <TabsList className="grid grid-cols-4 w-full max-w-lg">
           <TabsTrigger value="services">Xizmatlar</TabsTrigger>
           <TabsTrigger value="appointments">Qabullar</TabsTrigger>
           <TabsTrigger value="stats">Statistika</TabsTrigger>
+          <TabsTrigger value="subscription">Obuna</TabsTrigger>
         </TabsList>
 
         {/* Services Tab */}
@@ -359,6 +361,11 @@ const DiagnosticsDashboard = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Subscription Tab */}
+        <TabsContent value="subscription">
+          <DiagnosticsSubscription />
         </TabsContent>
       </Tabs>
 

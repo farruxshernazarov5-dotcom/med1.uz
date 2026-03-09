@@ -10,6 +10,7 @@ import {
 import AdBanner from "@/components/AdBanner";
 import PricingSection from "@/components/PricingSection";
 import ClinicServicesSection from "@/components/ClinicServicesSection";
+import DiagnosticsServicesSection from "@/components/DiagnosticsServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
@@ -308,6 +309,9 @@ const ServicesPage = () => {
 
       {/* Clinic B2B Services */}
       <ClinicServicesSection />
+
+      {/* Diagnostics B2B Services */}
+      <DiagnosticsServicesSection />
 
       {/* Pricing Plans */}
       <PricingSection />

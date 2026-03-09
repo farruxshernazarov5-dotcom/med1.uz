@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown } from "lucide-react";
+import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown, Microscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const categories = [
   { id: "ai", label: "AI Xizmatlar", icon: Brain, color: "text-primary" },
   { id: "clinic", label: "Klinikalar", icon: Building2, color: "text-blue-500" },
+  { id: "diagnostics", label: "Diagnostika", icon: Microscope, color: "text-cyan-500" },
   { id: "maternity", label: "Tug'ruqxonalar", icon: Baby, color: "text-pink-500" },
   { id: "cosmetology", label: "Kosmetologiya", icon: Sparkles, color: "text-purple-500" },
   { id: "pharmacy", label: "Dorixonalar", icon: Pill, color: "text-green-500" },
