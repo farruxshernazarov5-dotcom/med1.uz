@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown, Microscope, Droplets, Megaphone } from "lucide-react";
+import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown, Microscope, Droplets, Megaphone, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
