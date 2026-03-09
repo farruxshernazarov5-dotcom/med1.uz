@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
-import { Crown, CheckCircle2, ArrowRight, Zap, Star } from "lucide-react";
+import { Crown, CheckCircle2, ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import SubscriptionContactModal from "@/components/SubscriptionContactModal";
 
 const ClinicSubscription = () => {
   const [plans, setPlans] = useState<any[]>([]);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: string } | null>(null);
 
   useEffect(() => {
     supabase
@@ -16,6 +18,14 @@ const ClinicSubscription = () => {
       .order("sort_order")
       .then(({ data }) => setPlans(data || []));
   }, []);
+
+  const handleSubscribe = (plan: any) => {
+    setSelectedPlan({
+      name: plan.name,
+      price: Number(plan.price_monthly).toLocaleString(),
+    });
+    setContactOpen(true);
+  };
 
   if (plans.length === 0) return null;
 
@@ -72,15 +82,26 @@ const ClinicSubscription = () => {
                   <li className="text-xs text-muted-foreground pl-5">+{features.length - 6} ta qo'shimcha</li>
                 )}
               </ul>
-              <Button asChild size="sm" className={cn("w-full", plan.is_popular && "bg-hero-gradient border-0")} variant={plan.is_popular ? "default" : "outline"}>
-                <Link to="/pricing">
-                  Batafsil <ArrowRight className="w-3 h-3 ml-1" />
-                </Link>
+              <Button
+                onClick={() => handleSubscribe(plan)}
+                size="sm"
+                className={cn("w-full", plan.is_popular && "bg-hero-gradient border-0")}
+                variant={plan.is_popular ? "default" : "outline"}
+              >
+                {Number(plan.price_monthly) === 0 ? "Boshlash" : "Obuna bo'lish"} <ArrowRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
           );
         })}
       </div>
+
+      <SubscriptionContactModal
+        open={contactOpen}
+        onOpenChange={setContactOpen}
+        planName={selectedPlan?.name}
+        planPrice={selectedPlan?.price}
+        category="clinic"
+      />
     </div>
   );
 };

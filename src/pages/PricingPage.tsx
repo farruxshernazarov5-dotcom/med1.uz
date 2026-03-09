@@ -5,9 +5,9 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { CheckCircle2, Star, Zap, ArrowRight, Brain, Building2, Baby, Sparkles, Pill, Crown, Microscope, Droplets, Megaphone, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import SubscriptionContactModal from "@/components/SubscriptionContactModal";
 
 const categories = [
   { id: "ai", label: "AI Xizmatlar", icon: Brain, color: "text-primary" },
@@ -25,6 +25,8 @@ const categories = [
 const PricingPage = () => {
   const [plans, setPlans] = useState<any[]>([]);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  const [contactOpen, setContactOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{ name: string; price: string; category: string } | null>(null);
 
   useEffect(() => {
     supabase
@@ -35,6 +37,16 @@ const PricingPage = () => {
   }, []);
 
   const getPlans = (cat: string) => plans.filter((p) => p.category === cat);
+
+  const handleSubscribeClick = (plan: any) => {
+    const price = billingCycle === "monthly" ? Number(plan.price_monthly) : Number(plan.price_yearly || 0);
+    setSelectedPlan({
+      name: plan.name,
+      price: price.toLocaleString(),
+      category: plan.category,
+    });
+    setContactOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -159,14 +171,12 @@ const PricingPage = () => {
                         </ul>
 
                         <Button
-                          asChild
+                          onClick={() => handleSubscribeClick(plan)}
                           className={cn("w-full", plan.is_popular && "bg-hero-gradient border-0")}
                           variant={plan.is_popular ? "default" : "outline"}
                           size="lg"
                         >
-                          <Link to="/auth">
-                            {price === 0 ? "Boshlash" : "Obuna bo'lish"} <ArrowRight className="w-4 h-4 ml-1" />
-                          </Link>
+                          {price === 0 ? "Boshlash" : "Obuna bo'lish"} <ArrowRight className="w-4 h-4 ml-1" />
                         </Button>
                       </div>
                     );
@@ -203,6 +213,15 @@ const PricingPage = () => {
       </section>
 
       <Footer />
+
+      {/* Contact Modal */}
+      <SubscriptionContactModal
+        open={contactOpen}
+        onOpenChange={setContactOpen}
+        planName={selectedPlan?.name}
+        planPrice={selectedPlan?.price}
+        category={selectedPlan?.category}
+      />
     </div>
   );
 };
