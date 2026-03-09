@@ -2227,9 +2227,16 @@ export type Database = {
           diagnosis: string | null
           doctor_id: string | null
           id: string
+          instructions: string | null
+          medications: Json | null
           notes: string | null
-          patient_id: string
+          patient_id: string | null
+          patient_name: string
+          prescription_date: string
+          qr_code: string | null
           status: string | null
+          updated_at: string
+          valid_until: string | null
         }
         Insert: {
           clinic_id: string
@@ -2237,9 +2244,16 @@ export type Database = {
           diagnosis?: string | null
           doctor_id?: string | null
           id?: string
+          instructions?: string | null
+          medications?: Json | null
           notes?: string | null
-          patient_id: string
+          patient_id?: string | null
+          patient_name?: string
+          prescription_date?: string
+          qr_code?: string | null
           status?: string | null
+          updated_at?: string
+          valid_until?: string | null
         }
         Update: {
           clinic_id?: string
@@ -2247,9 +2261,16 @@ export type Database = {
           diagnosis?: string | null
           doctor_id?: string | null
           id?: string
+          instructions?: string | null
+          medications?: Json | null
           notes?: string | null
-          patient_id?: string
+          patient_id?: string | null
+          patient_name?: string
+          prescription_date?: string
+          qr_code?: string | null
           status?: string | null
+          updated_at?: string
+          valid_until?: string | null
         }
         Relationships: [
           {
