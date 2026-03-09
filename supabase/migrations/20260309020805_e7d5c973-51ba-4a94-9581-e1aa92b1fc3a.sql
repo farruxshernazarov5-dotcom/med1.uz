@@ -1,0 +1,6 @@
+
+INSERT INTO public.platform_plans (name, description, category, price_monthly, price_yearly, is_popular, sort_order, features) VALUES
+('Boshlang''ich', 'Kichik klinikalar uchun asosiy platforma xizmatlari', 'clinic', 0, 0, false, 1, '["Katalogda joylashish", "Asosiy profil sahifasi", "5 tagacha xizmat qo''shish", "Oyiga 10 ta qabul boshqaruvi", "Standart qidiruv ko''rinishi"]'::jsonb),
+('Professional', 'O''rta va katta klinikalar uchun kengaytirilgan imkoniyatlar', 'clinic', 490000, 4900000, true, 2, '["Katalogda yuqori o''rin", "Professional profil sahifasi", "Cheksiz xizmatlar", "Cheksiz qabullar boshqaruvi", "AI bemor yo''naltirish tizimi", "Analitika va statistika paneli", "Shifokorlar profillari", "Foto galereya (20 ta rasm)", "Premium qidiruv natijalarida", "Bemor sharhlarini boshqarish"]'::jsonb),
+('Enterprise', 'Yirik tibbiy muassasalar va tarmoqlar uchun', 'clinic', 1490000, 14900000, false, 3, '["Barcha Professional imkoniyatlar", "Brend sahifasi dizayni", "API integratsiya", "Maxsus marketing kampaniyalari", "Bosh sahifada reklama", "AI diagnostika integratsiyasi", "Shaxsiy menejer", "Cheksiz foto/video", "Raqobatchillar tahlili", "Oylik hisobot va tavsiyalar", "Multi-filial boshqaruvi"]'::jsonb)
+ON CONFLICT DO NOTHING;
