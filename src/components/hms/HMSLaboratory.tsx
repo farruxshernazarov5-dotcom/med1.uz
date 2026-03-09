@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Plus, FlaskConical, Clock, CheckCircle2, X, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import HMSDownloadMenu from "./HMSDownloadMenu";
+import type { HMSReportData } from "@/utils/downloadHMSReport";
 
 interface Props {
   clinicId: string;
@@ -82,11 +84,39 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     completed: "bg-green-100 text-green-800",
   };
 
+  // Report data
+  const reportData: HMSReportData = {
+    title: "Laboratoriya hisoboti",
+    moduleType: "HMS Laboratoriya",
+    kpiCards: [
+      { label: "Jami buyurtmalar", value: String(orders.length) },
+      { label: "Kutilmoqda", value: String(orders.filter(o => o.status === "pending").length) },
+      { label: "Jarayonda", value: String(orders.filter(o => o.status === "in_progress").length) },
+      { label: "Tayyor", value: String(orders.filter(o => o.status === "completed").length) },
+    ],
+    tables: orders.length > 0 ? [{
+      title: "Tahlil buyurtmalari",
+      table: {
+        headers: ["Bemor", "Tahlil", "Kategoriya", "Status", "Sana"],
+        rows: orders.slice(0, 50).map(o => [
+          getPatientName(o.patient_id),
+          o.test_name,
+          o.test_category,
+          o.status,
+          new Date(o.ordered_at).toLocaleDateString("uz")
+        ])
+      }
+    }] : undefined,
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-xl font-bold text-foreground">Laboratoriya</h2>
-        <Button onClick={() => setShowForm(true)} size="sm"><Plus className="w-4 h-4 mr-1" /> Yangi tahlil</Button>
+        <div className="flex gap-2">
+          <HMSDownloadMenu data={reportData} />
+          <Button onClick={() => setShowForm(true)} size="sm"><Plus className="w-4 h-4 mr-1" /> Yangi tahlil</Button>
+        </div>
       </div>
 
       {showForm && (

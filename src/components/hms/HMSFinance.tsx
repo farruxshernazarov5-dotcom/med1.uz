@@ -7,19 +7,26 @@ import { toast } from "@/hooks/use-toast";
 import { Plus, X, TrendingUp, TrendingDown, DollarSign, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import HMSDownloadMenu from "./HMSDownloadMenu";
+import type { HMSReportData } from "@/utils/downloadHMSReport";
 
 interface Props { clinicId: string; }
 
 const HMSFinance = ({ clinicId }: Props) => {
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [clinicName, setClinicName] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [form, setForm] = useState({ transaction_type: "income", category: "service", amount: "", description: "", payment_method: "cash", transaction_date: new Date().toISOString().split("T")[0], notes: "" });
 
   const fetchData = async () => {
-    const { data } = await supabase.from("hms_finance").select("*").eq("clinic_id", clinicId).order("transaction_date", { ascending: false }).limit(500);
-    setTransactions(data || []);
+    const [txRes, clinicRes] = await Promise.all([
+      supabase.from("hms_finance").select("*").eq("clinic_id", clinicId).order("transaction_date", { ascending: false }).limit(500),
+      supabase.from("registered_clinics").select("name").eq("id", clinicId).single(),
+    ]);
+    setTransactions(txRes.data || []);
+    setClinicName(clinicRes.data?.name || "");
   };
 
   useEffect(() => { fetchData(); }, [clinicId]);
@@ -42,7 +49,6 @@ const HMSFinance = ({ clinicId }: Props) => {
     return matchFilter && matchSearch;
   });
 
-  // Monthly chart data
   const monthlyData: Record<string, { income: number; expense: number }> = {};
   transactions.forEach(t => {
     const month = t.transaction_date?.slice(0, 7) || "";
@@ -52,7 +58,6 @@ const HMSFinance = ({ clinicId }: Props) => {
   });
   const chartData = Object.entries(monthlyData).sort().slice(-6).map(([month, d]) => ({ month: month.slice(5), ...d }));
 
-  // Category pie data
   const categoryTotals: Record<string, number> = {};
   transactions.forEach(t => { categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Number(t.amount); });
   const pieData = Object.entries(categoryTotals).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 6);
@@ -63,11 +68,43 @@ const HMSFinance = ({ clinicId }: Props) => {
     { value: "rent", label: "Ijara" }, { value: "equipment", label: "Jihozlar" }, { value: "utilities", label: "Kommunal" }, { value: "other", label: "Boshqa" }
   ];
 
+  // Report data for download
+  const reportData: HMSReportData = {
+    title: "Moliyaviy hisobot",
+    moduleType: "HMS Moliya",
+    clinicName,
+    kpiCards: [
+      { label: "Jami daromad", value: `${totalIncome.toLocaleString()} so'm` },
+      { label: "Jami xarajat", value: `${totalExpense.toLocaleString()} so'm` },
+      { label: "Balans", value: `${balance.toLocaleString()} so'm` },
+      { label: "Tranzaksiyalar", value: String(transactions.length) },
+    ],
+    sections: [
+      { heading: "Moliyaviy xulosa", content: `Daromad: ${totalIncome.toLocaleString()} so'm\nXarajat: ${totalExpense.toLocaleString()} so'm\nSof foyda: ${balance.toLocaleString()} so'm` },
+    ],
+    tables: transactions.length > 0 ? [{
+      title: "So'nggi tranzaksiyalar",
+      table: {
+        headers: ["Sana", "Turi", "Kategoriya", "Tavsif", "Summa"],
+        rows: transactions.slice(0, 50).map(t => [
+          t.transaction_date,
+          t.transaction_type === "income" ? "Daromad" : "Xarajat",
+          categories.find(c => c.value === t.category)?.label || t.category,
+          t.description || "-",
+          `${Number(t.amount).toLocaleString()} so'm`
+        ])
+      }
+    }] : undefined,
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-heading text-xl font-bold text-foreground">Moliyaviy hisobotlar</h2>
-        <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}><Plus className="w-4 h-4 mr-1" /> Yangi tranzaksiya</Button>
+        <div className="flex gap-2">
+          <HMSDownloadMenu data={reportData} />
+          <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}><Plus className="w-4 h-4 mr-1" /> Yangi tranzaksiya</Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
