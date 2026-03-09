@@ -10,6 +10,7 @@ import {
 import AdBanner from "@/components/AdBanner";
 import PricingSection from "@/components/PricingSection";
 import ClinicServicesSection from "@/components/ClinicServicesSection";
+import DiagnosticsServicesSection from "@/components/DiagnosticsServicesSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
