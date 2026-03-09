@@ -325,28 +325,19 @@ const AIBabyCarePage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero */}
-      <section className="relative py-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-500/8 via-primary/5 to-transparent" />
-        <div className="container mx-auto px-4 relative">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center">
-              <Baby className="w-7 h-7 text-pink-500" />
-            </div>
-            <div>
-              <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">AI Bola Parvarishi</h1>
-              <p className="text-muted-foreground text-sm">Tug'ruqdan keyingi parvarish va chaqaloq rivojlanishi</p>
-            </div>
-          </div>
-          {baby && (
-            <div className="flex flex-wrap gap-3 mt-4">
-              <Badge variant="secondary" className="gap-1"><Baby className="w-3 h-3" />{baby.baby_name || "Chaqaloq"}</Badge>
-              <Badge variant="outline" className="gap-1"><Calendar className="w-3 h-3" />{babyAgeDays} kun ({babyAgeMonths} oy)</Badge>
-              <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />{baby.birth_weight_g ? `${baby.birth_weight_g}g` : "—"}</Badge>
-            </div>
-          )}
-        </div>
-      </section>
+      <AIServiceHero
+        image={aiBabyCareImg}
+        title="AI Bola Parvarishi"
+        subtitle={baby ? `${baby.baby_name || "Chaqaloq"} · ${babyAgeDays} kun (${babyAgeMonths} oy)` : "Tug'ruqdan keyingi parvarish"}
+        description="Chaqaloq rivojlanishi, emlash jadvali, o'sish monitoringi va ota-onalar uchun AI maslahatlar. Har bir bosqichda professional yordam."
+        icon={<Baby className="w-4 h-4" />}
+        gradient="from-amber-600/90 to-amber-900/80"
+        features={[
+          { icon: <ShieldCheck className="w-3.5 h-3.5" />, text: "Emlash jadvali" },
+          { icon: <Scale className="w-3.5 h-3.5" />, text: "O'sish monitoringi" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI maslahatlar" },
+        ]}
+      />
 
       <div className="container mx-auto px-4 pb-12">
         <MedicalDisclaimer compact className="mb-6" />

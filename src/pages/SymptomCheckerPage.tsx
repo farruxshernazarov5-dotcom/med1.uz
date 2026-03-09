@@ -89,40 +89,19 @@ const SymptomCheckerPage = () => {
         { label: "AI Diagnostika" },
       ]} />
 
-      {/* Hero */}
-      <section className="relative py-12 md:py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <Brain className="w-4 h-4" />
-              AI Symptom Checker
-            </div>
-            <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-4">
-              Sun'iy intellekt asosidagi <span className="text-primary">erta diagnostika</span>
-            </h1>
-            <p className="text-muted-foreground text-lg mb-6">
-              Simptomlaringizni kiriting — AI tizimi ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini beradi
-            </p>
-
-            {/* Trust badges */}
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Shield className="w-4 h-4 text-secondary" />
-                Ma'lumotlar maxfiy
-              </div>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Activity className="w-4 h-4 text-primary" />
-                Real vaqt tahlili
-              </div>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <AlertTriangle className="w-4 h-4 text-amber-500" />
-                Tibbiy maslahat emas
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <AIServiceHero
+        image={aiSymptomImg}
+        title="Sun'iy intellekt asosidagi erta diagnostika"
+        subtitle="AI Symptom Checker"
+        description="Simptomlaringizni kiriting — AI tizimi ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini beradi. Zamonaviy tibbiy bilim bazasi va klinik protokollar asosida ishlaydi."
+        icon={<Brain className="w-4 h-4" />}
+        gradient="from-primary/90 to-blue-900/80"
+        features={[
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "Ma'lumotlar maxfiy" },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: "Real vaqt tahlili" },
+          { icon: <AlertTriangle className="w-3.5 h-3.5" />, text: "Tibbiy maslahat emas" },
+        ]}
+      />
 
       {/* Main content */}
       <section className="container mx-auto px-4 pb-16">

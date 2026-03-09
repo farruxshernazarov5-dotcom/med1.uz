@@ -211,21 +211,19 @@ const AIRadiologyPage = () => {
         { label: "AI Radiologiya" },
       ]} />
 
-      {/* Hero */}
-      <section className="relative py-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
-        <div className="container mx-auto px-4 relative text-center max-w-3xl">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Eye className="w-4 h-4" /> AI Radiology Pro
-          </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-3">
-            Rentgen, MRT va KT tasvirlarini <span className="text-primary">AI tahlili</span>
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Tibbiy tasviringizni yuklang — AI tizimi patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi
-          </p>
-        </div>
-      </section>
+      <AIServiceHero
+        image={aiRadiologyImg}
+        title="Rentgen, MRT va KT tasvirlarini AI tahlili"
+        subtitle="AI Radiology Pro"
+        description="Tibbiy tasviringizni yuklang — AI tizimi patologik o'zgarishlarni aniqlaydi, anatomik tuzilmalarni baholaydi va mutaxassis tavsiya qiladi."
+        icon={<Eye className="w-4 h-4" />}
+        gradient="from-violet-700/90 to-violet-900/80"
+        features={[
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "DICOM qo'llab-quvvat" },
+          { icon: <Scan className="w-3.5 h-3.5" />, text: "Patologiya aniqlash" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "ICD-10 klassifikatsiya" },
+        ]}
+      />
 
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">

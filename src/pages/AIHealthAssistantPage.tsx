@@ -175,18 +175,21 @@ const AIHealthAssistantPage = () => {
         { label: "AI Sog'liq Assistenti" },
       ]} />
 
+      <AIServiceHero
+        image={aiAssistantImg}
+        title="Shaxsiy sog'liq assistenti"
+        subtitle="AI Personal Health Assistant"
+        description="24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar. Har qanday sog'liq savolingizga javob."
+        icon={<UserCheck className="w-4 h-4" />}
+        gradient="from-teal-700/90 to-teal-900/80"
+        features={[
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "4 ta rejim" },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: "24/7 faol" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Ko'p tilli" },
+        ]}
+      />
+
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-5xl">
-        {/* Header */}
-        <div className="text-center mb-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Brain className="w-4 h-4" />
-            AI Personal Health Assistant
-          </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground">
-            Shaxsiy sog'liq <span className="text-primary">assistenti</span>
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">24/7 ishlaydigan AI sog'liq yordamchingiz</p>
-        </div>
 
         {/* Mode selector */}
         <div className="flex flex-wrap justify-center gap-2 mb-4">

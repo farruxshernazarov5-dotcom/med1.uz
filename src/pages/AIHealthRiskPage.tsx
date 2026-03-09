@@ -168,21 +168,19 @@ const AIHealthRiskPage = () => {
         { label: "Kasallik Prognozi" },
       ]} />
 
-      <section className="relative py-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
-        <div className="container mx-auto px-4 relative text-center max-w-3xl">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <Brain className="w-4 h-4" />
-            Predictive Diagnostics AI
-          </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-3">
-            AI kasallik <span className="text-primary">prognozlash</span> tizimi
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Sog'liq ma'lumotlaringiz, simptomlar, analizlar va tibbiy tarixingiz asosida kelajakdagi kasallik xavflarini AI prognoz qiladi
-          </p>
-        </div>
-      </section>
+      <AIServiceHero
+        image={aiHealthRiskImg}
+        title="AI kasallik prognozlash tizimi"
+        subtitle="Predictive Diagnostics AI"
+        description="Sog'liq ma'lumotlaringiz, simptomlar, analizlar va tibbiy tarixingiz asosida kelajakdagi kasallik xavflarini sun'iy intellekt prognoz qiladi va oldini olish tavsiyalari beradi."
+        icon={<HeartPulse className="w-4 h-4" />}
+        gradient="from-rose-700/90 to-rose-900/80"
+        features={[
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "Risk Score hisoblash" },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: "Health Index" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Profilaktik tavsiyalar" },
+        ]}
+      />
 
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">

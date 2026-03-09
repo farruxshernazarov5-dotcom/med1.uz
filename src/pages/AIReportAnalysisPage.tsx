@@ -202,19 +202,19 @@ const AIReportAnalysisPage = () => {
         { label: "Analiz Tahlili" },
       ]} />
 
-      <section className="relative py-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
-        <div className="container mx-auto px-4 relative text-center max-w-3xl">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-3">
-            <FileText className="w-4 h-4" />
-            AI Report Analysis
-          </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-3">
-            Laboratoriya natijalarini <span className="text-primary">AI tahlili</span>
-          </h1>
-          <p className="text-muted-foreground text-sm">Analiz natijalaringizni yuklang yoki kiriting — AI tizimi ko'rsatkichlarni tahlil qilib, tushuntirish beradi</p>
-        </div>
-      </section>
+      <AIServiceHero
+        image={aiReportImg}
+        title="Laboratoriya natijalarini AI tahlili"
+        subtitle="AI Report Analysis"
+        description="Analiz natijalaringizni yuklang yoki kiriting — AI tizimi har bir ko'rsatkichni tahlil qilib, tibbiy izoh va tavsiya beradi. ICD-10 kodlari bilan professional darajada."
+        icon={<FileText className="w-4 h-4" />}
+        gradient="from-emerald-700/90 to-emerald-900/80"
+        features={[
+          { icon: <Shield className="w-3.5 h-3.5" />, text: "OCR rasm tanish" },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: "ICD-10 kodlari" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI interpretatsiya" },
+        ]}
+      />
 
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">

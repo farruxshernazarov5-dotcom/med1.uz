@@ -278,16 +278,21 @@ const AIPregnancyPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <AIServiceHero
+        image={aiPregnancyImg}
+        title="AI Homiladorlik Assistenti"
+        subtitle={`${currentWeek}-hafta · ${trimester}-trimester · Tug'ruqqa ${daysLeft} kun`}
+        description="Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari, harakatlar monitoringi va AI tibbiy maslahatlar olish imkoniyati."
+        icon={<Baby className="w-4 h-4" />}
+        gradient="from-pink-600/90 to-pink-900/80"
+        features={[
+          { icon: <Heart className="w-3.5 h-3.5" />, text: "Haftalik kuzatuv" },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: "Harakat monitoringi" },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI maslahatlar" },
+        ]}
+      />
+
       <div className="container mx-auto px-4 py-6 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
-            <Baby className="w-6 h-6 text-primary" /> AI Homiladorlik Assistenti
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {currentWeek}-hafta · {trimester}-trimester · Tug'ruqqa {daysLeft} kun qoldi
-          </p>
-        </div>
 
         {/* Progress bar */}
         <div className="mb-6">
