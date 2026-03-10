@@ -310,7 +310,7 @@ const PartnershipPage = () => {
             </div>
             <div className="pt-4 border-t border-border text-center text-xs">
               <p>© {new Date().getFullYear()} Med1.uz — O'zbekistonning yetakchi tibbiy platformasi</p>
-              <p className="mt-1">Aloqa: info@med1.uz | +998 90 123 45 67</p>
+              <p className="mt-1">Aloqa: info@med1.uz | +998 99 214 41 03</p>
             </div>
           </div>
         </div>
