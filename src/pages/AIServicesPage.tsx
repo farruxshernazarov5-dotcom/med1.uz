@@ -78,6 +78,38 @@ const aiServices = [
     color: "from-violet-500 to-violet-400",
     badge: "Yangi",
   },
+  {
+    icon: UtensilsCrossed,
+    title: "AI Dietolog",
+    description: "Shaxsiy ovqatlanish rejasi, kaloriya hisoblash, BMI tahlili va O'zbekiston milliy taomlari asosida dieta",
+    href: "/ai-dietolog",
+    color: "from-green-500 to-green-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Heart,
+    title: "AI Psixolog",
+    description: "Stress va depressiya bo'yicha 24/7 qo'llab-quvvatlash, meditatsiya va nafas mashqlari",
+    href: "/ai-psixolog",
+    color: "from-rose-400 to-rose-300",
+    badge: "Yangi",
+  },
+  {
+    icon: Pill,
+    title: "AI Farmatsevt",
+    description: "Dori o'zaro ta'sirini tekshirish, analoglarni topish va dozalash bo'yicha maslahat",
+    href: "/ai-farmatsevt",
+    color: "from-cyan-500 to-cyan-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Dumbbell,
+    title: "AI Fitness Trener",
+    description: "Shaxsiy mashq dasturlari, posture tahlili va reabilitatsiya mashqlari",
+    href: "/ai-fitness",
+    color: "from-orange-500 to-orange-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (
