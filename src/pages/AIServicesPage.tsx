@@ -145,6 +145,13 @@ const AIServicesPage = () => (
             <Sparkles className="w-4 h-4 text-amber-500" /> Zamonaviy AI modellari
           </div>
         </div>
+        <div className="mt-6 text-center">
+          <Link to="/ai-subscription">
+            <Button size="lg">
+              <Crown className="w-5 h-5 mr-2" /> Obuna tariflari va narxlar
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
 
