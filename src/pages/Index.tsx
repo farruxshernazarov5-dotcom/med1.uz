@@ -50,6 +50,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* AI Services Section */}
+      <HomeAIServicesSection />
+
       {/* Cosmetology Promo Section */}
       <CosmetologyPromo />
 
