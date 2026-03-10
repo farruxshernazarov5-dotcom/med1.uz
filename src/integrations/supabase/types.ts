@@ -14,6 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_payments: {
+        Row: {
+          amount: number
+          billing_period: string
+          created_at: string | null
+          id: string
+          invoice_id: string
+          paid_at: string | null
+          payment_method: string | null
+          plan_id: string
+          services: string[] | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          billing_period?: string
+          created_at?: string | null
+          id?: string
+          invoice_id: string
+          paid_at?: string | null
+          payment_method?: string | null
+          plan_id: string
+          services?: string[] | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          billing_period?: string
+          created_at?: string | null
+          id?: string
+          invoice_id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          plan_id?: string
+          services?: string[] | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_subscriptions: {
+        Row: {
+          billing_period: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          plan_id: string
+          services: string[] | null
+          started_at: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_period?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          plan_id?: string
+          services?: string[] | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_period?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          plan_id?: string
+          services?: string[] | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_usage: {
+        Row: {
+          id: string
+          service_id: string
+          usage_date: string | null
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          service_id: string
+          usage_date?: string | null
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          service_id?: string
+          usage_date?: string | null
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_date: string

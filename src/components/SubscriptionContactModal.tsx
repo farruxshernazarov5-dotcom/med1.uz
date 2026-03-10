@@ -113,9 +113,12 @@ const SubscriptionContactModal = ({
               <p className="text-xs text-muted-foreground text-center">
                 Yoki to'g'ridan-to'g'ri bog'laning:
               </p>
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <a href="tel:+998901234567" className="flex items-center gap-1.5 text-primary hover:underline">
-                  <Phone className="w-4 h-4" /> +998 90 123 45 67
+              <div className="flex flex-col items-center gap-1 text-sm">
+                <a href="tel:+998992144103" className="flex items-center gap-1.5 text-primary hover:underline">
+                  <Phone className="w-4 h-4" /> +998 99 214 41 03
+                </a>
+                <a href="tel:+998777770463" className="flex items-center gap-1.5 text-primary hover:underline">
+                  <Phone className="w-4 h-4" /> +998 77 777 04 63
                 </a>
                 <a href="https://t.me/med1uz" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-primary hover:underline">
                   <MessageSquare className="w-4 h-4" /> Telegram

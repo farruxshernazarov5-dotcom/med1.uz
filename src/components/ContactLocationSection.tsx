@@ -17,7 +17,11 @@ const ContactLocationSection = () => {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Telefon</p>
-                  <p className="text-sm font-medium text-foreground">+998 (71) 123-45-67</p>
+                  <div className="space-y-0.5">
+                    <a href="tel:+998992144103" className="block text-sm font-medium text-foreground hover:text-primary transition-colors">+998 99 214 41 03</a>
+                    <a href="tel:+998777770463" className="block text-sm font-medium text-foreground hover:text-primary transition-colors">+998 77 777 04 63</a>
+                    <a href="tel:+998770000498" className="block text-sm font-medium text-foreground hover:text-primary transition-colors">+998 77 000 04 98</a>
+                  </div>
                 </div>
               </li>
               <li className="flex items-center gap-3">

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const aiServices = [
@@ -78,6 +78,38 @@ const aiServices = [
     color: "from-violet-500 to-violet-400",
     badge: "Yangi",
   },
+  {
+    icon: UtensilsCrossed,
+    title: "AI Dietolog",
+    description: "Shaxsiy ovqatlanish rejasi, kaloriya hisoblash, BMI tahlili va O'zbekiston milliy taomlari asosida dieta",
+    href: "/ai-dietolog",
+    color: "from-green-500 to-green-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Heart,
+    title: "AI Psixolog",
+    description: "Stress va depressiya bo'yicha 24/7 qo'llab-quvvatlash, meditatsiya va nafas mashqlari",
+    href: "/ai-psixolog",
+    color: "from-rose-400 to-rose-300",
+    badge: "Yangi",
+  },
+  {
+    icon: Pill,
+    title: "AI Farmatsevt",
+    description: "Dori o'zaro ta'sirini tekshirish, analoglarni topish va dozalash bo'yicha maslahat",
+    href: "/ai-farmatsevt",
+    color: "from-cyan-500 to-cyan-400",
+    badge: "Yangi",
+  },
+  {
+    icon: Dumbbell,
+    title: "AI Fitness Trener",
+    description: "Shaxsiy mashq dasturlari, posture tahlili va reabilitatsiya mashqlari",
+    href: "/ai-fitness",
+    color: "from-orange-500 to-orange-400",
+    badge: "Yangi",
+  },
 ];
 
 const AIServicesPage = () => (
@@ -112,6 +144,13 @@ const AIServicesPage = () => (
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Sparkles className="w-4 h-4 text-amber-500" /> Zamonaviy AI modellari
           </div>
+        </div>
+        <div className="mt-6 text-center">
+          <Link to="/ai-subscription">
+            <Button size="lg">
+              <Crown className="w-5 h-5 mr-2" /> Obuna tariflari va narxlar
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

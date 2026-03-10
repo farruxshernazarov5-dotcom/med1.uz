@@ -64,6 +64,9 @@ import AIDietologPage from "./pages/AIDietologPage";
 import AIPsixologPage from "./pages/AIPsixologPage";
 import AIFarmatsevtPage from "./pages/AIFarmatsevtPage";
 import AIFitnessPage from "./pages/AIFitnessPage";
+import AISubscriptionPage from "./pages/AISubscriptionPage";
+import AIPaymentPage from "./pages/AIPaymentPage";
+import FloatingServicesPanel from "./components/FloatingServicesPanel";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -75,6 +78,7 @@ const App = () => (
         <BrowserRouter>
           <FloatingAISearch />
           <FloatingAIPanel />
+          <FloatingServicesPanel />
           <Routes>
             <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
@@ -132,8 +136,10 @@ const App = () => (
                  <Route path="/ai-dietolog" element={<AIDietologPage />} />
                  <Route path="/ai-psixolog" element={<AIPsixologPage />} />
                  <Route path="/ai-farmatsevt" element={<AIFarmatsevtPage />} />
-                 <Route path="/ai-fitness" element={<AIFitnessPage />} />
-              <Route path="*" element={<NotFound />} />
+                  <Route path="/ai-fitness" element={<AIFitnessPage />} />
+                  <Route path="/ai-subscription" element={<AISubscriptionPage />} />
+                  <Route path="/ai-payment" element={<AIPaymentPage />} />
+               <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

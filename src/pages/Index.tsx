@@ -15,6 +15,7 @@ import SectionTicker from "@/components/SectionTicker";
 import CosmetologyPromo from "@/components/CosmetologyPromo";
 import HealthDashboardWidget from "@/components/HealthDashboardWidget";
 import PartnerClinics from "@/components/PartnerClinics";
+import HomeAIServicesSection from "@/components/HomeAIServicesSection";
 
 const Index = () => {
   return (
@@ -48,6 +49,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* AI Services Section */}
+      <HomeAIServicesSection />
 
       {/* Cosmetology Promo Section */}
       <CosmetologyPromo />

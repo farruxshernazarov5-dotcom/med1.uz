@@ -155,7 +155,7 @@ const PartnershipPage = () => {
               <Handshake className="w-5 h-5 mr-2" /> Hamkor bo'lish
             </Button>
             <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-              <Phone className="w-5 h-5 mr-2" /> +998 90 123 45 67
+              <Phone className="w-5 h-5 mr-2" /> +998 99 214 41 03
             </Button>
           </div>
         </div>
@@ -310,7 +310,7 @@ const PartnershipPage = () => {
             </div>
             <div className="pt-4 border-t border-border text-center text-xs">
               <p>© {new Date().getFullYear()} Med1.uz — O'zbekistonning yetakchi tibbiy platformasi</p>
-              <p className="mt-1">Aloqa: info@med1.uz | +998 90 123 45 67</p>
+              <p className="mt-1">Aloqa: info@med1.uz | +998 99 214 41 03</p>
             </div>
           </div>
         </div>
