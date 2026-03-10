@@ -78,6 +78,7 @@ const App = () => (
         <BrowserRouter>
           <FloatingAISearch />
           <FloatingAIPanel />
+          <FloatingServicesPanel />
           <Routes>
             <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
