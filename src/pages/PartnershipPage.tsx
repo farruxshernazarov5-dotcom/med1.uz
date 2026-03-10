@@ -155,7 +155,7 @@ const PartnershipPage = () => {
               <Handshake className="w-5 h-5 mr-2" /> Hamkor bo'lish
             </Button>
             <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-              <Phone className="w-5 h-5 mr-2" /> +998 90 123 45 67
+              <Phone className="w-5 h-5 mr-2" /> +998 99 214 41 03
             </Button>
           </div>
         </div>
