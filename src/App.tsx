@@ -64,6 +64,9 @@ import AIDietologPage from "./pages/AIDietologPage";
 import AIPsixologPage from "./pages/AIPsixologPage";
 import AIFarmatsevtPage from "./pages/AIFarmatsevtPage";
 import AIFitnessPage from "./pages/AIFitnessPage";
+import AISubscriptionPage from "./pages/AISubscriptionPage";
+import AIPaymentPage from "./pages/AIPaymentPage";
+import FloatingServicesPanel from "./components/FloatingServicesPanel";
 const queryClient = new QueryClient();
 
 const App = () => (
