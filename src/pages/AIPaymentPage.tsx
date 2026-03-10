@@ -55,7 +55,7 @@ const AIPaymentPage = () => {
 
     try {
       // Create payment record in DB
-      const { error } = await supabase.from("ai_payments").insert({
+      const { error } = await supabase.from("ai_payments" as any).insert({
         user_id: user.id,
         invoice_id: invoiceId,
         plan_id: plan,
@@ -64,7 +64,7 @@ const AIPaymentPage = () => {
         services: plan === "custom" ? services : [],
         payment_method: paymentMethod,
         status: "pending",
-      });
+      } as any);
 
       if (error) throw error;
 

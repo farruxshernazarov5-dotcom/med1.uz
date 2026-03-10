@@ -136,8 +136,10 @@ const App = () => (
                  <Route path="/ai-dietolog" element={<AIDietologPage />} />
                  <Route path="/ai-psixolog" element={<AIPsixologPage />} />
                  <Route path="/ai-farmatsevt" element={<AIFarmatsevtPage />} />
-                 <Route path="/ai-fitness" element={<AIFitnessPage />} />
-              <Route path="*" element={<NotFound />} />
+                  <Route path="/ai-fitness" element={<AIFitnessPage />} />
+                  <Route path="/ai-subscription" element={<AISubscriptionPage />} />
+                  <Route path="/ai-payment" element={<AIPaymentPage />} />
+               <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
