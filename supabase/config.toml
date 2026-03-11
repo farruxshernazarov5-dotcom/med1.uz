@@ -29,3 +29,13 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.ai-cosmetology]
     verify_jwt = false
+  [functions.ai-dietolog]
+    verify_jwt = false
+  [functions.ai-psixolog]
+    verify_jwt = false
+  [functions.ai-farmatsevt]
+    verify_jwt = false
+  [functions.ai-fitness]
+    verify_jwt = false
+  [functions.telegram-notify]
+    verify_jwt = false
