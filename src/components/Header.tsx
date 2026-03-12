@@ -29,7 +29,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("UZ");
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, userRole, signOut } = useAuth();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
