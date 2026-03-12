@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, LogOut } from "lucide-react";
+import { Menu, X, Search, User, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,7 +29,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("UZ");
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, userRole, signOut } = useAuth();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -100,6 +100,11 @@ const Header = () => {
 
               {user ? (
                 <div className="hidden sm:flex items-center gap-2">
+                  {userRole === "admin" && (
+                    <Button asChild variant="ghost" size="sm" className="text-primary">
+                      <Link to="/admin"><Shield className="w-4 h-4 mr-1" /> Admin</Link>
+                    </Button>
+                  )}
                   <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
                     <Link to="/dashboard"><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
                   </Button>
@@ -135,9 +140,16 @@ const Header = () => {
                   ))}
                 </div>
                 {user ? (
-                  <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
-                    <Link to="/dashboard" onClick={() => setIsOpen(false)}>Panel</Link>
-                  </Button>
+                  <div className="flex flex-1 gap-2">
+                    {userRole === "admin" && (
+                      <Button asChild variant="outline" className="flex-1">
+                        <Link to="/admin" onClick={() => setIsOpen(false)}><Shield className="w-4 h-4 mr-1" /> Admin</Link>
+                      </Button>
+                    )}
+                    <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
+                      <Link to="/dashboard" onClick={() => setIsOpen(false)}>Panel</Link>
+                    </Button>
+                  </div>
                 ) : (
                   <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     <Link to="/auth" onClick={() => setIsOpen(false)}>Kirish</Link>
