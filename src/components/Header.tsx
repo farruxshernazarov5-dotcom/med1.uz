@@ -100,6 +100,11 @@ const Header = () => {
 
               {user ? (
                 <div className="hidden sm:flex items-center gap-2">
+                  {userRole === "admin" && (
+                    <Button asChild variant="ghost" size="sm" className="text-primary">
+                      <Link to="/admin"><Shield className="w-4 h-4 mr-1" /> Admin</Link>
+                    </Button>
+                  )}
                   <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
                     <Link to="/dashboard"><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
                   </Button>
