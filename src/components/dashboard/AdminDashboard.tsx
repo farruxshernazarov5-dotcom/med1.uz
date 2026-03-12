@@ -207,7 +207,7 @@ const AdminDashboard = () => {
   };
 
   const toggleActive = async (table: string, id: string, current: boolean, setter: Function) => {
-    await supabase.from(table).update({ is_active: !current }).eq("id", id);
+    await (supabase.from(table as any) as any).update({ is_active: !current }).eq("id", id);
     setter((prev: any[]) => prev.map(c => c.id === id ? { ...c, is_active: !current } : c));
     toast({ title: !current ? "Faollashtirildi ✅" : "Nofaol qilindi" });
   };
