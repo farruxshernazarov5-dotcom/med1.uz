@@ -140,9 +140,16 @@ const Header = () => {
                   ))}
                 </div>
                 {user ? (
-                  <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
-                    <Link to="/dashboard" onClick={() => setIsOpen(false)}>Panel</Link>
-                  </Button>
+                  <div className="flex flex-1 gap-2">
+                    {userRole === "admin" && (
+                      <Button asChild variant="outline" className="flex-1">
+                        <Link to="/admin" onClick={() => setIsOpen(false)}><Shield className="w-4 h-4 mr-1" /> Admin</Link>
+                      </Button>
+                    )}
+                    <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
+                      <Link to="/dashboard" onClick={() => setIsOpen(false)}>Panel</Link>
+                    </Button>
+                  </div>
                 ) : (
                   <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     <Link to="/auth" onClick={() => setIsOpen(false)}>Kirish</Link>
