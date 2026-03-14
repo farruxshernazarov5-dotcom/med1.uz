@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import {
   Package, ShoppingCart, BarChart3, Bell, Plus, Pencil, Trash2,
   Loader2, Eye, TrendingUp, DollarSign, AlertCircle,

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import {
   Droplets, Plus, Trash2, Edit, Save, X, Calendar,
   TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown,
