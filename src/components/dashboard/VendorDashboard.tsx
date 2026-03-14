@@ -14,6 +14,8 @@ import {
   Package, ShoppingCart, BarChart3, Bell, Plus, Pencil, Trash2,
   Loader2, Eye, TrendingUp, DollarSign, AlertCircle,
 } from "lucide-react";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 
 interface Vendor {
   id: string;
