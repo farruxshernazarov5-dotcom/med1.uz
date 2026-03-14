@@ -101,69 +101,65 @@ const BloodBankDashboard = () => {
     }));
   };
 
-  if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  const [tab, setTab] = useState("donations");
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin w-8 h-8 border-4 border-destructive border-t-transparent rounded-full" /></div>;
 
   if (!bank) return (
-    <Card><CardContent className="p-8 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-background"><div className="text-center p-8">
       <Droplets className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
       <h2 className="text-xl font-bold text-foreground mb-2">Qon banki topilmadi</h2>
       <p className="text-muted-foreground mb-4">Avval qon bankingizni ro'yxatdan o'tkazing</p>
       <Button onClick={() => window.location.href = "/blood-donor-register"}>Ro'yxatdan o'tish</Button>
-    </CardContent></Card>
+    </div></div>
   );
 
   const pendingCount = donations.filter(d => d.status === "pending").length;
   const completedCount = donations.filter(d => d.status === "completed").length;
-
   const statusData = [
     { name: "Kutilmoqda", value: pendingCount },
     { name: "Qabul qilindi", value: completedCount },
     { name: "Bekor", value: donations.filter(d => d.status === "cancelled").length },
   ].filter(d => d.value > 0);
+  const bloodTypeData = BLOOD_TYPES.map(bt => ({ name: bt, count: donors.filter(d => `${d.blood_group}${d.rh_factor}` === bt).length })).filter(d => d.count > 0);
 
-  const bloodTypeData = BLOOD_TYPES.map(bt => ({
-    name: bt,
-    count: donors.filter(d => `${d.blood_group}${d.rh_factor}` === bt).length,
-  })).filter(d => d.count > 0);
+  const sidebarItems: SidebarItem[] = [
+    { id: "donations", label: "Donatsiyalar", icon: Droplets, badge: pendingCount },
+    { id: "stats", label: "Statistika", icon: BarChart3 },
+    { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "profile", label: "Profil", icon: Settings },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-heading font-bold text-foreground flex items-center gap-2">
-            <Droplets className="w-6 h-6 text-red-500" /> {bank.name}
-          </h1>
-          <p className="text-sm text-muted-foreground">{bank.address}</p>
-        </div>
-      </div>
+    <DashboardShell title={bank.name} subtitle="Qon banki boshqaruv paneli" icon={Droplets} iconColor="text-destructive" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
+      {/* Blood types */}
+      {tab === "donations" && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Faol donorlar", val: donors.length, icon: Users, color: "from-destructive/20 to-destructive/5", iconColor: "text-destructive" },
+              { label: "Jami donatsiyalar", val: donations.length, icon: Calendar, color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
+              { label: "Kutilmoqda", val: pendingCount, icon: Clock, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
+              { label: "Qabul qilingan", val: completedCount, icon: CheckCircle, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
+            ].map(s => (
+              <div key={s.label} className={cn("rounded-2xl border border-border p-5 bg-gradient-to-br", s.color)}>
+                <s.icon className={cn("w-8 h-8 mb-3", s.iconColor)} />
+                <p className="text-2xl font-bold text-foreground">{s.val}</p>
+                <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+              </div>
+            ))}
+          </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card><CardContent className="p-4 text-center"><Users className="w-6 h-6 text-red-500 mx-auto mb-1" /><p className="text-2xl font-bold">{donors.length}</p><p className="text-xs text-muted-foreground">Faol donorlar</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><Calendar className="w-6 h-6 text-primary mx-auto mb-1" /><p className="text-2xl font-bold">{donations.length}</p><p className="text-xs text-muted-foreground">Jami donatsiyalar</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><Clock className="w-6 h-6 text-amber-500 mx-auto mb-1" /><p className="text-2xl font-bold">{pendingCount}</p><p className="text-xs text-muted-foreground">Kutilmoqda</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><CheckCircle className="w-6 h-6 text-emerald-500 mx-auto mb-1" /><p className="text-2xl font-bold">{completedCount}</p><p className="text-xs text-muted-foreground">Qabul qilingan</p></CardContent></Card>
-      </div>
+          <Card><CardContent className="p-4">
+            <h3 className="font-medium text-foreground mb-3">Mavjud qon guruhlari</h3>
+            <div className="flex flex-wrap gap-2">
+              {BLOOD_TYPES.map(bt => (
+                <Badge key={bt} variant={bank.available_blood_types?.includes(bt) ? "default" : "outline"} className={bank.available_blood_types?.includes(bt) ? "bg-destructive" : ""}>{bt}</Badge>
+              ))}
+            </div>
+          </CardContent></Card>
 
-      {/* Blood types availability */}
-      <Card><CardContent className="p-4">
-        <h3 className="font-medium text-foreground mb-3">Mavjud qon guruhlari</h3>
-        <div className="flex flex-wrap gap-2">
-          {BLOOD_TYPES.map(bt => (
-            <Badge key={bt} variant={bank.available_blood_types?.includes(bt) ? "default" : "outline"}
-              className={bank.available_blood_types?.includes(bt) ? "bg-red-500" : ""}>
-              {bt}
-            </Badge>
-          ))}
-        </div>
-      </CardContent></Card>
-
-      <Tabs defaultValue="donations">
-        <TabsList className="grid grid-cols-4 w-full max-w-lg">
-          <TabsTrigger value="donations">Donatsiyalar</TabsTrigger>
-          <TabsTrigger value="stats">Statistika</TabsTrigger>
-          <TabsTrigger value="subscription">Obuna</TabsTrigger>
-          <TabsTrigger value="profile">Profil</TabsTrigger>
-        </TabsList>
+          <h2 className="font-heading font-bold text-lg">Donatsiyalar ({donations.length})</h2>
 
         <TabsContent value="donations" className="space-y-4">
           <h2 className="font-heading font-bold text-lg">Donatsiyalar ({donations.length})</h2>
