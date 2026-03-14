@@ -320,8 +320,7 @@ const VendorDashboard = () => {
             </Card>
           </div>
         </TabsContent>
-      </Tabs>
-    </div>
+    </DashboardShell>
   );
 };
 

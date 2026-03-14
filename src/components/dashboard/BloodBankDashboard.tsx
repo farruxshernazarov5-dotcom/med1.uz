@@ -275,8 +275,7 @@ const BloodBankDashboard = () => {
             )}
           </CardContent></Card>
         </TabsContent>
-      </Tabs>
-    </div>
+    </DashboardShell>
   );
 };
 
