@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import {
-  Building2, Users, Calendar, DollarSign, Plus, LogOut,
+  Building2, Users, Calendar, DollarSign, Plus,
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
   Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart,
   Scissors, Receipt, Wrench, ListOrdered, Siren, ShieldCheck, PieChart,
-  CalendarDays, ShieldAlert, User, Globe
+  CalendarDays, ShieldAlert, User, Globe, TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 import ClinicProfileEditor from "./ClinicProfileEditor";
 import DoctorEditor from "./DoctorEditor";
 import ClinicAnalytics from "./ClinicAnalytics";
@@ -42,16 +44,14 @@ import HMSPrescription from "@/components/hms/HMSPrescription";
 import HMSFinance from "@/components/hms/HMSFinance";
 import HMSInventory from "@/components/hms/HMSInventory";
 
-type TabId = "overview" | "profile" | "services" | "doctors" | "appointments" | "analytics" | "subscription" | "hms-patients" | "hms-lab" | "hms-payroll" | "hms-pharmacy" | "hms-beds" | "hms-departments" | "hms-communication" | "hms-files" | "hms-surgery" | "hms-insurance" | "hms-emr" | "hms-equipment" | "hms-queue" | "hms-emergency" | "hms-qa" | "hms-reports" | "hms-appointment-portal" | "hms-patient-portal" | "hms-infection" | "hms-schedule" | "hms-teleconsultation" | "hms-prescription" | "hms-finance" | "hms-inventory";
-
 const ClinicDashboard = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const [clinic, setClinic] = useState<any>(null);
   const [services, setServices] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<TabId>("overview");
+  const [tab, setTab] = useState("overview");
 
   const fetchData = async () => {
     if (!user) return;
@@ -90,108 +90,129 @@ const ClinicDashboard = () => {
     fetchData();
   };
 
-  if (loading) return <div className="text-center py-12 text-muted-foreground">Yuklanmoqda...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="animate-spin w-8 h-8 border-4 border-secondary border-t-transparent rounded-full" />
+    </div>
+  );
 
   if (!clinic) {
     return (
-      <div className="text-center py-16">
-        <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-        <h2 className="font-heading text-2xl font-bold text-foreground mb-2">Klinikangizni yarating</h2>
-        <p className="text-muted-foreground mb-6">Platformada klinikangizni ro'yxatdan o'tkazing</p>
-        <Button onClick={handleCreateClinic} className="bg-hero-gradient text-primary-foreground border-0">
-          <Plus className="w-4 h-4 mr-2" /> Klinika yaratish
-        </Button>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center p-8">
+          <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <h2 className="font-heading text-2xl font-bold text-foreground mb-2">Klinikangizni yarating</h2>
+          <p className="text-muted-foreground mb-6">Platformada klinikangizni ro'yxatdan o'tkazing</p>
+          <Button onClick={handleCreateClinic} className="bg-gradient-to-r from-secondary to-accent text-white border-0">
+            <Plus className="w-4 h-4 mr-2" /> Klinika yaratish
+          </Button>
+        </div>
       </div>
     );
   }
 
-  const tabs = [
-    { id: "overview" as const, label: "Umumiy", icon: Building2 },
-    { id: "profile" as const, label: "Profil", icon: Settings },
-    { id: "services" as const, label: "Xizmatlar", icon: DollarSign },
-    { id: "doctors" as const, label: "Shifokorlar", icon: Stethoscope },
-    { id: "appointments" as const, label: "Qabullar", icon: Calendar },
-    { id: "analytics" as const, label: "Analitika", icon: BarChart3 },
-    { id: "subscription" as const, label: "Obuna", icon: Crown },
-    { id: "hms-patients" as const, label: "Bemorlar", icon: Users },
-    { id: "hms-lab" as const, label: "Laboratoriya", icon: FlaskConical },
-    { id: "hms-payroll" as const, label: "Xodimlar/Maosh", icon: Wallet },
-    { id: "hms-pharmacy" as const, label: "Dorixona", icon: Pill },
-    { id: "hms-beds" as const, label: "To'shaklar", icon: BedDouble },
-    { id: "hms-departments" as const, label: "Bo'limlar", icon: Building2 },
-    { id: "hms-communication" as const, label: "Aloqa", icon: Bell },
-    { id: "hms-files" as const, label: "Fayllar/Donor", icon: FileText },
-    { id: "hms-surgery" as const, label: "Operatsiya", icon: Scissors },
-    { id: "hms-insurance" as const, label: "Moliya", icon: Receipt },
-    { id: "hms-emr" as const, label: "EMR", icon: FileText },
-    { id: "hms-equipment" as const, label: "Jihozlar", icon: Wrench },
-    { id: "hms-queue" as const, label: "Navbat", icon: ListOrdered },
-    { id: "hms-emergency" as const, label: "Tez yordam", icon: Siren },
-    { id: "hms-qa" as const, label: "Sifat", icon: ShieldCheck },
-    { id: "hms-reports" as const, label: "Hisobotlar", icon: PieChart },
-    { id: "hms-appointment-portal" as const, label: "Onlayn qabul", icon: Globe },
-    { id: "hms-patient-portal" as const, label: "Bemor portal", icon: User },
-    { id: "hms-infection" as const, label: "Infektsiya", icon: ShieldAlert },
-    { id: "hms-schedule" as const, label: "Jadval", icon: CalendarDays },
-    { id: "hms-teleconsultation" as const, label: "Telemeditsina", icon: Monitor },
-    { id: "hms-prescription" as const, label: "Retseptlar", icon: Pill },
-    { id: "hms-finance" as const, label: "Moliya", icon: Receipt },
-    { id: "hms-inventory" as const, label: "Ombor", icon: FlaskConical },
-  ];
-
   const pendingAppts = appointments.filter((a) => a.status === "pending");
   const totalRevenue = appointments.filter((a) => a.status === "completed").reduce((s, a) => s + Number(a.total_price || 0), 0);
 
+  const sidebarItems: SidebarItem[] = [
+    { id: "overview", label: "Umumiy", icon: Building2 },
+    { id: "profile", label: "Profil", icon: Settings },
+    { id: "services", label: "Xizmatlar", icon: DollarSign },
+    { id: "doctors", label: "Shifokorlar", icon: Stethoscope },
+    { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingAppts.length },
+    { id: "analytics", label: "Analitika", icon: BarChart3 },
+    { id: "subscription", label: "Obuna", icon: Crown },
+    // HMS
+    { id: "hms-patients", label: "Bemorlar", icon: Users, group: "HMS" },
+    { id: "hms-lab", label: "Laboratoriya", icon: FlaskConical, group: "HMS" },
+    { id: "hms-payroll", label: "Xodimlar", icon: Wallet, group: "HMS" },
+    { id: "hms-pharmacy", label: "Dorixona", icon: Pill, group: "HMS" },
+    { id: "hms-beds", label: "To'shaklar", icon: BedDouble, group: "HMS" },
+    { id: "hms-departments", label: "Bo'limlar", icon: Building2, group: "HMS" },
+    { id: "hms-communication", label: "Aloqa", icon: Bell, group: "HMS" },
+    { id: "hms-files", label: "Fayllar", icon: FileText, group: "HMS" },
+    { id: "hms-surgery", label: "Operatsiya", icon: Scissors, group: "HMS" },
+    { id: "hms-insurance", label: "Sug'urta", icon: Receipt, group: "HMS" },
+    { id: "hms-emr", label: "EMR", icon: FileText, group: "HMS" },
+    { id: "hms-equipment", label: "Jihozlar", icon: Wrench, group: "HMS" },
+    { id: "hms-queue", label: "Navbat", icon: ListOrdered, group: "HMS" },
+    { id: "hms-emergency", label: "Tez yordam", icon: Siren, group: "HMS" },
+    { id: "hms-qa", label: "Sifat", icon: ShieldCheck, group: "HMS" },
+    { id: "hms-reports", label: "Hisobotlar", icon: PieChart, group: "HMS" },
+    { id: "hms-appointment-portal", label: "Onlayn qabul", icon: Globe, group: "HMS" },
+    { id: "hms-patient-portal", label: "Bemor portal", icon: User, group: "HMS" },
+    { id: "hms-infection", label: "Infektsiya", icon: ShieldAlert, group: "HMS" },
+    { id: "hms-schedule", label: "Jadval", icon: CalendarDays, group: "HMS" },
+    { id: "hms-teleconsultation", label: "Telemeditsina", icon: Monitor, group: "HMS" },
+    { id: "hms-prescription", label: "Retseptlar", icon: Pill, group: "HMS" },
+    { id: "hms-finance", label: "Moliya", icon: Receipt, group: "HMS" },
+    { id: "hms-inventory", label: "Ombor", icon: FlaskConical, group: "HMS" },
+  ];
+
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">{clinic.name}</h1>
-          <p className="text-muted-foreground text-sm">Klinika boshqaruv paneli</p>
-        </div>
-        <Button variant="ghost" size="icon" onClick={signOut}><LogOut className="w-4 h-4" /></Button>
-      </div>
-
-      <div className="flex gap-1 bg-muted rounded-xl p-1 mb-6 overflow-x-auto">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={cn("flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap",
-              tab === t.id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-            )}
-          >
-            <t.icon className="w-4 h-4" /> {t.label}
-          </button>
-        ))}
-      </div>
-
+    <DashboardShell
+      title={clinic.name}
+      subtitle="Klinika boshqaruv paneli"
+      icon={Building2}
+      iconColor="text-secondary"
+      sidebarItems={sidebarItems}
+      activeTab={tab}
+      onTabChange={setTab}
+    >
       {tab === "overview" && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: Stethoscope, label: "Shifokorlar", value: doctors.length, color: "text-primary" },
-            { icon: DollarSign, label: "Xizmatlar", value: services.length, color: "text-green-600" },
-            { icon: Calendar, label: "Kutilmoqda", value: pendingAppts.length, color: "text-yellow-600" },
-            { icon: Users, label: "Daromad", value: `${totalRevenue.toLocaleString()} so'm`, color: "text-primary" },
-          ].map((s) => (
-            <div key={s.label} className="bg-card rounded-2xl border border-border p-5 shadow-card">
-              <s.icon className={cn("w-6 h-6 mb-2", s.color)} />
-              <p className="text-xl font-bold text-foreground">{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: Stethoscope, label: "Shifokorlar", value: doctors.length, color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
+              { icon: DollarSign, label: "Xizmatlar", value: services.length, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
+              { icon: Calendar, label: "Kutilmoqda", value: pendingAppts.length, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
+              { icon: TrendingUp, label: "Daromad", value: `${totalRevenue.toLocaleString()} so'm`, color: "from-accent/20 to-accent/5", iconColor: "text-accent" },
+            ].map((s) => (
+              <div key={s.label} className={cn("rounded-2xl border border-border p-5 bg-gradient-to-br", s.color, "backdrop-blur-sm")}>
+                <s.icon className={cn("w-8 h-8 mb-3", s.iconColor)} />
+                <p className="text-2xl font-bold text-foreground">{s.value}</p>
+                <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Recent appointments */}
+          {pendingAppts.length > 0 && (
+            <div className="rounded-2xl border border-border bg-card p-5">
+              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-amber-500" />
+                Kutilayotgan qabullar ({pendingAppts.length})
+              </h3>
+              <div className="space-y-2">
+                {pendingAppts.slice(0, 5).map((a) => (
+                  <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">{a.patient_name}</p>
+                      <p className="text-xs text-muted-foreground">{a.patient_phone} • {a.appointment_date} {a.appointment_time?.slice(0, 5)}</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" className="text-emerald-500 hover:bg-emerald-500/10" onClick={() => updateAppointmentStatus(a.id, "confirmed")}>
+                        <CheckCircle className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-destructive hover:bg-destructive/10" onClick={() => updateAppointmentStatus(a.id, "cancelled")}>
+                        <XCircle className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
+          )}
         </div>
       )}
 
       {tab === "profile" && <ClinicProfileEditor clinic={clinic} onSaved={fetchData} />}
-
       {tab === "services" && <ClinicServicesManager clinicId={clinic.id} services={services} onRefresh={fetchData} />}
-
       {tab === "doctors" && <DoctorEditor clinicId={clinic.id} doctors={doctors} onRefresh={fetchData} />}
 
       {tab === "appointments" && (
         <div>
-          <h2 className="font-heading font-bold text-foreground mb-4">Qabullar</h2>
+          <h2 className="font-heading font-bold text-foreground mb-4 text-lg">Qabullar</h2>
           {appointments.length === 0 ? (
             <p className="text-center py-8 text-muted-foreground">Hozircha qabullar yo'q</p>
           ) : (
@@ -203,16 +224,16 @@ const ClinicDashboard = () => {
                     <p className="text-xs text-muted-foreground">{a.patient_phone} • {a.appointment_date} {a.appointment_time?.slice(0, 5)}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {a.total_price > 0 && <span className="text-sm font-bold text-primary">{Number(a.total_price).toLocaleString()}</span>}
+                    {a.total_price > 0 && <span className="text-sm font-bold text-secondary">{Number(a.total_price).toLocaleString()}</span>}
                     <Badge className={cn("text-[10px]",
-                      a.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                      a.status === "confirmed" ? "bg-green-100 text-green-800" :
+                      a.status === "pending" ? "bg-amber-100 text-amber-800" :
+                      a.status === "confirmed" ? "bg-emerald-100 text-emerald-800" :
                       "bg-muted text-muted-foreground"
                     )}>{a.status}</Badge>
                     {a.status === "pending" && (
                       <>
-                        <Button size="sm" variant="ghost" onClick={() => updateAppointmentStatus(a.id, "confirmed")}><CheckCircle className="w-4 h-4 text-green-600" /></Button>
-                        <Button size="sm" variant="ghost" onClick={() => updateAppointmentStatus(a.id, "cancelled")}><XCircle className="w-4 h-4 text-red-500" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => updateAppointmentStatus(a.id, "confirmed")}><CheckCircle className="w-4 h-4 text-emerald-600" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => updateAppointmentStatus(a.id, "cancelled")}><XCircle className="w-4 h-4 text-destructive" /></Button>
                       </>
                     )}
                   </div>
@@ -224,7 +245,6 @@ const ClinicDashboard = () => {
       )}
 
       {tab === "analytics" && <ClinicAnalytics clinicId={clinic.id} />}
-
       {tab === "subscription" && <ClinicSubscription />}
 
       {tab === "hms-patients" && <HMSPatients clinicId={clinic.id} />}
@@ -251,7 +271,7 @@ const ClinicDashboard = () => {
       {tab === "hms-prescription" && <HMSPrescription clinicId={clinic.id} />}
       {tab === "hms-finance" && <HMSFinance clinicId={clinic.id} />}
       {tab === "hms-inventory" && <HMSInventory clinicId={clinic.id} />}
-    </div>
+    </DashboardShell>
   );
 };
 
