@@ -11,10 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Plus, Trash2, Edit, Save, X, Calendar, Camera, Upload,
-  TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image,
+  TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image, Crown,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 
 interface CosmetologyCenter {
   id: string; name: string; address: string; phone: string; email: string;
@@ -121,15 +123,17 @@ const CosmetologyDashboard = () => {
     toast({ title: `Holat: ${status}` }); loadData();
   };
 
-  if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  const [tab, setTab] = useState("services");
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin w-8 h-8 border-4 border-secondary border-t-transparent rounded-full" /></div>;
 
   if (!center) return (
-    <Card><CardContent className="p-8 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-background"><div className="text-center p-8">
       <Sparkles className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
       <h2 className="text-xl font-bold text-foreground mb-2">Kosmetologiya markazi topilmadi</h2>
       <p className="text-muted-foreground mb-4">Avval markazingizni ro'yxatdan o'tkazing</p>
       <Button onClick={() => window.location.href = "/cosmetology-register"}>Ro'yxatdan o'tish</Button>
-    </CardContent></Card>
+    </div></div>
   );
 
   const pendingCount = appointments.filter((a) => a.status === "pending").length;
@@ -148,34 +152,26 @@ const CosmetologyDashboard = () => {
     name: cat, count: services.filter(s => s.category === cat).length,
   })).filter(d => d.count > 0);
 
+  const sidebarItems: SidebarItem[] = [
+    { id: "services", label: "Xizmatlar", icon: Sparkles },
+    { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingCount },
+    { id: "photos", label: "Rasmlar", icon: Image },
+    { id: "stats", label: "Statistika", icon: BarChart3 },
+    { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "profile", label: "Profil", icon: Settings },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        {center.logo_url && <img src={center.logo_url} className="w-14 h-14 rounded-xl object-cover border" alt="" />}
-        <div>
-          <h1 className="text-2xl font-heading font-bold text-foreground flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-violet-500" /> {center.name}
-          </h1>
-          <p className="text-sm text-muted-foreground">{center.address}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card><CardContent className="p-4 text-center"><Calendar className="w-6 h-6 text-primary mx-auto mb-1" /><p className="text-2xl font-bold">{appointments.length}</p><p className="text-xs text-muted-foreground">Jami qabullar</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><Clock className="w-6 h-6 text-amber-500 mx-auto mb-1" /><p className="text-2xl font-bold">{pendingCount}</p><p className="text-xs text-muted-foreground">Kutilmoqda</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><CheckCircle className="w-6 h-6 text-emerald-500 mx-auto mb-1" /><p className="text-2xl font-bold">{completedCount}</p><p className="text-xs text-muted-foreground">Bajarilgan</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><TrendingUp className="w-6 h-6 text-primary mx-auto mb-1" /><p className="text-2xl font-bold">{services.length}</p><p className="text-xs text-muted-foreground">Xizmatlar</p></CardContent></Card>
-      </div>
-
-      <Tabs defaultValue="services">
-        <TabsList className="grid grid-cols-6 w-full max-w-2xl">
-          <TabsTrigger value="services">Xizmatlar</TabsTrigger>
-          <TabsTrigger value="appointments">Qabullar</TabsTrigger>
-          <TabsTrigger value="photos">Rasmlar</TabsTrigger>
-          <TabsTrigger value="stats">Statistika</TabsTrigger>
-          <TabsTrigger value="subscription">Obuna</TabsTrigger>
-          <TabsTrigger value="profile">Profil</TabsTrigger>
-        </TabsList>
+    <DashboardShell
+      title={center.name}
+      subtitle="Kosmetologiya boshqaruv paneli"
+      icon={Sparkles}
+      iconColor="text-accent"
+      logoUrl={center.logo_url}
+      sidebarItems={sidebarItems}
+      activeTab={tab}
+      onTabChange={setTab}
+    >
 
         <TabsContent value="services" className="space-y-4">
           <div className="flex justify-between items-center">
@@ -371,8 +367,7 @@ const CosmetologyDashboard = () => {
             )}
           </CardContent></Card>
         </TabsContent>
-      </Tabs>
-    </div>
+    </DashboardShell>
   );
 };
 
