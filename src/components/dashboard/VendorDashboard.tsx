@@ -131,60 +131,41 @@ const VendorDashboard = () => {
   const totalViews = products.reduce((s, p) => s + (p.view_count || 0), 0);
   const pendingOrders = orders.filter(o => o.status === "pending").length;
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  const [tab, setTab] = useState("products");
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin w-8 h-8 border-4 border-secondary border-t-transparent rounded-full" /></div>;
 
   if (!vendor) return (
-    <Card className="max-w-lg mx-auto">
-      <CardContent className="py-12 text-center space-y-4">
-        <ShoppingCart className="w-12 h-12 mx-auto text-muted-foreground" />
-        <h2 className="text-xl font-bold">Medtexnika kompaniyangiz topilmadi</h2>
-        <p className="text-muted-foreground">Avval kompaniyangizni ro'yxatdan o'tkazing</p>
-        <Button onClick={() => window.location.href = "/vendor-register"}>Ro'yxatdan o'tish</Button>
-      </CardContent>
-    </Card>
+    <div className="min-h-screen flex items-center justify-center bg-background"><div className="text-center p-8">
+      <ShoppingCart className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+      <h2 className="text-xl font-bold">Medtexnika kompaniyangiz topilmadi</h2>
+      <p className="text-muted-foreground mb-4">Avval kompaniyangizni ro'yxatdan o'tkazing</p>
+      <Button onClick={() => window.location.href = "/vendor-register"}>Ro'yxatdan o'tish</Button>
+    </div></div>
   );
 
+  const sidebarItems: SidebarItem[] = [
+    { id: "products", label: "Mahsulotlar", icon: Package },
+    { id: "orders", label: "Buyurtmalar", icon: ShoppingCart, badge: pendingOrders },
+    { id: "stats", label: "Statistika", icon: BarChart3 },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{vendor.company_name}</h1>
-          <div className="flex items-center gap-2 mt-1">
-            {vendor.is_verified ? <Badge className="bg-emerald-500">✅ Tasdiqlangan</Badge> : <Badge variant="secondary">⏳ Tekshirilmoqda</Badge>}
+    <DashboardShell title={vendor.company_name} subtitle="Med texnika boshqaruv paneli" icon={Package} iconColor="text-secondary" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: "Mahsulotlar", val: products.length, icon: Package, color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
+          { label: "Buyurtmalar", val: orders.length, icon: ShoppingCart, color: "from-accent/20 to-accent/5", iconColor: "text-accent" },
+          { label: "Ko'rishlar", val: totalViews, icon: Eye, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
+          { label: "Tushum", val: `${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
+        ].map(s => (
+          <div key={s.label} className={cn("rounded-2xl border border-border p-5 bg-gradient-to-br", s.color)}>
+            <s.icon className={cn("w-8 h-8 mb-3", s.iconColor)} />
+            <p className="text-2xl font-bold text-foreground">{s.val}</p>
+            <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
           </div>
-        </div>
+        ))}
       </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-4 text-center">
-          <Package className="w-6 h-6 mx-auto text-primary mb-1" />
-          <p className="text-2xl font-bold">{products.length}</p>
-          <p className="text-xs text-muted-foreground">Mahsulotlar</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <ShoppingCart className="w-6 h-6 mx-auto text-secondary mb-1" />
-          <p className="text-2xl font-bold">{orders.length}</p>
-          <p className="text-xs text-muted-foreground">Buyurtmalar</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <Eye className="w-6 h-6 mx-auto text-amber-500 mb-1" />
-          <p className="text-2xl font-bold">{totalViews}</p>
-          <p className="text-xs text-muted-foreground">Ko'rishlar</p>
-        </CardContent></Card>
-        <Card><CardContent className="pt-4 text-center">
-          <DollarSign className="w-6 h-6 mx-auto text-emerald-500 mb-1" />
-          <p className="text-2xl font-bold">{totalRevenue.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground">Tushum (UZS)</p>
-        </CardContent></Card>
-      </div>
-
-      <Tabs defaultValue="products">
-        <TabsList className="w-full grid grid-cols-3">
-          <TabsTrigger value="products"><Package className="w-4 h-4 mr-1" /> Mahsulotlar</TabsTrigger>
-          <TabsTrigger value="orders"><ShoppingCart className="w-4 h-4 mr-1" /> Buyurtmalar {pendingOrders > 0 && <Badge className="ml-1 bg-destructive text-xs">{pendingOrders}</Badge>}</TabsTrigger>
-          <TabsTrigger value="stats"><BarChart3 className="w-4 h-4 mr-1" /> Statistika</TabsTrigger>
-        </TabsList>
 
         {/* Products Tab */}
         <TabsContent value="products" className="space-y-4">
