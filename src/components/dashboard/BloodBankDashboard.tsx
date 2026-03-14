@@ -11,10 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import {
   Droplets, Plus, Trash2, Edit, Save, X, Calendar,
-  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users,
+  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 
 interface BloodBank {
   id: string; name: string; address: string; phone: string; email: string;
