@@ -367,8 +367,7 @@ const CosmetologyDashboard = () => {
             )}
           </CardContent></Card>
         </TabsContent>
-      </Tabs>
-    </div>
+    </DashboardShell>
   );
 };
 
