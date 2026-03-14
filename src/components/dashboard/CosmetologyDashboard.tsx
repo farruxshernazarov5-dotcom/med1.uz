@@ -11,10 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Plus, Trash2, Edit, Save, X, Calendar, Camera, Upload,
-  TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image,
+  TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image, Crown,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 
 interface CosmetologyCenter {
   id: string; name: string; address: string; phone: string; email: string;
