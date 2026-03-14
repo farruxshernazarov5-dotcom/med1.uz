@@ -159,12 +159,8 @@ const BloodBankDashboard = () => {
             </div>
           </CardContent></Card>
 
-          <h2 className="font-heading font-bold text-lg">Donatsiyalar ({donations.length})</h2>
-
-        <TabsContent value="donations" className="space-y-4">
-          <h2 className="font-heading font-bold text-lg">Donatsiyalar ({donations.length})</h2>
           {donations.length === 0 ? (
-            <Card><CardContent className="p-8 text-center text-muted-foreground">Hali donatsiyalar yo'q</CardContent></Card>
+            <div className="text-center py-8 text-muted-foreground">Hali donatsiyalar yo'q</div>
           ) : (
             <div className="space-y-2">
               {donations.map(d => (
@@ -190,7 +186,8 @@ const BloodBankDashboard = () => {
               ))}
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
         <TabsContent value="stats" className="space-y-4">
           <h2 className="font-heading font-bold text-lg flex items-center gap-2"><BarChart3 className="w-5 h-5 text-primary" /> Statistika</h2>
