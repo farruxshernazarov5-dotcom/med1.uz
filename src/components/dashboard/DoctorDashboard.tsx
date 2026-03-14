@@ -12,9 +12,10 @@ import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save,
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
-  Phone, Mail, MapPin, Globe, ExternalLink, Crown
+  Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings
 } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
 
 const SPECIALTIES = [
@@ -28,13 +29,8 @@ const SPECIALTIES = [
 const LANGS = ["O'zbek", "Rus", "Ingliz", "Tojik", "Qoraqalpoq", "Qozoq", "Turk"];
 
 const DAYS = [
-  { key: "mon", label: "Du" },
-  { key: "tue", label: "Se" },
-  { key: "wed", label: "Cho" },
-  { key: "thu", label: "Pa" },
-  { key: "fri", label: "Ju" },
-  { key: "sat", label: "Sha" },
-  { key: "sun", label: "Ya" },
+  { key: "mon", label: "Du" }, { key: "tue", label: "Se" }, { key: "wed", label: "Cho" },
+  { key: "thu", label: "Pa" }, { key: "fri", label: "Ju" }, { key: "sat", label: "Sha" }, { key: "sun", label: "Ya" },
 ];
 
 const DoctorDashboard = () => {
@@ -44,7 +40,7 @@ const DoctorDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
-  const [appointments, setAppointments] = useState<any[]>([]);
+  const [tab, setTab] = useState("profile");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -58,47 +54,24 @@ const DoctorDashboard = () => {
 
   const fetchData = async () => {
     if (!user) return;
-    const { data: doc } = await supabase
-      .from("doctors")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
+    const { data: doc } = await supabase.from("doctors").select("*").eq("user_id", user.id).maybeSingle();
     if (doc) {
       setDoctor(doc);
       setForm({
-        full_name: doc.full_name || "",
-        specialty: doc.specialty || "",
-        experience_years: doc.experience_years?.toString() || "",
-        consultation_price: doc.consultation_price?.toString() || "",
-        bio: doc.bio || "",
-        education: doc.education || "",
-        photo_url: doc.photo_url || "",
+        full_name: doc.full_name || "", specialty: doc.specialty || "",
+        experience_years: doc.experience_years?.toString() || "", consultation_price: doc.consultation_price?.toString() || "",
+        bio: doc.bio || "", education: doc.education || "", photo_url: doc.photo_url || "",
         online_consultation: doc.online_consultation || false,
-        certificates: (doc.certificates as string[]) || [],
-        languages: (doc.languages as string[]) || [],
+        certificates: (doc.certificates as string[]) || [], languages: (doc.languages as string[]) || [],
         schedule: (doc.schedule as Record<string, { start: string; end: string; active: boolean }>) || {},
-        phone: doc.phone || "",
-        email: doc.email || "",
-        address: doc.address || "",
-        region: doc.region || "",
-        city: doc.city || "",
+        phone: doc.phone || "", email: doc.email || "", address: doc.address || "", region: doc.region || "", city: doc.city || "",
         social_links: {
-          telegram: (doc.social_links as any)?.telegram || "",
-          instagram: (doc.social_links as any)?.instagram || "",
-          facebook: (doc.social_links as any)?.facebook || "",
-          youtube: (doc.social_links as any)?.youtube || "",
+          telegram: (doc.social_links as any)?.telegram || "", instagram: (doc.social_links as any)?.instagram || "",
+          facebook: (doc.social_links as any)?.facebook || "", youtube: (doc.social_links as any)?.youtube || "",
           website: (doc.social_links as any)?.website || "",
         },
       });
-
-      // Fetch reviews
-      const { data: revs } = await supabase
-        .from("reviews")
-        .select("*")
-        .eq("doctor_id", doc.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
+      const { data: revs } = await supabase.from("reviews").select("*").eq("doctor_id", doc.id).order("created_at", { ascending: false }).limit(10);
       setReviews(revs || []);
     }
     setLoading(false);
@@ -115,226 +88,189 @@ const DoctorDashboard = () => {
     const ext = file.name.split(".").pop();
     const path = `doctors/independent/${user.id}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("clinic-photos").upload(path, file);
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    } else {
-      const { data } = supabase.storage.from("clinic-photos").getPublicUrl(path);
-      updateField("photo_url", data.publicUrl);
-    }
+    if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); }
+    else { const { data } = supabase.storage.from("clinic-photos").getPublicUrl(path); updateField("photo_url", data.publicUrl); }
     setUploading(false);
   };
 
   const toggleScheduleDay = (day: string) => {
-    setForm((p) => ({
-      ...p,
-      schedule: {
-        ...p.schedule,
-        [day]: p.schedule[day]?.active
-          ? { ...p.schedule[day], active: false }
-          : { start: "09:00", end: "17:00", active: true },
-      },
-    }));
+    setForm((p) => ({ ...p, schedule: { ...p.schedule, [day]: p.schedule[day]?.active ? { ...p.schedule[day], active: false } : { start: "09:00", end: "17:00", active: true } } }));
   };
 
   const updateScheduleTime = (day: string, field: "start" | "end", value: string) => {
-    setForm((p) => ({
-      ...p,
-      schedule: {
-        ...p.schedule,
-        [day]: { ...(p.schedule[day] || { start: "09:00", end: "17:00", active: true }), [field]: value },
-      },
-    }));
+    setForm((p) => ({ ...p, schedule: { ...p.schedule, [day]: { ...(p.schedule[day] || { start: "09:00", end: "17:00", active: true }), [field]: value } } }));
   };
 
   const handleSave = async () => {
     if (!doctor) return;
     setSaving(true);
     const { error } = await supabase.from("doctors").update({
-      full_name: form.full_name.trim(),
-      specialty: form.specialty.trim(),
-      experience_years: Number(form.experience_years) || 0,
-      consultation_price: Number(form.consultation_price) || 0,
-      bio: form.bio.trim(),
-      education: form.education,
-      photo_url: form.photo_url,
-      online_consultation: form.online_consultation,
-      certificates: form.certificates,
-      languages: form.languages,
-      schedule: form.schedule,
-      phone: form.phone,
-      email: form.email,
-      address: form.address,
-      region: form.region,
-      city: form.city,
-      social_links: form.social_links,
+      full_name: form.full_name.trim(), specialty: form.specialty.trim(),
+      experience_years: Number(form.experience_years) || 0, consultation_price: Number(form.consultation_price) || 0,
+      bio: form.bio.trim(), education: form.education, photo_url: form.photo_url,
+      online_consultation: form.online_consultation, certificates: form.certificates,
+      languages: form.languages, schedule: form.schedule, phone: form.phone, email: form.email,
+      address: form.address, region: form.region, city: form.city, social_links: form.social_links,
     }).eq("id", doctor.id);
-
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     else toast({ title: "✅ Profil yangilandi!" });
     setSaving(false);
   };
 
-  if (loading) {
-    return <div className="text-center py-12 text-muted-foreground">Yuklanmoqda...</div>;
-  }
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="animate-spin w-8 h-8 border-4 border-secondary border-t-transparent rounded-full" />
+    </div>
+  );
 
   if (!doctor) {
     return (
-      <div className="text-center py-16">
-        <Stethoscope className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-        <p className="text-lg font-bold text-foreground">Professional profil topilmadi</p>
-        <p className="text-muted-foreground mt-1">Avval profilingizni yarating</p>
-        <Link to="/doctor-register">
-          <Button className="mt-4 bg-hero-gradient text-primary-foreground border-0">
-            <Plus className="w-4 h-4 mr-2" /> Profil yaratish
-          </Button>
-        </Link>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center p-8">
+          <Stethoscope className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+          <p className="text-lg font-bold text-foreground">Professional profil topilmadi</p>
+          <p className="text-muted-foreground mt-1">Avval profilingizni yarating</p>
+          <Link to="/doctor-register">
+            <Button className="mt-4 bg-gradient-to-r from-secondary to-accent text-white border-0">
+              <Plus className="w-4 h-4 mr-2" /> Profil yaratish
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const sidebarItems: SidebarItem[] = [
+    { id: "profile", label: "Profil", icon: User },
+    { id: "schedule", label: "Jadval", icon: Calendar },
+    { id: "reviews", label: "Sharhlar", icon: Star },
+    { id: "settings", label: "Sozlamalar", icon: Settings },
+    { id: "subscription", label: "Obuna", icon: Crown },
+  ];
+
   return (
-    <div className="space-y-6">
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid grid-cols-3 w-full max-w-md">
-          <TabsTrigger value="profile"><Stethoscope className="w-4 h-4 mr-1" /> Profil</TabsTrigger>
-          <TabsTrigger value="reviews"><Star className="w-4 h-4 mr-1" /> Sharhlar</TabsTrigger>
-          <TabsTrigger value="subscription"><Crown className="w-4 h-4 mr-1" /> Obuna</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile" className="space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: "Reyting", value: Number(doctor.avg_rating || 0).toFixed(1), icon: Star, color: "text-yellow-500" },
-          { label: "Sharhlar", value: doctor.review_count || 0, icon: MessageCircle, color: "text-primary" },
-          { label: "Tajriba", value: `${doctor.experience_years || 0} yil`, icon: Clock, color: "text-medical-teal" },
-          { label: "Narx", value: `${Number(doctor.consultation_price || 0).toLocaleString()}`, icon: Calendar, color: "text-medical-green" },
-        ].map((s, i) => (
-          <div key={i} className="bg-card rounded-xl border border-border p-4 text-center">
-            <s.icon className={cn("w-5 h-5 mx-auto mb-1", s.color)} />
-            <p className="text-lg font-bold text-foreground">{s.value}</p>
-            <p className="text-[10px] text-muted-foreground">{s.label}</p>
+    <DashboardShell
+      title={doctor.full_name}
+      subtitle={doctor.specialty}
+      icon={Stethoscope}
+      iconColor="text-secondary"
+      logoUrl={doctor.photo_url}
+      sidebarItems={sidebarItems}
+      activeTab={tab}
+      onTabChange={setTab}
+    >
+      {tab === "profile" && (
+        <div className="space-y-6">
+          {/* Stats */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Reyting", value: Number(doctor.avg_rating || 0).toFixed(1), icon: Star, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
+              { label: "Sharhlar", value: doctor.review_count || 0, icon: MessageCircle, color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
+              { label: "Tajriba", value: `${doctor.experience_years || 0} yil`, icon: Clock, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
+              { label: "Narx", value: `${Number(doctor.consultation_price || 0).toLocaleString()}`, icon: Calendar, color: "from-accent/20 to-accent/5", iconColor: "text-accent" },
+            ].map((s, i) => (
+              <div key={i} className={cn("rounded-2xl border border-border p-5 bg-gradient-to-br", s.color)}>
+                <s.icon className={cn("w-8 h-8 mb-3", s.iconColor)} />
+                <p className="text-2xl font-bold text-foreground">{s.value}</p>
+                <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* View public profile link */}
-      <Link to={`/doctors/${doctor.id}`} className="flex items-center gap-2 text-sm text-primary hover:underline">
-        <Eye className="w-4 h-4" /> Ommaviy profilni ko'rish <ExternalLink className="w-3 h-3" />
-      </Link>
+          <Link to={`/doctors/${doctor.id}`} className="flex items-center gap-2 text-sm text-secondary hover:underline">
+            <Eye className="w-4 h-4" /> Ommaviy profilni ko'rish <ExternalLink className="w-3 h-3" />
+          </Link>
 
-      {/* Edit Form */}
-      <div className="bg-card rounded-2xl border border-border p-5 space-y-5">
-        <h3 className="font-heading font-bold text-foreground">Profilni tahrirlash</h3>
+          {/* Edit Form */}
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-5">
+            <h3 className="font-heading font-bold text-foreground text-lg">Profilni tahrirlash</h3>
 
-        {/* Photo */}
-        <div className="flex items-center gap-4">
-          {form.photo_url ? (
-            <img src={form.photo_url} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-border" />
-          ) : (
-            <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center">
-              <Camera className="w-8 h-8 text-muted-foreground" />
+            {/* Photo */}
+            <div className="flex items-center gap-4">
+              {form.photo_url ? (
+                <img src={form.photo_url} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-border" />
+              ) : (
+                <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center"><Camera className="w-8 h-8 text-muted-foreground" /></div>
+              )}
+              <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
+                {uploading ? "Yuklanmoqda..." : "Rasm o'zgartirish"}
+              </Button>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
             </div>
-          )}
-          <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
-            {uploading ? "Yuklanmoqda..." : "Rasm o'zgartirish"}
-          </Button>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-        </div>
 
-        {/* Basic info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label className="text-xs">To'liq ism *</Label>
-            <Input value={form.full_name} onChange={(e) => updateField("full_name", e.target.value)} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Mutaxassisligi *</Label>
-            <Input value={form.specialty} onChange={(e) => updateField("specialty", e.target.value)} className="mt-1" list="spec-dash" />
-            <datalist id="spec-dash">{SPECIALTIES.map((s) => <option key={s} value={s} />)}</datalist>
-          </div>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label className="text-xs">To'liq ism *</Label><Input value={form.full_name} onChange={(e) => updateField("full_name", e.target.value)} className="mt-1" /></div>
+              <div><Label className="text-xs">Mutaxassisligi *</Label><Input value={form.specialty} onChange={(e) => updateField("specialty", e.target.value)} className="mt-1" list="spec-dash" /><datalist id="spec-dash">{SPECIALTIES.map((s) => <option key={s} value={s} />)}</datalist></div>
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label className="text-xs">Tajriba (yil)</Label>
-            <Input type="number" value={form.experience_years} onChange={(e) => updateField("experience_years", e.target.value)} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Konsultatsiya narxi (so'm)</Label>
-            <Input type="number" value={form.consultation_price} onChange={(e) => updateField("consultation_price", e.target.value)} className="mt-1" />
-          </div>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label className="text-xs">Tajriba (yil)</Label><Input type="number" value={form.experience_years} onChange={(e) => updateField("experience_years", e.target.value)} className="mt-1" /></div>
+              <div><Label className="text-xs">Konsultatsiya narxi (so'm)</Label><Input type="number" value={form.consultation_price} onChange={(e) => updateField("consultation_price", e.target.value)} className="mt-1" /></div>
+            </div>
 
-        <div>
-          <Label className="text-xs">Bio</Label>
-          <Textarea value={form.bio} onChange={(e) => updateField("bio", e.target.value)} rows={3} className="mt-1" />
-        </div>
+            <div><Label className="text-xs">Bio</Label><Textarea value={form.bio} onChange={(e) => updateField("bio", e.target.value)} rows={3} className="mt-1" /></div>
+            <div><Label className="text-xs">Ta'lim</Label><Textarea value={form.education} onChange={(e) => updateField("education", e.target.value)} rows={2} className="mt-1" /></div>
 
-        <div>
-          <Label className="text-xs">Ta'lim</Label>
-          <Textarea value={form.education} onChange={(e) => updateField("education", e.target.value)} rows={2} className="mt-1" />
-        </div>
+            <label className="flex items-center gap-3 p-3 rounded-xl bg-accent/10 border border-border cursor-pointer">
+              <input type="checkbox" checked={form.online_consultation} onChange={(e) => updateField("online_consultation", e.target.checked)} className="rounded" />
+              <span className="text-sm font-medium text-foreground">Onlayn konsultatsiya mavjud</span>
+            </label>
 
-        <label className="flex items-center gap-3 p-3 rounded-xl bg-accent/30 border border-border cursor-pointer">
-          <input type="checkbox" checked={form.online_consultation} onChange={(e) => updateField("online_consultation", e.target.checked)} className="rounded" />
-          <span className="text-sm font-medium text-foreground">Onlayn konsultatsiya mavjud</span>
-        </label>
+            {/* Languages */}
+            <div>
+              <Label className="text-xs mb-2 block">Tillar</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {LANGS.map((l) => (
+                  <Badge key={l} variant={form.languages.includes(l) ? "default" : "outline"} className="cursor-pointer"
+                    onClick={() => updateField("languages", form.languages.includes(l) ? form.languages.filter((x) => x !== l) : [...form.languages, l])}>{l}</Badge>
+                ))}
+              </div>
+            </div>
 
-        {/* Languages */}
-        <div>
-          <Label className="text-xs mb-2 block">Tillar</Label>
-          <div className="flex flex-wrap gap-1.5">
-            {LANGS.map((l) => (
-              <Badge
-                key={l}
-                variant={form.languages.includes(l) ? "default" : "outline"}
-                className="cursor-pointer"
-                onClick={() => updateField("languages", form.languages.includes(l) ? form.languages.filter((x) => x !== l) : [...form.languages, l])}
-              >
-                {l}
-              </Badge>
-            ))}
+            {/* Certificates */}
+            <div>
+              <Label className="text-xs mb-2 block">Sertifikatlar</Label>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {form.certificates.map((c, i) => (
+                  <Badge key={i} variant="outline" className="text-xs gap-1">{c}<button onClick={() => updateField("certificates", form.certificates.filter((_, j) => j !== i))}><X className="w-3 h-3" /></button></Badge>
+                ))}
+              </div>
+              <Button size="sm" variant="outline" onClick={() => { const cert = prompt("Sertifikat nomini kiriting:"); if (cert?.trim()) updateField("certificates", [...form.certificates, cert.trim()]); }}>
+                <Plus className="w-3 h-3 mr-1" /> Qo'shish
+              </Button>
+            </div>
+
+            {/* Contact */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label className="text-xs">Telefon</Label><Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="mt-1" /></div>
+              <div><Label className="text-xs">Email</Label><Input value={form.email} onChange={(e) => updateField("email", e.target.value)} className="mt-1" /></div>
+            </div>
+            <div><Label className="text-xs">Manzil</Label><Input value={form.address} onChange={(e) => updateField("address", e.target.value)} className="mt-1" /></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label className="text-xs">Viloyat</Label><Input value={form.region} onChange={(e) => updateField("region", e.target.value)} className="mt-1" /></div>
+              <div><Label className="text-xs">Shahar</Label><Input value={form.city} onChange={(e) => updateField("city", e.target.value)} className="mt-1" /></div>
+            </div>
+
+            <Button onClick={handleSave} disabled={saving} className="w-full bg-gradient-to-r from-secondary to-accent text-white border-0">
+              <Save className="w-4 h-4 mr-2" /> {saving ? "Saqlanmoqda..." : "Saqlash"}
+            </Button>
           </div>
         </div>
+      )}
 
-        {/* Certificates */}
-        <div>
-          <Label className="text-xs mb-2 block">Sertifikatlar</Label>
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {form.certificates.map((c, i) => (
-              <Badge key={i} variant="outline" className="text-xs gap-1">
-                {c}
-                <button onClick={() => updateField("certificates", form.certificates.filter((_, j) => j !== i))}>
-                  <X className="w-3 h-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-          <Button size="sm" variant="outline" onClick={() => {
-            const cert = prompt("Sertifikat nomini kiriting:");
-            if (cert?.trim()) updateField("certificates", [...form.certificates, cert.trim()]);
-          }}>
-            <Plus className="w-3 h-3 mr-1" /> Qo'shish
-          </Button>
-        </div>
-
-        {/* Schedule */}
-        <div>
-          <Label className="text-xs mb-2 block">Qabul jadvali</Label>
+      {tab === "schedule" && (
+        <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+          <h3 className="font-heading font-bold text-foreground text-lg">Qabul jadvali</h3>
           <div className="space-y-2">
             {DAYS.map((d) => {
               const sched = form.schedule[d.key];
               const isActive = sched?.active;
               return (
                 <div key={d.key} className="flex items-center gap-2">
-                  <button
-                    onClick={() => toggleScheduleDay(d.key)}
+                  <button onClick={() => toggleScheduleDay(d.key)}
                     className={cn("w-11 h-8 text-xs font-bold rounded-lg border transition-all",
-                      isActive ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border"
-                    )}
-                  >{d.label}</button>
+                      isActive ? "bg-secondary text-white border-secondary" : "bg-muted text-muted-foreground border-border"
+                    )}>{d.label}</button>
                   {isActive && (
                     <>
                       <Input type="time" value={sched?.start || "09:00"} onChange={(e) => updateScheduleTime(d.key, "start", e.target.value)} className="w-24 h-8 text-xs" />
@@ -346,104 +282,52 @@ const DoctorDashboard = () => {
               );
             })}
           </div>
+          <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-secondary to-accent text-white border-0">
+            <Save className="w-4 h-4 mr-2" /> Saqlash
+          </Button>
         </div>
+      )}
 
-        {/* Contact */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label className="text-xs">Telefon</Label>
-            <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Email</Label>
-            <Input value={form.email} onChange={(e) => updateField("email", e.target.value)} className="mt-1" />
-          </div>
-        </div>
-        <div>
-          <Label className="text-xs">Manzil</Label>
-          <Input value={form.address} onChange={(e) => updateField("address", e.target.value)} className="mt-1" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label className="text-xs">Viloyat</Label>
-            <Input value={form.region} onChange={(e) => updateField("region", e.target.value)} className="mt-1" />
-          </div>
-          <div>
-            <Label className="text-xs">Shahar</Label>
-            <Input value={form.city} onChange={(e) => updateField("city", e.target.value)} className="mt-1" />
-          </div>
-        </div>
-
-        {/* Social Links */}
-        <div>
-          <Label className="text-xs mb-2 block">Ijtimoiy tarmoqlar</Label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <Label className="text-[10px] text-muted-foreground">Telegram</Label>
-              <Input value={form.social_links.telegram || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, telegram: e.target.value } }))} className="mt-1" placeholder="@username" />
-            </div>
-            <div>
-              <Label className="text-[10px] text-muted-foreground">Instagram</Label>
-              <Input value={form.social_links.instagram || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, instagram: e.target.value } }))} className="mt-1" placeholder="@username" />
-            </div>
-            <div>
-              <Label className="text-[10px] text-muted-foreground">Facebook</Label>
-              <Input value={form.social_links.facebook || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, facebook: e.target.value } }))} className="mt-1" placeholder="Sahifa havolasi" />
-            </div>
-            <div>
-              <Label className="text-[10px] text-muted-foreground">YouTube</Label>
-              <Input value={form.social_links.youtube || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, youtube: e.target.value } }))} className="mt-1" placeholder="Kanal havolasi" />
-            </div>
-            <div className="sm:col-span-2">
-              <Label className="text-[10px] text-muted-foreground">Veb-sayt</Label>
-              <Input value={form.social_links.website || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, website: e.target.value } }))} className="mt-1" placeholder="https://example.com" />
-            </div>
-          </div>
-        </div>
-
-        <Button onClick={handleSave} disabled={saving} className="w-full bg-hero-gradient text-primary-foreground border-0">
-          <Save className="w-4 h-4 mr-2" /> {saving ? "Saqlanmoqda..." : "Saqlash"}
-        </Button>
-      </div>
-
-        </TabsContent>
-
-        <TabsContent value="reviews">
-          {reviews.length > 0 ? (
-            <div className="bg-card rounded-2xl border border-border p-5">
-              <h3 className="font-heading font-bold text-foreground mb-4">Barcha sharhlar</h3>
-              <div className="space-y-3">
-                {reviews.map((rev) => (
-                  <div key={rev.id} className="p-3 rounded-xl bg-background border border-border">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={cn("w-3.5 h-3.5", i < rev.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30")} />
-                        ))}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground">{new Date(rev.created_at).toLocaleDateString()}</span>
-                    </div>
-                    {rev.comment && <p className="text-sm text-muted-foreground">{rev.comment}</p>}
-                    <Badge variant={rev.is_approved ? "secondary" : "outline"} className="text-[10px] mt-1">
-                      {rev.is_approved ? "Tasdiqlangan" : "Moderatsiyada"}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
+      {tab === "reviews" && (
+        <div className="space-y-4">
+          <h3 className="font-heading font-bold text-foreground text-lg">Sharhlar ({reviews.length})</h3>
+          {reviews.length === 0 ? (
+            <div className="bg-card rounded-2xl border border-border p-8 text-center text-muted-foreground">Hali sharhlar yo'q</div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Hozircha sharhlar yo'q</p>
+            <div className="space-y-3">
+              {reviews.map((r: any) => (
+                <div key={r.id} className="bg-card rounded-xl border border-border p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex">{[...Array(5)].map((_, i) => <Star key={i} className={cn("w-3.5 h-3.5", i < (r.rating || 0) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30")} />)}</div>
+                    <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("uz-UZ")}</span>
+                  </div>
+                  <p className="text-sm text-foreground">{r.comment || "Izoh yo'q"}</p>
+                </div>
+              ))}
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="subscription">
-          <DoctorSubscription />
-        </TabsContent>
-      </Tabs>
-    </div>
+      {tab === "settings" && (
+        <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+          <h3 className="font-heading font-bold text-foreground text-lg">Ijtimoiy tarmoqlar</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {["telegram", "instagram", "facebook", "youtube", "website"].map((key) => (
+              <div key={key}>
+                <Label className="text-xs capitalize">{key}</Label>
+                <Input value={form.social_links[key] || ""} onChange={(e) => setForm((p) => ({ ...p, social_links: { ...p.social_links, [key]: e.target.value } }))} className="mt-1" />
+              </div>
+            ))}
+          </div>
+          <Button onClick={handleSave} disabled={saving} className="bg-gradient-to-r from-secondary to-accent text-white border-0">
+            <Save className="w-4 h-4 mr-2" /> Saqlash
+          </Button>
+        </div>
+      )}
+
+      {tab === "subscription" && <DoctorSubscription />}
+    </DashboardShell>
   );
 };
 

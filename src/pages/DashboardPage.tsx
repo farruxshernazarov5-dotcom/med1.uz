@@ -10,8 +10,6 @@ import CosmetologyDashboard from "@/components/dashboard/CosmetologyDashboard";
 import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
 import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const DashboardPage = () => {
   const { user, loading, userRole } = useAuth();
@@ -19,31 +17,27 @@ const DashboardPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        <div className="text-center">
+          <div className="animate-spin w-10 h-10 border-4 border-secondary border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-muted-foreground text-sm">Yuklanmoqda...</p>
+        </div>
       </div>
     );
   }
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        {userRole === "admin" && <AdminDashboard />}
-        {userRole === "clinic" && <ClinicDashboard />}
-        {userRole === "vendor" && <VendorDashboard />}
-        {userRole === "diagnostics" && <DiagnosticsDashboard />}
-        {userRole === "maternity" && <MaternityDashboard />}
-        {userRole === "cosmetology" && <CosmetologyDashboard />}
-        {userRole === "doctor" && <DoctorDashboard />}
-        {userRole === "pharmacy" && <PharmacyDashboard />}
-        {userRole === "bloodbank" && <BloodBankDashboard />}
-        {(!userRole || userRole === "patient") && <PatientDashboard />}
-      </div>
-      <Footer />
-    </div>
-  );
+  // Each dashboard now has its own full-page shell layout
+  if (userRole === "admin") return <AdminDashboard />;
+  if (userRole === "clinic") return <ClinicDashboard />;
+  if (userRole === "vendor") return <VendorDashboard />;
+  if (userRole === "diagnostics") return <DiagnosticsDashboard />;
+  if (userRole === "maternity") return <MaternityDashboard />;
+  if (userRole === "cosmetology") return <CosmetologyDashboard />;
+  if (userRole === "doctor") return <DoctorDashboard />;
+  if (userRole === "pharmacy") return <PharmacyDashboard />;
+  if (userRole === "bloodbank") return <BloodBankDashboard />;
+  return <PatientDashboard />;
 };
 
 export default DashboardPage;
