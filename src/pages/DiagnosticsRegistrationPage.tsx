@@ -197,6 +197,9 @@ const DiagnosticsRegistrationPage = () => {
     } else {
       await supabase.from("user_roles").update({ role: "diagnostics" as any }).eq("user_id", user.id);
       toast({ title: "✅ Diagnostika markazi muvaffaqiyatli ro'yxatdan o'tkazildi!" });
+      supabase.functions.invoke("telegram-notify", {
+        body: { type: "new_registration", data: { name: form.name.trim(), type: "Diagnostika markazi", phone: form.phone.trim() } },
+      }).catch(() => {});
       navigate("/dashboard");
     }
     setSubmitting(false);

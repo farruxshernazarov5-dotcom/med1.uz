@@ -71,8 +71,14 @@ const AIPaymentPage = () => {
       // Simulate payment redirect
       toast.success("To'lov sahifasiga yo'naltirilmoqda...");
       
-      // In production, redirect to Payme/Click payment page
-      // For now, simulate successful payment
+      // Send Telegram notification for AI payment
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "ai_payment",
+          data: { user_id: user.id, plan_id: plan, amount, invoice_id: invoiceId },
+        },
+      }).catch(() => {});
+
       setTimeout(() => {
         setStep("success");
         setLoading(false);

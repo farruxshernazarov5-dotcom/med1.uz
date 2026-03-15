@@ -154,6 +154,9 @@ const CosmetologyRegistrationPage = () => {
       if (error) throw error;
       await supabase.from("user_roles").update({ role: "cosmetology" as any }).eq("user_id", user.id);
       toast({ title: "✅ Kosmetologiya markazi ro'yxatdan o'tkazildi!" });
+      supabase.functions.invoke("telegram-notify", {
+        body: { type: "new_registration", data: { name: form.name.trim(), type: "Kosmetologiya markazi", phone: form.phone.trim() } },
+      }).catch(() => {});
       navigate("/dashboard");
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
