@@ -169,6 +169,9 @@ const VendorRegistrationPage = () => {
       // Update user role to vendor
       await supabase.from("user_roles").update({ role: "vendor" as any }).eq("user_id", user.id);
       toast({ title: "✅ Kompaniya muvaffaqiyatli ro'yxatdan o'tkazildi!" });
+      supabase.functions.invoke("telegram-notify", {
+        body: { type: "new_registration", data: { name: form.companyName.trim(), type: "Med texnika", phone: form.phone.trim() } },
+      }).catch(() => {});
       navigate("/dashboard");
     }
     setSubmitting(false);
