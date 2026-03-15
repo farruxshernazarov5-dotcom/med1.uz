@@ -179,6 +179,9 @@ const MaternityRegistrationPage = () => {
       if (error) throw error;
       await supabase.from("user_roles").update({ role: "maternity" as any }).eq("user_id", user.id);
       toast({ title: "✅ Tug'ruqxona muvaffaqiyatli ro'yxatdan o'tkazildi!" });
+      supabase.functions.invoke("telegram-notify", {
+        body: { type: "new_registration", data: { name: form.name.trim(), type: "Tug'ruqxona", phone: form.phone.trim() } },
+      }).catch(() => {});
       navigate("/dashboard");
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });

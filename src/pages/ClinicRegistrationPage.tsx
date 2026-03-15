@@ -226,6 +226,17 @@ const ClinicRegistrationPage = () => {
         }
       }
       toast({ title: "✅ Klinika muvaffaqiyatli ro'yxatdan o'tkazildi!" });
+      // Send Telegram notification
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "new_registration",
+          data: {
+            name: form.name.trim(),
+            type: form.type,
+            phone: form.phone.trim(),
+          },
+        },
+      }).catch(() => {});
       navigate("/dashboard");
     }
     setSubmitting(false);

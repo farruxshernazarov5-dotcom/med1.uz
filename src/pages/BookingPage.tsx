@@ -155,8 +155,25 @@ const BookingPage = () => {
       notes: form.notes,
     });
     setSubmitting(false);
-    if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    else { setSuccess(true); toast({ title: "✅ Qabulga muvaffaqiyatli yozildingiz!" }); }
+    if (error) {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+    } else {
+      setSuccess(true);
+      toast({ title: "✅ Qabulga muvaffaqiyatli yozildingiz!" });
+      // Send Telegram notification
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "new_appointment",
+          data: {
+            patient_name: form.patient_name,
+            patient_phone: form.patient_phone,
+            clinic_name: selectedClinic?.name || "—",
+            appointment_date: form.date,
+            appointment_time: form.time,
+          },
+        },
+      }).catch(() => {});
+    }
   };
 
   const today = new Date().toISOString().split("T")[0];

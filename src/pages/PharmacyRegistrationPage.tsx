@@ -116,6 +116,9 @@ const PharmacyRegistrationPage = () => {
       } as any);
       if (error) throw error;
       toast({ title: "✅ Dorixona muvaffaqiyatli ro'yxatdan o'tdi!" });
+      supabase.functions.invoke("telegram-notify", {
+        body: { type: "new_registration", data: { name: form.name.trim(), type: "Dorixona", phone: form.phone.trim() } },
+      }).catch(() => {});
       navigate("/dashboard");
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
