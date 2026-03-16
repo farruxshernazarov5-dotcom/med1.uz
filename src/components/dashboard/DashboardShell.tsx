@@ -197,8 +197,8 @@ const SidebarButton = ({
     className={cn(
       "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
       active
-        ? "bg-gradient-to-r from-secondary/20 to-accent/10 text-white shadow-sm"
-        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/5",
+        ? "bg-primary/15 text-sidebar-foreground shadow-sm border border-sidebar-primary/30"
+        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-primary/10",
       collapsed && "justify-center px-2"
     )}
   >
