@@ -1,0 +1,30 @@
+import {
+  Stethoscope,
+  Bot,
+  FileText,
+  HeartPulse,
+  Eye,
+  UserCheck,
+  Baby,
+  Palette,
+  UtensilsCrossed,
+  Heart,
+  Pill,
+  Dumbbell,
+} from "lucide-react";
+
+export const AI_SERVICE_TARIFFS = [
+  { id: "symptom-checker", name: "AI Erta Diagnostika", icon: Stethoscope, monthlyPrice: 29000, yearlyPrice: 279000 },
+  { id: "ai-doctor-chat", name: "AI Shifokor Chat", icon: Bot, monthlyPrice: 39000, yearlyPrice: 379000 },
+  { id: "ai-report-analysis", name: "Analiz Tahlili", icon: FileText, monthlyPrice: 35000, yearlyPrice: 339000 },
+  { id: "ai-health-risk", name: "Sog'liq Xavfi Prognozi", icon: HeartPulse, monthlyPrice: 25000, yearlyPrice: 239000 },
+  { id: "ai-radiology", name: "AI Radiologiya Pro", icon: Eye, monthlyPrice: 49000, yearlyPrice: 479000 },
+  { id: "ai-health-assistant", name: "AI Sog'liq Assistent", icon: UserCheck, monthlyPrice: 45000, yearlyPrice: 429000 },
+  { id: "ai-pregnancy", name: "AI Homiladorlik", icon: Baby, monthlyPrice: 35000, yearlyPrice: 339000 },
+  { id: "ai-baby-care", name: "AI Bola Parvarishi", icon: Baby, monthlyPrice: 29000, yearlyPrice: 279000 },
+  { id: "ai-cosmetology", name: "AI Kosmetologiya", icon: Palette, monthlyPrice: 35000, yearlyPrice: 339000 },
+  { id: "ai-dietolog", name: "AI Dietolog", icon: UtensilsCrossed, monthlyPrice: 29000, yearlyPrice: 279000 },
+  { id: "ai-psixolog", name: "AI Psixolog", icon: Heart, monthlyPrice: 39000, yearlyPrice: 379000 },
+  { id: "ai-farmatsevt", name: "AI Farmatsevt", icon: Pill, monthlyPrice: 25000, yearlyPrice: 239000 },
+  { id: "ai-fitness", name: "AI Fitness Trener", icon: Dumbbell, monthlyPrice: 25000, yearlyPrice: 239000 },
+] as const;

@@ -63,10 +63,10 @@ const DashboardShell = ({
       <div className="p-4 border-b border-sidebar-border/30">
         <div className="flex items-center gap-3">
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-white/10" />
+            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-sidebar-border/40" />
           ) : (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center">
-              <TitleIcon className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-hero-gradient flex items-center justify-center">
+              <TitleIcon className="w-5 h-5 text-primary-foreground" />
             </div>
           )}
           {!collapsed && (
@@ -114,7 +114,7 @@ const DashboardShell = ({
         <button
           onClick={signOut}
           className={cn(
-            "flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-sidebar-foreground/60 hover:text-red-400 hover:bg-red-500/10 transition-all",
+            "flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all",
             collapsed && "justify-center"
           )}
         >
@@ -197,15 +197,15 @@ const SidebarButton = ({
     className={cn(
       "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
       active
-        ? "bg-gradient-to-r from-secondary/20 to-accent/10 text-white shadow-sm"
-        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-white/5",
+        ? "bg-primary/15 text-sidebar-foreground shadow-sm border border-sidebar-primary/30"
+        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-primary/10",
       collapsed && "justify-center px-2"
     )}
   >
     {active && (
       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full" />
     )}
-    <item.icon className={cn("w-4 h-4 shrink-0", active && "text-secondary")} />
+    <item.icon className={cn("w-4 h-4 shrink-0", active && "text-sidebar-primary")} />
     {!collapsed && (
       <span className="truncate">{item.label}</span>
     )}

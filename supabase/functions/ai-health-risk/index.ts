@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { enforceAiAccess } from "../_shared/ai-access.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -70,6 +71,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const access = await enforceAiAccess(req, "ai-health-risk");
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error }), {
+        status: access.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
     const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
       existingConditions, familyHistory, diet, sleepHours, stressLevel,

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ const SubscriptionContactModal = ({
   category,
 }: SubscriptionContactModalProps) => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -30,15 +32,47 @@ const SubscriptionContactModal = ({
     message: "",
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.name || !form.phone) {
       toast({ title: "Ism va telefon majburiy!", variant: "destructive" });
       return;
     }
-    // Here you would typically send this to your backend
-    console.log("Subscription inquiry:", { ...form, planName, planPrice, category });
-    setSubmitted(true);
-    toast({ title: "✅ So'rovingiz qabul qilindi!", description: "Tez orada siz bilan bog'lanamiz" });
+
+    setLoading(true);
+    try {
+      const details = `Tarif so'rovi: ${planName || "Noma'lum"}\nNarx: ${planPrice || "0"}\nKategoriya: ${category || "general"}\nTashkilot: ${form.organization || "—"}\nXabar: ${form.message || "—"}`;
+
+      const { error } = await supabase.from("contact_messages").insert({
+        full_name: form.name,
+        phone: form.phone,
+        email: form.email || null,
+        subject: "subscription_request",
+        message: details,
+        message_type: "subscription",
+      });
+      if (error) throw error;
+
+      await supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "new_subscription",
+          data: {
+            user_name: form.name,
+            user_id: form.phone,
+            plan: planName || "Noma'lum",
+            amount: Number((planPrice || "0").replace(/\s/g, "").replace(/,/g, "")) || 0,
+            message: form.message || "—",
+            service_type: category || "general",
+          },
+        },
+      });
+
+      setSubmitted(true);
+      toast({ title: "✅ So'rovingiz qabul qilindi!", description: "Tez orada siz bilan bog'lanamiz" });
+    } catch (error: any) {
+      toast({ title: "Xatolik", description: error.message || "So'rov yuborilmadi", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -106,9 +140,9 @@ const SubscriptionContactModal = ({
             </div>
 
             <div className="flex flex-col gap-3 mt-6">
-              <Button onClick={handleSubmit} className="w-full bg-hero-gradient border-0">
+              <Button onClick={handleSubmit} className="w-full bg-hero-gradient border-0" disabled={loading}>
                 <Send className="w-4 h-4 mr-2" />
-                So'rov yuborish
+                {loading ? "Yuborilmoqda..." : "So'rov yuborish"}
               </Button>
               <p className="text-xs text-muted-foreground text-center">
                 Yoki to'g'ridan-to'g'ri bog'laning:
