@@ -32,15 +32,47 @@ const SubscriptionContactModal = ({
     message: "",
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.name || !form.phone) {
       toast({ title: "Ism va telefon majburiy!", variant: "destructive" });
       return;
     }
-    // Here you would typically send this to your backend
-    console.log("Subscription inquiry:", { ...form, planName, planPrice, category });
-    setSubmitted(true);
-    toast({ title: "✅ So'rovingiz qabul qilindi!", description: "Tez orada siz bilan bog'lanamiz" });
+
+    setLoading(true);
+    try {
+      const details = `Tarif so'rovi: ${planName || "Noma'lum"}\nNarx: ${planPrice || "0"}\nKategoriya: ${category || "general"}\nTashkilot: ${form.organization || "—"}\nXabar: ${form.message || "—"}`;
+
+      const { error } = await supabase.from("contact_messages").insert({
+        full_name: form.name,
+        phone: form.phone,
+        email: form.email || null,
+        subject: "subscription_request",
+        message: details,
+        message_type: "subscription",
+      });
+      if (error) throw error;
+
+      await supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "new_subscription",
+          data: {
+            user_name: form.name,
+            user_id: form.phone,
+            plan: planName || "Noma'lum",
+            amount: Number((planPrice || "0").replace(/\s/g, "").replace(/,/g, "")) || 0,
+            message: form.message || "—",
+            service_type: category || "general",
+          },
+        },
+      });
+
+      setSubmitted(true);
+      toast({ title: "✅ So'rovingiz qabul qilindi!", description: "Tez orada siz bilan bog'lanamiz" });
+    } catch (error: any) {
+      toast({ title: "Xatolik", description: error.message || "So'rov yuborilmadi", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
