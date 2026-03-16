@@ -205,7 +205,7 @@ const SidebarButton = ({
     {active && (
       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full" />
     )}
-    <item.icon className={cn("w-4 h-4 shrink-0", active && "text-secondary")} />
+    <item.icon className={cn("w-4 h-4 shrink-0", active && "text-sidebar-primary")} />
     {!collapsed && (
       <span className="truncate">{item.label}</span>
     )}

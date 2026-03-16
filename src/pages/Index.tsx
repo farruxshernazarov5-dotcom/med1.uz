@@ -24,6 +24,7 @@ const Index = () => {
       <Header />
       <SectionTicker />
       <HeroSection />
+      <HomeServicesMenu />
 
       {/* AI Search Section */}
       <AISearchSection />

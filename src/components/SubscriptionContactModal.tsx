@@ -140,9 +140,9 @@ const SubscriptionContactModal = ({
             </div>
 
             <div className="flex flex-col gap-3 mt-6">
-              <Button onClick={handleSubmit} className="w-full bg-hero-gradient border-0">
+              <Button onClick={handleSubmit} className="w-full bg-hero-gradient border-0" disabled={loading}>
                 <Send className="w-4 h-4 mr-2" />
-                So'rov yuborish
+                {loading ? "Yuborilmoqda..." : "So'rov yuborish"}
               </Button>
               <p className="text-xs text-muted-foreground text-center">
                 Yoki to'g'ridan-to'g'ri bog'laning:

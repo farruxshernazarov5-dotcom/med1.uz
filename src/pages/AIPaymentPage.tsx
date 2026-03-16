@@ -54,24 +54,21 @@ const AIPaymentPage = () => {
     setLoading(true);
 
     try {
-      // Create payment record in DB
-      const { error } = await supabase.from("ai_payments" as any).insert({
-        user_id: user.id,
-        invoice_id: invoiceId,
-        plan_id: plan,
-        billing_period: billing,
-        amount,
-        services: plan === "custom" ? services : [],
-        payment_method: paymentMethod,
-        status: "pending",
-      } as any);
+      const { data, error } = await supabase.functions.invoke("ai-activate-subscription", {
+        body: {
+          invoice_id: invoiceId,
+          plan_id: plan,
+          billing_period: billing,
+          amount,
+          services: plan === "custom" ? services : [],
+          payment_method: paymentMethod,
+        },
+      });
 
-      if (error) throw error;
+      if (error || data?.error) throw new Error(error?.message || data?.error);
 
-      // Simulate payment redirect
-      toast.success("To'lov sahifasiga yo'naltirilmoqda...");
-      
-      // Send Telegram notification for AI payment
+      toast.success("To'lov muvaffaqiyatli amalga oshirildi");
+
       supabase.functions.invoke("telegram-notify", {
         body: {
           type: "ai_payment",
@@ -79,10 +76,8 @@ const AIPaymentPage = () => {
         },
       }).catch(() => {});
 
-      setTimeout(() => {
-        setStep("success");
-        setLoading(false);
-      }, 2000);
+      setStep("success");
+      setLoading(false);
     } catch (err: any) {
       toast.error("Xatolik yuz berdi: " + err.message);
       setLoading(false);
