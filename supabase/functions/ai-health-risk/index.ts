@@ -71,6 +71,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const access = await enforceAiAccess(req, "ai-health-risk");
+    if (!access.allowed) {
+      return new Response(JSON.stringify({ error: access.error }), {
+        status: access.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
     const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
       existingConditions, familyHistory, diet, sleepHours, stressLevel,
