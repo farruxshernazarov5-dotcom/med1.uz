@@ -23,6 +23,7 @@ const SubscriptionContactModal = ({
   category,
 }: SubscriptionContactModalProps) => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     phone: "",
