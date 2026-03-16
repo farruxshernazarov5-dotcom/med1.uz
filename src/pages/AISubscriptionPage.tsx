@@ -11,6 +11,7 @@ import {
   UtensilsCrossed, Heart, Pill, Dumbbell, Phone, ArrowRight, Gift, Percent
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { toast } from "sonner";
 
 const allAIServices = [

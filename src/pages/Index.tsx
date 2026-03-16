@@ -16,6 +16,7 @@ import CosmetologyPromo from "@/components/CosmetologyPromo";
 import HealthDashboardWidget from "@/components/HealthDashboardWidget";
 import PartnerClinics from "@/components/PartnerClinics";
 import HomeAIServicesSection from "@/components/HomeAIServicesSection";
+import HomeServicesMenu from "@/components/HomeServicesMenu";
 
 const Index = () => {
   return (

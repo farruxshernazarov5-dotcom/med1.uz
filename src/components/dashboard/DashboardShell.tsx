@@ -63,10 +63,10 @@ const DashboardShell = ({
       <div className="p-4 border-b border-sidebar-border/30">
         <div className="flex items-center gap-3">
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-white/10" />
+            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-sidebar-border/40" />
           ) : (
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center">
-              <TitleIcon className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-hero-gradient flex items-center justify-center">
+              <TitleIcon className="w-5 h-5 text-primary-foreground" />
             </div>
           )}
           {!collapsed && (
