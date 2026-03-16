@@ -114,7 +114,7 @@ const DashboardShell = ({
         <button
           onClick={signOut}
           className={cn(
-            "flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-sidebar-foreground/60 hover:text-red-400 hover:bg-red-500/10 transition-all",
+            "flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all",
             collapsed && "justify-center"
           )}
         >
