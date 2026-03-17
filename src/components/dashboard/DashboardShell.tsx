@@ -92,7 +92,7 @@ const DashboardShell = ({
         {groups.map((group) => (
           <div key={group.label} className="mt-4">
             {!collapsed && (
-              <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/30 font-semibold px-3 mb-1.5">
+              <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-3 mb-1.5">
                 {group.label}
               </p>
             )}
@@ -110,11 +110,11 @@ const DashboardShell = ({
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-sidebar-border/30">
+      <div className="p-3 border-t border-white/10">
         <button
           onClick={signOut}
           className={cn(
-            "flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 transition-all",
+            "flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-white/40 hover:text-red-400 hover:bg-white/5 transition-all",
             collapsed && "justify-center"
           )}
         >
