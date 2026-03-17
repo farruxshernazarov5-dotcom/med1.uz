@@ -25,7 +25,7 @@ serve(async (req) => {
     text: u.message?.text,
   }));
 
-  return new Response(JSON.stringify({ ok: data.ok, chats }), {
+  return new Response(JSON.stringify({ ok: data.ok, chats, raw: data }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
