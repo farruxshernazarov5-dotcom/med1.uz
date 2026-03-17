@@ -195,22 +195,22 @@ const SidebarButton = ({
   <button
     onClick={onClick}
     className={cn(
-      "flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative",
+      "flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all group relative",
       active
-        ? "bg-primary/15 text-sidebar-foreground shadow-sm border border-sidebar-primary/30"
-        : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-primary/10",
+        ? "bg-[hsl(214,84%,56%)] text-white shadow-lg shadow-[hsl(214,84%,56%)]/20"
+        : "text-white/60 hover:text-white hover:bg-white/5",
       collapsed && "justify-center px-2"
     )}
   >
-    {active && (
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full" />
-    )}
-    <item.icon className={cn("w-4 h-4 shrink-0", active && "text-sidebar-primary")} />
+    <item.icon className="w-4 h-4 shrink-0" />
     {!collapsed && (
       <span className="truncate">{item.label}</span>
     )}
     {!collapsed && item.badge !== undefined && item.badge > 0 && (
-      <span className="ml-auto text-[10px] bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center">
+      <span className={cn(
+        "flex items-center justify-center text-[9px] font-bold rounded-full bg-red-500 text-white",
+        "ml-auto w-5 h-5"
+      )}>
         {item.badge}
       </span>
     )}
