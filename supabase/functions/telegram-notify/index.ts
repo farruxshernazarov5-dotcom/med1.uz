@@ -28,22 +28,22 @@ serve(async (req) => {
 
     switch (type) {
       case "contact_message":
-        message = `📩 *Yangi xabar\\!*\n\n👤 *Ism:* ${escapeMarkdown(data.full_name)}\n📞 *Tel:* ${escapeMarkdown(data.phone)}\n📧 *Email:* ${escapeMarkdown(data.email || "—")}\n📋 *Mavzu:* ${escapeMarkdown(data.subject)}\n💬 *Xabar:* ${escapeMarkdown(data.message)}\n📅 *Vaqt:* ${escapeMarkdown(new Date().toLocaleString("uz-UZ"))}`;
+        message = `📩 <b>Yangi xabar!</b>\n\n👤 <b>Ism:</b> ${esc(data.full_name)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n📧 <b>Email:</b> ${esc(data.email || "—")}\n📋 <b>Mavzu:</b> ${esc(data.subject)}\n💬 <b>Xabar:</b> ${esc(data.message)}\n📅 <b>Vaqt:</b> ${esc(new Date().toLocaleString("uz-UZ"))}`;
         break;
       case "new_appointment":
-        message = `📅 *Yangi qabul yozilishi\\!*\n\n👤 *Bemor:* ${escapeMarkdown(data.patient_name)}\n📞 *Tel:* ${escapeMarkdown(data.patient_phone)}\n🏥 *Klinika:* ${escapeMarkdown(data.clinic_name || "—")}\n📅 *Sana:* ${escapeMarkdown(data.appointment_date)}\n⏰ *Vaqt:* ${escapeMarkdown(data.appointment_time)}`;
+        message = `📅 <b>Yangi qabul yozilishi!</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Klinika:</b> ${esc(data.clinic_name || "—")}\n📅 <b>Sana:</b> ${esc(data.appointment_date)}\n⏰ <b>Vaqt:</b> ${esc(data.appointment_time)}`;
         break;
       case "new_registration":
-        message = `🆕 *Yangi muassasa ro'yxatdan o'tdi\\!*\n\n🏥 *Nomi:* ${escapeMarkdown(data.name)}\n📋 *Turi:* ${escapeMarkdown(data.type)}\n📞 *Tel:* ${escapeMarkdown(data.phone)}\n📅 *Vaqt:* ${escapeMarkdown(new Date().toLocaleString("uz-UZ"))}`;
+        message = `🆕 <b>Yangi muassasa ro'yxatdan o'tdi!</b>\n\n🏥 <b>Nomi:</b> ${esc(data.name)}\n📋 <b>Turi:</b> ${esc(data.type)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n📅 <b>Vaqt:</b> ${esc(new Date().toLocaleString("uz-UZ"))}`;
         break;
       case "new_subscription":
-        message = `💰 *Yangi obuna\\!*\n\n👤 *Foydalanuvchi:* ${escapeMarkdown(data.user_name || data.user_id)}\n📦 *Tarif:* ${escapeMarkdown(data.plan)}\n💳 *Summa:* ${escapeMarkdown(String(data.amount))}\n📅 *Vaqt:* ${escapeMarkdown(new Date().toLocaleString("uz-UZ"))}`;
+        message = `💰 <b>Yangi obuna!</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📦 <b>Tarif:</b> ${esc(data.plan)}\n💳 <b>Summa:</b> ${esc(String(data.amount))}\n📅 <b>Vaqt:</b> ${esc(new Date().toLocaleString("uz-UZ"))}`;
         break;
       case "ai_payment":
-        message = `💳 *AI to'lov amalga oshirildi\\!*\n\n👤 *ID:* ${escapeMarkdown(data.user_id)}\n📦 *Tarif:* ${escapeMarkdown(data.plan_id)}\n💰 *Summa:* ${escapeMarkdown(String(data.amount))}\n🧾 *Invoice:* ${escapeMarkdown(data.invoice_id)}`;
+        message = `💳 <b>AI to'lov amalga oshirildi!</b>\n\n👤 <b>ID:</b> ${esc(data.user_id)}\n📦 <b>Tarif:</b> ${esc(data.plan_id)}\n💰 <b>Summa:</b> ${esc(String(data.amount))}\n🧾 <b>Invoice:</b> ${esc(data.invoice_id)}`;
         break;
       default:
-        message = `🔔 *Bildirishnoma*\n\n${escapeMarkdown(JSON.stringify(data, null, 2))}`;
+        message = `🔔 <b>Bildirishnoma</b>\n\n<pre>${esc(JSON.stringify(data, null, 2))}</pre>`;
     }
 
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -55,7 +55,7 @@ serve(async (req) => {
       body: JSON.stringify({
         chat_id: ADMIN_CHAT_ID,
         text: message,
-        parse_mode: "MarkdownV2",
+        parse_mode: "HTML",
       }),
     });
 
@@ -78,7 +78,7 @@ serve(async (req) => {
   }
 });
 
-function escapeMarkdown(text: string): string {
+function esc(text: string): string {
   if (!text) return "—";
-  return String(text).replace(/[_*\[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
+  return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
