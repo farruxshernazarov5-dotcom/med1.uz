@@ -126,18 +126,18 @@ const DashboardShell = ({
   );
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(213,73%,15%)] via-[hsl(213,60%,18%)] to-[hsl(213,73%,15%)] flex">
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-sidebar-background border-r border-sidebar-border/20 transition-all duration-300 shrink-0",
+          "hidden md:flex flex-col bg-[hsl(213,73%,15%)]/95 backdrop-blur-xl border-r border-white/10 transition-all duration-300 shrink-0",
           collapsed ? "w-[68px]" : "w-[260px]"
         )}
       >
         {renderSidebarContent()}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute top-4 -right-3 w-6 h-6 rounded-full bg-sidebar-background border border-sidebar-border/30 flex items-center justify-center text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors z-10 hidden md:flex"
+          className="absolute top-4 -right-3 w-6 h-6 rounded-full bg-[hsl(213,73%,15%)] border border-white/20 flex items-center justify-center text-white/50 hover:text-white transition-colors z-10 hidden md:flex"
           style={{ position: "sticky", bottom: 60 }}
         >
           {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
@@ -148,7 +148,7 @@ const DashboardShell = ({
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[260px] bg-sidebar-background shadow-2xl">
+          <aside className="absolute left-0 top-0 bottom-0 w-[260px] bg-[hsl(213,73%,15%)]/95 backdrop-blur-xl shadow-2xl">
             {renderSidebarContent()}
           </aside>
         </div>
@@ -157,9 +157,9 @@ const DashboardShell = ({
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
+        <header className="h-16 border-b border-white/10 bg-white/95 dark:bg-[hsl(213,60%,18%)]/95 backdrop-blur-xl flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-muted transition-colors"
+            className="md:hidden p-2 rounded-xl hover:bg-white/10 transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
