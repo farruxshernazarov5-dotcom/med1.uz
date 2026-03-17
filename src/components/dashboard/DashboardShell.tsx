@@ -60,19 +60,19 @@ const DashboardShell = ({
   const renderSidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo area */}
-      <div className="p-4 border-b border-sidebar-border/30">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-sidebar-border/40" />
+            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-white/20" />
           ) : (
-            <div className="w-10 h-10 rounded-xl bg-hero-gradient flex items-center justify-center">
-              <TitleIcon className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl bg-[hsl(214,84%,56%)] flex items-center justify-center">
+              <TitleIcon className="w-5 h-5 text-white" />
             </div>
           )}
           {!collapsed && (
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-sidebar-foreground truncate">{title}</h2>
-              {subtitle && <p className="text-[10px] text-sidebar-foreground/50 truncate">{subtitle}</p>}
+              <h2 className="text-sm font-bold text-white truncate">{title}</h2>
+              {subtitle && <p className="text-[10px] text-white/40 truncate">{subtitle}</p>}
             </div>
           )}
         </div>
