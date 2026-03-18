@@ -43,6 +43,7 @@ import HMSTeleconsultation from "@/components/hms/HMSTeleconsultation";
 import HMSPrescription from "@/components/hms/HMSPrescription";
 import HMSFinance from "@/components/hms/HMSFinance";
 import HMSInventory from "@/components/hms/HMSInventory";
+import HMSOverview from "@/components/hms/HMSOverview";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
@@ -160,50 +161,7 @@ const ClinicDashboard = () => {
       onTabChange={setTab}
     >
       {tab === "overview" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { icon: Stethoscope, label: "Shifokorlar", value: doctors.length, color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
-              { icon: DollarSign, label: "Xizmatlar", value: services.length, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
-              { icon: Calendar, label: "Kutilmoqda", value: pendingAppts.length, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
-              { icon: TrendingUp, label: "Daromad", value: `${totalRevenue.toLocaleString()} so'm`, color: "from-accent/20 to-accent/5", iconColor: "text-accent" },
-            ].map((s) => (
-              <div key={s.label} className={cn("rounded-2xl border border-border p-5 bg-gradient-to-br", s.color, "backdrop-blur-sm")}>
-                <s.icon className={cn("w-8 h-8 mb-3", s.iconColor)} />
-                <p className="text-2xl font-bold text-foreground">{s.value}</p>
-                <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Recent appointments */}
-          {pendingAppts.length > 0 && (
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <h3 className="font-heading font-bold text-foreground mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-amber-500" />
-                Kutilayotgan qabullar ({pendingAppts.length})
-              </h3>
-              <div className="space-y-2">
-                {pendingAppts.slice(0, 5).map((a) => (
-                  <div key={a.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-                    <div>
-                      <p className="font-semibold text-foreground text-sm">{a.patient_name}</p>
-                      <p className="text-xs text-muted-foreground">{a.patient_phone} • {a.appointment_date} {a.appointment_time?.slice(0, 5)}</p>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="text-emerald-500 hover:bg-emerald-500/10" onClick={() => updateAppointmentStatus(a.id, "confirmed")}>
-                        <CheckCircle className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="text-destructive hover:bg-destructive/10" onClick={() => updateAppointmentStatus(a.id, "cancelled")}>
-                        <XCircle className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        <HMSOverview clinicId={clinic.id} onNavigate={setTab} />
       )}
 
       {tab === "profile" && <ClinicProfileEditor clinic={clinic} onSaved={fetchData} />}
