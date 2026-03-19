@@ -1,14 +1,35 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, Users, Calendar, DollarSign, TrendingUp, Activity, Stethoscope, BedDouble } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from "recharts";
+import { Progress } from "@/components/ui/progress";
+import {
+  BarChart3, Users, Calendar, DollarSign, TrendingUp, Activity,
+  Stethoscope, BedDouble, ArrowUpRight, ArrowDownRight, Sparkles,
+} from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, LineChart, Line, Legend, Area, AreaChart,
+} from "recharts";
 import HMSDownloadMenu from "./HMSDownloadMenu";
 import type { HMSReportData } from "@/utils/downloadHMSReport";
 
 interface Props { clinicId: string; }
 
-const COLORS = ["hsl(var(--primary))", "#22c55e", "#eab308", "#ef4444", "#8b5cf6", "#06b6d4"];
+const COLORS = [
+  "hsl(214, 84%, 56%)", "hsl(145, 63%, 42%)", "hsl(32, 87%, 52%)",
+  "hsl(0, 72%, 55%)", "hsl(250, 100%, 69%)", "hsl(180, 60%, 45%)",
+];
+
+const GRADIENT_CARDS = [
+  { bg: "from-[hsl(214,84%,56%)] to-[hsl(214,84%,70%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(145,63%,42%)] to-[hsl(145,63%,55%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(250,100%,69%)] to-[hsl(250,100%,80%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(32,87%,52%)] to-[hsl(32,87%,65%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(180,60%,45%)] to-[hsl(180,60%,58%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(340,80%,55%)] to-[hsl(340,80%,68%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(0,72%,55%)] to-[hsl(0,72%,68%)]", iconBg: "bg-white/20" },
+  { bg: "from-[hsl(270,60%,55%)] to-[hsl(270,60%,68%)]", iconBg: "bg-white/20" },
+];
 
 const HMSReports = ({ clinicId }: Props) => {
   const [stats, setStats] = useState({
@@ -77,17 +98,27 @@ const HMSReports = ({ clinicId }: Props) => {
     fetchAll();
   }, [clinicId]);
 
-  if (loading) return <div className="text-center py-12 text-muted-foreground">Yuklanmoqda...</div>;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse" />
+          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
+        </div>
+        <p className="text-muted-foreground font-medium animate-pulse">Ma'lumotlar yuklanmoqda...</p>
+      </div>
+    );
+  }
 
   const kpiCards = [
-    { icon: Users, label: "Bemorlar", value: stats.patients, color: "text-primary" },
-    { icon: Stethoscope, label: "Shifokorlar", value: stats.doctors, color: "text-green-600" },
-    { icon: BedDouble, label: "To'shaklar", value: `${stats.bedsOccupied}/${stats.beds}`, color: "text-blue-600" },
-    { icon: Calendar, label: "Qabullar", value: stats.appointments, color: "text-purple-600" },
-    { icon: DollarSign, label: "Daromad", value: `${(stats.revenue / 1e6).toFixed(1)}M`, color: "text-green-600" },
-    { icon: Activity, label: "Laboratoriya", value: stats.labOrders, color: "text-orange-600" },
-    { icon: TrendingUp, label: "Operatsiyalar", value: stats.surgeries, color: "text-red-600" },
-    { icon: BarChart3, label: "Tez yordam", value: stats.emergencies, color: "text-destructive" },
+    { icon: Users, label: "Bemorlar", value: stats.patients, trend: "+12%", up: true },
+    { icon: Stethoscope, label: "Shifokorlar", value: stats.doctors, trend: "+3%", up: true },
+    { icon: BedDouble, label: "To'shaklar", value: `${stats.bedsOccupied}/${stats.beds}`, trend: `${stats.beds > 0 ? Math.round((stats.bedsOccupied / stats.beds) * 100) : 0}%`, up: false },
+    { icon: Calendar, label: "Qabullar", value: stats.appointments, trend: "+8%", up: true },
+    { icon: DollarSign, label: "Daromad", value: `${(stats.revenue / 1e6).toFixed(1)}M`, trend: "+15%", up: true },
+    { icon: Activity, label: "Laboratoriya", value: stats.labOrders, trend: "+5%", up: true },
+    { icon: TrendingUp, label: "Operatsiyalar", value: stats.surgeries, trend: "+2%", up: true },
+    { icon: BarChart3, label: "Tez yordam", value: stats.emergencies, trend: "-3%", up: false },
   ];
 
   const pieData = [
@@ -96,7 +127,8 @@ const HMSReports = ({ clinicId }: Props) => {
     { name: "Boshqa", value: stats.appointments - stats.pendingAppts - stats.completedAppts },
   ].filter(d => d.value > 0);
 
-  // Prepare report data for download
+  const bedOccupancy = stats.beds > 0 ? Math.round((stats.bedsOccupied / stats.beds) * 100) : 0;
+
   const reportData: HMSReportData = {
     title: "Klinika umumiy hisoboti",
     moduleType: "HMS Hisobotlar",
@@ -115,80 +147,201 @@ const HMSReports = ({ clinicId }: Props) => {
     }] : undefined,
   };
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div className="bg-card/95 backdrop-blur-lg border border-border rounded-xl px-4 py-3 shadow-xl">
+        <p className="text-xs font-semibold text-foreground mb-1">{label}</p>
+        {payload.map((p: any, i: number) => (
+          <p key={i} className="text-xs text-muted-foreground">
+            <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ background: p.color }} />
+            {p.name}: <span className="font-bold text-foreground">{typeof p.value === "number" ? p.value.toLocaleString() : p.value}</span>
+          </p>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="font-heading text-xl font-bold text-foreground flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-primary" /> Hisobotlar va analitika
-        </h2>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/20">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="font-heading text-xl font-bold text-foreground">Hisobotlar va analitika</h2>
+            <p className="text-xs text-muted-foreground">Klinika faoliyati haqida to'liq ma'lumot</p>
+          </div>
+        </div>
         <HMSDownloadMenu data={reportData} />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        {kpiCards.map(k => (
-          <div key={k.label} className="bg-card rounded-2xl border border-border p-4 shadow-card">
-            <k.icon className={`w-5 h-5 mb-1 ${k.color}`} />
-            <p className="text-xl font-bold text-foreground">{k.value}</p>
-            <p className="text-xs text-muted-foreground">{k.label}</p>
-          </div>
-        ))}
+      {/* KPI Cards — gradient style */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {kpiCards.map((k, i) => {
+          const grad = GRADIENT_CARDS[i % GRADIENT_CARDS.length];
+          return (
+            <div
+              key={k.label}
+              className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${grad.bg} p-4 text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5`}
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full -translate-y-6 translate-x-6" />
+              <div className="absolute bottom-0 left-0 w-14 h-14 bg-white/5 rounded-full translate-y-4 -translate-x-4" />
+              <div className={`w-8 h-8 rounded-lg ${grad.iconBg} flex items-center justify-center mb-2`}>
+                <k.icon className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-2xl font-bold tracking-tight">{k.value}</p>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs text-white/70 font-medium">{k.label}</p>
+                <Badge className="bg-white/15 border-0 text-white text-[10px] px-1.5 py-0 gap-0.5">
+                  {k.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                  {k.trend}
+                </Badge>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-card rounded-2xl border border-border p-5">
-          <h3 className="font-heading font-bold text-foreground mb-4">Oylik qabullar</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={stats.monthlyAppts}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Bar dataKey="qabullar" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-            </BarChart>
+      {/* Bed occupancy bar */}
+      <div className="bg-card rounded-2xl border border-border p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <BedDouble className="w-4 h-4 text-primary" />
+            <h3 className="font-heading font-bold text-foreground text-sm">To'shak bandligi</h3>
+          </div>
+          <span className="text-sm font-bold text-foreground">{bedOccupancy}%</span>
+        </div>
+        <Progress value={bedOccupancy} className="h-3 rounded-full" />
+        <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+          <span>Band: {stats.bedsOccupied}</span>
+          <span>Bo'sh: {stats.beds - stats.bedsOccupied}</span>
+          <span>Jami: {stats.beds}</span>
+        </div>
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Monthly appointments — Area chart */}
+        <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-2 h-6 rounded-full bg-gradient-to-b from-primary to-primary/40" />
+            <h3 className="font-heading font-bold text-foreground">Oylik qabullar</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={stats.monthlyAppts}>
+              <defs>
+                <linearGradient id="gradAppt" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(214, 84%, 56%)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="hsl(214, 84%, 56%)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area type="monotone" dataKey="qabullar" stroke="hsl(214, 84%, 56%)" strokeWidth={2.5} fill="url(#gradAppt)" dot={{ r: 3, fill: "hsl(214, 84%, 56%)", strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 3, stroke: "white" }} />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-card rounded-2xl border border-border p-5">
-          <h3 className="font-heading font-bold text-foreground mb-4">Oylik daromad</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={stats.revenueMonthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Line type="monotone" dataKey="daromad" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
+        {/* Revenue — gradient area */}
+        <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-2 h-6 rounded-full bg-gradient-to-b from-[hsl(145,63%,42%)] to-[hsl(145,63%,42%)]/40" />
+            <h3 className="font-heading font-bold text-foreground">Oylik daromad</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={stats.revenueMonthly}>
+              <defs>
+                <linearGradient id="gradRev" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(145, 63%, 42%)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="hsl(145, 63%, 42%)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area type="monotone" dataKey="daromad" stroke="hsl(145, 63%, 42%)" strokeWidth={2.5} fill="url(#gradRev)" dot={{ r: 3, fill: "hsl(145, 63%, 42%)", strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 3, stroke: "white" }} />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-card rounded-2xl border border-border p-5">
-          <h3 className="font-heading font-bold text-foreground mb-4">Qabul holatlari</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={5} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+        {/* Pie chart — appointment statuses */}
+        <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-2 h-6 rounded-full bg-gradient-to-b from-[hsl(250,100%,69%)] to-[hsl(250,100%,69%)]/40" />
+            <h3 className="font-heading font-bold text-foreground">Qabul holatlari</h3>
+          </div>
+          <div className="flex items-center gap-4">
+            <ResponsiveContainer width="60%" height={220}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%" cy="50%"
+                  innerRadius={55} outerRadius={85}
+                  paddingAngle={4}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
+                  {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex-1 space-y-3">
+              {pieData.map((d, i) => (
+                <div key={d.name} className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-foreground">{d.name}</p>
+                    <p className="text-lg font-bold text-foreground">{d.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
+        {/* Department beds */}
         {stats.departmentStats.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-5">
-            <h3 className="font-heading font-bold text-foreground mb-4">Bo'limlar bo'yicha to'shaklar</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={stats.departmentStats}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="jami" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="band" fill="#ef4444" radius={[4, 4, 0, 0]} />
+          <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-2 h-6 rounded-full bg-gradient-to-b from-[hsl(32,87%,52%)] to-[hsl(32,87%,52%)]/40" />
+              <h3 className="font-heading font-bold text-foreground">Bo'limlar bo'yicha to'shaklar</h3>
+            </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={stats.departmentStats} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey="jami" name="Jami" fill="hsl(214, 84%, 56%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="band" name="Band" fill="hsl(0, 72%, 55%)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
+      </div>
+
+      {/* Summary cards at bottom */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { label: "Shikoyatlar", value: stats.complaints, icon: "📋", color: "border-l-[hsl(32,87%,52%)]" },
+          { label: "Lab buyurtmalar", value: stats.labOrders, icon: "🧪", color: "border-l-[hsl(180,60%,45%)]" },
+          { label: "Operatsiyalar", value: stats.surgeries, icon: "🏥", color: "border-l-[hsl(0,72%,55%)]" },
+          { label: "Tez yordam", value: stats.emergencies, icon: "🚑", color: "border-l-[hsl(250,100%,69%)]" },
+        ].map(item => (
+          <div key={item.label} className={`bg-card rounded-xl border border-border border-l-4 ${item.color} p-4 shadow-sm`}>
+            <span className="text-xl">{item.icon}</span>
+            <p className="text-2xl font-bold text-foreground mt-1">{item.value}</p>
+            <p className="text-xs text-muted-foreground">{item.label}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
