@@ -4,12 +4,44 @@ export type AiAccessResult =
   | { allowed: true; userId: string; planId: string }
   | { allowed: false; status: number; error: string };
 
+/* ─── Qat'iy kunlik limitlar (plan_id → limit) ─── */
 const DAILY_LIMITS: Record<string, number> = {
+  // Individual plans
   free: 1,
   starter: 10,
+
+  // Clinic plans
+  "clinic-starter": 10,
+  "clinic-pro": 50,
+  "clinic-enterprise": -1,
+
+  // Diagnostics plans
+  "diag-starter": 15,
+  "diag-pro": 100,
+  "diag-enterprise": -1,
+
+  // Pharmacy plans
+  "pharm-starter": 20,
+  "pharm-pro": 80,
+  "pharm-enterprise": -1,
+
+  // Emergency plans
+  "emer-starter": 30,
+  "emer-pro": 150,
+  "emer-enterprise": -1,
+
+  // Cosmetology plans
+  "cosm-starter": 10,
+  "cosm-pro": 50,
+  "cosm-enterprise": -1,
 };
 
-const UNLIMITED_PLANS = new Set(["professional", "family", "custom", "ai-pro", "premium"]);
+/* Enterprise / unlimited reja'lar */
+const UNLIMITED_PLANS = new Set([
+  "professional", "family", "custom", "ai-pro", "premium",
+  "clinic-enterprise", "diag-enterprise", "pharm-enterprise",
+  "emer-enterprise", "cosm-enterprise",
+]);
 
 export async function enforceAiAccess(req: Request, serviceId: string): Promise<AiAccessResult> {
   try {
@@ -53,13 +85,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       ? subscription.services.map((s: string) => String(s).toLowerCase())
       : [];
 
-    const { count: dailyUsage } = await admin
-      .from("ai_usage")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .eq("service_id", serviceId)
-      .eq("usage_date", today);
-
+    /* ─── Xizmat tekshiruvi ─── */
     if (selectedServices.length > 0 && !selectedServices.includes(serviceId.toLowerCase())) {
       return {
         allowed: false,
@@ -68,8 +94,18 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       };
     }
 
-    if (!UNLIMITED_PLANS.has(planId)) {
-      const limit = DAILY_LIMITS[planId] ?? DAILY_LIMITS.free;
+    /* ─── Kunlik limit tekshiruvi ─── */
+    const limit = DAILY_LIMITS[planId] ?? DAILY_LIMITS.free ?? 1;
+    const isUnlimited = UNLIMITED_PLANS.has(planId) || limit === -1;
+
+    if (!isUnlimited) {
+      const { count: dailyUsage } = await admin
+        .from("ai_usage")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("service_id", serviceId)
+        .eq("usage_date", today);
+
       if ((dailyUsage || 0) >= limit) {
         return {
           allowed: false,
@@ -79,6 +115,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       }
     }
 
+    /* ─── Foydalanishni qayd etish ─── */
     const { error: usageInsertError } = await admin.from("ai_usage").insert({
       user_id: userId,
       service_id: serviceId,
