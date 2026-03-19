@@ -213,6 +213,9 @@ const PricingPage = () => {
         </div>
       </section>
 
+      {/* Org AI Tariffs */}
+      <OrgAiTariffSection />
+
       {/* Additional revenue models */}
       <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
