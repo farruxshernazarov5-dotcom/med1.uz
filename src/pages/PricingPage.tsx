@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import SubscriptionContactModal from "@/components/SubscriptionContactModal";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
+import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 
 const categories = [
   { id: "ai", label: "AI Xizmatlar", icon: Brain, color: "text-primary" },
