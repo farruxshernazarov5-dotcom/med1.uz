@@ -2846,6 +2846,57 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          invoice_number: string
+          invoice_type: string
+          metadata: Json | null
+          paid_at: string | null
+          payment_method: string | null
+          service_name: string | null
+          service_type: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          invoice_number: string
+          invoice_type?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_method?: string | null
+          service_name?: string | null
+          service_type?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          invoice_number?: string
+          invoice_type?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_method?: string | null
+          service_name?: string | null
+          service_type?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       login_history: {
         Row: {
           id: string
