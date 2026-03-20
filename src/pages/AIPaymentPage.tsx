@@ -67,12 +67,40 @@ const AIPaymentPage = () => {
 
       if (error || data?.error) throw new Error(error?.message || data?.error);
 
+      // Create invoice record
+      await supabase.from("invoices").insert({
+        user_id: user.id,
+        invoice_type: "ai_service",
+        service_type: "AI xizmatlar",
+        service_name: planNames[plan] || plan,
+        amount,
+        payment_method: paymentMethod === "payme" ? "Payme" : "Click",
+        status: "paid",
+        paid_at: new Date().toISOString(),
+        metadata: {
+          user_name: profile?.full_name || user.email,
+          user_phone: profile?.phone || "—",
+          user_email: user.email,
+          plan_id: plan,
+          billing_period: billing,
+          services,
+          old_invoice_id: invoiceId,
+        },
+      });
+
       toast.success("To'lov muvaffaqiyatli amalga oshirildi");
 
       supabase.functions.invoke("telegram-notify", {
         body: {
           type: "ai_payment",
-          data: { user_id: user.id, plan_id: plan, amount, invoice_id: invoiceId },
+          data: {
+            user_id: user.id,
+            user_name: profile?.full_name || user.email,
+            plan_id: planNames[plan] || plan,
+            amount,
+            invoice_id: invoiceId,
+            payment_method: paymentMethod === "payme" ? "Payme" : "Click",
+          },
         },
       }).catch(() => {});
 

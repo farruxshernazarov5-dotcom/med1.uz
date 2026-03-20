@@ -158,6 +158,28 @@ const BookingPage = () => {
     if (error) {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
+      // Create invoice for appointment
+      if (totalPrice > 0) {
+        supabase.from("invoices").insert({
+          user_id: user.id,
+          invoice_type: "clinic_service",
+          service_type: "Klinika qabuli",
+          service_name: selectedService?.name || "Konsultatsiya",
+          amount: totalPrice,
+          payment_method: "Naqd / Karta",
+          status: "pending",
+          metadata: {
+            user_name: form.patient_name,
+            user_phone: form.patient_phone,
+            user_email: user.email || "",
+            clinic_name: selectedClinic?.name,
+            doctor_name: selectedDoctor?.full_name ? `Dr. ${selectedDoctor.full_name}` : "—",
+            appointment_date: form.date,
+            appointment_time: form.time,
+          },
+        }).then(() => {});
+      }
+
       setSuccess(true);
       toast({ title: "✅ Qabulga muvaffaqiyatli yozildingiz!" });
       // Send Telegram notification
@@ -168,8 +190,11 @@ const BookingPage = () => {
             patient_name: form.patient_name,
             patient_phone: form.patient_phone,
             clinic_name: selectedClinic?.name || "—",
+            doctor_name: selectedDoctor?.full_name || "—",
+            service_name: selectedService?.name || "Konsultatsiya",
             appointment_date: form.date,
             appointment_time: form.time,
+            total_price: totalPrice,
           },
         },
       }).catch(() => {});
