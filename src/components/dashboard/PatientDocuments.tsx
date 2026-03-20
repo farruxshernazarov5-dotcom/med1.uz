@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { FileText, Download, CreditCard, Printer, Receipt, Filter } from "lucide-react";
+import { FileText, Download, CreditCard, Printer, Receipt, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,14 +15,14 @@ const statusLabels: Record<string, { text: string; variant: "default" | "seconda
   paid: { text: "To'langan", variant: "default" },
 };
 
-const invoiceTypeLabels: Record<string, string> = {
-  ai_service: "AI Xizmat",
-  clinic_service: "Klinika",
-  diagnostics: "Diagnostika",
-  cosmetology: "Kosmetologiya",
-  pharmacy: "Dorixona",
-  subscription: "Obuna",
-  service: "Xizmat",
+const invoiceTypeLabels: Record<string, { text: string; icon: string }> = {
+  ai_service: { text: "AI Xizmat", icon: "🤖" },
+  clinic_service: { text: "Klinika", icon: "🏥" },
+  diagnostics: { text: "Diagnostika", icon: "🔬" },
+  cosmetology: { text: "Kosmetologiya", icon: "💆" },
+  pharmacy: { text: "Dorixona", icon: "💊" },
+  subscription: { text: "Obuna", icon: "💎" },
+  service: { text: "Xizmat", icon: "📋" },
 };
 
 const generateAppointmentInvoice = (a: any): InvoiceData => ({
@@ -39,8 +39,11 @@ const generateAppointmentInvoice = (a: any): InvoiceData => ({
   metadata: {
     "Klinika": a.registered_clinics?.name || "—",
     "Shifokor": a.doctors?.full_name ? `Dr. ${a.doctors.full_name}` : "—",
+    "Mutaxassislik": a.doctors?.specialty || "—",
     "Sana": a.appointment_date,
     "Vaqt": a.appointment_time?.slice(0, 5),
+    "Xizmat davomiyligi": a.clinic_services?.duration_minutes ? `${a.clinic_services.duration_minutes} daqiqa` : "—",
+    "Izoh": a.notes || "—",
   },
 });
 
@@ -55,7 +58,7 @@ const PatientDocuments = () => {
     Promise.all([
       supabase
         .from("appointments")
-        .select("*, registered_clinics(name, address, phone), doctors(full_name, specialty), clinic_services(name, price)")
+        .select("*, registered_clinics(name, address, phone), doctors(full_name, specialty), clinic_services(name, price, duration_minutes)")
         .eq("patient_id", user.id)
         .order("appointment_date", { ascending: false }),
       supabase
@@ -69,7 +72,6 @@ const PatientDocuments = () => {
       setLoading(false);
     });
 
-    // Realtime subscription for new invoices
     const channel = supabase
       .channel("patient-invoices")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "invoices", filter: `user_id=eq.${user.id}` }, (payload) => {
@@ -94,7 +96,7 @@ const PatientDocuments = () => {
       ...invoices.map((inv) => ({
         sana: new Date(inv.created_at).toISOString().slice(0, 10),
         vaqt: new Date(inv.created_at).toISOString().slice(11, 16),
-        tur: invoiceTypeLabels[inv.invoice_type] || inv.invoice_type,
+        tur: invoiceTypeLabels[inv.invoice_type]?.text || inv.invoice_type,
         nomi: inv.service_name || "—",
         muassasa: inv.service_type || "—",
         narx: inv.amount || "0",
@@ -144,12 +146,8 @@ const PatientDocuments = () => {
 
           <TabsContent value="all">
             <div className="space-y-3">
-              {invoices.map((inv) => (
-                <InvoiceCard key={inv.id} invoice={inv} />
-              ))}
-              {appointments.map((a) => (
-                <AppointmentCard key={a.id} appointment={a} />
-              ))}
+              {invoices.map((inv) => <InvoiceCard key={inv.id} invoice={inv} />)}
+              {appointments.map((a) => <AppointmentCard key={a.id} appointment={a} />)}
             </div>
           </TabsContent>
 
@@ -157,9 +155,7 @@ const PatientDocuments = () => {
             <div className="space-y-3">
               {invoices.length === 0 ? (
                 <p className="text-center py-8 text-muted-foreground">Invoice topilmadi</p>
-              ) : invoices.map((inv) => (
-                <InvoiceCard key={inv.id} invoice={inv} />
-              ))}
+              ) : invoices.map((inv) => <InvoiceCard key={inv.id} invoice={inv} />)}
             </div>
           </TabsContent>
 
@@ -167,9 +163,7 @@ const PatientDocuments = () => {
             <div className="space-y-3">
               {appointments.length === 0 ? (
                 <p className="text-center py-8 text-muted-foreground">Qabullar topilmadi</p>
-              ) : appointments.map((a) => (
-                <AppointmentCard key={a.id} appointment={a} />
-              ))}
+              ) : appointments.map((a) => <AppointmentCard key={a.id} appointment={a} />)}
             </div>
           </TabsContent>
         </Tabs>
@@ -179,13 +173,16 @@ const PatientDocuments = () => {
 };
 
 const InvoiceCard = ({ invoice }: { invoice: any }) => {
+  const [expanded, setExpanded] = useState(false);
   const st = statusLabels[invoice.status] || statusLabels.pending;
+  const typeInfo = invoiceTypeLabels[invoice.invoice_type] || { text: invoice.invoice_type, icon: "📋" };
+  
   const invoiceData: InvoiceData = {
     invoiceNumber: invoice.invoice_number,
     userName: (invoice.metadata as any)?.user_name || "—",
     userPhone: (invoice.metadata as any)?.user_phone || "—",
     userEmail: (invoice.metadata as any)?.user_email || "—",
-    serviceType: invoiceTypeLabels[invoice.invoice_type] || invoice.invoice_type,
+    serviceType: typeInfo.text,
     serviceName: invoice.service_name || "—",
     amount: invoice.amount,
     paymentMethod: invoice.payment_method || "—",
@@ -194,65 +191,124 @@ const InvoiceCard = ({ invoice }: { invoice: any }) => {
     metadata: typeof invoice.metadata === "object" ? invoice.metadata : {},
   };
 
+  // Filter out internal metadata keys
+  const displayMeta = invoiceData.metadata
+    ? Object.fromEntries(
+        Object.entries(invoiceData.metadata).filter(
+          ([k]) => !["user_name", "user_phone", "user_email", "old_invoice_id"].includes(k)
+        )
+      )
+    : {};
+
   return (
-    <div className="bg-card rounded-xl border border-border p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:shadow-md transition-shadow">
-      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-        <Receipt className="w-5 h-5 text-primary" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="font-semibold text-foreground text-sm">{invoice.invoice_number}</span>
-          <Badge variant={st.variant} className="text-[10px]">{st.text}</Badge>
-          <Badge variant="outline" className="text-[10px]">{invoiceTypeLabels[invoice.invoice_type] || invoice.invoice_type}</Badge>
+    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow">
+      <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-lg">
+          {typeInfo.icon}
         </div>
-        <p className="text-xs text-muted-foreground">
-          {new Date(invoice.created_at).toLocaleDateString("uz-UZ")} • {invoice.service_name || "—"}
-        </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <span className="font-semibold text-foreground text-sm font-mono">{invoice.invoice_number}</span>
+            <Badge variant={st.variant} className="text-[10px]">{st.text}</Badge>
+            <Badge variant="outline" className="text-[10px]">{typeInfo.text}</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {new Date(invoice.created_at).toLocaleDateString("uz-UZ")} • {invoice.service_name || "—"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          {invoice.amount > 0 && (
+            <span className="text-sm font-bold text-primary">{Number(invoice.amount).toLocaleString()} so'm</span>
+          )}
+          <Button variant="ghost" size="sm" onClick={() => setExpanded(!expanded)}>
+            <Eye className="w-3.5 h-3.5" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => downloadInvoicePDF({ ...invoiceData, metadata: displayMeta })}>
+            <Printer className="w-3.5 h-3.5 mr-1" /> PDF
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => downloadInvoiceTxt({ ...invoiceData, metadata: displayMeta })}>
+            <Download className="w-3.5 h-3.5" />
+          </Button>
+        </div>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
-        {invoice.amount > 0 && (
-          <span className="text-sm font-bold text-primary">{Number(invoice.amount).toLocaleString()} so'm</span>
-        )}
-        <Button variant="outline" size="sm" onClick={() => downloadInvoicePDF(invoiceData)}>
-          <Printer className="w-3.5 h-3.5 mr-1" /> PDF
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => downloadInvoiceTxt(invoiceData)}>
-          <Download className="w-3.5 h-3.5" />
-        </Button>
-      </div>
+      
+      {expanded && (
+        <div className="px-4 pb-4 pt-0 border-t border-border">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
+            <DetailItem label="Xizmat turi" value={typeInfo.text} />
+            <DetailItem label="Xizmat nomi" value={invoice.service_name || "—"} />
+            <DetailItem label="To'lov usuli" value={invoice.payment_method || "—"} />
+            {Object.entries(displayMeta)
+              .filter(([, v]) => v && String(v) !== "—" && String(v) !== "")
+              .map(([k, v]) => (
+                <DetailItem key={k} label={k} value={String(v)} />
+              ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 const AppointmentCard = ({ appointment }: { appointment: any }) => {
+  const [expanded, setExpanded] = useState(false);
   const a = appointment;
   const st = statusLabels[a.status] || statusLabels.pending;
   const invoiceData = generateAppointmentInvoice(a);
 
   return (
-    <div className="bg-card rounded-xl border border-border p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:shadow-md transition-shadow">
-      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-        <CreditCard className="w-5 h-5 text-accent-foreground" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <span className="font-semibold text-foreground text-sm truncate">{a.registered_clinics?.name || "Klinika"}</span>
-          <Badge variant={st.variant} className="text-[10px]">{st.text}</Badge>
+    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow">
+      <div className="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 text-lg">
+          🏥
         </div>
-        <p className="text-xs text-muted-foreground">
-          {a.appointment_date} • {a.doctors?.full_name ? `Dr. ${a.doctors.full_name}` : ""} • {a.clinic_services?.name || "Konsultatsiya"}
-        </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+            <span className="font-semibold text-foreground text-sm truncate">{a.registered_clinics?.name || "Klinika"}</span>
+            <Badge variant={st.variant} className="text-[10px]">{st.text}</Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {a.appointment_date} • {a.doctors?.full_name ? `Dr. ${a.doctors.full_name}` : ""} • {a.clinic_services?.name || "Konsultatsiya"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          {a.total_price > 0 && (
+            <span className="text-sm font-bold text-primary">{Number(a.total_price).toLocaleString()} so'm</span>
+          )}
+          <Button variant="ghost" size="sm" onClick={() => setExpanded(!expanded)}>
+            <Eye className="w-3.5 h-3.5" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => downloadInvoicePDF(invoiceData)}>
+            <Printer className="w-3.5 h-3.5 mr-1" /> Chek
+          </Button>
+        </div>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
-        {a.total_price > 0 && (
-          <span className="text-sm font-bold text-primary">{Number(a.total_price).toLocaleString()} so'm</span>
-        )}
-        <Button variant="outline" size="sm" onClick={() => downloadInvoicePDF(invoiceData)}>
-          <Printer className="w-3.5 h-3.5 mr-1" /> Chek
-        </Button>
-      </div>
+
+      {expanded && (
+        <div className="px-4 pb-4 pt-0 border-t border-border">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
+            <DetailItem label="Klinika" value={a.registered_clinics?.name || "—"} />
+            <DetailItem label="Shifokor" value={a.doctors?.full_name ? `Dr. ${a.doctors.full_name}` : "—"} />
+            <DetailItem label="Mutaxassislik" value={a.doctors?.specialty || "—"} />
+            <DetailItem label="Xizmat" value={a.clinic_services?.name || "Konsultatsiya"} />
+            <DetailItem label="Sana" value={a.appointment_date} />
+            <DetailItem label="Vaqt" value={a.appointment_time?.slice(0, 5) || "—"} />
+            <DetailItem label="Davomiyligi" value={a.clinic_services?.duration_minutes ? `${a.clinic_services.duration_minutes} daqiqa` : "—"} />
+            <DetailItem label="Bemor" value={a.patient_name} />
+            <DetailItem label="Telefon" value={a.patient_phone} />
+            {a.notes && <DetailItem label="Izoh" value={a.notes} />}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+const DetailItem = ({ label, value }: { label: string; value: string }) => (
+  <div className="bg-muted/50 rounded-lg p-2.5">
+    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{label}</p>
+    <p className="text-xs font-bold text-foreground mt-0.5 truncate">{value}</p>
+  </div>
+);
 
 export default PatientDocuments;
