@@ -17,7 +17,7 @@ serve(async (req) => {
     const TELEGRAM_API_KEY = Deno.env.get("TELEGRAM_API_KEY");
     if (!TELEGRAM_API_KEY) throw new Error("TELEGRAM_API_KEY is not configured");
 
-    const ADMIN_CHAT_ID = Deno.env.get("TELEGRAM_ADMIN_CHAT_ID") || "5079601480";
+    const ADMIN_CHAT_ID = Deno.env.get("TELEGRAM_ADMIN_CHAT_ID") || "1826388740";
 
     const { type, data } = await req.json();
     console.log(`Telegram notify: type=${type}`, JSON.stringify(data));
@@ -26,22 +26,67 @@ serve(async (req) => {
 
     switch (type) {
       case "contact_message":
-        message = `📩 <b>Yangi xabar!</b>\n\n👤 <b>Ism:</b> ${esc(data.full_name)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n📧 <b>Email:</b> ${esc(data.email || "—")}\n📋 <b>Mavzu:</b> ${esc(data.subject)}\n💬 <b>Xabar:</b> ${esc(data.message)}\n📅 <b>Vaqt:</b> ${new Date().toISOString().slice(0, 16)}`;
+        message = `📩 <b>YANGI XABAR</b>\n\n👤 <b>Ism:</b> ${esc(data.full_name)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n📧 <b>Email:</b> ${esc(data.email || "—")}\n📋 <b>Mavzu:</b> ${esc(data.subject)}\n💬 <b>Xabar:</b> ${esc(data.message)}\n\n📅 ${ts()}`;
         break;
+
       case "new_appointment":
-        message = `📅 <b>Yangi qabul!</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Klinika:</b> ${esc(data.clinic_name || "—")}\n📅 <b>Sana:</b> ${esc(data.appointment_date)}\n⏰ <b>Vaqt:</b> ${esc(data.appointment_time)}`;
+        message = `📅 <b>YANGI QABUL</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Klinika:</b> ${esc(data.clinic_name || "—")}\n👨‍⚕️ <b>Shifokor:</b> ${esc(data.doctor_name || "—")}\n🔬 <b>Xizmat:</b> ${esc(data.service_name || "Konsultatsiya")}\n📅 <b>Sana:</b> ${esc(data.appointment_date)}\n⏰ <b>Vaqt:</b> ${esc(data.appointment_time)}\n💰 <b>Narx:</b> ${esc(data.total_price ? data.total_price + " so'm" : "Bepul")}\n\n📌 <b>Holat:</b> Kutilmoqda\n📅 ${ts()}`;
         break;
+
       case "new_registration":
-        message = `🆕 <b>Yangi muassasa!</b>\n\n🏥 <b>Nomi:</b> ${esc(data.name)}\n📋 <b>Turi:</b> ${esc(data.type)}\n📞 <b>Tel:</b> ${esc(data.phone)}`;
+        message = `🆕 <b>YANGI MUASSASA RO'YXATDAN O'TDI</b>\n\n🏥 <b>Nomi:</b> ${esc(data.name)}\n📋 <b>Turi:</b> ${esc(data.type)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n📧 <b>Email:</b> ${esc(data.email || "—")}\n📍 <b>Manzil:</b> ${esc(data.address || "—")}\n\n📅 ${ts()}`;
         break;
+
       case "new_subscription":
-        message = `💰 <b>Yangi obuna!</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📦 <b>Tarif:</b> ${esc(data.plan)}\n💳 <b>Summa:</b> ${esc(String(data.amount))} so'm`;
+        message = `💎 <b>YANGI OBUNA</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📦 <b>Tarif:</b> ${esc(data.plan)}\n💳 <b>Summa:</b> ${esc(String(data.amount))} so'm\n📅 <b>Davr:</b> ${esc(data.billing_period || "—")}\n\n📌 <b>Holat:</b> Faol\n📅 ${ts()}`;
         break;
+
       case "ai_payment":
-        message = `💳 <b>AI to'lov!</b>\n\n👤 <b>ID:</b> ${esc(data.user_id)}\n📦 <b>Tarif:</b> ${esc(data.plan_id)}\n💰 <b>Summa:</b> ${esc(String(data.amount))} so'm\n🧾 <b>Invoice:</b> ${esc(data.invoice_id)}`;
+        message = `💳 <b>AI TO'LOV</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📦 <b>Tarif:</b> ${esc(data.plan_id)}\n💰 <b>Summa:</b> ${esc(String(data.amount))} so'm\n🧾 <b>Invoice:</b> ${esc(data.invoice_id)}\n💳 <b>To'lov usuli:</b> ${esc(data.payment_method || "—")}\n\n📌 <b>Holat:</b> ✅ To'landi\n📅 ${ts()}`;
         break;
+
+      case "clinic_booking":
+        message = `🏥 <b>KLINIKAGA YOZILISH</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Klinika:</b> ${esc(data.clinic_name)}\n👨‍⚕️ <b>Shifokor:</b> ${esc(data.doctor_name || "—")}\n🔬 <b>Xizmat:</b> ${esc(data.service_name || "—")}\n💰 <b>Narx:</b> ${esc(data.price || "—")}\n📅 <b>Sana:</b> ${esc(data.date)}\n⏰ <b>Vaqt:</b> ${esc(data.time)}\n\n📅 ${ts()}`;
+        break;
+
+      case "lab_order":
+        message = `🔬 <b>LABORATORIYA BUYURTMASI</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Markaz:</b> ${esc(data.center_name)}\n📋 <b>Xizmat:</b> ${esc(data.service_name)}\n💰 <b>Narx:</b> ${esc(data.price || "—")}\n\n📅 ${ts()}`;
+        break;
+
+      case "pharmacy_order":
+        message = `💊 <b>DORIXONA BUYURTMASI</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n🏪 <b>Dorixona:</b> ${esc(data.pharmacy_name || "—")}\n📋 <b>Buyurtma:</b> ${esc(data.items || "—")}\n💰 <b>Summa:</b> ${esc(data.amount || "—")}\n\n📅 ${ts()}`;
+        break;
+
+      case "cosmetology_booking":
+        message = `💆 <b>KOSMETOLOGIYA QABULI</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Markaz:</b> ${esc(data.center_name)}\n💅 <b>Xizmat:</b> ${esc(data.service_name || "—")}\n📅 <b>Sana:</b> ${esc(data.date)}\n⏰ <b>Vaqt:</b> ${esc(data.time)}\n\n📅 ${ts()}`;
+        break;
+
+      case "diagnostics_booking":
+        message = `🩺 <b>DIAGNOSTIKA QABULI</b>\n\n👤 <b>Bemor:</b> ${esc(data.patient_name)}\n📞 <b>Tel:</b> ${esc(data.patient_phone)}\n🏥 <b>Markaz:</b> ${esc(data.center_name)}\n🔬 <b>Xizmat:</b> ${esc(data.service_name || "—")}\n📅 <b>Sana:</b> ${esc(data.date)}\n⏰ <b>Vaqt:</b> ${esc(data.time)}\n\n📅 ${ts()}`;
+        break;
+
+      case "blood_donation":
+        message = `🩸 <b>YANGI DONOR RO'YXATDAN O'TDI</b>\n\n👤 <b>Donor:</b> ${esc(data.full_name)}\n📞 <b>Tel:</b> ${esc(data.phone)}\n🩸 <b>Guruh:</b> ${esc(data.blood_group)} ${esc(data.rh_factor)}\n🏥 <b>Qon banki:</b> ${esc(data.blood_bank_name || "—")}\n\n📅 ${ts()}`;
+        break;
+
+      case "user_registration":
+        message = `🆕 <b>YANGI FOYDALANUVCHI</b>\n\n👤 <b>Ism:</b> ${esc(data.full_name || "—")}\n📞 <b>Tel:</b> ${esc(data.phone || "—")}\n📧 <b>Email:</b> ${esc(data.email || "—")}\n👤 <b>Rol:</b> ${esc(data.role || "patient")}\n\n📅 ${ts()}`;
+        break;
+
+      case "invoice_created":
+        message = `🧾 <b>YANGI INVOICE YARATILDI</b>\n\n🆔 <b>Invoice:</b> ${esc(data.invoice_number)}\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📋 <b>Xizmat:</b> ${esc(data.service_name || "—")}\n🏷️ <b>Turi:</b> ${esc(data.invoice_type || "—")}\n💰 <b>Summa:</b> ${esc(String(data.amount))} so'm\n💳 <b>To'lov usuli:</b> ${esc(data.payment_method || "—")}\n\n📌 <b>Holat:</b> ${data.status === "paid" ? "✅ To'landi" : "⏳ Kutilmoqda"}\n📅 ${ts()}`;
+        break;
+
+      case "premium_service":
+        message = `⭐ <b>PREMIUM XIZMAT</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || data.user_id)}\n📋 <b>Xizmat:</b> ${esc(data.service_name)}\n💰 <b>Summa:</b> ${esc(String(data.amount || 0))} so'm\n🧾 <b>Invoice:</b> ${esc(data.invoice_number || "—")}\n\n📅 ${ts()}`;
+        break;
+
+      case "service_order":
+        message = `📋 <b>XIZMATGA BUYURTMA</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || "—")}\n📞 <b>Tel:</b> ${esc(data.phone || "—")}\n🏥 <b>Muassasa:</b> ${esc(data.org_name || "—")}\n📋 <b>Xizmat:</b> ${esc(data.service_name)}\n💰 <b>Narx:</b> ${esc(data.price || "—")}\n\n📅 ${ts()}`;
+        break;
+
       default:
-        message = `🔔 <b>Bildirishnoma</b>\n\n${esc(JSON.stringify(data, null, 2))}`;
+        message = `🔔 <b>BILDIRISHNOMA</b>\n\n📋 <b>Tur:</b> ${esc(type)}\n\n${esc(JSON.stringify(data, null, 2))}\n\n📅 ${ts()}`;
     }
 
     console.log(`Sending via gateway to chat_id: ${ADMIN_CHAT_ID}`);
@@ -83,4 +128,9 @@ serve(async (req) => {
 function esc(text: string): string {
   if (!text) return "—";
   return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function ts(): string {
+  const now = new Date();
+  return `${now.toISOString().slice(0, 10)} ${now.toISOString().slice(11, 16)}`;
 }
