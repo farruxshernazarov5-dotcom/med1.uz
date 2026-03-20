@@ -87,6 +87,18 @@ const BloodDonorRegistrationPage = () => {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "✅ Donor sifatida ro'yxatdan o'tdingiz!" });
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "blood_donation",
+          data: {
+            full_name: form.fullName,
+            phone: form.phone,
+            blood_group: form.bloodGroup,
+            rh_factor: "",
+            blood_bank_name: "Yangi donor ro'yxatdan o'tdi",
+          },
+        },
+      }).catch(() => {});
       navigate("/blood-banks");
     }
     setSubmitting(false);

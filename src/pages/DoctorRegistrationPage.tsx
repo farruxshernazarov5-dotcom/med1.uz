@@ -160,6 +160,18 @@ const DoctorRegistrationPage = () => {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "✅ Profilingiz yaratildi!", description: "Endi dashboardda tahrirlashingiz mumkin." });
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "new_registration",
+          data: {
+            name: form.full_name.trim(),
+            type: "Shifokor",
+            phone: form.phone || "—",
+            email: form.email || "—",
+            address: `${form.region || ""} ${form.city || ""}`.trim() || "—",
+          },
+        },
+      }).catch(() => {});
       navigate("/dashboard");
     }
     setSubmitting(false);

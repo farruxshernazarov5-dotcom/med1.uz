@@ -82,10 +82,14 @@ const AIPaymentPage = () => {
           user_name: profile?.full_name || user.email,
           user_phone: profile?.phone || "—",
           user_email: user.email,
-          plan_id: plan,
-          billing_period: billing,
-          services,
-          old_invoice_id: invoiceId,
+          "Tarif rejasi": planNames[plan] || plan,
+          "Hisob davri": billing === "monthly" ? "Oylik" : "Yillik",
+          "Tanlangan xizmatlar": plan === "custom" && services.length > 0
+            ? services.map(s => serviceNames[s] || s).join(", ")
+            : "Barcha xizmatlar",
+          "Amal qilish muddati": billing === "monthly"
+            ? new Date(Date.now() + 30 * 86400000).toLocaleDateString("uz-UZ")
+            : new Date(Date.now() + 365 * 86400000).toLocaleDateString("uz-UZ"),
         },
       });
 

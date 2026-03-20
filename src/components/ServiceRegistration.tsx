@@ -37,6 +37,22 @@ const ServiceRegistration = () => {
     }
     setSubmitted(true);
     toast({ title: "✅ Arizangiz yuborildi!", description: "24 soat ichida javob beramiz." });
+
+    // Send Telegram notification
+    import("@/integrations/supabase/client").then(({ supabase }) => {
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "service_order",
+          data: {
+            user_name: form.contactName,
+            phone: form.phone,
+            org_name: form.orgName || "—",
+            service_name: form.type,
+            price: "—",
+          },
+        },
+      }).catch(() => {});
+    });
   };
 
   const reset = () => {
