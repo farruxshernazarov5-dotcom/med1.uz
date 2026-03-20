@@ -161,6 +161,7 @@ const BookingPage = () => {
       // Create invoice for appointment
       if (totalPrice > 0) {
         supabase.from("invoices").insert({
+          invoice_number: "",
           user_id: user.id,
           invoice_type: "clinic_service",
           service_type: "Klinika qabuli",

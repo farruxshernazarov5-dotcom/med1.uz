@@ -69,6 +69,7 @@ const AIPaymentPage = () => {
 
       // Create invoice record
       await supabase.from("invoices").insert({
+        invoice_number: "",
         user_id: user.id,
         invoice_type: "ai_service",
         service_type: "AI xizmatlar",
