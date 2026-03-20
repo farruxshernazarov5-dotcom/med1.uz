@@ -51,6 +51,25 @@ const AppointmentBooking = () => {
     }
     setSubmitted(true);
     toast({ title: "✅ Arizangiz qabul qilindi!", description: "Tez orada siz bilan bog'lanamiz." });
+
+    // Send Telegram notification
+    import("@/integrations/supabase/client").then(({ supabase }) => {
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "new_appointment",
+          data: {
+            patient_name: name,
+            patient_phone: phone,
+            clinic_name: "Med1.uz (tezkor qabul)",
+            doctor_name: doctor || "—",
+            service_name: specialty || "Konsultatsiya",
+            appointment_date: date ? format(date, "yyyy-MM-dd") : "—",
+            appointment_time: time || "—",
+            total_price: 0,
+          },
+        },
+      }).catch(() => {});
+    });
   };
 
   const reset = () => {
