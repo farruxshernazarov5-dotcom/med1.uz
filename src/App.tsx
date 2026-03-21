@@ -69,6 +69,7 @@ import AIPaymentPage from "./pages/AIPaymentPage";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import ContactPage from "./pages/ContactPage";
 import AdminPage from "./pages/AdminPage";
+import AIVitalSignsPage from "./pages/AIVitalSignsPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -142,7 +143,8 @@ const App = () => (
                   <Route path="/ai-subscription" element={<AISubscriptionPage />} />
                    <Route path="/ai-payment" element={<AIPaymentPage />} />
                     <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/admin" element={<AdminPage />} />
+                     <Route path="/admin" element={<AdminPage />} />
+                     <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
                 <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
