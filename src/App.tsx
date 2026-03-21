@@ -143,7 +143,8 @@ const App = () => (
                   <Route path="/ai-subscription" element={<AISubscriptionPage />} />
                    <Route path="/ai-payment" element={<AIPaymentPage />} />
                     <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/admin" element={<AdminPage />} />
+                     <Route path="/admin" element={<AdminPage />} />
+                     <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
                 <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

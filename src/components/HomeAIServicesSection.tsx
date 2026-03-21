@@ -19,6 +19,7 @@ const aiServices = [
   { icon: Heart, title: "AI Psixolog", href: "/ai-psixolog", color: "from-rose-400 to-rose-300" },
   { icon: Pill, title: "AI Farmatsevt", href: "/ai-farmatsevt", color: "from-cyan-500 to-cyan-400" },
   { icon: Dumbbell, title: "AI Fitness", href: "/ai-fitness", color: "from-orange-500 to-orange-400" },
+  { icon: HeartPulse, title: "AI Vital Signs", href: "/ai-vital-signs", color: "from-red-500 to-blue-400" },
 ];
 
 const HomeAIServicesSection = () => {
