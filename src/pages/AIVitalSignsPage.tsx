@@ -168,15 +168,28 @@ const AIVitalSignsPage = () => {
 
         {/* How to use */}
         <div className="bg-card border border-border rounded-2xl p-5 mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <Info className="w-5 h-5 text-primary" />
-            <h2 className="font-bold text-foreground">Qanday foydalanish</h2>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Info className="w-5 h-5 text-primary" />
+              <h2 className="font-bold text-foreground">Qanday foydalanish</h2>
+            </div>
+            {voice.speaking && (
+              <span className="text-xs text-primary animate-pulse flex items-center gap-1">
+                <Volume2 className="w-3.5 h-3.5" /> Gapirmoqda...
+              </span>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> Puls oksimetr yoki tonometr yordamida o'lchang</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> Natijalarni pastdagi maydonlarga kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> "AI Tahlil" tugmasini bosing va tavsiyalarni oling</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> 📱 Kamera sensori orqali yoki qo'lda puls kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> 🩸 Qon bosimi va SpO2 qiymatlarini kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> 🧠 "AI Tahlil" tugmasini bosing</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">4.</span> 🔊 Ovozli yo'riqnoma sizga yordam beradi</div>
           </div>
+        </div>
+
+        {/* Camera PPG Sensor */}
+        <div className="mb-8">
+          <CameraPPGSensor onResult={handleCameraResult} onStatusChange={handleCameraStatus} />
         </div>
 
         {/* Input Cards */}
