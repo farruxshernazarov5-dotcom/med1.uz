@@ -69,6 +69,7 @@ import AIPaymentPage from "./pages/AIPaymentPage";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import ContactPage from "./pages/ContactPage";
 import AdminPage from "./pages/AdminPage";
+import AIVitalSignsPage from "./pages/AIVitalSignsPage";
 const queryClient = new QueryClient();
 
 const App = () => (
