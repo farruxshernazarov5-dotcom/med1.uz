@@ -45,12 +45,23 @@ const AIVitalSignsPage = () => {
   const [aiResult, setAiResult] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [animPulse, setAnimPulse] = useState(false);
+  const voice = useVoiceGuidance();
 
   // heartbeat animation
   useEffect(() => {
     const iv = setInterval(() => { setAnimPulse(p => !p); }, 800);
     return () => clearInterval(iv);
   }, []);
+
+  const handleCameraResult = useCallback((bpm: number) => {
+    setPulse(String(bpm));
+    voice.speak(`Sizning yurak urishingiz: ${bpm} zarb minutiga. ${bpm >= 60 && bpm <= 100 ? "Bu normal ko'rsatkich." : "Bu ko'rsatkich me'yordan tashqarida. Shifokorga murojaat qilishingizni tavsiya qilamiz."}`);
+    toast({ title: `Puls aniqlandi: ${bpm} bpm ✅` });
+  }, [voice]);
+
+  const handleCameraStatus = useCallback((msg: string) => {
+    voice.speak(msg);
+  }, [voice]);
 
   // fetch history
   useEffect(() => {
