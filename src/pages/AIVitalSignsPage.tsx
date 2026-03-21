@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
+import CameraPPGSensor from "@/components/vital-signs/CameraPPGSensor";
+import useVoiceGuidance from "@/hooks/useVoiceGuidance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Droplets, Wind, TrendingUp, Save, Info, Activity, AlertTriangle, CheckCircle2, ArrowRight } from "lucide-react";
+import { Heart, Droplets, Wind, TrendingUp, Save, Info, Activity, AlertTriangle, CheckCircle2, ArrowRight, Volume2, VolumeX } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
@@ -43,12 +45,23 @@ const AIVitalSignsPage = () => {
   const [aiResult, setAiResult] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [animPulse, setAnimPulse] = useState(false);
+  const voice = useVoiceGuidance();
 
   // heartbeat animation
   useEffect(() => {
     const iv = setInterval(() => { setAnimPulse(p => !p); }, 800);
     return () => clearInterval(iv);
   }, []);
+
+  const handleCameraResult = useCallback((bpm: number) => {
+    setPulse(String(bpm));
+    voice.speak(`Sizning yurak urishingiz: ${bpm} zarb minutiga. ${bpm >= 60 && bpm <= 100 ? "Bu normal ko'rsatkich." : "Bu ko'rsatkich me'yordan tashqarida. Shifokorga murojaat qilishingizni tavsiya qilamiz."}`);
+    toast({ title: `Puls aniqlandi: ${bpm} bpm ✅` });
+  }, [voice]);
+
+  const handleCameraStatus = useCallback((msg: string) => {
+    voice.speak(msg);
+  }, [voice]);
 
   // fetch history
   useEffect(() => {
@@ -70,6 +83,7 @@ const AIVitalSignsPage = () => {
     setSaving(true);
     await supabase.from("health_records").insert({ user_id: user.id, record_type: type, value, recorded_at: new Date().toISOString() });
     toast({ title: "Saqlandi ✅" });
+    voice.speak("Ko'rsatkich muvaffaqiyatli saqlandi.");
     setSaving(false);
     // refresh
     const { data } = await supabase.from("health_records").select("*").eq("user_id", user.id)
@@ -130,10 +144,19 @@ const AIVitalSignsPage = () => {
             <div className={cn("w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-transform duration-300", animPulse ? "scale-110" : "scale-100")}>
               <Heart className={cn("w-12 h-12 text-white transition-all duration-300", animPulse ? "scale-125" : "scale-100")} fill="currentColor" />
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-bold mb-2">AI Vital Signs Monitor</h1>
               <p className="text-white/80 text-lg">Yurak urishi, qon bosimi va kislorod darajasini sun'iy intellekt yordamida tahlil qiling</p>
             </div>
+            <Button
+              onClick={voice.toggle}
+              variant="ghost"
+              size="icon"
+              className="text-white/80 hover:text-white hover:bg-white/20 rounded-full"
+              title={voice.enabled ? "Ovozli yo'riqnomani o'chirish" : "Ovozli yo'riqnomani yoqish"}
+            >
+              {voice.enabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
+            </Button>
           </div>
           {/* ECG line animation */}
           <svg className="absolute bottom-0 left-0 w-full h-16 opacity-20" viewBox="0 0 1200 60" preserveAspectRatio="none">
@@ -146,15 +169,28 @@ const AIVitalSignsPage = () => {
 
         {/* How to use */}
         <div className="bg-card border border-border rounded-2xl p-5 mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <Info className="w-5 h-5 text-primary" />
-            <h2 className="font-bold text-foreground">Qanday foydalanish</h2>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Info className="w-5 h-5 text-primary" />
+              <h2 className="font-bold text-foreground">Qanday foydalanish</h2>
+            </div>
+            {voice.speaking && (
+              <span className="text-xs text-primary animate-pulse flex items-center gap-1">
+                <Volume2 className="w-3.5 h-3.5" /> Gapirmoqda...
+              </span>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> Puls oksimetr yoki tonometr yordamida o'lchang</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> Natijalarni pastdagi maydonlarga kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> "AI Tahlil" tugmasini bosing va tavsiyalarni oling</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> 📱 Kamera sensori orqali yoki qo'lda puls kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> 🩸 Qon bosimi va SpO2 qiymatlarini kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> 🧠 "AI Tahlil" tugmasini bosing</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">4.</span> 🔊 Ovozli yo'riqnoma sizga yordam beradi</div>
           </div>
+        </div>
+
+        {/* Camera PPG Sensor */}
+        <div className="mb-8">
+          <CameraPPGSensor onResult={handleCameraResult} onStatusChange={handleCameraStatus} />
         </div>
 
         {/* Input Cards */}
