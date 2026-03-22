@@ -94,7 +94,7 @@ const AIVitalSignsPage = () => {
     setSaving(true);
     await supabase.from("health_records").insert({ user_id: user.id, record_type: type, value, recorded_at: new Date().toISOString() });
     toast({ title: "Saqlandi ✅" });
-    voice.speak("Ko'rsatkich muvaffaqiyatli saqlandi.");
+    voice.speakKey("saved");
     setSaving(false);
     // refresh
     const { data } = await supabase.from("health_records").select("*").eq("user_id", user.id)
