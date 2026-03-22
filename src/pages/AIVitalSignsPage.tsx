@@ -56,12 +56,22 @@ const AIVitalSignsPage = () => {
 
   const handleCameraResult = useCallback((bpm: number) => {
     setPulse(String(bpm));
-    voice.speak(`Sizning yurak urishingiz: ${bpm} zarb minutiga. ${bpm >= 60 && bpm <= 100 ? "Bu normal ko'rsatkich." : "Bu ko'rsatkich me'yordan tashqarida. Shifokorga murojaat qilishingizni tavsiya qilamiz."}`);
+    if (bpm >= 60 && bpm <= 100) {
+      voice.speakKey("result_normal");
+    } else {
+      voice.speakKey("result_warning");
+    }
     toast({ title: `Puls aniqlandi: ${bpm} bpm ✅` });
   }, [voice]);
 
   const handleCameraStatus = useCallback((msg: string) => {
-    voice.speak(msg);
+    // Map status messages to voice keys for better quality
+    if (msg.includes("tayyorlanmoqda")) voice.speakKey("start");
+    else if (msg.includes("kameraga qo'ying")) voice.speakKey("finger_place");
+    else if (msg.includes("o'lchanmoqda")) voice.speakKey("measuring");
+    else if (msg.includes("aniqlanmadi")) voice.speakKey("signal_weak");
+    else if (msg.includes("ruxsati")) voice.speakKey("camera_error");
+    else voice.speak(msg);
   }, [voice]);
 
   // fetch history
@@ -84,7 +94,7 @@ const AIVitalSignsPage = () => {
     setSaving(true);
     await supabase.from("health_records").insert({ user_id: user.id, record_type: type, value, recorded_at: new Date().toISOString() });
     toast({ title: "Saqlandi ✅" });
-    voice.speak("Ko'rsatkich muvaffaqiyatli saqlandi.");
+    voice.speakKey("saved");
     setSaving(false);
     // refresh
     const { data } = await supabase.from("health_records").select("*").eq("user_id", user.id)
