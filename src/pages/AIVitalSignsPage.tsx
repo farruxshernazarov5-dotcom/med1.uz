@@ -149,15 +149,22 @@ const AIVitalSignsPage = () => {
               <h1 className="text-3xl md:text-4xl font-bold mb-2">AI Vital Signs Monitor</h1>
               <p className="text-white/80 text-lg">Yurak urishi, qon bosimi va kislorod darajasini sun'iy intellekt yordamida tahlil qiling</p>
             </div>
-            <Button
-              onClick={voice.toggle}
-              variant="ghost"
-              size="icon"
-              className="text-white/80 hover:text-white hover:bg-white/20 rounded-full"
-              title={voice.enabled ? "Ovozli yo'riqnomani o'chirish" : "Ovozli yo'riqnomani yoqish"}
-            >
-              {voice.enabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Language selector */}
+              <div className="flex bg-white/10 rounded-full p-0.5">
+                {(["uz", "ru", "en"] as VoiceLang[]).map(l => (
+                  <button key={l} onClick={() => voice.setLang(l)}
+                    className={cn("px-2.5 py-1 rounded-full text-xs font-medium transition-all", voice.lang === l ? "bg-white text-[#0A2540]" : "text-white/60 hover:text-white")}
+                  >{l.toUpperCase()}</button>
+                ))}
+              </div>
+              <Button onClick={voice.toggle} variant="ghost" size="icon"
+                className="text-white/80 hover:text-white hover:bg-white/20 rounded-full"
+                title={voice.enabled ? "Ovozli yo'riqnomani o'chirish" : "Ovozli yo'riqnomani yoqish"}
+              >
+                {voice.enabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
+              </Button>
+            </div>
           </div>
           {/* ECG line animation */}
           <svg className="absolute bottom-0 left-0 w-full h-16 opacity-20" viewBox="0 0 1200 60" preserveAspectRatio="none">
