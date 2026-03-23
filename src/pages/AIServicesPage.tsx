@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 
 const aiServices = [
   {
