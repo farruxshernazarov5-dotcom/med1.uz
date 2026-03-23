@@ -181,6 +181,9 @@ const AIServicesPage = () => (
       </div>
     </section>
 
+    {/* Org AI Tariffs */}
+    <OrgAiTariffSection />
+
     {/* Info section */}
     <section className="container mx-auto px-4 pb-16">
       <div className="max-w-3xl mx-auto bg-muted rounded-2xl p-8 text-center">

@@ -357,6 +357,9 @@ const ServicesPage = () => {
       {/* Hospital Management System */}
       <HMSServicesSection />
 
+      {/* Org AI Tariffs */}
+      <OrgAiTariffSection />
+
       {/* Pricing Plans */}
       <PricingSection />
 
