@@ -5,34 +5,35 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import CameraPPGSensor from "@/components/vital-signs/CameraPPGSensor";
+import BMICalculator from "@/components/vital-signs/BMICalculator";
+import HealthScoreCard from "@/components/vital-signs/HealthScoreCard";
 import useVoiceGuidance from "@/hooks/useVoiceGuidance";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
-import { Heart, Droplets, Wind, TrendingUp, Save, Info, Activity, AlertTriangle, CheckCircle2, ArrowRight, Volume2, VolumeX, Globe } from "lucide-react";
+import { Heart, Droplets, Wind, TrendingUp, Save, Info, Activity, Volume2, VolumeX, Scale } from "lucide-react";
 import type { VoiceLang } from "@/hooks/useVoiceGuidance";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, LineChart, Line } from "recharts";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
 /* ── helpers ── */
 const getPulseStatus = (v: number) => {
-  if (v < 60) return { label: "Past (Bradikardiya)", color: "text-blue-500", bg: "bg-blue-500", severity: "warning" };
-  if (v <= 100) return { label: "Normal", color: "text-green-500", bg: "bg-green-500", severity: "normal" };
-  return { label: "Yuqori (Taxikardiya)", color: "text-red-500", bg: "bg-red-500", severity: "danger" };
+  if (v < 60) return { label: "Past (Bradikardiya)", color: "text-blue-500", bg: "bg-blue-500" };
+  if (v <= 100) return { label: "Normal", color: "text-green-500", bg: "bg-green-500" };
+  return { label: "Yuqori (Taxikardiya)", color: "text-red-500", bg: "bg-red-500" };
 };
 const getBPStatus = (s: number, d: number) => {
-  if (s < 90 || d < 60) return { label: "Past bosim (Gipotenziya)", color: "text-blue-500", severity: "warning" };
-  if (s <= 120 && d <= 80) return { label: "Normal", color: "text-green-500", severity: "normal" };
-  if (s <= 140 && d <= 90) return { label: "Biroz yuqori", color: "text-amber-500", severity: "warning" };
-  return { label: "Gipertoniya", color: "text-red-500", severity: "danger" };
+  if (s < 90 || d < 60) return { label: "Past bosim (Gipotenziya)", color: "text-blue-500" };
+  if (s <= 120 && d <= 80) return { label: "Normal", color: "text-green-500" };
+  if (s <= 140 && d <= 90) return { label: "Biroz yuqori", color: "text-amber-500" };
+  return { label: "Gipertoniya", color: "text-red-500" };
 };
 const getSpo2Status = (v: number) => {
-  if (v >= 95) return { label: "Normal", color: "text-green-500", bg: "bg-green-500", severity: "normal" };
-  if (v >= 90) return { label: "Past", color: "text-amber-500", bg: "bg-amber-500", severity: "warning" };
-  return { label: "Xavfli", color: "text-red-500", bg: "bg-red-500", severity: "danger" };
+  if (v >= 95) return { label: "Normal", color: "text-green-500", bg: "bg-green-500" };
+  if (v >= 90) return { label: "Past", color: "text-amber-500", bg: "bg-amber-500" };
+  return { label: "Xavfli", color: "text-red-500", bg: "bg-red-500" };
 };
 
 const AIVitalSignsPage = () => {
@@ -41,6 +42,7 @@ const AIVitalSignsPage = () => {
   const [systolic, setSystolic] = useState("");
   const [diastolic, setDiastolic] = useState("");
   const [spo2, setSpo2] = useState("");
+  const [bmiValue, setBmiValue] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [aiResult, setAiResult] = useState<string | null>(null);
@@ -48,43 +50,33 @@ const AIVitalSignsPage = () => {
   const [animPulse, setAnimPulse] = useState(false);
   const voice = useVoiceGuidance();
 
-  // heartbeat animation
   useEffect(() => {
-    const iv = setInterval(() => { setAnimPulse(p => !p); }, 800);
+    const iv = setInterval(() => setAnimPulse(p => !p), 800);
     return () => clearInterval(iv);
   }, []);
 
   const handleCameraResult = useCallback((bpm: number) => {
     setPulse(String(bpm));
-    if (bpm >= 60 && bpm <= 100) {
-      voice.speakKey("result_normal");
-    } else {
-      voice.speakKey("result_warning");
-    }
+    if (bpm >= 60 && bpm <= 100) voice.speakKey("result_normal");
+    else voice.speakKey("result_warning");
     toast({ title: `Puls aniqlandi: ${bpm} bpm ✅` });
   }, [voice]);
 
   const handleCameraStatus = useCallback((msg: string) => {
-    // Map status messages to voice keys for better quality
     if (msg.includes("tayyorlanmoqda")) voice.speakKey("start");
     else if (msg.includes("kameraga qo'ying")) voice.speakKey("finger_place");
     else if (msg.includes("o'lchanmoqda")) voice.speakKey("measuring");
     else if (msg.includes("aniqlanmadi")) voice.speakKey("signal_weak");
     else if (msg.includes("ruxsati")) voice.speakKey("camera_error");
-    else voice.speak(msg);
   }, [voice]);
 
-  // fetch history
   useEffect(() => {
     if (!user) return;
     (async () => {
       const { data } = await supabase
-        .from("health_records")
-        .select("*")
-        .eq("user_id", user.id)
-        .in("record_type", ["vital_pulse", "vital_bp", "vital_spo2"])
-        .order("recorded_at", { ascending: false })
-        .limit(50);
+        .from("health_records").select("*").eq("user_id", user.id)
+        .in("record_type", ["vital_pulse", "vital_bp", "vital_spo2", "vital_bmi"])
+        .order("recorded_at", { ascending: false }).limit(50);
       setHistory(data || []);
     })();
   }, [user]);
@@ -96,23 +88,29 @@ const AIVitalSignsPage = () => {
     toast({ title: "Saqlandi ✅" });
     voice.speakKey("saved");
     setSaving(false);
-    // refresh
     const { data } = await supabase.from("health_records").select("*").eq("user_id", user.id)
-      .in("record_type", ["vital_pulse", "vital_bp", "vital_spo2"]).order("recorded_at", { ascending: false }).limit(50);
+      .in("record_type", ["vital_pulse", "vital_bp", "vital_spo2", "vital_bmi"]).order("recorded_at", { ascending: false }).limit(50);
     setHistory(data || []);
   };
 
+  const handleBMISave = (bmi: number, height: number, weight: number) => {
+    setBmiValue(bmi);
+    voice.speakKey("bmi_result");
+    saveVital("vital_bmi", { bmi, height, weight });
+  };
+
   const analyzeWithAI = async () => {
-    if (!pulse && !systolic && !spo2) { toast({ title: "Kamida bitta ko'rsatkichni kiriting", variant: "destructive" }); return; }
+    if (!pulse && !systolic && !spo2 && !bmiValue) { toast({ title: "Kamida bitta ko'rsatkichni kiriting", variant: "destructive" }); return; }
     setAiLoading(true);
     setAiResult(null);
+    voice.speakKey("health_score");
     try {
-      const message = `Foydalanuvchi vital ko'rsatkichlari:\n${pulse ? `Yurak urishi: ${pulse} bpm\n` : ""}${systolic && diastolic ? `Qon bosimi: ${systolic}/${diastolic} mmHg\n` : ""}${spo2 ? `SpO2: ${spo2}%\n` : ""}\nIltimos quyidagilarni bering:\n1. Har bir ko'rsatkichning holati va izohi\n2. Xavf darajasi\n3. Qisqa tavsiyalar\n4. Qaysi shifokorga murojaat qilish kerakligi\n\nJavobni o'zbek tilida bering.`;
+      const message = `Foydalanuvchi vital ko'rsatkichlari:\n${pulse ? `Yurak urishi: ${pulse} bpm\n` : ""}${systolic && diastolic ? `Qon bosimi: ${systolic}/${diastolic} mmHg\n` : ""}${spo2 ? `SpO2: ${spo2}%\n` : ""}${bmiValue ? `BMI: ${bmiValue}\n` : ""}\nIltimos quyidagilarni bering:\n1. Har bir ko'rsatkichning holati va izohi\n2. Xavf darajasi\n3. Qisqa tavsiyalar\n4. Qaysi shifokorga murojaat qilish kerakligi\n5. Umumiy sog'liq bahosi\n\nJavobni o'zbek tilida bering.`;
       const { data, error } = await supabase.functions.invoke("ai-health-assistant", { body: { message } });
       if (error) throw error;
       setAiResult(data?.response || data?.text || "Javob olinmadi");
     } catch {
-      setAiResult("AI xizmatiga ulanishda xatolik yuz berdi. Keyinroq urinib ko'ring.");
+      setAiResult("AI xizmatiga ulanishda xatolik yuz berdi.");
     }
     setAiLoading(false);
   };
@@ -157,10 +155,9 @@ const AIVitalSignsPage = () => {
             </div>
             <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-bold mb-2">AI Vital Signs Monitor</h1>
-              <p className="text-white/80 text-lg">Yurak urishi, qon bosimi va kislorod darajasini sun'iy intellekt yordamida tahlil qiling</p>
+              <p className="text-white/80 text-lg">Yurak urishi, qon bosimi, SpO2 va BMI — sun'iy intellekt yordamida to'liq sog'liq monitoring</p>
             </div>
             <div className="flex items-center gap-2">
-              {/* Language selector */}
               <div className="flex bg-white/10 rounded-full p-0.5">
                 {(["uz", "ru", "en"] as VoiceLang[]).map(l => (
                   <button key={l} onClick={() => voice.setLang(l)}
@@ -170,13 +167,11 @@ const AIVitalSignsPage = () => {
               </div>
               <Button onClick={voice.toggle} variant="ghost" size="icon"
                 className="text-white/80 hover:text-white hover:bg-white/20 rounded-full"
-                title={voice.enabled ? "Ovozli yo'riqnomani o'chirish" : "Ovozli yo'riqnomani yoqish"}
               >
                 {voice.enabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
               </Button>
             </div>
           </div>
-          {/* ECG line animation */}
           <svg className="absolute bottom-0 left-0 w-full h-16 opacity-20" viewBox="0 0 1200 60" preserveAspectRatio="none">
             <path d="M0,30 L200,30 L220,10 L240,50 L260,5 L280,55 L300,30 L500,30 L520,10 L540,50 L560,5 L580,55 L600,30 L800,30 L820,10 L840,50 L860,5 L880,55 L900,30 L1200,30" fill="none" stroke="white" strokeWidth="2">
               <animate attributeName="stroke-dashoffset" from="2400" to="0" dur="3s" repeatCount="indefinite" />
@@ -198,11 +193,12 @@ const AIVitalSignsPage = () => {
               </span>
             )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
-            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> 📱 Kamera sensori orqali yoki qo'lda puls kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> 🩸 Qon bosimi va SpO2 qiymatlarini kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> 🧠 "AI Tahlil" tugmasini bosing</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">4.</span> 🔊 Ovozli yo'riqnoma sizga yordam beradi</div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm text-muted-foreground">
+            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> 📱 Kamera sensori yoki qo'lda puls kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> 🩸 Qon bosimi va SpO2 kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> ⚖️ BMI uchun bo'y va vazn kiriting</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">4.</span> 🧠 "AI Tahlil" tugmasini bosing</div>
+            <div className="flex gap-2"><span className="font-bold text-primary">5.</span> 🔊 Ovozli yo'riqnoma sizga yordam beradi</div>
           </div>
         </div>
 
@@ -212,7 +208,7 @@ const AIVitalSignsPage = () => {
         </div>
 
         {/* Input Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Pulse */}
           <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-4">
@@ -305,17 +301,38 @@ const AIVitalSignsPage = () => {
               <Save className="w-3.5 h-3.5 mr-1" /> Saqlash
             </Button>
           </div>
+
+          {/* BMI */}
+          <BMICalculator
+            saving={saving}
+            onSave={handleBMISave}
+            onCalculated={setBmiValue}
+          />
         </div>
 
-        {/* AI Analyze Button */}
-        <div className="text-center mb-8">
-          <Button onClick={analyzeWithAI} disabled={aiLoading} size="lg" className="bg-gradient-to-r from-[#0A2540] via-[#2F80ED] to-[#7B61FF] text-white border-0 px-10 py-6 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all">
-            {aiLoading ? (
-              <><Activity className="w-5 h-5 mr-2 animate-spin" /> AI tahlil qilmoqda...</>
-            ) : (
-              <><TrendingUp className="w-5 h-5 mr-2" /> 🧠 AI Tahlil qilish</>
-            )}
-          </Button>
+        {/* Health Score + AI Analyze */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <HealthScoreCard
+            pulse={pulseVal}
+            systolic={sysVal}
+            diastolic={diaVal}
+            spo2={spo2Val}
+            bmi={bmiValue}
+          />
+
+          <div className="md:col-span-2 flex flex-col items-center justify-center bg-card border border-border rounded-2xl p-8">
+            <h3 className="font-bold text-foreground mb-3 text-lg">🧠 AI bilan tahlil qilish</h3>
+            <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
+              Barcha ko'rsatkichlaringizni kiritib, AI tahlil tugmasini bosing. Sun'iy intellekt sizga batafsil xulosa va tavsiyalar beradi.
+            </p>
+            <Button onClick={analyzeWithAI} disabled={aiLoading} size="lg" className="bg-gradient-to-r from-[#0A2540] via-[#2F80ED] to-[#7B61FF] text-white border-0 px-10 py-6 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all">
+              {aiLoading ? (
+                <><Activity className="w-5 h-5 mr-2 animate-spin" /> AI tahlil qilmoqda...</>
+              ) : (
+                <><TrendingUp className="w-5 h-5 mr-2" /> 🧠 AI Tahlil qilish</>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* AI Result */}
@@ -339,7 +356,6 @@ const AIVitalSignsPage = () => {
               <TrendingUp className="w-5 h-5 text-primary" /> Ko'rsatkichlar tarixi
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Pulse chart */}
               {pulseHistory.length > 0 && (
                 <div className="bg-card border border-border rounded-2xl p-5">
                   <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Heart className="w-4 h-4 text-red-500" /> Puls tarixi</h4>
@@ -357,7 +373,6 @@ const AIVitalSignsPage = () => {
                   </div>
                 </div>
               )}
-              {/* BP chart */}
               {bpHistory.length > 0 && (
                 <div className="bg-card border border-border rounded-2xl p-5">
                   <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Droplets className="w-4 h-4 text-blue-500" /> Bosim tarixi</h4>
@@ -375,7 +390,6 @@ const AIVitalSignsPage = () => {
                   </div>
                 </div>
               )}
-              {/* SpO2 chart */}
               {spo2History.length > 0 && (
                 <div className="bg-card border border-border rounded-2xl p-5">
                   <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Wind className="w-4 h-4 text-teal-500" /> SpO2 tarixi</h4>
@@ -396,6 +410,17 @@ const AIVitalSignsPage = () => {
             </div>
           </div>
         )}
+
+        {/* Terms & Disclaimer */}
+        <div className="bg-card border border-border rounded-2xl p-6 mb-8">
+          <h3 className="font-bold text-foreground mb-3">📜 Foydalanish shartlari</h3>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <p>• Ushbu xizmat tibbiy qurilma emas va tibbiy tashxis o'rnini bosmaydi.</p>
+            <p>• Kamera orqali o'lchash taxminiy natija beradi, aniq ko'rsatkichlar uchun tibbiy asboblardan foydalaning.</p>
+            <p>• Barcha ma'lumotlar maxfiy saqlanadi va uchinchi shaxslarga uzatilmaydi.</p>
+            <p>• Xizmatdan foydalanib siz <Link to="/user-guide" className="text-primary underline">foydalanish shartlari</Link>ni qabul qilasiz.</p>
+          </div>
+        </div>
 
         <MedicalDisclaimer className="mb-8" />
       </div>
