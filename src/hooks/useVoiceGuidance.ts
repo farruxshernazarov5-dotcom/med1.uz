@@ -48,13 +48,28 @@ const MESSAGES: Record<string, Record<VoiceLang, string>> = {
     ru: "Нет доступа к камере. Пожалуйста, разрешите доступ.",
     en: "Camera access denied. Please enable camera access.",
   },
+  bp_estimated: {
+    uz: "Qon bosimingiz taxminiy aniqlandi.",
+    ru: "Ваше артериальное давление приблизительно определено.",
+    en: "Your blood pressure has been estimated.",
+  },
+  bmi_result: {
+    uz: "Tana massa indeksingiz hisoblandi.",
+    ru: "Ваш индекс массы тела рассчитан.",
+    en: "Your body mass index has been calculated.",
+  },
+  health_score: {
+    uz: "Umumiy sog'liq bahoingiz tayyor.",
+    ru: "Ваша общая оценка здоровья готова.",
+    en: "Your overall health score is ready.",
+  },
 };
 
 /* Premium voice selection priorities */
 const VOICE_PRIORITIES: Record<VoiceLang, RegExp[]> = {
   uz: [
     /female|woman|zira|yelda|dilnoza|malika/i,
-    /milena|svetlana|irina|tatiana|katya/i, // fallback to Russian female
+    /milena|svetlana|irina|tatiana|katya/i,
   ],
   ru: [
     /milena|svetlana|irina|tatiana|katya|yandex|alice/i,
@@ -66,12 +81,20 @@ const VOICE_PRIORITIES: Record<VoiceLang, RegExp[]> = {
   ],
 };
 
+/* Fallback language chain: if UZ voice not found, use RU text+voice, then EN */
+const FALLBACK_CHAIN: Record<VoiceLang, VoiceLang[]> = {
+  uz: ["ru", "en"],
+  ru: ["en"],
+  en: [],
+};
+
 const useVoiceGuidance = () => {
   const [speaking, setSpeaking] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [lang, setLang] = useState<VoiceLang>("uz");
   const [voicesLoaded, setVoicesLoaded] = useState(false);
   const cachedVoices = useRef<Record<string, SpeechSynthesisVoice | null>>({});
+  const activeLangRef = useRef<VoiceLang>("uz"); // actual language being spoken
 
   const langMap: Record<VoiceLang, string> = { uz: "uz-UZ", ru: "ru-RU", en: "en-US" };
 
@@ -82,9 +105,8 @@ const useVoiceGuidance = () => {
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) {
         setVoicesLoaded(true);
-        // Pre-cache best voices for each language
         (["uz", "ru", "en"] as VoiceLang[]).forEach(l => {
-          cachedVoices.current[l] = findBestVoice(voices, l);
+          cachedVoices.current[l] = findVoiceForLang(voices, l);
         });
       }
     };
@@ -93,53 +115,60 @@ const useVoiceGuidance = () => {
     return () => { window.speechSynthesis.onvoiceschanged = null; };
   }, []);
 
-  const findBestVoice = (voices: SpeechSynthesisVoice[], targetLang: VoiceLang): SpeechSynthesisVoice | null => {
+  const findVoiceForLang = (voices: SpeechSynthesisVoice[], targetLang: VoiceLang): SpeechSynthesisVoice | null => {
     const targetCode = langMap[targetLang].split("-")[0];
     const langVoices = voices.filter(v => v.lang.startsWith(targetCode));
 
-    // Try priority patterns
     for (const pattern of VOICE_PRIORITIES[targetLang]) {
       const match = langVoices.find(v => pattern.test(v.name));
       if (match) return match;
     }
-
-    // Any female-sounding voice in target language
     const femaleVoice = langVoices.find(v => /female|woman/i.test(v.name));
     if (femaleVoice) return femaleVoice;
-
-    // Any voice in target language
     if (langVoices[0]) return langVoices[0];
-
-    // Fallback chain: uz -> ru -> en
-    if (targetLang === "uz") {
-      const ruVoice = voices.find(v => v.lang.startsWith("ru") && /female|woman|milena|svetlana|irina/i.test(v.name));
-      if (ruVoice) return ruVoice;
-      const anyRu = voices.find(v => v.lang.startsWith("ru"));
-      if (anyRu) return anyRu;
-    }
-
     return null;
   };
 
-  const speak = useCallback((text: string) => {
+  /** Resolve which language to actually speak: find a lang that has a voice available */
+  const resolveVoiceLang = useCallback((): { voice: SpeechSynthesisVoice | null; effectiveLang: VoiceLang } => {
+    // First try the selected language
+    const directVoice = cachedVoices.current[lang] || findVoiceForLang(window.speechSynthesis.getVoices(), lang);
+    if (directVoice) {
+      const voiceLangCode = directVoice.lang.split("-")[0];
+      const selectedCode = langMap[lang].split("-")[0];
+      if (voiceLangCode === selectedCode) {
+        return { voice: directVoice, effectiveLang: lang };
+      }
+    }
+
+    // Fallback: find a language that has both voice AND message translation
+    for (const fallbackLang of FALLBACK_CHAIN[lang]) {
+      const fbVoice = cachedVoices.current[fallbackLang] || findVoiceForLang(window.speechSynthesis.getVoices(), fallbackLang);
+      if (fbVoice) {
+        return { voice: fbVoice, effectiveLang: fallbackLang };
+      }
+    }
+
+    // Last resort: use whatever voice is available
+    if (directVoice) return { voice: directVoice, effectiveLang: lang };
+    return { voice: null, effectiveLang: lang };
+  }, [lang]);
+
+  const speak = useCallback((text: string, forceLang?: VoiceLang) => {
     if (!enabled || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
 
     const utter = new SpeechSynthesisUtterance(text);
-    const targetLang = langMap[lang];
-    utter.lang = targetLang;
+    const targetLang = forceLang || lang;
+    utter.lang = langMap[targetLang];
     utter.rate = 0.92;
     utter.pitch = 1.05;
     utter.volume = 1;
 
-    // Use cached voice or find one
-    const voice = cachedVoices.current[lang] || findBestVoice(window.speechSynthesis.getVoices(), lang);
+    const voice = cachedVoices.current[targetLang] || findVoiceForLang(window.speechSynthesis.getVoices(), targetLang);
     if (voice) {
       utter.voice = voice;
-      // If using a fallback language voice, update lang accordingly
-      if (!voice.lang.startsWith(targetLang.split("-")[0])) {
-        utter.lang = voice.lang;
-      }
+      utter.lang = voice.lang;
     }
 
     utter.onstart = () => setSpeaking(true);
@@ -148,10 +177,28 @@ const useVoiceGuidance = () => {
     window.speechSynthesis.speak(utter);
   }, [enabled, lang]);
 
+  /** KEY FIX: speakKey now uses the text matching the ACTUAL voice language, not the selected UI language */
   const speakKey = useCallback((key: string) => {
-    const msg = MESSAGES[key]?.[lang];
-    if (msg) speak(msg);
-  }, [speak, lang]);
+    if (!enabled || !("speechSynthesis" in window)) return;
+    const { voice, effectiveLang } = resolveVoiceLang();
+    
+    // Use the message text that matches the voice's actual language
+    const msg = MESSAGES[key]?.[effectiveLang];
+    if (!msg) return;
+
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(msg);
+    utter.lang = voice ? voice.lang : langMap[effectiveLang];
+    utter.rate = 0.92;
+    utter.pitch = 1.05;
+    utter.volume = 1;
+    if (voice) utter.voice = voice;
+
+    utter.onstart = () => setSpeaking(true);
+    utter.onend = () => setSpeaking(false);
+    utter.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utter);
+  }, [enabled, resolveVoiceLang]);
 
   const stop = useCallback(() => {
     window.speechSynthesis.cancel();
