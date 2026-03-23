@@ -18,6 +18,7 @@ import DoctorServicesSection from "@/components/DoctorServicesSection";
 import AdvertisingServicesSection from "@/components/AdvertisingServicesSection";
 import AIDiagnosticsServicesSection from "@/components/AIDiagnosticsServicesSection";
 import HMSServicesSection from "@/components/HMSServicesSection";
+import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 const mainServices = [
   {
     id: "ai-diagnostics",
@@ -356,6 +357,9 @@ const ServicesPage = () => {
 
       {/* Hospital Management System */}
       <HMSServicesSection />
+
+      {/* Org AI Tariffs */}
+      <OrgAiTariffSection />
 
       {/* Pricing Plans */}
       <PricingSection />
