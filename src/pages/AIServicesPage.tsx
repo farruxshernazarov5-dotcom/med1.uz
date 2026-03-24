@@ -8,108 +8,74 @@ import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 
 const aiServices = [
   {
-    icon: Stethoscope,
-    title: "AI Erta Diagnostika",
+    icon: Stethoscope, title: "AI Erta Diagnostika",
     description: "Simptomlaringizni kiriting — AI ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini beradi",
-    href: "/symptom-checker",
-    color: "from-primary to-primary/70",
-    badge: "Mashhur",
+    href: "/symptom-checker", color: "from-primary to-primary/70", badge: "Mashhur",
   },
   {
-    icon: Bot,
-    title: "AI Shifokor Chat",
+    icon: Bot, title: "AI Shifokor Chat",
     description: "Sun'iy intellekt bilan real vaqtda suhbatlashing — sog'liq savollaringizga tezkor javob oling",
-    href: "/ai-doctor-chat",
-    color: "from-blue-500 to-blue-400",
-    badge: "Yangi",
+    href: "/ai-doctor-chat", color: "from-blue-500 to-blue-400", badge: "Yangi",
   },
   {
-    icon: FileText,
-    title: "Analiz Natijalarini Tahlili",
+    icon: FileText, title: "Analiz Natijalarini Tahlili",
     description: "Laboratoriya analiz natijalaringizni AI ga ko'rsating — ko'rsatkichlarni tahlil qilib tushuntiradi",
-    href: "/ai-report-analysis",
-    color: "from-emerald-500 to-emerald-400",
-    badge: "Yangi",
+    href: "/ai-report-analysis", color: "from-emerald-500 to-emerald-400", badge: "Yangi",
   },
   {
-    icon: HeartPulse,
-    title: "Sog'liq Xavfi Prognozi",
+    icon: HeartPulse, title: "Sog'liq Xavfi Prognozi",
     description: "Hayot tarzingiz va sog'liq ma'lumotlaringiz asosida kelajakdagi kasallik xavflarini baholang",
-    href: "/ai-health-risk",
-    color: "from-rose-500 to-rose-400",
-    badge: "Yangi",
+    href: "/ai-health-risk", color: "from-rose-500 to-rose-400", badge: "Yangi",
   },
   {
-    icon: Eye,
-    title: "AI Radiologiya Pro",
-    description: "Rentgen, MRT va KT tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi va mutaxassis tavsiya qiladi",
-    href: "/ai-radiology",
-    color: "from-violet-500 to-violet-400",
-    badge: "Yangi",
+    icon: Eye, title: "AI Radiologiya Pro",
+    description: "Rentgen, MRT va KT tasvirlaringizni AI ga yuklang — patologik o'zgarishlarni aniqlaydi",
+    href: "/ai-radiology", color: "from-violet-500 to-violet-400", badge: "Yangi",
   },
   {
-    icon: UserCheck,
-    title: "AI Sog'liq Assistenti",
-    description: "24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar",
-    href: "/ai-health-assistant",
-    color: "from-teal-500 to-teal-400",
-    badge: "Yangi",
+    icon: UserCheck, title: "AI Sog'liq Assistenti",
+    description: "24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi",
+    href: "/ai-health-assistant", color: "from-teal-500 to-teal-400", badge: "Yangi",
   },
   {
-    icon: Baby,
-    title: "AI Homiladorlik Assistenti",
-    description: "Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari, harakatlar monitoringi va AI tibbiy maslahatlar",
-    href: "/ai-pregnancy",
-    color: "from-pink-500 to-pink-400",
-    badge: "Yangi",
+    icon: Baby, title: "AI Homiladorlik Assistenti",
+    description: "Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari va AI tibbiy maslahatlar",
+    href: "/ai-pregnancy", color: "from-pink-500 to-pink-400", badge: "Yangi",
   },
   {
-    icon: Baby,
-    title: "AI Bola Parvarishi",
+    icon: Baby, title: "AI Bola Parvarishi",
     description: "Tug'ruqdan keyingi parvarish, chaqaloq rivojlanishi, emlash jadvali va ota-onalar uchun AI maslahatlar",
-    href: "/ai-baby-care",
-    color: "from-amber-500 to-amber-400",
-    badge: "Yangi",
+    href: "/ai-baby-care", color: "from-amber-500 to-amber-400", badge: "Yangi",
   },
   {
-    icon: Palette,
-    title: "AI Kosmetologiya Assistenti",
-    description: "Teri tahlili, individual parvarish rejasi, kosmetologik muolajalar tavsiyasi va professional dermatologik maslahatlar",
-    href: "/ai-cosmetology",
-    color: "from-violet-500 to-violet-400",
-    badge: "Yangi",
+    icon: Palette, title: "AI Kosmetologiya Assistenti",
+    description: "Teri tahlili, individual parvarish rejasi, kosmetologik muolajalar tavsiyasi",
+    href: "/ai-cosmetology", color: "from-violet-500 to-violet-400", badge: "Yangi",
   },
   {
-    icon: UtensilsCrossed,
-    title: "AI Dietolog",
-    description: "Shaxsiy ovqatlanish rejasi, kaloriya hisoblash, BMI tahlili va O'zbekiston milliy taomlari asosida dieta",
-    href: "/ai-dietolog",
-    color: "from-green-500 to-green-400",
-    badge: "Yangi",
+    icon: UtensilsCrossed, title: "AI Dietolog",
+    description: "Shaxsiy ovqatlanish rejasi, kaloriya hisoblash, BMI tahlili va milliy taomlari asosida dieta",
+    href: "/ai-dietolog", color: "from-green-500 to-green-400", badge: "Yangi",
   },
   {
-    icon: Heart,
-    title: "AI Psixolog",
+    icon: Heart, title: "AI Psixolog",
     description: "Stress va depressiya bo'yicha 24/7 qo'llab-quvvatlash, meditatsiya va nafas mashqlari",
-    href: "/ai-psixolog",
-    color: "from-rose-400 to-rose-300",
-    badge: "Yangi",
+    href: "/ai-psixolog", color: "from-rose-400 to-rose-300", badge: "Yangi",
   },
   {
-    icon: Pill,
-    title: "AI Farmatsevt",
+    icon: Pill, title: "AI Farmatsevt",
     description: "Dori o'zaro ta'sirini tekshirish, analoglarni topish va dozalash bo'yicha maslahat",
-    href: "/ai-farmatsevt",
-    color: "from-cyan-500 to-cyan-400",
-    badge: "Yangi",
+    href: "/ai-farmatsevt", color: "from-cyan-500 to-cyan-400", badge: "Yangi",
   },
   {
-    icon: Dumbbell,
-    title: "AI Fitness Trener",
+    icon: Dumbbell, title: "AI Fitness Trener",
     description: "Shaxsiy mashq dasturlari, posture tahlili va reabilitatsiya mashqlari",
-    href: "/ai-fitness",
-    color: "from-orange-500 to-orange-400",
-    badge: "Yangi",
+    href: "/ai-fitness", color: "from-orange-500 to-orange-400", badge: "Yangi",
+  },
+  {
+    icon: Activity, title: "AI Vital Signs Monitor",
+    description: "Yurak urishi, qon bosimi, SpO2 va BMI ko'rsatkichlarini real vaqtda o'lchash va AI tahlili",
+    href: "/ai-vital-signs", color: "from-red-500 to-blue-400", badge: "Yangi",
   },
 ];
 
@@ -130,7 +96,7 @@ const AIServicesPage = () => (
           AI Tibbiy Xizmatlar
         </div>
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-foreground mb-4">
-          Sun'iy intellekt asosidagi <span className="text-primary">tibbiy xizmatlar</span>
+          Sun'iy intellekt asosidagi <span className="text-primary">14 ta tibbiy xizmat</span>
         </h1>
         <p className="text-muted-foreground text-lg mb-8">
           Med1.uz AI tizimi orqali kasalliklarni erta aniqlang, sog'liq holatini baholang va professional maslahat oling
@@ -207,7 +173,14 @@ const AIServicesPage = () => (
             </div>
           ))}
         </div>
-        <div className="mt-6 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs text-amber-800 dark:text-amber-200">
+        <div className="mt-6 flex flex-wrap justify-center gap-3 text-xs">
+          <Link to="/user-guide" className="text-primary hover:underline">📘 Foydalanish qo'llanmasi</Link>
+          <span className="text-muted-foreground">•</span>
+          <Link to="/user-guide#terms" className="text-primary hover:underline">📋 Foydalanish shartlari</Link>
+          <span className="text-muted-foreground">•</span>
+          <Link to="/user-guide#privacy" className="text-primary hover:underline">🔒 Maxfiylik siyosati</Link>
+        </div>
+        <div className="mt-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs text-amber-800 dark:text-amber-200">
           ⚠️ AI natijalari tibbiy tashxis emas. Faqat ma'lumot va profilaktika maqsadida. Aniq tashxis uchun shifokorga murojaat qiling.
         </div>
       </div>

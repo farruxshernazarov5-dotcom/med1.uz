@@ -11,6 +11,7 @@ import {
   Heart,
   Pill,
   Dumbbell,
+  Activity,
 } from "lucide-react";
 
 export const AI_SERVICE_TARIFFS = [
@@ -27,4 +28,5 @@ export const AI_SERVICE_TARIFFS = [
   { id: "ai-psixolog", name: "AI Psixolog", icon: Heart, monthlyPrice: 39000, yearlyPrice: 379000 },
   { id: "ai-farmatsevt", name: "AI Farmatsevt", icon: Pill, monthlyPrice: 25000, yearlyPrice: 239000 },
   { id: "ai-fitness", name: "AI Fitness Trener", icon: Dumbbell, monthlyPrice: 25000, yearlyPrice: 239000 },
+  { id: "ai-vital-signs", name: "AI Vital Signs", icon: Activity, monthlyPrice: 35000, yearlyPrice: 339000 },
 ] as const;

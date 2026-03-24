@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { 
   Brain, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
-  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles
+  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -19,7 +19,7 @@ const aiServices = [
   { icon: Heart, title: "AI Psixolog", href: "/ai-psixolog", color: "from-rose-400 to-rose-300" },
   { icon: Pill, title: "AI Farmatsevt", href: "/ai-farmatsevt", color: "from-cyan-500 to-cyan-400" },
   { icon: Dumbbell, title: "AI Fitness", href: "/ai-fitness", color: "from-orange-500 to-orange-400" },
-  { icon: HeartPulse, title: "AI Vital Signs", href: "/ai-vital-signs", color: "from-red-500 to-blue-400" },
+  { icon: Activity, title: "AI Vital Signs", href: "/ai-vital-signs", color: "from-red-500 to-blue-400" },
 ];
 
 const HomeAIServicesSection = () => {
@@ -33,7 +33,7 @@ const HomeAIServicesSection = () => {
             </div>
             <div>
               <h2 className="text-xl font-heading font-bold text-foreground">AI Xizmatlar</h2>
-              <p className="text-xs text-muted-foreground">13 ta sun'iy intellekt asosidagi tibbiy xizmat</p>
+              <p className="text-xs text-muted-foreground">14 ta sun'iy intellekt asosidagi tibbiy xizmat</p>
             </div>
           </div>
           <div className="flex gap-2">

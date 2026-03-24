@@ -6,7 +6,8 @@ import {
   Map, BookOpen, Heart, Stethoscope, FileText, Building2,
   Wrench, Newspaper, Activity, Pill, Droplets, Baby, Info,
   Briefcase, BookMarked, Eye, ArrowRight, Brain, Bot, Shield,
-  HeartPulse, UserCheck, Users, Sparkles, Handshake, LogIn
+  HeartPulse, UserCheck, Users, Sparkles, Handshake, LogIn,
+  Palette, UtensilsCrossed, Dumbbell, Crown
 } from "lucide-react";
 
 const sitemapSections = [
@@ -18,6 +19,8 @@ const sitemapSections = [
       { label: "Bosh sahifa", href: "/" },
       { label: "Biz haqimizda", href: "/about" },
       { label: "Xizmatlarimiz", href: "/services" },
+      { label: "Narxlar", href: "/pricing" },
+      { label: "Aloqa", href: "/contact" },
       { label: "Foydalanuvchi qo'llanmasi", href: "/user-guide" },
       { label: "Hamkorlik shartnomasi", href: "/partnership" },
       { label: "Sayt xaritasi", href: "/sitemap" },
@@ -78,7 +81,7 @@ const sitemapSections = [
     ],
   },
   {
-    title: "AI Sun'iy Intellekt xizmatlari",
+    title: "AI Sun'iy Intellekt xizmatlari (14 ta)",
     icon: Brain,
     gradient: "from-tech-purple to-tech-electric",
     links: [
@@ -89,7 +92,16 @@ const sitemapSections = [
       { label: "Kasallik prognozi", href: "/ai-health-risk" },
       { label: "AI Radiologiya (MRT/KT)", href: "/ai-radiology" },
       { label: "AI Sog'liq assistenti", href: "/ai-health-assistant" },
+      { label: "AI Homiladorlik", href: "/ai-pregnancy" },
+      { label: "AI Bola Parvarishi", href: "/ai-baby-care" },
+      { label: "AI Kosmetologiya", href: "/ai-cosmetology" },
+      { label: "AI Dietolog", href: "/ai-dietolog" },
+      { label: "AI Psixolog", href: "/ai-psixolog" },
+      { label: "AI Farmatsevt", href: "/ai-farmatsevt" },
+      { label: "AI Fitness Trener", href: "/ai-fitness" },
+      { label: "AI Vital Signs", href: "/ai-vital-signs" },
       { label: "AI Aqlli qidiruv", href: "/smart-search" },
+      { label: "AI Obuna tariflari", href: "/ai-subscription" },
     ],
   },
   {
@@ -112,7 +124,9 @@ const sitemapSections = [
       { label: "Tug'ruqxona ro'yxati", href: "/maternity-register" },
       { label: "Kosmetologiya ro'yxati", href: "/cosmetology-register" },
       { label: "Shifokor ro'yxati", href: "/doctor-register" },
+      { label: "Dorixona ro'yxati", href: "/pharmacy-register" },
       { label: "Medtexnika sotuvchi ro'yxati", href: "/vendor-register" },
+      { label: "Qon donori ro'yxati", href: "/blood-donor-register" },
     ],
   },
   {
@@ -126,6 +140,16 @@ const sitemapSections = [
       { label: "Dorixonalar uchun", href: "/partnership#pharmacies" },
       { label: "Shifokorlar uchun", href: "/partnership#doctors" },
       { label: "Medtexnika uchun", href: "/partnership#medtech" },
+    ],
+  },
+  {
+    title: "Huquqiy hujjatlar",
+    icon: Shield,
+    gradient: "from-primary to-tech-purple",
+    links: [
+      { label: "Foydalanish qo'llanmasi", href: "/user-guide" },
+      { label: "Foydalanish shartlari", href: "/user-guide#terms" },
+      { label: "Maxfiylik siyosati", href: "/user-guide#privacy" },
     ],
   },
 ];
