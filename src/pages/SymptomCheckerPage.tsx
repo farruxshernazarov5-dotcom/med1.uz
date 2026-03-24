@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Brain, AlertTriangle, Shield, Activity } from "lucide-react";
+import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import AIServiceHero from "@/components/AIServiceHero";
 import aiSymptomImg from "@/assets/ai-symptom-checker.jpg";
 import SymptomInput from "@/components/symptom-checker/SymptomInput";
@@ -106,13 +107,16 @@ const SymptomCheckerPage = () => {
       {/* Main content */}
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">
-          {/* Disclaimer */}
-          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-8 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-amber-800 dark:text-amber-200">
-              <strong>Ogohlantirish:</strong> Bu tizim tibbiy tashxis o'rnini bosmaydi. Natijalar faqat ma'lumot maqsadida beriladi. 
-              Aniq tashxis va davolash uchun albatta shifokorga murojaat qiling.
-            </p>
+          {/* Usage Guide */}
+          <div className="mb-6">
+            <AIServiceUsageGuide
+              serviceName="AI Erta Diagnostika"
+              steps={[
+                { title: "Simptomlarni kiriting", desc: "Sezayotgan belgilaringiz, yoshingiz va jinsni ko'rsating" },
+                { title: "AI tahlil qiladi", desc: "Sun'iy intellekt ma'lumotlaringizni ICD-10 standartlari asosida tahlil qiladi" },
+                { title: "Natijalar va tavsiyalar", desc: "Ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini ko'ring" },
+              ]}
+            />
           </div>
 
           {/* Steps indicator */}
