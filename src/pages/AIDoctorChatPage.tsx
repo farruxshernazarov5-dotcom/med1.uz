@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2, Shield, Activity } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
+import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
 
@@ -128,12 +129,16 @@ const AIDoctorChatPage = () => {
 
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
 
-        {/* Disclaimer */}
-        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4 flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-800 dark:text-amber-200">
-            AI maslahatchi tibbiy tashxis o'rnini bosmaydi. Aniq tashxis uchun shifokorga murojaat qiling.
-          </p>
+        {/* Usage Guide */}
+        <div className="mb-4">
+          <AIServiceUsageGuide
+            serviceName="AI Shifokor Chat"
+            steps={[
+              { title: "Savolingizni yozing", desc: "Sog'liq haqida savolingizni yoki simptomlaringizni yozing" },
+              { title: "AI javob beradi", desc: "Sun'iy intellekt real vaqtda tibbiy maslahat beradi" },
+              { title: "Tavsiyalarga amal qiling", desc: "AI tavsiyalarini ko'rib, kerak bo'lsa shifokorga murojaat qiling" },
+            ]}
+          />
         </div>
 
         {/* Chat area */}
