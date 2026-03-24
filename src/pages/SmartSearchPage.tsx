@@ -544,7 +544,7 @@ const SmartSearchPage = () => {
                     moreCount={result.localTerms.length}>
                     <div className="grid gap-2">
                       {result.localTerms.slice(0, 5).map((t, i) => (
-                        <Link key={i} to={`/medicine/${encodeURIComponent(t.term)}`}
+                        <Link key={i} to={`/medicine/term/${t.id}`}
                           className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground">{t.term}</p>
@@ -639,7 +639,7 @@ const SmartSearchPage = () => {
               {/* Terms tab */}
               <TabsContent value="terms" className="space-y-2 mt-4">
                 {result.localTerms.map((t, i) => (
-                  <Link key={i} to={`/medicine/${encodeURIComponent(t.term)}`}
+                  <Link key={i} to={`/medicine/term/${t.id}`}
                     className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground">{t.term}</p>

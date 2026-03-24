@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   Brain, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
-  UtensilsCrossed, Heart, Pill, Dumbbell, ChevronUp, ChevronDown, Crown, X, Sparkles
+  UtensilsCrossed, Heart, Pill, Dumbbell, ChevronUp, ChevronDown, Crown, X, Sparkles, Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +20,7 @@ const aiServices = [
   { icon: Heart, title: "AI Psixolog", href: "/ai-psixolog", color: "text-rose-400" },
   { icon: Pill, title: "AI Farmatsevt", href: "/ai-farmatsevt", color: "text-cyan-500" },
   { icon: Dumbbell, title: "AI Fitness", href: "/ai-fitness", color: "text-orange-500" },
+  { icon: Activity, title: "AI Vital Signs", href: "/ai-vital-signs", color: "text-red-500" },
 ];
 
 const FloatingServicesPanel = () => {
@@ -46,7 +47,7 @@ const FloatingServicesPanel = () => {
           <div className="bg-gradient-to-r from-primary to-primary/80 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary-foreground" />
-              <span className="text-sm font-bold text-primary-foreground">AI Xizmatlar</span>
+              <span className="text-sm font-bold text-primary-foreground">AI Xizmatlar (14)</span>
             </div>
             <Link to="/ai-subscription" onClick={() => setIsOpen(false)}>
               <span className="text-xs bg-primary-foreground/20 text-primary-foreground px-2 py-0.5 rounded-full flex items-center gap-1">

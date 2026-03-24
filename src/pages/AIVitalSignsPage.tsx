@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Heart, Droplets, Wind, TrendingUp, Save, Info, Activity, Volume2, VolumeX, Scale } from "lucide-react";
+import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import type { VoiceLang } from "@/hooks/useVoiceGuidance";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, LineChart, Line } from "recharts";
 import { cn } from "@/lib/utils";
@@ -180,26 +181,16 @@ const AIVitalSignsPage = () => {
           </svg>
         </div>
 
-        {/* How to use */}
-        <div className="bg-card border border-border rounded-2xl p-5 mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Info className="w-5 h-5 text-primary" />
-              <h2 className="font-bold text-foreground">Qanday foydalanish</h2>
-            </div>
-            {voice.speaking && (
-              <span className="text-xs text-primary animate-pulse flex items-center gap-1">
-                <Volume2 className="w-3.5 h-3.5" /> Gapirmoqda...
-              </span>
-            )}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm text-muted-foreground">
-            <div className="flex gap-2"><span className="font-bold text-primary">1.</span> 📱 Kamera sensori yoki qo'lda puls kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">2.</span> 🩸 Qon bosimi va SpO2 kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">3.</span> ⚖️ BMI uchun bo'y va vazn kiriting</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">4.</span> 🧠 "AI Tahlil" tugmasini bosing</div>
-            <div className="flex gap-2"><span className="font-bold text-primary">5.</span> 🔊 Ovozli yo'riqnoma sizga yordam beradi</div>
-          </div>
+        {/* Usage Guide */}
+        <div className="mb-8">
+          <AIServiceUsageGuide
+            serviceName="AI Vital Signs Monitor"
+            steps={[
+              { title: "Ko'rsatkichlarni kiriting", desc: "Kamera sensori yoki qo'lda puls, bosim, SpO2 va BMI kiriting" },
+              { title: "AI tahlil qiladi", desc: "Sun'iy intellekt barcha ko'rsatkichlarni birgalikda tahlil qiladi" },
+              { title: "Natija va tavsiyalar", desc: "Sog'liq bahosi, xavf darajasi va shifokor tavsiyasini oling" },
+            ]}
+          />
         </div>
 
         {/* Camera PPG Sensor */}
