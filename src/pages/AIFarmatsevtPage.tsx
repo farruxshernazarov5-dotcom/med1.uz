@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -139,7 +141,16 @@ const AIFarmatsevtPage = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <AIServiceUsageGuide
+            serviceName="AI Farmatsevt"
+            steps={[
+              { title: "Dori nomini kiriting", desc: "Foydalanayotgan yoki qiziqtirgan dori nomini yozing" },
+              { title: "O'zaro ta'sirni tekshiring", desc: "Ikki yoki undan ortiq dori qo'shib, ularning o'zaro ta'sirini aniqlang" },
+              { title: "Natija va tavsiyalar", desc: "AI dori analoglarini, dozalash va saqlash shartlarini ko'rsatadi" },
+            ]}
+          />
+
+          <div className="mt-6">
             {/* Medication List */}
             <Card className="lg:col-span-1">
               <CardHeader>
