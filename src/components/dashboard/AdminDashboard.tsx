@@ -5,10 +5,11 @@ import {
   Building2, Users, Calendar, DollarSign, Stethoscope, LogOut, MessageSquare,
   Shield, Activity, Bell, FileText, CheckCircle, XCircle, Clock, Eye,
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
-  Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store,
+  Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
   Settings, Database, Wifi, Heart, Microscope, Menu
 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,8 @@ const sidebarSections = [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
       { id: "ai", label: "AI Monitor", icon: Bot },
+      { id: "announcements", label: "E'lonlar", icon: Bell },
+      { id: "promotions", label: "Aksiyalar", icon: Heart },
       { id: "admin_users", label: "Adminlar", icon: UserCog },
       { id: "monitoring", label: "Monitoring", icon: Monitor },
       { id: "audit", label: "Audit log", icon: Shield },
@@ -950,6 +953,79 @@ const AdminDashboard = () => {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ═══ ANNOUNCEMENTS ═══ */}
+          {tab === "announcements" && (
+            <div className="space-y-4">
+              <SectionHeader icon={Bell} title="E'lonlar va xabarlar" count={undefined} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <Card className="border-primary/30"><CardContent className="p-5 text-center">
+                  <Bell className="w-8 h-8 text-primary mx-auto mb-2" />
+                  <h3 className="font-semibold text-foreground text-sm mb-1">Barcha muassasalarga</h3>
+                  <p className="text-xs text-muted-foreground mb-3">Klinikalar, dorixonalar va boshqa muassasalarga ommaviy xabar</p>
+                  <Button size="sm" className="bg-[#2F80ED] hover:bg-[#2F80ED]/90"><Bell className="w-3 h-3 mr-1" /> Xabar yuborish</Button>
+                </CardContent></Card>
+                <Card className="border-emerald-500/30"><CardContent className="p-5 text-center">
+                  <MessageSquare className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+                  <h3 className="font-semibold text-foreground text-sm mb-1">Foydalanuvchilarga</h3>
+                  <p className="text-xs text-muted-foreground mb-3">Barcha platformadagi foydalanuvchilarga e'lon</p>
+                  <Button size="sm" variant="outline"><MessageSquare className="w-3 h-3 mr-1" /> Xabar yuborish</Button>
+                </CardContent></Card>
+                <Card className="border-purple-500/30"><CardContent className="p-5 text-center">
+                  <Activity className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                  <h3 className="font-semibold text-foreground text-sm mb-1">Telegram orqali</h3>
+                  <p className="text-xs text-muted-foreground mb-3">Telegram bot orqali ommaviy xabar yuborish</p>
+                  <Button size="sm" variant="outline"><Activity className="w-3 h-3 mr-1" /> Telegram xabar</Button>
+                </CardContent></Card>
+              </div>
+              <Card><CardContent className="p-5">
+                <h3 className="font-medium text-foreground mb-3">So'nggi e'lonlar</h3>
+                <div className="text-center py-8">
+                  <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                  <p className="text-muted-foreground text-sm">Hali e'lonlar yuborilmagan</p>
+                </div>
+              </CardContent></Card>
+            </div>
+          )}
+
+          {/* ═══ PROMOTIONS ═══ */}
+          {tab === "promotions" && (
+            <div className="space-y-4">
+              <SectionHeader icon={Heart} title="Aksiyalar boshqaruvi" count={undefined} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="border-primary/30"><CardContent className="p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Heart className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm">Yangi aksiya yaratish</h3>
+                      <p className="text-xs text-muted-foreground">Barcha muassasalar uchun platformaviy aksiya</p>
+                    </div>
+                  </div>
+                  <Button size="sm"><Plus className="w-3 h-3 mr-1" /> Aksiya yaratish</Button>
+                </CardContent></Card>
+                <Card><CardContent className="p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm">Aksiyalar statistikasi</h3>
+                      <p className="text-xs text-muted-foreground">Faol aksiyalar: 0 | Tugagan: 0</p>
+                    </div>
+                  </div>
+                </CardContent></Card>
+              </div>
+              <Card><CardContent className="p-5">
+                <h3 className="font-medium text-foreground mb-3">Faol aksiyalar</h3>
+                <div className="text-center py-8">
+                  <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                  <p className="text-muted-foreground text-sm">Hali aksiyalar yaratilmagan</p>
+                </div>
+              </CardContent></Card>
             </div>
           )}
 

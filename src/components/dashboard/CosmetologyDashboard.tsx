@@ -12,6 +12,8 @@ import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Plus, Trash2, Edit, Save, X, Calendar, Camera, Upload,
   TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image, Crown,
+  Users, Package, Video, Megaphone, Percent, MessageSquare, ClipboardList,
+  UserPlus, FileText, Bell,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
@@ -153,10 +155,17 @@ const CosmetologyDashboard = () => {
   })).filter(d => d.count > 0);
 
   const sidebarItems: SidebarItem[] = [
+    { id: "overview", label: "Umumiy", icon: BarChart3 },
     { id: "services", label: "Xizmatlar", icon: Sparkles },
     { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingCount },
+    { id: "patients", label: "Bemorlar", icon: Users },
+    { id: "staff", label: "Xodimlar", icon: UserPlus },
+    { id: "inventory", label: "Inventar", icon: Package },
+    { id: "promotions", label: "Aksiyalar", icon: Percent },
+    { id: "announcements", label: "E'lonlar", icon: Megaphone },
+    { id: "teleconsult", label: "Video konsultatsiya", icon: Video },
     { id: "photos", label: "Rasmlar", icon: Image },
-    { id: "stats", label: "Statistika", icon: BarChart3 },
+    { id: "stats", label: "Statistika", icon: TrendingUp },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "profile", label: "Profil", icon: Settings },
   ];
@@ -172,6 +181,40 @@ const CosmetologyDashboard = () => {
       activeTab={tab}
       onTabChange={setTab}
     >
+
+        {/* ═══ OVERVIEW ═══ */}
+        <TabsContent value="overview" className="space-y-4">
+          <h2 className="font-heading font-bold text-lg">Umumiy ko'rinish</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { icon: Sparkles, label: "Xizmatlar", value: services.length, color: "text-primary" },
+              { icon: Calendar, label: "Qabullar", value: appointments.length, color: "text-blue-500" },
+              { icon: CheckCircle, label: "Bajarilgan", value: completedCount, color: "text-emerald-500" },
+              { icon: Clock, label: "Kutilmoqda", value: pendingCount, color: "text-amber-500" },
+            ].map((s, i) => (
+              <Card key={i}><CardContent className="p-4 text-center">
+                <s.icon className={`w-6 h-6 ${s.color} mx-auto mb-2`} />
+                <p className="text-2xl font-bold text-foreground">{s.value}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+              </CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-4">
+            <h3 className="font-medium text-foreground mb-3">So'nggi qabullar</h3>
+            {appointments.slice(0, 5).map(apt => (
+              <div key={apt.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{apt.patient_name}</p>
+                  <p className="text-xs text-muted-foreground">{apt.appointment_date} — {apt.appointment_time}</p>
+                </div>
+                <Badge variant={apt.status === "pending" ? "default" : "secondary"} className="text-xs">
+                  {apt.status === "pending" ? "Kutilmoqda" : apt.status === "completed" ? "Bajarilgan" : apt.status}
+                </Badge>
+              </div>
+            ))}
+            {appointments.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Qabullar yo'q</p>}
+          </CardContent></Card>
+        </TabsContent>
 
         <TabsContent value="services" className="space-y-4">
           <div className="flex justify-between items-center">
@@ -315,6 +358,129 @@ const CosmetologyDashboard = () => {
                   </PieChart>
                 </ResponsiveContainer>
               ) : <p className="text-sm text-muted-foreground">Ma'lumot yo'q</p>}
+            </CardContent></Card>
+          </div>
+        </TabsContent>
+
+        {/* ═══ PATIENTS ═══ */}
+        <TabsContent value="patients" className="space-y-4">
+          <h2 className="font-heading font-bold text-lg flex items-center gap-2"><Users className="w-5 h-5 text-primary" /> Bemorlar bazasi</h2>
+          <Card><CardContent className="p-5">
+            {appointments.length > 0 ? (
+              <div className="space-y-2">
+                {[...new Map(appointments.map(a => [a.patient_name, a])).values()].map((apt, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">{apt.patient_name[0]}</div>
+                      <div>
+                        <p className="font-medium text-foreground">{apt.patient_name}</p>
+                        <p className="text-xs text-muted-foreground">{apt.patient_phone}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">So'nggi tashrif</p>
+                      <p className="text-xs font-medium text-foreground">{apt.appointment_date}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : <p className="text-sm text-muted-foreground text-center py-8">Bemorlar bazasi bo'sh</p>}
+          </CardContent></Card>
+        </TabsContent>
+
+        {/* ═══ STAFF ═══ */}
+        <TabsContent value="staff" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-heading font-bold text-lg flex items-center gap-2"><UserPlus className="w-5 h-5 text-primary" /> Xodimlar</h2>
+            <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Yangi xodim</Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {["Kosmetolog", "Dermatolog", "Lazer mutaxassisi", "Administrator"].map((role, i) => (
+              <Card key={i}><CardContent className="p-4 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <UserPlus className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{role}</p>
+                  <p className="text-xs text-muted-foreground">Xodim qo'shilmagan</p>
+                </div>
+              </CardContent></Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* ═══ INVENTORY ═══ */}
+        <TabsContent value="inventory" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-heading font-bold text-lg flex items-center gap-2"><Package className="w-5 h-5 text-primary" /> Inventar boshqaruvi</h2>
+            <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Yangi mahsulot</Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { name: "Lazer tip", category: "Jihozlar", status: "Faol", count: 3 },
+              { name: "Botox ampulalari", category: "Preparatlar", status: "Kam qoldi", count: 12 },
+              { name: "Yuz maskalari", category: "Materiallar", status: "Faol", count: 50 },
+              { name: "Filler preparatlari", category: "Preparatlar", status: "Buyurtma kerak", count: 2 },
+              { name: "Sterilizator", category: "Jihozlar", status: "Faol", count: 2 },
+              { name: "Himoya qo'lqoplari", category: "Materiallar", status: "Faol", count: 200 },
+            ].map((item, i) => (
+              <Card key={i}><CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-medium text-foreground text-sm">{item.name}</p>
+                  <Badge variant={item.status === "Faol" ? "secondary" : "destructive"} className="text-[10px]">{item.status}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">{item.category} — {item.count} dona</p>
+              </CardContent></Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* ═══ PROMOTIONS ═══ */}
+        <TabsContent value="promotions" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-heading font-bold text-lg flex items-center gap-2"><Percent className="w-5 h-5 text-primary" /> Aksiyalar</h2>
+            <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Yangi aksiya</Button>
+          </div>
+          <Card><CardContent className="p-5">
+            <div className="text-center py-8">
+              <Percent className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-30" />
+              <p className="text-sm text-muted-foreground">Hali aksiyalar qo'shilmagan</p>
+              <p className="text-xs text-muted-foreground mt-1">Aksiya yarating va mijozlaringizni jalb qiling</p>
+            </div>
+          </CardContent></Card>
+        </TabsContent>
+
+        {/* ═══ ANNOUNCEMENTS ═══ */}
+        <TabsContent value="announcements" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-heading font-bold text-lg flex items-center gap-2"><Megaphone className="w-5 h-5 text-primary" /> E'lonlar</h2>
+            <Button size="sm"><Plus className="w-4 h-4 mr-1" /> Yangi e'lon</Button>
+          </div>
+          <Card><CardContent className="p-5">
+            <div className="text-center py-8">
+              <Megaphone className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-30" />
+              <p className="text-sm text-muted-foreground">Xodimlarga va bemorlarga e'lonlar yuboring</p>
+              <p className="text-xs text-muted-foreground mt-1">Muhim xabarlar, ish vaqti o'zgarishlari va boshqalar</p>
+            </div>
+          </CardContent></Card>
+        </TabsContent>
+
+        {/* ═══ TELECONSULT ═══ */}
+        <TabsContent value="teleconsult" className="space-y-4">
+          <h2 className="font-heading font-bold text-lg flex items-center gap-2"><Video className="w-5 h-5 text-primary" /> Video konsultatsiya</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card><CardContent className="p-5 text-center">
+              <Video className="w-12 h-12 text-primary mx-auto mb-3" />
+              <h3 className="font-medium text-foreground mb-2">Yangi konsultatsiya</h3>
+              <p className="text-xs text-muted-foreground mb-4">Bemor bilan onlayn video qo'ng'iroq orqali maslahat bering</p>
+              <Button><Video className="w-4 h-4 mr-2" /> Konsultatsiya boshlash</Button>
+            </CardContent></Card>
+            <Card><CardContent className="p-5">
+              <h3 className="font-medium text-foreground mb-3">Rejalashtirilgan konsultatsiyalar</h3>
+              <div className="text-center py-6">
+                <Clock className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-30" />
+                <p className="text-xs text-muted-foreground">Rejalashtirilgan konsultatsiyalar yo'q</p>
+              </div>
             </CardContent></Card>
           </div>
         </TabsContent>

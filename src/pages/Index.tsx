@@ -17,6 +17,7 @@ import HealthDashboardWidget from "@/components/HealthDashboardWidget";
 import PartnerClinics from "@/components/PartnerClinics";
 import HomeAIServicesSection from "@/components/HomeAIServicesSection";
 import HomeServicesMenu from "@/components/HomeServicesMenu";
+import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
 
 const Index = () => {
   return (
@@ -54,6 +55,9 @@ const Index = () => {
 
       {/* AI Services Section */}
       <HomeAIServicesSection />
+
+      {/* Sponsors Leaderboard */}
+      <SponsorsLeaderboard />
 
       {/* Cosmetology Promo Section */}
       <CosmetologyPromo />
