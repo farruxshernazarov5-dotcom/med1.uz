@@ -12,6 +12,8 @@ import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Plus, Trash2, Edit, Save, X, Calendar, Camera, Upload,
   TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2, Settings, Image, Crown,
+  Users, Package, Video, Megaphone, Percent, MessageSquare, ClipboardList,
+  UserPlus, FileText, Bell,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
@@ -153,10 +155,17 @@ const CosmetologyDashboard = () => {
   })).filter(d => d.count > 0);
 
   const sidebarItems: SidebarItem[] = [
+    { id: "overview", label: "Umumiy", icon: BarChart3 },
     { id: "services", label: "Xizmatlar", icon: Sparkles },
     { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingCount },
+    { id: "patients", label: "Bemorlar", icon: Users },
+    { id: "staff", label: "Xodimlar", icon: UserPlus },
+    { id: "inventory", label: "Inventar", icon: Package },
+    { id: "promotions", label: "Aksiyalar", icon: Percent },
+    { id: "announcements", label: "E'lonlar", icon: Megaphone },
+    { id: "teleconsult", label: "Video konsultatsiya", icon: Video },
     { id: "photos", label: "Rasmlar", icon: Image },
-    { id: "stats", label: "Statistika", icon: BarChart3 },
+    { id: "stats", label: "Statistika", icon: TrendingUp },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "profile", label: "Profil", icon: Settings },
   ];
