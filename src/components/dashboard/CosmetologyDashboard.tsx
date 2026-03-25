@@ -182,6 +182,40 @@ const CosmetologyDashboard = () => {
       onTabChange={setTab}
     >
 
+        {/* ═══ OVERVIEW ═══ */}
+        <TabsContent value="overview" className="space-y-4">
+          <h2 className="font-heading font-bold text-lg">Umumiy ko'rinish</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { icon: Sparkles, label: "Xizmatlar", value: services.length, color: "text-primary" },
+              { icon: Calendar, label: "Qabullar", value: appointments.length, color: "text-blue-500" },
+              { icon: CheckCircle, label: "Bajarilgan", value: completedCount, color: "text-emerald-500" },
+              { icon: Clock, label: "Kutilmoqda", value: pendingCount, color: "text-amber-500" },
+            ].map((s, i) => (
+              <Card key={i}><CardContent className="p-4 text-center">
+                <s.icon className={`w-6 h-6 ${s.color} mx-auto mb-2`} />
+                <p className="text-2xl font-bold text-foreground">{s.value}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+              </CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-4">
+            <h3 className="font-medium text-foreground mb-3">So'nggi qabullar</h3>
+            {appointments.slice(0, 5).map(apt => (
+              <div key={apt.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{apt.patient_name}</p>
+                  <p className="text-xs text-muted-foreground">{apt.appointment_date} — {apt.appointment_time}</p>
+                </div>
+                <Badge variant={apt.status === "pending" ? "default" : "secondary"} className="text-xs">
+                  {apt.status === "pending" ? "Kutilmoqda" : apt.status === "completed" ? "Bajarilgan" : apt.status}
+                </Badge>
+              </div>
+            ))}
+            {appointments.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">Qabullar yo'q</p>}
+          </CardContent></Card>
+        </TabsContent>
+
         <TabsContent value="services" className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="font-heading font-bold text-lg">Kosmetologiya xizmatlari</h2>
