@@ -56,6 +56,9 @@ const Index = () => {
       {/* AI Services Section */}
       <HomeAIServicesSection />
 
+      {/* Sponsors Leaderboard */}
+      <SponsorsLeaderboard />
+
       {/* Cosmetology Promo Section */}
       <CosmetologyPromo />
 
