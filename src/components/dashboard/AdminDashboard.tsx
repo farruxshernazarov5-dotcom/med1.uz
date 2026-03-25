@@ -5,10 +5,11 @@ import {
   Building2, Users, Calendar, DollarSign, Stethoscope, LogOut, MessageSquare,
   Shield, Activity, Bell, FileText, CheckCircle, XCircle, Clock, Eye,
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
-  Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store,
+  Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
   Settings, Database, Wifi, Heart, Microscope, Menu
 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
