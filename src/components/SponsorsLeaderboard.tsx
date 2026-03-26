@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Trophy, Star, Crown, Medal, ArrowRight, Gift, Users, TrendingUp, Sparkles } from "lucide-react";
+import { Heart, Trophy, Star, Crown, Medal, Gift, Users, TrendingUp, Sparkles, Zap, Target, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -10,41 +10,43 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 
 const DEMO_SPONSORS = [
-  { id: 1, name: "BAXODIR ****", region: "Samarqand viloyati", amount: 320000, avatar: null, rank: 1 },
-  { id: 2, name: "ABRORBEK ****", region: "Toshkent shahri", amount: 305000, avatar: null, rank: 2 },
-  { id: 3, name: "SARDORBEK ****", region: "Andijon viloyati", amount: 200000, avatar: null, rank: 3 },
-  { id: 4, name: "ABDULXAMID ****", region: "Toshkent shahri", amount: 172000, avatar: null, rank: 4 },
-  { id: 5, name: "Foydalanuvchi", region: "Samarqand viloyati", amount: 172000, avatar: null, rank: 5 },
-  { id: 6, name: "FERUZA ****", region: "Toshkent shahri", amount: 165000, avatar: null, rank: 6 },
-  { id: 7, name: "Anonim", region: "", amount: 101000, avatar: null, rank: 7 },
-  { id: 8, name: "Anonim", region: "", amount: 100000, avatar: null, rank: 8 },
+  { id: 1, name: "BAXODIR ****", region: "Samarqand viloyati", amount: 320000, rank: 1 },
+  { id: 2, name: "ABRORBEK ****", region: "Toshkent shahri", amount: 305000, rank: 2 },
+  { id: 3, name: "SARDORBEK ****", region: "Andijon viloyati", amount: 200000, rank: 3 },
+  { id: 4, name: "ABDULXAMID ****", region: "Toshkent shahri", amount: 172000, rank: 4 },
+  { id: 5, name: "Foydalanuvchi", region: "Samarqand viloyati", amount: 172000, rank: 5 },
+  { id: 6, name: "FERUZA ****", region: "Toshkent shahri", amount: 165000, rank: 6 },
+  { id: 7, name: "Anonim", region: "", amount: 101000, rank: 7 },
+  { id: 8, name: "Anonim", region: "", amount: 100000, rank: 8 },
+  { id: 9, name: "JASUR ****", region: "Buxoro viloyati", amount: 95000, rank: 9 },
+  { id: 10, name: "NILUFAR ****", region: "Farg'ona viloyati", amount: 80000, rank: 10 },
 ];
 
-const QUICK_AMOUNTS = [2000, 5000, 10000, 20000, 50000, 100000];
-
-const getRankIcon = (rank: number) => {
-  if (rank === 1) return <Crown className="w-5 h-5 text-yellow-400" />;
-  if (rank === 2) return <Medal className="w-5 h-5 text-gray-300" />;
-  if (rank === 3) return <Medal className="w-5 h-5 text-amber-600" />;
-  return null;
-};
-
-const getRankBg = (rank: number) => {
-  if (rank === 1) return "from-yellow-500/20 to-amber-500/10 border-yellow-500/30";
-  if (rank === 2) return "from-gray-300/20 to-gray-400/10 border-gray-400/30";
-  if (rank === 3) return "from-amber-600/20 to-orange-500/10 border-amber-600/30";
-  return "";
-};
+const QUICK_AMOUNTS = [5000, 10000, 25000, 50000, 100000, 200000];
+const GOAL_AMOUNT = 5000000;
 
 const SponsorsLeaderboard = () => {
   const [showDonate, setShowDonate] = useState(false);
   const [amount, setAmount] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [animatedTotal, setAnimatedTotal] = useState(0);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  const currentMonth = new Date().toLocaleString("uz-UZ", { month: "long", year: "numeric" });
   const totalAmount = DEMO_SPONSORS.reduce((s, sp) => s + sp.amount, 0);
-  const displaySponsors = showAll ? DEMO_SPONSORS : DEMO_SPONSORS.slice(0, 5);
+  const progressPercent = Math.min((totalAmount / GOAL_AMOUNT) * 100, 100);
+  const displaySponsors = showAll ? DEMO_SPONSORS : DEMO_SPONSORS.slice(0, 6);
+
+  useEffect(() => {
+    let start = 0;
+    const step = totalAmount / 60;
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= totalAmount) { setAnimatedTotal(totalAmount); clearInterval(timer); }
+      else setAnimatedTotal(Math.floor(start));
+    }, 16);
+    return () => clearInterval(timer);
+  }, [totalAmount]);
 
   const handleDonate = () => {
     if (!amount || Number(amount) < 1000) {
@@ -56,146 +58,192 @@ const SponsorsLeaderboard = () => {
     setAmount("");
   };
 
+  const podiumOrder = [1, 0, 2]; // 2nd, 1st, 3rd
+
   return (
-    <section className="py-10 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-      <div className="absolute top-10 left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000" />
+    <section className="py-16 relative overflow-hidden">
+      {/* Animated particles */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-primary/3 via-transparent to-secondary/3" />
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="absolute rounded-full bg-primary/5 animate-pulse"
+            style={{
+              width: `${30 + i * 20}px`, height: `${30 + i * 20}px`,
+              top: `${10 + i * 15}%`, left: `${5 + i * 16}%`,
+              animationDelay: `${i * 0.5}s`, animationDuration: `${3 + i}s`
+            }} />
+        ))}
+      </div>
 
       <div className="container mx-auto px-4 relative">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4 animate-fade-in">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/15 to-secondary/15 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-5 backdrop-blur-sm border border-primary/20">
             <Heart className="w-4 h-4 animate-pulse" />
             Loyiha homiylarimiz
+            <Sparkles className="w-4 h-4 text-amber-500" />
           </div>
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Med1.uz ni birga <span className="text-primary">rivojlantiramiz</span>
+          <h2 className="font-heading text-3xl md:text-4xl font-black text-foreground mb-3 tracking-tight">
+            Med1.uz ni birga <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">rivojlantiramiz</span>
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto text-sm">
-            Loyiha rivojiga hissa qo'shgan barcha homiylarimizga minnatdorchilik bildiramiz. 
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Sizning har bir hissangiz millionlab foydalanuvchilar uchun sifatli tibbiy xizmatlar yaratishga yordam beradi.
+            Loyiha rivojiga hissa qo'shgan barcha homiylarimizga minnatdorchilik bildiramiz!
           </p>
         </div>
 
+        {/* Progress bar */}
+        <div className="max-w-2xl mx-auto mb-10">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-bold text-foreground flex items-center gap-1">
+              <Target className="w-4 h-4 text-primary" />
+              {animatedTotal.toLocaleString()} so'm yig'ildi
+            </span>
+            <span className="text-sm text-muted-foreground">Maqsad: {(GOAL_AMOUNT / 1e6).toFixed(0)}M so'm</span>
+          </div>
+          <div className="h-4 bg-muted rounded-full overflow-hidden relative">
+            <div className="h-full bg-gradient-to-r from-primary via-secondary to-emerald-500 rounded-full transition-all duration-1000 ease-out relative"
+              style={{ width: `${progressPercent}%` }}>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1 text-center">{progressPercent.toFixed(1)}% maqsadga yetildi</p>
+        </div>
+
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 max-w-2xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 max-w-3xl mx-auto">
           {[
-            { icon: Users, label: "Homiylar", value: DEMO_SPONSORS.length, color: "text-primary" },
-            { icon: TrendingUp, label: "Jami hissa", value: `${(totalAmount / 1000).toFixed(0)}K`, color: "text-emerald-500" },
-            { icon: Gift, label: "Bu oy", value: currentMonth, color: "text-amber-500" },
-            { icon: Star, label: "Maqsad", value: "2M so'm", color: "text-purple-500" },
+            { icon: Users, label: "Homiylar soni", value: DEMO_SPONSORS.length, color: "from-blue-500 to-blue-600" },
+            { icon: TrendingUp, label: "Jami hissa", value: `${(totalAmount / 1000).toFixed(0)}K`, color: "from-emerald-500 to-emerald-600" },
+            { icon: Zap, label: "O'rtacha hissa", value: `${Math.round(totalAmount / DEMO_SPONSORS.length / 1000)}K`, color: "from-amber-500 to-amber-600" },
+            { icon: Star, label: "Eng katta hissa", value: `${(DEMO_SPONSORS[0].amount / 1000).toFixed(0)}K`, color: "from-purple-500 to-purple-600" },
           ].map((s, i) => (
-            <div key={i} className="bg-card border border-border rounded-xl p-3 text-center hover:shadow-md transition-all animate-fade-in" style={{ animationDelay: `${i * 100}ms` }}>
-              <s.icon className={`w-5 h-5 ${s.color} mx-auto mb-1`} />
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className="font-bold text-foreground text-sm">{s.value}</p>
+            <div key={i} className="group bg-card border border-border rounded-2xl p-4 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-primary/30">
+              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-110 transition-transform`}>
+                <s.icon className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-xs text-muted-foreground mb-1">{s.label}</p>
+              <p className="font-black text-foreground text-xl">{s.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Top 3 podium */}
-        <div className="flex justify-center items-end gap-3 mb-6 max-w-lg mx-auto">
-          {/* 2nd place */}
-          <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: "200ms" }}>
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-400 dark:from-gray-600 dark:to-gray-800 flex items-center justify-center text-xl font-bold text-white border-2 border-gray-300">
-                {DEMO_SPONSORS[1].name[0]}
-              </div>
-              <div className="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-bold border-2 border-background">2</div>
-            </div>
-            <p className="text-xs font-semibold text-foreground mt-2 truncate max-w-20 text-center">{DEMO_SPONSORS[1].name}</p>
-            <p className="text-[10px] text-muted-foreground">{DEMO_SPONSORS[1].region}</p>
-            <Badge className="mt-1 bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 text-[10px]">
-              {(DEMO_SPONSORS[1].amount / 1000).toFixed(0)}K
-            </Badge>
-          </div>
+        {/* Top 3 podium - professional */}
+        <div className="flex justify-center items-end gap-4 md:gap-6 mb-10 max-w-xl mx-auto">
+          {podiumOrder.map((idx, posIdx) => {
+            const sp = DEMO_SPONSORS[idx];
+            const isFirst = idx === 0;
+            const sizes = isFirst
+              ? { avatar: "w-24 h-24", text: "text-3xl", mt: "-mt-6", badge: "text-sm", podiumH: "h-28" }
+              : { avatar: "w-18 h-18", text: "text-xl", mt: "", badge: "text-xs", podiumH: idx === 1 ? "h-20" : "h-16" };
+            const gradients = [
+              "from-gray-300 to-gray-500 dark:from-gray-500 dark:to-gray-700",
+              "from-yellow-400 via-amber-400 to-yellow-500",
+              "from-amber-500 to-orange-600"
+            ];
+            const borderColors = ["border-gray-300", "border-yellow-400 shadow-yellow-500/30 shadow-xl", "border-amber-500"];
 
-          {/* 1st place */}
-          <div className="flex flex-col items-center -mt-4 animate-fade-in" style={{ animationDelay: "100ms" }}>
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-2xl font-bold text-white border-3 border-yellow-300 shadow-lg shadow-yellow-500/20 animate-pulse">
-                {DEMO_SPONSORS[0].name[0]}
+            return (
+              <div key={sp.id} className={`flex flex-col items-center ${sizes.mt} animate-fade-in`} style={{ animationDelay: `${posIdx * 150}ms` }}>
+                <div className="relative mb-2">
+                  {isFirst && (
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
+                      <Crown className="w-8 h-8 text-yellow-400 drop-shadow-lg animate-bounce" style={{ animationDuration: "2s" }} />
+                    </div>
+                  )}
+                  <div className={`${sizes.avatar} rounded-full bg-gradient-to-br ${gradients[posIdx]} flex items-center justify-center ${sizes.text} font-black text-white border-4 ${borderColors[posIdx]} transition-transform hover:scale-110`}>
+                    {sp.name === "Anonim" ? "🎭" : sp.name[0]}
+                  </div>
+                  <div className={`absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-gradient-to-br ${gradients[posIdx]} flex items-center justify-center text-white text-sm font-black border-2 border-background`}>
+                    {sp.rank}
+                  </div>
+                </div>
+                <p className={`font-bold text-foreground ${isFirst ? "text-sm" : "text-xs"} truncate max-w-24 text-center`}>{sp.name}</p>
+                <p className="text-[10px] text-muted-foreground">{sp.region}</p>
+                <Badge className={`mt-1.5 ${isFirst ? "bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 dark:from-yellow-900/40 dark:to-amber-900/40 dark:text-yellow-300 shadow-sm" : "bg-muted text-muted-foreground"} ${sizes.badge} font-bold`}>
+                  {(sp.amount / 1000).toFixed(0)}K UZS
+                </Badge>
               </div>
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                <Crown className="w-6 h-6 text-yellow-400 drop-shadow-md" />
-              </div>
-              <div className="absolute -top-1 -left-1 w-7 h-7 rounded-full bg-yellow-500 flex items-center justify-center text-white text-sm font-bold border-2 border-background">1</div>
-            </div>
-            <p className="text-sm font-bold text-foreground mt-2 truncate max-w-24 text-center">{DEMO_SPONSORS[0].name}</p>
-            <p className="text-[10px] text-muted-foreground">{DEMO_SPONSORS[0].region}</p>
-            <Badge className="mt-1 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 text-xs font-bold">
-              {(DEMO_SPONSORS[0].amount / 1000).toFixed(0)}K UZS
-            </Badge>
-          </div>
-
-          {/* 3rd place */}
-          <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: "300ms" }}>
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xl font-bold text-white border-2 border-amber-400">
-                {DEMO_SPONSORS[2].name[0]}
-              </div>
-              <div className="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-amber-600 flex items-center justify-center text-white text-xs font-bold border-2 border-background">3</div>
-            </div>
-            <p className="text-xs font-semibold text-foreground mt-2 truncate max-w-20 text-center">{DEMO_SPONSORS[2].name}</p>
-            <p className="text-[10px] text-muted-foreground">{DEMO_SPONSORS[2].region}</p>
-            <Badge className="mt-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-[10px]">
-              {(DEMO_SPONSORS[2].amount / 1000).toFixed(0)}K
-            </Badge>
-          </div>
+            );
+          })}
         </div>
 
         {/* Leaderboard list */}
-        <div className="max-w-xl mx-auto bg-card border border-border rounded-2xl overflow-hidden shadow-card">
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 px-5 py-3 border-b border-border flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-primary" />
-              <span className="font-heading font-bold text-sm text-foreground">Homiylar reytingi</span>
+        <div className="max-w-2xl mx-auto bg-card border border-border rounded-3xl overflow-hidden shadow-xl">
+          <div className="bg-gradient-to-r from-[#0A2540] to-[#1e3a5f] px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-yellow-400" />
+              </div>
+              <div>
+                <span className="font-bold text-white text-sm">Homiylar reytingi</span>
+                <p className="text-white/40 text-[10px]">Real vaqtda yangilanadi</p>
+              </div>
             </div>
-            <Badge variant="secondary" className="text-[10px]">{currentMonth}</Badge>
+            <Badge className="bg-white/10 text-white/80 text-[10px] border-white/10">
+              {new Date().toLocaleString("uz-UZ", { month: "long", year: "numeric" })}
+            </Badge>
           </div>
 
           <div className="divide-y divide-border">
             {displaySponsors.slice(3).map((sp, idx) => (
-              <div key={sp.id} className={`flex items-center gap-3 px-5 py-3 hover:bg-muted/50 transition-colors animate-fade-in`} style={{ animationDelay: `${(idx + 4) * 80}ms` }}>
-                <span className="w-6 text-center font-bold text-muted-foreground text-sm">{sp.rank}</span>
-                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
+              <div key={sp.id}
+                className={`flex items-center gap-4 px-6 py-4 transition-all duration-300 cursor-default
+                  ${hoveredId === sp.id ? "bg-primary/5 scale-[1.01]" : "hover:bg-muted/50"}`}
+                onMouseEnter={() => setHoveredId(sp.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                style={{ animationDelay: `${(idx + 4) * 80}ms` }}>
+                <span className="w-8 text-center font-black text-muted-foreground text-lg">{sp.rank}</span>
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-sm font-bold text-primary border-2 border-primary/20">
                   {sp.name === "Anonim" ? "🎭" : sp.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground text-sm truncate">{sp.name}</p>
-                  {sp.region && <p className="text-[10px] text-muted-foreground">{sp.region}</p>}
+                  <p className="font-bold text-foreground text-sm truncate">{sp.name}</p>
+                  {sp.region && <p className="text-[11px] text-muted-foreground">{sp.region}</p>}
                 </div>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm whitespace-nowrap">
-                  {sp.amount.toLocaleString()} UZS
-                </span>
+                <div className="text-right">
+                  <span className="font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                    {sp.amount.toLocaleString()}
+                  </span>
+                  <p className="text-[9px] text-muted-foreground">UZS</p>
+                </div>
+                {hoveredId === sp.id && <ArrowUp className="w-4 h-4 text-primary animate-bounce shrink-0" />}
               </div>
             ))}
           </div>
 
-          {!showAll && DEMO_SPONSORS.length > 5 && (
-            <button onClick={() => setShowAll(true)} className="w-full py-3 text-xs text-primary font-medium hover:bg-muted/50 transition-colors border-t border-border">
-              Barcha homiylarni ko'rish →
+          {!showAll && DEMO_SPONSORS.length > 6 && (
+            <button onClick={() => setShowAll(true)}
+              className="w-full py-4 text-sm text-primary font-bold hover:bg-primary/5 transition-colors border-t border-border flex items-center justify-center gap-2">
+              Barcha {DEMO_SPONSORS.length} homiyni ko'rish
+              <span className="text-xs bg-primary/10 px-2 py-0.5 rounded-full">+{DEMO_SPONSORS.length - 6}</span>
             </button>
           )}
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-8 space-y-4 animate-fade-in" style={{ animationDelay: "500ms" }}>
-          <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 rounded-2xl p-6 max-w-lg mx-auto border border-primary/20">
-            <Heart className="w-10 h-10 text-primary mx-auto mb-3 animate-pulse" />
-            <h3 className="font-heading font-bold text-lg text-foreground mb-2">Jamoamizga kuch qo'shing</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Qariyb <strong className="text-foreground">2 million foydalanuvchiga</strong> ega loyihamizning bir qismi 
-              bo'lishingiz va uni qo'llab-quvvatlashingiz — biz uchun yuksak ishonch va cheksiz ilhom manbaidir.
-            </p>
-            <Button onClick={() => setShowDonate(true)} size="lg" className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg shadow-emerald-500/20 px-8">
-              <Heart className="w-4 h-4 mr-2" /> Hissa qo'shish
-            </Button>
-            <p className="text-[10px] text-muted-foreground mt-3">
-              Tugmani bosish bilan <Link to="/user-guide#terms" className="text-primary underline">ommaviy offerta</Link> shartlariga rozi bo'lasiz
-            </p>
+        {/* CTA - premium */}
+        <div className="text-center mt-12 animate-fade-in">
+          <div className="relative max-w-xl mx-auto">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-emerald-500/20 rounded-3xl blur-xl" />
+            <div className="relative bg-gradient-to-br from-card via-card to-primary/5 rounded-3xl p-8 border border-primary/20 shadow-2xl">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary/30">
+                <Heart className="w-8 h-8 text-white animate-pulse" />
+              </div>
+              <h3 className="font-black text-xl text-foreground mb-3">
+                Jamoamizga qo'shiling!
+              </h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                <strong className="text-foreground">2 million+ foydalanuvchiga</strong> ega tibbiy platformaning bir qismi bo'ling.
+                Sizning hissangiz — millionlab odamlar uchun sifatli sog'liq xizmati demakdir.
+              </p>
+              <Button onClick={() => setShowDonate(true)} size="lg"
+                className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 text-white shadow-xl shadow-emerald-500/25 px-10 text-base font-bold">
+                <Heart className="w-5 h-5 mr-2" /> Hissa qo'shish
+              </Button>
+              <p className="text-[10px] text-muted-foreground mt-4">
+                Tugmani bosish bilan <Link to="/user-guide#terms" className="text-primary underline">ommaviy offerta</Link> shartlariga rozi bo'lasiz
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -204,39 +252,52 @@ const SponsorsLeaderboard = () => {
       <Dialog open={showDonate} onOpenChange={setShowDonate}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary" />
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                <Heart className="w-4 h-4 text-white" />
+              </div>
               Loyihani qo'llab-quvvatlash
             </DialogTitle>
             <DialogDescription>Hissa qo'shish orqali loyiha rivojiga yordam bering</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">🎭</span>
-                <Label className="text-sm">Anonim hissa qo'shish</Label>
+                <span className="text-lg">🎭</span>
+                <Label className="text-sm font-medium">Anonim hissa qo'shish</Label>
               </div>
               <Switch checked={isAnonymous} onCheckedChange={setIsAnonymous} />
             </div>
             <div>
-              <Label>Summa (so'm)</Label>
-              <Input type="number" placeholder="Summa" value={amount} onChange={e => setAmount(e.target.value)} className="mt-1 text-lg" />
+              <Label className="text-sm font-semibold">Summa (so'm)</Label>
+              <Input type="number" placeholder="Masalan: 50000" value={amount}
+                onChange={e => setAmount(e.target.value)} className="mt-2 text-lg h-12 font-bold" />
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {QUICK_AMOUNTS.map(a => (
                 <button key={a} onClick={() => setAmount(String(a))}
-                  className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
-                    amount === String(a) ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:border-primary/30"
-                  }`}>
-                  {a.toLocaleString()}
+                  className={`py-3 rounded-xl border text-sm font-bold transition-all duration-200
+                    ${amount === String(a)
+                      ? "border-primary bg-primary/10 text-primary shadow-sm scale-105"
+                      : "border-border text-foreground hover:border-primary/40 hover:bg-primary/5"
+                    }`}>
+                  {(a / 1000).toFixed(0)}K
                 </button>
               ))}
             </div>
-            <Button onClick={handleDonate} className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white" size="lg">
-              <Heart className="w-4 h-4 mr-2" /> Hissa qo'shish
+            {amount && Number(amount) >= 1000 && (
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-3 text-center">
+                <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                  💚 <strong>{Number(amount).toLocaleString()} so'm</strong> hissa qo'shiladi
+                </p>
+              </div>
+            )}
+            <Button onClick={handleDonate}
+              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold shadow-lg" size="lg">
+              <Heart className="w-5 h-5 mr-2" /> Hissa qo'shish
             </Button>
             <p className="text-[10px] text-center text-muted-foreground">
-              Tugmani bosish bilan <Link to="/user-guide#terms" className="text-primary underline">ommaviy offerta</Link> shartlariga rozi bo'lasiz
+              <Link to="/user-guide#terms" className="text-primary underline">Ommaviy offerta</Link> shartlariga rozilik
             </p>
           </div>
         </DialogContent>
