@@ -1184,44 +1184,125 @@ const AdminDashboard = () => {
                 </div>
               </CardContent></Card>
             </div>
-            );
-          })()}
+          )}
 
-          {/* ═══ PROMOTIONS ═══ */}
+          {/* ═══ PROMOTIONS (ENHANCED) ═══ */}
           {tab === "promotions" && (
-            <div className="space-y-4">
-              <SectionHeader icon={Heart} title="Aksiyalar boshqaruvi" count={undefined} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="border-primary/30"><CardContent className="p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-primary" />
+            <div className="space-y-6">
+              <SectionHeader icon={Heart} title="Aksiyalar boshqaruvi" count={promos.length} />
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "Faol aksiyalar", value: promos.filter(p => p.active).length, icon: Heart, gradient: "from-emerald-500 to-emerald-600" },
+                  { label: "Tugagan", value: promos.filter(p => !p.active).length, icon: XCircle, gradient: "from-red-500 to-red-600" },
+                  { label: "Jami aksiyalar", value: promos.length, icon: FileText, gradient: "from-blue-500 to-blue-600" },
+                  { label: "O'rt. chegirma", value: promos.length > 0 ? `${Math.round(promos.reduce((s, p) => s + p.discount, 0) / promos.length)}%` : "0%", icon: DollarSign, gradient: "from-purple-500 to-purple-600" },
+                ].map(s => (
+                  <div key={s.label} className="bg-card rounded-xl border border-border p-4 hover:shadow-md transition">
+                    <div className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center mb-2", s.gradient)}>
+                      <s.icon className="w-4 h-4 text-white" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm">Yangi aksiya yaratish</h3>
-                      <p className="text-xs text-muted-foreground">Barcha muassasalar uchun platformaviy aksiya</p>
-                    </div>
+                    <p className="text-lg font-bold text-foreground">{s.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
                   </div>
-                  <Button size="sm"><Plus className="w-3 h-3 mr-1" /> Aksiya yaratish</Button>
-                </CardContent></Card>
-                <Card><CardContent className="p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-amber-500" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm">Aksiyalar statistikasi</h3>
-                      <p className="text-xs text-muted-foreground">Faol aksiyalar: 0 | Tugagan: 0</p>
-                    </div>
-                  </div>
-                </CardContent></Card>
+                ))}
               </div>
-              <Card><CardContent className="p-5">
-                <h3 className="font-medium text-foreground mb-3">Faol aksiyalar</h3>
-                <div className="text-center py-8">
-                  <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
-                  <p className="text-muted-foreground text-sm">Hali aksiyalar yaratilmagan</p>
+
+              {/* Create promo form */}
+              <Card><CardContent className="p-6 space-y-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-primary" /> Yangi aksiya yaratish
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Aksiya nomi</label>
+                    <Input value={promoName} onChange={e => setPromoName(e.target.value)} placeholder="Masalan: Yoz chegirmasi" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Chegirma foizi (%)</label>
+                    <Input type="number" value={promoDiscount} onChange={e => setPromoDiscount(e.target.value)} placeholder="20" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Amal qilish muddati</label>
+                    <Input type="date" value={promoExpiry} onChange={e => setPromoExpiry(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Kategoriya</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        { id: "general", label: "🌐 Umumiy" },
+                        { id: "clinic", label: "🏥 Klinikalar" },
+                        { id: "ai", label: "🤖 AI xizmat" },
+                        { id: "pharmacy", label: "💊 Dorixona" },
+                      ].map(c => (
+                        <button key={c.id} onClick={() => setPromoCategory(c.id)}
+                          className={cn("px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all",
+                            promoCategory === c.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30"
+                          )}>{c.label}</button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+                <Button className="bg-[#2F80ED] hover:bg-[#2F80ED]/90" onClick={() => {
+                  if (!promoName || !promoDiscount) {
+                    toast({ title: "Aksiya nomi va chegirma foizini kiriting", variant: "destructive" });
+                    return;
+                  }
+                  const newPromo = {
+                    id: Date.now().toString(), name: promoName, discount: Number(promoDiscount),
+                    expiry: promoExpiry, category: promoCategory, active: true, createdAt: new Date().toISOString()
+                  };
+                  setPromos(prev => [newPromo, ...prev]);
+                  setPromoName(""); setPromoDiscount(""); setPromoExpiry("");
+                  toast({ title: "✅ Aksiya yaratildi!", description: promoName });
+                }}>
+                  <Plus className="w-4 h-4 mr-1" /> Aksiya yaratish
+                </Button>
+              </CardContent></Card>
+
+              {/* Promos list */}
+              <Card><CardContent className="p-5">
+                <h3 className="font-medium text-foreground mb-3">📋 Aksiyalar ro'yxati</h3>
+                {promos.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                    <p className="text-muted-foreground text-sm">Hali aksiyalar yaratilmagan</p>
+                    <p className="text-xs text-muted-foreground mt-1">Yuqoridagi forma orqali yangi aksiya yarating</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {promos.map(p => (
+                      <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center",
+                            p.active ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-red-100 dark:bg-red-900/30"
+                          )}>
+                            <Heart className={cn("w-5 h-5", p.active ? "text-emerald-600" : "text-red-500")} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground">{p.name}</p>
+                            <p className="text-[10px] text-muted-foreground">
+                              {p.category === "clinic" ? "🏥 Klinikalar" : p.category === "ai" ? "🤖 AI" : p.category === "pharmacy" ? "💊 Dorixona" : "🌐 Umumiy"}
+                              {p.expiry && ` • Muddati: ${p.expiry}`}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-primary/10 text-primary font-bold text-sm">-{p.discount}%</Badge>
+                          <Button size="sm" variant={p.active ? "destructive" : "default"} className="h-7 text-[10px]"
+                            onClick={() => setPromos(prev => prev.map(pr => pr.id === p.id ? { ...pr, active: !pr.active } : pr))}>
+                            <Power className="w-3 h-3 mr-1" /> {p.active ? "Nofaol" : "Faol"}
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] text-destructive"
+                            onClick={() => setPromos(prev => prev.filter(pr => pr.id !== p.id))}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent></Card>
             </div>
           )}
