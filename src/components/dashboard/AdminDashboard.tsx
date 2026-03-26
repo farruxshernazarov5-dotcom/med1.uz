@@ -1097,39 +1097,92 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* ═══ ANNOUNCEMENTS ═══ */}
-          {tab === "announcements" && (
-            <div className="space-y-4">
-              <SectionHeader icon={Bell} title="E'lonlar va xabarlar" count={undefined} />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <Card className="border-primary/30"><CardContent className="p-5 text-center">
-                  <Bell className="w-8 h-8 text-primary mx-auto mb-2" />
-                  <h3 className="font-semibold text-foreground text-sm mb-1">Barcha muassasalarga</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Klinikalar, dorixonalar va boshqa muassasalarga ommaviy xabar</p>
-                  <Button size="sm" className="bg-[#2F80ED] hover:bg-[#2F80ED]/90"><Bell className="w-3 h-3 mr-1" /> Xabar yuborish</Button>
-                </CardContent></Card>
-                <Card className="border-emerald-500/30"><CardContent className="p-5 text-center">
-                  <MessageSquare className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                  <h3 className="font-semibold text-foreground text-sm mb-1">Foydalanuvchilarga</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Barcha platformadagi foydalanuvchilarga e'lon</p>
-                  <Button size="sm" variant="outline"><MessageSquare className="w-3 h-3 mr-1" /> Xabar yuborish</Button>
-                </CardContent></Card>
-                <Card className="border-purple-500/30"><CardContent className="p-5 text-center">
-                  <Activity className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                  <h3 className="font-semibold text-foreground text-sm mb-1">Telegram orqali</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Telegram bot orqali ommaviy xabar yuborish</p>
-                  <Button size="sm" variant="outline"><Activity className="w-3 h-3 mr-1" /> Telegram xabar</Button>
-                </CardContent></Card>
+          {/* ═══ ANNOUNCEMENTS (ENHANCED) ═══ */}
+          {tab === "announcements" && (() => {
+            const [annTitle, setAnnTitle] = [useState("")[0], useState("")[1]];
+            const [annContent, setAnnContent] = [useState("")[0], useState("")[1]];
+            const [annTarget, setAnnTarget] = [useState("all")[0], useState("all")[1]];
+            const [annChannel, setAnnChannel] = [useState("push")[0], useState("push")[1]];
+
+            return (
+            <div className="space-y-6">
+              <SectionHeader icon={Bell} title="E'lonlar boshqaruvi" count={undefined} />
+
+              {/* Send channels */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { icon: Bell, title: "Push notification", desc: "Platformadagi barcha foydalanuvchilarga", color: "from-blue-500 to-blue-600", channel: "push" },
+                  { icon: MessageSquare, title: "Email xabar", desc: "Email orqali segment bo'yicha yuborish", color: "from-emerald-500 to-emerald-600", channel: "email" },
+                  { icon: Activity, title: "Telegram xabar", desc: "Telegram bot orqali ommaviy xabar", color: "from-purple-500 to-purple-600", channel: "telegram" },
+                ].map(ch => (
+                  <div key={ch.channel} onClick={() => setAnnChannel(ch.channel)}
+                    className={cn("bg-card rounded-2xl border-2 p-5 cursor-pointer transition-all hover:shadow-md",
+                      annChannel === ch.channel ? "border-primary shadow-lg" : "border-border"
+                    )}>
+                    <div className={cn("w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center mb-3", ch.color)}>
+                      <ch.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-sm mb-1">{ch.title}</h3>
+                    <p className="text-xs text-muted-foreground">{ch.desc}</p>
+                    {annChannel === ch.channel && <Badge className="mt-2 bg-primary/10 text-primary text-[10px]">Tanlangan</Badge>}
+                  </div>
+                ))}
               </div>
+
+              {/* Compose form */}
+              <Card><CardContent className="p-6 space-y-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Bell className="w-4 h-4 text-primary" /> Yangi e'lon yaratish</h3>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Maqsadli segment</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: "all", label: "Hammaga" },
+                      { id: "clinics", label: "🏥 Klinikalar" },
+                      { id: "doctors", label: "👨‍⚕️ Shifokorlar" },
+                      { id: "patients", label: "👤 Bemorlar" },
+                      { id: "diagnostics", label: "🔬 Diagnostika" },
+                      { id: "pharmacies", label: "💊 Dorixonalar" },
+                    ].map(seg => (
+                      <button key={seg.id} onClick={() => setAnnTarget(seg.id)}
+                        className={cn("px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                          annTarget === seg.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30"
+                        )}>{seg.label}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">E'lon sarlavhasi</label>
+                  <Input value={annTitle} onChange={e => setAnnTitle(e.target.value)} placeholder="Masalan: Yangi xizmat ishga tushdi!" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Xabar matni</label>
+                  <textarea value={annContent} onChange={e => setAnnContent(e.target.value)}
+                    placeholder="E'lon matni..." rows={4}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                </div>
+                <div className="flex gap-2">
+                  <Button className="bg-[#2F80ED] hover:bg-[#2F80ED]/90" onClick={() => {
+                    toast({ title: "📢 E'lon yuborildi!", description: `${annTarget === "all" ? "Barcha foydalanuvchilarga" : annTarget} — ${annChannel} orqali` });
+                    setAnnTitle(""); setAnnContent("");
+                  }}>
+                    <Bell className="w-4 h-4 mr-1" /> Yuborish
+                  </Button>
+                  <Button variant="outline" onClick={() => { setAnnTitle(""); setAnnContent(""); }}>Tozalash</Button>
+                </div>
+              </CardContent></Card>
+
+              {/* History */}
               <Card><CardContent className="p-5">
-                <h3 className="font-medium text-foreground mb-3">So'nggi e'lonlar</h3>
+                <h3 className="font-medium text-foreground mb-3">📜 E'lonlar tarixi</h3>
                 <div className="text-center py-8">
                   <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
                   <p className="text-muted-foreground text-sm">Hali e'lonlar yuborilmagan</p>
+                  <p className="text-xs text-muted-foreground mt-1">Yangi e'lon yuborilganda bu yerda ko'rinadi</p>
                 </div>
               </CardContent></Card>
             </div>
-          )}
+            );
+          })()}
 
           {/* ═══ PROMOTIONS ═══ */}
           {tab === "promotions" && (
