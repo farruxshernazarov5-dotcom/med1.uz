@@ -765,25 +765,72 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* ═══ APPOINTMENTS ═══ */}
+          {/* ═══ APPOINTMENTS (ENHANCED) ═══ */}
           {tab === "appointments" && (
-            <div className="space-y-3">
-              <SectionHeader icon={Calendar} title="Barcha qabullar" count={appointments.length} />
-              {appointments.filter(a => !searchQ || a.patient_name?.toLowerCase().includes(searchQ.toLowerCase())).map(a => (
-                <div key={a.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md transition">
-                  <div className="flex-1">
-                    <p className="font-semibold text-foreground">{a.patient_name}</p>
-                    <p className="text-xs text-muted-foreground">{(a as any).registered_clinics?.name || "—"} • {a.appointment_date} • {a.appointment_time}</p>
-                    <p className="text-xs text-muted-foreground">📞 {a.patient_phone}</p>
-                  </div>
-                  <Badge className={cn("text-[10px]",
-                    a.status === "pending" ? "bg-amber-100 text-amber-800" :
-                    a.status === "confirmed" ? "bg-blue-100 text-blue-800" :
-                    a.status === "completed" ? "bg-emerald-100 text-emerald-800" : "bg-muted text-muted-foreground"
-                  )}>{a.status}</Badge>
-                  {a.total_price ? <span className="text-sm font-bold text-[#2F80ED]">{Number(a.total_price).toLocaleString()} so'm</span> : null}
+            <div className="space-y-4">
+              <SectionHeader icon={Calendar} title="Barcha qabullar" count={appointments.length}>
+                <div className="flex gap-1">
+                  {["all", "pending", "confirmed", "completed", "cancelled"].map(s => (
+                    <button key={s} onClick={() => setSearchQ(s === "all" ? "" : s)}
+                      className={cn("px-3 py-1 text-[11px] font-medium rounded-lg transition-all",
+                        (s === "all" && !searchQ) || searchQ === s ? "bg-[#2F80ED] text-white" : "text-muted-foreground hover:bg-muted"
+                      )}>
+                      {s === "all" ? "Barchasi" : s === "pending" ? "Kutilmoqda" : s === "confirmed" ? "Tasdiqlangan" : s === "completed" ? "Tugallangan" : "Bekor"}
+                    </button>
+                  ))}
                 </div>
-              ))}
+              </SectionHeader>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                {[
+                  { label: "Jami", value: appointments.length, icon: Calendar, color: "from-blue-500 to-blue-600" },
+                  { label: "Kutilmoqda", value: appointments.filter(a => a.status === "pending").length, icon: Clock, color: "from-amber-500 to-amber-600" },
+                  { label: "Tasdiqlangan", value: appointments.filter(a => a.status === "confirmed").length, icon: CheckCircle, color: "from-emerald-500 to-emerald-600" },
+                  { label: "Daromad", value: `${appointments.filter(a => a.status === "completed").reduce((s, a) => s + Number(a.total_price || 0), 0).toLocaleString()}`, icon: DollarSign, color: "from-purple-500 to-purple-600" },
+                ].map(s => (
+                  <div key={s.label} className="bg-card rounded-xl border border-border p-4">
+                    <div className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center mb-2", s.color)}>
+                      <s.icon className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-lg font-bold text-foreground">{s.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                {appointments.filter(a => {
+                  if (searchQ && ["pending","confirmed","completed","cancelled"].includes(searchQ)) return a.status === searchQ;
+                  if (searchQ) return a.patient_name?.toLowerCase().includes(searchQ.toLowerCase());
+                  return true;
+                }).map(a => (
+                  <div key={a.id} className="bg-card rounded-xl border border-border p-4 hover:shadow-md hover:border-primary/20 transition-all">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-bold text-foreground">{a.patient_name}</p>
+                          <Badge className={cn("text-[10px]",
+                            a.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" :
+                            a.status === "confirmed" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" :
+                            a.status === "completed" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" :
+                            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                          )}>{a.status === "pending" ? "Kutilmoqda" : a.status === "confirmed" ? "Tasdiqlangan" : a.status === "completed" ? "Tugallangan" : "Bekor"}</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                          <div className="text-xs"><span className="text-muted-foreground">🏥 </span><span className="text-foreground">{(a as any).registered_clinics?.name || "—"}</span></div>
+                          <div className="text-xs"><span className="text-muted-foreground">📅 </span><span className="text-foreground">{a.appointment_date}</span></div>
+                          <div className="text-xs"><span className="text-muted-foreground">⏰ </span><span className="text-foreground">{a.appointment_time}</span></div>
+                          <div className="text-xs"><span className="text-muted-foreground">📞 </span><span className="text-foreground">{a.patient_phone}</span></div>
+                        </div>
+                        {a.notes && <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded-lg p-2">📝 {a.notes}</p>}
+                      </div>
+                      <div className="text-right ml-4">
+                        {a.total_price ? (
+                          <p className="text-sm font-black text-[#2F80ED]">{Number(a.total_price).toLocaleString()} <span className="text-[10px] font-normal">so'm</span></p>
+                        ) : <p className="text-xs text-muted-foreground">—</p>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
               {appointments.length === 0 && <p className="text-center py-12 text-muted-foreground">Qabullar yo'q</p>}
             </div>
           )}
