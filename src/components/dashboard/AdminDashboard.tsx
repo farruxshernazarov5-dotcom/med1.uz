@@ -869,20 +869,45 @@ const AdminDashboard = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-              <h3 className="font-bold text-foreground">AI to'lovlar tarixi</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-foreground">AI to'lovlar tarixi (Cheklar)</h3>
+                <Badge variant="secondary" className="text-[10px]">{aiPayments.length} ta chek</Badge>
+              </div>
               {aiPayments.map(p => (
-                <div key={p.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Invoice: {p.invoice_id}</p>
-                    <p className="text-xs text-muted-foreground">{p.plan_id} • {p.billing_period} • {new Date(p.created_at).toLocaleDateString("uz-UZ")}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-foreground">{Number(p.amount).toLocaleString()} so'm</p>
-                    <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}>{p.status}</Badge>
+                <div key={p.id} className="bg-card rounded-xl border border-border p-4 hover:shadow-md hover:border-primary/20 transition-all mb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileText className="w-4 h-4 text-primary" />
+                        <p className="text-sm font-bold text-foreground">Invoice: {p.invoice_id}</p>
+                        <Badge className={cn("text-[10px]",
+                          p.status === "paid" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" :
+                          "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                        )}>{p.status === "paid" ? "✅ To'langan" : "⏳ Kutilmoqda"}</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                        <div className="text-xs"><span className="text-muted-foreground">📦 Plan: </span><span className="text-foreground font-medium">{p.plan_id}</span></div>
+                        <div className="text-xs"><span className="text-muted-foreground">📅 Muddat: </span><span className="text-foreground font-medium">{p.billing_period}</span></div>
+                        <div className="text-xs"><span className="text-muted-foreground">🕐 Sana: </span><span className="text-foreground font-medium">{new Date(p.created_at).toLocaleDateString("uz-UZ")}</span></div>
+                        <div className="text-xs"><span className="text-muted-foreground">💳 Usul: </span><span className="text-foreground font-medium">{p.payment_method || "—"}</span></div>
+                      </div>
+                      {p.services && p.services.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {(p.services as string[]).map((s: string, i: number) => (
+                            <Badge key={i} variant="outline" className="text-[9px]">{s}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right ml-4">
+                      <p className="text-lg font-black text-[#2F80ED]">{Number(p.amount).toLocaleString()}</p>
+                      <p className="text-[10px] text-muted-foreground">so'm</p>
+                      {p.paid_at && <p className="text-[10px] text-emerald-600 mt-1">✅ {new Date(p.paid_at).toLocaleDateString("uz-UZ")}</p>}
+                    </div>
                   </div>
                 </div>
               ))}
-              {aiPayments.length === 0 && <p className="text-muted-foreground text-sm">To'lovlar yo'q</p>}
+              {aiPayments.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">To'lovlar yo'q</p>}
             </div>
           )}
 
