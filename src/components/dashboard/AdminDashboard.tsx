@@ -86,6 +86,15 @@ const AdminDashboard = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; table: string; id: string; name: string }>({ open: false, table: "", id: "", name: "" });
   const [editDialog, setEditDialog] = useState<{ open: boolean; item: any; table: string; fields: string[] }>({ open: false, item: null, table: "", fields: [] });
   const [editValues, setEditValues] = useState<any>({});
+  const [annTitle, setAnnTitle] = useState("");
+  const [annContent, setAnnContent] = useState("");
+  const [annTarget, setAnnTarget] = useState("all");
+  const [annChannel, setAnnChannel] = useState("push");
+  const [promoName, setPromoName] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState("");
+  const [promoExpiry, setPromoExpiry] = useState("");
+  const [promoCategory, setPromoCategory] = useState("general");
+  const [promos, setPromos] = useState<any[]>([]);
 
   // ─── Fetch All Data ───
   const fetchAll = useCallback(async () => {
@@ -765,25 +774,72 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* ═══ APPOINTMENTS ═══ */}
+          {/* ═══ APPOINTMENTS (ENHANCED) ═══ */}
           {tab === "appointments" && (
-            <div className="space-y-3">
-              <SectionHeader icon={Calendar} title="Barcha qabullar" count={appointments.length} />
-              {appointments.filter(a => !searchQ || a.patient_name?.toLowerCase().includes(searchQ.toLowerCase())).map(a => (
-                <div key={a.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md transition">
-                  <div className="flex-1">
-                    <p className="font-semibold text-foreground">{a.patient_name}</p>
-                    <p className="text-xs text-muted-foreground">{(a as any).registered_clinics?.name || "—"} • {a.appointment_date} • {a.appointment_time}</p>
-                    <p className="text-xs text-muted-foreground">📞 {a.patient_phone}</p>
-                  </div>
-                  <Badge className={cn("text-[10px]",
-                    a.status === "pending" ? "bg-amber-100 text-amber-800" :
-                    a.status === "confirmed" ? "bg-blue-100 text-blue-800" :
-                    a.status === "completed" ? "bg-emerald-100 text-emerald-800" : "bg-muted text-muted-foreground"
-                  )}>{a.status}</Badge>
-                  {a.total_price ? <span className="text-sm font-bold text-[#2F80ED]">{Number(a.total_price).toLocaleString()} so'm</span> : null}
+            <div className="space-y-4">
+              <SectionHeader icon={Calendar} title="Barcha qabullar" count={appointments.length}>
+                <div className="flex gap-1">
+                  {["all", "pending", "confirmed", "completed", "cancelled"].map(s => (
+                    <button key={s} onClick={() => setSearchQ(s === "all" ? "" : s)}
+                      className={cn("px-3 py-1 text-[11px] font-medium rounded-lg transition-all",
+                        (s === "all" && !searchQ) || searchQ === s ? "bg-[#2F80ED] text-white" : "text-muted-foreground hover:bg-muted"
+                      )}>
+                      {s === "all" ? "Barchasi" : s === "pending" ? "Kutilmoqda" : s === "confirmed" ? "Tasdiqlangan" : s === "completed" ? "Tugallangan" : "Bekor"}
+                    </button>
+                  ))}
                 </div>
-              ))}
+              </SectionHeader>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                {[
+                  { label: "Jami", value: appointments.length, icon: Calendar, color: "from-blue-500 to-blue-600" },
+                  { label: "Kutilmoqda", value: appointments.filter(a => a.status === "pending").length, icon: Clock, color: "from-amber-500 to-amber-600" },
+                  { label: "Tasdiqlangan", value: appointments.filter(a => a.status === "confirmed").length, icon: CheckCircle, color: "from-emerald-500 to-emerald-600" },
+                  { label: "Daromad", value: `${appointments.filter(a => a.status === "completed").reduce((s, a) => s + Number(a.total_price || 0), 0).toLocaleString()}`, icon: DollarSign, color: "from-purple-500 to-purple-600" },
+                ].map(s => (
+                  <div key={s.label} className="bg-card rounded-xl border border-border p-4">
+                    <div className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center mb-2", s.color)}>
+                      <s.icon className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-lg font-bold text-foreground">{s.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                {appointments.filter(a => {
+                  if (searchQ && ["pending","confirmed","completed","cancelled"].includes(searchQ)) return a.status === searchQ;
+                  if (searchQ) return a.patient_name?.toLowerCase().includes(searchQ.toLowerCase());
+                  return true;
+                }).map(a => (
+                  <div key={a.id} className="bg-card rounded-xl border border-border p-4 hover:shadow-md hover:border-primary/20 transition-all">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-bold text-foreground">{a.patient_name}</p>
+                          <Badge className={cn("text-[10px]",
+                            a.status === "pending" ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" :
+                            a.status === "confirmed" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" :
+                            a.status === "completed" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" :
+                            "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                          )}>{a.status === "pending" ? "Kutilmoqda" : a.status === "confirmed" ? "Tasdiqlangan" : a.status === "completed" ? "Tugallangan" : "Bekor"}</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                          <div className="text-xs"><span className="text-muted-foreground">🏥 </span><span className="text-foreground">{(a as any).registered_clinics?.name || "—"}</span></div>
+                          <div className="text-xs"><span className="text-muted-foreground">📅 </span><span className="text-foreground">{a.appointment_date}</span></div>
+                          <div className="text-xs"><span className="text-muted-foreground">⏰ </span><span className="text-foreground">{a.appointment_time}</span></div>
+                          <div className="text-xs"><span className="text-muted-foreground">📞 </span><span className="text-foreground">{a.patient_phone}</span></div>
+                        </div>
+                        {a.notes && <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded-lg p-2">📝 {a.notes}</p>}
+                      </div>
+                      <div className="text-right ml-4">
+                        {a.total_price ? (
+                          <p className="text-sm font-black text-[#2F80ED]">{Number(a.total_price).toLocaleString()} <span className="text-[10px] font-normal">so'm</span></p>
+                        ) : <p className="text-xs text-muted-foreground">—</p>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
               {appointments.length === 0 && <p className="text-center py-12 text-muted-foreground">Qabullar yo'q</p>}
             </div>
           )}
@@ -822,54 +878,148 @@ const AdminDashboard = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-              <h3 className="font-bold text-foreground">AI to'lovlar tarixi</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-foreground">AI to'lovlar tarixi (Cheklar)</h3>
+                <Badge variant="secondary" className="text-[10px]">{aiPayments.length} ta chek</Badge>
+              </div>
               {aiPayments.map(p => (
-                <div key={p.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between mb-2">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Invoice: {p.invoice_id}</p>
-                    <p className="text-xs text-muted-foreground">{p.plan_id} • {p.billing_period} • {new Date(p.created_at).toLocaleDateString("uz-UZ")}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-foreground">{Number(p.amount).toLocaleString()} so'm</p>
-                    <Badge className={p.status === "paid" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}>{p.status}</Badge>
+                <div key={p.id} className="bg-card rounded-xl border border-border p-4 hover:shadow-md hover:border-primary/20 transition-all mb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileText className="w-4 h-4 text-primary" />
+                        <p className="text-sm font-bold text-foreground">Invoice: {p.invoice_id}</p>
+                        <Badge className={cn("text-[10px]",
+                          p.status === "paid" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" :
+                          "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                        )}>{p.status === "paid" ? "✅ To'langan" : "⏳ Kutilmoqda"}</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                        <div className="text-xs"><span className="text-muted-foreground">📦 Plan: </span><span className="text-foreground font-medium">{p.plan_id}</span></div>
+                        <div className="text-xs"><span className="text-muted-foreground">📅 Muddat: </span><span className="text-foreground font-medium">{p.billing_period}</span></div>
+                        <div className="text-xs"><span className="text-muted-foreground">🕐 Sana: </span><span className="text-foreground font-medium">{new Date(p.created_at).toLocaleDateString("uz-UZ")}</span></div>
+                        <div className="text-xs"><span className="text-muted-foreground">💳 Usul: </span><span className="text-foreground font-medium">{p.payment_method || "—"}</span></div>
+                      </div>
+                      {p.services && p.services.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {(p.services as string[]).map((s: string, i: number) => (
+                            <Badge key={i} variant="outline" className="text-[9px]">{s}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right ml-4">
+                      <p className="text-lg font-black text-[#2F80ED]">{Number(p.amount).toLocaleString()}</p>
+                      <p className="text-[10px] text-muted-foreground">so'm</p>
+                      {p.paid_at && <p className="text-[10px] text-emerald-600 mt-1">✅ {new Date(p.paid_at).toLocaleDateString("uz-UZ")}</p>}
+                    </div>
                   </div>
                 </div>
               ))}
-              {aiPayments.length === 0 && <p className="text-muted-foreground text-sm">To'lovlar yo'q</p>}
+              {aiPayments.length === 0 && <p className="text-muted-foreground text-sm text-center py-8">To'lovlar yo'q</p>}
             </div>
           )}
 
-          {/* ═══ AI MONITOR ═══ */}
+          {/* ═══ AI MONITOR (ENHANCED) ═══ */}
           {tab === "ai" && (
             <div className="space-y-6">
               <SectionHeader icon={Bot} title="AI Xizmatlar Monitoringi" count={undefined} />
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {[
-                  { label: "Faol obunalar", value: stats.aiSubs || 0 },
-                  { label: "Jami to'lovlar", value: aiPayments.length },
-                  { label: "AI daromad", value: `${(stats.aiRevenue || 0).toLocaleString()}` },
-                  { label: "AI so'rovlar", value: stats.aiUsageTotal || 0 },
-                  { label: "API holati", value: "✅ Faol" },
+                  { label: "Faol obunalar", value: stats.aiSubs || 0, icon: CreditCard, gradient: "from-purple-500 to-purple-600" },
+                  { label: "Jami to'lovlar", value: aiPayments.length, icon: FileText, gradient: "from-blue-500 to-blue-600" },
+                  { label: "AI daromad", value: `${((stats.aiRevenue || 0) / 1000).toFixed(0)}K`, icon: DollarSign, gradient: "from-emerald-500 to-emerald-600" },
+                  { label: "AI so'rovlar", value: stats.aiUsageTotal || 0, icon: Activity, gradient: "from-amber-500 to-amber-600" },
+                  { label: "API holati", value: "✅ Faol", icon: Cpu, gradient: "from-pink-500 to-pink-600" },
                 ].map(s => (
-                  <div key={s.label} className="bg-card rounded-xl border border-border p-4 text-center">
+                  <div key={s.label} className="bg-card rounded-xl border border-border p-4 text-center hover:shadow-md transition">
+                    <div className={cn("w-9 h-9 rounded-xl bg-gradient-to-br flex items-center justify-center mb-2 mx-auto", s.gradient)}>
+                      <s.icon className="w-4 h-4 text-white" />
+                    </div>
                     <p className="text-xl font-bold text-foreground">{s.value}</p>
                     <p className="text-xs text-muted-foreground">{s.label}</p>
                   </div>
                 ))}
               </div>
+
+              {/* AI Revenue Chart */}
               <div className="bg-card rounded-2xl border border-border p-5">
-                <h4 className="text-sm font-semibold text-foreground mb-3">🤖 AI xizmatlar holati</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-foreground">🤖 AI daromad grafigi</h4>
+                  <ChartPeriodSelector />
+                </div>
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={revenueChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="qiymat" stroke="#7B61FF" fill="#7B61FF" fillOpacity={0.15} name="AI daromad" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* AI Services Status */}
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <h4 className="text-sm font-semibold text-foreground mb-3">🤖 14 ta AI xizmat holati</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {[
-                    "AI Simptom Analiz", "AI Doctor Chat", "AI Laboratoriya Analiz", "AI Salomatlik Prognozi",
-                    "AI Radiologiya Pro", "AI Sog'liq Assistenti", "AI Homiladorlik", "AI Bola Parvarishi",
-                    "AI Kosmetologiya", "AI Dietolog", "AI Psixolog", "AI Farmatsevt", "AI Fitness Trener"
+                    { name: "AI Simptom Analiz", fn: "symptom-checker" },
+                    { name: "AI Doctor Chat", fn: "ai-doctor-chat" },
+                    { name: "AI Laboratoriya Analiz", fn: "ai-report-analysis" },
+                    { name: "AI Salomatlik Prognozi", fn: "ai-health-risk" },
+                    { name: "AI Radiologiya Pro", fn: "ai-radiology" },
+                    { name: "AI Sog'liq Assistenti", fn: "ai-health-assistant" },
+                    { name: "AI Homiladorlik", fn: "ai-pregnancy" },
+                    { name: "AI Bola Parvarishi", fn: "ai-baby-care" },
+                    { name: "AI Kosmetologiya", fn: "ai-cosmetology" },
+                    { name: "AI Dietolog", fn: "ai-dietolog" },
+                    { name: "AI Psixolog", fn: "ai-psixolog" },
+                    { name: "AI Farmatsevt", fn: "ai-farmatsevt" },
+                    { name: "AI Fitness Trener", fn: "ai-fitness" },
+                    { name: "AI Vital Signs", fn: "ai-vital-signs" },
                   ].map(s => (
-                    <div key={s} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30">
-                      <span className="text-sm text-foreground">{s}</span>
-                      <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Faol</Badge>
+                    <div key={s.name} className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-sm text-foreground font-medium">{s.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground font-mono">{s.fn}</span>
+                        <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px]">Faol</Badge>
+                      </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* AI Payments / Invoices List */}
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-foreground">🧾 AI cheklar (Invoices)</h4>
+                  <Badge variant="secondary" className="text-[10px]">{aiPayments.length} ta</Badge>
+                </div>
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {aiPayments.map(p => (
+                    <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition">
+                      <div className="flex items-center gap-3">
+                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center",
+                          p.status === "paid" ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-amber-100 dark:bg-amber-900/30"
+                        )}>
+                          <FileText className={cn("w-4 h-4", p.status === "paid" ? "text-emerald-600" : "text-amber-600")} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">{p.invoice_id}</p>
+                          <p className="text-[10px] text-muted-foreground">{p.plan_id} • {p.billing_period} • {new Date(p.created_at).toLocaleDateString("uz-UZ")}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-foreground text-sm">{Number(p.amount).toLocaleString()} so'm</p>
+                        <Badge className={cn("text-[9px]", p.status === "paid" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>{p.status === "paid" ? "To'langan" : "Kutilmoqda"}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                  {aiPayments.length === 0 && <p className="text-center py-6 text-muted-foreground text-sm">AI to'lovlar yo'q</p>}
                 </div>
               </div>
             </div>
@@ -956,75 +1106,203 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* ═══ ANNOUNCEMENTS ═══ */}
+          {/* ═══ ANNOUNCEMENTS (ENHANCED) ═══ */}
           {tab === "announcements" && (
-            <div className="space-y-4">
-              <SectionHeader icon={Bell} title="E'lonlar va xabarlar" count={undefined} />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <Card className="border-primary/30"><CardContent className="p-5 text-center">
-                  <Bell className="w-8 h-8 text-primary mx-auto mb-2" />
-                  <h3 className="font-semibold text-foreground text-sm mb-1">Barcha muassasalarga</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Klinikalar, dorixonalar va boshqa muassasalarga ommaviy xabar</p>
-                  <Button size="sm" className="bg-[#2F80ED] hover:bg-[#2F80ED]/90"><Bell className="w-3 h-3 mr-1" /> Xabar yuborish</Button>
-                </CardContent></Card>
-                <Card className="border-emerald-500/30"><CardContent className="p-5 text-center">
-                  <MessageSquare className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                  <h3 className="font-semibold text-foreground text-sm mb-1">Foydalanuvchilarga</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Barcha platformadagi foydalanuvchilarga e'lon</p>
-                  <Button size="sm" variant="outline"><MessageSquare className="w-3 h-3 mr-1" /> Xabar yuborish</Button>
-                </CardContent></Card>
-                <Card className="border-purple-500/30"><CardContent className="p-5 text-center">
-                  <Activity className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                  <h3 className="font-semibold text-foreground text-sm mb-1">Telegram orqali</h3>
-                  <p className="text-xs text-muted-foreground mb-3">Telegram bot orqali ommaviy xabar yuborish</p>
-                  <Button size="sm" variant="outline"><Activity className="w-3 h-3 mr-1" /> Telegram xabar</Button>
-                </CardContent></Card>
+            <div className="space-y-6">
+              <SectionHeader icon={Bell} title="E'lonlar boshqaruvi" count={undefined} />
+
+              {/* Send channels */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { icon: Bell, title: "Push notification", desc: "Platformadagi barcha foydalanuvchilarga", color: "from-blue-500 to-blue-600", channel: "push" },
+                  { icon: MessageSquare, title: "Email xabar", desc: "Email orqali segment bo'yicha yuborish", color: "from-emerald-500 to-emerald-600", channel: "email" },
+                  { icon: Activity, title: "Telegram xabar", desc: "Telegram bot orqali ommaviy xabar", color: "from-purple-500 to-purple-600", channel: "telegram" },
+                ].map(ch => (
+                  <div key={ch.channel} onClick={() => setAnnChannel(ch.channel)}
+                    className={cn("bg-card rounded-2xl border-2 p-5 cursor-pointer transition-all hover:shadow-md",
+                      annChannel === ch.channel ? "border-primary shadow-lg" : "border-border"
+                    )}>
+                    <div className={cn("w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center mb-3", ch.color)}>
+                      <ch.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-sm mb-1">{ch.title}</h3>
+                    <p className="text-xs text-muted-foreground">{ch.desc}</p>
+                    {annChannel === ch.channel && <Badge className="mt-2 bg-primary/10 text-primary text-[10px]">Tanlangan</Badge>}
+                  </div>
+                ))}
               </div>
+
+              {/* Compose form */}
+              <Card><CardContent className="p-6 space-y-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2"><Bell className="w-4 h-4 text-primary" /> Yangi e'lon yaratish</h3>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Maqsadli segment</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: "all", label: "Hammaga" },
+                      { id: "clinics", label: "🏥 Klinikalar" },
+                      { id: "doctors", label: "👨‍⚕️ Shifokorlar" },
+                      { id: "patients", label: "👤 Bemorlar" },
+                      { id: "diagnostics", label: "🔬 Diagnostika" },
+                      { id: "pharmacies", label: "💊 Dorixonalar" },
+                    ].map(seg => (
+                      <button key={seg.id} onClick={() => setAnnTarget(seg.id)}
+                        className={cn("px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+                          annTarget === seg.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30"
+                        )}>{seg.label}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">E'lon sarlavhasi</label>
+                  <Input value={annTitle} onChange={e => setAnnTitle(e.target.value)} placeholder="Masalan: Yangi xizmat ishga tushdi!" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Xabar matni</label>
+                  <textarea value={annContent} onChange={e => setAnnContent(e.target.value)}
+                    placeholder="E'lon matni..." rows={4}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                </div>
+                <div className="flex gap-2">
+                  <Button className="bg-[#2F80ED] hover:bg-[#2F80ED]/90" onClick={() => {
+                    toast({ title: "📢 E'lon yuborildi!", description: `${annTarget === "all" ? "Barcha foydalanuvchilarga" : annTarget} — ${annChannel} orqali` });
+                    setAnnTitle(""); setAnnContent("");
+                  }}>
+                    <Bell className="w-4 h-4 mr-1" /> Yuborish
+                  </Button>
+                  <Button variant="outline" onClick={() => { setAnnTitle(""); setAnnContent(""); }}>Tozalash</Button>
+                </div>
+              </CardContent></Card>
+
+              {/* History */}
               <Card><CardContent className="p-5">
-                <h3 className="font-medium text-foreground mb-3">So'nggi e'lonlar</h3>
+                <h3 className="font-medium text-foreground mb-3">📜 E'lonlar tarixi</h3>
                 <div className="text-center py-8">
                   <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
                   <p className="text-muted-foreground text-sm">Hali e'lonlar yuborilmagan</p>
+                  <p className="text-xs text-muted-foreground mt-1">Yangi e'lon yuborilganda bu yerda ko'rinadi</p>
                 </div>
               </CardContent></Card>
             </div>
           )}
 
-          {/* ═══ PROMOTIONS ═══ */}
+          {/* ═══ PROMOTIONS (ENHANCED) ═══ */}
           {tab === "promotions" && (
-            <div className="space-y-4">
-              <SectionHeader icon={Heart} title="Aksiyalar boshqaruvi" count={undefined} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="border-primary/30"><CardContent className="p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-primary" />
+            <div className="space-y-6">
+              <SectionHeader icon={Heart} title="Aksiyalar boshqaruvi" count={promos.length} />
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { label: "Faol aksiyalar", value: promos.filter(p => p.active).length, icon: Heart, gradient: "from-emerald-500 to-emerald-600" },
+                  { label: "Tugagan", value: promos.filter(p => !p.active).length, icon: XCircle, gradient: "from-red-500 to-red-600" },
+                  { label: "Jami aksiyalar", value: promos.length, icon: FileText, gradient: "from-blue-500 to-blue-600" },
+                  { label: "O'rt. chegirma", value: promos.length > 0 ? `${Math.round(promos.reduce((s, p) => s + p.discount, 0) / promos.length)}%` : "0%", icon: DollarSign, gradient: "from-purple-500 to-purple-600" },
+                ].map(s => (
+                  <div key={s.label} className="bg-card rounded-xl border border-border p-4 hover:shadow-md transition">
+                    <div className={cn("w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center mb-2", s.gradient)}>
+                      <s.icon className="w-4 h-4 text-white" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm">Yangi aksiya yaratish</h3>
-                      <p className="text-xs text-muted-foreground">Barcha muassasalar uchun platformaviy aksiya</p>
-                    </div>
+                    <p className="text-lg font-bold text-foreground">{s.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
                   </div>
-                  <Button size="sm"><Plus className="w-3 h-3 mr-1" /> Aksiya yaratish</Button>
-                </CardContent></Card>
-                <Card><CardContent className="p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-amber-500" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm">Aksiyalar statistikasi</h3>
-                      <p className="text-xs text-muted-foreground">Faol aksiyalar: 0 | Tugagan: 0</p>
-                    </div>
-                  </div>
-                </CardContent></Card>
+                ))}
               </div>
-              <Card><CardContent className="p-5">
-                <h3 className="font-medium text-foreground mb-3">Faol aksiyalar</h3>
-                <div className="text-center py-8">
-                  <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
-                  <p className="text-muted-foreground text-sm">Hali aksiyalar yaratilmagan</p>
+
+              {/* Create promo form */}
+              <Card><CardContent className="p-6 space-y-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-primary" /> Yangi aksiya yaratish
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Aksiya nomi</label>
+                    <Input value={promoName} onChange={e => setPromoName(e.target.value)} placeholder="Masalan: Yoz chegirmasi" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Chegirma foizi (%)</label>
+                    <Input type="number" value={promoDiscount} onChange={e => setPromoDiscount(e.target.value)} placeholder="20" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Amal qilish muddati</label>
+                    <Input type="date" value={promoExpiry} onChange={e => setPromoExpiry(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground block mb-1">Kategoriya</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        { id: "general", label: "🌐 Umumiy" },
+                        { id: "clinic", label: "🏥 Klinikalar" },
+                        { id: "ai", label: "🤖 AI xizmat" },
+                        { id: "pharmacy", label: "💊 Dorixona" },
+                      ].map(c => (
+                        <button key={c.id} onClick={() => setPromoCategory(c.id)}
+                          className={cn("px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all",
+                            promoCategory === c.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/30"
+                          )}>{c.label}</button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+                <Button className="bg-[#2F80ED] hover:bg-[#2F80ED]/90" onClick={() => {
+                  if (!promoName || !promoDiscount) {
+                    toast({ title: "Aksiya nomi va chegirma foizini kiriting", variant: "destructive" });
+                    return;
+                  }
+                  const newPromo = {
+                    id: Date.now().toString(), name: promoName, discount: Number(promoDiscount),
+                    expiry: promoExpiry, category: promoCategory, active: true, createdAt: new Date().toISOString()
+                  };
+                  setPromos(prev => [newPromo, ...prev]);
+                  setPromoName(""); setPromoDiscount(""); setPromoExpiry("");
+                  toast({ title: "✅ Aksiya yaratildi!", description: promoName });
+                }}>
+                  <Plus className="w-4 h-4 mr-1" /> Aksiya yaratish
+                </Button>
+              </CardContent></Card>
+
+              {/* Promos list */}
+              <Card><CardContent className="p-5">
+                <h3 className="font-medium text-foreground mb-3">📋 Aksiyalar ro'yxati</h3>
+                {promos.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                    <p className="text-muted-foreground text-sm">Hali aksiyalar yaratilmagan</p>
+                    <p className="text-xs text-muted-foreground mt-1">Yuqoridagi forma orqali yangi aksiya yarating</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {promos.map(p => (
+                      <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition">
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center",
+                            p.active ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-red-100 dark:bg-red-900/30"
+                          )}>
+                            <Heart className={cn("w-5 h-5", p.active ? "text-emerald-600" : "text-red-500")} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground">{p.name}</p>
+                            <p className="text-[10px] text-muted-foreground">
+                              {p.category === "clinic" ? "🏥 Klinikalar" : p.category === "ai" ? "🤖 AI" : p.category === "pharmacy" ? "💊 Dorixona" : "🌐 Umumiy"}
+                              {p.expiry && ` • Muddati: ${p.expiry}`}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-primary/10 text-primary font-bold text-sm">-{p.discount}%</Badge>
+                          <Button size="sm" variant={p.active ? "destructive" : "default"} className="h-7 text-[10px]"
+                            onClick={() => setPromos(prev => prev.map(pr => pr.id === p.id ? { ...pr, active: !pr.active } : pr))}>
+                            <Power className="w-3 h-3 mr-1" /> {p.active ? "Nofaol" : "Faol"}
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 text-[10px] text-destructive"
+                            onClick={() => setPromos(prev => prev.filter(pr => pr.id !== p.id))}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent></Card>
             </div>
           )}
