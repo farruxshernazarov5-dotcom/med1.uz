@@ -1107,13 +1107,7 @@ const AdminDashboard = () => {
           )}
 
           {/* ═══ ANNOUNCEMENTS (ENHANCED) ═══ */}
-          {tab === "announcements" && (() => {
-            const [annTitle, setAnnTitle] = [useState("")[0], useState("")[1]];
-            const [annContent, setAnnContent] = [useState("")[0], useState("")[1]];
-            const [annTarget, setAnnTarget] = [useState("all")[0], useState("all")[1]];
-            const [annChannel, setAnnChannel] = [useState("push")[0], useState("push")[1]];
-
-            return (
+          {tab === "announcements" && (
             <div className="space-y-6">
               <SectionHeader icon={Bell} title="E'lonlar boshqaruvi" count={undefined} />
 
