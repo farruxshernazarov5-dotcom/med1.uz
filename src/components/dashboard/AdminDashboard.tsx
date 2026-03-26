@@ -911,37 +911,106 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* ═══ AI MONITOR ═══ */}
+          {/* ═══ AI MONITOR (ENHANCED) ═══ */}
           {tab === "ai" && (
             <div className="space-y-6">
               <SectionHeader icon={Bot} title="AI Xizmatlar Monitoringi" count={undefined} />
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {[
-                  { label: "Faol obunalar", value: stats.aiSubs || 0 },
-                  { label: "Jami to'lovlar", value: aiPayments.length },
-                  { label: "AI daromad", value: `${(stats.aiRevenue || 0).toLocaleString()}` },
-                  { label: "AI so'rovlar", value: stats.aiUsageTotal || 0 },
-                  { label: "API holati", value: "✅ Faol" },
+                  { label: "Faol obunalar", value: stats.aiSubs || 0, icon: CreditCard, gradient: "from-purple-500 to-purple-600" },
+                  { label: "Jami to'lovlar", value: aiPayments.length, icon: FileText, gradient: "from-blue-500 to-blue-600" },
+                  { label: "AI daromad", value: `${((stats.aiRevenue || 0) / 1000).toFixed(0)}K`, icon: DollarSign, gradient: "from-emerald-500 to-emerald-600" },
+                  { label: "AI so'rovlar", value: stats.aiUsageTotal || 0, icon: Activity, gradient: "from-amber-500 to-amber-600" },
+                  { label: "API holati", value: "✅ Faol", icon: Cpu, gradient: "from-pink-500 to-pink-600" },
                 ].map(s => (
-                  <div key={s.label} className="bg-card rounded-xl border border-border p-4 text-center">
+                  <div key={s.label} className="bg-card rounded-xl border border-border p-4 text-center hover:shadow-md transition">
+                    <div className={cn("w-9 h-9 rounded-xl bg-gradient-to-br flex items-center justify-center mb-2 mx-auto", s.gradient)}>
+                      <s.icon className="w-4 h-4 text-white" />
+                    </div>
                     <p className="text-xl font-bold text-foreground">{s.value}</p>
                     <p className="text-xs text-muted-foreground">{s.label}</p>
                   </div>
                 ))}
               </div>
+
+              {/* AI Revenue Chart */}
               <div className="bg-card rounded-2xl border border-border p-5">
-                <h4 className="text-sm font-semibold text-foreground mb-3">🤖 AI xizmatlar holati</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-foreground">🤖 AI daromad grafigi</h4>
+                  <ChartPeriodSelector />
+                </div>
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={revenueChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="qiymat" stroke="#7B61FF" fill="#7B61FF" fillOpacity={0.15} name="AI daromad" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* AI Services Status */}
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <h4 className="text-sm font-semibold text-foreground mb-3">🤖 14 ta AI xizmat holati</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {[
-                    "AI Simptom Analiz", "AI Doctor Chat", "AI Laboratoriya Analiz", "AI Salomatlik Prognozi",
-                    "AI Radiologiya Pro", "AI Sog'liq Assistenti", "AI Homiladorlik", "AI Bola Parvarishi",
-                    "AI Kosmetologiya", "AI Dietolog", "AI Psixolog", "AI Farmatsevt", "AI Fitness Trener"
+                    { name: "AI Simptom Analiz", fn: "symptom-checker" },
+                    { name: "AI Doctor Chat", fn: "ai-doctor-chat" },
+                    { name: "AI Laboratoriya Analiz", fn: "ai-report-analysis" },
+                    { name: "AI Salomatlik Prognozi", fn: "ai-health-risk" },
+                    { name: "AI Radiologiya Pro", fn: "ai-radiology" },
+                    { name: "AI Sog'liq Assistenti", fn: "ai-health-assistant" },
+                    { name: "AI Homiladorlik", fn: "ai-pregnancy" },
+                    { name: "AI Bola Parvarishi", fn: "ai-baby-care" },
+                    { name: "AI Kosmetologiya", fn: "ai-cosmetology" },
+                    { name: "AI Dietolog", fn: "ai-dietolog" },
+                    { name: "AI Psixolog", fn: "ai-psixolog" },
+                    { name: "AI Farmatsevt", fn: "ai-farmatsevt" },
+                    { name: "AI Fitness Trener", fn: "ai-fitness" },
+                    { name: "AI Vital Signs", fn: "ai-vital-signs" },
                   ].map(s => (
-                    <div key={s} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/30">
-                      <span className="text-sm text-foreground">{s}</span>
-                      <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Faol</Badge>
+                    <div key={s.name} className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-sm text-foreground font-medium">{s.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground font-mono">{s.fn}</span>
+                        <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px]">Faol</Badge>
+                      </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* AI Payments / Invoices List */}
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-foreground">🧾 AI cheklar (Invoices)</h4>
+                  <Badge variant="secondary" className="text-[10px]">{aiPayments.length} ta</Badge>
+                </div>
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {aiPayments.map(p => (
+                    <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition">
+                      <div className="flex items-center gap-3">
+                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center",
+                          p.status === "paid" ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-amber-100 dark:bg-amber-900/30"
+                        )}>
+                          <FileText className={cn("w-4 h-4", p.status === "paid" ? "text-emerald-600" : "text-amber-600")} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">{p.invoice_id}</p>
+                          <p className="text-[10px] text-muted-foreground">{p.plan_id} • {p.billing_period} • {new Date(p.created_at).toLocaleDateString("uz-UZ")}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-foreground text-sm">{Number(p.amount).toLocaleString()} so'm</p>
+                        <Badge className={cn("text-[9px]", p.status === "paid" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>{p.status === "paid" ? "To'langan" : "Kutilmoqda"}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                  {aiPayments.length === 0 && <p className="text-center py-6 text-muted-foreground text-sm">AI to'lovlar yo'q</p>}
                 </div>
               </div>
             </div>
