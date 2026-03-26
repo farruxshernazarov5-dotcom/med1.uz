@@ -86,6 +86,15 @@ const AdminDashboard = () => {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; table: string; id: string; name: string }>({ open: false, table: "", id: "", name: "" });
   const [editDialog, setEditDialog] = useState<{ open: boolean; item: any; table: string; fields: string[] }>({ open: false, item: null, table: "", fields: [] });
   const [editValues, setEditValues] = useState<any>({});
+  const [annTitle, setAnnTitle] = useState("");
+  const [annContent, setAnnContent] = useState("");
+  const [annTarget, setAnnTarget] = useState("all");
+  const [annChannel, setAnnChannel] = useState("push");
+  const [promoName, setPromoName] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState("");
+  const [promoExpiry, setPromoExpiry] = useState("");
+  const [promoCategory, setPromoCategory] = useState("general");
+  const [promos, setPromos] = useState<any[]>([]);
 
   // ─── Fetch All Data ───
   const fetchAll = useCallback(async () => {
