@@ -25,12 +25,13 @@ const NotificationPreferences = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("notification_channels, telegram_chat_id")
+      .select("*")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
-          const ch = data.notification_channels as string[] | null;
+          const raw = data as any;
+          const ch = raw.notification_channels as string[] | null;
           if (ch) {
             setChannels({
               telegram: ch.includes("telegram"),
@@ -38,7 +39,7 @@ const NotificationPreferences = () => {
               sms: ch.includes("sms"),
             });
           }
-          setTelegramChatId((data.telegram_chat_id as string) || "");
+          setTelegramChatId((raw.telegram_chat_id as string) || "");
         }
       });
   }, [user]);
