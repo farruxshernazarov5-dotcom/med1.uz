@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { QrCode, FlaskConical, Stethoscope, FileCheck, Send, Download, CheckCircle2 } from "lucide-react";
+import { QrCode, FlaskConical, Stethoscope, FileCheck, Send, Download, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import NotificationPreferences from "./NotificationPreferences";
 
 interface LabResult {
   id: string;
