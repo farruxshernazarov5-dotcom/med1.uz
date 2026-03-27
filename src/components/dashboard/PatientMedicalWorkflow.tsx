@@ -243,7 +243,7 @@ const PatientMedicalWorkflow = () => {
               </div>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
                 variant="outline"
@@ -262,10 +262,21 @@ const PatientMedicalWorkflow = () => {
               >
                 <QrCode className="w-3.5 h-3.5 mr-1" /> QR ko'rish
               </Button>
+              <Button
+                size="sm"
+                onClick={() => sendNotification(selectedResult.id)}
+                disabled={sending}
+              >
+                <Bell className="w-3.5 h-3.5 mr-1" />
+                {sending ? "Yuborilmoqda..." : "Natijani yuborish"}
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Notification Preferences */}
+      <NotificationPreferences />
     </div>
   );
 };
