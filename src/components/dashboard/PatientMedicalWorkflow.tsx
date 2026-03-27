@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { QrCode, FlaskConical, Stethoscope, FileCheck, Send, Download, CheckCircle2 } from "lucide-react";
+import { QrCode, FlaskConical, Stethoscope, FileCheck, Send, Download, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import NotificationPreferences from "./NotificationPreferences";
 
 interface LabResult {
   id: string;
@@ -71,10 +74,27 @@ const statusMap = {
 
 const PatientMedicalWorkflow = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selected, setSelected] = useState<string | null>(null);
   const [qrInput, setQrInput] = useState("");
+  const [sending, setSending] = useState(false);
 
   const selectedResult = mockResults.find((r) => r.id === selected);
+
+  const sendNotification = async (labId: string) => {
+    if (!user) return;
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("lab-result-notify", {
+        body: { lab_result_id: labId, patient_id: user.id },
+      });
+      if (error) throw error;
+      toast({ title: "Yuborildi ✅", description: "Analiz natijasi bildirishnomasi yuborildi" });
+    } catch (e: any) {
+      toast({ title: "Xatolik", description: e.message, variant: "destructive" });
+    }
+    setSending(false);
+  };
 
   const searchQR = () => {
     const found = mockResults.find((r) => r.qrCode === qrInput || r.id === qrInput);
@@ -223,7 +243,7 @@ const PatientMedicalWorkflow = () => {
               </div>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
                 variant="outline"
@@ -242,10 +262,21 @@ const PatientMedicalWorkflow = () => {
               >
                 <QrCode className="w-3.5 h-3.5 mr-1" /> QR ko'rish
               </Button>
+              <Button
+                size="sm"
+                onClick={() => sendNotification(selectedResult.id)}
+                disabled={sending}
+              >
+                <Bell className="w-3.5 h-3.5 mr-1" />
+                {sending ? "Yuborilmoqda..." : "Natijani yuborish"}
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Notification Preferences */}
+      <NotificationPreferences />
     </div>
   );
 };
