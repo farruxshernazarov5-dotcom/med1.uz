@@ -74,10 +74,27 @@ const statusMap = {
 
 const PatientMedicalWorkflow = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selected, setSelected] = useState<string | null>(null);
   const [qrInput, setQrInput] = useState("");
+  const [sending, setSending] = useState(false);
 
   const selectedResult = mockResults.find((r) => r.id === selected);
+
+  const sendNotification = async (labId: string) => {
+    if (!user) return;
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("lab-result-notify", {
+        body: { lab_result_id: labId, patient_id: user.id },
+      });
+      if (error) throw error;
+      toast({ title: "Yuborildi ✅", description: "Analiz natijasi bildirishnomasi yuborildi" });
+    } catch (e: any) {
+      toast({ title: "Xatolik", description: e.message, variant: "destructive" });
+    }
+    setSending(false);
+  };
 
   const searchQR = () => {
     const found = mockResults.find((r) => r.qrCode === qrInput || r.id === qrInput);
