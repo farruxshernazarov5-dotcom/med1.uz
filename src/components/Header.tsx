@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, Search, User, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import logoImg from "@/assets/logo.png";
 
@@ -90,6 +91,7 @@ const Header = () => {
                 <Search className="w-5 h-5" />
               </Button>
 
+              <ThemeToggle />
               <div className="hidden sm:flex items-center gap-1 bg-muted rounded-lg p-1">
                 {languages.map((lang) => (
                   <button key={lang} onClick={() => setCurrentLang(lang)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${currentLang === lang ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>

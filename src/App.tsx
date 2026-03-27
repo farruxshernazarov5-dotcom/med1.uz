@@ -67,6 +67,7 @@ import AIFitnessPage from "./pages/AIFitnessPage";
 import AISubscriptionPage from "./pages/AISubscriptionPage";
 import AIPaymentPage from "./pages/AIPaymentPage";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
+import CookieConsent from "./components/CookieConsent";
 import ContactPage from "./pages/ContactPage";
 import AdminPage from "./pages/AdminPage";
 import AIVitalSignsPage from "./pages/AIVitalSignsPage";
@@ -82,6 +83,7 @@ const App = () => (
           <FloatingAISearch />
           <FloatingAIPanel />
           <FloatingServicesPanel />
+          <CookieConsent />
           <Routes>
             <Route path="/" element={<Index />} />
           <Route path="/medicine" element={<MedicinePage />} />
