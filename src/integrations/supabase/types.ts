@@ -3780,7 +3780,9 @@ export type Database = {
           date_of_birth: string | null
           full_name: string
           id: string
+          notification_channels: string[] | null
           phone: string | null
+          telegram_chat_id: string | null
           updated_at: string
           user_id: string
         }
@@ -3791,7 +3793,9 @@ export type Database = {
           date_of_birth?: string | null
           full_name?: string
           id?: string
+          notification_channels?: string[] | null
           phone?: string | null
+          telegram_chat_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -3802,7 +3806,9 @@ export type Database = {
           date_of_birth?: string | null
           full_name?: string
           id?: string
+          notification_channels?: string[] | null
           phone?: string | null
+          telegram_chat_id?: string | null
           updated_at?: string
           user_id?: string
         }
