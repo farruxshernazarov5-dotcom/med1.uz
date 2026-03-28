@@ -22,6 +22,7 @@ import ClinicSubscription from "./ClinicSubscription";
 import HMSPatients from "@/components/hms/HMSPatients";
 import HMSLaboratory from "@/components/hms/HMSLaboratory";
 import HMSPayroll from "@/components/hms/HMSPayroll";
+import HMSStaffManagement from "@/components/hms/HMSStaffManagement";
 import HMSPharmacy from "@/components/hms/HMSPharmacy";
 import HMSBeds from "@/components/hms/HMSBeds";
 import HMSDepartments from "@/components/hms/HMSDepartments";
@@ -126,7 +127,8 @@ const ClinicDashboard = () => {
     // HMS
     { id: "hms-patients", label: "Bemorlar", icon: Users, group: "HMS" },
     { id: "hms-lab", label: "Laboratoriya", icon: FlaskConical, group: "HMS" },
-    { id: "hms-payroll", label: "Xodimlar", icon: Wallet, group: "HMS" },
+    { id: "hms-staff", label: "Xodimlar", icon: Users, group: "HMS" },
+    { id: "hms-payroll", label: "Ish haqi", icon: Wallet, group: "HMS" },
     { id: "hms-pharmacy", label: "Dorixona", icon: Pill, group: "HMS" },
     { id: "hms-beds", label: "To'shaklar", icon: BedDouble, group: "HMS" },
     { id: "hms-departments", label: "Bo'limlar", icon: Building2, group: "HMS" },
@@ -207,6 +209,7 @@ const ClinicDashboard = () => {
 
       {tab === "hms-patients" && <HMSPatients clinicId={clinic.id} />}
       {tab === "hms-lab" && <HMSLaboratory clinicId={clinic.id} />}
+      {tab === "hms-staff" && <HMSStaffManagement clinicId={clinic.id} />}
       {tab === "hms-payroll" && <HMSPayroll clinicId={clinic.id} />}
       {tab === "hms-pharmacy" && <HMSPharmacy clinicId={clinic.id} />}
       {tab === "hms-beds" && <HMSBeds clinicId={clinic.id} />}
