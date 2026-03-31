@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X, Edit2, Trash2, ShieldAlert, AlertTriangle, Droplets } from "lucide-react";
+import { Plus, X, Edit2, Trash2, ShieldAlert, AlertTriangle, Droplets, Activity, TrendingUp, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 interface Props { clinicId: string; }
+const COLORS = ["hsl(145, 63%, 42%)", "hsl(0, 72%, 55%)", "hsl(32, 87%, 52%)", "hsl(214, 84%, 56%)"];
 
 const HMSInfection = ({ clinicId }: Props) => {
   const [records, setRecords] = useState<any[]>([]);
@@ -68,50 +70,114 @@ const HMSInfection = ({ clinicId }: Props) => {
   const filtered = filter === "all" ? records : records.filter(r => r.record_type === filter);
   const quarantined = records.filter(r => r.quarantine_status === "active");
   const infections = records.filter(r => r.record_type === "infection");
+  const sterilizations = records.filter(r => r.record_type === "sterilization");
+  const criticalCount = records.filter(r => r.severity === "critical" || r.severity === "high").length;
+
+  // Charts
+  const typeStats = [
+    { name: "Sterilizatsiya", value: sterilizations.length },
+    { name: "Infektsiya", value: infections.length },
+    { name: "Karantin", value: records.filter(r => r.record_type === "quarantine").length },
+  ].filter(d => d.value > 0);
+
+  const deptInfections = departments.map(d => ({
+    name: d.name.slice(0, 12),
+    infektsiyalar: records.filter(r => r.department_id === d.id && r.record_type === "infection").length,
+    sterilizatsiya: records.filter(r => r.department_id === d.id && r.record_type === "sterilization").length,
+  })).filter(d => d.infektsiyalar > 0 || d.sterilizatsiya > 0);
 
   const severityColors: Record<string, string> = { low: "bg-green-100 text-green-800", medium: "bg-yellow-100 text-yellow-800", high: "bg-orange-100 text-orange-800", critical: "bg-red-100 text-red-800" };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-heading text-xl font-bold text-foreground flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-primary" /> Infektsiya nazorati</h2>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-lg">
+            <ShieldAlert className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="font-heading text-xl font-bold text-foreground">Infektsiya nazorati</h2>
+            <p className="text-xs text-muted-foreground">Sanitariya va gigiyena monitoring</p>
+          </div>
+        </div>
         <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}><Plus className="w-4 h-4 mr-1" /> Yangi yozuv</Button>
       </div>
 
+      {/* Critical alert */}
       {quarantined.length > 0 && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 mb-4 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-red-600" />
-          <p className="text-sm text-red-800 dark:text-red-200"><strong>{quarantined.length}</strong> ta karantin holati faol!</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-xl p-4 flex items-center gap-3 animate-pulse">
+          <AlertTriangle className="w-6 h-6 text-red-600 shrink-0" />
+          <div>
+            <p className="font-bold text-red-800 dark:text-red-200">⚠️ {quarantined.length} ta faol karantin holati!</p>
+            <p className="text-sm text-red-600 dark:text-red-300">Izolyatsiya protokollari kuchda</p>
+          </div>
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <p className="text-xs text-muted-foreground">Jami yozuvlar</p>
-          <p className="text-lg font-bold text-foreground">{records.length}</p>
-        </div>
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <p className="text-xs text-muted-foreground">Sterilizatsiya</p>
-          <p className="text-lg font-bold text-green-600">{records.filter(r => r.record_type === "sterilization").length}</p>
-        </div>
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <p className="text-xs text-muted-foreground">Infektsiyalar</p>
-          <p className="text-lg font-bold text-red-600">{infections.length}</p>
-        </div>
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <p className="text-xs text-muted-foreground">Karantin</p>
-          <p className="text-lg font-bold text-orange-600">{quarantined.length}</p>
-        </div>
-      </div>
-
-      <div className="flex gap-2 mb-4 overflow-x-auto">
-        {[{ id: "all", label: "Barchasi" }, { id: "sterilization", label: "Sterilizatsiya" }, { id: "infection", label: "Infektsiya" }, { id: "quarantine", label: "Karantin" }].map(f => (
-          <button key={f.id} onClick={() => setFilter(f.id)} className={cn("px-3 py-1 text-xs rounded-full whitespace-nowrap", filter === f.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{f.label}</button>
+      {/* KPI */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {[
+          { icon: Activity, label: "Jami yozuvlar", value: records.length, color: "from-blue-500 to-blue-600" },
+          { icon: Droplets, label: "Sterilizatsiya", value: sterilizations.length, color: "from-green-500 to-green-600" },
+          { icon: ShieldAlert, label: "Infektsiyalar", value: infections.length, color: "from-red-500 to-red-600" },
+          { icon: AlertTriangle, label: "Karantin", value: quarantined.length, color: "from-orange-500 to-orange-600" },
+          { icon: Target, label: "Xavfli", value: criticalCount, color: "from-red-700 to-red-800" },
+        ].map(k => (
+          <div key={k.label} className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${k.color} p-4 text-white shadow-lg`}>
+            <k.icon className="w-5 h-5 text-white/80 mb-1" />
+            <p className="text-2xl font-bold">{k.value}</p>
+            <p className="text-xs text-white/70">{k.label}</p>
+          </div>
         ))}
       </div>
 
+      {/* Charts */}
+      {records.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="bg-card rounded-2xl border border-border p-5">
+            <h3 className="font-heading font-bold text-foreground text-sm mb-4">Yozuv turlari</h3>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie data={typeStats} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                  {typeStats.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {typeStats.map((d, i) => (
+                <span key={d.name} className="flex items-center gap-1 text-xs"><span className="w-2 h-2 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />{d.name}: {d.value}</span>
+              ))}
+            </div>
+          </div>
+          {deptInfections.length > 0 && (
+            <div className="bg-card rounded-2xl border border-border p-5">
+              <h3 className="font-heading font-bold text-foreground text-sm mb-4">Bo'limlar bo'yicha</h3>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={deptInfections}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} />
+                  <YAxis tick={{ fontSize: 11 }} axisLine={false} />
+                  <Tooltip />
+                  <Bar dataKey="infektsiyalar" name="Infektsiya" fill="hsl(0, 72%, 55%)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="sterilizatsiya" name="Sterilizatsiya" fill="hsl(145, 63%, 42%)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="flex gap-2 overflow-x-auto">
+        {[{ id: "all", label: "Barchasi" }, { id: "sterilization", label: "Sterilizatsiya" }, { id: "infection", label: "Infektsiya" }, { id: "quarantine", label: "Karantin" }].map(f => (
+          <button key={f.id} onClick={() => setFilter(f.id)} className={cn("px-3 py-1.5 text-xs rounded-full whitespace-nowrap font-medium", filter === f.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{f.label}</button>
+        ))}
+      </div>
+
+      {/* Form */}
       {showForm && (
-        <div className="bg-card rounded-2xl border border-border p-5 mb-6">
+        <div className="bg-card rounded-2xl border border-border p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-heading font-bold text-foreground">{editing ? "Tahrirlash" : "Yangi yozuv"}</h3>
             <Button variant="ghost" size="icon" onClick={resetForm}><X className="w-4 h-4" /></Button>
@@ -146,8 +212,8 @@ const HMSInfection = ({ clinicId }: Props) => {
                   <option value="active">Faol karantin</option>
                   <option value="completed">Tugallangan</option>
                 </select>
-                <Input type="date" placeholder="Boshlanish" value={form.quarantine_start} onChange={e => setForm({ ...form, quarantine_start: e.target.value })} />
-                <Input type="date" placeholder="Tugash" value={form.quarantine_end} onChange={e => setForm({ ...form, quarantine_end: e.target.value })} />
+                <Input type="date" value={form.quarantine_start} onChange={e => setForm({ ...form, quarantine_start: e.target.value })} />
+                <Input type="date" value={form.quarantine_end} onChange={e => setForm({ ...form, quarantine_end: e.target.value })} />
               </>
             )}
             <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={form.severity} onChange={e => setForm({ ...form, severity: e.target.value })}>
@@ -165,12 +231,13 @@ const HMSInfection = ({ clinicId }: Props) => {
         </div>
       )}
 
+      {/* Records list */}
       <div className="space-y-3">
         {filtered.map(r => (
-          <div key={r.id} className={cn("bg-card rounded-2xl border p-5", r.quarantine_status === "active" ? "border-destructive/50" : "border-border")}>
+          <div key={r.id} className={cn("bg-card rounded-2xl border p-5 hover:shadow-sm transition-shadow", r.quarantine_status === "active" ? "border-destructive/50" : "border-border")}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-3">
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", r.record_type === "infection" ? "bg-destructive/10" : r.record_type === "quarantine" ? "bg-orange-100" : "bg-green-100")}>
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", r.record_type === "infection" ? "bg-destructive/10" : r.record_type === "quarantine" ? "bg-orange-100 dark:bg-orange-900/30" : "bg-green-100 dark:bg-green-900/30")}>
                   {r.record_type === "sterilization" ? <Droplets className="w-5 h-5 text-green-700" /> : <ShieldAlert className="w-5 h-5 text-destructive" />}
                 </div>
                 <div>
@@ -185,7 +252,8 @@ const HMSInfection = ({ clinicId }: Props) => {
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="text-[10px]">{r.record_type}</Badge>
                 <Badge className={cn("text-[10px]", severityColors[r.severity])}>{r.severity}</Badge>
-                {r.quarantine_status === "active" && <Badge className="text-[10px] bg-red-600 text-white">Karantin</Badge>}
+                {r.quarantine_status === "active" && <Badge className="text-[10px] bg-red-600 text-white animate-pulse">🔴 Karantin</Badge>}
+                <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("uz")}</span>
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditing(r); setForm({ record_type: r.record_type, area: r.area || "", department_id: r.department_id || "", equipment_name: r.equipment_name || "", sterilization_method: r.sterilization_method || "", performed_by: r.performed_by || "", infection_type: r.infection_type || "", patient_id: r.patient_id || "", quarantine_status: r.quarantine_status, quarantine_start: r.quarantine_start || "", quarantine_end: r.quarantine_end || "", severity: r.severity, notes: r.notes || "" }); setShowForm(true); }}><Edit2 className="w-3 h-3" /></Button>
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
               </div>
