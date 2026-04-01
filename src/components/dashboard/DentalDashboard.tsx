@@ -2,33 +2,28 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import {
-  Stethoscope, Users, Calendar, DollarSign, Plus, Settings, BarChart3,
-  CheckCircle, X, Clock, Activity, Heart, ArrowLeft
+  Stethoscope, Users, Calendar, DollarSign, Settings, BarChart3,
+  Activity, Heart, Camera, FlaskConical, Package, Bell, FileText
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import { writeAuditLog } from "@/utils/auditLog";
 
-// Interactive tooth chart data
-const TEETH_UPPER = [18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
-const TEETH_LOWER = [48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38];
-
-const TOOTH_STATUSES: Record<string, { label: string; color: string }> = {
-  healthy: { label: "Sog'lom", color: "bg-green-500" },
-  caries: { label: "Kariyes", color: "bg-yellow-500" },
-  filled: { label: "Plomba", color: "bg-blue-500" },
-  crown: { label: "Koronka", color: "bg-purple-500" },
-  missing: { label: "Yo'q", color: "bg-red-500" },
-  implant: { label: "Implant", color: "bg-cyan-500" },
-};
+import DentalOverview from "@/components/dental/DentalOverview";
+import DentalPatients from "@/components/dental/DentalPatients";
+import DentalToothChart from "@/components/dental/DentalToothChart";
+import DentalImaging from "@/components/dental/DentalImaging";
+import DentalBilling from "@/components/dental/DentalBilling";
+import DentalLab from "@/components/dental/DentalLab";
+import DentalInventory from "@/components/dental/DentalInventory";
+import DentalReports from "@/components/dental/DentalReports";
+import DentalRecall from "@/components/dental/DentalRecall";
 
 const DentalDashboard = () => {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [clinic, setClinic] = useState<any>(null);
   const [patients, setPatients] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -37,11 +32,6 @@ const DentalDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("overview");
 
-  // Patient form
-  const [showAddPatient, setShowAddPatient] = useState(false);
-  const [pForm, setPForm] = useState({ full_name: "", phone: "", date_of_birth: "", gender: "male" });
-
-  // Tooth chart
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [toothChart, setToothChart] = useState<Record<number, string>>({});
 
@@ -66,17 +56,15 @@ const DentalDashboard = () => {
 
   useEffect(() => { fetchData(); }, [user]);
 
-  const handleAddPatient = async () => {
-    if (!clinic || !pForm.full_name || !pForm.phone) return;
+  const handleAddPatient = async (form: { full_name: string; phone: string; date_of_birth: string; gender: string }) => {
+    if (!clinic || !form.full_name || !form.phone) return;
     const { error } = await supabase.from("dental_patients").insert({
-      clinic_id: clinic.id, full_name: pForm.full_name, phone: pForm.phone,
-      date_of_birth: pForm.date_of_birth || null, gender: pForm.gender,
+      clinic_id: clinic.id, full_name: form.full_name, phone: form.phone,
+      date_of_birth: form.date_of_birth || null, gender: form.gender,
     } as any);
     if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
-    await writeAuditLog({ action: "create", entity_type: "dental_patient", module: "dental", details: { name: pForm.full_name } });
+    await writeAuditLog({ action: "create", entity_type: "dental_patient", module: "dental", details: { name: form.full_name } });
     toast({ title: "Bemor qo'shildi" });
-    setPForm({ full_name: "", phone: "", date_of_birth: "", gender: "male" });
-    setShowAddPatient(false);
     fetchData();
   };
 
@@ -96,7 +84,6 @@ const DentalDashboard = () => {
 
   const today = new Date().toISOString().split("T")[0];
   const todayAppts = appointments.filter(a => a.appointment_date === today);
-  const completedTreatments = treatments.filter(t => t.status === "completed");
 
   const sidebarItems: SidebarItem[] = [
     { id: "overview", label: "Umumiy", icon: BarChart3 },
@@ -104,7 +91,13 @@ const DentalDashboard = () => {
     { id: "tooth-chart", label: "Tish xaritasi", icon: Heart },
     { id: "appointments", label: "Qabullar", icon: Calendar },
     { id: "treatments", label: "Davolash", icon: Activity },
+    { id: "imaging", label: "Tasvirlar", icon: Camera },
+    { id: "billing", label: "Moliya", icon: DollarSign },
+    { id: "lab", label: "Lab", icon: FlaskConical },
+    { id: "inventory", label: "Materiallar", icon: Package },
+    { id: "recall", label: "Eslatmalar", icon: Bell },
     { id: "services", label: "Xizmatlar", icon: Stethoscope },
+    { id: "reports", label: "Hisobotlar", icon: BarChart3 },
     { id: "settings", label: "Sozlamalar", icon: Settings },
   ];
 
@@ -129,149 +122,16 @@ const DentalDashboard = () => {
       activeTab={tab}
       onTabChange={setTab}
     >
-      {tab === "overview" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: "Bemorlar", value: patients.length, icon: Users, color: "text-blue-600" },
-              { label: "Bugungi qabullar", value: todayAppts.length, icon: Calendar, color: "text-green-600" },
-              { label: "Davolashlar", value: treatments.length, icon: Activity, color: "text-purple-600" },
-              { label: "Xizmatlar", value: services.length, icon: Stethoscope, color: "text-primary" },
-            ].map(s => (
-              <div key={s.label} className="bg-card rounded-2xl border border-border p-5">
-                <s.icon className={cn("w-6 h-6 mb-2", s.color)} />
-                <p className={cn("text-3xl font-bold", s.color)}>{s.value}</p>
-                <p className="text-xs text-muted-foreground">{s.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="bg-card rounded-2xl border border-border p-6">
-            <h3 className="font-heading font-bold text-foreground mb-4">Bugungi qabullar</h3>
-            {todayAppts.length === 0 ? <p className="text-muted-foreground text-sm">Bugun qabul yo'q</p> :
-              todayAppts.map(a => (
-                <div key={a.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                  <span className="text-sm font-medium text-foreground">{a.appointment_time}</span>
-                  <span className="text-sm text-muted-foreground">{a.doctor_name || "Shifokor"}</span>
-                  <Badge variant="outline">{a.status}</Badge>
-                </div>
-              ))
-            }
-          </div>
-        </div>
-      )}
-
-      {tab === "patients" && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="font-heading text-xl font-bold text-foreground">Bemorlar</h2>
-            <Button onClick={() => setShowAddPatient(true)}><Plus className="w-4 h-4 mr-1" /> Yangi bemor</Button>
-          </div>
-          {showAddPatient && (
-            <div className="bg-card rounded-2xl border border-border p-4 space-y-3">
-              <Input placeholder="Ism familiya" value={pForm.full_name} onChange={e => setPForm(p => ({ ...p, full_name: e.target.value }))} />
-              <Input placeholder="Telefon" value={pForm.phone} onChange={e => setPForm(p => ({ ...p, phone: e.target.value }))} />
-              <Input type="date" value={pForm.date_of_birth} onChange={e => setPForm(p => ({ ...p, date_of_birth: e.target.value }))} />
-              <div className="flex gap-2">
-                <Button onClick={handleAddPatient}>Saqlash</Button>
-                <Button variant="outline" onClick={() => setShowAddPatient(false)}>Bekor</Button>
-              </div>
-            </div>
-          )}
-          <div className="space-y-2">
-            {patients.map(p => (
-              <div key={p.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-foreground">{p.full_name}</p>
-                  <p className="text-xs text-muted-foreground">{p.phone} {p.date_of_birth && `• ${p.date_of_birth}`}</p>
-                </div>
-                <Button size="sm" variant="outline" onClick={() => openToothChart(p)}>🦷 Tish xaritasi</Button>
-              </div>
-            ))}
-            {patients.length === 0 && <p className="text-center py-8 text-muted-foreground">Bemorlar topilmadi</p>}
-          </div>
-        </div>
-      )}
-
+      {tab === "overview" && <DentalOverview patients={patients} todayAppts={todayAppts} treatments={treatments} services={services} />}
+      {tab === "patients" && <DentalPatients patients={patients} onAddPatient={handleAddPatient} onOpenToothChart={openToothChart} />}
       {tab === "tooth-chart" && (
-        <div className="space-y-6">
-          {selectedPatient ? (
-            <>
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" onClick={() => { setSelectedPatient(null); setTab("patients"); }}>
-                  <ArrowLeft className="w-4 h-4 mr-1" /> Orqaga
-                </Button>
-                <h2 className="font-heading text-xl font-bold text-foreground">🦷 {selectedPatient.full_name} — Tish xaritasi</h2>
-              </div>
-              {/* Legend */}
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(TOOTH_STATUSES).map(([k, v]) => (
-                  <div key={k} className="flex items-center gap-1">
-                    <div className={cn("w-3 h-3 rounded-full", v.color)} />
-                    <span className="text-xs text-muted-foreground">{v.label}</span>
-                  </div>
-                ))}
-              </div>
-              {/* Upper teeth */}
-              <div className="bg-card rounded-2xl border border-border p-6">
-                <p className="text-xs text-muted-foreground mb-3 text-center">Yuqori jag'</p>
-                <div className="flex justify-center gap-1 flex-wrap">
-                  {TEETH_UPPER.map(t => {
-                    const status = toothChart[t] || "healthy";
-                    return (
-                      <div key={t} className="relative group">
-                        <button
-                          className={cn("w-9 h-9 rounded-lg border-2 border-border text-xs font-bold flex items-center justify-center transition-all hover:scale-110",
-                            TOOTH_STATUSES[status]?.color || "bg-muted", "text-white"
-                          )}
-                        >
-                          {t}
-                        </button>
-                        <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-popover border border-border rounded-lg shadow-lg z-50 p-1 min-w-[100px]">
-                          {Object.entries(TOOTH_STATUSES).map(([k, v]) => (
-                            <button key={k} onClick={() => setToothStatus(t, k)} className="text-xs px-2 py-1 text-left hover:bg-muted rounded flex items-center gap-1">
-                              <div className={cn("w-2 h-2 rounded-full", v.color)} /> {v.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <p className="text-xs text-muted-foreground mt-4 mb-3 text-center">Pastki jag'</p>
-                <div className="flex justify-center gap-1 flex-wrap">
-                  {TEETH_LOWER.map(t => {
-                    const status = toothChart[t] || "healthy";
-                    return (
-                      <div key={t} className="relative group">
-                        <button
-                          className={cn("w-9 h-9 rounded-lg border-2 border-border text-xs font-bold flex items-center justify-center transition-all hover:scale-110",
-                            TOOTH_STATUSES[status]?.color || "bg-muted", "text-white"
-                          )}
-                        >
-                          {t}
-                        </button>
-                        <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-popover border border-border rounded-lg shadow-lg z-50 p-1 min-w-[100px]">
-                          {Object.entries(TOOTH_STATUSES).map(([k, v]) => (
-                            <button key={k} onClick={() => setToothStatus(t, k)} className="text-xs px-2 py-1 text-left hover:bg-muted rounded flex items-center gap-1">
-                              <div className={cn("w-2 h-2 rounded-full", v.color)} /> {v.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Bemorlar bo'limidan bemor tanlab tish xaritasini oching</p>
-            </div>
-          )}
-        </div>
+        <DentalToothChart
+          selectedPatient={selectedPatient}
+          toothChart={toothChart}
+          onSetToothStatus={setToothStatus}
+          onBack={() => { setSelectedPatient(null); setTab("patients"); }}
+        />
       )}
-
       {tab === "appointments" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Qabullar</h2>
@@ -288,7 +148,6 @@ const DentalDashboard = () => {
           }
         </div>
       )}
-
       {tab === "treatments" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Davolash rejalari</h2>
@@ -310,7 +169,11 @@ const DentalDashboard = () => {
           }
         </div>
       )}
-
+      {tab === "imaging" && <DentalImaging patients={patients} />}
+      {tab === "billing" && <DentalBilling treatments={treatments} appointments={appointments} />}
+      {tab === "lab" && <DentalLab patients={patients} />}
+      {tab === "inventory" && <DentalInventory />}
+      {tab === "recall" && <DentalRecall patients={patients} />}
       {tab === "services" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Xizmatlar</h2>
@@ -327,7 +190,7 @@ const DentalDashboard = () => {
           }
         </div>
       )}
-
+      {tab === "reports" && <DentalReports patients={patients} appointments={appointments} treatments={treatments} services={services} />}
       {tab === "settings" && (
         <div className="bg-card rounded-2xl border border-border p-6">
           <h2 className="font-heading text-xl font-bold text-foreground mb-4">Klinika sozlamalari</h2>
