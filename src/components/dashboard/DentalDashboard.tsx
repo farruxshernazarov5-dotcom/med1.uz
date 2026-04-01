@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Stethoscope, Users, Calendar, DollarSign, Settings, BarChart3,
   Activity, Heart, Camera, FlaskConical, Package, Bell, FileText,
-  ClipboardList, UserCheck, Wrench, MessageSquare, Brain
+  ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
