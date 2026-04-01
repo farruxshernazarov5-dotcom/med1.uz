@@ -352,7 +352,21 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     const patient = patients.find(p => p.id === order.patient_id);
     const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
     const template = LAB_TEMPLATES[order.test_category];
+    const autoTemplate = template && orderResults.length === 0 && order.status !== "completed";
 
+    const handleDownloadPDF = () => {
+      // Get verification code if available
+      downloadLabReportPDF({
+        testName: order.test_name,
+        testCategory: CATEGORIES.find(c => c.value === order.test_category)?.label || order.test_category,
+        patientName: patient?.full_name || "—",
+        patientPhone: patient?.phone,
+        patientDob: patient?.date_of_birth,
+        orderedAt: order.ordered_at,
+        completedAt: order.completed_at,
+        results: orderResults,
+      });
+    };
     return (
       <div>
         <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(null)} className="mb-4">
