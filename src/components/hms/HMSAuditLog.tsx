@@ -11,11 +11,24 @@ interface Props { clinicId: string; }
 const actionLabels: Record<string, string> = {
   create: "Yaratildi", update: "Yangilandi", delete: "O'chirildi", login: "Kirish", view: "Ko'rildi",
   status_change: "Status o'zgardi", payment: "To'lov", prescription: "Retsept", appointment: "Qabul",
+  lab_order: "Analiz buyurtma", lab_result: "Analiz natija", send_notification: "Bildirishnoma",
 };
 
 const entityLabels: Record<string, string> = {
   patient: "Bemor", staff: "Xodim", appointment: "Qabul", prescription: "Retsept", lab_order: "Analiz",
   finance: "Moliya", bed: "Palata", equipment: "Jihoz", department: "Bo'lim", teleconsultation: "Telemeditsina",
+  pharmacy: "Dorixona", document: "Hujjat", verification: "Verifikatsiya",
+};
+
+const roleLabels: Record<string, string> = {
+  super_admin: "Super Admin", clinic_admin: "Klinika Admin", doctor: "Shifokor",
+  reception: "Qabulxona", accountant: "Buxgalter", lab_technician: "Laborant", patient: "Bemor",
+};
+
+const moduleLabels: Record<string, string> = {
+  patients: "Bemorlar", laboratory: "Laboratoriya", pharmacy: "Dorixona", billing: "To'lovlar",
+  appointments: "Qabullar", prescriptions: "Retseptlar", staff: "Xodimlar", emr: "EMR",
+  surgery: "Operatsiya", insurance: "Sug'urta", equipment: "Jihozlar", beds: "Palatalar",
 };
 
 const COLORS = ["hsl(var(--primary))", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];

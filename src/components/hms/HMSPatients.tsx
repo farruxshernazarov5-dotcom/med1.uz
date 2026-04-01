@@ -214,6 +214,7 @@ const HMSPatients = ({ clinicId }: Props) => {
             <div className="flex gap-2">
               {p.blood_group && <Badge variant="outline" className="text-sm">{p.blood_group}{p.rh_factor || ""}</Badge>}
               <Badge variant="outline">{p.gender === "male" ? "Erkak" : "Ayol"}</Badge>
+              <Button size="sm" variant="outline" onClick={() => handleSendToLab(p)}><FlaskConical className="w-3.5 h-3.5 mr-1" /> Laboratoriyaga</Button>
               <Button size="sm" variant="outline" onClick={() => handleEdit(p)}><Edit2 className="w-3.5 h-3.5 mr-1" /> Tahrirlash</Button>
             </div>
           </div>
