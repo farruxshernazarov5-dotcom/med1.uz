@@ -9,7 +9,7 @@ import {
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
   Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart,
   Scissors, Receipt, Wrench, ListOrdered, Siren, ShieldCheck, PieChart,
-  CalendarDays, ShieldAlert, User, Globe, TrendingUp
+  CalendarDays, ShieldAlert, User, Globe, TrendingUp, CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DashboardShell from "./DashboardShell";
@@ -46,6 +46,7 @@ import HMSFinance from "@/components/hms/HMSFinance";
 import HMSInventory from "@/components/hms/HMSInventory";
 import HMSOverview from "@/components/hms/HMSOverview";
 import HMSAuditLog from "@/components/hms/HMSAuditLog";
+import HMSPaymentSettings from "@/components/hms/HMSPaymentSettings";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
@@ -152,6 +153,7 @@ const ClinicDashboard = () => {
     { id: "hms-finance", label: "Moliya", icon: Receipt, group: "HMS" },
     { id: "hms-inventory", label: "Ombor", icon: FlaskConical, group: "HMS" },
     { id: "hms-audit", label: "Audit Log", icon: ShieldCheck, group: "HMS" },
+    { id: "hms-payment-settings", label: "To'lov (SaaS)", icon: CreditCard, group: "HMS" },
   ];
 
   return (
@@ -235,6 +237,7 @@ const ClinicDashboard = () => {
       {tab === "hms-finance" && <HMSFinance clinicId={clinic.id} />}
       {tab === "hms-inventory" && <HMSInventory clinicId={clinic.id} />}
       {tab === "hms-audit" && <HMSAuditLog clinicId={clinic.id} />}
+      {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
     </DashboardShell>
   );
 };
