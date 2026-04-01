@@ -11,7 +11,7 @@ const HeroSection = () => {
     <>
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImage} alt="Medical background" className="w-full h-full object-cover" />
+          <img src={heroImage} alt="Med1.uz tibbiy portal - O'zbekiston yetakchi tibbiy platformasi" className="w-full h-full object-cover" width={1920} height={1080} fetchPriority="high" />
           <div className="absolute inset-0 bg-medical-navy/70" />
           <div className="absolute inset-0 bg-gradient-to-r from-medical-navy/90 via-medical-navy/60 to-transparent" />
         </div>

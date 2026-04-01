@@ -2249,6 +2249,7 @@ export type Database = {
           id: string
           insurance_number: string | null
           is_active: boolean | null
+          national_id: string | null
           notes: string | null
           passport_id: string | null
           phone: string
@@ -2270,6 +2271,7 @@ export type Database = {
           id?: string
           insurance_number?: string | null
           is_active?: boolean | null
+          national_id?: string | null
           notes?: string | null
           passport_id?: string | null
           phone: string
@@ -2291,6 +2293,7 @@ export type Database = {
           id?: string
           insurance_number?: string | null
           is_active?: boolean | null
+          national_id?: string | null
           notes?: string | null
           passport_id?: string | null
           phone?: string

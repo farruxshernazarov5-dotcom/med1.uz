@@ -1,77 +1,93 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import MedicinePage from "./pages/MedicinePage";
-import HealthPage from "./pages/HealthPage";
-import DiseasesPage from "./pages/DiseasesPage";
-import DiseaseDetailPage from "./pages/DiseaseDetailPage";
-import ArticlesPage from "./pages/ArticlesPage";
-import ArticleDetailPage from "./pages/ArticleDetailPage";
-import CategoryArticlesPage from "./pages/CategoryArticlesPage";
-import ClinicsPage from "./pages/ClinicsPage";
-import ClinicDetailPage from "./pages/ClinicDetailPage";
-import NewsDetailPage from "./pages/NewsDetailPage";
-import MedTechPage from "./pages/MedTechPage";
-import MedTechDetailPage from "./pages/MedTechDetailPage";
-import NewsPage from "./pages/NewsPage";
-import DiagnosticsPage from "./pages/DiagnosticsPage";
-import PharmaciesPage from "./pages/PharmaciesPage";
-import BloodBanksPage from "./pages/BloodBanksPage";
-import MaternityPage from "./pages/MaternityPage";
-import AboutPage from "./pages/AboutPage";
-import ServicesPage from "./pages/ServicesPage";
-import UserGuidePage from "./pages/UserGuidePage";
-import SitemapPage from "./pages/SitemapPage";
-import CosmetologyPage from "./pages/CosmetologyPage";
-import TermDetailPage from "./pages/TermDetailPage";
-import AuthPage from "./pages/AuthPage";
-import DashboardPage from "./pages/DashboardPage";
-import BookingPage from "./pages/BookingPage";
-import ClinicRegistrationPage from "./pages/ClinicRegistrationPage";
-import VendorRegistrationPage from "./pages/VendorRegistrationPage";
-import DiagnosticsRegistrationPage from "./pages/DiagnosticsRegistrationPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import SymptomCheckerPage from "./pages/SymptomCheckerPage";
-import AIDoctorChatPage from "./pages/AIDoctorChatPage";
-import AIReportAnalysisPage from "./pages/AIReportAnalysisPage";
-import AIHealthRiskPage from "./pages/AIHealthRiskPage";
-import AIServicesPage from "./pages/AIServicesPage";
-import MaternityRegistrationPage from "./pages/MaternityRegistrationPage";
-import CosmetologyRegistrationPage from "./pages/CosmetologyRegistrationPage";
-import DoctorsPage from "./pages/DoctorsPage";
-import DoctorProfilePage from "./pages/DoctorProfilePage";
-import DoctorRegistrationPage from "./pages/DoctorRegistrationPage";
-import SmartSearchPage from "./pages/SmartSearchPage";
-import AIDiagnostikaPage from "./pages/AIDiagnostikaPage";
-import AIRadiologyPage from "./pages/AIRadiologyPage";
-import AIHealthAssistantPage from "./pages/AIHealthAssistantPage";
+
+// Lazy-loaded pages for code splitting
+const MedicinePage = lazy(() => import("./pages/MedicinePage"));
+const HealthPage = lazy(() => import("./pages/HealthPage"));
+const DiseasesPage = lazy(() => import("./pages/DiseasesPage"));
+const DiseaseDetailPage = lazy(() => import("./pages/DiseaseDetailPage"));
+const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
+const ArticleDetailPage = lazy(() => import("./pages/ArticleDetailPage"));
+const CategoryArticlesPage = lazy(() => import("./pages/CategoryArticlesPage"));
+const ClinicsPage = lazy(() => import("./pages/ClinicsPage"));
+const ClinicDetailPage = lazy(() => import("./pages/ClinicDetailPage"));
+const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
+const MedTechPage = lazy(() => import("./pages/MedTechPage"));
+const MedTechDetailPage = lazy(() => import("./pages/MedTechDetailPage"));
+const NewsPage = lazy(() => import("./pages/NewsPage"));
+const DiagnosticsPage = lazy(() => import("./pages/DiagnosticsPage"));
+const PharmaciesPage = lazy(() => import("./pages/PharmaciesPage"));
+const BloodBanksPage = lazy(() => import("./pages/BloodBanksPage"));
+const MaternityPage = lazy(() => import("./pages/MaternityPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const UserGuidePage = lazy(() => import("./pages/UserGuidePage"));
+const SitemapPage = lazy(() => import("./pages/SitemapPage"));
+const CosmetologyPage = lazy(() => import("./pages/CosmetologyPage"));
+const TermDetailPage = lazy(() => import("./pages/TermDetailPage"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const BookingPage = lazy(() => import("./pages/BookingPage"));
+const ClinicRegistrationPage = lazy(() => import("./pages/ClinicRegistrationPage"));
+const VendorRegistrationPage = lazy(() => import("./pages/VendorRegistrationPage"));
+const DiagnosticsRegistrationPage = lazy(() => import("./pages/DiagnosticsRegistrationPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
+const SymptomCheckerPage = lazy(() => import("./pages/SymptomCheckerPage"));
+const AIDoctorChatPage = lazy(() => import("./pages/AIDoctorChatPage"));
+const AIReportAnalysisPage = lazy(() => import("./pages/AIReportAnalysisPage"));
+const AIHealthRiskPage = lazy(() => import("./pages/AIHealthRiskPage"));
+const AIServicesPage = lazy(() => import("./pages/AIServicesPage"));
+const MaternityRegistrationPage = lazy(() => import("./pages/MaternityRegistrationPage"));
+const CosmetologyRegistrationPage = lazy(() => import("./pages/CosmetologyRegistrationPage"));
+const DoctorsPage = lazy(() => import("./pages/DoctorsPage"));
+const DoctorProfilePage = lazy(() => import("./pages/DoctorProfilePage"));
+const DoctorRegistrationPage = lazy(() => import("./pages/DoctorRegistrationPage"));
+const SmartSearchPage = lazy(() => import("./pages/SmartSearchPage"));
+const AIDiagnostikaPage = lazy(() => import("./pages/AIDiagnostikaPage"));
+const AIRadiologyPage = lazy(() => import("./pages/AIRadiologyPage"));
+const AIHealthAssistantPage = lazy(() => import("./pages/AIHealthAssistantPage"));
+const PartnershipPage = lazy(() => import("./pages/PartnershipPage"));
+const ReportVerificationPage = lazy(() => import("./pages/ReportVerificationPage"));
+const PharmacyRegistrationPage = lazy(() => import("./pages/PharmacyRegistrationPage"));
+const AIPregnancyPage = lazy(() => import("./pages/AIPregnancyPage"));
+const AIBabyCarePage = lazy(() => import("./pages/AIBabyCarePage"));
+const AICosmetologyPage = lazy(() => import("./pages/AICosmetologyPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const AIDietologPage = lazy(() => import("./pages/AIDietologPage"));
+const AIPsixologPage = lazy(() => import("./pages/AIPsixologPage"));
+const AIFarmatsevtPage = lazy(() => import("./pages/AIFarmatsevtPage"));
+const AIFitnessPage = lazy(() => import("./pages/AIFitnessPage"));
+const AISubscriptionPage = lazy(() => import("./pages/AISubscriptionPage"));
+const AIPaymentPage = lazy(() => import("./pages/AIPaymentPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
+const AIVitalSignsPage = lazy(() => import("./pages/AIVitalSignsPage"));
+const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistrationPage"));
+
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
-import PartnershipPage from "./pages/PartnershipPage";
-import ReportVerificationPage from "./pages/ReportVerificationPage";
-import PharmacyRegistrationPage from "./pages/PharmacyRegistrationPage";
-import AIPregnancyPage from "./pages/AIPregnancyPage";
-import AIBabyCarePage from "./pages/AIBabyCarePage";
-import AICosmetologyPage from "./pages/AICosmetologyPage";
-import PricingPage from "./pages/PricingPage";
-import AIDietologPage from "./pages/AIDietologPage";
-import AIPsixologPage from "./pages/AIPsixologPage";
-import AIFarmatsevtPage from "./pages/AIFarmatsevtPage";
-import AIFitnessPage from "./pages/AIFitnessPage";
-import AISubscriptionPage from "./pages/AISubscriptionPage";
-import AIPaymentPage from "./pages/AIPaymentPage";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import CookieConsent from "./components/CookieConsent";
-import ContactPage from "./pages/ContactPage";
-import AdminPage from "./pages/AdminPage";
-import AIVitalSignsPage from "./pages/AIVitalSignsPage";
+
 const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+      <p className="text-sm text-muted-foreground">Yuklanmoqda...</p>
+    </div>
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -84,74 +100,79 @@ const App = () => (
           <FloatingAIPanel />
           <FloatingServicesPanel />
           <CookieConsent />
-          <Routes>
-            <Route path="/" element={<Index />} />
-          <Route path="/medicine" element={<MedicinePage />} />
-          <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
-          <Route path="/health" element={<HealthPage />} />
-          <Route path="/diseases" element={<DiseasesPage />} />
-          <Route path="/diseases/:categoryId/:slug" element={<DiseaseDetailPage />} />
-          <Route path="/articles" element={<ArticlesPage />} />
-          <Route path="/articles/:categoryId" element={<CategoryArticlesPage />} />
-          <Route path="/articles/:categoryId/:slug" element={<ArticleDetailPage />} />
-          <Route path="/clinics" element={<ClinicsPage />} />
-          <Route path="/clinics/:clinicId" element={<ClinicDetailPage />} />
-          <Route path="/med-tech" element={<MedTechPage />} />
-          <Route path="/med-tech/:equipmentId" element={<MedTechDetailPage />} />
-          <Route path="/news" element={<NewsPage />} />
-          <Route path="/news/:newsId" element={<NewsDetailPage />} />
-          <Route path="/diagnostics" element={<DiagnosticsPage />} />
-          <Route path="/pharmacies" element={<PharmaciesPage />} />
-          <Route path="/blood-banks" element={<BloodBanksPage />} />
-          <Route path="/maternity" element={<MaternityPage />} />
-          <Route path="/cosmetology" element={<CosmetologyPage />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/booking" element={<BookingPage />} />
-          <Route path="/clinic-register" element={<ClinicRegistrationPage />} />
-           <Route path="/vendor-register" element={<VendorRegistrationPage />} />
-           <Route path="/diagnostics-register" element={<DiagnosticsRegistrationPage />} />
-           <Route path="/maternity-register" element={<MaternityRegistrationPage />} />
-           <Route path="/cosmetology-register" element={<CosmetologyRegistrationPage />} />
-           <Route path="/doctor-register" element={<DoctorRegistrationPage />} />
-           <Route path="/doctors" element={<DoctorsPage />} />
-           <Route path="/doctors/:doctorId" element={<DoctorProfilePage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/user-guide" element={<UserGuidePage />} />
-          <Route path="/sitemap" element={<SitemapPage />} />
-           <Route path="/symptom-checker" element={<SymptomCheckerPage />} />
-           <Route path="/ai-services" element={<AIServicesPage />} />
-           <Route path="/ai-doctor-chat" element={<AIDoctorChatPage />} />
-           <Route path="/ai-report-analysis" element={<AIReportAnalysisPage />} />
-           <Route path="/ai-health-risk" element={<AIHealthRiskPage />} />
-           <Route path="/ai-diagnostika" element={<AIDiagnostikaPage />} />
-           <Route path="/ai-radiology" element={<AIRadiologyPage />} />
-           <Route path="/ai-health-assistant" element={<AIHealthAssistantPage />} />
-           <Route path="/smart-search" element={<SmartSearchPage />} />
-            <Route path="/partnership" element={<PartnershipPage />} />
-            <Route path="/report/:reportId" element={<ReportVerificationPage />} />
-             <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
-              <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
-               <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/medicine" element={<MedicinePage />} />
+                <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
+                <Route path="/health" element={<HealthPage />} />
+                <Route path="/diseases" element={<DiseasesPage />} />
+                <Route path="/diseases/:categoryId/:slug" element={<DiseaseDetailPage />} />
+                <Route path="/articles" element={<ArticlesPage />} />
+                <Route path="/articles/:categoryId" element={<CategoryArticlesPage />} />
+                <Route path="/articles/:categoryId/:slug" element={<ArticleDetailPage />} />
+                <Route path="/clinics" element={<ClinicsPage />} />
+                <Route path="/clinics/:clinicId" element={<ClinicDetailPage />} />
+                <Route path="/med-tech" element={<MedTechPage />} />
+                <Route path="/med-tech/:equipmentId" element={<MedTechDetailPage />} />
+                <Route path="/news" element={<NewsPage />} />
+                <Route path="/news/:newsId" element={<NewsDetailPage />} />
+                <Route path="/diagnostics" element={<DiagnosticsPage />} />
+                <Route path="/pharmacies" element={<PharmaciesPage />} />
+                <Route path="/blood-banks" element={<BloodBanksPage />} />
+                <Route path="/maternity" element={<MaternityPage />} />
+                <Route path="/cosmetology" element={<CosmetologyPage />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/booking" element={<BookingPage />} />
+                <Route path="/clinic-register" element={<ClinicRegistrationPage />} />
+                <Route path="/vendor-register" element={<VendorRegistrationPage />} />
+                <Route path="/diagnostics-register" element={<DiagnosticsRegistrationPage />} />
+                <Route path="/maternity-register" element={<MaternityRegistrationPage />} />
+                <Route path="/cosmetology-register" element={<CosmetologyRegistrationPage />} />
+                <Route path="/doctor-register" element={<DoctorRegistrationPage />} />
+                <Route path="/doctors" element={<DoctorsPage />} />
+                <Route path="/doctors/:doctorId" element={<DoctorProfilePage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/user-guide" element={<UserGuidePage />} />
+                <Route path="/sitemap" element={<SitemapPage />} />
+                <Route path="/symptom-checker" element={<SymptomCheckerPage />} />
+                <Route path="/ai-services" element={<AIServicesPage />} />
+                <Route path="/ai-doctor-chat" element={<AIDoctorChatPage />} />
+                <Route path="/ai-report-analysis" element={<AIReportAnalysisPage />} />
+                <Route path="/ai-health-risk" element={<AIHealthRiskPage />} />
+                <Route path="/ai-diagnostika" element={<AIDiagnostikaPage />} />
+                <Route path="/ai-radiology" element={<AIRadiologyPage />} />
+                <Route path="/ai-health-assistant" element={<AIHealthAssistantPage />} />
+                <Route path="/smart-search" element={<SmartSearchPage />} />
+                <Route path="/partnership" element={<PartnershipPage />} />
+                <Route path="/report/:reportId" element={<ReportVerificationPage />} />
+                <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
+                <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
+                <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
                 <Route path="/ai-cosmetology" element={<AICosmetologyPage />} />
-                 <Route path="/pricing" element={<PricingPage />} />
-                 <Route path="/ai-dietolog" element={<AIDietologPage />} />
-                 <Route path="/ai-psixolog" element={<AIPsixologPage />} />
-                 <Route path="/ai-farmatsevt" element={<AIFarmatsevtPage />} />
-                  <Route path="/ai-fitness" element={<AIFitnessPage />} />
-                  <Route path="/ai-subscription" element={<AISubscriptionPage />} />
-                   <Route path="/ai-payment" element={<AIPaymentPage />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                     <Route path="/admin" element={<AdminPage />} />
-                     <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/ai-dietolog" element={<AIDietologPage />} />
+                <Route path="/ai-psixolog" element={<AIPsixologPage />} />
+                <Route path="/ai-farmatsevt" element={<AIFarmatsevtPage />} />
+                <Route path="/ai-fitness" element={<AIFitnessPage />} />
+                <Route path="/ai-subscription" element={<AISubscriptionPage />} />
+                <Route path="/ai-payment" element={<AIPaymentPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
+                <Route path="/blood-donor-register" element={<BloodDonorRegistrationPage />} />
                 <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </AuthProvider>
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

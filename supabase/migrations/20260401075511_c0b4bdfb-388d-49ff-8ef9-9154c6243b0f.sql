@@ -1,0 +1,1 @@
+ALTER TABLE public.hms_patients ADD COLUMN national_id TEXT UNIQUE;
