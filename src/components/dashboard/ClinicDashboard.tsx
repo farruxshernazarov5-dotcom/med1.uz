@@ -237,6 +237,7 @@ const ClinicDashboard = () => {
       {tab === "hms-finance" && <HMSFinance clinicId={clinic.id} />}
       {tab === "hms-inventory" && <HMSInventory clinicId={clinic.id} />}
       {tab === "hms-audit" && <HMSAuditLog clinicId={clinic.id} />}
+      {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
     </DashboardShell>
   );
 };
