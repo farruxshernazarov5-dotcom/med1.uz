@@ -171,12 +171,17 @@ const HMSAuditLog = ({ clinicId }: Props) => {
                 <p className="text-xs text-muted-foreground">
                   {new Date(l.created_at).toLocaleString("uz")}
                   {l.entity_id && <span className="ml-2">ID: {l.entity_id.slice(0, 8)}...</span>}
+                  {l.role && <span className="ml-2">👤 {roleLabels[l.role] || l.role}</span>}
+                  {l.module && <span className="ml-2">📦 {moduleLabels[l.module] || l.module}</span>}
                 </p>
               </div>
             </div>
-            {l.details && (
-              <p className="text-xs text-muted-foreground max-w-xs truncate">{typeof l.details === "string" ? l.details : JSON.stringify(l.details).slice(0, 80)}</p>
-            )}
+            <div className="flex flex-col items-end gap-1">
+              {l.details && (
+                <p className="text-xs text-muted-foreground max-w-xs truncate">{typeof l.details === "string" ? l.details : JSON.stringify(l.details).slice(0, 80)}</p>
+              )}
+              {l.ip_address && <span className="text-[10px] text-muted-foreground">IP: {l.ip_address}</span>}
+            </div>
           </div>
         ))}
         {filtered.length === 0 && <p className="text-center py-8 text-muted-foreground">Audit loglar yo'q</p>}
