@@ -83,6 +83,25 @@ const HMSPatients = ({ clinicId }: Props) => {
     fetchPatientDetails(p);
   };
 
+  const handleSendToLab = async (patient: any) => {
+    const testName = prompt("Tahlil nomini kiriting (masalan: Umumiy qon tahlili):");
+    if (!testName) return;
+    const { error } = await supabase.from("hms_lab_orders").insert({
+      clinic_id: clinicId,
+      patient_id: patient.id,
+      test_name: testName,
+      test_category: "blood",
+      priority: "normal",
+      status: "pending",
+    });
+    if (error) {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "✅ Laboratoriyaga yuborildi", description: `${patient.full_name} — ${testName}` });
+    if (selectedPatient?.id === patient.id) fetchPatientDetails(patient);
+  };
+
   const resetForm = () => {
     setForm({ full_name: "", phone: "", date_of_birth: "", gender: "male", blood_group: "", address: "", passport_id: "", emergency_contact: "", allergies: "", chronic_diseases: "", notes: "", email: "", insurance_number: "" });
     setEditing(null);
@@ -195,6 +214,7 @@ const HMSPatients = ({ clinicId }: Props) => {
             <div className="flex gap-2">
               {p.blood_group && <Badge variant="outline" className="text-sm">{p.blood_group}{p.rh_factor || ""}</Badge>}
               <Badge variant="outline">{p.gender === "male" ? "Erkak" : "Ayol"}</Badge>
+              <Button size="sm" variant="outline" onClick={() => handleSendToLab(p)}><FlaskConical className="w-3.5 h-3.5 mr-1" /> Laboratoriyaga</Button>
               <Button size="sm" variant="outline" onClick={() => handleEdit(p)}><Edit2 className="w-3.5 h-3.5 mr-1" /> Tahrirlash</Button>
             </div>
           </div>
@@ -268,8 +288,13 @@ const HMSPatients = ({ clinicId }: Props) => {
             ))}
           </TabsContent>
 
-          {/* LAB RESULTS TAB */}
+           {/* LAB RESULTS TAB */}
           <TabsContent value="lab" className="mt-4 space-y-3">
+            <div className="flex justify-end mb-2">
+              <Button size="sm" onClick={() => handleSendToLab(p)}>
+                <FlaskConical className="w-3.5 h-3.5 mr-1" /> Laboratoriyaga yuborish
+              </Button>
+            </div>
             {labOrders.length === 0 ? (
               <p className="text-center py-8 text-muted-foreground">Analizlar topilmadi</p>
             ) : labOrders.map((order: any) => (
