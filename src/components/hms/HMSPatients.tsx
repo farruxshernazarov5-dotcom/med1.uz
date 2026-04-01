@@ -83,6 +83,25 @@ const HMSPatients = ({ clinicId }: Props) => {
     fetchPatientDetails(p);
   };
 
+  const handleSendToLab = async (patient: any) => {
+    const testName = prompt("Tahlil nomini kiriting (masalan: Umumiy qon tahlili):");
+    if (!testName) return;
+    const { error } = await supabase.from("hms_lab_orders").insert({
+      clinic_id: clinicId,
+      patient_id: patient.id,
+      test_name: testName,
+      test_category: "blood",
+      priority: "normal",
+      status: "pending",
+    });
+    if (error) {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "✅ Laboratoriyaga yuborildi", description: `${patient.full_name} — ${testName}` });
+    if (selectedPatient?.id === patient.id) fetchPatientDetails(patient);
+  };
+
   const resetForm = () => {
     setForm({ full_name: "", phone: "", date_of_birth: "", gender: "male", blood_group: "", address: "", passport_id: "", emergency_contact: "", allergies: "", chronic_diseases: "", notes: "", email: "", insurance_number: "" });
     setEditing(null);
