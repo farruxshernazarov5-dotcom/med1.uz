@@ -141,7 +141,7 @@ const DentalDashboard = () => {
       onTabChange={setTab}
     >
       {tab === "overview" && <DentalOverview patients={patients} todayAppts={todayAppts} treatments={treatments} services={services} />}
-      {tab === "patients" && <DentalPatients patients={patients} onAddPatient={handleAddPatient} onOpenToothChart={openToothChart} />}
+      {tab === "patients" && <DentalPatients patients={patients} onAddPatient={handleAddPatient} onOpenToothChart={openToothChart} treatments={treatments} appointments={appointments} />}
       {tab === "tooth-chart" && (
         <DentalToothChart selectedPatient={selectedPatient} toothChart={toothChart} onSetToothStatus={setToothStatus} onBack={() => { setSelectedPatient(null); setTab("patients"); }} />
       )}
