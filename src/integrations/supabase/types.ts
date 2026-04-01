@@ -213,6 +213,11 @@ export type Database = {
           entity_id: string | null
           entity_type: string
           id: string
+          ip_address: string | null
+          module: string | null
+          new_data: Json | null
+          old_data: Json | null
+          role: string | null
           user_id: string | null
         }
         Insert: {
@@ -222,6 +227,11 @@ export type Database = {
           entity_id?: string | null
           entity_type: string
           id?: string
+          ip_address?: string | null
+          module?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          role?: string | null
           user_id?: string | null
         }
         Update: {
@@ -231,6 +241,11 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string
           id?: string
+          ip_address?: string | null
+          module?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          role?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -1057,6 +1072,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "doctors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_verifications: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          document_date: string | null
+          document_id: string
+          document_type: string
+          id: string
+          metadata: Json | null
+          patient_name: string | null
+          scanned_count: number | null
+          status: string
+          verification_code: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          document_date?: string | null
+          document_id: string
+          document_type?: string
+          id?: string
+          metadata?: Json | null
+          patient_name?: string | null
+          scanned_count?: number | null
+          status?: string
+          verification_code?: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          document_date?: string | null
+          document_id?: string
+          document_type?: string
+          id?: string
+          metadata?: Json | null
+          patient_name?: string | null
+          scanned_count?: number | null
+          status?: string
+          verification_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_verifications_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
