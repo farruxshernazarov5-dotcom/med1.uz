@@ -9,7 +9,7 @@ import {
   Stethoscope, CheckCircle, XCircle, Settings, BarChart3,
   Crown, Monitor, FlaskConical, Wallet, Pill, BedDouble, Bell, FileText, Heart,
   Scissors, Receipt, Wrench, ListOrdered, Siren, ShieldCheck, PieChart,
-  CalendarDays, ShieldAlert, User, Globe, TrendingUp
+  CalendarDays, ShieldAlert, User, Globe, TrendingUp, CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DashboardShell from "./DashboardShell";
