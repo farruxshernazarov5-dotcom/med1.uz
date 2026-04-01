@@ -109,7 +109,16 @@ const DentalDashboard = () => {
   ];
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
-  if (!clinic) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Stomatologiya klinikangiz topilmadi</div>;
+  if (!clinic) return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center p-8">
+        <Stethoscope className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-foreground mb-2">🦷 Stomatologiya klinikangiz topilmadi</h2>
+        <p className="text-muted-foreground mb-4">Avval klinikangizni ro'yxatdan o'tkazing</p>
+        <Button onClick={() => window.location.href = "/dental-register"}>Ro'yxatdan o'tish</Button>
+      </div>
+    </div>
+  );
 
   return (
     <DashboardShell
