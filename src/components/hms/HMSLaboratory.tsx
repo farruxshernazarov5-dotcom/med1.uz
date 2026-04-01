@@ -194,7 +194,8 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     if (!form.patient_id || !form.test_name) {
       toast({ title: "Bemor va tahlil nomi majburiy!", variant: "destructive" }); return;
     }
-    await supabase.from("hms_lab_orders").insert({ ...form, clinic_id: clinicId });
+    const { data } = await supabase.from("hms_lab_orders").insert({ ...form, clinic_id: clinicId }).select("id").single();
+    await writeAuditLog({ action: "create", entity_type: "lab_order", entity_id: data?.id, module: "laboratory", details: { test_name: form.test_name, patient_id: form.patient_id } });
     toast({ title: "✅ Tahlil buyurtmasi yaratildi" });
     setShowForm(false);
     setForm({ patient_id: "", test_name: "", test_category: "blood", priority: "normal", notes: "" });
