@@ -462,9 +462,16 @@ const HMSLaboratory = ({ clinicId }: Props) => {
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
             {order.status === "completed" && (
-              <Button size="sm" variant="outline" onClick={() => handleSendNotification(order)} disabled={sending === order.id}>
-                <Send className="w-3.5 h-3.5 mr-1" /> {sending === order.id ? "Yuborilmoqda..." : "Natijani yuborish"}
-              </Button>
+              <>
+                <Button size="sm" variant="outline" onClick={() => handleSendNotification(order)} disabled={sending === order.id}>
+                  <Send className="w-3.5 h-3.5 mr-1" /> {sending === order.id ? "Yuborilmoqda..." : "Natijani yuborish"}
+                </Button>
+                {orderResults.length > 0 && (
+                  <Button size="sm" variant="outline" onClick={handleDownloadPDF}>
+                    <Download className="w-3.5 h-3.5 mr-1" /> PDF yuklab olish
+                  </Button>
+                )}
+              </>
             )}
             {order.status === "pending" && (
               <Button size="sm" onClick={() => { updateOrderStatus(order.id, "in_progress"); setSelectedOrder({ ...order, status: "in_progress" }); }}>
