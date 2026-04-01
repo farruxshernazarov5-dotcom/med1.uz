@@ -45,6 +45,7 @@ import HMSPrescription from "@/components/hms/HMSPrescription";
 import HMSFinance from "@/components/hms/HMSFinance";
 import HMSInventory from "@/components/hms/HMSInventory";
 import HMSOverview from "@/components/hms/HMSOverview";
+import HMSAuditLog from "@/components/hms/HMSAuditLog";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
