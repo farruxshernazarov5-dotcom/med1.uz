@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import HMSDownloadMenu from "./HMSDownloadMenu";
 import type { HMSReportData } from "@/utils/downloadHMSReport";
+import { writeAuditLog } from "@/utils/auditLog";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
@@ -98,6 +99,7 @@ const HMSPatients = ({ clinicId }: Props) => {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       return;
     }
+    await writeAuditLog({ action: "create", entity_type: "lab_order", module: "patients", details: { patient_name: patient.full_name, test_name: testName } });
     toast({ title: "✅ Laboratoriyaga yuborildi", description: `${patient.full_name} — ${testName}` });
     if (selectedPatient?.id === patient.id) fetchPatientDetails(patient);
   };
@@ -116,9 +118,11 @@ const HMSPatients = ({ clinicId }: Props) => {
     const payload = { ...form, clinic_id: clinicId };
     if (editing) {
       await supabase.from("hms_patients").update(payload).eq("id", editing.id);
+      await writeAuditLog({ action: "update", entity_type: "patient", entity_id: editing.id, module: "patients", details: { full_name: form.full_name } });
       toast({ title: "✅ Bemor yangilandi" });
     } else {
-      await supabase.from("hms_patients").insert(payload);
+      const { data } = await supabase.from("hms_patients").insert(payload).select("id").single();
+      await writeAuditLog({ action: "create", entity_type: "patient", entity_id: data?.id, module: "patients", details: { full_name: form.full_name } });
       toast({ title: "✅ Bemor qo'shildi" });
     }
     resetForm();

@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import HMSDownloadMenu from "./HMSDownloadMenu";
 import type { HMSReportData } from "@/utils/downloadHMSReport";
+import { downloadLabReportPDF } from "@/utils/downloadLabReport";
+import { writeAuditLog } from "@/utils/auditLog";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
@@ -192,7 +194,8 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     if (!form.patient_id || !form.test_name) {
       toast({ title: "Bemor va tahlil nomi majburiy!", variant: "destructive" }); return;
     }
-    await supabase.from("hms_lab_orders").insert({ ...form, clinic_id: clinicId });
+    const { data } = await supabase.from("hms_lab_orders").insert({ ...form, clinic_id: clinicId }).select("id").single();
+    await writeAuditLog({ action: "create", entity_type: "lab_order", entity_id: data?.id, module: "laboratory", details: { test_name: form.test_name, patient_id: form.patient_id } });
     toast({ title: "✅ Tahlil buyurtmasi yaratildi" });
     setShowForm(false);
     setForm({ patient_id: "", test_name: "", test_category: "blood", priority: "normal", notes: "" });
@@ -240,9 +243,9 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     await supabase.from("hms_lab_orders").update({
       status, completed_at: status === "completed" ? new Date().toISOString() : null
     }).eq("id", id);
+    const order = orders.find(o => o.id === id);
     // Create QR verification record when completed
     if (status === "completed") {
-      const order = orders.find(o => o.id === id);
       const patient = patients.find(p => p.id === order?.patient_id);
       await supabase.from("document_verifications").insert({
         document_id: id,
@@ -252,6 +255,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         metadata: { test_name: order?.test_name, test_category: order?.test_category },
       } as any);
     }
+    await writeAuditLog({ action: "status_change", entity_type: "lab_order", entity_id: id, module: "laboratory", details: { status, test_name: order?.test_name } });
     toast({ title: `Status: ${status}` });
     fetchData();
   };
@@ -348,7 +352,21 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     const patient = patients.find(p => p.id === order.patient_id);
     const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
     const template = LAB_TEMPLATES[order.test_category];
+    const autoTemplate = template && orderResults.length === 0 && order.status !== "completed";
 
+    const handleDownloadPDF = () => {
+      // Get verification code if available
+      downloadLabReportPDF({
+        testName: order.test_name,
+        testCategory: CATEGORIES.find(c => c.value === order.test_category)?.label || order.test_category,
+        patientName: patient?.full_name || "—",
+        patientPhone: patient?.phone,
+        patientDob: patient?.date_of_birth,
+        orderedAt: order.ordered_at,
+        completedAt: order.completed_at,
+        results: orderResults,
+      });
+    };
     return (
       <div>
         <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(null)} className="mb-4">
@@ -444,9 +462,16 @@ const HMSLaboratory = ({ clinicId }: Props) => {
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
             {order.status === "completed" && (
-              <Button size="sm" variant="outline" onClick={() => handleSendNotification(order)} disabled={sending === order.id}>
-                <Send className="w-3.5 h-3.5 mr-1" /> {sending === order.id ? "Yuborilmoqda..." : "Natijani yuborish"}
-              </Button>
+              <>
+                <Button size="sm" variant="outline" onClick={() => handleSendNotification(order)} disabled={sending === order.id}>
+                  <Send className="w-3.5 h-3.5 mr-1" /> {sending === order.id ? "Yuborilmoqda..." : "Natijani yuborish"}
+                </Button>
+                {orderResults.length > 0 && (
+                  <Button size="sm" variant="outline" onClick={handleDownloadPDF}>
+                    <Download className="w-3.5 h-3.5 mr-1" /> PDF yuklab olish
+                  </Button>
+                )}
+              </>
             )}
             {order.status === "pending" && (
               <Button size="sm" onClick={() => { updateOrderStatus(order.id, "in_progress"); setSelectedOrder({ ...order, status: "in_progress" }); }}>
@@ -467,13 +492,13 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-semibold text-foreground">Natija kiritish</h4>
               {template && (
-                <Button size="sm" variant={useTemplate ? "default" : "outline"} onClick={() => setUseTemplate(!useTemplate)}>
-                  <FileText className="w-3.5 h-3.5 mr-1" /> {useTemplate ? "Yopish" : "Shablondan"}
+                <Button size="sm" variant={useTemplate || autoTemplate ? "default" : "outline"} onClick={() => setUseTemplate(!useTemplate)}>
+                  <FileText className="w-3.5 h-3.5 mr-1" /> {useTemplate || autoTemplate ? "Yopish" : "Shablondan"}
                 </Button>
               )}
             </div>
 
-            {useTemplate && template ? (
+            {(useTemplate || autoTemplate) && template ? (
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                   {template.map(t => {
