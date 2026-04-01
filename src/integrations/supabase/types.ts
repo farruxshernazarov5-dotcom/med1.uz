@@ -131,6 +131,8 @@ export type Database = {
           patient_id: string
           patient_name: string
           patient_phone: string
+          payment_id: string | null
+          payment_status: string
           service_id: string | null
           status: string
           total_price: number | null
@@ -147,6 +149,8 @@ export type Database = {
           patient_id: string
           patient_name: string
           patient_phone: string
+          payment_id?: string | null
+          payment_status?: string
           service_id?: string | null
           status?: string
           total_price?: number | null
@@ -163,6 +167,8 @@ export type Database = {
           patient_id?: string
           patient_name?: string
           patient_phone?: string
+          payment_id?: string | null
+          payment_status?: string
           service_id?: string | null
           status?: string
           total_price?: number | null
@@ -181,6 +187,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_payments"
             referencedColumns: ["id"]
           },
           {
@@ -499,6 +512,66 @@ export type Database = {
           weight?: number | null
         }
         Relationships: []
+      }
+      clinic_payments: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          clinic_id: string
+          created_at: string
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          patient_id: string
+          provider: string
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          appointment_id?: string | null
+          clinic_id: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          patient_id: string
+          provider?: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          patient_id?: string
+          provider?: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_payments_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clinic_photos: {
         Row: {
@@ -3820,6 +3893,8 @@ export type Database = {
           address: string | null
           amenities: string[] | null
           category: string | null
+          click_merchant_id: string | null
+          click_service_id: string | null
           created_at: string
           description: string | null
           director_name: string | null
@@ -3836,6 +3911,8 @@ export type Database = {
           longitude: number | null
           name: string
           owner_id: string
+          payme_merchant_id: string | null
+          payment_enabled: boolean
           phone: string | null
           social_links: Json | null
           specialties: string[] | null
@@ -3849,6 +3926,8 @@ export type Database = {
           address?: string | null
           amenities?: string[] | null
           category?: string | null
+          click_merchant_id?: string | null
+          click_service_id?: string | null
           created_at?: string
           description?: string | null
           director_name?: string | null
@@ -3865,6 +3944,8 @@ export type Database = {
           longitude?: number | null
           name: string
           owner_id: string
+          payme_merchant_id?: string | null
+          payment_enabled?: boolean
           phone?: string | null
           social_links?: Json | null
           specialties?: string[] | null
@@ -3878,6 +3959,8 @@ export type Database = {
           address?: string | null
           amenities?: string[] | null
           category?: string | null
+          click_merchant_id?: string | null
+          click_service_id?: string | null
           created_at?: string
           description?: string | null
           director_name?: string | null
@@ -3894,6 +3977,8 @@ export type Database = {
           longitude?: number | null
           name?: string
           owner_id?: string
+          payme_merchant_id?: string | null
+          payment_enabled?: boolean
           phone?: string | null
           social_links?: Json | null
           specialties?: string[] | null
