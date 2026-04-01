@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   BookOpen, Heart, Stethoscope, FileText, Building2, Wrench,
-  Newspaper, Activity, Pill, Droplets, Baby, ArrowRight
+  Newspaper, Activity, Pill, Droplets, Baby, ArrowRight, Smile
 } from "lucide-react";
 
 const services = [
@@ -16,6 +16,7 @@ const services = [
   { icon: Pill, label: "Dorixonalar", desc: "25,000+ dori vositalari", href: "/pharmacies", color: "bg-medical-red/10 text-medical-red" },
   { icon: Droplets, label: "Qon banklari", desc: "Qon guruhlari bazasi", href: "/blood-banks", color: "bg-medical-orange/10 text-medical-orange" },
   { icon: Baby, label: "Tug'ruqxonalar", desc: "Davlat va xususiy", href: "/maternity", color: "bg-medical-purple/10 text-medical-purple" },
+  { icon: Smile, label: "Stomatologiya", desc: "Stomatologiya kliniкalari", href: "/dental-register", color: "bg-primary/10 text-primary" },
 ];
 
 const ServicesSection = () => {

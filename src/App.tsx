@@ -72,6 +72,7 @@ const ContactPage = lazy(() => import("./pages/ContactPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const AIVitalSignsPage = lazy(() => import("./pages/AIVitalSignsPage"));
 const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistrationPage"));
+const DentalRegistrationPage = lazy(() => import("./pages/DentalRegistrationPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -166,6 +167,7 @@ const App = () => (
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
                 <Route path="/blood-donor-register" element={<BloodDonorRegistrationPage />} />
+                <Route path="/dental-register" element={<DentalRegistrationPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

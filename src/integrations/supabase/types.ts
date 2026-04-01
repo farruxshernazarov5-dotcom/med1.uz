@@ -848,6 +848,218 @@ export type Database = {
           },
         ]
       }
+      dental_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          clinic_id: string
+          created_at: string
+          doctor_name: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          service_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          clinic_id: string
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          service_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          clinic_id?: string
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          service_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_appointments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "dental_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_patients: {
+        Row: {
+          allergies: string | null
+          clinic_id: string
+          created_at: string
+          date_of_birth: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          notes: string | null
+          phone: string
+          tooth_chart: Json | null
+          updated_at: string
+        }
+        Insert: {
+          allergies?: string | null
+          clinic_id: string
+          created_at?: string
+          date_of_birth?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          notes?: string | null
+          phone: string
+          tooth_chart?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          allergies?: string | null
+          clinic_id?: string
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string
+          tooth_chart?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_patients_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_services: {
+        Row: {
+          category: string | null
+          clinic_id: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_services_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_treatments: {
+        Row: {
+          clinic_id: string
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          patient_id: string
+          price: number | null
+          status: string | null
+          tooth_number: number | null
+          treatment_type: string
+        }
+        Insert: {
+          clinic_id: string
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          patient_id: string
+          price?: number | null
+          status?: string | null
+          tooth_number?: number | null
+          treatment_type: string
+        }
+        Update: {
+          clinic_id?: string
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          patient_id?: string
+          price?: number | null
+          status?: string | null
+          tooth_number?: number | null
+          treatment_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_treatments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_treatments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diagnostics_appointments: {
         Row: {
           appointment_date: string
@@ -4144,6 +4356,69 @@ export type Database = {
         }
         Relationships: []
       }
+      registered_dental_clinics: {
+        Row: {
+          address: string
+          branches: Json | null
+          city: string
+          created_at: string
+          director_name: string | null
+          email: string | null
+          id: string
+          inn: string | null
+          is_active: boolean | null
+          license_number: string | null
+          logo_url: string | null
+          name: string
+          owner_id: string
+          phone: string
+          region: string
+          updated_at: string
+          website: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          address: string
+          branches?: Json | null
+          city?: string
+          created_at?: string
+          director_name?: string | null
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          license_number?: string | null
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          phone: string
+          region?: string
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          address?: string
+          branches?: Json | null
+          city?: string
+          created_at?: string
+          director_name?: string | null
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          license_number?: string | null
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string
+          region?: string
+          updated_at?: string
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: []
+      }
       registered_diagnostics: {
         Row: {
           additional_phone: string | null
@@ -4607,6 +4882,7 @@ export type Database = {
         | "doctor"
         | "pharmacy"
         | "bloodbank"
+        | "dental"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4745,6 +5021,7 @@ export const Constants = {
         "doctor",
         "pharmacy",
         "bloodbank",
+        "dental",
       ],
     },
   },

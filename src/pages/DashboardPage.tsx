@@ -10,6 +10,7 @@ import CosmetologyDashboard from "@/components/dashboard/CosmetologyDashboard";
 import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
 import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
+import DentalDashboard from "@/components/dashboard/DentalDashboard";
 
 const DashboardPage = () => {
   const { user, loading, userRole } = useAuth();
@@ -37,6 +38,7 @@ const DashboardPage = () => {
   if (userRole === "doctor") return <DoctorDashboard />;
   if (userRole === "pharmacy") return <PharmacyDashboard />;
   if (userRole === "bloodbank") return <BloodBankDashboard />;
+  if (userRole === "dental") return <DentalDashboard />;
   return <PatientDashboard />;
 };
 
