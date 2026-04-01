@@ -33,6 +33,7 @@ const ROLE_REDIRECT: Record<string, string> = {
   maternity: "/maternity-register",
   cosmetology: "/cosmetology-register",
   pharmacy: "/pharmacy-register",
+  dental: "/dental-register",
 };
 
 const PASSWORD_RULES = [
