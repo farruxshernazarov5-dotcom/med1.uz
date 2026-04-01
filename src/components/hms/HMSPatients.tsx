@@ -118,9 +118,11 @@ const HMSPatients = ({ clinicId }: Props) => {
     const payload = { ...form, clinic_id: clinicId };
     if (editing) {
       await supabase.from("hms_patients").update(payload).eq("id", editing.id);
+      await writeAuditLog({ action: "update", entity_type: "patient", entity_id: editing.id, module: "patients", details: { full_name: form.full_name } });
       toast({ title: "✅ Bemor yangilandi" });
     } else {
-      await supabase.from("hms_patients").insert(payload);
+      const { data } = await supabase.from("hms_patients").insert(payload).select("id").single();
+      await writeAuditLog({ action: "create", entity_type: "patient", entity_id: data?.id, module: "patients", details: { full_name: form.full_name } });
       toast({ title: "✅ Bemor qo'shildi" });
     }
     resetForm();
