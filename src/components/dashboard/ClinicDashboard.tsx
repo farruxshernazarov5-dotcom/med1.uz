@@ -153,6 +153,7 @@ const ClinicDashboard = () => {
     { id: "hms-finance", label: "Moliya", icon: Receipt, group: "HMS" },
     { id: "hms-inventory", label: "Ombor", icon: FlaskConical, group: "HMS" },
     { id: "hms-audit", label: "Audit Log", icon: ShieldCheck, group: "HMS" },
+    { id: "hms-payment-settings", label: "To'lov (SaaS)", icon: CreditCard, group: "HMS" },
   ];
 
   return (
