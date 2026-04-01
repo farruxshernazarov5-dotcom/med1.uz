@@ -147,20 +147,29 @@ const DentalDashboard = () => {
       )}
       {tab === "treatment-plans" && <DentalTreatmentPlans patients={patients} treatments={treatments} />}
       {tab === "appointments" && (
-        <div className="space-y-4">
-          <h2 className="font-heading text-xl font-bold text-foreground">Qabullar</h2>
-          {appointments.length === 0 ? <p className="text-muted-foreground text-center py-8">Qabullar topilmadi</p> :
-            appointments.map(a => (
-              <div key={a.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-foreground">{a.appointment_date} {a.appointment_time}</p>
-                  <p className="text-xs text-muted-foreground">{a.doctor_name} {a.notes && `— ${a.notes}`}</p>
-                </div>
-                <Badge variant={a.status === "completed" ? "default" : "outline"}>{a.status}</Badge>
-              </div>
-            ))
-          }
-        </div>
+        <DentalAppointments
+          appointments={appointments}
+          patients={patients}
+          services={services}
+          onAddAppointment={async (form) => {
+            if (!clinic) return;
+            const { error } = await supabase.from("dental_appointments").insert({
+              clinic_id: clinic.id, patient_id: form.patient_id,
+              appointment_date: form.appointment_date, appointment_time: form.appointment_time,
+              doctor_name: form.doctor_name, notes: form.notes,
+            } as any);
+            if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
+            await writeAuditLog({ action: "create", entity_type: "dental_appointment", module: "dental" });
+            toast({ title: "Qabul yaratildi" });
+            fetchData();
+          }}
+          onUpdateStatus={async (id, status) => {
+            await supabase.from("dental_appointments").update({ status } as any).eq("id", id);
+            await writeAuditLog({ action: "update", entity_type: "dental_appointment", module: "dental", entity_id: id });
+            toast({ title: "Status yangilandi" });
+            fetchData();
+          }}
+        />
       )}
       {tab === "billing" && <DentalBillingPro treatments={treatments} appointments={appointments} />}
       {tab === "staff" && <DentalStaff />}
