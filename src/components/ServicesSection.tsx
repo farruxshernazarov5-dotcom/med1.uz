@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   BookOpen, Heart, Stethoscope, FileText, Building2, Wrench,
-  Newspaper, Activity, Pill, Droplets, Baby, ArrowRight
+  Newspaper, Activity, Pill, Droplets, Baby, ArrowRight, Smile
 } from "lucide-react";
 
 const services = [
