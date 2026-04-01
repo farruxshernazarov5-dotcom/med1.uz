@@ -243,9 +243,9 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     await supabase.from("hms_lab_orders").update({
       status, completed_at: status === "completed" ? new Date().toISOString() : null
     }).eq("id", id);
+    const order = orders.find(o => o.id === id);
     // Create QR verification record when completed
     if (status === "completed") {
-      const order = orders.find(o => o.id === id);
       const patient = patients.find(p => p.id === order?.patient_id);
       await supabase.from("document_verifications").insert({
         document_id: id,
@@ -255,6 +255,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         metadata: { test_name: order?.test_name, test_category: order?.test_category },
       } as any);
     }
+    await writeAuditLog({ action: "status_change", entity_type: "lab_order", entity_id: id, module: "laboratory", details: { status, test_name: order?.test_name } });
     toast({ title: `Status: ${status}` });
     fetchData();
   };
