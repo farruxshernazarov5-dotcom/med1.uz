@@ -492,8 +492,8 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-semibold text-foreground">Natija kiritish</h4>
               {template && (
-                <Button size="sm" variant={useTemplate ? "default" : "outline"} onClick={() => setUseTemplate(!useTemplate)}>
-                  <FileText className="w-3.5 h-3.5 mr-1" /> {useTemplate ? "Yopish" : "Shablondan"}
+                <Button size="sm" variant={useTemplate || autoTemplate ? "default" : "outline"} onClick={() => setUseTemplate(!useTemplate)}>
+                  <FileText className="w-3.5 h-3.5 mr-1" /> {useTemplate || autoTemplate ? "Yopish" : "Shablondan"}
                 </Button>
               )}
             </div>
