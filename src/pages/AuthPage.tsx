@@ -21,6 +21,7 @@ const roles = [
   { value: "maternity", label: "Tug'ruqxona", icon: Baby, desc: "Tug'ruqxona boshqarish" },
   { value: "cosmetology", label: "Kosmetologiya", icon: Sparkles, desc: "Kosmetologiya markazi" },
   { value: "pharmacy", label: "Dorixona", icon: Pill, desc: "Dorixona boshqarish" },
+  { value: "dental", label: "Stomatologiya", icon: Stethoscope, desc: "Stomatologiya klinikasi" },
 ];
 
 const ROLE_REDIRECT: Record<string, string> = {
