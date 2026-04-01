@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import {
   Stethoscope, Users, Calendar, DollarSign, Settings, BarChart3,
-  Activity, Heart, Camera, FlaskConical, Package, Bell, FileText
+  Activity, Heart, Camera, FlaskConical, Package, Bell, FileText,
+  ClipboardList, UserCheck, Wrench, MessageSquare, Brain
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -16,11 +17,17 @@ import DentalOverview from "@/components/dental/DentalOverview";
 import DentalPatients from "@/components/dental/DentalPatients";
 import DentalToothChart from "@/components/dental/DentalToothChart";
 import DentalImaging from "@/components/dental/DentalImaging";
-import DentalBilling from "@/components/dental/DentalBilling";
 import DentalLab from "@/components/dental/DentalLab";
 import DentalInventory from "@/components/dental/DentalInventory";
 import DentalReports from "@/components/dental/DentalReports";
 import DentalRecall from "@/components/dental/DentalRecall";
+import DentalTreatmentPlans from "@/components/dental/DentalTreatmentPlans";
+import DentalBillingPro from "@/components/dental/DentalBillingPro";
+import DentalStaff from "@/components/dental/DentalStaff";
+import DentalEquipment from "@/components/dental/DentalEquipment";
+import DentalFeedback from "@/components/dental/DentalFeedback";
+import DentalDocuments from "@/components/dental/DentalDocuments";
+import DentalAI from "@/components/dental/DentalAI";
 
 const DentalDashboard = () => {
   const { user } = useAuth();
@@ -31,7 +38,6 @@ const DentalDashboard = () => {
   const [treatments, setTreatments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("overview");
-
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [toothChart, setToothChart] = useState<Record<number, string>>({});
 
@@ -89,13 +95,18 @@ const DentalDashboard = () => {
     { id: "overview", label: "Umumiy", icon: BarChart3 },
     { id: "patients", label: "Bemorlar", icon: Users },
     { id: "tooth-chart", label: "Tish xaritasi", icon: Heart },
+    { id: "treatment-plans", label: "Davolash kursi", icon: ClipboardList },
     { id: "appointments", label: "Qabullar", icon: Calendar },
-    { id: "treatments", label: "Davolash", icon: Activity },
-    { id: "imaging", label: "Tasvirlar", icon: Camera },
     { id: "billing", label: "Moliya", icon: DollarSign },
+    { id: "staff", label: "Shifokorlar", icon: UserCheck },
+    { id: "imaging", label: "Tasvirlar", icon: Camera },
     { id: "lab", label: "Lab", icon: FlaskConical },
+    { id: "equipment", label: "Jihozlar", icon: Wrench },
     { id: "inventory", label: "Materiallar", icon: Package },
+    { id: "feedback", label: "Qayta aloqa", icon: MessageSquare },
+    { id: "documents", label: "Hujjatlar", icon: FileText },
     { id: "recall", label: "Eslatmalar", icon: Bell },
+    { id: "ai", label: "AI xizmatlari", icon: Brain },
     { id: "services", label: "Xizmatlar", icon: Stethoscope },
     { id: "reports", label: "Hisobotlar", icon: BarChart3 },
     { id: "settings", label: "Sozlamalar", icon: Settings },
@@ -125,13 +136,9 @@ const DentalDashboard = () => {
       {tab === "overview" && <DentalOverview patients={patients} todayAppts={todayAppts} treatments={treatments} services={services} />}
       {tab === "patients" && <DentalPatients patients={patients} onAddPatient={handleAddPatient} onOpenToothChart={openToothChart} />}
       {tab === "tooth-chart" && (
-        <DentalToothChart
-          selectedPatient={selectedPatient}
-          toothChart={toothChart}
-          onSetToothStatus={setToothStatus}
-          onBack={() => { setSelectedPatient(null); setTab("patients"); }}
-        />
+        <DentalToothChart selectedPatient={selectedPatient} toothChart={toothChart} onSetToothStatus={setToothStatus} onBack={() => { setSelectedPatient(null); setTab("patients"); }} />
       )}
+      {tab === "treatment-plans" && <DentalTreatmentPlans patients={patients} treatments={treatments} />}
       {tab === "appointments" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Qabullar</h2>
@@ -148,32 +155,16 @@ const DentalDashboard = () => {
           }
         </div>
       )}
-      {tab === "treatments" && (
-        <div className="space-y-4">
-          <h2 className="font-heading text-xl font-bold text-foreground">Davolash rejalari</h2>
-          {treatments.length === 0 ? <p className="text-muted-foreground text-center py-8">Davolash topilmadi</p> :
-            treatments.map(t => (
-              <div key={t.id} className="bg-card rounded-xl border border-border p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-foreground">{t.treatment_type} {t.tooth_number && `(Tish #${t.tooth_number})`}</p>
-                    <p className="text-xs text-muted-foreground">{t.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <Badge variant={t.status === "completed" ? "default" : "outline"}>{t.status}</Badge>
-                    {t.price > 0 && <p className="text-xs text-muted-foreground mt-1">{Number(t.price).toLocaleString()} so'm</p>}
-                  </div>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      )}
+      {tab === "billing" && <DentalBillingPro treatments={treatments} appointments={appointments} />}
+      {tab === "staff" && <DentalStaff />}
       {tab === "imaging" && <DentalImaging patients={patients} />}
-      {tab === "billing" && <DentalBilling treatments={treatments} appointments={appointments} />}
       {tab === "lab" && <DentalLab patients={patients} />}
+      {tab === "equipment" && <DentalEquipment />}
       {tab === "inventory" && <DentalInventory />}
+      {tab === "feedback" && <DentalFeedback patients={patients} />}
+      {tab === "documents" && <DentalDocuments patients={patients} />}
       {tab === "recall" && <DentalRecall patients={patients} />}
+      {tab === "ai" && <DentalAI />}
       {tab === "services" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Xizmatlar</h2>
