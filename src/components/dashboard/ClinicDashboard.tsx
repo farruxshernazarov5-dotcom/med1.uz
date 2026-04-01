@@ -45,6 +45,7 @@ import HMSPrescription from "@/components/hms/HMSPrescription";
 import HMSFinance from "@/components/hms/HMSFinance";
 import HMSInventory from "@/components/hms/HMSInventory";
 import HMSOverview from "@/components/hms/HMSOverview";
+import HMSAuditLog from "@/components/hms/HMSAuditLog";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
@@ -150,6 +151,7 @@ const ClinicDashboard = () => {
     { id: "hms-prescription", label: "Retseptlar", icon: Pill, group: "HMS" },
     { id: "hms-finance", label: "Moliya", icon: Receipt, group: "HMS" },
     { id: "hms-inventory", label: "Ombor", icon: FlaskConical, group: "HMS" },
+    { id: "hms-audit", label: "Audit Log", icon: ShieldCheck, group: "HMS" },
   ];
 
   return (
@@ -232,6 +234,7 @@ const ClinicDashboard = () => {
       {tab === "hms-prescription" && <HMSPrescription clinicId={clinic.id} />}
       {tab === "hms-finance" && <HMSFinance clinicId={clinic.id} />}
       {tab === "hms-inventory" && <HMSInventory clinicId={clinic.id} />}
+      {tab === "hms-audit" && <HMSAuditLog clinicId={clinic.id} />}
     </DashboardShell>
   );
 };
