@@ -99,6 +99,7 @@ const HMSPatients = ({ clinicId }: Props) => {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       return;
     }
+    await writeAuditLog({ action: "create", entity_type: "lab_order", module: "patients", details: { patient_name: patient.full_name, test_name: testName } });
     toast({ title: "✅ Laboratoriyaga yuborildi", description: `${patient.full_name} — ${testName}` });
     if (selectedPatient?.id === patient.id) fetchPatientDetails(patient);
   };
