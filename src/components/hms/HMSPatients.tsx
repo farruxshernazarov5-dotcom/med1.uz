@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import HMSDownloadMenu from "./HMSDownloadMenu";
 import type { HMSReportData } from "@/utils/downloadHMSReport";
+import { writeAuditLog } from "@/utils/auditLog";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
