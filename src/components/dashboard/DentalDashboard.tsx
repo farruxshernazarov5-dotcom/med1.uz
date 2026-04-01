@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Stethoscope, Users, Calendar, DollarSign, Settings, BarChart3,
   Activity, Heart, Camera, FlaskConical, Package, Bell, FileText,
-  ClipboardList, UserCheck, Wrench, MessageSquare, Brain
+  ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -28,6 +28,9 @@ import DentalEquipment from "@/components/dental/DentalEquipment";
 import DentalFeedback from "@/components/dental/DentalFeedback";
 import DentalDocuments from "@/components/dental/DentalDocuments";
 import DentalAI from "@/components/dental/DentalAI";
+import DentalSaaS from "@/components/dental/DentalSaaS";
+import DentalAuditLog from "@/components/dental/DentalAuditLog";
+import DentalAnalytics from "@/components/dental/DentalAnalytics";
 
 const DentalDashboard = () => {
   const { user } = useAuth();
@@ -107,6 +110,9 @@ const DentalDashboard = () => {
     { id: "documents", label: "Hujjatlar", icon: FileText },
     { id: "recall", label: "Eslatmalar", icon: Bell },
     { id: "ai", label: "AI xizmatlari", icon: Brain },
+    { id: "analytics", label: "Analitika", icon: PieChart },
+    { id: "saas", label: "SaaS obuna", icon: Crown },
+    { id: "audit", label: "Audit Log", icon: ScrollText },
     { id: "services", label: "Xizmatlar", icon: Stethoscope },
     { id: "reports", label: "Hisobotlar", icon: BarChart3 },
     { id: "settings", label: "Sozlamalar", icon: Settings },
@@ -165,6 +171,9 @@ const DentalDashboard = () => {
       {tab === "documents" && <DentalDocuments patients={patients} />}
       {tab === "recall" && <DentalRecall patients={patients} />}
       {tab === "ai" && <DentalAI />}
+      {tab === "analytics" && <DentalAnalytics patients={patients} appointments={appointments} treatments={treatments} services={services} />}
+      {tab === "saas" && <DentalSaaS clinic={clinic} />}
+      {tab === "audit" && <DentalAuditLog clinicId={clinic?.id} />}
       {tab === "services" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Xizmatlar</h2>
