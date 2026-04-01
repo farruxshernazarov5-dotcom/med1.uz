@@ -10,6 +10,7 @@ import CosmetologyDashboard from "@/components/dashboard/CosmetologyDashboard";
 import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
 import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
+import DentalDashboard from "@/components/dashboard/DentalDashboard";
 
 const DashboardPage = () => {
   const { user, loading, userRole } = useAuth();
