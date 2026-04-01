@@ -498,7 +498,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
               )}
             </div>
 
-            {useTemplate && template ? (
+            {(useTemplate || autoTemplate) && template ? (
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                   {template.map(t => {
