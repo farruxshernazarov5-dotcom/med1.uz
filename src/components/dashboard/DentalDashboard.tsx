@@ -171,6 +171,9 @@ const DentalDashboard = () => {
       {tab === "documents" && <DentalDocuments patients={patients} />}
       {tab === "recall" && <DentalRecall patients={patients} />}
       {tab === "ai" && <DentalAI />}
+      {tab === "analytics" && <DentalAnalytics patients={patients} appointments={appointments} treatments={treatments} services={services} />}
+      {tab === "saas" && <DentalSaaS clinic={clinic} />}
+      {tab === "audit" && <DentalAuditLog clinicId={clinic?.id} />}
       {tab === "services" && (
         <div className="space-y-4">
           <h2 className="font-heading text-xl font-bold text-foreground">Xizmatlar</h2>
