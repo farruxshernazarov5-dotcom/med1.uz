@@ -287,8 +287,13 @@ const HMSPatients = ({ clinicId }: Props) => {
             ))}
           </TabsContent>
 
-          {/* LAB RESULTS TAB */}
+           {/* LAB RESULTS TAB */}
           <TabsContent value="lab" className="mt-4 space-y-3">
+            <div className="flex justify-end mb-2">
+              <Button size="sm" onClick={() => handleSendToLab(p)}>
+                <FlaskConical className="w-3.5 h-3.5 mr-1" /> Laboratoriyaga yuborish
+              </Button>
+            </div>
             {labOrders.length === 0 ? (
               <p className="text-center py-8 text-muted-foreground">Analizlar topilmadi</p>
             ) : labOrders.map((order: any) => (
