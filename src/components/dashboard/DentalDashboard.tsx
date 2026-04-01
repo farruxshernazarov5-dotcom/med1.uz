@@ -28,6 +28,9 @@ import DentalEquipment from "@/components/dental/DentalEquipment";
 import DentalFeedback from "@/components/dental/DentalFeedback";
 import DentalDocuments from "@/components/dental/DentalDocuments";
 import DentalAI from "@/components/dental/DentalAI";
+import DentalSaaS from "@/components/dental/DentalSaaS";
+import DentalAuditLog from "@/components/dental/DentalAuditLog";
+import DentalAnalytics from "@/components/dental/DentalAnalytics";
 
 const DentalDashboard = () => {
   const { user } = useAuth();
