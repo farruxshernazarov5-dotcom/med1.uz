@@ -115,6 +115,7 @@ const DentalDashboard = () => {
     <DashboardShell
       title={`🦷 ${clinic.name}`}
       subtitle="Stomatologiya boshqaruv paneli"
+      icon={Stethoscope}
       sidebarItems={sidebarItems}
       activeTab={tab}
       onTabChange={setTab}

@@ -38,6 +38,7 @@ const DashboardPage = () => {
   if (userRole === "doctor") return <DoctorDashboard />;
   if (userRole === "pharmacy") return <PharmacyDashboard />;
   if (userRole === "bloodbank") return <BloodBankDashboard />;
+  if (userRole === "dental") return <DentalDashboard />;
   return <PatientDashboard />;
 };
 
