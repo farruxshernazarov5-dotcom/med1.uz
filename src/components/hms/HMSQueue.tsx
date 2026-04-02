@@ -208,7 +208,7 @@ const HMSQueue = ({ clinicId }: Props) => {
     }
   };
 
-  const testVoice = () => speakQueue(25, departments[0]?.name || "3-xona");
+  const testVoice = () => speakQueue("Azizbek", 25, departments[0]?.name || "Stomatologiya", "3-xona");
 
   // ============ TV DISPLAY MODE ============
   if (activeTab === "display") {
