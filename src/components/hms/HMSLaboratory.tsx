@@ -179,10 +179,13 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     if (!quickPatient.full_name || !quickPatient.phone) {
       toast({ title: "Ism va telefon majburiy!", variant: "destructive" }); return;
     }
-    const { data, error } = await supabase.from("hms_patients").insert({
+    const payload: any = {
       clinic_id: clinicId, full_name: quickPatient.full_name, phone: quickPatient.phone,
-      date_of_birth: quickPatient.date_of_birth || null, national_id: quickPatient.national_id || null,
-    }).select("id").single();
+      date_of_birth: quickPatient.date_of_birth || null,
+    };
+    // Only set national_id if actually provided (to avoid unique constraint on empty strings)
+    if (quickPatient.national_id?.trim()) payload.national_id = quickPatient.national_id.trim();
+    const { data, error } = await supabase.from("hms_patients").insert(payload).select("id, full_name, phone").single();
     if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
     toast({ title: "✅ Bemor yaratildi" });
     setForm({ ...form, patient_id: data.id });
