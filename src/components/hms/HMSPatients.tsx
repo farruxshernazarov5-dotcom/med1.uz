@@ -29,6 +29,8 @@ const HMSPatients = ({ clinicId }: Props) => {
   const [patientTab, setPatientTab] = useState("profile");
   const [filterGender, setFilterGender] = useState("all");
   const [filterStatus, setFilterStatus] = useState("active");
+  const [showLabModal, setShowLabModal] = useState<any>(null);
+  const [labForm, setLabForm] = useState({ test_name: "", test_category: "blood", priority: "normal", notes: "" });
 
   // Patient detail data
   const [labOrders, setLabOrders] = useState<any[]>([]);
