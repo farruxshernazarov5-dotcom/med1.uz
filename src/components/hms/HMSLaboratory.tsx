@@ -718,6 +718,40 @@ const HMSLaboratory = ({ clinicId }: Props) => {
 
   return (
     <div>
+      {/* Send Notification Modal (global) */}
+      {showSendModal && !selectedOrder && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSendModal(null)}>
+          <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="font-heading text-lg font-bold text-foreground mb-1">📤 Natijani yuborish</h3>
+            <p className="text-xs text-muted-foreground mb-4">Bemor: <strong>{getPatientName(showSendModal.patient_id)}</strong></p>
+            <div className="space-y-3 mb-4">
+              {[
+                { key: "telegram", icon: MessageCircle, label: "Telegram", color: "text-blue-500" },
+                { key: "sms", icon: Phone, label: "SMS", color: "text-green-500" },
+                { key: "email", icon: Mail, label: "Email", color: "text-orange-500" },
+              ].map(ch => (
+                <label key={ch.key} className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
+                  sendChannels.includes(ch.key) ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"
+                )}>
+                  <input type="checkbox" checked={sendChannels.includes(ch.key)} onChange={(e) => {
+                    if (e.target.checked) setSendChannels([...sendChannels, ch.key]);
+                    else setSendChannels(sendChannels.filter(c => c !== ch.key));
+                  }} className="rounded" />
+                  <ch.icon className={cn("w-5 h-5", ch.color)} />
+                  <span className="text-sm font-medium text-foreground">{ch.label}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Button className="flex-1" disabled={sendChannels.length === 0 || sending === showSendModal.id} onClick={() => handleSendNotification(showSendModal, sendChannels)}>
+                <Send className="w-4 h-4 mr-1" /> {sending === showSendModal.id ? "Yuborilmoqda..." : "Yuborish"}
+              </Button>
+              <Button variant="outline" onClick={() => setShowSendModal(null)}>Bekor</Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-xl font-bold text-foreground">Laboratoriya (LIS)</h2>
         <div className="flex gap-2">
