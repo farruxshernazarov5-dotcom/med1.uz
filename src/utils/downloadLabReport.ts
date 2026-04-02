@@ -4,6 +4,9 @@ interface LabReportData {
   patientName: string;
   patientPhone?: string;
   patientDob?: string;
+  patientGender?: string;
+  patientBloodGroup?: string;
+  patientAllergies?: string;
   orderedAt: string;
   completedAt?: string;
   results: Array<{
