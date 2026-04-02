@@ -20,6 +20,17 @@ import {
 
 interface Props { clinicId: string; }
 
+const LAB_CATEGORIES = [
+  { value: "blood", label: "Qon tahlili" },
+  { value: "urine", label: "Siydik tahlili" },
+  { value: "biochemistry", label: "Biokimyoviy" },
+  { value: "hormones", label: "Gormonlar" },
+  { value: "immunology", label: "Immunologiya" },
+  { value: "microbiology", label: "Mikrobiologiya" },
+  { value: "coagulation", label: "Koagulyatsiya" },
+  { value: "other", label: "Boshqa" },
+];
+
 const HMSPatients = ({ clinicId }: Props) => {
   const [patients, setPatients] = useState<any[]>([]);
   const [search, setSearch] = useState("");
