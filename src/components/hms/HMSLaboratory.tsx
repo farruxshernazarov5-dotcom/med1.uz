@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus, FlaskConical, Clock, CheckCircle2, X, AlertTriangle,
   Search, TrendingUp, BarChart3, Zap, Send, FileText, Download,
-  ArrowLeft, Eye, Printer, ChevronRight, UserPlus, Activity
+  ArrowLeft, Eye, Printer, ChevronRight, UserPlus, Activity,
+  Phone, Mail, MessageCircle, Stethoscope, QrCode, ShieldCheck, User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import HMSDownloadMenu from "./HMSDownloadMenu";
