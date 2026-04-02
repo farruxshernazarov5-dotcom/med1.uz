@@ -563,8 +563,9 @@ const HMSQueue = ({ clinicId }: Props) => {
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => {
-                    const room = getDeptName(q.department_id) || getDoctorName(q.doctor_id) || "1";
-                    speakQueue(q.queue_number, room);
+                    const dept = getDeptName(q.department_id);
+                    const room = dept || getDoctorName(q.doctor_id) || "1";
+                    speakQueue(q.patient_name, q.queue_number, dept, room);
                   }}>
                     <Volume2 className="w-4 h-4 mr-1" /> Qayta chaqirish
                   </Button>
