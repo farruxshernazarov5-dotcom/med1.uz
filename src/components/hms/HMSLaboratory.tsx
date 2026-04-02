@@ -174,6 +174,14 @@ const HMSLaboratory = ({ clinicId }: Props) => {
 
   useEffect(() => { fetchData(); }, [clinicId]);
 
+  // Auto-open template when selecting an order with no results
+  useEffect(() => {
+    if (selectedOrder && !results[selectedOrder.id]?.length && selectedOrder.status !== "completed") {
+      setUseTemplate(true);
+      setTemplateValues({});
+    }
+  }, [selectedOrder?.id]);
+
   // Quick Patient Create
   const handleQuickPatient = async () => {
     if (!quickPatient.full_name || !quickPatient.phone) {
