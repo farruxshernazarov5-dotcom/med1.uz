@@ -1,0 +1,2 @@
+ALTER TABLE public.hms_patients DROP CONSTRAINT hms_patients_national_id_key;
+CREATE UNIQUE INDEX hms_patients_national_id_key ON public.hms_patients (national_id) WHERE national_id IS NOT NULL AND national_id != '';
