@@ -20,30 +20,45 @@ type QueueLang = "uz" | "ru" | "en";
 
 const LANG_LABELS: Record<QueueLang, string> = { uz: "O'zbek", ru: "Русский", en: "English" };
 
-const VOICE_TEXTS: Record<QueueLang, { call: string; room: string; please: string }> = {
-  uz: { call: "Navbat raqami", room: "xonaga kiring", please: "Iltimos" },
-  ru: { call: "Номер очереди", room: "пройдите в кабинет", please: "Пожалуйста" },
-  en: { call: "Queue number", room: "please go to room", please: "Please" },
-};
-
 const LANG_MAP: Record<QueueLang, string> = { uz: "uz-UZ", ru: "ru-RU", en: "en-US" };
 
-const VOICE_PRIORITIES: Record<QueueLang, RegExp[]> = {
-  uz: [/female|woman|zira|yelda|dilnoza/i, /milena|svetlana|irina/i],
-  ru: [/milena|svetlana|irina|tatiana|katya|yandex|alice/i, /female|woman/i],
-  en: [/samantha|victoria|karen|moira|tessa|fiona/i, /google.*female|microsoft.*zira|female|woman/i],
+type VoiceGender = "female" | "male";
+
+const generateVoiceText = (name: string, number: number, department: string, room: string, lang: QueueLang): string => {
+  const dept = department || room;
+  if (lang === "uz") {
+    return `${name}. Navbat raqami ${number}. Iltimos, ${dept} bolimi, ${room}-xonaga kiring.`;
+  }
+  if (lang === "ru") {
+    return `${name}. Номер ${number}. Пожалуйста, пройдите в ${dept}, кабинет ${room}.`;
+  }
+  return `${name}. Queue number ${number}. Please go to ${dept}, room ${room}.`;
 };
 
-const findBestVoice = (lang: QueueLang): SpeechSynthesisVoice | null => {
+const VOICE_PRIORITIES_BY_GENDER: Record<VoiceGender, Record<QueueLang, RegExp[]>> = {
+  female: {
+    uz: [/female|woman|zira|yelda|dilnoza/i, /milena|svetlana|irina/i],
+    ru: [/milena|svetlana|irina|tatiana|katya|yandex|alice/i, /female|woman/i],
+    en: [/samantha|victoria|karen|moira|tessa|fiona/i, /google.*female|microsoft.*zira|female|woman/i],
+  },
+  male: {
+    uz: [/male|man|alisher|jasur/i, /dmitri|pavel|ivan/i],
+    ru: [/dmitri|pavel|ivan|maxim|yandex/i, /male|man/i],
+    en: [/daniel|james|david|google.*male|microsoft.*david/i, /male|man/i],
+  },
+};
+
+const findBestVoice = (lang: QueueLang, gender: VoiceGender = "female"): SpeechSynthesisVoice | null => {
   if (!("speechSynthesis" in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   const code = LANG_MAP[lang].split("-")[0];
   const langVoices = voices.filter(v => v.lang.startsWith(code));
-  for (const pattern of VOICE_PRIORITIES[lang]) {
+  for (const pattern of VOICE_PRIORITIES_BY_GENDER[gender][lang]) {
     const match = langVoices.find(v => pattern.test(v.name));
     if (match) return match;
   }
-  return langVoices.find(v => /female|woman/i.test(v.name)) || langVoices[0] || null;
+  const genderPattern = gender === "female" ? /female|woman/i : /male|man/i;
+  return langVoices.find(v => genderPattern.test(v.name)) || langVoices[0] || null;
 };
 
 const HMSQueue = ({ clinicId }: Props) => {
@@ -66,6 +81,7 @@ const HMSQueue = ({ clinicId }: Props) => {
   const [voiceVolume, setVoiceVolume] = useState(1.0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [repeatCount, setRepeatCount] = useState(2);
+  const [voiceGender, setVoiceGender] = useState<VoiceGender>("female");
   const [deptFilter, setDeptFilter] = useState("");
 
   const displayRef = useRef<HTMLDivElement>(null);
@@ -101,16 +117,11 @@ const HMSQueue = ({ clinicId }: Props) => {
     }
   }, []);
 
-  const speakQueue = useCallback((number: number, room: string) => {
+  const speakQueue = useCallback((name: string, number: number, department: string, room: string) => {
     if (!voiceEnabled || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
 
-    const t = VOICE_TEXTS[voiceLang];
-    const text = voiceLang === "uz"
-      ? `${t.call} ${number}, ${room} ${t.room}`
-      : voiceLang === "ru"
-        ? `${t.call} ${number}, ${t.room} ${room}`
-        : `${t.call} ${number}, ${t.room} ${room}`;
+    const text = generateVoiceText(name, number, department, room, voiceLang);
 
     const speak = (attempt: number) => {
       if (attempt > repeatCount) { setIsSpeaking(false); return; }
@@ -119,7 +130,7 @@ const HMSQueue = ({ clinicId }: Props) => {
       utter.rate = voiceRate;
       utter.pitch = voicePitch;
       utter.volume = voiceVolume;
-      const voice = findBestVoice(voiceLang);
+      const voice = findBestVoice(voiceLang, voiceGender);
       if (voice) { utter.voice = voice; utter.lang = voice.lang; }
       utter.onstart = () => setIsSpeaking(true);
       utter.onend = () => {
@@ -134,7 +145,7 @@ const HMSQueue = ({ clinicId }: Props) => {
     };
 
     speak(1);
-  }, [voiceEnabled, voiceLang, voiceRate, voicePitch, voiceVolume, repeatCount]);
+  }, [voiceEnabled, voiceLang, voiceRate, voicePitch, voiceVolume, voiceGender, repeatCount]);
 
   const resetForm = () => { setForm({ patient_name: "", patient_phone: "", patient_id: "", doctor_id: "", department_id: "", priority: "normal", estimated_wait_minutes: 15, notes: "" }); setShowForm(false); };
 
@@ -153,8 +164,9 @@ const HMSQueue = ({ clinicId }: Props) => {
     const item = queue.find(q => q.id === id);
     await supabase.from("hms_queue").update({ status: "called", called_at: new Date().toISOString() }).eq("id", id);
     if (item) {
-      const room = getDeptName(item.department_id) || getDoctorName(item.doctor_id) || "1";
-      speakQueue(item.queue_number, room);
+      const dept = getDeptName(item.department_id);
+      const room = dept || getDoctorName(item.doctor_id) || "1";
+      speakQueue(item.patient_name, item.queue_number, dept, room);
     }
     toast({ title: "🔔 Bemor chaqirildi!" }); fetchData();
   };
@@ -196,7 +208,7 @@ const HMSQueue = ({ clinicId }: Props) => {
     }
   };
 
-  const testVoice = () => speakQueue(25, departments[0]?.name || "3-xona");
+  const testVoice = () => speakQueue("Azizbek", 25, departments[0]?.name || "Stomatologiya", "3-xona");
 
   // ============ TV DISPLAY MODE ============
   if (activeTab === "display") {
@@ -332,6 +344,16 @@ const HMSQueue = ({ clinicId }: Props) => {
               <div>
                 <label className="text-sm text-muted-foreground mb-2 block">Takrorlash soni: {repeatCount}</label>
                 <Slider min={1} max={3} step={1} value={[repeatCount]} onValueChange={v => setRepeatCount(v[0])} />
+              </div>
+
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Ovoz turi</label>
+                <div className="flex gap-2">
+                  <Button size="sm" variant={voiceGender === "female" ? "default" : "outline"} className="flex-1"
+                    onClick={() => setVoiceGender("female")}>👩 Ayol</Button>
+                  <Button size="sm" variant={voiceGender === "male" ? "default" : "outline"} className="flex-1"
+                    onClick={() => setVoiceGender("male")}>👨 Erkak</Button>
+                </div>
               </div>
 
               <Button size="sm" variant="outline" onClick={testVoice} disabled={isSpeaking}>
@@ -551,8 +573,9 @@ const HMSQueue = ({ clinicId }: Props) => {
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => {
-                    const room = getDeptName(q.department_id) || getDoctorName(q.doctor_id) || "1";
-                    speakQueue(q.queue_number, room);
+                    const dept = getDeptName(q.department_id);
+                    const room = dept || getDoctorName(q.doctor_id) || "1";
+                    speakQueue(q.patient_name, q.queue_number, dept, room);
                   }}>
                     <Volume2 className="w-4 h-4 mr-1" /> Qayta chaqirish
                   </Button>
