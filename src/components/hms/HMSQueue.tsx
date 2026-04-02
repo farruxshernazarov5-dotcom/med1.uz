@@ -20,6 +20,8 @@ type QueueLang = "uz" | "ru" | "en";
 
 const LANG_LABELS: Record<QueueLang, string> = { uz: "O'zbek", ru: "Русский", en: "English" };
 
+const LANG_MAP: Record<QueueLang, string> = { uz: "uz-UZ", ru: "ru-RU", en: "en-US" };
+
 type VoiceGender = "female" | "male";
 
 const generateVoiceText = (name: string, number: number, department: string, room: string, lang: QueueLang): string => {
