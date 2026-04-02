@@ -436,13 +436,15 @@ const HMSLaboratory = ({ clinicId }: Props) => {
                   </TableHeader>
                   <TableBody>
                     {orderResults.map((r: any) => (
-                      <TableRow key={r.id} className={r.is_abnormal ? "bg-red-50/50 dark:bg-red-900/10" : ""}>
+                      <TableRow key={r.id} className={r.is_abnormal ? "bg-red-50/50 dark:bg-red-900/10" : r.value === "—" ? "opacity-50" : ""}>
                         <TableCell className="text-xs font-medium py-2">{r.parameter_name}</TableCell>
-                        <TableCell className={cn("text-xs py-2 font-bold", r.is_abnormal ? "text-destructive" : "text-foreground")}>{r.value}</TableCell>
+                        <TableCell className={cn("text-xs py-2 font-bold", r.is_abnormal ? "text-destructive" : r.value === "—" ? "text-muted-foreground italic" : "text-foreground")}>{r.value}</TableCell>
                         <TableCell className="text-xs py-2 text-muted-foreground">{r.unit}</TableCell>
                         <TableCell className="text-xs py-2 text-muted-foreground">{r.reference_range}</TableCell>
                         <TableCell className="text-xs py-2">
-                          {r.is_abnormal ? (
+                          {r.value === "—" ? (
+                            <Badge className="bg-muted text-muted-foreground text-[10px]">Kiritilmagan</Badge>
+                          ) : r.is_abnormal ? (
                             <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[10px]">
                               <AlertTriangle className="w-3 h-3 mr-0.5" /> Normadan tashqari
                             </Badge>
