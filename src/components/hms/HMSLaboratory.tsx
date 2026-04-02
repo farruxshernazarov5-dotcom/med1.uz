@@ -168,21 +168,26 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
       supabase.from("hms_lab_orders").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }),
-      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth").eq("clinic_id", clinicId).eq("is_active", true),
+      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id").eq("clinic_id", clinicId).eq("is_active", true),
     ]);
     setOrders(ordersRes.data || []);
     setPatients(patientsRes.data || []);
 
     if (ordersRes.data?.length) {
-      const { data: allResults } = await supabase
-        .from("hms_lab_results").select("*")
-        .in("order_id", ordersRes.data.map((o: any) => o.id));
+      const ids = ordersRes.data.map((o: any) => o.id);
+      const [resultsRes, verRes] = await Promise.all([
+        supabase.from("hms_lab_results").select("*").in("order_id", ids),
+        supabase.from("document_verifications").select("*").in("document_id", ids).eq("document_type", "lab_result"),
+      ]);
       const grouped: Record<string, any[]> = {};
-      (allResults || []).forEach((r: any) => {
+      (resultsRes.data || []).forEach((r: any) => {
         if (!grouped[r.order_id]) grouped[r.order_id] = [];
         grouped[r.order_id].push(r);
       });
       setResults(grouped);
+      const verMap: Record<string, any> = {};
+      (verRes.data || []).forEach((v: any) => { verMap[v.document_id] = v; });
+      setVerificationData(verMap);
     }
   };
 
