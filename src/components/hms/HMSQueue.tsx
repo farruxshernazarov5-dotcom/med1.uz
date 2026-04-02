@@ -20,30 +20,43 @@ type QueueLang = "uz" | "ru" | "en";
 
 const LANG_LABELS: Record<QueueLang, string> = { uz: "O'zbek", ru: "Русский", en: "English" };
 
-const VOICE_TEXTS: Record<QueueLang, { call: string; room: string; please: string }> = {
-  uz: { call: "Navbat raqami", room: "xonaga kiring", please: "Iltimos" },
-  ru: { call: "Номер очереди", room: "пройдите в кабинет", please: "Пожалуйста" },
-  en: { call: "Queue number", room: "please go to room", please: "Please" },
+type VoiceGender = "female" | "male";
+
+const generateVoiceText = (name: string, number: number, department: string, room: string, lang: QueueLang): string => {
+  const dept = department || room;
+  if (lang === "uz") {
+    return `${name}. Navbat raqami ${number}. Iltimos, ${dept} bolimi, ${room}-xonaga kiring.`;
+  }
+  if (lang === "ru") {
+    return `${name}. Номер ${number}. Пожалуйста, пройдите в ${dept}, кабинет ${room}.`;
+  }
+  return `${name}. Queue number ${number}. Please go to ${dept}, room ${room}.`;
 };
 
-const LANG_MAP: Record<QueueLang, string> = { uz: "uz-UZ", ru: "ru-RU", en: "en-US" };
-
-const VOICE_PRIORITIES: Record<QueueLang, RegExp[]> = {
-  uz: [/female|woman|zira|yelda|dilnoza/i, /milena|svetlana|irina/i],
-  ru: [/milena|svetlana|irina|tatiana|katya|yandex|alice/i, /female|woman/i],
-  en: [/samantha|victoria|karen|moira|tessa|fiona/i, /google.*female|microsoft.*zira|female|woman/i],
+const VOICE_PRIORITIES_BY_GENDER: Record<VoiceGender, Record<QueueLang, RegExp[]>> = {
+  female: {
+    uz: [/female|woman|zira|yelda|dilnoza/i, /milena|svetlana|irina/i],
+    ru: [/milena|svetlana|irina|tatiana|katya|yandex|alice/i, /female|woman/i],
+    en: [/samantha|victoria|karen|moira|tessa|fiona/i, /google.*female|microsoft.*zira|female|woman/i],
+  },
+  male: {
+    uz: [/male|man|alisher|jasur/i, /dmitri|pavel|ivan/i],
+    ru: [/dmitri|pavel|ivan|maxim|yandex/i, /male|man/i],
+    en: [/daniel|james|david|google.*male|microsoft.*david/i, /male|man/i],
+  },
 };
 
-const findBestVoice = (lang: QueueLang): SpeechSynthesisVoice | null => {
+const findBestVoice = (lang: QueueLang, gender: VoiceGender = "female"): SpeechSynthesisVoice | null => {
   if (!("speechSynthesis" in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   const code = LANG_MAP[lang].split("-")[0];
   const langVoices = voices.filter(v => v.lang.startsWith(code));
-  for (const pattern of VOICE_PRIORITIES[lang]) {
+  for (const pattern of VOICE_PRIORITIES_BY_GENDER[gender][lang]) {
     const match = langVoices.find(v => pattern.test(v.name));
     if (match) return match;
   }
-  return langVoices.find(v => /female|woman/i.test(v.name)) || langVoices[0] || null;
+  const genderPattern = gender === "female" ? /female|woman/i : /male|man/i;
+  return langVoices.find(v => genderPattern.test(v.name)) || langVoices[0] || null;
 };
 
 const HMSQueue = ({ clinicId }: Props) => {
