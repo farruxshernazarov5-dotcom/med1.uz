@@ -79,6 +79,7 @@ const HMSQueue = ({ clinicId }: Props) => {
   const [voiceVolume, setVoiceVolume] = useState(1.0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [repeatCount, setRepeatCount] = useState(2);
+  const [voiceGender, setVoiceGender] = useState<VoiceGender>("female");
   const [deptFilter, setDeptFilter] = useState("");
 
   const displayRef = useRef<HTMLDivElement>(null);
