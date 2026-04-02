@@ -292,7 +292,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     fetchData();
   };
 
-  const handleSendNotification = async (order: any) => {
+  const handleSendNotification = async (order: any, channels: string[] = ["telegram"]) => {
     setSending(order.id);
     try {
       const patient = patients.find(p => p.id === order.patient_id);
@@ -300,10 +300,11 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         toast({ title: "Bemor user_id topilmadi", variant: "destructive" }); setSending(null); return;
       }
       const { error } = await supabase.functions.invoke("lab-result-notify", {
-        body: { lab_result_id: order.id, patient_id: patient.user_id, channels: ["telegram"] },
+        body: { lab_result_id: order.id, patient_id: patient.user_id, channels },
       });
       if (error) throw error;
-      toast({ title: "✅ Bildirishnoma yuborildi!" });
+      toast({ title: "✅ Bildirishnoma yuborildi!", description: `Kanallar: ${channels.join(", ")}` });
+      setShowSendModal(null);
     } catch (e: any) {
       toast({ title: "Xatolik", description: e.message, variant: "destructive" });
     }
