@@ -215,25 +215,26 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const handleAddTemplateResults = async (orderId: string, category: string) => {
     const template = LAB_TEMPLATES[category];
     if (!template) return;
-    const rows = template
-      .filter(t => templateValues[t.name]?.trim())
-      .map(t => {
-        const val = parseFloat(templateValues[t.name]);
-        const ref = t.ref;
-        let isAbnormal = false;
-        if (!isNaN(val) && ref.includes("-")) {
-          const [min, max] = ref.split("-").map(Number);
-          if (!isNaN(min) && !isNaN(max)) isAbnormal = val < min || val > max;
-        }
-        return {
-          order_id: orderId, parameter_name: t.name, value: templateValues[t.name],
-          unit: t.unit, reference_range: t.ref, is_abnormal: isAbnormal,
-        };
-      });
-    if (rows.length === 0) { toast({ title: "Kamida 1 ta qiymat kiriting!", variant: "destructive" }); return; }
+    const filledCount = template.filter(t => templateValues[t.name]?.trim()).length;
+    if (filledCount === 0) { toast({ title: "Kamida 1 ta qiymat kiriting!", variant: "destructive" }); return; }
+    // Save ALL template fields - filled ones with values, unfilled with "—"
+    const rows = template.map(t => {
+      const rawVal = templateValues[t.name]?.trim() || "";
+      const val = parseFloat(rawVal);
+      const ref = t.ref;
+      let isAbnormal = false;
+      if (rawVal && !isNaN(val) && ref.includes("-")) {
+        const [min, max] = ref.split("-").map(Number);
+        if (!isNaN(min) && !isNaN(max)) isAbnormal = val < min || val > max;
+      }
+      return {
+        order_id: orderId, parameter_name: t.name, value: rawVal || "—",
+        unit: t.unit, reference_range: t.ref, is_abnormal: isAbnormal,
+      };
+    });
     await supabase.from("hms_lab_results").insert(rows);
     const abnormalCount = rows.filter(r => r.is_abnormal).length;
-    toast({ title: `✅ ${rows.length} ta natija qo'shildi`, description: abnormalCount > 0 ? `⚠️ ${abnormalCount} ta normadan tashqari` : undefined });
+    toast({ title: `✅ ${rows.length} ta natija qo'shildi (${filledCount} to'ldirilgan)`, description: abnormalCount > 0 ? `⚠️ ${abnormalCount} ta normadan tashqari` : undefined });
     setTemplateValues({});
     setUseTemplate(false);
     fetchData();
