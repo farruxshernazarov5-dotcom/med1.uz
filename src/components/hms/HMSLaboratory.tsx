@@ -695,9 +695,33 @@ const HMSLaboratory = ({ clinicId }: Props) => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={form.patient_id} onChange={(e) => setForm({ ...form, patient_id: e.target.value })}>
-                    <option value="">Bemorni tanlang *</option>
-                    {patients.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+                  <div className="relative">
+                    <Input
+                      placeholder="Bemor qidirish (ism yoki telefon)..."
+                      value={patientSearch}
+                      onChange={(e) => setPatientSearch(e.target.value)}
+                      className="mb-1 text-sm"
+                    />
+                  </div>
+                  <select
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    value={form.patient_id}
+                    onChange={(e) => setForm({ ...form, patient_id: e.target.value })}
+                  >
+                    <option value="">Bemorni tanlang * ({patients.filter(p => {
+                      if (!patientSearch) return true;
+                      const q = patientSearch.toLowerCase();
+                      return p.full_name?.toLowerCase().includes(q) || p.phone?.includes(q);
+                    }).length} ta)</option>
+                    {patients
+                      .filter(p => {
+                        if (!patientSearch) return true;
+                        const q = patientSearch.toLowerCase();
+                        return p.full_name?.toLowerCase().includes(q) || p.phone?.includes(q);
+                      })
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>{p.full_name} — {p.phone}</option>
+                      ))}
                   </select>
                   {!showQuickPatient && (
                     <button className="text-xs text-primary mt-1 hover:underline flex items-center gap-1" onClick={() => setShowQuickPatient(true)}>
@@ -705,10 +729,21 @@ const HMSLaboratory = ({ clinicId }: Props) => {
                     </button>
                   )}
                 </div>
+                <div>
+                  <select
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm mb-1"
+                    value={form.test_category}
+                    onChange={(e) => {
+                      const cat = e.target.value;
+                      const label = CATEGORIES.find(c => c.value === cat)?.label || "";
+                      setForm({ ...form, test_category: cat, test_name: form.test_name || label });
+                    }}
+                  >
+                    {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  </select>
+                  <p className="text-[10px] text-muted-foreground">Kategoriya tanlang → shablon avtomatik yuklanadi</p>
+                </div>
                 <Input placeholder="Tahlil nomi *" value={form.test_name} onChange={(e) => setForm({ ...form, test_name: e.target.value })} />
-                <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={form.test_category} onChange={(e) => setForm({ ...form, test_category: e.target.value })}>
-                  {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
                 <select className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}>
                   <option value="normal">Oddiy</option>
                   <option value="urgent">Shoshilinch</option>
