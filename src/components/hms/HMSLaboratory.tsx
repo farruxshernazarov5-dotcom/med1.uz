@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus, FlaskConical, Clock, CheckCircle2, X, AlertTriangle,
   Search, TrendingUp, BarChart3, Zap, Send, FileText, Download,
-  ArrowLeft, Eye, Printer, ChevronRight, UserPlus, Activity
+  ArrowLeft, Eye, Printer, ChevronRight, UserPlus, Activity,
+  Phone, Mail, MessageCircle, Stethoscope, QrCode, ShieldCheck, User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import HMSDownloadMenu from "./HMSDownloadMenu";
@@ -131,6 +132,16 @@ const LAB_TEMPLATES: Record<string, Array<{ name: string; unit: string; ref: str
 
 const PIE_COLORS = ["hsl(var(--primary))", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"];
 
+const SPECIALIST_RECOMMENDATIONS: Record<string, { specialist: string; reason: string }[]> = {
+  blood: [{ specialist: "Gematolog", reason: "Qon ko'rsatkichlari normadan tashqari" }],
+  biochemistry: [{ specialist: "Terapevt", reason: "Bioximik ko'rsatkichlarni baholash" }, { specialist: "Endokrinolog", reason: "Glyukoza yoki gormon bilan bog'liq" }],
+  hormones: [{ specialist: "Endokrinolog", reason: "Gormon balansini tekshirish" }],
+  urine: [{ specialist: "Urolog / Nefrolog", reason: "Siydik tahlili natijalarini baholash" }],
+  immunology: [{ specialist: "Immunolog / Revmatolog", reason: "Immunologik ko'rsatkichlar" }],
+  coagulation: [{ specialist: "Gematolog", reason: "Qon ivish tizimi" }],
+  microbiology: [{ specialist: "Infektsionist", reason: "Infektsiya aniqlash va davolash" }],
+};
+
 const HMSLaboratory = ({ clinicId }: Props) => {
   const [orders, setOrders] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
@@ -146,6 +157,9 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const [templateValues, setTemplateValues] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
   const [patientSearch, setPatientSearch] = useState("");
+  const [showSendModal, setShowSendModal] = useState<any>(null);
+  const [sendChannels, setSendChannels] = useState<string[]>(["telegram"]);
+  const [verificationData, setVerificationData] = useState<Record<string, any>>({});
 
   const [form, setForm] = useState({ patient_id: "", test_name: "", test_category: "blood", priority: "normal", notes: "" });
   const [resultForm, setResultForm] = useState({ parameter_name: "", value: "", unit: "", reference_range: "", is_abnormal: false });
@@ -154,21 +168,26 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
       supabase.from("hms_lab_orders").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }),
-      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth").eq("clinic_id", clinicId).eq("is_active", true),
+      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id").eq("clinic_id", clinicId).eq("is_active", true),
     ]);
     setOrders(ordersRes.data || []);
     setPatients(patientsRes.data || []);
 
     if (ordersRes.data?.length) {
-      const { data: allResults } = await supabase
-        .from("hms_lab_results").select("*")
-        .in("order_id", ordersRes.data.map((o: any) => o.id));
+      const ids = ordersRes.data.map((o: any) => o.id);
+      const [resultsRes, verRes] = await Promise.all([
+        supabase.from("hms_lab_results").select("*").in("order_id", ids),
+        supabase.from("document_verifications").select("*").in("document_id", ids).eq("document_type", "lab_result"),
+      ]);
       const grouped: Record<string, any[]> = {};
-      (allResults || []).forEach((r: any) => {
+      (resultsRes.data || []).forEach((r: any) => {
         if (!grouped[r.order_id]) grouped[r.order_id] = [];
         grouped[r.order_id].push(r);
       });
       setResults(grouped);
+      const verMap: Record<string, any> = {};
+      (verRes.data || []).forEach((v: any) => { verMap[v.document_id] = v; });
+      setVerificationData(verMap);
     }
   };
 
@@ -273,7 +292,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     fetchData();
   };
 
-  const handleSendNotification = async (order: any) => {
+  const handleSendNotification = async (order: any, channels: string[] = ["telegram"]) => {
     setSending(order.id);
     try {
       const patient = patients.find(p => p.id === order.patient_id);
@@ -281,10 +300,11 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         toast({ title: "Bemor user_id topilmadi", variant: "destructive" }); setSending(null); return;
       }
       const { error } = await supabase.functions.invoke("lab-result-notify", {
-        body: { lab_result_id: order.id, patient_id: patient.user_id, channels: ["telegram"] },
+        body: { lab_result_id: order.id, patient_id: patient.user_id, channels },
       });
       if (error) throw error;
-      toast({ title: "✅ Bildirishnoma yuborildi!" });
+      toast({ title: "✅ Bildirishnoma yuborildi!", description: `Kanallar: ${channels.join(", ")}` });
+      setShowSendModal(null);
     } catch (e: any) {
       toast({ title: "Xatolik", description: e.message, variant: "destructive" });
     }
@@ -366,9 +386,10 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
     const template = LAB_TEMPLATES[order.test_category];
     const autoTemplate = template && orderResults.length === 0 && order.status !== "completed";
+    const verification = verificationData[order.id];
+    const specialists = SPECIALIST_RECOMMENDATIONS[order.test_category] || [];
 
     const handleDownloadPDF = () => {
-      // Get verification code if available
       downloadLabReportPDF({
         testName: order.test_name,
         testCategory: CATEGORIES.find(c => c.value === order.test_category)?.label || order.test_category,
@@ -378,13 +399,65 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         orderedAt: order.ordered_at,
         completedAt: order.completed_at,
         results: orderResults,
+        verificationCode: verification?.verification_code,
       });
     };
+
     return (
       <div>
         <Button variant="ghost" size="sm" onClick={() => setSelectedOrder(null)} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-1" /> Orqaga
         </Button>
+
+        {/* Send Notification Modal */}
+        {showSendModal && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSendModal(null)}>
+            <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+              <h3 className="font-heading text-lg font-bold text-foreground mb-1">📤 Natijani yuborish</h3>
+              <p className="text-xs text-muted-foreground mb-4">Bemor: <strong>{patient?.full_name}</strong></p>
+              
+              <div className="space-y-3 mb-4">
+                {[
+                  { key: "telegram", icon: MessageCircle, label: "Telegram", desc: "Telefon raqam orqali chat_id aniqlanadi", color: "text-blue-500" },
+                  { key: "sms", icon: Phone, label: "SMS", desc: patient?.phone || "Telefon kiritilmagan", color: "text-green-500" },
+                  { key: "email", icon: Mail, label: "Email", desc: "Email orqali yuborish", color: "text-orange-500" },
+                ].map(ch => (
+                  <label key={ch.key} className={cn(
+                    "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
+                    sendChannels.includes(ch.key) ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"
+                  )}>
+                    <input
+                      type="checkbox"
+                      checked={sendChannels.includes(ch.key)}
+                      onChange={(e) => {
+                        if (e.target.checked) setSendChannels([...sendChannels, ch.key]);
+                        else setSendChannels(sendChannels.filter(c => c !== ch.key));
+                      }}
+                      className="rounded"
+                    />
+                    <ch.icon className={cn("w-5 h-5", ch.color)} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{ch.label}</p>
+                      <p className="text-[10px] text-muted-foreground">{ch.desc}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  disabled={sendChannels.length === 0 || sending === showSendModal.id}
+                  onClick={() => handleSendNotification(showSendModal, sendChannels)}
+                >
+                  <Send className="w-4 h-4 mr-1" />
+                  {sending === showSendModal.id ? "Yuborilmoqda..." : "Yuborish"}
+                </Button>
+                <Button variant="outline" onClick={() => setShowSendModal(null)}>Bekor</Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-card rounded-2xl border border-border p-6 mb-4">
           <div className="flex items-start justify-between mb-4">
@@ -408,19 +481,37 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             </div>
           </div>
 
-          {/* Patient Info */}
+          {/* Patient Info - Enhanced */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="bg-muted/30 rounded-xl p-4">
-              <h4 className="text-xs font-semibold text-muted-foreground mb-2">BEMOR MA'LUMOTI</h4>
-              <p className="text-sm font-medium text-foreground">{patient?.full_name || "—"}</p>
-              {patient?.phone && <p className="text-xs text-muted-foreground">{patient.phone}</p>}
-              {patient?.date_of_birth && <p className="text-xs text-muted-foreground">Tug'ilgan: {patient.date_of_birth}</p>}
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
+                <User className="w-3 h-3" /> BEMOR MA'LUMOTI
+              </h4>
+              <p className="text-sm font-bold text-foreground">{patient?.full_name || "—"}</p>
+              {patient?.phone && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1"><Phone className="w-3 h-3" /> {patient.phone}</p>}
+              {patient?.date_of_birth && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Tug'ilgan: {patient.date_of_birth} ({Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / 31557600000)} yosh)
+                </p>
+              )}
+              {patient?.gender && <p className="text-xs text-muted-foreground mt-0.5">Jinsi: {patient.gender === "male" ? "Erkak" : patient.gender === "female" ? "Ayol" : patient.gender}</p>}
+              {patient?.blood_group && <p className="text-xs text-muted-foreground mt-0.5">Qon guruhi: {patient.blood_group}</p>}
+              {patient?.national_id && <p className="text-xs text-muted-foreground mt-0.5">ID: {patient.national_id}</p>}
+              {patient?.allergies && (
+                <div className="mt-1">
+                  <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[10px]">
+                    <AlertTriangle className="w-3 h-3 mr-0.5" /> Allergiya: {patient.allergies}
+                  </Badge>
+                </div>
+              )}
             </div>
             <div className="bg-muted/30 rounded-xl p-4">
               <h4 className="text-xs font-semibold text-muted-foreground mb-2">TAHLIL TAFSILOTI</h4>
               <p className="text-xs text-muted-foreground">Buyurtma: {new Date(order.ordered_at).toLocaleString("uz")}</p>
               {order.completed_at && <p className="text-xs text-muted-foreground">Tayyor: {new Date(order.completed_at).toLocaleString("uz")}</p>}
               {order.notes && <p className="text-xs text-muted-foreground mt-1">Izoh: {order.notes}</p>}
+              <p className="text-xs text-muted-foreground mt-1">Natijalar: {orderResults.length} parametr</p>
+              {abnormalCount > 0 && <p className="text-xs text-destructive font-medium mt-1">⚠️ {abnormalCount} ta normadan tashqari</p>}
             </div>
           </div>
 
@@ -474,12 +565,67 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             </div>
           )}
 
+          {/* Specialist Recommendation */}
+          {order.status === "completed" && abnormalCount > 0 && specialists.length > 0 && (
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-4">
+              <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-200 flex items-center gap-2 mb-2">
+                <Stethoscope className="w-4 h-4" /> Mutaxassisga murojaat tavsiya etiladi
+              </h4>
+              <div className="space-y-1.5">
+                {specialists.map((s, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 text-[10px]">{s.specialist}</Badge>
+                    <span className="text-amber-700 dark:text-amber-300">{s.reason}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-2 italic">
+                ⚠️ Bu tavsiya avtomatik tizim tomonidan berilgan. Aniq tashxis uchun shifokor bilan maslahatlashing.
+              </p>
+            </div>
+          )}
+
+          {/* DMED-style Verification Block */}
+          {order.status === "completed" && verification && (
+            <div className="bg-muted/30 border border-border rounded-xl p-4 mb-4">
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ShieldCheck className="w-5 h-5 text-primary" />
+                    <span className="font-heading font-bold text-foreground text-sm">MED1.UZ</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
+                    Hujjat Med1.uz yagona tibbiy axborot tizimida yaratilgan. Hujjatning haqqoniyligini{" "}
+                    <a href={`https://med1-uz.lovable.app/verify/${verification.verification_code}`} className="text-primary underline" target="_blank" rel="noopener noreferrer">
+                      https://med1-uz.lovable.app/verify
+                    </a>{" "}
+                    saytida hujjatning ID kodini kiritish, yoki QR-kod orqali tekshirish mumkin.
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    <strong>Hujjat ID:</strong> {verification.verification_code}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    <strong>Yaratish sanasi:</strong> {new Date(verification.created_at).toLocaleString("uz")}
+                  </p>
+                </div>
+                <div className="shrink-0 text-center">
+                  <div className="text-2xl font-bold text-primary mb-1">{verification.scanned_count || 0}</div>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://med1-uz.lovable.app/verify/${verification.verification_code}`)}`}
+                    alt="QR Verification"
+                    className="w-20 h-20 rounded"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
             {order.status === "completed" && (
               <>
-                <Button size="sm" variant="outline" onClick={() => handleSendNotification(order)} disabled={sending === order.id}>
-                  <Send className="w-3.5 h-3.5 mr-1" /> {sending === order.id ? "Yuborilmoqda..." : "Natijani yuborish"}
+                <Button size="sm" variant="outline" onClick={() => { setShowSendModal(order); setSendChannels(["telegram"]); }}>
+                  <Send className="w-3.5 h-3.5 mr-1" /> Natijani yuborish
                 </Button>
                 {orderResults.length > 0 && (
                   <Button size="sm" variant="outline" onClick={handleDownloadPDF}>
@@ -572,6 +718,40 @@ const HMSLaboratory = ({ clinicId }: Props) => {
 
   return (
     <div>
+      {/* Send Notification Modal (global) */}
+      {showSendModal && !selectedOrder && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSendModal(null)}>
+          <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="font-heading text-lg font-bold text-foreground mb-1">📤 Natijani yuborish</h3>
+            <p className="text-xs text-muted-foreground mb-4">Bemor: <strong>{getPatientName(showSendModal.patient_id)}</strong></p>
+            <div className="space-y-3 mb-4">
+              {[
+                { key: "telegram", icon: MessageCircle, label: "Telegram", color: "text-blue-500" },
+                { key: "sms", icon: Phone, label: "SMS", color: "text-green-500" },
+                { key: "email", icon: Mail, label: "Email", color: "text-orange-500" },
+              ].map(ch => (
+                <label key={ch.key} className={cn(
+                  "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors",
+                  sendChannels.includes(ch.key) ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"
+                )}>
+                  <input type="checkbox" checked={sendChannels.includes(ch.key)} onChange={(e) => {
+                    if (e.target.checked) setSendChannels([...sendChannels, ch.key]);
+                    else setSendChannels(sendChannels.filter(c => c !== ch.key));
+                  }} className="rounded" />
+                  <ch.icon className={cn("w-5 h-5", ch.color)} />
+                  <span className="text-sm font-medium text-foreground">{ch.label}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Button className="flex-1" disabled={sendChannels.length === 0 || sending === showSendModal.id} onClick={() => handleSendNotification(showSendModal, sendChannels)}>
+                <Send className="w-4 h-4 mr-1" /> {sending === showSendModal.id ? "Yuborilmoqda..." : "Yuborish"}
+              </Button>
+              <Button variant="outline" onClick={() => setShowSendModal(null)}>Bekor</Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-xl font-bold text-foreground">Laboratoriya (LIS)</h2>
         <div className="flex gap-2">
@@ -810,7 +990,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
                     </div>
                     <div className="flex items-center gap-2">
                       {abnormal > 0 && <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 text-[10px]"><AlertTriangle className="w-3 h-3 mr-0.5" /> {abnormal}</Badge>}
-                      <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); handleSendNotification(order); }} disabled={sending === order.id}>
+                      <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setShowSendModal(order); setSendChannels(["telegram"]); }}>
                         <Send className="w-3.5 h-3.5" />
                       </Button>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
