@@ -956,7 +956,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
                     </div>
                     <div className="flex items-center gap-2">
                       {abnormal > 0 && <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 text-[10px]"><AlertTriangle className="w-3 h-3 mr-0.5" /> {abnormal}</Badge>}
-                      <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); handleSendNotification(order); }} disabled={sending === order.id}>
+                      <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setShowSendModal(order); setSendChannels(["telegram"]); }}>
                         <Send className="w-3.5 h-3.5" />
                       </Button>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
