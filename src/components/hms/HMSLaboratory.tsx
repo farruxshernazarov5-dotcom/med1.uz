@@ -145,6 +145,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const [useTemplate, setUseTemplate] = useState(false);
   const [templateValues, setTemplateValues] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
+  const [patientSearch, setPatientSearch] = useState("");
 
   const [form, setForm] = useState({ patient_id: "", test_name: "", test_category: "blood", priority: "normal", notes: "" });
   const [resultForm, setResultForm] = useState({ parameter_name: "", value: "", unit: "", reference_range: "", is_abnormal: false });
