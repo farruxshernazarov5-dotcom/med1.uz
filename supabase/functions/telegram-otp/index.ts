@@ -78,11 +78,19 @@ Deno.serve(async (req) => {
           { phone, chat_id: chatId, is_verified: false, updated_at: new Date().toISOString() },
           { onConflict: "phone" }
         );
+
+        // Also try to link chat_id to profile for lab notifications
+        await supabase.from("profiles")
+          .update({ telegram_chat_id: String(chatId) } as any)
+          .eq("phone", phone);
+
         if (error) {
           await sendTelegramMessage(chatId, "❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
         } else {
           await sendTelegramMessage(chatId,
-            `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\nEndi saytda "Telegram kod yuborish" tugmasini bosing.`
+            `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\n` +
+            `📌 Endi analiz natijalari shu bot orqali yuboriladi.\n` +
+            `Saytda "Telegram kod yuborish" tugmasini bosing.`
           );
         }
         return new Response("ok");
