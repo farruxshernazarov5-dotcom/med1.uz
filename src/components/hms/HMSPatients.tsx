@@ -98,23 +98,30 @@ const HMSPatients = ({ clinicId }: Props) => {
   };
 
   const handleSendToLab = async (patient: any) => {
-    const testName = prompt("Tahlil nomini kiriting (masalan: Umumiy qon tahlili):");
-    if (!testName) return;
+    setShowLabModal(patient);
+    setLabForm({ test_name: "", test_category: "blood", priority: "normal", notes: "" });
+  };
+
+  const confirmSendToLab = async () => {
+    if (!showLabModal || !labForm.test_name) {
+      toast({ title: "Tahlil nomini kiriting!", variant: "destructive" }); return;
+    }
     const { error } = await supabase.from("hms_lab_orders").insert({
       clinic_id: clinicId,
-      patient_id: patient.id,
-      test_name: testName,
-      test_category: "blood",
-      priority: "normal",
+      patient_id: showLabModal.id,
+      test_name: labForm.test_name,
+      test_category: labForm.test_category,
+      priority: labForm.priority,
       status: "pending",
+      notes: labForm.notes || null,
     });
     if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-      return;
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return;
     }
-    await writeAuditLog({ action: "create", entity_type: "lab_order", module: "patients", details: { patient_name: patient.full_name, test_name: testName } });
-    toast({ title: "✅ Laboratoriyaga yuborildi", description: `${patient.full_name} — ${testName}` });
-    if (selectedPatient?.id === patient.id) fetchPatientDetails(patient);
+    await writeAuditLog({ action: "create", entity_type: "lab_order", module: "patients", details: { patient_name: showLabModal.full_name, test_name: labForm.test_name, category: labForm.test_category } });
+    toast({ title: "✅ Laboratoriyaga yuborildi", description: `${showLabModal.full_name} — ${labForm.test_name}` });
+    if (selectedPatient?.id === showLabModal.id) fetchPatientDetails(showLabModal);
+    setShowLabModal(null);
   };
 
   const resetForm = () => {
