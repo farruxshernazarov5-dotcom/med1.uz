@@ -4,6 +4,9 @@ interface LabReportData {
   patientName: string;
   patientPhone?: string;
   patientDob?: string;
+  patientGender?: string;
+  patientBloodGroup?: string;
+  patientAllergies?: string;
   orderedAt: string;
   completedAt?: string;
   results: Array<{
@@ -62,7 +65,10 @@ export const downloadLabReportPDF = (data: LabReportData) => {
     <h4>Bemor ma'lumoti</h4>
     <p><strong>${esc(data.patientName)}</strong></p>
     ${data.patientPhone ? `<p>📞 ${esc(data.patientPhone)}</p>` : ""}
-    ${data.patientDob ? `<p>🎂 ${esc(data.patientDob)}</p>` : ""}
+    ${data.patientDob ? `<p>🎂 ${esc(data.patientDob)} (${Math.floor((Date.now() - new Date(data.patientDob).getTime()) / 31557600000)} yosh)</p>` : ""}
+    ${data.patientGender ? `<p>👤 ${data.patientGender === "male" ? "Erkak" : data.patientGender === "female" ? "Ayol" : esc(data.patientGender)}</p>` : ""}
+    ${data.patientBloodGroup ? `<p>🩸 Qon guruhi: ${esc(data.patientBloodGroup)}</p>` : ""}
+    ${data.patientAllergies ? `<p>⚠️ Allergiya: ${esc(data.patientAllergies)}</p>` : ""}
   </div>
   <div class="info-box">
     <h4>Tahlil ma'lumoti</h4>

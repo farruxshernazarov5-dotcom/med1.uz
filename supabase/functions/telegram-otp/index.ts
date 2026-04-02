@@ -61,11 +61,13 @@ Deno.serve(async (req) => {
       const text = message.text.trim();
 
       if (text.startsWith("/start")) {
+        // Try to link chat_id to profile by phone if already registered
         await sendTelegramMessage(chatId,
           "🏥 <b>Med1.uz - Telegram orqali kirish</b>\n\n" +
           "Telefon raqamingizni quyidagi formatda yuboring:\n" +
           "<code>+998901234567</code>\n\n" +
-          "Keyin saytda ko'rsatilgan kodni kiriting."
+          "Keyin saytda ko'rsatilgan kodni kiriting.\n\n" +
+          "📌 Telefon raqamingiz Med1.uz tizimida ro'yxatdan o'tgan bo'lsa, analiz natijalari shu bot orqali yuboriladi."
         );
         return new Response("ok");
       }
@@ -76,11 +78,19 @@ Deno.serve(async (req) => {
           { phone, chat_id: chatId, is_verified: false, updated_at: new Date().toISOString() },
           { onConflict: "phone" }
         );
+
+        // Also try to link chat_id to profile for lab notifications
+        await supabase.from("profiles")
+          .update({ telegram_chat_id: String(chatId) } as any)
+          .eq("phone", phone);
+
         if (error) {
           await sendTelegramMessage(chatId, "❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
         } else {
           await sendTelegramMessage(chatId,
-            `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\nEndi saytda "Telegram kod yuborish" tugmasini bosing.`
+            `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\n` +
+            `📌 Endi analiz natijalari shu bot orqali yuboriladi.\n` +
+            `Saytda "Telegram kod yuborish" tugmasini bosing.`
           );
         }
         return new Response("ok");

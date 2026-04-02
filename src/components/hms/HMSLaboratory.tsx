@@ -296,13 +296,51 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     setSending(order.id);
     try {
       const patient = patients.find(p => p.id === order.patient_id);
-      if (!patient?.user_id) {
-        toast({ title: "Bemor user_id topilmadi", variant: "destructive" }); setSending(null); return;
+      if (!patient) {
+        toast({ title: "Bemor topilmadi", variant: "destructive" }); setSending(null); return;
       }
-      const { error } = await supabase.functions.invoke("lab-result-notify", {
-        body: { lab_result_id: order.id, patient_id: patient.user_id, channels },
-      });
-      if (error) throw error;
+
+      // If patient has user_id, use profile-based notify
+      if (patient.user_id) {
+        const { error } = await supabase.functions.invoke("lab-result-notify", {
+          body: { lab_result_id: order.id, patient_id: patient.user_id, channels },
+        });
+        if (error) throw error;
+      } else {
+        // Fallback: use phone to find telegram chat_id from telegram_otp table
+        if (channels.includes("telegram") && patient.phone) {
+          const { data: otpRecord } = await supabase
+            .from("telegram_otp")
+            .select("chat_id")
+            .eq("phone", patient.phone)
+            .maybeSingle();
+
+          if (otpRecord?.chat_id) {
+            const orderResults = results[order.id] || [];
+            const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
+            const message = `🧾 <b>ANALIZ NATIJASI TAYYOR</b>\n\n` +
+              `👤 <b>Bemor:</b> ${patient.full_name}\n` +
+              `🧪 <b>Tahlil:</b> ${order.test_name}\n` +
+              `📅 <b>Sana:</b> ${new Date().toISOString().slice(0, 10)}\n` +
+              `📊 <b>Natijalar:</b> ${orderResults.length} parametr\n` +
+              (abnormalCount > 0 ? `⚠️ <b>Normadan tashqari:</b> ${abnormalCount} ta\n` : `✅ <b>Barcha ko'rsatkichlar normal</b>\n`) +
+              `\n🔗 <b>Natijani ko'rish:</b> https://med1-uz.lovable.app/dashboard\n\n` +
+              `⚠️ <i>Bu xabar avtomatik yuborilgan.</i>`;
+
+            await supabase.functions.invoke("telegram-notify", {
+              body: {
+                type: "lab_result_direct",
+                data: { chat_id: otpRecord.chat_id, message },
+              },
+            });
+          } else {
+            toast({ title: "⚠️ Telegram chat_id topilmadi", description: "Bemor Telegram botga ulanmagan. Telefon: " + patient.phone, variant: "destructive" });
+            setSending(null);
+            return;
+          }
+        }
+        // SMS / email can be added here
+      }
       toast({ title: "✅ Bildirishnoma yuborildi!", description: `Kanallar: ${channels.join(", ")}` });
       setShowSendModal(null);
     } catch (e: any) {
@@ -396,6 +434,9 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         patientName: patient?.full_name || "—",
         patientPhone: patient?.phone,
         patientDob: patient?.date_of_birth,
+        patientGender: patient?.gender,
+        patientBloodGroup: patient?.blood_group,
+        patientAllergies: patient?.allergies,
         orderedAt: order.ordered_at,
         completedAt: order.completed_at,
         results: orderResults,

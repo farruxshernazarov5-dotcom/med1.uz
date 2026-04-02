@@ -85,6 +85,26 @@ serve(async (req) => {
         message = `📋 <b>XIZMATGA BUYURTMA</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || "—")}\n📞 <b>Tel:</b> ${esc(data.phone || "—")}\n🏥 <b>Muassasa:</b> ${esc(data.org_name || "—")}\n📋 <b>Xizmat:</b> ${esc(data.service_name)}\n💰 <b>Narx:</b> ${esc(data.price || "—")}\n\n📅 ${ts()}`;
         break;
 
+      case "lab_result_direct":
+        // Direct send with provided chat_id and message
+        if (data.chat_id && data.message) {
+          const directRes = await fetch(`${GATEWAY_URL}/sendMessage`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+              "X-Connection-Api-Key": TELEGRAM_API_KEY,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ chat_id: data.chat_id, text: data.message, parse_mode: "HTML" }),
+          });
+          const directResult = await directRes.json();
+          return new Response(JSON.stringify({ success: directRes.ok, result: directResult }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        message = `🔔 Lab result direct send failed — no chat_id`;
+        break;
+
       default:
         message = `🔔 <b>BILDIRISHNOMA</b>\n\n📋 <b>Tur:</b> ${esc(type)}\n\n${esc(JSON.stringify(data, null, 2))}\n\n📅 ${ts()}`;
     }
