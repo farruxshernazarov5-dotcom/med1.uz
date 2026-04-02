@@ -117,16 +117,11 @@ const HMSQueue = ({ clinicId }: Props) => {
     }
   }, []);
 
-  const speakQueue = useCallback((number: number, room: string) => {
+  const speakQueue = useCallback((name: string, number: number, department: string, room: string) => {
     if (!voiceEnabled || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
 
-    const t = VOICE_TEXTS[voiceLang];
-    const text = voiceLang === "uz"
-      ? `${t.call} ${number}, ${room} ${t.room}`
-      : voiceLang === "ru"
-        ? `${t.call} ${number}, ${t.room} ${room}`
-        : `${t.call} ${number}, ${t.room} ${room}`;
+    const text = generateVoiceText(name, number, department, room, voiceLang);
 
     const speak = (attempt: number) => {
       if (attempt > repeatCount) { setIsSpeaking(false); return; }
@@ -135,7 +130,7 @@ const HMSQueue = ({ clinicId }: Props) => {
       utter.rate = voiceRate;
       utter.pitch = voicePitch;
       utter.volume = voiceVolume;
-      const voice = findBestVoice(voiceLang);
+      const voice = findBestVoice(voiceLang, voiceGender);
       if (voice) { utter.voice = voice; utter.lang = voice.lang; }
       utter.onstart = () => setIsSpeaking(true);
       utter.onend = () => {
@@ -150,7 +145,7 @@ const HMSQueue = ({ clinicId }: Props) => {
     };
 
     speak(1);
-  }, [voiceEnabled, voiceLang, voiceRate, voicePitch, voiceVolume, repeatCount]);
+  }, [voiceEnabled, voiceLang, voiceRate, voicePitch, voiceVolume, voiceGender, repeatCount]);
 
   const resetForm = () => { setForm({ patient_name: "", patient_phone: "", patient_id: "", doctor_id: "", department_id: "", priority: "normal", estimated_wait_minutes: 15, notes: "" }); setShowForm(false); };
 
