@@ -152,6 +152,8 @@ const App = () => (
                 <Route path="/smart-search" element={<SmartSearchPage />} />
                 <Route path="/partnership" element={<PartnershipPage />} />
                 <Route path="/report/:reportId" element={<ReportVerificationPage />} />
+                <Route path="/verify" element={<ReportVerificationPage />} />
+                <Route path="/verify/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
                 <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
                 <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
