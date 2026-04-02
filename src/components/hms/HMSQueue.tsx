@@ -346,6 +346,16 @@ const HMSQueue = ({ clinicId }: Props) => {
                 <Slider min={1} max={3} step={1} value={[repeatCount]} onValueChange={v => setRepeatCount(v[0])} />
               </div>
 
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Ovoz turi</label>
+                <div className="flex gap-2">
+                  <Button size="sm" variant={voiceGender === "female" ? "default" : "outline"} className="flex-1"
+                    onClick={() => setVoiceGender("female")}>👩 Ayol</Button>
+                  <Button size="sm" variant={voiceGender === "male" ? "default" : "outline"} className="flex-1"
+                    onClick={() => setVoiceGender("male")}>👨 Erkak</Button>
+                </div>
+              </div>
+
               <Button size="sm" variant="outline" onClick={testVoice} disabled={isSpeaking}>
                 <Mic className="w-4 h-4 mr-1" /> {isSpeaking ? "Eshitilmoqda..." : "Sinab ko'rish"}
               </Button>
