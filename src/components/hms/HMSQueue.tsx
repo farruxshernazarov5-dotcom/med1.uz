@@ -55,7 +55,7 @@ const HMSQueue = ({ clinicId }: Props) => {
   const [showForm, setShowForm] = useState(false);
   const [showDisplay, setShowDisplay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [activeTab, setActiveTab] = useState<"queue" | "display" | "settings">("queue");
+  const [activeTab, setActiveTab] = useState("queue");
   const [form, setForm] = useState({ patient_name: "", patient_phone: "", patient_id: "", doctor_id: "", department_id: "", priority: "normal", estimated_wait_minutes: 15, notes: "" });
 
   // Voice settings
