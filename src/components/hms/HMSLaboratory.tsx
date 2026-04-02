@@ -358,6 +358,8 @@ const HMSLaboratory = ({ clinicId }: Props) => {
     const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
     const template = LAB_TEMPLATES[order.test_category];
     const autoTemplate = template && orderResults.length === 0 && order.status !== "completed";
+    // Auto-open template view when entering detail with no results
+    if (autoTemplate && !useTemplate) setUseTemplate(true);
 
     const handleDownloadPDF = () => {
       // Get verification code if available
