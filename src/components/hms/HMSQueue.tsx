@@ -164,8 +164,9 @@ const HMSQueue = ({ clinicId }: Props) => {
     const item = queue.find(q => q.id === id);
     await supabase.from("hms_queue").update({ status: "called", called_at: new Date().toISOString() }).eq("id", id);
     if (item) {
-      const room = getDeptName(item.department_id) || getDoctorName(item.doctor_id) || "1";
-      speakQueue(item.queue_number, room);
+      const dept = getDeptName(item.department_id);
+      const room = dept || getDoctorName(item.doctor_id) || "1";
+      speakQueue(item.patient_name, item.queue_number, dept, room);
     }
     toast({ title: "🔔 Bemor chaqirildi!" }); fetchData();
   };
