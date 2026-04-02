@@ -549,6 +549,52 @@ const HMSPatients = ({ clinicId }: Props) => {
         </Table>
         {filtered.length === 0 && <p className="text-center py-8 text-muted-foreground">Bemorlar topilmadi</p>}
       </div>
+
+      {/* Lab Order Modal */}
+      {showLabModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowLabModal(null)}>
+          <div className="bg-card rounded-2xl border border-border p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-heading font-bold text-foreground flex items-center gap-2">
+                <FlaskConical className="w-5 h-5 text-primary" /> Laboratoriyaga yuborish
+              </h3>
+              <Button variant="ghost" size="icon" onClick={() => setShowLabModal(null)}><X className="w-4 h-4" /></Button>
+            </div>
+            <div className="bg-muted/30 rounded-xl p-3 mb-4">
+              <p className="text-sm font-medium text-foreground">{showLabModal.full_name}</p>
+              <p className="text-xs text-muted-foreground">{showLabModal.phone}</p>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Tahlil nomi *</label>
+                <Input placeholder="Masalan: Umumiy qon tahlili" value={labForm.test_name} onChange={e => setLabForm({ ...labForm, test_name: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Kategoriya</label>
+                <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={labForm.test_category} onChange={e => setLabForm({ ...labForm, test_category: e.target.value })}>
+                  {LAB_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Ustuvorlik</label>
+                <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={labForm.priority} onChange={e => setLabForm({ ...labForm, priority: e.target.value })}>
+                  <option value="normal">Oddiy</option>
+                  <option value="urgent">Shoshilinch</option>
+                  <option value="critical">Juda shoshilinch</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Izoh</label>
+                <Input placeholder="Qo'shimcha izoh..." value={labForm.notes} onChange={e => setLabForm({ ...labForm, notes: e.target.value })} />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Button onClick={confirmSendToLab} className="flex-1"><FlaskConical className="w-4 h-4 mr-1" /> Yuborish</Button>
+              <Button variant="outline" onClick={() => setShowLabModal(null)}>Bekor</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
