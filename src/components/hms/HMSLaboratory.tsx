@@ -132,6 +132,16 @@ const LAB_TEMPLATES: Record<string, Array<{ name: string; unit: string; ref: str
 
 const PIE_COLORS = ["hsl(var(--primary))", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899"];
 
+const SPECIALIST_RECOMMENDATIONS: Record<string, { specialist: string; reason: string }[]> = {
+  blood: [{ specialist: "Gematolog", reason: "Qon ko'rsatkichlari normadan tashqari" }],
+  biochemistry: [{ specialist: "Terapevt", reason: "Bioximik ko'rsatkichlarni baholash" }, { specialist: "Endokrinolog", reason: "Glyukoza yoki gormon bilan bog'liq" }],
+  hormones: [{ specialist: "Endokrinolog", reason: "Gormon balansini tekshirish" }],
+  urine: [{ specialist: "Urolog / Nefrolog", reason: "Siydik tahlili natijalarini baholash" }],
+  immunology: [{ specialist: "Immunolog / Revmatolog", reason: "Immunologik ko'rsatkichlar" }],
+  coagulation: [{ specialist: "Gematolog", reason: "Qon ivish tizimi" }],
+  microbiology: [{ specialist: "Infektsionist", reason: "Infektsiya aniqlash va davolash" }],
+};
+
 const HMSLaboratory = ({ clinicId }: Props) => {
   const [orders, setOrders] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
@@ -147,6 +157,9 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const [templateValues, setTemplateValues] = useState<Record<string, string>>({});
   const [sending, setSending] = useState<string | null>(null);
   const [patientSearch, setPatientSearch] = useState("");
+  const [showSendModal, setShowSendModal] = useState<any>(null);
+  const [sendChannels, setSendChannels] = useState<string[]>(["telegram"]);
+  const [verificationData, setVerificationData] = useState<Record<string, any>>({});
 
   const [form, setForm] = useState({ patient_id: "", test_name: "", test_category: "blood", priority: "normal", notes: "" });
   const [resultForm, setResultForm] = useState({ parameter_name: "", value: "", unit: "", reference_range: "", is_abnormal: false });
