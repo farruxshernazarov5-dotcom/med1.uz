@@ -59,9 +59,14 @@ const HMSPatients = ({ clinicId }: Props) => {
   const fetchPatients = async () => {
     const { data } = await supabase
       .from("hms_patients").select("*").eq("clinic_id", clinicId)
-      .eq("is_active", filterStatus === "active")
+      .neq("is_active", false)
       .order("created_at", { ascending: false });
     setPatients(data || []);
+    if (filterStatus === "active") {
+      setPatients((data || []).filter(p => p.is_active !== false));
+    } else {
+      setPatients((data || []).filter(p => p.is_active === false));
+    }
   };
 
   useEffect(() => { fetchPatients(); }, [clinicId, filterStatus]);
