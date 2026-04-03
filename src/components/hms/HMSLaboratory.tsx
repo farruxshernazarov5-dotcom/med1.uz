@@ -168,7 +168,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
       supabase.from("hms_lab_orders").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }),
-      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id").eq("clinic_id", clinicId).eq("is_active", true),
+      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number").eq("clinic_id", clinicId).neq("is_active", false),
     ]);
     setOrders(ordersRes.data || []);
     setPatients(patientsRes.data || []);
@@ -431,12 +431,12 @@ const HMSLaboratory = ({ clinicId }: Props) => {
       downloadLabReportPDF({
         testName: order.test_name,
         testCategory: CATEGORIES.find(c => c.value === order.test_category)?.label || order.test_category,
-        patientName: patient?.full_name || "—",
-        patientPhone: patient?.phone,
-        patientDob: patient?.date_of_birth,
-        patientGender: patient?.gender,
-        patientBloodGroup: patient?.blood_group,
-        patientAllergies: patient?.allergies,
+        patientName: patient?.full_name || "Noma'lum",
+        patientPhone: patient?.phone || undefined,
+        patientDob: patient?.date_of_birth || undefined,
+        patientGender: patient?.gender || undefined,
+        patientBloodGroup: patient?.blood_group || undefined,
+        patientAllergies: patient?.allergies || undefined,
         orderedAt: order.ordered_at,
         completedAt: order.completed_at,
         results: orderResults,
@@ -528,22 +528,31 @@ const HMSLaboratory = ({ clinicId }: Props) => {
               <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
                 <User className="w-3 h-3" /> BEMOR MA'LUMOTI
               </h4>
-              <p className="text-sm font-bold text-foreground">{patient?.full_name || "—"}</p>
-              {patient?.phone && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1"><Phone className="w-3 h-3" /> {patient.phone}</p>}
-              {patient?.date_of_birth && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Tug'ilgan: {patient.date_of_birth} ({Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / 31557600000)} yosh)
-                </p>
-              )}
-              {patient?.gender && <p className="text-xs text-muted-foreground mt-0.5">Jinsi: {patient.gender === "male" ? "Erkak" : patient.gender === "female" ? "Ayol" : patient.gender}</p>}
-              {patient?.blood_group && <p className="text-xs text-muted-foreground mt-0.5">Qon guruhi: {patient.blood_group}</p>}
-              {patient?.national_id && <p className="text-xs text-muted-foreground mt-0.5">ID: {patient.national_id}</p>}
-              {patient?.allergies && (
-                <div className="mt-1">
-                  <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[10px]">
-                    <AlertTriangle className="w-3 h-3 mr-0.5" /> Allergiya: {patient.allergies}
-                  </Badge>
+              {patient ? (
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-foreground">{patient.full_name}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {patient.phone}</p>
+                  {patient.date_of_birth && (
+                    <p className="text-xs text-muted-foreground">
+                      🎂 {patient.date_of_birth} ({Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / 31557600000)} yosh)
+                    </p>
+                  )}
+                  {patient.gender && <p className="text-xs text-muted-foreground">👤 {patient.gender === "male" ? "Erkak" : patient.gender === "female" ? "Ayol" : patient.gender}</p>}
+                  {patient.blood_group && <p className="text-xs text-muted-foreground">🩸 Qon guruhi: {patient.blood_group}</p>}
+                  {patient.national_id && <p className="text-xs text-muted-foreground">🆔 ID: {patient.national_id}</p>}
+                  {patient.address && <p className="text-xs text-muted-foreground">📍 {patient.address}</p>}
+                  {patient.email && <p className="text-xs text-muted-foreground">✉️ {patient.email}</p>}
+                  {patient.allergies && (
+                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[10px] mt-1">
+                      <AlertTriangle className="w-3 h-3 mr-0.5" /> Allergiya: {patient.allergies}
+                    </Badge>
+                  )}
+                  {patient.chronic_diseases && (
+                    <p className="text-xs text-muted-foreground mt-1">⚕️ Surunkali: {patient.chronic_diseases}</p>
+                  )}
                 </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Bemor ma'lumotlari topilmadi (ID: {order.patient_id?.slice(0, 8)}...)</p>
               )}
             </div>
             <div className="bg-muted/30 rounded-xl p-4">
