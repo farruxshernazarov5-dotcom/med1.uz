@@ -168,10 +168,24 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
       supabase.from("hms_lab_orders").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }),
-      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number").eq("clinic_id", clinicId).neq("is_active", false),
+      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number").eq("clinic_id", clinicId),
     ]);
-    setOrders(ordersRes.data || []);
-    setPatients(patientsRes.data || []);
+    const fetchedOrders = ordersRes.data || [];
+    const fetchedPatients = patientsRes.data || [];
+    setOrders(fetchedOrders);
+    setPatients(fetchedPatients);
+
+    // If patients came back empty but orders have patient_ids, fetch patients individually
+    if (fetchedPatients.length === 0 && fetchedOrders.length > 0) {
+      const uniquePatientIds = [...new Set(fetchedOrders.map((o: any) => o.patient_id).filter(Boolean))];
+      if (uniquePatientIds.length > 0) {
+        const { data: fallbackPatients } = await supabase
+          .from("hms_patients")
+          .select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number")
+          .in("id", uniquePatientIds as string[]);
+        if (fallbackPatients?.length) setPatients(fallbackPatients);
+      }
+    }
 
     if (ordersRes.data?.length) {
       const ids = ordersRes.data.map((o: any) => o.id);
@@ -194,10 +208,24 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   useEffect(() => { fetchData(); }, [clinicId]);
 
   // Auto-open template when selecting an order with no results
+  // Also fetch patient if not found in local state
   useEffect(() => {
-    if (selectedOrder && !results[selectedOrder.id]?.length && selectedOrder.status !== "completed") {
-      setUseTemplate(true);
-      setTemplateValues({});
+    if (selectedOrder) {
+      if (!results[selectedOrder.id]?.length && selectedOrder.status !== "completed") {
+        setUseTemplate(true);
+        setTemplateValues({});
+      }
+      // Fetch patient if missing from local state
+      const patientExists = patients.find(p => p.id === selectedOrder.patient_id);
+      if (!patientExists && selectedOrder.patient_id) {
+        supabase.from("hms_patients")
+          .select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number")
+          .eq("id", selectedOrder.patient_id)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (data) setPatients(prev => [...prev, data]);
+          });
+      }
     }
   }, [selectedOrder?.id]);
 
