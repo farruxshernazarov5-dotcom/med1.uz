@@ -62,17 +62,15 @@ const HMSFinance = ({ clinicId }: Props) => {
   };
 
   const printInvoice = (patientName: string, items: any[], discount: number, total: number) => {
-    const html = `<html><head><title>Invoice - ${clinicName}</title><style>body{font-family:Arial;padding:40px;max-width:600px;margin:auto}h1{color:#1a5f7a;border-bottom:2px solid #1a5f7a;padding-bottom:10px}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#f0f8ff}.total{font-size:18px;font-weight:bold;color:#1a5f7a;text-align:right;margin-top:10px}</style></head><body>
-    <h1>🏥 ${clinicName} — Chek / Invoice</h1>
-    <p><b>Bemor:</b> ${patientName}</p><p><b>Sana:</b> ${new Date().toLocaleDateString("uz")}</p>
-    <table><tr><th>Xizmat</th><th>Soni</th><th>Narxi</th><th>Jami</th></tr>
-    ${items.map((it: any) => `<tr><td>${it.name}</td><td>${it.qty}</td><td>${Number(it.price).toLocaleString()} so'm</td><td>${(it.qty * it.price).toLocaleString()} so'm</td></tr>`).join("")}
-    </table>
-    ${discount > 0 ? `<p>Chegirma: -${Number(discount).toLocaleString()} so'm</p>` : ""}
-    <p class="total">Jami: ${total.toLocaleString()} so'm</p>
-    <p style="margin-top:30px;font-size:12px;color:#666">Med1.uz — Tibbiy platforma</p>
-    </body></html>`;
-    const w = window.open("", "_blank"); w?.document.write(html); w?.document.close(); w?.print();
+    downloadHMSReceipt({
+      clinicName: clinicName || "Klinika",
+      patientName,
+      invoiceNumber: `INV-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
+      date: new Date().toLocaleDateString("uz"),
+      items: items.map((it: any) => ({ name: it.name, qty: it.qty, price: Number(it.price) })),
+      discount,
+      paymentMethod: invoiceForm.payment_method,
+    });
   };
 
   const totalIncome = transactions.filter(t => t.transaction_type === "income").reduce((s, t) => s + Number(t.amount), 0);
