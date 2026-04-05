@@ -304,7 +304,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
       status, completed_at: status === "completed" ? new Date().toISOString() : null
     }).eq("id", id);
     const order = orders.find(o => o.id === id);
-    // Create QR verification record when completed
+    // Create QR verification record + auto-invoice when completed
     if (status === "completed") {
       const patient = patients.find(p => p.id === order?.patient_id);
       await supabase.from("document_verifications").insert({
@@ -314,6 +314,33 @@ const HMSLaboratory = ({ clinicId }: Props) => {
         patient_name: patient?.full_name || "",
         metadata: { test_name: order?.test_name, test_category: order?.test_category },
       } as any);
+
+      // Auto-create invoice for this lab order
+      if (order?.patient_id) {
+        const invoiceNumber = `LAB-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+        const categoryLabel = CATEGORIES.find(c => c.value === order.test_category)?.label || order.test_category;
+        await supabase.from("hms_invoices").insert({
+          clinic_id: clinicId,
+          patient_id: order.patient_id,
+          invoice_number: invoiceNumber,
+          invoice_date: new Date().toISOString().split("T")[0],
+          items: JSON.stringify([{ name: `${order.test_name} (${categoryLabel})`, qty: 1, price: 0 }]),
+          total_amount: 0,
+          status: "pending",
+          notes: `Laboratoriya tahlili: ${order.test_name}`,
+        });
+        // Also record in hms_finance
+        await supabase.from("hms_finance").insert({
+          clinic_id: clinicId,
+          transaction_type: "income",
+          category: "service",
+          amount: 0,
+          description: `Lab: ${order.test_name} — ${patient?.full_name || ""}`,
+          reference_id: id,
+          payment_method: "pending",
+          transaction_date: new Date().toISOString().split("T")[0],
+        });
+      }
     }
     await writeAuditLog({ action: "status_change", entity_type: "lab_order", entity_id: id, module: "laboratory", details: { status, test_name: order?.test_name } });
     toast({ title: `Status: ${status}` });
