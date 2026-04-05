@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X, TrendingUp, TrendingDown, DollarSign, Search, Receipt, Wallet, CreditCard, FileText, Printer } from "lucide-react";
+import { Plus, X, TrendingUp, TrendingDown, DollarSign, Search, Receipt, Wallet, CreditCard, FileText, Printer, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
