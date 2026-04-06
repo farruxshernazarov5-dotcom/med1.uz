@@ -101,7 +101,7 @@ const HMSQueue = ({ clinicId }: Props) => {
     const [qRes, allRes, patRes, docRes, deptRes] = await Promise.all([
       supabase.from("hms_queue").select("*").eq("clinic_id", clinicId).in("status", ["waiting", "called"]).order("priority", { ascending: true }).order("queue_number"),
       supabase.from("hms_queue").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }).limit(200),
-      supabase.from("hms_patients").select("id, full_name, phone").eq("clinic_id", clinicId).eq("is_active", true),
+      supabase.from("hms_patients").select("id, full_name, phone").eq("clinic_id", clinicId).neq("is_active", false),
       supabase.from("doctors").select("id, full_name").eq("clinic_id", clinicId).eq("is_active", true),
       supabase.from("hms_departments").select("id, name").eq("clinic_id", clinicId).eq("is_active", true),
     ]);
