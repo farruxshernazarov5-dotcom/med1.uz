@@ -24,10 +24,21 @@ const LANG_MAP: Record<QueueLang, string> = { uz: "uz-UZ", ru: "ru-RU", en: "en-
 
 type VoiceGender = "female" | "male";
 
+/** Normalize Uzbek text for better TTS pronunciation */
+const fixUzbekTTS = (text: string): string => {
+  return text
+    .replace(/bo['ʻ']limi/gi, "bolimi")
+    .replace(/xonaga/gi, "honaga")
+    .replace(/o['ʻ']/g, "o")
+    .replace(/g['ʻ']/g, "g")
+    .replace(/sh/gi, "sh");
+};
+
 const generateVoiceText = (name: string, number: number, department: string, room: string, lang: QueueLang): string => {
   const dept = department || room;
   if (lang === "uz") {
-    return `${name}. Navbat raqami ${number}. Iltimos, ${dept} bolimi, ${room}-xonaga kiring.`;
+    const raw = `${name}. Navbat raqami ${number}. Iltimos, ${dept} bolimi, ${room} honaga kiring.`;
+    return fixUzbekTTS(raw);
   }
   if (lang === "ru") {
     return `${name}. Номер ${number}. Пожалуйста, пройдите в ${dept}, кабинет ${room}.`;
@@ -90,7 +101,7 @@ const HMSQueue = ({ clinicId }: Props) => {
     const [qRes, allRes, patRes, docRes, deptRes] = await Promise.all([
       supabase.from("hms_queue").select("*").eq("clinic_id", clinicId).in("status", ["waiting", "called"]).order("priority", { ascending: true }).order("queue_number"),
       supabase.from("hms_queue").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }).limit(200),
-      supabase.from("hms_patients").select("id, full_name, phone").eq("clinic_id", clinicId).eq("is_active", true),
+      supabase.from("hms_patients").select("id, full_name, phone").eq("clinic_id", clinicId).neq("is_active", false),
       supabase.from("doctors").select("id, full_name").eq("clinic_id", clinicId).eq("is_active", true),
       supabase.from("hms_departments").select("id, name").eq("clinic_id", clinicId).eq("is_active", true),
     ]);

@@ -168,7 +168,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
       supabase.from("hms_lab_orders").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }),
-      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number").eq("clinic_id", clinicId),
+      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number").eq("clinic_id", clinicId).neq("is_active", false),
     ]);
     const fetchedOrders = ordersRes.data || [];
     const fetchedPatients = patientsRes.data || [];
