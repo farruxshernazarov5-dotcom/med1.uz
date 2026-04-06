@@ -4,33 +4,51 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X, TrendingUp, TrendingDown, DollarSign, Search, Receipt, Wallet, CreditCard, FileText, Printer, ArrowLeft } from "lucide-react";
+import { Plus, X, TrendingUp, TrendingDown, DollarSign, Search, Receipt, Wallet, CreditCard, FileText, Printer, ArrowLeft, Eye, ChevronRight, User, Phone, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import HMSDownloadMenu from "./HMSDownloadMenu";
 import type { HMSReportData } from "@/utils/downloadHMSReport";
 import { downloadHMSReceipt } from "@/utils/downloadHMSReceipt";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from "@/components/ui/table";
 
 interface Props { clinicId: string; }
 
 const HMSFinance = ({ clinicId }: Props) => {
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoicePatients, setInvoicePatients] = useState<Record<string, any>>({});
   const [clinicName, setClinicName] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [form, setForm] = useState({ transaction_type: "income", category: "service", amount: "", description: "", payment_method: "cash", transaction_date: new Date().toISOString().split("T")[0], notes: "" });
   const [invoiceForm, setInvoiceForm] = useState({ patient_name: "", items: [{ name: "", qty: 1, price: 0 }], payment_method: "cash", discount: 0 });
 
   const fetchData = async () => {
-    const [txRes, clinicRes] = await Promise.all([
+    const [txRes, clinicRes, invRes] = await Promise.all([
       supabase.from("hms_finance").select("*").eq("clinic_id", clinicId).order("transaction_date", { ascending: false }).limit(500),
       supabase.from("registered_clinics").select("name").eq("id", clinicId).single(),
+      supabase.from("hms_invoices").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }).limit(200),
     ]);
     setTransactions(txRes.data || []);
     setClinicName(clinicRes.data?.name || "");
+    const fetchedInvoices = invRes.data || [];
+    setInvoices(fetchedInvoices);
+
+    // Fetch patient names for invoices
+    const patientIds = [...new Set(fetchedInvoices.map((inv: any) => inv.patient_id).filter(Boolean))];
+    if (patientIds.length > 0) {
+      const { data: pts } = await supabase.from("hms_patients").select("id, full_name, phone, date_of_birth, gender, blood_group").in("id", patientIds as string[]);
+      const map: Record<string, any> = {};
+      (pts || []).forEach((p: any) => { map[p.id] = p; });
+      setInvoicePatients(map);
+    }
   };
 
   useEffect(() => { fetchData(); }, [clinicId]);
@@ -48,7 +66,6 @@ const HMSFinance = ({ clinicId }: Props) => {
     const validItems = invoiceForm.items.filter(it => it.name && it.price > 0);
     const subtotal = validItems.reduce((s, it) => s + it.qty * it.price, 0);
     const total = subtotal - Number(invoiceForm.discount);
-    // Save as income transaction
     await supabase.from("hms_finance").insert({
       clinic_id: clinicId, transaction_type: "income", category: "service",
       amount: total, description: `Invoice: ${invoiceForm.patient_name}`,
@@ -70,6 +87,22 @@ const HMSFinance = ({ clinicId }: Props) => {
       items: items.map((it: any) => ({ name: it.name, qty: it.qty, price: Number(it.price) })),
       discount,
       paymentMethod: invoiceForm.payment_method,
+    });
+  };
+
+  const printInvoiceFromRecord = (inv: any) => {
+    const patient = invoicePatients[inv.patient_id];
+    let items: any[] = [];
+    try { items = typeof inv.items === "string" ? JSON.parse(inv.items) : (inv.items || []); } catch { items = []; }
+    downloadHMSReceipt({
+      clinicName: clinicName || "Klinika",
+      patientName: patient?.full_name || "Noma'lum",
+      patientPhone: patient?.phone,
+      invoiceNumber: inv.invoice_number,
+      date: inv.invoice_date,
+      items: items.map((it: any) => ({ name: it.name, qty: it.qty || 1, price: Number(it.price || 0) })),
+      discount: Number(inv.discount || 0),
+      paymentMethod: inv.payment_method || "—",
     });
   };
 
@@ -99,7 +132,6 @@ const HMSFinance = ({ clinicId }: Props) => {
   const pieData = Object.entries(categoryTotals).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 6);
   const COLORS = ["hsl(var(--primary))", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"];
 
-  // Payment method stats
   const paymentMethods: Record<string, number> = {};
   transactions.filter(t => t.transaction_type === "income").forEach(t => { paymentMethods[t.payment_method] = (paymentMethods[t.payment_method] || 0) + Number(t.amount); });
   const paymentData = Object.entries(paymentMethods).map(([name, value]) => ({ name: name === "cash" ? "Naqd" : name === "card" ? "Karta" : name === "transfer" ? "O'tkazma" : "Onlayn", value }));
@@ -126,6 +158,135 @@ const HMSFinance = ({ clinicId }: Props) => {
       }
     }] : undefined,
   };
+
+  // ─── INVOICE DETAIL VIEW ───
+  if (selectedInvoice) {
+    const inv = selectedInvoice;
+    const patient = invoicePatients[inv.patient_id];
+    let items: any[] = [];
+    try { items = typeof inv.items === "string" ? JSON.parse(inv.items) : (inv.items || []); } catch { items = []; }
+    const subtotal = items.reduce((s: number, it: any) => s + (it.qty || 1) * Number(it.price || 0), 0);
+    const discount = Number(inv.discount || 0);
+    const total = Number(inv.total_amount || subtotal - discount);
+    const statusLabel = inv.status === "paid" ? "To'langan" : inv.status === "partial" ? "Qisman" : "Kutilmoqda";
+    const statusColor = inv.status === "paid" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : inv.status === "partial" ? "bg-yellow-100 text-yellow-800" : "bg-orange-100 text-orange-800";
+
+    return (
+      <div>
+        <Button variant="ghost" size="sm" onClick={() => setSelectedInvoice(null)} className="mb-4">
+          <ArrowLeft className="w-4 h-4 mr-1" /> Orqaga
+        </Button>
+
+        <div className="bg-card rounded-2xl border border-border p-6 mb-4">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <h2 className="font-heading text-xl font-bold text-foreground flex items-center gap-2">
+                <Receipt className="w-5 h-5 text-primary" /> Invoice #{inv.invoice_number}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">{clinicName}</p>
+            </div>
+            <Badge className={cn("text-xs", statusColor)}>{statusLabel}</Badge>
+          </div>
+
+          {/* Patient & Invoice Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-muted/30 rounded-xl p-4">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
+                <User className="w-3 h-3" /> BEMOR MA'LUMOTI
+              </h4>
+              {patient ? (
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-foreground">{patient.full_name}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {patient.phone || "—"}</p>
+                  {patient.date_of_birth && (
+                    <p className="text-xs text-muted-foreground">🎂 {patient.date_of_birth} ({Math.floor((Date.now() - new Date(patient.date_of_birth).getTime()) / 31557600000)} yosh)</p>
+                  )}
+                  {patient.gender && <p className="text-xs text-muted-foreground">👤 {patient.gender === "male" ? "Erkak" : "Ayol"}</p>}
+                  {patient.blood_group && <p className="text-xs text-muted-foreground">🩸 {patient.blood_group}</p>}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Bemor ma'lumotlari topilmadi</p>
+              )}
+            </div>
+            <div className="bg-muted/30 rounded-xl p-4">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> INVOICE TAFSILOTI
+              </h4>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">📅 Sana: <strong className="text-foreground">{inv.invoice_date}</strong></p>
+                {inv.due_date && <p className="text-xs text-muted-foreground">⏳ Muddat: {inv.due_date}</p>}
+                {inv.payment_method && <p className="text-xs text-muted-foreground">💳 To'lov: {inv.payment_method === "cash" ? "Naqd" : inv.payment_method === "card" ? "Karta" : inv.payment_method === "transfer" ? "O'tkazma" : inv.payment_method}</p>}
+                {inv.insurance_company && <p className="text-xs text-muted-foreground">🏢 Sug'urta: {inv.insurance_company}</p>}
+                {inv.notes && <p className="text-xs text-muted-foreground mt-1">📝 {inv.notes}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          {items.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-sm font-semibold text-foreground mb-2">Xizmatlar</h4>
+              <div className="border border-border rounded-xl overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead className="text-xs font-semibold">Xizmat</TableHead>
+                      <TableHead className="text-xs font-semibold text-center">Soni</TableHead>
+                      <TableHead className="text-xs font-semibold text-right">Narxi</TableHead>
+                      <TableHead className="text-xs font-semibold text-right">Jami</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {items.map((it: any, i: number) => (
+                      <TableRow key={i}>
+                        <TableCell className="text-xs font-medium py-2">{it.name}</TableCell>
+                        <TableCell className="text-xs py-2 text-center">{it.qty || 1}</TableCell>
+                        <TableCell className="text-xs py-2 text-right">{Number(it.price || 0).toLocaleString()} so'm</TableCell>
+                        <TableCell className="text-xs py-2 text-right font-bold">{((it.qty || 1) * Number(it.price || 0)).toLocaleString()} so'm</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+
+          {/* Totals */}
+          <div className="bg-muted/30 rounded-xl p-4 mb-4">
+            <div className="space-y-1">
+              {subtotal > 0 && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Jami:</span><span className="text-foreground">{subtotal.toLocaleString()} so'm</span></div>}
+              {discount > 0 && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Chegirma:</span><span className="text-red-500">-{discount.toLocaleString()} so'm</span></div>}
+              {Number(inv.tax || 0) > 0 && <div className="flex justify-between text-xs"><span className="text-muted-foreground">Soliq:</span><span className="text-foreground">{Number(inv.tax).toLocaleString()} so'm</span></div>}
+              <div className="flex justify-between text-sm font-bold border-t border-border pt-2 mt-2">
+                <span className="text-foreground">JAMI:</span>
+                <span className="text-primary">{total.toLocaleString()} so'm</span>
+              </div>
+              {Number(inv.paid_amount || 0) > 0 && (
+                <div className="flex justify-between text-xs"><span className="text-muted-foreground">To'langan:</span><span className="text-green-600">{Number(inv.paid_amount).toLocaleString()} so'm</span></div>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => printInvoiceFromRecord(inv)}>
+              <Printer className="w-3.5 h-3.5 mr-1" /> Chop etish / PDF
+            </Button>
+            {inv.status !== "paid" && (
+              <Button size="sm" onClick={async () => {
+                await supabase.from("hms_invoices").update({ status: "paid", paid_amount: total, payment_method: inv.payment_method || "cash" }).eq("id", inv.id);
+                toast({ title: "✅ To'lov tasdiqlandi" });
+                setSelectedInvoice({ ...inv, status: "paid", paid_amount: total });
+                fetchData();
+              }}>
+                <DollarSign className="w-3.5 h-3.5 mr-1" /> To'lovni tasdiqlash
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -158,7 +319,7 @@ const HMSFinance = ({ clinicId }: Props) => {
       <Tabs defaultValue="transactions" className="w-full">
         <TabsList className="grid grid-cols-3 w-full max-w-md mb-4">
           <TabsTrigger value="transactions">Tranzaksiyalar</TabsTrigger>
-          <TabsTrigger value="invoices">Invoicelar</TabsTrigger>
+          <TabsTrigger value="invoices">Invoicelar ({invoices.length})</TabsTrigger>
           <TabsTrigger value="analytics">Analitika</TabsTrigger>
         </TabsList>
 
@@ -232,6 +393,11 @@ const HMSFinance = ({ clinicId }: Props) => {
 
         {/* Invoice Tab */}
         <TabsContent value="invoices">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-foreground">Invoicelar ({invoices.length})</h3>
+            <Button size="sm" onClick={() => setShowInvoiceForm(true)}><Plus className="w-4 h-4 mr-1" /> Yangi Invoice</Button>
+          </div>
+
           {showInvoiceForm && (
             <div className="bg-card rounded-2xl border border-border p-5 mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -275,13 +441,47 @@ const HMSFinance = ({ clinicId }: Props) => {
               </div>
             </div>
           )}
-          {!showInvoiceForm && (
-            <div className="text-center py-8">
-              <Receipt className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground mb-3">Invoice yaratish uchun yuqoridagi "Invoice" tugmasini bosing</p>
-              <Button size="sm" onClick={() => setShowInvoiceForm(true)}><Plus className="w-4 h-4 mr-1" /> Yangi Invoice</Button>
-            </div>
-          )}
+
+          {/* Invoice List */}
+          <div className="space-y-2">
+            {invoices.map(inv => {
+              const patient = invoicePatients[inv.patient_id];
+              const statusLabel = inv.status === "paid" ? "To'langan" : inv.status === "partial" ? "Qisman" : "Kutilmoqda";
+              const statusColor = inv.status === "paid" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : inv.status === "partial" ? "bg-yellow-100 text-yellow-800" : "bg-orange-100 text-orange-800";
+              return (
+                <div
+                  key={inv.id}
+                  className="bg-card rounded-xl border border-border p-4 cursor-pointer hover:shadow-sm transition-shadow"
+                  onClick={() => setSelectedInvoice(inv)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Receipt className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground text-sm truncate">
+                        {inv.invoice_number} — {patient?.full_name || "Bemor"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {inv.invoice_date} • {Number(inv.total_amount || 0).toLocaleString()} so'm
+                        {inv.notes ? ` • ${inv.notes.slice(0, 30)}` : ""}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className={cn("text-[10px]", statusColor)}>{statusLabel}</Badge>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {invoices.length === 0 && (
+              <div className="text-center py-8">
+                <Receipt className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">Invoicelar yo'q</p>
+              </div>
+            )}
+          </div>
         </TabsContent>
 
         {/* Analytics Tab */}
