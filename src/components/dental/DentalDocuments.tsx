@@ -1,48 +1,123 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Image, Upload, Search, FolderOpen, Download, Eye, Shield } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { writeAuditLog } from "@/utils/auditLog";
+import { Upload, Search, Download, Eye, Shield, Trash2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Document {
-  id: string;
-  name: string;
-  category: "xray" | "consent" | "history" | "lab" | "photo" | "other";
-  patientName: string;
-  uploadedAt: string;
-  size: string;
-  type: string;
+interface DentalDocumentsProps {
+  patients: any[];
+  clinicId: string;
 }
 
-const SAMPLE_DOCS: Document[] = [
-  { id: "1", name: "OPG_panoramic_scan.dcm", category: "xray", patientName: "Aliyev Jasur", uploadedAt: "2026-03-28", size: "4.2 MB", type: "DICOM" },
-  { id: "2", name: "rozilik_formasi.pdf", category: "consent", patientName: "Aliyev Jasur", uploadedAt: "2026-03-28", size: "120 KB", type: "PDF" },
-  { id: "3", name: "periapical_46.jpg", category: "xray", patientName: "Rahimova Dilnoza", uploadedAt: "2026-03-25", size: "1.8 MB", type: "Image" },
-  { id: "4", name: "tibbiy_tarix.pdf", category: "history", patientName: "Toshmatov Rustam", uploadedAt: "2026-03-22", size: "340 KB", type: "PDF" },
-  { id: "5", name: "before_treatment.jpg", category: "photo", patientName: "Usmonova Gulnora", uploadedAt: "2026-03-20", size: "2.1 MB", type: "Image" },
-  { id: "6", name: "lab_natija_CBC.pdf", category: "lab", patientName: "Aliyev Jasur", uploadedAt: "2026-03-18", size: "85 KB", type: "PDF" },
-];
-
-const categoryConfig = {
+const CATEGORIES: Record<string, { label: string; icon: string; color: string }> = {
   xray: { label: "Rentgen", icon: "🩻", color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30" },
   consent: { label: "Rozilik", icon: "📝", color: "text-green-600 bg-green-50 dark:bg-green-950/30" },
   history: { label: "Tarix", icon: "📋", color: "text-purple-600 bg-purple-50 dark:bg-purple-950/30" },
-  lab: { label: "Laboratoriya", icon: "🧪", color: "text-yellow-600 bg-yellow-50 dark:bg-yellow-950/30" },
+  lab: { label: "Lab", icon: "🧪", color: "text-yellow-600 bg-yellow-50 dark:bg-yellow-950/30" },
   photo: { label: "Foto", icon: "📸", color: "text-pink-600 bg-pink-50 dark:bg-pink-950/30" },
   other: { label: "Boshqa", icon: "📄", color: "text-muted-foreground bg-muted" },
 };
 
-const DentalDocuments = ({ patients }: { patients: any[] }) => {
-  const [docs] = useState<Document[]>(SAMPLE_DOCS);
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+const DentalDocuments = ({ patients, clinicId }: DentalDocumentsProps) => {
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [uploadPatient, setUploadPatient] = useState("");
+  const [uploadCategory, setUploadCategory] = useState("other");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filtered = docs.filter(d => {
-    const matchSearch = d.name.toLowerCase().includes(search.toLowerCase()) || d.patientName.toLowerCase().includes(search.toLowerCase());
-    const matchCat = categoryFilter === "all" || d.category === categoryFilter;
+  const fetchFiles = async () => {
+    const { data } = await supabase
+      .from("dental_files")
+      .select("*")
+      .eq("clinic_id", clinicId)
+      .order("created_at", { ascending: false });
+    setFiles(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchFiles(); }, [clinicId]);
+
+  const getPatientName = (pid: string | null) => {
+    if (!pid) return "Umumiy";
+    return patients.find(p => p.id === pid)?.full_name || "Noma'lum";
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Fayl hajmi 10MB dan oshmasin", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${clinicId}/${Date.now()}.${ext}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("dental-files")
+      .upload(path, file);
+
+    if (uploadError) {
+      toast({ title: "Yuklashda xatolik", description: uploadError.message, variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+
+    const fileSizeKB = (file.size / 1024).toFixed(0);
+    const fileSize = file.size > 1048576 ? `${(file.size / 1048576).toFixed(1)} MB` : `${fileSizeKB} KB`;
+
+    const { error } = await supabase.from("dental_files").insert({
+      clinic_id: clinicId,
+      patient_id: uploadPatient || null,
+      module: "documents",
+      file_name: file.name,
+      file_url: path,
+      file_size: fileSize,
+      category: uploadCategory,
+    } as any);
+
+    if (error) {
+      toast({ title: "Saqlashda xatolik", description: error.message, variant: "destructive" });
+    } else {
+      await writeAuditLog({ action: "create", entity_type: "dental_file", module: "dental", details: { name: file.name } });
+      toast({ title: "Fayl yuklandi ✅" });
+      fetchFiles();
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDownload = async (fileUrl: string, fileName: string) => {
+    const { data, error } = await supabase.storage.from("dental-files").download(fileUrl);
+    if (error || !data) { toast({ title: "Yuklab olishda xatolik", variant: "destructive" }); return; }
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDelete = async (id: string, fileUrl: string) => {
+    await supabase.storage.from("dental-files").remove([fileUrl]);
+    await supabase.from("dental_files").delete().eq("id", id);
+    await writeAuditLog({ action: "delete", entity_type: "dental_file", module: "dental", entity_id: id });
+    toast({ title: "Fayl o'chirildi" });
+    fetchFiles();
+  };
+
+  const filtered = files.filter(f => {
+    const matchSearch = f.file_name?.toLowerCase().includes(search.toLowerCase()) || getPatientName(f.patient_id).toLowerCase().includes(search.toLowerCase());
+    const matchCat = categoryFilter === "all" || f.category === categoryFilter;
     return matchSearch && matchCat;
   });
 
@@ -50,46 +125,42 @@ const DentalDocuments = ({ patients }: { patients: any[] }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="font-heading text-xl font-bold text-foreground">📁 Hujjatlar va fayllar</h2>
-        <Button onClick={() => setShowUpload(!showUpload)}>
-          <Upload className="w-4 h-4 mr-1" /> Fayl yuklash
-        </Button>
+        <Button onClick={() => setShowUpload(!showUpload)}><Upload className="w-4 h-4 mr-1" /> Fayl yuklash</Button>
       </div>
 
       {showUpload && (
-        <div className="bg-card rounded-2xl border-2 border-dashed border-primary/30 p-8 text-center">
-          <Upload className="w-12 h-12 text-primary mx-auto mb-3" />
-          <p className="font-semibold text-foreground">Faylni bu yerga tashlang</p>
-          <p className="text-sm text-muted-foreground mb-4">yoki tanlash uchun bosing</p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Select>
-              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Bemorni tanlang" /></SelectTrigger>
+        <div className="bg-card rounded-2xl border-2 border-dashed border-primary/30 p-6 space-y-4">
+          <div className="flex gap-3 flex-wrap">
+            <Select value={uploadPatient} onValueChange={setUploadPatient}>
+              <SelectTrigger className="w-[200px]"><SelectValue placeholder="Bemorni tanlang" /></SelectTrigger>
               <SelectContent>
+                <SelectItem value="general">Umumiy</SelectItem>
                 {patients.map(p => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Select>
-              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Kategoriya" /></SelectTrigger>
+            <Select value={uploadCategory} onValueChange={setUploadCategory}>
+              <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {Object.entries(categoryConfig).map(([k, v]) => (
-                  <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>
-                ))}
+                {Object.entries(CATEGORIES).map(([k, v]) => <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Button>Yuklash</Button>
+          </div>
+          <div className="text-center">
+            <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.dcm,.doc,.docx" className="hidden" onChange={handleUpload} />
+            <Button onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              {uploading ? "Yuklanmoqda..." : "📎 Faylni tanlang"}
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2">PDF, JPG, PNG, DICOM • Max 10MB</p>
           </div>
         </div>
       )}
 
-      {/* Stats */}
+      {/* Category stats */}
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        {Object.entries(categoryConfig).map(([key, cfg]) => {
-          const count = docs.filter(d => d.category === key).length;
+        {Object.entries(CATEGORIES).map(([key, cfg]) => {
+          const count = files.filter(f => f.category === key).length;
           return (
-            <div
-              key={key}
-              className={cn("bg-card rounded-xl border border-border p-3 text-center cursor-pointer transition-shadow hover:shadow-md", categoryFilter === key && "ring-2 ring-primary")}
-              onClick={() => setCategoryFilter(categoryFilter === key ? "all" : key)}
-            >
+            <div key={key} className={cn("bg-card rounded-xl border border-border p-3 text-center cursor-pointer hover:shadow-md transition-shadow", categoryFilter === key && "ring-2 ring-primary")} onClick={() => setCategoryFilter(categoryFilter === key ? "all" : key)}>
               <p className="text-2xl">{cfg.icon}</p>
               <p className="text-lg font-bold text-foreground">{count}</p>
               <p className="text-xs text-muted-foreground">{cfg.label}</p>
@@ -105,29 +176,35 @@ const DentalDocuments = ({ patients }: { patients: any[] }) => {
       </div>
 
       {/* Files list */}
-      <div className="space-y-3">
-        {filtered.map(doc => {
-          const cfg = categoryConfig[doc.category];
-          return (
-            <div key={doc.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
-              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0", cfg.color)}>
-                {cfg.icon}
+      {loading ? (
+        <div className="text-center py-12"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" /></div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <p>Fayllar topilmadi</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(doc => {
+            const cfg = CATEGORIES[doc.category] || CATEGORIES.other;
+            return (
+              <div key={doc.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0", cfg.color)}>{cfg.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate">{doc.file_name}</p>
+                  <p className="text-xs text-muted-foreground">{getPatientName(doc.patient_id)} • {doc.created_at?.split("T")[0]} • {doc.file_size || "—"}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Badge variant="outline" className="text-xs">{cfg.label}</Badge>
+                  <Button size="icon" variant="ghost" onClick={() => handleDownload(doc.file_url, doc.file_name)}><Download className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" className="text-red-500" onClick={() => handleDelete(doc.id, doc.file_url)}><Trash2 className="w-4 h-4" /></Button>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">{doc.name}</p>
-                <p className="text-xs text-muted-foreground">{doc.patientName} • {doc.uploadedAt} • {doc.size}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">{doc.type}</Badge>
-                <Button size="icon" variant="ghost"><Eye className="w-4 h-4" /></Button>
-                <Button size="icon" variant="ghost"><Download className="w-4 h-4" /></Button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Security note */}
       <div className="bg-card rounded-2xl border border-border p-4 flex items-center gap-3">
         <Shield className="w-6 h-6 text-green-600 shrink-0" />
         <div>
