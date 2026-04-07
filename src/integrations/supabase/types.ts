@@ -912,6 +912,242 @@ export type Database = {
           },
         ]
       }
+      dental_equipment: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          model: string | null
+          name: string
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          room: string | null
+          serial_number: string | null
+          status: string
+          type: string
+          updated_at: string
+          warranty_end: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          model?: string | null
+          name: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          room?: string | null
+          serial_number?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          warranty_end?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          model?: string | null
+          name?: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          room?: string | null
+          serial_number?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          warranty_end?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_equipment_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_equipment_maintenance: {
+        Row: {
+          clinic_id: string
+          cost: number | null
+          created_at: string
+          equipment_id: string
+          id: string
+          next_service_date: string | null
+          notes: string | null
+          service_date: string
+          service_type: string
+          technician_name: string | null
+        }
+        Insert: {
+          clinic_id: string
+          cost?: number | null
+          created_at?: string
+          equipment_id: string
+          id?: string
+          next_service_date?: string | null
+          notes?: string | null
+          service_date?: string
+          service_type?: string
+          technician_name?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          cost?: number | null
+          created_at?: string
+          equipment_id?: string
+          id?: string
+          next_service_date?: string | null
+          notes?: string | null
+          service_date?: string
+          service_type?: string
+          technician_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_equipment_maintenance_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_equipment_maintenance_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "dental_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_files: {
+        Row: {
+          category: string
+          clinic_id: string
+          created_at: string
+          file_name: string
+          file_size: string | null
+          file_url: string
+          id: string
+          module: string
+          patient_id: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string
+          clinic_id: string
+          created_at?: string
+          file_name: string
+          file_size?: string | null
+          file_url: string
+          id?: string
+          module?: string
+          patient_id?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string
+          clinic_id?: string
+          created_at?: string
+          file_name?: string
+          file_size?: string | null
+          file_url?: string
+          id?: string
+          module?: string
+          patient_id?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_files_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_files_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_lab_orders: {
+        Row: {
+          clinic_id: string
+          completed_at: string | null
+          created_at: string
+          doctor_name: string | null
+          due_date: string | null
+          external_lab: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          price: number | null
+          status: string
+          technician_name: string | null
+          tooth_number: number | null
+          updated_at: string
+          work_type: string
+        }
+        Insert: {
+          clinic_id: string
+          completed_at?: string | null
+          created_at?: string
+          doctor_name?: string | null
+          due_date?: string | null
+          external_lab?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          price?: number | null
+          status?: string
+          technician_name?: string | null
+          tooth_number?: number | null
+          updated_at?: string
+          work_type: string
+        }
+        Update: {
+          clinic_id?: string
+          completed_at?: string | null
+          created_at?: string
+          doctor_name?: string | null
+          due_date?: string | null
+          external_lab?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          price?: number | null
+          status?: string
+          technician_name?: string | null
+          tooth_number?: number | null
+          updated_at?: string
+          work_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_lab_orders_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_lab_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_patients: {
         Row: {
           allergies: string | null
