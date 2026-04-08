@@ -912,6 +912,60 @@ export type Database = {
           },
         ]
       }
+      dental_complaints: {
+        Row: {
+          clinic_id: string
+          created_at: string | null
+          id: string
+          issue: string
+          patient_id: string | null
+          priority: string | null
+          resolution: string | null
+          resolved_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string | null
+          id?: string
+          issue: string
+          patient_id?: string | null
+          priority?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string | null
+          id?: string
+          issue?: string
+          patient_id?: string | null
+          priority?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_complaints_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_complaints_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_equipment: {
         Row: {
           clinic_id: string
@@ -1025,6 +1079,63 @@ export type Database = {
           },
         ]
       }
+      dental_feedback: {
+        Row: {
+          clinic_id: string
+          comment: string | null
+          created_at: string | null
+          doctor_name: string | null
+          id: string
+          patient_id: string | null
+          rating: number
+          replied_at: string | null
+          reply: string | null
+          service_type: string | null
+          status: string | null
+        }
+        Insert: {
+          clinic_id: string
+          comment?: string | null
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          patient_id?: string | null
+          rating: number
+          replied_at?: string | null
+          reply?: string | null
+          service_type?: string | null
+          status?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          comment?: string | null
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          patient_id?: string | null
+          rating?: number
+          replied_at?: string | null
+          reply?: string | null
+          service_type?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_feedback_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_feedback_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_files: {
         Row: {
           category: string
@@ -1072,6 +1183,135 @@ export type Database = {
           },
           {
             foreignKeyName: "dental_files_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_inventory: {
+        Row: {
+          batch_number: string | null
+          category: string
+          clinic_id: string
+          created_at: string | null
+          expiry_date: string | null
+          id: string
+          location: string | null
+          min_quantity: number | null
+          name: string
+          notes: string | null
+          purchase_price: number | null
+          quantity: number
+          sell_price: number | null
+          sku: string | null
+          status: string | null
+          supplier: string | null
+          unit: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          batch_number?: string | null
+          category?: string
+          clinic_id: string
+          created_at?: string | null
+          expiry_date?: string | null
+          id?: string
+          location?: string | null
+          min_quantity?: number | null
+          name: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          sku?: string | null
+          status?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          batch_number?: string | null
+          category?: string
+          clinic_id?: string
+          created_at?: string | null
+          expiry_date?: string | null
+          id?: string
+          location?: string | null
+          min_quantity?: number | null
+          name?: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          sku?: string | null
+          status?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_inventory_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_inventory_usage: {
+        Row: {
+          clinic_id: string
+          created_at: string | null
+          doctor_name: string | null
+          id: string
+          inventory_id: string
+          notes: string | null
+          patient_id: string | null
+          quantity_used: number
+          treatment_type: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          inventory_id: string
+          notes?: string | null
+          patient_id?: string | null
+          quantity_used?: number
+          treatment_type?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          inventory_id?: string
+          notes?: string | null
+          patient_id?: string | null
+          quantity_used?: number
+          treatment_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_inventory_usage_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_inventory_usage_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "dental_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_inventory_usage_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "dental_patients"
