@@ -1438,6 +1438,72 @@ export type Database = {
           },
         ]
       }
+      dental_reminders: {
+        Row: {
+          channel: string | null
+          clinic_id: string
+          created_at: string | null
+          doctor_name: string | null
+          id: string
+          message: string | null
+          patient_id: string
+          reminder_date: string
+          reminder_type: string
+          repeat_interval: string | null
+          sent_at: string | null
+          service_type: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          channel?: string | null
+          clinic_id: string
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          message?: string | null
+          patient_id: string
+          reminder_date: string
+          reminder_type?: string
+          repeat_interval?: string | null
+          sent_at?: string | null
+          service_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          channel?: string | null
+          clinic_id?: string
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          message?: string | null
+          patient_id?: string
+          reminder_date?: string
+          reminder_type?: string
+          repeat_interval?: string | null
+          sent_at?: string | null
+          service_type?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_reminders_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_reminders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_services: {
         Row: {
           category: string | null
