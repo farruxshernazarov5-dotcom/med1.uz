@@ -32,6 +32,8 @@ import DentalSaaS from "@/components/dental/DentalSaaS";
 import DentalAuditLog from "@/components/dental/DentalAuditLog";
 import DentalAnalytics from "@/components/dental/DentalAnalytics";
 import DentalAppointments from "@/components/dental/DentalAppointments";
+import DentalServicesManager from "@/components/dental/DentalServicesManager";
+import DentalSettings from "@/components/dental/DentalSettings";
 
 const DentalDashboard = () => {
   const { user } = useAuth();
@@ -184,35 +186,9 @@ const DentalDashboard = () => {
       {tab === "analytics" && <DentalAnalytics patients={patients} appointments={appointments} treatments={treatments} services={services} />}
       {tab === "saas" && <DentalSaaS clinic={clinic} />}
       {tab === "audit" && <DentalAuditLog clinicId={clinic?.id} />}
-      {tab === "services" && (
-        <div className="space-y-4">
-          <h2 className="font-heading text-xl font-bold text-foreground">Xizmatlar</h2>
-          {services.length === 0 ? <p className="text-muted-foreground text-center py-8">Xizmatlar topilmadi</p> :
-            services.map(s => (
-              <div key={s.id} className="bg-card rounded-xl border border-border p-4 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-foreground">{s.name}</p>
-                  <p className="text-xs text-muted-foreground">{s.category} • {s.duration_minutes} daqiqa</p>
-                </div>
-                <p className="font-bold text-foreground">{Number(s.price).toLocaleString()} so'm</p>
-              </div>
-            ))
-          }
-        </div>
-      )}
+      {tab === "services" && <DentalServicesManager clinicId={clinic.id} />}
       {tab === "reports" && <DentalReports patients={patients} appointments={appointments} treatments={treatments} services={services} />}
-      {tab === "settings" && (
-        <div className="bg-card rounded-2xl border border-border p-6">
-          <h2 className="font-heading text-xl font-bold text-foreground mb-4">Klinika sozlamalari</h2>
-          <div className="space-y-2 text-sm">
-            <p><strong>Nom:</strong> {clinic.name}</p>
-            <p><strong>Telefon:</strong> {clinic.phone}</p>
-            <p><strong>Manzil:</strong> {clinic.address}, {clinic.city}</p>
-            {clinic.email && <p><strong>Email:</strong> {clinic.email}</p>}
-            {clinic.inn && <p><strong>INN:</strong> {clinic.inn}</p>}
-          </div>
-        </div>
-      )}
+      {tab === "settings" && <DentalSettings clinic={clinic} onUpdate={fetchData} />}
     </DashboardShell>
   );
 };
