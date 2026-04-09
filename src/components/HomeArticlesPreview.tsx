@@ -186,23 +186,23 @@ const HomeArticlesPreview = () => {
                   <h3 className="font-heading font-semibold text-sm text-foreground mb-2 line-clamp-2">{cat.article.title}</h3>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{cat.article.summary}</p>
                   <div className="flex flex-wrap gap-1.5 mb-3">
-                    <Link
-                      to={`/diseases`}
-                      className="inline-flex items-center gap-1 text-[10px] font-medium bg-medical-red/10 text-medical-red px-2 py-0.5 rounded-full hover:bg-medical-red/20 transition-colors"
+                    <span
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = '/diseases'; }}
+                      className="inline-flex items-center gap-1 text-[10px] font-medium bg-medical-red/10 text-medical-red px-2 py-0.5 rounded-full hover:bg-medical-red/20 transition-colors cursor-pointer"
                       style={{ color: 'hsl(var(--medical-red))' }}
                     >
                       <Stethoscope className="w-2.5 h-2.5" />
                       Kasalliklar
-                    </Link>
+                    </span>
                     {cat.linkedEncyclopediaTerms.slice(0, 2).map((term) => (
-                      <Link
+                      <span
                         key={term}
-                        to={`/medicine?term=${encodeURIComponent(term)}`}
-                        className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full hover:bg-primary/20 transition-colors"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/medicine?term=${encodeURIComponent(term)}`; }}
+                        className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full hover:bg-primary/20 transition-colors cursor-pointer"
                       >
                         <BookOpen className="w-2.5 h-2.5" />
                         {term}
-                      </Link>
+                      </span>
                     ))}
                   </div>
                   <div className="flex items-center justify-between">
