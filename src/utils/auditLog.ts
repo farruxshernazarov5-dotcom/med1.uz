@@ -12,20 +12,27 @@ interface AuditLogEntry {
 
 export const writeAuditLog = async (entry: AuditLogEntry) => {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-    await supabase.functions.invoke("write-audit-log", {
-      body: {
-        action: entry.action,
-        entity_type: entry.entity_type,
-        entity_id: entry.entity_id || null,
-        module: entry.module || entry.entity_type,
-        details: entry.details || null,
-        old_data: entry.old_data || null,
-        new_data: entry.new_data || null,
-      },
-    });
+    // Get user role
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    await supabase.from("audit_logs").insert({
+      user_id: user.id,
+      role: roleData?.role || "unknown",
+      action: entry.action,
+      entity_type: entry.entity_type,
+      entity_id: entry.entity_id || null,
+      module: entry.module || entry.entity_type,
+      details: entry.details || null,
+      old_data: entry.old_data || null,
+      new_data: entry.new_data || null,
+    } as any);
   } catch (e) {
     console.error("Audit log error:", e);
   }
