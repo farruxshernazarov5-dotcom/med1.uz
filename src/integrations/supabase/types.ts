@@ -1079,6 +1079,44 @@ export type Database = {
           },
         ]
       }
+      dental_expenses: {
+        Row: {
+          amount: number
+          category: string
+          clinic_id: string
+          created_at: string
+          description: string
+          expense_date: string
+          id: string
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          clinic_id: string
+          created_at?: string
+          description?: string
+          expense_date?: string
+          id?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          clinic_id?: string
+          created_at?: string
+          description?: string
+          expense_date?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_expenses_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_feedback: {
         Row: {
           clinic_id: string
@@ -1544,6 +1582,125 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_staff: {
+        Row: {
+          avatar_url: string | null
+          clinic_id: string
+          created_at: string
+          email: string | null
+          experience_years: number | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string
+          rating: number | null
+          specialty: string
+          status: string
+          updated_at: string
+          working_hours: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          clinic_id: string
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string
+          rating?: number | null
+          specialty?: string
+          status?: string
+          updated_at?: string
+          working_hours?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          clinic_id?: string
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string
+          rating?: number | null
+          specialty?: string
+          status?: string
+          updated_at?: string
+          working_hours?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_staff_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_transactions: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          invoice_number: string | null
+          items: Json | null
+          notes: string | null
+          paid_amount: number
+          patient_id: string | null
+          payment_method: string
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          items?: Json | null
+          notes?: string | null
+          paid_amount?: number
+          patient_id?: string | null
+          payment_method?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          items?: Json | null
+          notes?: string | null
+          paid_amount?: number
+          patient_id?: string | null
+          payment_method?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_transactions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_transactions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
             referencedColumns: ["id"]
           },
         ]
@@ -4915,6 +5072,8 @@ export type Database = {
           owner_id: string
           phone: string
           region: string
+          subscription_expires_at: string | null
+          subscription_plan: string
           updated_at: string
           website: string | null
           working_hours: Json | null
@@ -4935,6 +5094,8 @@ export type Database = {
           owner_id: string
           phone: string
           region?: string
+          subscription_expires_at?: string | null
+          subscription_plan?: string
           updated_at?: string
           website?: string | null
           working_hours?: Json | null
@@ -4955,6 +5116,8 @@ export type Database = {
           owner_id?: string
           phone?: string
           region?: string
+          subscription_expires_at?: string | null
+          subscription_plan?: string
           updated_at?: string
           website?: string | null
           working_hours?: Json | null
