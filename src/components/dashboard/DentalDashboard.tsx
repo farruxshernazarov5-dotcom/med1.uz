@@ -173,8 +173,8 @@ const DentalDashboard = () => {
           }}
         />
       )}
-      {tab === "billing" && <DentalBillingPro treatments={treatments} appointments={appointments} />}
-      {tab === "staff" && <DentalStaff />}
+      {tab === "billing" && <DentalBillingPro clinicId={clinic.id} patients={patients} services={services} />}
+      {tab === "staff" && <DentalStaff clinicId={clinic.id} />}
       {tab === "imaging" && <DentalImaging patients={patients} />}
       {tab === "lab" && <DentalLab patients={patients} clinicId={clinic.id} />}
       {tab === "equipment" && <DentalEquipment clinicId={clinic.id} />}

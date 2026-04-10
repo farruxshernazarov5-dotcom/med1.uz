@@ -123,14 +123,10 @@ const DentalBillingPro = ({ clinicId, patients, services }: DentalBillingProProp
     const items = Array.isArray(inv.items) ? inv.items : [];
     downloadHMSReceipt({
       clinicName: "Dental Klinika",
-      clinicAddress: "",
-      clinicPhone: "",
       patientName: getPatientName(inv.patient_id),
       invoiceNumber: inv.invoice_number || inv.id?.slice(0, 8),
       date: inv.created_at?.split("T")[0] || "",
-      items: items.map((i: any) => ({ name: i.name, price: Number(i.price) })),
-      totalAmount: Number(inv.total_amount),
-      paidAmount: Number(inv.paid_amount),
+      items: items.map((i: any) => ({ name: i.name, qty: 1, price: Number(i.price) })),
       paymentMethod: inv.payment_method,
     });
   };
