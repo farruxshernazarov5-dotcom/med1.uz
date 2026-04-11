@@ -1476,6 +1476,51 @@ export type Database = {
           },
         ]
       }
+      dental_plan_payments: {
+        Row: {
+          amount: number
+          clinic_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          payment_method: string
+          plan_id: string
+        }
+        Insert: {
+          amount?: number
+          clinic_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          plan_id: string
+        }
+        Update: {
+          amount?: number
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_plan_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_plan_payments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "dental_treatment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_reminders: {
         Row: {
           channel: string | null
@@ -1701,6 +1746,123 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_treatment_plans: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          doctor_name: string | null
+          id: string
+          notes: string | null
+          paid_amount: number
+          patient_id: string
+          plan_name: string
+          status: string
+          total_cost: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          notes?: string | null
+          paid_amount?: number
+          patient_id: string
+          plan_name: string
+          status?: string
+          total_cost?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          notes?: string | null
+          paid_amount?: number
+          patient_id?: string
+          plan_name?: string
+          status?: string
+          total_cost?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_treatment_plans_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_treatment_plans_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_treatment_steps: {
+        Row: {
+          clinic_id: string
+          completed_at: string | null
+          cost: number
+          created_at: string
+          doctor_name: string | null
+          id: string
+          name: string
+          notes: string | null
+          plan_id: string
+          status: string
+          step_order: number
+          tooth_number: number | null
+        }
+        Insert: {
+          clinic_id: string
+          completed_at?: string | null
+          cost?: number
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          plan_id: string
+          status?: string
+          step_order?: number
+          tooth_number?: number | null
+        }
+        Update: {
+          clinic_id?: string
+          completed_at?: string | null
+          cost?: number
+          created_at?: string
+          doctor_name?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          plan_id?: string
+          status?: string
+          step_order?: number
+          tooth_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_treatment_steps_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_treatment_steps_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "dental_treatment_plans"
             referencedColumns: ["id"]
           },
         ]
