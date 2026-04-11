@@ -147,7 +147,7 @@ const DentalDashboard = () => {
       {tab === "tooth-chart" && (
         <DentalToothChart selectedPatient={selectedPatient} toothChart={toothChart} onSetToothStatus={setToothStatus} onBack={() => { setSelectedPatient(null); setTab("patients"); }} />
       )}
-      {tab === "treatment-plans" && <DentalTreatmentPlans patients={patients} treatments={treatments} />}
+      {tab === "treatment-plans" && <DentalTreatmentPlans patients={patients} treatments={treatments} clinicId={clinic.id} />}
       {tab === "appointments" && (
         <DentalAppointments
           appointments={appointments}
@@ -175,7 +175,7 @@ const DentalDashboard = () => {
       )}
       {tab === "billing" && <DentalBillingPro clinicId={clinic.id} patients={patients} services={services} />}
       {tab === "staff" && <DentalStaff clinicId={clinic.id} />}
-      {tab === "imaging" && <DentalImaging patients={patients} />}
+      {tab === "imaging" && <DentalImaging patients={patients} clinicId={clinic.id} />}
       {tab === "lab" && <DentalLab patients={patients} clinicId={clinic.id} />}
       {tab === "equipment" && <DentalEquipment clinicId={clinic.id} />}
       {tab === "inventory" && <DentalInventory clinicId={clinic.id} patients={patients} />}
