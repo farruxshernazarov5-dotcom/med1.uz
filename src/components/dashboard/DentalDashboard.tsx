@@ -187,7 +187,7 @@ const DentalDashboard = () => {
       {tab === "saas" && <DentalSaaS clinic={clinic} />}
       {tab === "audit" && <DentalAuditLog clinicId={clinic?.id} />}
       {tab === "services" && <DentalServicesManager clinicId={clinic.id} />}
-      {tab === "reports" && <DentalReports patients={patients} appointments={appointments} treatments={treatments} services={services} />}
+      {tab === "reports" && <DentalReports patients={patients} appointments={appointments} treatments={treatments} services={services} clinicId={clinic.id} clinicName={clinic.name} />}
       {tab === "settings" && <DentalSettings clinic={clinic} onUpdate={fetchData} />}
     </DashboardShell>
   );
