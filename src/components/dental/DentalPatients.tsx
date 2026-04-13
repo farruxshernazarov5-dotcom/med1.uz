@@ -12,6 +12,7 @@ interface DentalPatientsProps {
   onOpenToothChart: (patient: any) => void;
   treatments?: any[];
   appointments?: any[];
+  clinicId: string;
 }
 
 const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [] }: DentalPatientsProps) => {
