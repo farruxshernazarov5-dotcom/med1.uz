@@ -284,10 +284,10 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
             <div className="bg-card rounded-2xl border border-border p-5">
               <h3 className="font-heading font-bold text-foreground mb-3">📊 Top xizmatlar</h3>
               <div className="space-y-2">
-                {analytics.topServices.map(([name, count], i) => (
-                  <div key={name} className="flex items-center justify-between p-2 bg-muted/30 rounded-xl">
-                    <span className="text-sm text-foreground">{i + 1}. {name}</span>
-                    <Badge variant="outline">{count} marta</Badge>
+                {analytics.topServices.map(([name, count]: [string, number], i: number) => (
+                  <div key={String(name)} className="flex items-center justify-between p-2 bg-muted/30 rounded-xl">
+                    <span className="text-sm text-foreground">{i + 1}. {String(name)}</span>
+                    <Badge variant="outline">{Number(count)} marta</Badge>
                   </div>
                 ))}
               </div>
