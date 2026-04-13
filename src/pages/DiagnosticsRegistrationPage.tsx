@@ -200,7 +200,7 @@ const DiagnosticsRegistrationPage = () => {
       supabase.functions.invoke("telegram-notify", {
         body: { type: "new_registration", data: { name: form.name.trim(), type: "Diagnostika markazi", phone: form.phone.trim() } },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/diagnostics");
     }
     setSubmitting(false);
   };

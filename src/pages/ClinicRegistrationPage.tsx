@@ -237,7 +237,7 @@ const ClinicRegistrationPage = () => {
           },
         },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/clinic");
     }
     setSubmitting(false);
   };

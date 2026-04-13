@@ -172,7 +172,7 @@ const VendorRegistrationPage = () => {
       supabase.functions.invoke("telegram-notify", {
         body: { type: "new_registration", data: { name: form.companyName.trim(), type: "Med texnika", phone: form.phone.trim() } },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/vendor");
     }
     setSubmitting(false);
   };
