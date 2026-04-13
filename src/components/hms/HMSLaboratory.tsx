@@ -360,16 +360,8 @@ const HMSLaboratory = ({ clinicId }: Props) => {
       if (!patient) {
         toast({ title: "Bemor topilmadi", variant: "destructive" }); setSending(null); return;
       }
-
-      // If patient has user_id, use profile-based notify
-      if (patient.user_id) {
-        const { error } = await supabase.functions.invoke("lab-result-notify", {
-          body: { lab_result_id: order.id, patient_id: patient.user_id, channels },
-        });
-        if (error) throw error;
-      } else {
-        // Fallback: use phone to find telegram chat_id from telegram_otp table
-        if (channels.includes("telegram") && patient.phone) {
+      // Use phone-based notification (hms_patients doesn't have user_id)
+      if (channels.includes("telegram") && patient.phone) {
           const { data: otpRecord } = await supabase
             .from("telegram_otp")
             .select("chat_id")
