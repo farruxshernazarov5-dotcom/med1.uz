@@ -230,6 +230,51 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
     setChatLoading(false);
   };
 
+  // Treatment AI handler
+  const handleTreatmentAI = async () => {
+    if (!treatmentInput.trim() || treatmentLoading) return;
+    setTreatmentLoading(true);
+    setTreatmentResult("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dental-ai-chat", {
+        body: { messages: [{ role: "user", content: treatmentInput }], mode: "treatment" },
+      });
+      if (error) throw error;
+      setTreatmentResult(data.reply);
+    } catch { setTreatmentResult("Xatolik yuz berdi. Qayta urinib ko'ring."); }
+    setTreatmentLoading(false);
+  };
+
+  // Diagnosis AI handler
+  const handleDiagnosisAI = async () => {
+    if (!diagnosisInput.trim() || diagnosisLoading) return;
+    setDiagnosisLoading(true);
+    setDiagnosisResult("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dental-ai-chat", {
+        body: { messages: [{ role: "user", content: diagnosisInput }], mode: "diagnosis" },
+      });
+      if (error) throw error;
+      setDiagnosisResult(data.reply);
+    } catch { setDiagnosisResult("Xatolik yuz berdi. Qayta urinib ko'ring."); }
+    setDiagnosisLoading(false);
+  };
+
+  // X-ray AI handler
+  const handleXrayAI = async () => {
+    if (!xrayInput.trim() || xrayLoading) return;
+    setXrayLoading(true);
+    setXrayResult("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dental-ai-chat", {
+        body: { messages: [{ role: "user", content: `Rentgen tasviri tavsifi: ${xrayInput}` }], mode: "diagnosis" },
+      });
+      if (error) throw error;
+      setXrayResult(data.reply);
+    } catch { setXrayResult("Xatolik yuz berdi. Qayta urinib ko'ring."); }
+    setXrayLoading(false);
+  };
+
   const tabs = [
     { id: "dashboard" as const, label: "📊 Dashboard", icon: BarChart3 },
     { id: "insights" as const, label: "🧠 Insights", icon: Brain },
@@ -237,6 +282,9 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
     { id: "alerts" as const, label: "🔔 Alertlar", icon: Bell },
     { id: "finance" as const, label: "💰 Moliya", icon: DollarSign },
     { id: "patients" as const, label: "👥 Bemorlar", icon: Users },
+    { id: "treatment" as const, label: "🦷 Davolash AI", icon: ClipboardList },
+    { id: "diagnosis" as const, label: "🔬 Tashxis AI", icon: Stethoscope },
+    { id: "xray" as const, label: "📷 Rentgen AI", icon: Scan },
     { id: "chatbot" as const, label: "💬 AI Chat", icon: MessageSquare },
   ];
 
