@@ -391,9 +391,8 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             setSending(null);
             return;
           }
-        }
-        // SMS / email can be added here
       }
+      // SMS / email can be added here
       toast({ title: "✅ Bildirishnoma yuborildi!", description: `Kanallar: ${channels.join(", ")}` });
       setShowSendModal(null);
     } catch (e: any) {
