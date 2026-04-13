@@ -232,7 +232,6 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             if (data) setPatients(prev => [...prev, data]);
           });
       }
-      }
     }
   }, [selectedOrder?.id]);
 
