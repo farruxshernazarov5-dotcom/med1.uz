@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, User, Phone, Calendar, Heart, FileText, FlaskConical, CreditCard, ClipboardList, X, Bell, Activity, TrendingUp, Download, Upload, Eye } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Search, User, Phone, Calendar, Heart, FileText, FlaskConical, CreditCard, ClipboardList, X, Bell, Activity, TrendingUp, Download, Upload, Eye, Clock, CheckCircle, Truck, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { writeAuditLog } from "@/utils/auditLog";
 
 interface DentalPatientsProps {
   patients: any[];
@@ -15,7 +19,17 @@ interface DentalPatientsProps {
   clinicId: string;
 }
 
-const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [] }: DentalPatientsProps) => {
+const WORK_TYPES = [
+  { value: "crown", label: "👑 Koronka" },
+  { value: "bridge", label: "🌉 Ko'prik" },
+  { value: "denture", label: "🦷 Protez" },
+  { value: "veneer", label: "✨ Vinir" },
+  { value: "xray", label: "🩻 Rentgen" },
+  { value: "cbct", label: "📷 3D CBCT" },
+  { value: "other", label: "📋 Boshqa" },
+];
+
+const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [], clinicId }: DentalPatientsProps) => {
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
@@ -23,6 +37,59 @@ const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments =
   const [genderFilter, setGenderFilter] = useState("all");
   const [sortBy, setSortBy] = useState<"name" | "date">("date");
   const [form, setForm] = useState({ full_name: "", phone: "", date_of_birth: "", gender: "male", allergies: "", notes: "" });
+
+  // Lab state
+  const [patientLabOrders, setPatientLabOrders] = useState<any[]>([]);
+  const [labLoading, setLabLoading] = useState(false);
+  const [showLabForm, setShowLabForm] = useState(false);
+  const [labForm, setLabForm] = useState({ work_type: "", tooth_number: "", doctor_name: "", notes: "", price: "" });
+
+  const fetchPatientLabOrders = async (patientId: string) => {
+    setLabLoading(true);
+    const { data } = await supabase
+      .from("dental_lab_orders")
+      .select("*")
+      .eq("clinic_id", clinicId)
+      .eq("patient_id", patientId)
+      .order("created_at", { ascending: false });
+    setPatientLabOrders(data || []);
+    setLabLoading(false);
+  };
+
+  useEffect(() => {
+    if (selectedPatient && profileTab === "lab") {
+      fetchPatientLabOrders(selectedPatient.id);
+    }
+  }, [selectedPatient?.id, profileTab]);
+
+  const handleSendToLab = async () => {
+    if (!selectedPatient) {
+      toast({ title: "Bemor tanlanmagan! Analiz yaratib bo'lmaydi", variant: "destructive" });
+      return;
+    }
+    if (!labForm.work_type) {
+      toast({ title: "Ish turini tanlang", variant: "destructive" });
+      return;
+    }
+    const { error } = await supabase.from("dental_lab_orders").insert({
+      clinic_id: clinicId,
+      patient_id: selectedPatient.id,
+      work_type: labForm.work_type,
+      tooth_number: labForm.tooth_number ? parseInt(labForm.tooth_number) : null,
+      doctor_name: labForm.doctor_name || null,
+      notes: labForm.notes || null,
+      price: labForm.price ? parseFloat(labForm.price) : 0,
+    } as any);
+    if (error) {
+      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+      return;
+    }
+    await writeAuditLog({ action: "create", entity_type: "dental_lab_order", module: "dental", details: { patient: selectedPatient.full_name, work_type: labForm.work_type } });
+    toast({ title: "Labga yuborildi ✅" });
+    setLabForm({ work_type: "", tooth_number: "", doctor_name: "", notes: "", price: "" });
+    setShowLabForm(false);
+    fetchPatientLabOrders(selectedPatient.id);
+  };
 
   const handleAdd = async () => {
     if (!form.full_name || !form.phone) return;
@@ -329,18 +396,77 @@ const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments =
             </div>
           </TabsContent>
 
-          {/* LAB TAB */}
           <TabsContent value="lab">
             <div className="space-y-4">
-              <h3 className="font-heading font-bold text-foreground">Laboratoriya</h3>
-              <div className="bg-card rounded-2xl border border-border p-6 text-center">
-                <FlaskConical className="w-16 h-16 mx-auto mb-4 text-purple-500 opacity-40" />
-                <p className="text-foreground font-medium">Lab xizmatlari</p>
-                <p className="text-sm text-muted-foreground mt-1">Bemorni laboratoriyaga yo'naltirish uchun "Labga yuborish" tugmasini bosing</p>
-                <Button variant="outline" className="mt-4">
-                  <FlaskConical className="w-4 h-4 mr-1" /> Labga yuborish
+              <div className="flex justify-between items-center">
+                <h3 className="font-heading font-bold text-foreground">🧪 Laboratoriya buyurtmalari</h3>
+                <Button size="sm" onClick={() => setShowLabForm(!showLabForm)}>
+                  <Plus className="w-4 h-4 mr-1" /> Labga yuborish
                 </Button>
               </div>
+
+              {showLabForm && (
+                <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
+                  <h4 className="font-semibold text-foreground">Yangi lab buyurtma — {selectedPatient.full_name}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Select value={labForm.work_type} onValueChange={v => setLabForm({ ...labForm, work_type: v })}>
+                      <SelectTrigger><SelectValue placeholder="🦷 Ish turi *" /></SelectTrigger>
+                      <SelectContent>
+                        {WORK_TYPES.map(w => <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <Input placeholder="Tish raqami (11-48)" type="number" value={labForm.tooth_number} onChange={e => setLabForm({ ...labForm, tooth_number: e.target.value })} />
+                    <Input placeholder="Shifokor ismi" value={labForm.doctor_name} onChange={e => setLabForm({ ...labForm, doctor_name: e.target.value })} />
+                    <Input placeholder="Narx (so'm)" type="number" value={labForm.price} onChange={e => setLabForm({ ...labForm, price: e.target.value })} />
+                  </div>
+                  <Input placeholder="Izoh / ko'rsatmalar" value={labForm.notes} onChange={e => setLabForm({ ...labForm, notes: e.target.value })} />
+                  <div className="flex gap-2">
+                    <Button onClick={handleSendToLab}><FlaskConical className="w-4 h-4 mr-1" /> Yuborish</Button>
+                    <Button variant="outline" onClick={() => setShowLabForm(false)}>Bekor</Button>
+                  </div>
+                </div>
+              )}
+
+              {labLoading ? (
+                <div className="text-center py-8"><div className="animate-spin w-6 h-6 border-4 border-primary border-t-transparent rounded-full mx-auto" /></div>
+              ) : patientLabOrders.length === 0 ? (
+                <div className="bg-card rounded-2xl border border-border p-6 text-center">
+                  <FlaskConical className="w-16 h-16 mx-auto mb-4 text-purple-500 opacity-40" />
+                  <p className="text-foreground font-medium">Lab buyurtmalari yo'q</p>
+                  <p className="text-sm text-muted-foreground mt-1">"Labga yuborish" tugmasini bosib yangi buyurtma yarating</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {patientLabOrders.map(order => {
+                    const statusMap: Record<string, { label: string; color: string }> = {
+                      pending: { label: "Kutilmoqda", color: "text-yellow-600 bg-yellow-50 dark:bg-yellow-950/30" },
+                      in_progress: { label: "Jarayonda", color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30" },
+                      ready: { label: "Tayyor", color: "text-green-600 bg-green-50 dark:bg-green-950/30" },
+                      delivered: { label: "Yetkazilgan", color: "text-purple-600 bg-purple-50 dark:bg-purple-950/30" },
+                    };
+                    const st = statusMap[order.status] || statusMap.pending;
+                    return (
+                      <div key={order.id} className="bg-card rounded-xl border border-border p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              {WORK_TYPES.find(w => w.value === order.work_type)?.label || order.work_type}
+                              {order.tooth_number && ` • Tish #${order.tooth_number}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {order.doctor_name && `👨‍⚕️ ${order.doctor_name} • `}
+                              {order.created_at?.split("T")[0]}
+                              {order.price > 0 && ` • ${Number(order.price).toLocaleString()} so'm`}
+                            </p>
+                            {order.notes && <p className="text-xs text-muted-foreground mt-1">📝 {order.notes}</p>}
+                          </div>
+                          <Badge variant="outline" className={cn("text-xs", st.color)}>{st.label}</Badge>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </TabsContent>
 
