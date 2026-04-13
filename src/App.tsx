@@ -171,6 +171,7 @@ const App = () => (
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
                 <Route path="/blood-donor-register" element={<BloodDonorRegistrationPage />} />
                 <Route path="/dental-register" element={<DentalRegistrationPage />} />
+                <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
