@@ -225,11 +225,12 @@ const HMSLaboratory = ({ clinicId }: Props) => {
       const patientExists = patients.find(p => p.id === selectedOrder.patient_id);
       if (!patientExists && selectedOrder.patient_id) {
         supabase.from("hms_patients")
-          .select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number")
+          .select(PATIENT_FIELDS)
           .eq("id", selectedOrder.patient_id)
           .maybeSingle()
           .then(({ data }) => {
             if (data) setPatients(prev => [...prev, data]);
+          });
           });
       }
     }
