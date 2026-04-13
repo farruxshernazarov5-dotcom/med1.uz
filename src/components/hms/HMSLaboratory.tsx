@@ -231,7 +231,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
           .then(({ data }) => {
             if (data) setPatients(prev => [...prev, data]);
           });
-          });
+      }
       }
     }
   }, [selectedOrder?.id]);
