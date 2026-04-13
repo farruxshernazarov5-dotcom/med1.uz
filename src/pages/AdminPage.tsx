@@ -17,7 +17,7 @@ const AdminPage = () => {
   }
 
   if (!user) return <Navigate to="/auth" replace />;
-  if (userRole !== "admin") return <Navigate to="/dashboard" replace />;
+  if (userRole !== "admin") return <Navigate to={`/dashboard/${userRole || "patient"}`} replace />;
 
   return <AdminDashboard />;
 };
