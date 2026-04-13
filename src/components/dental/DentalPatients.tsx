@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, User, Phone, Calendar, Heart, FileText, FlaskConical, CreditCard, ClipboardList, X, Bell, Activity, TrendingUp, Download, Upload, Eye, Clock, CheckCircle, Truck, Play } from "lucide-react";
+import DentalPatientPayments from "./DentalPatientPayments";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
