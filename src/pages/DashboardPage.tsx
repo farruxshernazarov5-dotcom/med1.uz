@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import PatientDashboard from "@/components/dashboard/PatientDashboard";
 import ClinicDashboard from "@/components/dashboard/ClinicDashboard";
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
@@ -12,8 +12,23 @@ import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
 import DentalDashboard from "@/components/dashboard/DentalDashboard";
 
+const DASHBOARD_MAP: Record<string, React.ComponentType> = {
+  admin: AdminDashboard,
+  clinic: ClinicDashboard,
+  vendor: VendorDashboard,
+  diagnostics: DiagnosticsDashboard,
+  maternity: MaternityDashboard,
+  cosmetology: CosmetologyDashboard,
+  doctor: DoctorDashboard,
+  pharmacy: PharmacyDashboard,
+  bloodbank: BloodBankDashboard,
+  dental: DentalDashboard,
+  patient: PatientDashboard,
+};
+
 const DashboardPage = () => {
   const { user, loading, userRole } = useAuth();
+  const { type } = useParams<{ type?: string }>();
 
   if (loading) {
     return (
@@ -28,18 +43,11 @@ const DashboardPage = () => {
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  // Each dashboard now has its own full-page shell layout
-  if (userRole === "admin") return <AdminDashboard />;
-  if (userRole === "clinic") return <ClinicDashboard />;
-  if (userRole === "vendor") return <VendorDashboard />;
-  if (userRole === "diagnostics") return <DiagnosticsDashboard />;
-  if (userRole === "maternity") return <MaternityDashboard />;
-  if (userRole === "cosmetology") return <CosmetologyDashboard />;
-  if (userRole === "doctor") return <DoctorDashboard />;
-  if (userRole === "pharmacy") return <PharmacyDashboard />;
-  if (userRole === "bloodbank") return <BloodBankDashboard />;
-  if (userRole === "dental") return <DentalDashboard />;
-  return <PatientDashboard />;
+  // URL-based routing: /dashboard/dental, /dashboard/clinic, etc.
+  const dashboardType = type || userRole || "patient";
+  const DashboardComponent = DASHBOARD_MAP[dashboardType] || PatientDashboard;
+
+  return <DashboardComponent />;
 };
 
 export default DashboardPage;

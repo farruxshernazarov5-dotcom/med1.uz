@@ -127,6 +127,7 @@ const App = () => (
                 <Route path="/cosmetology" element={<CosmetologyPage />} />
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/dashboard/:type" element={<DashboardPage />} />
                 <Route path="/booking" element={<BookingPage />} />
                 <Route path="/clinic-register" element={<ClinicRegistrationPage />} />
                 <Route path="/vendor-register" element={<VendorRegistrationPage />} />
