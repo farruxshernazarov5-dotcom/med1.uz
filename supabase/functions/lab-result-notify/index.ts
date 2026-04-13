@@ -22,74 +22,93 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { lab_result_id, patient_id, channels } = await req.json();
+    const { lab_result_id, patient_id, channels, email_data } = await req.json();
 
-    if (!lab_result_id || !patient_id) {
-      throw new Error("lab_result_id and patient_id are required");
+    if (!lab_result_id && !patient_id) {
+      throw new Error("lab_result_id or patient_id is required");
     }
 
-    // Get patient profile
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name, phone, notification_channels, telegram_chat_id")
-      .eq("user_id", patient_id)
-      .maybeSingle();
-
-    if (!profile) throw new Error("Patient profile not found");
-
-    const activeChannels = channels || profile.notification_channels || ["telegram", "email"];
+    const activeChannels = channels || ["telegram", "email"];
     const results: Record<string, { success: boolean; error?: string }> = {};
 
-    // Telegram notification
-    if (activeChannels.includes("telegram") && profile.telegram_chat_id) {
+    // === TELEGRAM via profiles (for patient dashboard users) ===
+    if (activeChannels.includes("telegram") && patient_id) {
       try {
-        const message = `🧾 <b>ANALIZ NATIJASI TAYYOR</b>\n\n` +
-          `👤 <b>Bemor:</b> ${esc(profile.full_name)}\n` +
-          `🧪 <b>Analiz:</b> ${esc(lab_result_id)}\n` +
-          `📅 <b>Sana:</b> ${new Date().toISOString().slice(0, 10)}\n` +
-          `⏰ <b>Vaqt:</b> ${new Date().toISOString().slice(11, 16)}\n\n` +
-          `🔗 <b>Natijani ko'rish:</b> https://med1-uz.lovable.app/dashboard\n\n` +
-          `⚠️ <i>Bu xabar avtomatik yuborilgan. Savollar uchun shifokoringizga murojaat qiling.</i>`;
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, phone, telegram_chat_id")
+          .eq("user_id", patient_id)
+          .maybeSingle();
 
-        const res = await fetch(`${GATEWAY_URL}/sendMessage`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-            "X-Connection-Api-Key": TELEGRAM_API_KEY,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chat_id: profile.telegram_chat_id,
-            text: message,
-            parse_mode: "HTML",
-          }),
-        });
+        let chatId = profile?.telegram_chat_id;
 
-        const data = await res.json();
-        results.telegram = { success: res.ok };
-        if (!res.ok) results.telegram.error = JSON.stringify(data);
+        // Fallback: check telegram_otp by phone
+        if (!chatId && profile?.phone) {
+          const { data: otpRecord } = await supabase
+            .from("telegram_otp")
+            .select("chat_id")
+            .eq("phone", profile.phone)
+            .maybeSingle();
+          chatId = otpRecord?.chat_id;
+        }
+
+        if (chatId) {
+          const message = `🧾 <b>ANALIZ NATIJASI TAYYOR</b>\n\n` +
+            `👤 <b>Bemor:</b> ${esc(profile?.full_name || "")}\n` +
+            `🧪 <b>Analiz:</b> ${esc(lab_result_id)}\n` +
+            `📅 <b>Sana:</b> ${new Date().toISOString().slice(0, 10)}\n\n` +
+            `🔗 <b>Natijani ko'rish:</b> https://med1-uz.lovable.app/dashboard\n\n` +
+            `⚠️ <i>Bu xabar avtomatik yuborilgan.</i>`;
+
+          const res = await fetch(`${GATEWAY_URL}/sendMessage`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+              "X-Connection-Api-Key": TELEGRAM_API_KEY,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "HTML" }),
+          });
+          const data = await res.json();
+          results.telegram = { success: res.ok };
+          if (!res.ok) results.telegram.error = JSON.stringify(data);
+        } else {
+          results.telegram = { success: false, error: "No telegram chat_id found" };
+        }
       } catch (e) {
         results.telegram = { success: false, error: e.message };
       }
     }
 
-    // SMS notification (placeholder — needs Twilio connector)
-    if (activeChannels.includes("sms") && profile.phone) {
-      // For now, log the intent. Twilio integration can be added when connector is linked.
-      console.log(`SMS would be sent to ${profile.phone}: Analiz natijangiz tayyor. Med1.uz orqali ko'ring.`);
-      results.sms = { success: true, error: "SMS connector not yet configured — logged only" };
+    // === EMAIL via transactional email system ===
+    if (activeChannels.includes("email") && email_data?.recipient_email) {
+      try {
+        const { error } = await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "lab-result-notification",
+            recipientEmail: email_data.recipient_email,
+            idempotencyKey: `lab-result-${lab_result_id}-${Date.now()}`,
+            templateData: {
+              patientName: email_data.patient_name,
+              testName: email_data.test_name,
+              testCategory: email_data.test_category,
+              resultsCount: email_data.results_count,
+              abnormalCount: email_data.abnormal_count,
+              resultsSummary: email_data.results_summary,
+              date: email_data.date,
+            },
+          },
+        });
+        if (error) throw error;
+        results.email = { success: true };
+      } catch (e) {
+        results.email = { success: false, error: e.message };
+      }
     }
 
-    // Email notification (placeholder — needs email infrastructure)
-    if (activeChannels.includes("email")) {
-      console.log(`Email would be sent to patient ${patient_id} with lab result PDF`);
-      results.email = { success: true, error: "Email infrastructure pending — logged only" };
-    }
-
-    // Notify admin too
+    // Notify admin
     const ADMIN_CHAT_ID = Deno.env.get("TELEGRAM_ADMIN_CHAT_ID") || "1826388740";
     const adminMsg = `📊 <b>ANALIZ NATIJASI YUBORILDI</b>\n\n` +
-      `👤 <b>Bemor:</b> ${esc(profile.full_name)}\n` +
       `🧪 <b>Analiz ID:</b> ${esc(lab_result_id)}\n` +
       `📡 <b>Kanallar:</b> ${activeChannels.join(", ")}\n` +
       `✅ <b>Natija:</b> ${JSON.stringify(results)}\n\n📅 ${new Date().toISOString().slice(0, 16).replace("T", " ")}`;
