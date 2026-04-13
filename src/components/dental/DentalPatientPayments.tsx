@@ -84,7 +84,26 @@ const DentalPatientPayments = ({ patient, clinicId, services }: DentalPatientPay
     } as any).select().single();
     if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); }
     else {
-      await writeAuditLog({ action: "create", entity_type: "dental_transaction", module: "dental", details: { patient: patient.full_name, total: totalAmount } });
+      // Cross-post to HMS Finance & Invoices for unified reporting
+      const invoiceItems = items.map(i => ({ name: i.name, price: Number(i.price), qty: Number(i.qty || 1) }));
+      await Promise.all([
+        supabase.from("hms_invoices").insert({
+          clinic_id: clinicId,
+          patient_id: patient.id,
+          invoice_number: data?.invoice_number || null,
+          invoice_date: new Date().toISOString().split("T")[0],
+          items: invoiceItems,
+          subtotal: totalAmount,
+          discount: 0,
+          tax: 0,
+          total_amount: totalAmount,
+          paid_amount: 0,
+          status: "unpaid",
+          payment_method: "multi",
+          notes: `Dental: ${invoiceForm.notes || ""}`.trim(),
+        } as any),
+        writeAuditLog({ action: "create", entity_type: "dental_transaction", module: "dental", details: { patient: patient.full_name, total: totalAmount } }),
+      ]);
       toast({ title: "Invoice yaratildi ✅", description: `${data?.invoice_number || ""} — ${totalAmount.toLocaleString()} so'm` });
       setInvoiceForm({ items: [{ name: "", price: "", qty: "1" }], notes: "" });
       setShowNewInvoice(false);
@@ -111,7 +130,21 @@ const DentalPatientPayments = ({ patient, clinicId, services }: DentalPatientPay
     } as any);
     if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); }
     else {
-      await writeAuditLog({ action: "create", entity_type: "dental_split_payment", module: "dental", details: { patient: patient.full_name, amount, method: paymentForm.payment_method } });
+      // Cross-post payment to HMS Finance for unified reporting
+      await Promise.all([
+        supabase.from("hms_finance").insert({
+          clinic_id: clinicId,
+          transaction_type: "income",
+          category: "dental",
+          amount,
+          description: `Dental to'lov: ${patient.full_name} (${paymentForm.payment_method})`,
+          reference_id: transactionId,
+          payment_method: paymentForm.payment_method,
+          transaction_date: new Date().toISOString().split("T")[0],
+          notes: paymentForm.notes || null,
+        } as any),
+        writeAuditLog({ action: "create", entity_type: "dental_split_payment", module: "dental", details: { patient: patient.full_name, amount, method: paymentForm.payment_method } }),
+      ]);
       toast({ title: `To'lov qabul qilindi: ${amount.toLocaleString()} so'm ✅` });
       setPaymentForm({ amount: "", payment_method: "cash", notes: "" });
       setShowPaymentForm(null);
