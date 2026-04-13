@@ -27,7 +27,7 @@ interface ChatMessage {
 }
 
 const DentalAI = ({ clinicId, patients, appointments, treatments, services }: DentalAIProps) => {
-  const [tab, setTab] = useState<"dashboard" | "insights" | "recommendations" | "alerts" | "chatbot" | "patients" | "finance">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "insights" | "recommendations" | "alerts" | "chatbot" | "patients" | "finance" | "treatment" | "diagnosis" | "xray">("dashboard");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { role: "assistant", content: "Salom! Men klinika AI boshqaruv yordamchisiman. Daromad, bemorlar, xizmatlar va boshqa ko'rsatkichlar bo'yicha savollaringizga javob beraman. 🦷" },
   ]);
@@ -35,6 +35,21 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
   const [chatLoading, setChatLoading] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
+
+  // Treatment AI states
+  const [treatmentInput, setTreatmentInput] = useState("");
+  const [treatmentResult, setTreatmentResult] = useState("");
+  const [treatmentLoading, setTreatmentLoading] = useState(false);
+
+  // Diagnosis AI states
+  const [diagnosisInput, setDiagnosisInput] = useState("");
+  const [diagnosisResult, setDiagnosisResult] = useState("");
+  const [diagnosisLoading, setDiagnosisLoading] = useState(false);
+
+  // X-ray AI states
+  const [xrayInput, setXrayInput] = useState("");
+  const [xrayResult, setXrayResult] = useState("");
+  const [xrayLoading, setXrayLoading] = useState(false);
 
   useEffect(() => {
     if (!clinicId) return;
