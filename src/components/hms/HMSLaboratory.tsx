@@ -165,30 +165,36 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const [resultForm, setResultForm] = useState({ parameter_name: "", value: "", unit: "", reference_range: "", is_abnormal: false });
   const [quickPatient, setQuickPatient] = useState({ full_name: "", phone: "", date_of_birth: "", national_id: "" });
 
+  const PATIENT_FIELDS = "id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number";
+
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
       supabase.from("hms_lab_orders").select("*").eq("clinic_id", clinicId).order("created_at", { ascending: false }),
-      supabase.from("hms_patients").select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number").eq("clinic_id", clinicId).neq("is_active", false),
+      supabase.from("hms_patients").select(PATIENT_FIELDS).eq("clinic_id", clinicId).neq("is_active", false),
     ]);
     const fetchedOrders = ordersRes.data || [];
-    const fetchedPatients = patientsRes.data || [];
+    let fetchedPatients = patientsRes.data || [];
     setOrders(fetchedOrders);
-    setPatients(fetchedPatients);
 
-    // If patients came back empty but orders have patient_ids, fetch patients individually
-    if (fetchedPatients.length === 0 && fetchedOrders.length > 0) {
-      const uniquePatientIds = [...new Set(fetchedOrders.map((o: any) => o.patient_id).filter(Boolean))];
-      if (uniquePatientIds.length > 0) {
-        const { data: fallbackPatients } = await supabase
+    // Always check for missing patients referenced by orders
+    if (fetchedOrders.length > 0) {
+      const orderPatientIds = [...new Set(fetchedOrders.map((o: any) => o.patient_id).filter(Boolean))];
+      const loadedIds = new Set(fetchedPatients.map(p => p.id));
+      const missingIds = orderPatientIds.filter(id => !loadedIds.has(id));
+      if (missingIds.length > 0) {
+        const { data: extraPatients } = await supabase
           .from("hms_patients")
-          .select("id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number")
-          .in("id", uniquePatientIds as string[]);
-        if (fallbackPatients?.length) setPatients(fallbackPatients);
+          .select(PATIENT_FIELDS)
+          .in("id", missingIds as string[]);
+        if (extraPatients?.length) {
+          fetchedPatients = [...fetchedPatients, ...extraPatients];
+        }
       }
     }
+    setPatients(fetchedPatients);
 
-    if (ordersRes.data?.length) {
-      const ids = ordersRes.data.map((o: any) => o.id);
+    if (fetchedOrders.length > 0) {
+      const ids = fetchedOrders.map((o: any) => o.id);
       const [resultsRes, verRes] = await Promise.all([
         supabase.from("hms_lab_results").select("*").in("order_id", ids),
         supabase.from("document_verifications").select("*").in("document_id", ids).eq("document_type", "lab_result"),
