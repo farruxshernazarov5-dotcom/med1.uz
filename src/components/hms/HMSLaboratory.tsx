@@ -165,7 +165,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
   const [resultForm, setResultForm] = useState({ parameter_name: "", value: "", unit: "", reference_range: "", is_abnormal: false });
   const [quickPatient, setQuickPatient] = useState({ full_name: "", phone: "", date_of_birth: "", national_id: "" });
 
-  const PATIENT_FIELDS = "id, full_name, phone, user_id, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number";
+  const PATIENT_FIELDS = "id, full_name, phone, date_of_birth, gender, allergies, blood_group, national_id, address, passport_id, emergency_contact, chronic_diseases, email, insurance_number";
 
   const fetchData = async () => {
     const [ordersRes, patientsRes] = await Promise.all([
