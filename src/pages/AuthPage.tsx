@@ -214,7 +214,7 @@ const AuthPage = () => {
         toast({ title: "Xush kelibsiz!" });
         setTimeout(() => {
           const redirectRole = currentUserRole || "patient";
-          navigate(ROLE_REDIRECT[redirectRole] || "/dashboard");
+          navigate(ROLE_REDIRECT[redirectRole] || `/dashboard/${redirectRole}`);
         }, 500);
       }
     } else {
