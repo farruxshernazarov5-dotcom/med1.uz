@@ -143,7 +143,7 @@ const DentalDashboard = () => {
       onTabChange={setTab}
     >
       {tab === "overview" && <DentalOverview patients={patients} todayAppts={todayAppts} treatments={treatments} services={services} clinicId={clinic?.id} onNavigate={setTab} />}
-      {tab === "patients" && <DentalPatients patients={patients} onAddPatient={handleAddPatient} onOpenToothChart={openToothChart} treatments={treatments} appointments={appointments} />}
+      {tab === "patients" && <DentalPatients patients={patients} onAddPatient={handleAddPatient} onOpenToothChart={openToothChart} treatments={treatments} appointments={appointments} clinicId={clinic.id} />}
       {tab === "tooth-chart" && (
         <DentalToothChart selectedPatient={selectedPatient} toothChart={toothChart} onSetToothStatus={setToothStatus} onBack={() => { setSelectedPatient(null); setTab("patients"); }} />
       )}
@@ -182,7 +182,7 @@ const DentalDashboard = () => {
       {tab === "feedback" && <DentalFeedback patients={patients} clinicId={clinic.id} />}
       {tab === "documents" && <DentalDocuments patients={patients} clinicId={clinic.id} />}
       {tab === "recall" && <DentalRecall patients={patients} clinicId={clinic.id} />}
-      {tab === "ai" && <DentalAI />}
+      {tab === "ai" && <DentalAI clinicId={clinic.id} patients={patients} appointments={appointments} treatments={treatments} services={services} />}
       {tab === "analytics" && <DentalAnalytics patients={patients} appointments={appointments} treatments={treatments} services={services} />}
       {tab === "saas" && <DentalSaaS clinic={clinic} />}
       {tab === "audit" && <DentalAuditLog clinicId={clinic?.id} />}
