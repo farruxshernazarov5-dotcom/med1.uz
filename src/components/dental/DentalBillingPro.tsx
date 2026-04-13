@@ -79,6 +79,19 @@ const DentalBillingPro = ({ clinicId, patients, services }: DentalBillingProProp
     } as any);
     if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); }
     else {
+      // Cross-post to HMS Invoices for unified clinic reporting
+      await supabase.from("hms_invoices").insert({
+        clinic_id: clinicId,
+        patient_id: invoiceForm.patient_id || null,
+        invoice_date: new Date().toISOString().split("T")[0],
+        items: items.map(i => ({ name: i.name, price: Number(i.price), qty: 1 })),
+        subtotal: totalAmount,
+        total_amount: totalAmount,
+        paid_amount: 0,
+        status: "unpaid",
+        payment_method: invoiceForm.payment_method,
+        notes: `Dental: ${invoiceForm.notes || ""}`.trim(),
+      } as any);
       await writeAuditLog({ action: "create", entity_type: "dental_transaction", module: "dental", details: { total: totalAmount } });
       toast({ title: "Invoice yaratildi ✅" });
       setInvoiceForm({ patient_id: "", payment_method: "cash", notes: "", items: [{ name: "", price: "" }] });
