@@ -83,13 +83,13 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
 
     const avgRevenuePerPatient = patients.length > 0 ? Math.round(transactions.reduce((s, t) => s + Number(t.amount || 0), 0) / patients.length) : 0;
 
-    const serviceUsage = treatments.reduce((acc: Record<string, number>, t: any) => {
+    const serviceUsage: Record<string, number> = treatments.reduce((acc: Record<string, number>, t: any) => {
       const key = t.treatment_type || "Boshqa";
       acc[key] = (acc[key] || 0) + 1;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
-    const topServices = Object.entries(serviceUsage).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topServices: [string, number][] = Object.entries(serviceUsage).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 5);
 
     return {
       monthlyRevenue, lastMonthRevenue, monthlyExpense,
@@ -100,7 +100,7 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
       newPatientsThisMonth,
       cancelRate: parseFloat(cancelRate as string),
       avgRevenuePerPatient,
-      topServices,
+      topServices: topServices as [string, number][],
       completedAppts: completedAppts.length,
     };
   }, [patients, appointments, treatments, transactions, expenses]);
@@ -156,7 +156,7 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
       recs.push({ icon: "📣", title: "Marketing kampaniya", desc: "Ijtimoiy tarmoqlar va Google Ads orqali yangi bemorlarni jalb qiling", priority: "high" });
     }
 
-    if (analytics.topServices.length > 0 && analytics.topServices[0][1] > 10) {
+    if (analytics.topServices.length > 0 && (analytics.topServices[0][1] as number) > 10) {
       recs.push({ icon: "⭐", title: `"${analytics.topServices[0][0]}" narxini ko'ring`, desc: "Eng mashhur xizmat narxini bozor bilan solishtirib ko'ring", priority: "medium" });
     }
 
