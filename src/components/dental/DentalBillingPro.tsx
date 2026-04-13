@@ -79,6 +79,19 @@ const DentalBillingPro = ({ clinicId, patients, services }: DentalBillingProProp
     } as any);
     if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); }
     else {
+      // Cross-post to HMS Invoices for unified clinic reporting
+      await supabase.from("hms_invoices").insert({
+        clinic_id: clinicId,
+        patient_id: invoiceForm.patient_id || null,
+        invoice_date: new Date().toISOString().split("T")[0],
+        items: items.map(i => ({ name: i.name, price: Number(i.price), qty: 1 })),
+        subtotal: totalAmount,
+        total_amount: totalAmount,
+        paid_amount: 0,
+        status: "unpaid",
+        payment_method: invoiceForm.payment_method,
+        notes: `Dental: ${invoiceForm.notes || ""}`.trim(),
+      } as any);
       await writeAuditLog({ action: "create", entity_type: "dental_transaction", module: "dental", details: { total: totalAmount } });
       toast({ title: "Invoice yaratildi ✅" });
       setInvoiceForm({ patient_id: "", payment_method: "cash", notes: "", items: [{ name: "", price: "" }] });
@@ -88,12 +101,37 @@ const DentalBillingPro = ({ clinicId, patients, services }: DentalBillingProProp
     setSaving(false);
   };
 
-  const handlePayment = async (id: string, amount: number) => {
+  const handlePayment = async (id: string, amount: number, method?: string) => {
     const tx = transactions.find(t => t.id === id);
     if (!tx) return;
     const newPaid = Number(tx.paid_amount || 0) + amount;
     const newStatus = newPaid >= Number(tx.total_amount) ? "paid" : "partial";
+    const payMethod = method || tx.payment_method || "cash";
+
+    // Update dental transaction
     await supabase.from("dental_transactions").update({ paid_amount: newPaid, status: newStatus } as any).eq("id", id);
+
+    // Create split payment record
+    await supabase.from("dental_split_payments").insert({
+      clinic_id: clinicId,
+      transaction_id: id,
+      patient_id: tx.patient_id,
+      amount,
+      payment_method: payMethod,
+    } as any);
+
+    // Cross-post to HMS Finance for unified reporting
+    await supabase.from("hms_finance").insert({
+      clinic_id: clinicId,
+      transaction_type: "income",
+      category: "dental",
+      amount,
+      description: `Dental to'lov: ${getPatientName(tx.patient_id)} (${payMethod})`,
+      reference_id: id,
+      payment_method: payMethod,
+      transaction_date: new Date().toISOString().split("T")[0],
+    } as any);
+
     await writeAuditLog({ action: "update", entity_type: "dental_transaction", module: "dental", entity_id: id, details: { paid: amount, status: newStatus } });
     toast({ title: `To'lov qabul qilindi: ${amount.toLocaleString()} so'm` });
     fetchData();
