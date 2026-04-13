@@ -25,7 +25,7 @@ const roles = [
 ];
 
 const ROLE_REDIRECT: Record<string, string> = {
-  patient: "/dashboard",
+  patient: "/dashboard/patient",
   doctor: "/doctor-register",
   clinic: "/clinic-register",
   diagnostics: "/diagnostics-register",
@@ -34,6 +34,8 @@ const ROLE_REDIRECT: Record<string, string> = {
   cosmetology: "/cosmetology-register",
   pharmacy: "/pharmacy-register",
   dental: "/dental-register",
+  bloodbank: "/dashboard/bloodbank",
+  admin: "/dashboard/admin",
 };
 
 const PASSWORD_RULES = [

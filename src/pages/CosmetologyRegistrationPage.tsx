@@ -157,7 +157,7 @@ const CosmetologyRegistrationPage = () => {
       supabase.functions.invoke("telegram-notify", {
         body: { type: "new_registration", data: { name: form.name.trim(), type: "Kosmetologiya markazi", phone: form.phone.trim() } },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/cosmetology");
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }

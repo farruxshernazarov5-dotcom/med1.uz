@@ -47,7 +47,7 @@ const DentalRegistrationPage = () => {
     } else {
       await writeAuditLog({ action: "create", entity_type: "dental_clinic", module: "dental", details: { name: form.name } });
       toast({ title: "Muvaffaqiyatli!", description: "Stomatologiya klinikangiz ro'yxatdan o'tdi" });
-      navigate("/dashboard");
+      navigate("/dashboard/dental");
     }
     setLoading(false);
   };

@@ -119,7 +119,7 @@ const PharmacyRegistrationPage = () => {
       supabase.functions.invoke("telegram-notify", {
         body: { type: "new_registration", data: { name: form.name.trim(), type: "Dorixona", phone: form.phone.trim() } },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/pharmacy");
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     } finally { setSubmitting(false); }

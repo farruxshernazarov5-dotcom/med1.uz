@@ -182,7 +182,7 @@ const MaternityRegistrationPage = () => {
       supabase.functions.invoke("telegram-notify", {
         body: { type: "new_registration", data: { name: form.name.trim(), type: "Tug'ruqxona", phone: form.phone.trim() } },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/maternity");
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
     }

@@ -172,7 +172,7 @@ const DoctorRegistrationPage = () => {
           },
         },
       }).catch(() => {});
-      navigate("/dashboard");
+      navigate("/dashboard/doctor");
     }
     setSubmitting(false);
   };
