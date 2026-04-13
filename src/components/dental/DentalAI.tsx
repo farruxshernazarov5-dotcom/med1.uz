@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Brain, Send, Sparkles, MessageSquare, AlertTriangle, Stethoscope,
   BarChart3, Loader2, TrendingUp, TrendingDown, Users, Calendar,
-  DollarSign, Activity, Bell, Zap, Target, PieChart, ArrowUp, ArrowDown
+  DollarSign, Activity, Bell, Zap, Target, PieChart, ArrowUp, ArrowDown,
+  FileText, Scan, ClipboardList, Image as ImageIcon, Pill
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
@@ -26,7 +27,7 @@ interface ChatMessage {
 }
 
 const DentalAI = ({ clinicId, patients, appointments, treatments, services }: DentalAIProps) => {
-  const [tab, setTab] = useState<"dashboard" | "insights" | "recommendations" | "alerts" | "chatbot" | "patients" | "finance">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "insights" | "recommendations" | "alerts" | "chatbot" | "patients" | "finance" | "treatment" | "diagnosis" | "xray">("dashboard");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { role: "assistant", content: "Salom! Men klinika AI boshqaruv yordamchisiman. Daromad, bemorlar, xizmatlar va boshqa ko'rsatkichlar bo'yicha savollaringizga javob beraman. 🦷" },
   ]);
@@ -34,6 +35,21 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
   const [chatLoading, setChatLoading] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
+
+  // Treatment AI states
+  const [treatmentInput, setTreatmentInput] = useState("");
+  const [treatmentResult, setTreatmentResult] = useState("");
+  const [treatmentLoading, setTreatmentLoading] = useState(false);
+
+  // Diagnosis AI states
+  const [diagnosisInput, setDiagnosisInput] = useState("");
+  const [diagnosisResult, setDiagnosisResult] = useState("");
+  const [diagnosisLoading, setDiagnosisLoading] = useState(false);
+
+  // X-ray AI states
+  const [xrayInput, setXrayInput] = useState("");
+  const [xrayResult, setXrayResult] = useState("");
+  const [xrayLoading, setXrayLoading] = useState(false);
 
   useEffect(() => {
     if (!clinicId) return;
@@ -214,6 +230,51 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
     setChatLoading(false);
   };
 
+  // Treatment AI handler
+  const handleTreatmentAI = async () => {
+    if (!treatmentInput.trim() || treatmentLoading) return;
+    setTreatmentLoading(true);
+    setTreatmentResult("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dental-ai-chat", {
+        body: { messages: [{ role: "user", content: treatmentInput }], mode: "treatment" },
+      });
+      if (error) throw error;
+      setTreatmentResult(data.reply);
+    } catch { setTreatmentResult("Xatolik yuz berdi. Qayta urinib ko'ring."); }
+    setTreatmentLoading(false);
+  };
+
+  // Diagnosis AI handler
+  const handleDiagnosisAI = async () => {
+    if (!diagnosisInput.trim() || diagnosisLoading) return;
+    setDiagnosisLoading(true);
+    setDiagnosisResult("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dental-ai-chat", {
+        body: { messages: [{ role: "user", content: diagnosisInput }], mode: "diagnosis" },
+      });
+      if (error) throw error;
+      setDiagnosisResult(data.reply);
+    } catch { setDiagnosisResult("Xatolik yuz berdi. Qayta urinib ko'ring."); }
+    setDiagnosisLoading(false);
+  };
+
+  // X-ray AI handler
+  const handleXrayAI = async () => {
+    if (!xrayInput.trim() || xrayLoading) return;
+    setXrayLoading(true);
+    setXrayResult("");
+    try {
+      const { data, error } = await supabase.functions.invoke("dental-ai-chat", {
+        body: { messages: [{ role: "user", content: `Rentgen tasviri tavsifi: ${xrayInput}` }], mode: "diagnosis" },
+      });
+      if (error) throw error;
+      setXrayResult(data.reply);
+    } catch { setXrayResult("Xatolik yuz berdi. Qayta urinib ko'ring."); }
+    setXrayLoading(false);
+  };
+
   const tabs = [
     { id: "dashboard" as const, label: "📊 Dashboard", icon: BarChart3 },
     { id: "insights" as const, label: "🧠 Insights", icon: Brain },
@@ -221,6 +282,9 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
     { id: "alerts" as const, label: "🔔 Alertlar", icon: Bell },
     { id: "finance" as const, label: "💰 Moliya", icon: DollarSign },
     { id: "patients" as const, label: "👥 Bemorlar", icon: Users },
+    { id: "treatment" as const, label: "🦷 Davolash AI", icon: ClipboardList },
+    { id: "diagnosis" as const, label: "🔬 Tashxis AI", icon: Stethoscope },
+    { id: "xray" as const, label: "📷 Rentgen AI", icon: Scan },
     { id: "chatbot" as const, label: "💬 AI Chat", icon: MessageSquare },
   ];
 
@@ -449,6 +513,131 @@ const DentalAI = ({ clinicId, patients, appointments, treatments, services }: De
                 </>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TREATMENT AI */}
+      {tab === "treatment" && (
+        <div className="space-y-4">
+          <h3 className="font-heading font-bold text-foreground">🦷 AI Davolash Rejasi Yordamchisi</h3>
+          <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Bemor holati va tish muammolarini yozing — AI davolash bosqichlari, materiallar va xarajat bahosini tavsiya qiladi.
+            </p>
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Masalan: 36-tish — chuqur kariyes, pulpa ochiq, bemor 45 yosh, diabet bor. Qanday davolash kerak?"
+                value={treatmentInput}
+                onChange={e => setTreatmentInput(e.target.value)}
+                rows={4}
+              />
+              <Button onClick={handleTreatmentAI} disabled={treatmentLoading} className="w-full">
+                {treatmentLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Tahlil qilinmoqda...</> : <><ClipboardList className="w-4 h-4 mr-2" /> Davolash rejasini olish</>}
+              </Button>
+            </div>
+            {treatmentResult && (
+              <div className="bg-muted/50 rounded-xl p-4 mt-3">
+                <h4 className="font-semibold text-foreground text-sm mb-2 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" /> AI Davolash Tavsiyasi
+                </h4>
+                <div className="text-sm text-foreground whitespace-pre-wrap">{treatmentResult}</div>
+                <p className="text-[10px] text-muted-foreground mt-3 italic">⚠️ Bu AI tavsiyasi — yakuniy qaror shifokor tomonidan qabul qilinishi kerak.</p>
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { emoji: "💊", title: "Material tanlash", desc: "AI mos plomba, tojdish yoki implant materialini tavsiya qiladi" },
+              { emoji: "⚠️", title: "Risk baholash", desc: "Bemor yoshi, kasalliklari va allergiyalari hisobga olinadi" },
+              { emoji: "💰", title: "Xarajat bahosi", desc: "Davolash bosqichlari va taxminiy narx taklifi" },
+            ].map(f => (
+              <div key={f.title} className="bg-card rounded-xl border border-border p-4 text-center">
+                <span className="text-2xl">{f.emoji}</span>
+                <p className="font-semibold text-foreground text-sm mt-2">{f.title}</p>
+                <p className="text-xs text-muted-foreground mt-1">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* DIAGNOSIS AI */}
+      {tab === "diagnosis" && (
+        <div className="space-y-4">
+          <h3 className="font-heading font-bold text-foreground">🔬 AI Tashxis Yordamchisi</h3>
+          <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Bemor simptomlarini yozing — AI ehtimoliy tashxis, differentsial diagnostika va tekshiruvlar tavsiya qiladi.
+            </p>
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Masalan: Bemor o'ng pastki jag'da og'riq, sovuqqa sezuvchanlik, milkda shish, 2 kundan beri. 22-tish atrofida qorayish bor."
+                value={diagnosisInput}
+                onChange={e => setDiagnosisInput(e.target.value)}
+                rows={4}
+              />
+              <Button onClick={handleDiagnosisAI} disabled={diagnosisLoading} className="w-full">
+                {diagnosisLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Tahlil qilinmoqda...</> : <><Stethoscope className="w-4 h-4 mr-2" /> Tashxis olish</>}
+              </Button>
+            </div>
+            {diagnosisResult && (
+              <div className="bg-muted/50 rounded-xl p-4 mt-3">
+                <h4 className="font-semibold text-foreground text-sm mb-2 flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-primary" /> AI Tashxis Natijasi
+                </h4>
+                <div className="text-sm text-foreground whitespace-pre-wrap">{diagnosisResult}</div>
+                <p className="text-[10px] text-muted-foreground mt-3 italic">⚠️ Bu AI tavsiyasi — yakuniy tashxis shifokor tomonidan qo'yilishi kerak.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* X-RAY AI */}
+      {tab === "xray" && (
+        <div className="space-y-4">
+          <h3 className="font-heading font-bold text-foreground">📷 AI Rentgen Tahlili</h3>
+          <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Rentgen, OPG yoki CBCT tasvir tavsifini yozing — AI patologik o'zgarishlarni FDI tizimida aniqlaydi.
+            </p>
+            <div className="space-y-3">
+              <Textarea
+                placeholder="Masalan: OPG tasvirda 46-tish ildiz uchida 5mm radiolucent soha, 37-tish distal yuzasida kariyes soyasi, 18-tish gorizontal impaksiya."
+                value={xrayInput}
+                onChange={e => setXrayInput(e.target.value)}
+                rows={4}
+              />
+              <Button onClick={handleXrayAI} disabled={xrayLoading} className="w-full">
+                {xrayLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Tahlil qilinmoqda...</> : <><Scan className="w-4 h-4 mr-2" /> Rentgen tahlil qilish</>}
+              </Button>
+            </div>
+            {xrayResult && (
+              <div className="bg-muted/50 rounded-xl p-4 mt-3">
+                <h4 className="font-semibold text-foreground text-sm mb-2 flex items-center gap-2">
+                  <Scan className="w-4 h-4 text-primary" /> AI Rentgen Natijasi
+                </h4>
+                <div className="text-sm text-foreground whitespace-pre-wrap">{xrayResult}</div>
+                <p className="text-[10px] text-muted-foreground mt-3 italic">⚠️ Bu AI tavsiyasi — yakuniy xulosa radiolog tomonidan tasdiqlashi kerak.</p>
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { emoji: "🦴", title: "Suyak tahlili", desc: "Periapical, periodontal suyak yo'qolishi" },
+              { emoji: "🔍", title: "Kariyes aniqlash", desc: "Interproximal va okklyuzal karieslar" },
+              { emoji: "🦷", title: "Impaksiya", desc: "Aql tishlari va boshqa impaksiyalar" },
+              { emoji: "📐", title: "Kanal tahlili", desc: "Ildiz kanallari va apikal holatlar" },
+            ].map(f => (
+              <div key={f.title} className="bg-card rounded-xl border border-border p-4 flex items-center gap-3">
+                <span className="text-2xl">{f.emoji}</span>
+                <div>
+                  <p className="font-semibold text-foreground text-sm">{f.title}</p>
+                  <p className="text-xs text-muted-foreground">{f.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
