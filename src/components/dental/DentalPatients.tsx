@@ -31,7 +31,7 @@ const WORK_TYPES = [
   { value: "other", label: "📋 Boshqa" },
 ];
 
-const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [], clinicId }: DentalPatientsProps) => {
+const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [], clinicId, services = [] }: DentalPatientsProps) => {
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
