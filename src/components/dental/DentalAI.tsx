@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Brain, Send, Sparkles, MessageSquare, AlertTriangle, Stethoscope,
   BarChart3, Loader2, TrendingUp, TrendingDown, Users, Calendar,
-  DollarSign, Activity, Bell, Zap, Target, PieChart, ArrowUp, ArrowDown
+  DollarSign, Activity, Bell, Zap, Target, PieChart, ArrowUp, ArrowDown,
+  FileText, Scan, ClipboardList, Image as ImageIcon, Pill
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
