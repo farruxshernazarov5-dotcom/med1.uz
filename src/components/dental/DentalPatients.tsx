@@ -18,6 +18,7 @@ interface DentalPatientsProps {
   treatments?: any[];
   appointments?: any[];
   clinicId: string;
+  services?: any[];
 }
 
 const WORK_TYPES = [
