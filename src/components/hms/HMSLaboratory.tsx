@@ -360,8 +360,14 @@ const HMSLaboratory = ({ clinicId }: Props) => {
       if (!patient) {
         toast({ title: "Bemor topilmadi", variant: "destructive" }); setSending(null); return;
       }
-      // Use phone-based notification (hms_patients doesn't have user_id)
+
+      const channelResults: { channel: string; success: boolean; error?: string }[] = [];
+      const orderResults = results[order.id] || [];
+      const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
+
+      // === TELEGRAM ===
       if (channels.includes("telegram") && patient.phone) {
+        try {
           const { data: otpRecord } = await supabase
             .from("telegram_otp")
             .select("chat_id")
@@ -369,8 +375,6 @@ const HMSLaboratory = ({ clinicId }: Props) => {
             .maybeSingle();
 
           if (otpRecord?.chat_id) {
-            const orderResults = results[order.id] || [];
-            const abnormalCount = orderResults.filter((r: any) => r.is_abnormal).length;
             const message = `🧾 <b>ANALIZ NATIJASI TAYYOR</b>\n\n` +
               `👤 <b>Bemor:</b> ${patient.full_name}\n` +
               `🧪 <b>Tahlil:</b> ${order.test_name}\n` +
@@ -381,19 +385,66 @@ const HMSLaboratory = ({ clinicId }: Props) => {
               `⚠️ <i>Bu xabar avtomatik yuborilgan.</i>`;
 
             await supabase.functions.invoke("telegram-notify", {
-              body: {
-                type: "lab_result_direct",
-                data: { chat_id: otpRecord.chat_id, message },
-              },
+              body: { type: "lab_result_direct", data: { chat_id: otpRecord.chat_id, message } },
             });
+            channelResults.push({ channel: "Telegram", success: true });
           } else {
-            toast({ title: "⚠️ Telegram chat_id topilmadi", description: "Bemor Telegram botga ulanmagan. Telefon: " + patient.phone, variant: "destructive" });
-            setSending(null);
-            return;
+            channelResults.push({ channel: "Telegram", success: false, error: "Bemor Telegram botga ulanmagan" });
           }
+        } catch (e: any) {
+          channelResults.push({ channel: "Telegram", success: false, error: e.message });
+        }
       }
-      // SMS / email can be added here
-      toast({ title: "✅ Bildirishnoma yuborildi!", description: `Kanallar: ${channels.join(", ")}` });
+
+      // === EMAIL ===
+      if (channels.includes("email") && patient.email) {
+        try {
+          const resultsSummary = orderResults.map((r: any) => 
+            `${r.parameter_name}: ${r.value} ${r.unit} (${r.is_abnormal ? "⚠️ Normadan tashqari" : "✅ Normal"})`
+          ).join("\n");
+
+          await supabase.functions.invoke("lab-result-notify", {
+            body: {
+              lab_result_id: order.id,
+              patient_id: order.patient_id,
+              channels: ["email"],
+              email_data: {
+                recipient_email: patient.email,
+                patient_name: patient.full_name,
+                test_name: order.test_name,
+                test_category: CATEGORIES.find(c => c.value === order.test_category)?.label || order.test_category,
+                results_count: orderResults.length,
+                abnormal_count: abnormalCount,
+                results_summary: resultsSummary,
+                date: new Date().toISOString().slice(0, 10),
+              }
+            },
+          });
+          channelResults.push({ channel: "Email", success: true });
+        } catch (e: any) {
+          channelResults.push({ channel: "Email", success: false, error: e.message });
+        }
+      } else if (channels.includes("email") && !patient.email) {
+        channelResults.push({ channel: "Email", success: false, error: "Bemor email kiritilmagan" });
+      }
+
+      // === RESULTS SUMMARY ===
+      const successCount = channelResults.filter(r => r.success).length;
+      const failedChannels = channelResults.filter(r => !r.success);
+
+      if (successCount > 0) {
+        const successNames = channelResults.filter(r => r.success).map(r => r.channel).join(", ");
+        toast({ title: "✅ Bildirishnoma yuborildi!", description: `Kanallar: ${successNames}` });
+        if (failedChannels.length > 0) {
+          failedChannels.forEach(f => {
+            toast({ title: `⚠️ ${f.channel} yuborilmadi`, description: f.error, variant: "destructive" });
+          });
+        }
+      } else if (channelResults.length > 0) {
+        toast({ title: "❌ Bildirishnoma yuborilmadi", description: failedChannels.map(f => `${f.channel}: ${f.error}`).join("; "), variant: "destructive" });
+      } else {
+        toast({ title: "⚠️ Kanal tanlanmagan yoki ma'lumot yetarli emas", variant: "destructive" });
+      }
       setShowSendModal(null);
     } catch (e: any) {
       toast({ title: "Xatolik", description: e.message, variant: "destructive" });
