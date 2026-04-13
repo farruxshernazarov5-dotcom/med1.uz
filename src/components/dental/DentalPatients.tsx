@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, User, Phone, Calendar, Heart, FileText, FlaskConical, CreditCard, ClipboardList, X, Bell, Activity, TrendingUp, Download, Upload, Eye, Clock, CheckCircle, Truck, Play } from "lucide-react";
+import DentalPatientPayments from "./DentalPatientPayments";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -17,6 +18,7 @@ interface DentalPatientsProps {
   treatments?: any[];
   appointments?: any[];
   clinicId: string;
+  services?: any[];
 }
 
 const WORK_TYPES = [
@@ -29,7 +31,7 @@ const WORK_TYPES = [
   { value: "other", label: "📋 Boshqa" },
 ];
 
-const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [], clinicId }: DentalPatientsProps) => {
+const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments = [], appointments = [], clinicId, services = [] }: DentalPatientsProps) => {
   const [showAdd, setShowAdd] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<any>(null);
@@ -355,45 +357,9 @@ const DentalPatients = ({ patients, onAddPatient, onOpenToothChart, treatments =
             </div>
           </TabsContent>
 
-          {/* PAYMENTS TAB */}
+          {/* PAYMENTS TAB - Full multi-payment system */}
           <TabsContent value="payments">
-            <div className="space-y-4">
-              <h3 className="font-heading font-bold text-foreground">To'lovlar</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-green-50 dark:bg-green-950/20 rounded-xl border border-green-200 dark:border-green-900 p-4 text-center">
-                  <p className="text-xs text-green-600 font-medium">Jami davolash</p>
-                  <p className="text-xl font-bold text-green-700">{totalSpent.toLocaleString()} so'm</p>
-                </div>
-                <div className="bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-200 dark:border-red-900 p-4 text-center">
-                  <p className="text-xs text-red-600 font-medium">Qarzdorlik</p>
-                  <p className="text-xl font-bold text-red-700">0 so'm</p>
-                </div>
-              </div>
-              {patientTreatments.filter((t: any) => t.price).length > 0 ? (
-                <div className="bg-card rounded-xl border border-border overflow-hidden">
-                  <table className="w-full text-sm">
-                    <thead className="bg-muted/50">
-                      <tr>
-                        <th className="text-left p-3 text-muted-foreground font-medium">Xizmat</th>
-                        <th className="text-left p-3 text-muted-foreground font-medium">Sana</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">Summa</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {patientTreatments.filter((t: any) => t.price).map((t: any) => (
-                        <tr key={t.id} className="border-t border-border">
-                          <td className="p-3 text-foreground">{t.treatment_type}</td>
-                          <td className="p-3 text-muted-foreground">{t.created_at?.split("T")[0]}</td>
-                          <td className="p-3 text-right font-medium text-foreground">{Number(t.price).toLocaleString()} so'm</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-center py-8 text-muted-foreground">To'lov ma'lumotlari topilmadi</p>
-              )}
-            </div>
+            <DentalPatientPayments patient={selectedPatient} clinicId={clinicId} services={services} />
           </TabsContent>
 
           <TabsContent value="lab">

@@ -1631,6 +1631,61 @@ export type Database = {
           },
         ]
       }
+      dental_split_payments: {
+        Row: {
+          amount: number
+          clinic_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          patient_id: string | null
+          payment_method: string
+          transaction_id: string
+        }
+        Insert: {
+          amount?: number
+          clinic_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          payment_method?: string
+          transaction_id: string
+        }
+        Update: {
+          amount?: number
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          payment_method?: string
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_split_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_dental_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_split_payments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "dental_patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dental_split_payments_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "dental_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dental_staff: {
         Row: {
           avatar_url: string | null
