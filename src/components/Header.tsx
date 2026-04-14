@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
+import { getDashboardPath } from "@/lib/dashboard";
 import logoImg from "@/assets/logo.png";
 
 const navItems = [
@@ -31,6 +32,7 @@ const Header = () => {
   const [currentLang, setCurrentLang] = useState("UZ");
   const [searchOpen, setSearchOpen] = useState(false);
   const { user, profile, userRole, signOut } = useAuth();
+  const dashboardPath = getDashboardPath(userRole);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -108,7 +110,7 @@ const Header = () => {
                     </Button>
                   )}
                   <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
-                    <Link to="/dashboard"><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
+                    <Link to={dashboardPath}><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
                   </Button>
                   <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
                 </div>
@@ -149,7 +151,7 @@ const Header = () => {
                       </Button>
                     )}
                     <Button asChild className="flex-1 bg-hero-gradient text-primary-foreground border-0">
-                      <Link to="/dashboard" onClick={() => setIsOpen(false)}>Panel</Link>
+                      <Link to={dashboardPath} onClick={() => setIsOpen(false)}>Panel</Link>
                     </Button>
                   </div>
                 ) : (

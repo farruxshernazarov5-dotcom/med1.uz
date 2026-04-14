@@ -29,28 +29,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle(),
       supabase.from("profiles").select("full_name, phone, avatar_url").eq("user_id", userId).maybeSingle(),
     ]);
-    if (roleRes.data) setUserRole(roleRes.data.role);
-    if (profileRes.data) setProfile(profileRes.data);
+    setUserRole(roleRes.data?.role ?? null);
+    setProfile(profileRes.data ?? null);
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+    const syncAuthState = async (sess: Session | null) => {
+      setLoading(true);
       setSession(sess);
       setUser(sess?.user ?? null);
+
       if (sess?.user) {
-        setTimeout(() => fetchUserData(sess.user.id), 0);
+        await fetchUserData(sess.user.id);
       } else {
         setUserRole(null);
         setProfile(null);
       }
+
       setLoading(false);
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+      void syncAuthState(sess);
     });
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-      if (sess?.user) fetchUserData(sess.user.id);
-      setLoading(false);
+      void syncAuthState(sess);
     });
 
     return () => subscription.unsubscribe();
