@@ -11,6 +11,7 @@ import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
 import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
 import DentalDashboard from "@/components/dashboard/DentalDashboard";
+import { getDashboardPath } from "@/lib/dashboard";
 
 const DASHBOARD_MAP: Record<string, React.ComponentType> = {
   admin: AdminDashboard,
@@ -43,9 +44,14 @@ const DashboardPage = () => {
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  // URL-based routing: /dashboard/dental, /dashboard/clinic, etc.
-  const dashboardType = type || userRole || "patient";
-  const DashboardComponent = DASHBOARD_MAP[dashboardType] || PatientDashboard;
+  if (!type) return <Navigate to={getDashboardPath(userRole)} replace />;
+
+  const dashboardType = type.toLowerCase();
+  const DashboardComponent = DASHBOARD_MAP[dashboardType];
+
+  if (!DashboardComponent) {
+    return <Navigate to={getDashboardPath(userRole)} replace />;
+  }
 
   return <DashboardComponent />;
 };

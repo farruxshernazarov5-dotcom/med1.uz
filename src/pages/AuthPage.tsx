@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope, Pill } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getDashboardPath } from "@/lib/dashboard";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -213,9 +214,8 @@ const AuthPage = () => {
       } else {
         toast({ title: "Xush kelibsiz!" });
         setTimeout(() => {
-          const redirectRole = currentUserRole || "patient";
-          navigate(ROLE_REDIRECT[redirectRole] || `/dashboard/${redirectRole}`);
-        }, 500);
+          navigate(getDashboardPath(currentUserRole), { replace: true });
+        }, 150);
       }
     } else {
       if (!fullName.trim()) {
