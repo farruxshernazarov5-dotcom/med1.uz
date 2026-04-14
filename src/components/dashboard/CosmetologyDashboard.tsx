@@ -181,7 +181,7 @@ const CosmetologyDashboard = () => {
       activeTab={tab}
       onTabChange={setTab}
     >
-
+      <Tabs value={tab} onValueChange={setTab} className="space-y-4">
         {/* ═══ OVERVIEW ═══ */}
         <TabsContent value="overview" className="space-y-4">
           <h2 className="font-heading font-bold text-lg">Umumiy ko'rinish</h2>
@@ -533,6 +533,7 @@ const CosmetologyDashboard = () => {
             )}
           </CardContent></Card>
         </TabsContent>
+      </Tabs>
     </DashboardShell>
   );
 };
