@@ -183,6 +183,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "appointments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "appointments_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
@@ -586,6 +593,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "clinic_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       clinic_photos: {
@@ -619,6 +633,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_photos_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -660,6 +681,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_services_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2205,6 +2233,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "doctors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       document_verifications: {
@@ -2253,6 +2288,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_verifications_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2371,6 +2413,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "favorite_clinics_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       health_records: {
@@ -2442,6 +2491,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hms_announcements_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hms_attendance: {
@@ -2484,6 +2540,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_attendance_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -2553,6 +2616,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_beds_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -2635,6 +2705,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_complaints_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_complaints_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
@@ -2693,6 +2770,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_departments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -2759,6 +2843,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_donors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2834,6 +2925,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_emergency_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -2921,6 +3019,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_equipment_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_equipment_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
@@ -2974,6 +3079,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hms_files_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hms_finance: {
@@ -3025,6 +3137,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_finance_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -3102,6 +3221,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_infection_control_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -3189,6 +3315,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hms_inventory_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hms_invoices: {
@@ -3267,6 +3400,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_invoices_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_invoices_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -3324,6 +3464,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_lab_orders_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -3453,6 +3600,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_medical_records_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_medical_records_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
@@ -3502,6 +3656,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_messages_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -3588,6 +3749,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hms_patients_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hms_payroll: {
@@ -3642,6 +3810,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_payroll_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -3708,6 +3883,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_pharmacy_stock_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -3817,6 +3999,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_prescriptions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_prescriptions_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
@@ -3893,6 +4082,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_queue_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_queue_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
@@ -3966,6 +4162,13 @@ export type Database = {
             referencedRelation: "registered_clinics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hms_staff_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hms_staff_schedule: {
@@ -4020,6 +4223,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_staff_schedule_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -4111,6 +4321,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hms_surgeries_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hms_surgeries_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
@@ -4184,6 +4401,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_teleconsultations_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
           {
@@ -5763,6 +5987,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reviews_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reviews_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
@@ -5892,7 +6123,96 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      registered_clinics_public: {
+        Row: {
+          additional_phone: string | null
+          address: string | null
+          amenities: string[] | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          director_name: string | null
+          email: string | null
+          id: string | null
+          iin: string | null
+          inn: string | null
+          is_active: boolean | null
+          latitude: number | null
+          legal_name: string | null
+          license_number: string | null
+          logo_external_url: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string | null
+          owner_id: string | null
+          phone: string | null
+          social_links: Json | null
+          specialties: string[] | null
+          telegram: string | null
+          updated_at: string | null
+          website: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          id?: string | null
+          iin?: string | null
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_external_url?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string | null
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          additional_phone?: string | null
+          address?: string | null
+          amenities?: string[] | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          director_name?: string | null
+          email?: string | null
+          id?: string | null
+          iin?: string | null
+          inn?: string | null
+          is_active?: boolean | null
+          latitude?: number | null
+          legal_name?: string | null
+          license_number?: string | null
+          logo_external_url?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string | null
+          owner_id?: string | null
+          phone?: string | null
+          social_links?: Json | null
+          specialties?: string[] | null
+          telegram?: string | null
+          updated_at?: string | null
+          website?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {

@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-webhook-secret, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/telegram';
@@ -13,6 +13,17 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Validate webhook secret
+    const webhookSecret = Deno.env.get('PAYMENT_WEBHOOK_SECRET');
+    const providedSecret = req.headers.get('x-webhook-secret');
+
+    if (!webhookSecret || !providedSecret || providedSecret !== webhookSecret) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -27,14 +38,51 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Validate payment_id format (UUID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(payment_id)) {
+      return new Response(JSON.stringify({ error: 'Invalid payment_id format' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Validate status value
+    const allowedStatuses = ['paid', 'failed', 'cancelled', 'refunded'];
+    const finalStatus = paymentStatus || 'paid';
+    if (!allowedStatuses.includes(finalStatus)) {
+      return new Response(JSON.stringify({ error: 'Invalid status value' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Verify payment exists and is pending before updating
+    const { data: existingPayment, error: checkErr } = await supabase
+      .from('clinic_payments')
+      .select('id, status')
+      .eq('id', payment_id)
+      .single();
+
+    if (checkErr || !existingPayment) {
+      return new Response(JSON.stringify({ error: 'Payment not found' }), {
+        status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (existingPayment.status !== 'pending') {
+      return new Response(JSON.stringify({ error: 'Payment already processed' }), {
+        status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Update payment status
     const { data: payment, error: payErr } = await supabase
       .from('clinic_payments')
       .update({
-        status: paymentStatus || 'paid',
+        status: finalStatus,
         transaction_id: transaction_id || null,
       })
       .eq('id', payment_id)
+      .eq('status', 'pending')
       .select('*, registered_clinics:clinic_id(name)')
       .single();
 
@@ -82,7 +130,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
