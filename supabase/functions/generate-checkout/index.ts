@@ -11,6 +11,28 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Validate JWT auth
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -24,6 +46,14 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Validate amount is a positive number
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount <= 0 || numAmount > 100000000) {
+      return new Response(JSON.stringify({ error: 'Invalid amount' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Get clinic payment settings
     const { data: clinic, error: clinicErr } = await supabase
       .from('registered_clinics')
@@ -33,6 +63,12 @@ Deno.serve(async (req) => {
 
     if (clinicErr) throw clinicErr;
 
+    if (!clinic.payment_enabled) {
+      return new Response(JSON.stringify({ error: 'Payment not enabled for this clinic' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Create payment record
     const { data: payment, error: payErr } = await supabase
       .from('clinic_payments')
@@ -40,7 +76,7 @@ Deno.serve(async (req) => {
         clinic_id,
         appointment_id: appointment_id || null,
         patient_id,
-        amount,
+        amount: numAmount,
         provider: provider || 'cash',
         status: 'pending',
         notes: description || null,
@@ -55,12 +91,12 @@ Deno.serve(async (req) => {
     const selectedProvider = provider || 'click';
 
     if (selectedProvider === 'click' && clinic.click_merchant_id && clinic.click_service_id) {
-      checkout_url = `https://my.click.uz/services/pay?service_id=${clinic.click_service_id}&merchant_id=${clinic.click_merchant_id}&amount=${amount}&transaction_param=${payment.id}`;
+      checkout_url = `https://my.click.uz/services/pay?service_id=${encodeURIComponent(clinic.click_service_id)}&merchant_id=${encodeURIComponent(clinic.click_merchant_id)}&amount=${numAmount}&transaction_param=${payment.id}`;
     } else if (selectedProvider === 'payme' && clinic.payme_merchant_id) {
       const params = btoa(JSON.stringify({
         m: clinic.payme_merchant_id,
         ac: { payment_id: payment.id },
-        a: amount * 100,
+        a: numAmount * 100,
       }));
       checkout_url = `https://checkout.paycom.uz/${params}`;
     }
@@ -70,7 +106,8 @@ Deno.serve(async (req) => {
       action: 'payment_created',
       entity_type: 'clinic_payments',
       entity_id: payment.id,
-      details: { clinic_id, amount, provider: selectedProvider },
+      details: { clinic_id, amount: numAmount, provider: selectedProvider },
+      user_id: claimsData.claims.sub,
     });
 
     return new Response(JSON.stringify({
@@ -82,7 +119,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
