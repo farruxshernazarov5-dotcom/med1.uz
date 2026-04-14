@@ -214,7 +214,7 @@ const AuthPage = () => {
       } else {
         toast({ title: "Xush kelibsiz!" });
         setTimeout(() => {
-          navigate(getDashboardPath(currentUserRole), { replace: true });
+          navigate("/dashboard", { replace: true });
         }, 150);
       }
     } else {
