@@ -33,7 +33,7 @@ serve(async (req) => {
     }
 
     const userId = authData.user.id;
-    const { invoice_id, plan_id, billing_period, amount, services } = await req.json();
+    const { invoice_id, plan_id, billing_period, amount, services, tier } = await req.json();
 
     if (!invoice_id || !plan_id || !billing_period || typeof amount !== "number") {
       return new Response(JSON.stringify({ error: "To'lov ma'lumotlari to'liq emas" }), {
