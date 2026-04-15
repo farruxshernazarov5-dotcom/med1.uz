@@ -60,36 +60,45 @@ export type Database = {
         Row: {
           billing_period: string
           created_at: string | null
+          daily_image_limit: number
+          daily_text_limit: number
           expires_at: string | null
           id: string
           plan_id: string
           services: string[] | null
           started_at: string | null
           status: string
+          tier: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           billing_period?: string
           created_at?: string | null
+          daily_image_limit?: number
+          daily_text_limit?: number
           expires_at?: string | null
           id?: string
           plan_id?: string
           services?: string[] | null
           started_at?: string | null
           status?: string
+          tier?: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
           billing_period?: string
           created_at?: string | null
+          daily_image_limit?: number
+          daily_text_limit?: number
           expires_at?: string | null
           id?: string
           plan_id?: string
           services?: string[] | null
           started_at?: string | null
           status?: string
+          tier?: string
           updated_at?: string | null
           user_id?: string
         }
