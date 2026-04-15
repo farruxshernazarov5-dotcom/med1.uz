@@ -1,49 +1,50 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { routeModel } from "./ai-router.ts";
 
 export type AiAccessResult =
-  | { allowed: true; userId: string; planId: string }
+  | { allowed: true; userId: string; planId: string; tier: string; model: string; maxTokens: number }
   | { allowed: false; status: number; error: string };
 
-/* ─── Qat'iy kunlik limitlar (plan_id → limit) ─── */
-const DAILY_LIMITS: Record<string, number> = {
-  // Individual plans
-  free: 1,
-  starter: 10,
-
-  // Clinic plans
-  "clinic-starter": 10,
-  "clinic-pro": 50,
-  "clinic-enterprise": -1,
-
-  // Diagnostics plans
-  "diag-starter": 15,
-  "diag-pro": 100,
-  "diag-enterprise": -1,
-
-  // Pharmacy plans
-  "pharm-starter": 20,
-  "pharm-pro": 80,
-  "pharm-enterprise": -1,
-
-  // Emergency plans
-  "emer-starter": 30,
-  "emer-pro": 150,
-  "emer-enterprise": -1,
-
-  // Cosmetology plans
-  "cosm-starter": 10,
-  "cosm-pro": 50,
-  "cosm-enterprise": -1,
+/* ─── Tier-based daily limits ─── */
+const TIER_DAILY_LIMITS: Record<string, { text: number; image: number }> = {
+  free:     { text: 1,   image: 0 },
+  lite:     { text: 20,  image: 0 },
+  standard: { text: 50,  image: 5 },
+  premium:  { text: 100, image: 15 },
 };
 
-/* Enterprise / unlimited reja'lar */
+/* ─── Legacy plan limits (backward compat) ─── */
+const DAILY_LIMITS: Record<string, number> = {
+  free: 1, starter: 10,
+  "clinic-starter": 10, "clinic-pro": 50, "clinic-enterprise": -1,
+  "diag-starter": 15, "diag-pro": 100, "diag-enterprise": -1,
+  "pharm-starter": 20, "pharm-pro": 80, "pharm-enterprise": -1,
+  "emer-starter": 30, "emer-pro": 150, "emer-enterprise": -1,
+  "cosm-starter": 10, "cosm-pro": 50, "cosm-enterprise": -1,
+};
+
 const UNLIMITED_PLANS = new Set([
   "professional", "family", "custom", "ai-pro", "premium",
   "clinic-enterprise", "diag-enterprise", "pharm-enterprise",
   "emer-enterprise", "cosm-enterprise",
 ]);
 
-export async function enforceAiAccess(req: Request, serviceId: string): Promise<AiAccessResult> {
+/* ─── Lite tier services ─── */
+const LITE_SERVICES = new Set(["ai-dietolog", "ai-farmatsevt", "ai-fitness", "ai-vital-signs"]);
+const STANDARD_SERVICES = new Set([
+  ...LITE_SERVICES,
+  "symptom-checker", "ai-doctor-chat", "ai-health-risk", "ai-health-assistant",
+  "ai-psixolog", "ai-pregnancy", "ai-baby-care", "ai-cosmetology",
+]);
+
+function isServiceInTier(serviceId: string, tier: string): boolean {
+  if (tier === "premium" || tier === "professional" || tier === "family") return true;
+  if (tier === "standard") return STANDARD_SERVICES.has(serviceId);
+  if (tier === "lite") return LITE_SERVICES.has(serviceId);
+  return true; // free gets 1 request to any service
+}
+
+export async function enforceAiAccess(req: Request, serviceId: string, requestType: "text" | "image" = "text"): Promise<AiAccessResult> {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -72,7 +73,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
 
     const { data: subscription } = await admin
       .from("ai_subscriptions")
-      .select("plan_id, services, status, expires_at, created_at")
+      .select("plan_id, tier, services, status, expires_at, created_at")
       .eq("user_id", userId)
       .eq("status", "active")
       .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
@@ -80,25 +81,29 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       .limit(1)
       .maybeSingle();
 
+    const tier = String(subscription?.tier || "free").toLowerCase();
     const planId = String(subscription?.plan_id || "free").toLowerCase();
     const selectedServices = Array.isArray(subscription?.services)
       ? subscription.services.map((s: string) => String(s).toLowerCase())
       : [];
 
-    /* ─── Xizmat tekshiruvi ─── */
+    /* ─── Service access check ─── */
     if (selectedServices.length > 0 && !selectedServices.includes(serviceId.toLowerCase())) {
-      return {
-        allowed: false,
-        status: 403,
-        error: "Ushbu AI xizmat sizning joriy tarifingizga kirmaydi",
-      };
+      return { allowed: false, status: 403, error: "Ushbu AI xizmat sizning joriy tarifingizga kirmaydi" };
     }
 
-    /* ─── Kunlik limit tekshiruvi ─── */
-    const limit = DAILY_LIMITS[planId] ?? DAILY_LIMITS.free ?? 1;
-    const isUnlimited = UNLIMITED_PLANS.has(planId) || limit === -1;
+    if (tier !== "free" && !isServiceInTier(serviceId, tier)) {
+      return { allowed: false, status: 403, error: `Ushbu xizmat ${tier.toUpperCase()} tarifiga kirmaydi. Tarifni yangilang.` };
+    }
 
-    if (!isUnlimited) {
+    /* ─── Daily limit check ─── */
+    const tierLimits = TIER_DAILY_LIMITS[tier];
+    if (tierLimits) {
+      const limit = requestType === "image" ? tierLimits.image : tierLimits.text;
+      if (limit === 0 && requestType === "image") {
+        return { allowed: false, status: 403, error: "Rasm tahlili sizning tarifingizda mavjud emas" };
+      }
+
       const { count: dailyUsage } = await admin
         .from("ai_usage")
         .select("id", { count: "exact", head: true })
@@ -113,9 +118,30 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
           error: `Bugungi limit tugadi (${limit} ta). Tarifni yangilang yoki ertaga urinib ko'ring`,
         };
       }
+    } else {
+      // Legacy plan limits
+      const limit = DAILY_LIMITS[planId] ?? DAILY_LIMITS.free ?? 1;
+      const isUnlimited = UNLIMITED_PLANS.has(planId) || limit === -1;
+
+      if (!isUnlimited) {
+        const { count: dailyUsage } = await admin
+          .from("ai_usage")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("service_id", serviceId)
+          .eq("usage_date", today);
+
+        if ((dailyUsage || 0) >= limit) {
+          return {
+            allowed: false,
+            status: 429,
+            error: `Bugungi limit tugadi (${limit} ta). Tarifni yangilang yoki ertaga urinib ko'ring`,
+          };
+        }
+      }
     }
 
-    /* ─── Foydalanishni qayd etish ─── */
+    /* ─── Record usage ─── */
     const { error: usageInsertError } = await admin.from("ai_usage").insert({
       user_id: userId,
       service_id: serviceId,
@@ -127,7 +153,10 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       return { allowed: false, status: 500, error: "So'rovni qayd etishda xatolik" };
     }
 
-    return { allowed: true, userId, planId };
+    /* ─── Route to correct model ─── */
+    const { model, maxTokens } = routeModel(tier, requestType);
+
+    return { allowed: true, userId, planId, tier, model, maxTokens };
   } catch (error) {
     console.error("enforceAiAccess error", error);
     return { allowed: false, status: 500, error: "AI kirishni tekshirishda xatolik" };

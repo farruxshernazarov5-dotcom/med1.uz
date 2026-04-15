@@ -270,9 +270,10 @@ const AISubscriptionPage = () => {
               const tierBadgeClass = s.tier === "lite" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
                 s.tier === "standard" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
                 "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
-              const isAvailable = currentTier === "premium" ||
-                (currentTier === "standard" && s.tier !== "premium") ||
-                (currentTier === "lite" && s.tier === "lite");
+              const tierRank = { free: 0, lite: 1, standard: 2, premium: 3 } as const;
+              const userRank = tierRank[currentTier as keyof typeof tierRank] ?? 0;
+              const serviceRank = tierRank[s.tier as keyof typeof tierRank] ?? 3;
+              const isAvailable = userRank >= serviceRank;
               return (
                 <div key={s.id} className="bg-card/80 backdrop-blur-[15px] border border-border/60 rounded-xl p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-3 mb-2">
