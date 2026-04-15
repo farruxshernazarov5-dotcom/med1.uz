@@ -885,6 +885,39 @@ export type Database = {
           },
         ]
       }
+      credit_history: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          description: string | null
+          id: string
+          service_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          service_id?: string | null
+          type?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          service_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dental_appointments: {
         Row: {
           appointment_date: string
@@ -6065,6 +6098,39 @@ export type Database = {
           otp_expires_at?: string | null
           phone?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          expires_at: string
+          id: string
+          package_name: string | null
+          purchased_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          package_name?: string | null
+          purchased_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          package_name?: string | null
+          purchased_at?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
