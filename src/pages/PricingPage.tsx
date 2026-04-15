@@ -187,23 +187,20 @@ const PricingPage = () => {
 
                 {cat.id === "ai" && (
                   <div className="mt-8 rounded-2xl border border-border bg-card p-6">
-                    <h3 className="font-heading text-xl font-bold text-foreground mb-4">AI xizmatlar alohida tariflari</h3>
+                    <h3 className="font-heading text-xl font-bold text-foreground mb-4">AI xizmatlar kredit narxlari</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {AI_SERVICE_TARIFFS.map((service) => {
-                        const price = billingCycle === "monthly" ? service.monthlyPrice : service.yearlyPrice;
-                        return (
-                          <div key={service.id} className="rounded-xl border border-border bg-background p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                              <service.icon className="w-4 h-4 text-primary" />
-                              <p className="text-sm font-semibold text-foreground">{service.name}</p>
-                            </div>
-                            <p className="text-lg font-bold text-primary">
-                              {price.toLocaleString()} so'm
-                              <span className="text-xs font-normal text-muted-foreground">/{billingCycle === "monthly" ? "oy" : "yil"}</span>
-                            </p>
+                      {AI_SERVICE_TARIFFS.map((service) => (
+                        <div key={service.id} className="rounded-xl border border-border bg-background p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <service.icon className="w-4 h-4 text-primary" />
+                            <p className="text-sm font-semibold text-foreground">{service.name}</p>
                           </div>
-                        );
-                      })}
+                          <p className="text-lg font-bold text-primary">
+                            {service.creditCost} kredit
+                            <span className="text-xs font-normal text-muted-foreground"> / so'rov</span>
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

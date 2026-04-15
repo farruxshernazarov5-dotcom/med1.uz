@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, LogOut, Shield } from "lucide-react";
+import { Menu, X, Search, User, LogOut, Shield, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
+import { useCredits } from "@/hooks/useCredits";
 import logoImg from "@/assets/logo.png";
 
 const navItems = [
@@ -32,6 +33,7 @@ const Header = () => {
   const [currentLang, setCurrentLang] = useState("UZ");
   const [searchOpen, setSearchOpen] = useState(false);
   const { user, profile, userRole, signOut } = useAuth();
+  const { balance } = useCredits();
   const dashboardPath = getDashboardPath(userRole);
 
   useEffect(() => {
@@ -104,6 +106,10 @@ const Header = () => {
 
               {user ? (
                 <div className="hidden sm:flex items-center gap-2">
+                  <Link to="/ai-subscription" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors">
+                    <Coins className="w-3.5 h-3.5" />
+                    🪙 {balance}
+                  </Link>
                   {userRole === "admin" && (
                     <Button asChild variant="ghost" size="sm" className="text-primary">
                       <Link to="/admin"><Shield className="w-4 h-4 mr-1" /> Admin</Link>
