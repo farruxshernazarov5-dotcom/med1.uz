@@ -33,7 +33,7 @@ serve(async (req) => {
     }
 
     const userId = authData.user.id;
-    const { invoice_id, plan_id, billing_period, amount, services } = await req.json();
+    const { invoice_id, plan_id, billing_period, amount, services, tier } = await req.json();
 
     if (!invoice_id || !plan_id || !billing_period || typeof amount !== "number") {
       return new Response(JSON.stringify({ error: "To'lov ma'lumotlari to'liq emas" }), {
@@ -69,18 +69,28 @@ serve(async (req) => {
 
     if (paymentError) throw paymentError;
 
+    const resolvedTier = tier || plan_id || "free";
+    const tierLimits: Record<string, { text: number; image: number }> = {
+      free: { text: 1, image: 0 }, lite: { text: 20, image: 0 },
+      standard: { text: 50, image: 5 }, premium: { text: 100, image: 15 },
+    };
+    const limits = tierLimits[resolvedTier] || tierLimits.free;
+
     const { data: subscription, error: subError } = await admin
       .from("ai_subscriptions")
       .insert({
         user_id: userId,
         plan_id,
+        tier: resolvedTier,
         billing_period,
         services: Array.isArray(services) ? services : [],
         status: "active",
         started_at: now.toISOString(),
         expires_at: expiresAt.toISOString(),
+        daily_text_limit: limits.text,
+        daily_image_limit: limits.image,
       })
-      .select("id, plan_id, billing_period, status, started_at, expires_at, services")
+      .select("id, plan_id, tier, billing_period, status, started_at, expires_at, services")
       .single();
 
     if (subError) throw subError;
