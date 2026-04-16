@@ -1,123 +1,77 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Microscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/hooks/use-toast";
-import {
-  Microscope, Plus, Trash2, Edit, Save, X, Calendar, Users,
-  TrendingUp, Clock, CheckCircle, XCircle, BarChart3, Loader2,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import DashboardShell from "./DashboardShell";
+import type { SidebarItem } from "./DashboardShell";
 import DiagnosticsSubscription from "./DiagnosticsSubscription";
 
-interface DiagCenter {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-  specialties: string[];
-}
+import DiagOverview from "@/components/diagnostics/DiagOverview";
+import DiagPatients from "@/components/diagnostics/DiagPatients";
+import DiagLabOrders from "@/components/diagnostics/DiagLabOrders";
+import DiagResults from "@/components/diagnostics/DiagResults";
+import DiagTemplates from "@/components/diagnostics/DiagTemplates";
+import DiagInventory from "@/components/diagnostics/DiagInventory";
+import DiagFinance from "@/components/diagnostics/DiagFinance";
+import DiagStaff from "@/components/diagnostics/DiagStaff";
 
-interface DiagService {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  duration_minutes: number;
-  description: string;
-  preparation_info: string;
-  is_active: boolean;
-}
-
-interface DiagAppointment {
-  id: string;
-  patient_name: string;
-  patient_phone: string;
-  appointment_date: string;
-  appointment_time: string;
-  status: string;
-  notes: string;
-  service_id: string | null;
-}
-
-const SERVICE_CATEGORIES = [
-  "MRT", "KT", "UZI", "Rentgen", "Laboratoriya", "EKG", "Endoskopiya", "Boshqa",
-];
+import {
+  LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
+  Package, DollarSign, UserCheck, Crown, Settings,
+} from "lucide-react";
 
 const DiagnosticsDashboard = () => {
   const { user } = useAuth();
-  const [center, setCenter] = useState<DiagCenter | null>(null);
-  const [services, setServices] = useState<DiagService[]>([]);
-  const [appointments, setAppointments] = useState<DiagAppointment[]>([]);
+  const [center, setCenter] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [editingService, setEditingService] = useState<string | null>(null);
-  const [newService, setNewService] = useState(false);
-  const [serviceForm, setServiceForm] = useState({ name: "", category: "MRT", price: 0, duration_minutes: 30, description: "", preparation_info: "" });
+  const [tab, setTab] = useState("overview");
+
+  // Data states
+  const [services, setServices] = useState<any[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [results, setResults] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [inventory, setInventory] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [staff, setStaff] = useState<any[]>([]);
 
   useEffect(() => {
-    if (user) loadData();
+    if (user) loadAll();
   }, [user]);
 
-  const loadData = async () => {
+  const loadAll = async () => {
     setLoading(true);
-    // Load center
     const { data: centers } = await supabase
-      .from("registered_diagnostics" as any)
-      .select("*")
-      .eq("owner_id", user!.id)
-      .limit(1) as any;
+      .from("registered_diagnostics" as any).select("*").eq("owner_id", user!.id).limit(1) as any;
 
     if (centers?.length) {
       const c = centers[0];
       setCenter(c);
 
-      // Load services and appointments in parallel
-      const [svcRes, aptRes] = await Promise.all([
+      const [svcR, patR, ordR, resR, tplR, invR, txnR, stfR] = await Promise.all([
         supabase.from("diagnostics_services" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
-        supabase.from("diagnostics_appointments" as any).select("*").eq("center_id", c.id).order("appointment_date", { ascending: false }).limit(50) as any,
+        supabase.from("diagnostics_patients" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
+        supabase.from("diagnostics_lab_orders" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
+        supabase.from("diagnostics_lab_results" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(500) as any,
+        supabase.from("diagnostics_test_templates" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
+        supabase.from("diagnostics_inventory" as any).select("*").eq("center_id", c.id).order("name") as any,
+        supabase.from("diagnostics_transactions" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
+        supabase.from("diagnostics_staff" as any).select("*").eq("center_id", c.id).order("full_name") as any,
       ]);
-      setServices(svcRes.data || []);
-      setAppointments(aptRes.data || []);
+
+      setServices(svcR.data || []);
+      setPatients(patR.data || []);
+      setOrders(ordR.data || []);
+      setResults(resR.data || []);
+      setTemplates(tplR.data || []);
+      setInventory(invR.data || []);
+      setTransactions(txnR.data || []);
+      setStaff(stfR.data || []);
     }
     setLoading(false);
-  };
-
-  const saveService = async () => {
-    if (!center || !serviceForm.name.trim()) return;
-    const payload = { ...serviceForm, center_id: center.id };
-
-    if (editingService) {
-      const { error } = await supabase.from("diagnostics_services" as any).update(payload as any).eq("id", editingService);
-      if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
-      toast({ title: "✅ Xizmat yangilandi" });
-    } else {
-      const { error } = await supabase.from("diagnostics_services" as any).insert(payload as any);
-      if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
-      toast({ title: "✅ Yangi xizmat qo'shildi" });
-    }
-    setEditingService(null);
-    setNewService(false);
-    setServiceForm({ name: "", category: "MRT", price: 0, duration_minutes: 30, description: "", preparation_info: "" });
-    loadData();
-  };
-
-  const deleteService = async (id: string) => {
-    const { error } = await supabase.from("diagnostics_services" as any).delete().eq("id", id);
-    if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "Xizmat o'chirildi" });
-    loadData();
-  };
-
-  const updateAppointmentStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("diagnostics_appointments" as any).update({ status } as any).eq("id", id);
-    if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
-    toast({ title: `Holat "${status}" ga o'zgartirildi` });
-    loadData();
   };
 
   if (loading) {
@@ -141,236 +95,93 @@ const DiagnosticsDashboard = () => {
     );
   }
 
-  // Stats
-  const totalAppointments = appointments.length;
-  const pendingCount = appointments.filter((a) => a.status === "pending").length;
-  const completedCount = appointments.filter((a) => a.status === "completed").length;
-  const totalRevenue = services.reduce((sum, s) => sum + (s.price || 0), 0);
+  const today = new Date().toISOString().split("T")[0];
+  const todayOrders = orders.filter((o: any) => o.created_at?.startsWith(today)).length;
+  const pendingOrders = orders.filter((o: any) => o.status === "pending" || o.status === "in_progress").length;
+  const completedOrders = orders.filter((o: any) => o.status === "completed").length;
+  const todayRevenue = transactions.filter((t: any) => t.created_at?.startsWith(today) && t.status === "paid").reduce((s: number, t: any) => s + (t.amount || 0), 0);
+
+  const sidebarItems: SidebarItem[] = [
+    { id: "overview", label: "Bosh panel", icon: LayoutDashboard },
+    { id: "patients", label: "Bemorlar", icon: Users, badge: patients.length, group: "Boshqaruv" },
+    { id: "lab-orders", label: "Buyurtmalar", icon: FlaskConical, badge: pendingOrders, group: "Laboratoriya" },
+    { id: "results", label: "Natijalar", icon: FileText, group: "Laboratoriya" },
+    { id: "templates", label: "Shablonlar", icon: BookTemplate, group: "Laboratoriya" },
+    { id: "services", label: "Xizmatlar", icon: Microscope, group: "Boshqaruv" },
+    { id: "inventory", label: "Reagentlar", icon: Package, group: "Ombor" },
+    { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
+    { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
+    { id: "subscription", label: "Obuna", icon: Crown },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-heading font-bold text-foreground flex items-center gap-2">
-            <Microscope className="w-6 h-6 text-primary" /> {center.name}
-          </h1>
-          <p className="text-sm text-muted-foreground">{center.address}</p>
-        </div>
-      </div>
+    <DashboardShell
+      title={center.name}
+      subtitle="Diagnostika markazi — LIS"
+      icon={Microscope}
+      iconColor="text-primary"
+      sidebarItems={sidebarItems}
+      activeTab={tab}
+      onTabChange={setTab}
+    >
+      {tab === "overview" && (
+        <DiagOverview stats={{ todayOrders, pendingOrders, completedOrders, todayRevenue, totalPatients: patients.length, totalServices: services.length }} />
+      )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Calendar className="w-6 h-6 text-primary mx-auto mb-1" />
-            <p className="text-2xl font-bold text-foreground">{totalAppointments}</p>
-            <p className="text-xs text-muted-foreground">Jami qabullar</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Clock className="w-6 h-6 text-amber-500 mx-auto mb-1" />
-            <p className="text-2xl font-bold text-foreground">{pendingCount}</p>
-            <p className="text-xs text-muted-foreground">Kutilmoqda</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <CheckCircle className="w-6 h-6 text-emerald-500 mx-auto mb-1" />
-            <p className="text-2xl font-bold text-foreground">{completedCount}</p>
-            <p className="text-xs text-muted-foreground">Bajarilgan</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <TrendingUp className="w-6 h-6 text-primary mx-auto mb-1" />
-            <p className="text-2xl font-bold text-foreground">{services.length}</p>
-            <p className="text-xs text-muted-foreground">Xizmatlar</p>
-          </CardContent>
-        </Card>
-      </div>
+      {tab === "patients" && (
+        <DiagPatients centerId={center.id} patients={patients} onReload={loadAll} />
+      )}
 
-      <Tabs defaultValue="services">
-        <TabsList className="grid grid-cols-4 w-full max-w-lg">
-          <TabsTrigger value="services">Xizmatlar</TabsTrigger>
-          <TabsTrigger value="appointments">Qabullar</TabsTrigger>
-          <TabsTrigger value="stats">Statistika</TabsTrigger>
-          <TabsTrigger value="subscription">Obuna</TabsTrigger>
-        </TabsList>
+      {tab === "lab-orders" && (
+        <DiagLabOrders centerId={center.id} orders={orders} patients={patients} services={services} onReload={loadAll} />
+      )}
 
-        {/* Services Tab */}
-        <TabsContent value="services" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="font-heading font-bold text-lg text-foreground">Diagnostika xizmatlari</h2>
-            <Button size="sm" onClick={() => { setNewService(true); setEditingService(null); setServiceForm({ name: "", category: "MRT", price: 0, duration_minutes: 30, description: "", preparation_info: "" }); }}>
-              <Plus className="w-4 h-4 mr-1" /> Yangi xizmat
-            </Button>
-          </div>
+      {tab === "results" && (
+        <DiagResults centerId={center.id} results={results} orders={orders} templates={templates} onReload={loadAll} />
+      )}
 
-          {(newService || editingService) && (
-            <Card className="border-primary/30">
-              <CardContent className="p-4 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label>Xizmat nomi *</Label>
-                    <Input value={serviceForm.name} onChange={(e) => setServiceForm(p => ({ ...p, name: e.target.value }))} placeholder="Masalan: Bosh MRT" className="mt-1" />
-                  </div>
-                  <div>
-                    <Label>Kategoriya</Label>
-                    <select value={serviceForm.category} onChange={(e) => setServiceForm(p => ({ ...p, category: e.target.value }))}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1">
-                      {SERVICE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <Label>Narxi (so'm)</Label>
-                    <Input type="number" value={serviceForm.price} onChange={(e) => setServiceForm(p => ({ ...p, price: +e.target.value }))} className="mt-1" />
-                  </div>
-                  <div>
-                    <Label>Davomiyligi (daqiqa)</Label>
-                    <Input type="number" value={serviceForm.duration_minutes} onChange={(e) => setServiceForm(p => ({ ...p, duration_minutes: +e.target.value }))} className="mt-1" />
-                  </div>
-                </div>
-                <div>
-                  <Label>Tavsif</Label>
-                  <Textarea value={serviceForm.description} onChange={(e) => setServiceForm(p => ({ ...p, description: e.target.value }))} rows={2} className="mt-1" />
-                </div>
-                <div>
-                  <Label>Tayyorgarlik ko'rsatmalari</Label>
-                  <Textarea value={serviceForm.preparation_info} onChange={(e) => setServiceForm(p => ({ ...p, preparation_info: e.target.value }))} placeholder="Bemor uchun tayyorgarlik..." rows={2} className="mt-1" />
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={saveService}><Save className="w-4 h-4 mr-1" /> Saqlash</Button>
-                  <Button size="sm" variant="outline" onClick={() => { setNewService(false); setEditingService(null); }}><X className="w-4 h-4 mr-1" /> Bekor</Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+      {tab === "templates" && (
+        <DiagTemplates centerId={center.id} templates={templates} onReload={loadAll} />
+      )}
 
-          {services.length === 0 && !newService ? (
-            <Card><CardContent className="p-8 text-center text-muted-foreground">Hali xizmatlar qo'shilmagan</CardContent></Card>
+      {tab === "services" && (
+        <div className="space-y-4">
+          <h3 className="font-heading font-bold text-lg text-foreground">Diagnostika xizmatlari</h3>
+          <p className="text-sm text-muted-foreground">Xizmatlarni boshqarish uchun quyidagi ro'yxatdan foydalaning</p>
+          {services.length === 0 ? (
+            <Card><CardContent className="py-10 text-center text-muted-foreground">Xizmatlar topilmadi</CardContent></Card>
           ) : (
             <div className="space-y-2">
-              {services.map((svc) => (
+              {services.map((svc: any) => (
                 <Card key={svc.id}>
                   <CardContent className="p-4 flex items-center justify-between">
                     <div>
                       <p className="font-medium text-foreground">{svc.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">{svc.category}</Badge>
-                        <span className="text-sm text-primary font-semibold">{svc.price?.toLocaleString()} so'm</span>
-                        <span className="text-xs text-muted-foreground">{svc.duration_minutes} daqiqa</span>
-                      </div>
+                      <p className="text-xs text-muted-foreground">{svc.category} • {svc.duration_minutes} daqiqa</p>
                     </div>
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => {
-                        setEditingService(svc.id);
-                        setNewService(false);
-                        setServiceForm({ name: svc.name, category: svc.category, price: svc.price, duration_minutes: svc.duration_minutes, description: svc.description || "", preparation_info: svc.preparation_info || "" });
-                      }}>
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="text-destructive" onClick={() => deleteService(svc.id)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <span className="text-sm font-semibold text-primary">{svc.price?.toLocaleString()} so'm</span>
                   </CardContent>
                 </Card>
               ))}
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Appointments Tab */}
-        <TabsContent value="appointments" className="space-y-4">
-          <h2 className="font-heading font-bold text-lg text-foreground">Qabulga yozilganlar</h2>
-          {appointments.length === 0 ? (
-            <Card><CardContent className="p-8 text-center text-muted-foreground">Hali qabullar yo'q</CardContent></Card>
-          ) : (
-            <div className="space-y-2">
-              {appointments.map((apt) => (
-                <Card key={apt.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium text-foreground">{apt.patient_name}</p>
-                        <p className="text-sm text-muted-foreground">{apt.patient_phone}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant={apt.status === "pending" ? "default" : apt.status === "completed" ? "secondary" : "destructive"} className="text-xs">
-                            {apt.status === "pending" ? "Kutilmoqda" : apt.status === "confirmed" ? "Tasdiqlangan" : apt.status === "completed" ? "Bajarilgan" : "Bekor qilingan"}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{apt.appointment_date} — {apt.appointment_time}</span>
-                        </div>
-                        {apt.notes && <p className="text-xs text-muted-foreground mt-1">{apt.notes}</p>}
-                      </div>
-                      <div className="flex gap-1">
-                        {apt.status === "pending" && (
-                          <>
-                            <Button size="sm" variant="outline" onClick={() => updateAppointmentStatus(apt.id, "confirmed")}>
-                              <CheckCircle className="w-3 h-3 mr-1" /> Tasdiqlash
-                            </Button>
-                            <Button size="sm" variant="ghost" className="text-destructive" onClick={() => updateAppointmentStatus(apt.id, "cancelled")}>
-                              <XCircle className="w-3 h-3" />
-                            </Button>
-                          </>
-                        )}
-                        {apt.status === "confirmed" && (
-                          <Button size="sm" variant="outline" onClick={() => updateAppointmentStatus(apt.id, "completed")}>
-                            <CheckCircle className="w-3 h-3 mr-1" /> Bajarildi
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
+      {tab === "inventory" && (
+        <DiagInventory centerId={center.id} items={inventory} onReload={loadAll} />
+      )}
 
-        {/* Stats Tab */}
-        <TabsContent value="stats" className="space-y-4">
-          <h2 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary" /> Statistika
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardContent className="p-5">
-                <h3 className="font-medium text-foreground mb-3">Xizmatlar bo'yicha</h3>
-                {SERVICE_CATEGORIES.map(cat => {
-                  const count = services.filter(s => s.category === cat).length;
-                  if (!count) return null;
-                  return (
-                    <div key={cat} className="flex justify-between items-center py-1.5 border-b border-border last:border-0">
-                      <span className="text-sm text-muted-foreground">{cat}</span>
-                      <Badge variant="secondary">{count} ta</Badge>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-5">
-                <h3 className="font-medium text-foreground mb-3">Qabullar holati</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between"><span className="text-sm text-muted-foreground">Kutilmoqda</span><Badge>{pendingCount}</Badge></div>
-                  <div className="flex justify-between"><span className="text-sm text-muted-foreground">Tasdiqlangan</span><Badge variant="secondary">{appointments.filter(a => a.status === "confirmed").length}</Badge></div>
-                  <div className="flex justify-between"><span className="text-sm text-muted-foreground">Bajarilgan</span><Badge variant="outline">{completedCount}</Badge></div>
-                  <div className="flex justify-between"><span className="text-sm text-muted-foreground">Bekor qilingan</span><Badge variant="destructive">{appointments.filter(a => a.status === "cancelled").length}</Badge></div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+      {tab === "finance" && (
+        <DiagFinance centerId={center.id} transactions={transactions} patients={patients} orders={orders} onReload={loadAll} />
+      )}
 
-        {/* Subscription Tab */}
-        <TabsContent value="subscription">
-          <DiagnosticsSubscription />
-        </TabsContent>
-      </Tabs>
+      {tab === "staff" && (
+        <DiagStaff centerId={center.id} staff={staff} onReload={loadAll} />
+      )}
 
-      <p className="text-xs text-muted-foreground text-center">Ma'lumot manbasi: med1.uz — {new Date().getFullYear()}</p>
-    </div>
+      {tab === "subscription" && <DiagnosticsSubscription />}
+    </DashboardShell>
   );
 };
 
