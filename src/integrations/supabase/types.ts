@@ -2106,6 +2106,242 @@ export type Database = {
           },
         ]
       }
+      diagnostics_inventory: {
+        Row: {
+          category: string | null
+          center_id: string
+          created_at: string
+          expiry_date: string | null
+          id: string
+          min_quantity: number | null
+          name: string
+          notes: string | null
+          purchase_price: number | null
+          quantity: number | null
+          supplier: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          center_id: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          min_quantity?: number | null
+          name: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          center_id?: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          min_quantity?: number | null
+          name?: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_inventory_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_lab_orders: {
+        Row: {
+          center_id: string
+          created_at: string
+          doctor_name: string | null
+          doctor_phone: string | null
+          id: string
+          notes: string | null
+          order_number: string | null
+          patient_id: string
+          priority: string | null
+          service_id: string | null
+          status: string
+          total_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          doctor_name?: string | null
+          doctor_phone?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string | null
+          patient_id: string
+          priority?: string | null
+          service_id?: string | null
+          status?: string
+          total_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          doctor_name?: string | null
+          doctor_phone?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string | null
+          patient_id?: string
+          priority?: string | null
+          service_id?: string | null
+          status?: string
+          total_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_lab_orders_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_lab_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_lab_orders_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_lab_results: {
+        Row: {
+          center_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          parameter_name: string
+          reference_max: string | null
+          reference_min: string | null
+          status: string | null
+          unit: string | null
+          value: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          parameter_name: string
+          reference_max?: string | null
+          reference_min?: string | null
+          status?: string | null
+          unit?: string | null
+          value?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          parameter_name?: string
+          reference_max?: string | null
+          reference_min?: string | null
+          status?: string | null
+          unit?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_lab_results_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_lab_results_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_lab_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_patients: {
+        Row: {
+          address: string | null
+          blood_group: string | null
+          center_id: string
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          notes: string | null
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          blood_group?: string | null
+          center_id: string
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          notes?: string | null
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          blood_group?: string | null
+          center_id?: string
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_patients_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diagnostics_photos: {
         Row: {
           caption: string | null
@@ -2184,6 +2420,152 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_staff: {
+        Row: {
+          center_id: string
+          created_at: string
+          email: string | null
+          full_name: string
+          hire_date: string | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          phone: string | null
+          role: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_staff_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_test_templates: {
+        Row: {
+          category: string | null
+          center_id: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          parameters: Json
+        }
+        Insert: {
+          category?: string | null
+          center_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          parameters?: Json
+        }
+        Update: {
+          category?: string | null
+          center_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          parameters?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_test_templates_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_transactions: {
+        Row: {
+          amount: number
+          center_id: string
+          created_at: string
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          order_id: string | null
+          patient_id: string | null
+          payment_method: string | null
+          status: string | null
+        }
+        Insert: {
+          amount?: number
+          center_id: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          order_id?: string | null
+          patient_id?: string | null
+          payment_method?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          center_id?: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          order_id?: string | null
+          patient_id?: string | null
+          payment_method?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_transactions_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_lab_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_transactions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_patients"
             referencedColumns: ["id"]
           },
         ]
