@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -168,8 +167,8 @@ const VendorDashboard = () => {
         ))}
       </div>
 
-        {/* Products Tab */}
-        <TabsContent value="products" className="space-y-4">
+      {tab === "products" && (
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold">Mahsulotlar ({products.length})</h3>
             <Button size="sm" onClick={() => { resetProductForm(); setShowProductForm(true); }}>
@@ -250,10 +249,11 @@ const VendorDashboard = () => {
               </Table>
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Orders Tab */}
-        <TabsContent value="orders" className="space-y-4">
+      {tab === "orders" && (
+        <div className="space-y-4">
           <h3 className="font-semibold">Buyurtmalar ({orders.length})</h3>
           {orders.length === 0 ? (
             <Card><CardContent className="py-8 text-center text-muted-foreground">
@@ -293,10 +293,11 @@ const VendorDashboard = () => {
               ))}
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Stats Tab */}
-        <TabsContent value="stats" className="space-y-4">
+      {tab === "stats" && (
+        <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Eng ko'p ko'rilgan</CardTitle></CardHeader>
@@ -320,7 +321,8 @@ const VendorDashboard = () => {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
+        </div>
+      )}
     </DashboardShell>
   );
 };
