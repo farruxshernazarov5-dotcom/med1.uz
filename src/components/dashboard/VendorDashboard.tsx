@@ -1,137 +1,34 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import {
-  Package, ShoppingCart, BarChart3, Bell, Plus, Pencil, Trash2,
-  Loader2, Eye, TrendingUp, DollarSign, AlertCircle,
-} from "lucide-react";
+import { ShoppingCart, Package, Wrench, Calendar, Users, Box, UserCog, DollarSign, BarChart3, LayoutDashboard } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
-
-interface Vendor {
-  id: string;
-  company_name: string;
-  is_verified: boolean;
-  categories: string[];
-}
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock_quantity: number;
-  is_active: boolean;
-  view_count: number;
-  photos: string[];
-  description: string;
-}
-
-interface Order {
-  id: string;
-  buyer_name: string;
-  buyer_phone: string;
-  status: string;
-  total_amount: number;
-  created_at: string;
-  notes: string;
-}
+import MTOverview from "@/components/medtech/MTOverview";
+import MTEquipment from "@/components/medtech/MTEquipment";
+import MTClients from "@/components/medtech/MTClients";
+import MTMaintenance from "@/components/medtech/MTMaintenance";
+import MTRentals from "@/components/medtech/MTRentals";
+import MTSales from "@/components/medtech/MTSales";
+import MTInventory from "@/components/medtech/MTInventory";
+import MTTechnicians from "@/components/medtech/MTTechnicians";
+import MTFinance from "@/components/medtech/MTFinance";
 
 const VendorDashboard = () => {
   const { user } = useAuth();
-  const [vendor, setVendor] = useState<Vendor | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [vendor, setVendor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showProductForm, setShowProductForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [productForm, setProductForm] = useState({ name: "", category: "", price: "", stock_quantity: "", description: "" });
-  const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState("overview");
 
   useEffect(() => {
-    if (user) loadData();
+    if (!user) return;
+    (async () => {
+      const { data } = await supabase.from("medtech_vendors" as any).select("*").eq("owner_id", user.id).maybeSingle();
+      setVendor(data);
+      setLoading(false);
+    })();
   }, [user]);
-
-  const loadData = async () => {
-    setLoading(true);
-    const { data: v } = await supabase.from("medtech_vendors" as any).select("*").eq("owner_id", user!.id).maybeSingle();
-    if (v) {
-      setVendor(v as any);
-      const [prodRes, orderRes] = await Promise.all([
-        supabase.from("medtech_products" as any).select("*").eq("vendor_id", (v as any).id).order("created_at", { ascending: false }),
-        supabase.from("medtech_orders" as any).select("*").eq("vendor_id", (v as any).id).order("created_at", { ascending: false }),
-      ]);
-      setProducts((prodRes.data || []) as any);
-      setOrders((orderRes.data || []) as any);
-    }
-    setLoading(false);
-  };
-
-  const resetProductForm = () => {
-    setProductForm({ name: "", category: "", price: "", stock_quantity: "", description: "" });
-    setEditingProduct(null);
-    setShowProductForm(false);
-  };
-
-  const handleEditProduct = (p: Product) => {
-    setEditingProduct(p);
-    setProductForm({ name: p.name, category: p.category, price: String(p.price), stock_quantity: String(p.stock_quantity), description: p.description || "" });
-    setShowProductForm(true);
-  };
-
-  const handleSaveProduct = async () => {
-    if (!productForm.name.trim()) { toast({ title: "Mahsulot nomi majburiy", variant: "destructive" }); return; }
-    setSaving(true);
-    const payload = {
-      name: productForm.name.trim(),
-      category: productForm.category.trim(),
-      price: parseFloat(productForm.price) || 0,
-      stock_quantity: parseInt(productForm.stock_quantity) || 0,
-      description: productForm.description.trim(),
-      vendor_id: vendor!.id,
-    };
-
-    if (editingProduct) {
-      const { error } = await supabase.from("medtech_products" as any).update(payload as any).eq("id", editingProduct.id);
-      if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-      else toast({ title: "✅ Mahsulot yangilandi" });
-    } else {
-      const { error } = await supabase.from("medtech_products" as any).insert(payload as any);
-      if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-      else toast({ title: "✅ Mahsulot qo'shildi" });
-    }
-    setSaving(false);
-    resetProductForm();
-    loadData();
-  };
-
-  const handleDeleteProduct = async (id: string) => {
-    if (!confirm("Mahsulotni o'chirmoqchimisiz?")) return;
-    await supabase.from("medtech_products" as any).delete().eq("id", id);
-    toast({ title: "Mahsulot o'chirildi" });
-    loadData();
-  };
-
-  const updateOrderStatus = async (orderId: string, status: string) => {
-    await supabase.from("medtech_orders" as any).update({ status } as any).eq("id", orderId);
-    toast({ title: `Buyurtma holati: ${status}` });
-    loadData();
-  };
-
-  const totalRevenue = orders.filter(o => o.status === "completed").reduce((s, o) => s + (o.total_amount || 0), 0);
-  const totalViews = products.reduce((s, p) => s + (p.view_count || 0), 0);
-  const pendingOrders = orders.filter(o => o.status === "pending").length;
-
-  const [tab, setTab] = useState("products");
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin w-8 h-8 border-4 border-secondary border-t-transparent rounded-full" /></div>;
 
@@ -144,185 +41,31 @@ const VendorDashboard = () => {
     </div></div>
   );
 
+  const vendorId = user!.id;
+
   const sidebarItems: SidebarItem[] = [
-    { id: "products", label: "Mahsulotlar", icon: Package },
-    { id: "orders", label: "Buyurtmalar", icon: ShoppingCart, badge: pendingOrders },
-    { id: "stats", label: "Statistika", icon: BarChart3 },
+    { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard },
+    { id: "equipment", label: "Uskunalar", icon: Package },
+    { id: "maintenance", label: "Servis", icon: Wrench },
+    { id: "rentals", label: "Ijara", icon: Calendar },
+    { id: "sales", label: "Sotuvlar", icon: ShoppingCart },
+    { id: "clients", label: "Mijozlar", icon: Users },
+    { id: "inventory", label: "Ombor", icon: Box },
+    { id: "technicians", label: "Texniklar", icon: UserCog },
+    { id: "finance", label: "Moliya", icon: DollarSign },
   ];
 
   return (
-    <DashboardShell title={vendor.company_name} subtitle="Med texnika boshqaruv paneli" icon={Package} iconColor="text-secondary" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {[
-          { label: "Mahsulotlar", val: products.length, icon: Package, color: "from-secondary/20 to-secondary/5", iconColor: "text-secondary" },
-          { label: "Buyurtmalar", val: orders.length, icon: ShoppingCart, color: "from-accent/20 to-accent/5", iconColor: "text-accent" },
-          { label: "Ko'rishlar", val: totalViews, icon: Eye, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500" },
-          { label: "Tushum", val: `${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500" },
-        ].map(s => (
-          <div key={s.label} className={cn("rounded-2xl border border-border p-5 bg-gradient-to-br", s.color)}>
-            <s.icon className={cn("w-8 h-8 mb-3", s.iconColor)} />
-            <p className="text-2xl font-bold text-foreground">{s.val}</p>
-            <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {tab === "products" && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-semibold">Mahsulotlar ({products.length})</h3>
-            <Button size="sm" onClick={() => { resetProductForm(); setShowProductForm(true); }}>
-              <Plus className="w-4 h-4 mr-1" /> Yangi mahsulot
-            </Button>
-          </div>
-
-          {showProductForm && (
-            <Card>
-              <CardHeader><CardTitle className="text-lg">{editingProduct ? "Mahsulotni tahrirlash" : "Yangi mahsulot"}</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <Label>Nomi *</Label>
-                  <Input value={productForm.name} onChange={e => setProductForm(p => ({ ...p, name: e.target.value }))} className="mt-1" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label>Kategoriya</Label>
-                    <Input value={productForm.category} onChange={e => setProductForm(p => ({ ...p, category: e.target.value }))} className="mt-1" placeholder="Diagnostika uskunalari" />
-                  </div>
-                  <div>
-                    <Label>Narxi (UZS)</Label>
-                    <Input type="number" value={productForm.price} onChange={e => setProductForm(p => ({ ...p, price: e.target.value }))} className="mt-1" />
-                  </div>
-                </div>
-                <div>
-                  <Label>Miqdori (dona)</Label>
-                  <Input type="number" value={productForm.stock_quantity} onChange={e => setProductForm(p => ({ ...p, stock_quantity: e.target.value }))} className="mt-1" />
-                </div>
-                <div>
-                  <Label>Tavsif</Label>
-                  <Textarea value={productForm.description} onChange={e => setProductForm(p => ({ ...p, description: e.target.value }))} rows={2} className="mt-1" />
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleSaveProduct} disabled={saving}>
-                    {saving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
-                    {editingProduct ? "Yangilash" : "Qo'shish"}
-                  </Button>
-                  <Button variant="outline" onClick={resetProductForm}>Bekor qilish</Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {products.length === 0 ? (
-            <Card><CardContent className="py-8 text-center text-muted-foreground">
-              <Package className="w-10 h-10 mx-auto mb-2 opacity-50" />
-              Hozircha mahsulotlar yo'q
-            </CardContent></Card>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nomi</TableHead>
-                    <TableHead>Kategoriya</TableHead>
-                    <TableHead>Narxi</TableHead>
-                    <TableHead>Miqdori</TableHead>
-                    <TableHead>Ko'rishlar</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map(p => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-medium">{p.name}</TableCell>
-                      <TableCell><Badge variant="outline" className="text-xs">{p.category || "—"}</Badge></TableCell>
-                      <TableCell>{p.price?.toLocaleString()} UZS</TableCell>
-                      <TableCell>{p.stock_quantity}</TableCell>
-                      <TableCell>{p.view_count}</TableCell>
-                      <TableCell className="flex gap-1">
-                        <Button size="icon" variant="ghost" onClick={() => handleEditProduct(p)}><Pencil className="w-4 h-4" /></Button>
-                        <Button size="icon" variant="ghost" onClick={() => handleDeleteProduct(p.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "orders" && (
-        <div className="space-y-4">
-          <h3 className="font-semibold">Buyurtmalar ({orders.length})</h3>
-          {orders.length === 0 ? (
-            <Card><CardContent className="py-8 text-center text-muted-foreground">
-              <ShoppingCart className="w-10 h-10 mx-auto mb-2 opacity-50" />
-              Hozircha buyurtmalar yo'q
-            </CardContent></Card>
-          ) : (
-            <div className="space-y-3">
-              {orders.map(o => (
-                <Card key={o.id}>
-                  <CardContent className="pt-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium">{o.buyer_name}</p>
-                        <p className="text-sm text-muted-foreground">{o.buyer_phone}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{new Date(o.created_at).toLocaleDateString("uz-UZ")}</p>
-                        {o.notes && <p className="text-xs text-muted-foreground mt-1">📝 {o.notes}</p>}
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">{o.total_amount?.toLocaleString()} UZS</p>
-                        <Badge variant={o.status === "completed" ? "default" : o.status === "pending" ? "secondary" : "outline"} className="mt-1">
-                          {o.status === "pending" ? "⏳ Kutilmoqda" : o.status === "confirmed" ? "✅ Tasdiqlangan" : o.status === "shipped" ? "🚚 Yuborilgan" : o.status === "completed" ? "✔ Yakunlangan" : o.status}
-                        </Badge>
-                      </div>
-                    </div>
-                    {o.status === "pending" && (
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" onClick={() => updateOrderStatus(o.id, "confirmed")}>Tasdiqlash</Button>
-                        <Button size="sm" variant="destructive" onClick={() => updateOrderStatus(o.id, "cancelled")}>Bekor qilish</Button>
-                      </div>
-                    )}
-                    {o.status === "confirmed" && (
-                      <Button size="sm" className="mt-3" onClick={() => updateOrderStatus(o.id, "shipped")}>🚚 Yuborish</Button>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "stats" && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Eng ko'p ko'rilgan</CardTitle></CardHeader>
-              <CardContent>
-                {products.sort((a, b) => b.view_count - a.view_count).slice(0, 5).map((p, i) => (
-                  <div key={p.id} className="flex justify-between py-1.5 border-b last:border-0">
-                    <span className="text-sm">{i + 1}. {p.name}</span>
-                    <span className="text-sm text-muted-foreground">{p.view_count} ko'rish</span>
-                  </div>
-                ))}
-                {products.length === 0 && <p className="text-sm text-muted-foreground">Ma'lumot yo'q</p>}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Buyurtmalar statistikasi</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between"><span className="text-sm">Jami buyurtmalar:</span><span className="font-medium">{orders.length}</span></div>
-                <div className="flex justify-between"><span className="text-sm">Kutilmoqda:</span><span className="font-medium text-amber-600">{pendingOrders}</span></div>
-                <div className="flex justify-between"><span className="text-sm">Yakunlangan:</span><span className="font-medium text-emerald-600">{orders.filter(o => o.status === "completed").length}</span></div>
-                <div className="flex justify-between"><span className="text-sm">Jami tushum:</span><span className="font-bold">{totalRevenue.toLocaleString()} UZS</span></div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
+    <DashboardShell title={vendor.company_name || "Medtexnika"} subtitle="Med texnika boshqaruv paneli" icon={Package} iconColor="text-secondary" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
+      {tab === "overview" && <MTOverview vendorId={vendorId} />}
+      {tab === "equipment" && <MTEquipment vendorId={vendorId} />}
+      {tab === "maintenance" && <MTMaintenance vendorId={vendorId} />}
+      {tab === "rentals" && <MTRentals vendorId={vendorId} />}
+      {tab === "sales" && <MTSales vendorId={vendorId} />}
+      {tab === "clients" && <MTClients vendorId={vendorId} />}
+      {tab === "inventory" && <MTInventory vendorId={vendorId} />}
+      {tab === "technicians" && <MTTechnicians vendorId={vendorId} />}
+      {tab === "finance" && <MTFinance vendorId={vendorId} />}
     </DashboardShell>
   );
 };
