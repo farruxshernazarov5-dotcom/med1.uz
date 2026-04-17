@@ -5106,6 +5106,287 @@ export type Database = {
         }
         Relationships: []
       }
+      medtech_clients: {
+        Row: {
+          address: string | null
+          client_type: string
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          id: string
+          inn: string | null
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          address?: string | null
+          client_type?: string
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          address?: string | null
+          client_type?: string
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
+      medtech_documents: {
+        Row: {
+          created_at: string
+          doc_name: string
+          doc_type: string | null
+          equipment_id: string | null
+          expires_at: string | null
+          file_size: string | null
+          file_url: string
+          id: string
+          notes: string | null
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_name: string
+          doc_type?: string | null
+          equipment_id?: string | null
+          expires_at?: string | null
+          file_size?: string | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_name?: string
+          doc_type?: string | null
+          equipment_id?: string | null
+          expires_at?: string | null
+          file_size?: string | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_documents_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medtech_equipment: {
+        Row: {
+          brand: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          model: string | null
+          name: string
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          rental_daily_price: number | null
+          sell_price: number | null
+          serial_number: string | null
+          status: string
+          updated_at: string
+          vendor_id: string
+          warranty_end: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          model?: string | null
+          name: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          rental_daily_price?: number | null
+          sell_price?: number | null
+          serial_number?: string | null
+          status?: string
+          updated_at?: string
+          vendor_id: string
+          warranty_end?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          model?: string | null
+          name?: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          rental_daily_price?: number | null
+          sell_price?: number | null
+          serial_number?: string | null
+          status?: string
+          updated_at?: string
+          vendor_id?: string
+          warranty_end?: string | null
+        }
+        Relationships: []
+      }
+      medtech_inventory: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          location: string | null
+          min_quantity: number | null
+          name: string
+          notes: string | null
+          purchase_price: number | null
+          quantity: number
+          sell_price: number | null
+          sku: string | null
+          supplier: string | null
+          unit: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          min_quantity?: number | null
+          name: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          sku?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          min_quantity?: number | null
+          name?: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          sku?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
+      medtech_maintenance: {
+        Row: {
+          cost: number | null
+          created_at: string
+          equipment_id: string
+          id: string
+          next_service_date: string | null
+          notes: string | null
+          problem: string | null
+          service_date: string
+          service_type: string
+          solution: string | null
+          status: string
+          technician_id: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          equipment_id: string
+          id?: string
+          next_service_date?: string | null
+          notes?: string | null
+          problem?: string | null
+          service_date?: string
+          service_type?: string
+          solution?: string | null
+          status?: string
+          technician_id?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          equipment_id?: string
+          id?: string
+          next_service_date?: string | null
+          notes?: string | null
+          problem?: string | null
+          service_date?: string
+          service_type?: string
+          solution?: string | null
+          status?: string
+          technician_id?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_maintenance_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medtech_maintenance_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_technicians"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medtech_order_items: {
         Row: {
           created_at: string
@@ -5262,6 +5543,213 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      medtech_rentals: {
+        Row: {
+          client_id: string
+          created_at: string
+          daily_price: number
+          deposit: number | null
+          end_date: string
+          equipment_id: string
+          id: string
+          notes: string | null
+          paid_amount: number | null
+          return_date: string | null
+          start_date: string
+          status: string
+          total_amount: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          daily_price?: number
+          deposit?: number | null
+          end_date: string
+          equipment_id: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          return_date?: string | null
+          start_date: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          daily_price?: number
+          deposit?: number | null
+          end_date?: string
+          equipment_id?: string
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          return_date?: string | null
+          start_date?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_rentals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medtech_rentals_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medtech_sales: {
+        Row: {
+          client_id: string
+          created_at: string
+          equipment_id: string | null
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          paid_amount: number | null
+          payment_method: string | null
+          payment_status: string | null
+          sale_date: string
+          sale_price: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          equipment_id?: string | null
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          paid_amount?: number | null
+          payment_method?: string | null
+          payment_status?: string | null
+          sale_date?: string
+          sale_price?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          equipment_id?: string | null
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          paid_amount?: number | null
+          payment_method?: string | null
+          payment_status?: string | null
+          sale_date?: string
+          sale_price?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medtech_sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medtech_sales_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "medtech_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medtech_technicians: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          phone: string | null
+          specialization: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          phone?: string | null
+          specialization?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          phone?: string | null
+          specialization?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
+      medtech_transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          related_id: string | null
+          related_type: string | null
+          transaction_date: string
+          type: string
+          vendor_id: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          related_id?: string | null
+          related_type?: string | null
+          transaction_date?: string
+          type?: string
+          vendor_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          related_id?: string | null
+          related_type?: string | null
+          transaction_date?: string
+          type?: string
+          vendor_id?: string
+        }
+        Relationships: []
       }
       medtech_vendors: {
         Row: {
