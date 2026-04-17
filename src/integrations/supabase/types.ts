@@ -4988,6 +4988,345 @@ export type Database = {
           },
         ]
       }
+      maternity_deliveries: {
+        Row: {
+          blood_loss_ml: number | null
+          center_id: string
+          complications: string | null
+          created_at: string
+          delivery_date: string
+          delivery_type: string
+          doctor_name: string | null
+          duration_hours: number | null
+          id: string
+          midwife_name: string | null
+          notes: string | null
+          outcome: string
+          patient_id: string
+          room_number: string | null
+        }
+        Insert: {
+          blood_loss_ml?: number | null
+          center_id: string
+          complications?: string | null
+          created_at?: string
+          delivery_date?: string
+          delivery_type?: string
+          doctor_name?: string | null
+          duration_hours?: number | null
+          id?: string
+          midwife_name?: string | null
+          notes?: string | null
+          outcome?: string
+          patient_id: string
+          room_number?: string | null
+        }
+        Update: {
+          blood_loss_ml?: number | null
+          center_id?: string
+          complications?: string | null
+          created_at?: string
+          delivery_date?: string
+          delivery_type?: string
+          doctor_name?: string | null
+          duration_hours?: number | null
+          id?: string
+          midwife_name?: string | null
+          notes?: string | null
+          outcome?: string
+          patient_id?: string
+          room_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_deliveries_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_deliveries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_documents: {
+        Row: {
+          center_id: string
+          created_at: string
+          document_type: string
+          file_name: string
+          file_size: string | null
+          file_url: string
+          id: string
+          patient_id: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          document_type?: string
+          file_name: string
+          file_size?: string | null
+          file_url: string
+          id?: string
+          patient_id?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_size?: string | null
+          file_url?: string
+          id?: string
+          patient_id?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_documents_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_documents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_lab_results: {
+        Row: {
+          center_id: string
+          created_at: string
+          id: string
+          is_abnormal: boolean | null
+          normal_range: string | null
+          notes: string | null
+          patient_id: string
+          result_value: string | null
+          test_date: string
+          test_name: string
+          test_type: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          id?: string
+          is_abnormal?: boolean | null
+          normal_range?: string | null
+          notes?: string | null
+          patient_id: string
+          result_value?: string | null
+          test_date?: string
+          test_name: string
+          test_type?: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          id?: string
+          is_abnormal?: boolean | null
+          normal_range?: string | null
+          notes?: string | null
+          patient_id?: string
+          result_value?: string | null
+          test_date?: string
+          test_name?: string
+          test_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_lab_results_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_lab_results_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_newborns: {
+        Row: {
+          apgar_score_1min: number | null
+          apgar_score_5min: number | null
+          baby_name: string | null
+          birth_date: string
+          blood_group: string | null
+          center_id: string
+          created_at: string
+          delivery_id: string | null
+          gender: string
+          head_circumference_cm: number | null
+          health_status: string
+          height_cm: number | null
+          id: string
+          notes: string | null
+          patient_id: string
+          vaccinations: string[] | null
+          weight_g: number | null
+        }
+        Insert: {
+          apgar_score_1min?: number | null
+          apgar_score_5min?: number | null
+          baby_name?: string | null
+          birth_date?: string
+          blood_group?: string | null
+          center_id: string
+          created_at?: string
+          delivery_id?: string | null
+          gender?: string
+          head_circumference_cm?: number | null
+          health_status?: string
+          height_cm?: number | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          vaccinations?: string[] | null
+          weight_g?: number | null
+        }
+        Update: {
+          apgar_score_1min?: number | null
+          apgar_score_5min?: number | null
+          baby_name?: string | null
+          birth_date?: string
+          blood_group?: string | null
+          center_id?: string
+          created_at?: string
+          delivery_id?: string | null
+          gender?: string
+          head_circumference_cm?: number | null
+          health_status?: string
+          height_cm?: number | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          vaccinations?: string[] | null
+          weight_g?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_newborns_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_newborns_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_deliveries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_newborns_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_patients: {
+        Row: {
+          address: string | null
+          allergies: string | null
+          blood_group: string | null
+          center_id: string
+          chronic_diseases: string | null
+          created_at: string
+          date_of_birth: string | null
+          edd_date: string | null
+          full_name: string
+          gravida: number | null
+          husband_name: string | null
+          husband_phone: string | null
+          id: string
+          lmp_date: string | null
+          notes: string | null
+          para: number | null
+          passport_id: string | null
+          phone: string
+          rh_factor: string | null
+          risk_level: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          allergies?: string | null
+          blood_group?: string | null
+          center_id: string
+          chronic_diseases?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          edd_date?: string | null
+          full_name: string
+          gravida?: number | null
+          husband_name?: string | null
+          husband_phone?: string | null
+          id?: string
+          lmp_date?: string | null
+          notes?: string | null
+          para?: number | null
+          passport_id?: string | null
+          phone: string
+          rh_factor?: string | null
+          risk_level?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          allergies?: string | null
+          blood_group?: string | null
+          center_id?: string
+          chronic_diseases?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          edd_date?: string | null
+          full_name?: string
+          gravida?: number | null
+          husband_name?: string | null
+          husband_phone?: string | null
+          id?: string
+          lmp_date?: string | null
+          notes?: string | null
+          para?: number | null
+          passport_id?: string | null
+          phone?: string
+          rh_factor?: string | null
+          risk_level?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_patients_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maternity_photos: {
         Row: {
           caption: string | null
@@ -5019,6 +5358,129 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_pregnancy_logs: {
+        Row: {
+          blood_pressure: string | null
+          center_id: string
+          created_at: string
+          doctor_notes: string | null
+          fetal_heart_rate: number | null
+          fundal_height_cm: number | null
+          id: string
+          next_visit_date: string | null
+          patient_id: string
+          recommendations: string | null
+          symptoms: string | null
+          visit_date: string
+          week_number: number
+          weight_kg: number | null
+        }
+        Insert: {
+          blood_pressure?: string | null
+          center_id: string
+          created_at?: string
+          doctor_notes?: string | null
+          fetal_heart_rate?: number | null
+          fundal_height_cm?: number | null
+          id?: string
+          next_visit_date?: string | null
+          patient_id: string
+          recommendations?: string | null
+          symptoms?: string | null
+          visit_date?: string
+          week_number: number
+          weight_kg?: number | null
+        }
+        Update: {
+          blood_pressure?: string | null
+          center_id?: string
+          created_at?: string
+          doctor_notes?: string | null
+          fetal_heart_rate?: number | null
+          fundal_height_cm?: number | null
+          id?: string
+          next_visit_date?: string | null
+          patient_id?: string
+          recommendations?: string | null
+          symptoms?: string | null
+          visit_date?: string
+          week_number?: number
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_pregnancy_logs_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_pregnancy_logs_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_prescriptions: {
+        Row: {
+          center_id: string
+          created_at: string
+          doctor_name: string | null
+          dosage: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          medication_name: string
+          notes: string | null
+          patient_id: string
+          prescribed_date: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          doctor_name?: string | null
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          medication_name: string
+          notes?: string | null
+          patient_id: string
+          prescribed_date?: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          doctor_name?: string | null
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          medication_name?: string
+          notes?: string | null
+          patient_id?: string
+          prescribed_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_prescriptions_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_prescriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
             referencedColumns: ["id"]
           },
         ]
@@ -5063,6 +5525,179 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_staff: {
+        Row: {
+          center_id: string
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          phone: string | null
+          role: string
+          shift: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          phone?: string | null
+          role?: string
+          shift?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          phone?: string | null
+          role?: string
+          shift?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_staff_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          center_id: string
+          created_at: string
+          description: string | null
+          id: string
+          invoice_number: string | null
+          paid_amount: number
+          patient_id: string | null
+          payment_method: string | null
+          status: string
+          transaction_date: string
+          type: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          center_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_number?: string | null
+          paid_amount?: number
+          patient_id?: string | null
+          payment_method?: string | null
+          status?: string
+          transaction_date?: string
+          type?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          center_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_number?: string | null
+          paid_amount?: number
+          patient_id?: string | null
+          payment_method?: string | null
+          status?: string
+          transaction_date?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_transactions_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_transactions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_ultrasound: {
+        Row: {
+          abnormalities: string | null
+          amniotic_fluid: string | null
+          center_id: string
+          conclusion: string | null
+          created_at: string
+          doctor_name: string | null
+          fetal_position: string | null
+          fetal_weight_g: number | null
+          gestational_week: number | null
+          id: string
+          image_urls: string[] | null
+          patient_id: string
+          placenta_position: string | null
+          scan_date: string
+        }
+        Insert: {
+          abnormalities?: string | null
+          amniotic_fluid?: string | null
+          center_id: string
+          conclusion?: string | null
+          created_at?: string
+          doctor_name?: string | null
+          fetal_position?: string | null
+          fetal_weight_g?: number | null
+          gestational_week?: number | null
+          id?: string
+          image_urls?: string[] | null
+          patient_id: string
+          placenta_position?: string | null
+          scan_date?: string
+        }
+        Update: {
+          abnormalities?: string | null
+          amniotic_fluid?: string | null
+          center_id?: string
+          conclusion?: string | null
+          created_at?: string
+          doctor_name?: string | null
+          fetal_position?: string | null
+          fetal_weight_g?: number | null
+          gestational_week?: number | null
+          id?: string
+          image_urls?: string[] | null
+          patient_id?: string
+          placenta_position?: string | null
+          scan_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_ultrasound_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_maternity"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maternity_ultrasound_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_patients"
             referencedColumns: ["id"]
           },
         ]
