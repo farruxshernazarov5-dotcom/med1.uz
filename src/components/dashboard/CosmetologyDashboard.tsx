@@ -114,7 +114,7 @@ const CosmetologyDashboard = () => {
       {tab === "feedback" && <CosFeedback centerId={center.id} />}
       {tab === "inventory" && <CosInventory centerId={center.id} />}
       {tab === "staff" && <CosStaff centerId={center.id} />}
-      {tab === "subscription" && <CosmetologySubscription centerId={center.id} />}
+      {tab === "subscription" && <CosmetologySubscription />}
       {tab === "settings" && (
         <Card><CardContent className="p-5 space-y-4">
           <h3 className="font-heading font-semibold text-lg">Markaz profili</h3>
