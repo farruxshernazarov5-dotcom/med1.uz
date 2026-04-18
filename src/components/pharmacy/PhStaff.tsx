@@ -80,7 +80,7 @@ const PhStaff = ({ pharmacyId }: { pharmacyId: string }) => {
                 {s.salary && <p className="text-xs mt-1">Maosh: <span className="text-foreground font-medium">{Number(s.salary).toLocaleString()} so'm</span></p>}
               </div>
               <Button size="icon" variant="ghost" onClick={() => del(s.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
-            </Card></CardContent>
+            </CardContent></Card>
           ))}
         </div>
       )}
