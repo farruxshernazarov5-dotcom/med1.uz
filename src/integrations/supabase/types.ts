@@ -6491,6 +6491,131 @@ export type Database = {
         }
         Relationships: []
       }
+      pharmacy_customers: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          email: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          loyalty_points: number | null
+          notes: string | null
+          pharmacy_id: string
+          phone: string | null
+          total_purchases: number | null
+          total_spent: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          loyalty_points?: number | null
+          notes?: string | null
+          pharmacy_id: string
+          phone?: string | null
+          total_purchases?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          loyalty_points?: number | null
+          notes?: string | null
+          pharmacy_id?: string
+          phone?: string | null
+          total_purchases?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_customers_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_inventory_batches: {
+        Row: {
+          batch_number: string | null
+          created_at: string | null
+          expiry_date: string | null
+          id: string
+          notes: string | null
+          pharmacy_id: string
+          product_id: string
+          purchase_price: number | null
+          quantity: number
+          received_date: string | null
+          remaining_quantity: number
+          sell_price: number | null
+          supplier_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          batch_number?: string | null
+          created_at?: string | null
+          expiry_date?: string | null
+          id?: string
+          notes?: string | null
+          pharmacy_id: string
+          product_id: string
+          purchase_price?: number | null
+          quantity?: number
+          received_date?: string | null
+          remaining_quantity?: number
+          sell_price?: number | null
+          supplier_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          batch_number?: string | null
+          created_at?: string | null
+          expiry_date?: string | null
+          id?: string
+          notes?: string | null
+          pharmacy_id?: string
+          product_id?: string
+          purchase_price?: number | null
+          quantity?: number
+          received_date?: string | null
+          remaining_quantity?: number
+          sell_price?: number | null
+          supplier_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_inventory_batches_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_inventory_batches_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pharmacy_order_items: {
         Row: {
           created_at: string
@@ -6621,6 +6746,85 @@ export type Database = {
           },
         ]
       }
+      pharmacy_prescriptions: {
+        Row: {
+          clinic_name: string | null
+          created_at: string | null
+          customer_id: string | null
+          diagnosis: string | null
+          dispensed_at: string | null
+          doctor_name: string | null
+          file_url: string | null
+          id: string
+          medications: Json | null
+          notes: string | null
+          patient_name: string
+          patient_phone: string | null
+          pharmacy_id: string
+          sale_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          clinic_name?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          diagnosis?: string | null
+          dispensed_at?: string | null
+          doctor_name?: string | null
+          file_url?: string | null
+          id?: string
+          medications?: Json | null
+          notes?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          pharmacy_id: string
+          sale_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          clinic_name?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          diagnosis?: string | null
+          dispensed_at?: string | null
+          doctor_name?: string | null
+          file_url?: string | null
+          id?: string
+          medications?: Json | null
+          notes?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          pharmacy_id?: string
+          sale_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_prescriptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_prescriptions_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_prescriptions_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pharmacy_products: {
         Row: {
           category: string | null
@@ -6679,6 +6883,405 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "pharmacy_products_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_promo_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean | null
+          min_amount: number | null
+          pharmacy_id: string
+          usage_count: number | null
+          usage_limit: number | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          min_amount?: number | null
+          pharmacy_id: string
+          usage_count?: number | null
+          usage_limit?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          min_amount?: number | null
+          pharmacy_id?: string
+          usage_count?: number | null
+          usage_limit?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_promo_codes_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_sale_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          pharmacy_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          sale_id: string
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          pharmacy_id: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          sale_id: string
+          total_price?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          pharmacy_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          sale_id?: string
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_sale_items_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_sales: {
+        Row: {
+          created_at: string | null
+          customer_id: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          discount_amount: number | null
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          payment_method: string
+          payment_status: string
+          pharmacy_id: string
+          prescription_id: string | null
+          promo_code: string | null
+          staff_name: string | null
+          subtotal: number | null
+          total_amount: number
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          discount_amount?: number | null
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          payment_method?: string
+          payment_status?: string
+          pharmacy_id: string
+          prescription_id?: string | null
+          promo_code?: string | null
+          staff_name?: string | null
+          subtotal?: number | null
+          total_amount?: number
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          discount_amount?: number | null
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          payment_method?: string
+          payment_status?: string
+          pharmacy_id?: string
+          prescription_id?: string | null
+          promo_code?: string | null
+          staff_name?: string | null
+          subtotal?: number | null
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_sales_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_staff: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string
+          hire_date: string | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          pharmacy_id: string
+          phone: string | null
+          role: string
+          salary: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name: string
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          pharmacy_id: string
+          phone?: string | null
+          role?: string
+          salary?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          pharmacy_id?: string
+          phone?: string | null
+          role?: string
+          salary?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_staff_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_supplier_orders: {
+        Row: {
+          created_at: string | null
+          expected_date: string | null
+          id: string
+          items: Json | null
+          notes: string | null
+          order_number: string | null
+          pharmacy_id: string
+          received_date: string | null
+          status: string
+          supplier_id: string | null
+          total_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expected_date?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          order_number?: string | null
+          pharmacy_id: string
+          received_date?: string | null
+          status?: string
+          supplier_id?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expected_date?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          order_number?: string | null
+          pharmacy_id?: string
+          received_date?: string | null
+          status?: string
+          supplier_id?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_supplier_orders_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pharmacy_supplier_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacy_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_suppliers: {
+        Row: {
+          address: string | null
+          balance: number | null
+          contact_person: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          inn: string | null
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          pharmacy_id: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          balance?: number | null
+          contact_person?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          pharmacy_id: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          balance?: number | null
+          contact_person?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          inn?: string | null
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          pharmacy_id?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_suppliers_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "registered_pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacy_transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          pharmacy_id: string
+          reference_id: string | null
+          reference_type: string | null
+          transaction_date: string | null
+          type: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          pharmacy_id: string
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_date?: string | null
+          type?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          pharmacy_id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_date?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pharmacy_transactions_pharmacy_id_fkey"
             columns: ["pharmacy_id"]
             isOneToOne: false
             referencedRelation: "registered_pharmacies"
