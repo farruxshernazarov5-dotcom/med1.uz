@@ -806,6 +806,639 @@ export type Database = {
           },
         ]
       }
+      cosmetology_before_after: {
+        Row: {
+          after_url: string | null
+          before_url: string | null
+          center_id: string
+          client_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean | null
+          service_type: string | null
+          taken_date: string
+        }
+        Insert: {
+          after_url?: string | null
+          before_url?: string | null
+          center_id: string
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          service_type?: string | null
+          taken_date?: string
+        }
+        Update: {
+          after_url?: string | null
+          before_url?: string | null
+          center_id?: string
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          service_type?: string | null
+          taken_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_before_after_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_before_after_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_client_packages: {
+        Row: {
+          amount_paid: number | null
+          center_id: string
+          client_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          package_id: string | null
+          package_name: string
+          purchase_date: string
+          status: string
+          total_sessions: number | null
+          used_sessions: number | null
+        }
+        Insert: {
+          amount_paid?: number | null
+          center_id: string
+          client_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          package_id?: string | null
+          package_name: string
+          purchase_date?: string
+          status?: string
+          total_sessions?: number | null
+          used_sessions?: number | null
+        }
+        Update: {
+          amount_paid?: number | null
+          center_id?: string
+          client_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          package_id?: string | null
+          package_name?: string
+          purchase_date?: string
+          status?: string
+          total_sessions?: number | null
+          used_sessions?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_client_packages_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_client_packages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_client_packages_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_client_visits: {
+        Row: {
+          amount: number | null
+          center_id: string
+          client_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          service_id: string | null
+          service_name: string | null
+          staff_name: string | null
+          visit_date: string
+        }
+        Insert: {
+          amount?: number | null
+          center_id: string
+          client_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_id?: string | null
+          service_name?: string | null
+          staff_name?: string | null
+          visit_date?: string
+        }
+        Update: {
+          amount?: number | null
+          center_id?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_id?: string | null
+          service_name?: string | null
+          staff_name?: string | null
+          visit_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_client_visits_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_client_visits_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_clients: {
+        Row: {
+          allergies: string | null
+          center_id: string
+          contraindications: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          last_visit_date: string | null
+          loyalty_points: number | null
+          medical_notes: string | null
+          notes: string | null
+          phone: string
+          skin_concerns: string[] | null
+          skin_type: string | null
+          source: string | null
+          total_spent: number | null
+          updated_at: string
+          visit_count: number | null
+        }
+        Insert: {
+          allergies?: string | null
+          center_id: string
+          contraindications?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          last_visit_date?: string | null
+          loyalty_points?: number | null
+          medical_notes?: string | null
+          notes?: string | null
+          phone: string
+          skin_concerns?: string[] | null
+          skin_type?: string | null
+          source?: string | null
+          total_spent?: number | null
+          updated_at?: string
+          visit_count?: number | null
+        }
+        Update: {
+          allergies?: string | null
+          center_id?: string
+          contraindications?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          last_visit_date?: string | null
+          loyalty_points?: number | null
+          medical_notes?: string | null
+          notes?: string | null
+          phone?: string
+          skin_concerns?: string[] | null
+          skin_type?: string | null
+          source?: string | null
+          total_spent?: number | null
+          updated_at?: string
+          visit_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_clients_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_course_sessions: {
+        Row: {
+          center_id: string
+          completed_at: string | null
+          course_id: string
+          created_at: string
+          id: string
+          result_notes: string | null
+          scheduled_date: string | null
+          session_number: number
+          staff_name: string | null
+          status: string
+        }
+        Insert: {
+          center_id: string
+          completed_at?: string | null
+          course_id: string
+          created_at?: string
+          id?: string
+          result_notes?: string | null
+          scheduled_date?: string | null
+          session_number: number
+          staff_name?: string | null
+          status?: string
+        }
+        Update: {
+          center_id?: string
+          completed_at?: string | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          result_notes?: string | null
+          scheduled_date?: string | null
+          session_number?: number
+          staff_name?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_course_sessions_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_course_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_treatment_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_documents: {
+        Row: {
+          center_id: string
+          client_id: string | null
+          created_at: string
+          doc_type: string
+          file_name: string
+          file_url: string
+          id: string
+          notes: string | null
+          signed_at: string | null
+        }
+        Insert: {
+          center_id: string
+          client_id?: string | null
+          created_at?: string
+          doc_type?: string
+          file_name: string
+          file_url: string
+          id?: string
+          notes?: string | null
+          signed_at?: string | null
+        }
+        Update: {
+          center_id?: string
+          client_id?: string | null
+          created_at?: string
+          doc_type?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          notes?: string | null
+          signed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_documents_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_feedback: {
+        Row: {
+          center_id: string
+          client_id: string | null
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          reply: string | null
+          service_name: string | null
+          staff_name: string | null
+          status: string | null
+        }
+        Insert: {
+          center_id: string
+          client_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          reply?: string | null
+          service_name?: string | null
+          staff_name?: string | null
+          status?: string | null
+        }
+        Update: {
+          center_id?: string
+          client_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          reply?: string | null
+          service_name?: string | null
+          staff_name?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_feedback_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_feedback_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_inventory: {
+        Row: {
+          brand: string | null
+          category: string | null
+          center_id: string
+          created_at: string
+          expiry_date: string | null
+          id: string
+          is_active: boolean | null
+          min_quantity: number | null
+          name: string
+          notes: string | null
+          purchase_price: number | null
+          quantity: number
+          sell_price: number | null
+          supplier: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          center_id: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          min_quantity?: number | null
+          name: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          center_id?: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          min_quantity?: number | null
+          name?: string
+          notes?: string | null
+          purchase_price?: number | null
+          quantity?: number
+          sell_price?: number | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_inventory_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_marketing_campaigns: {
+        Row: {
+          center_id: string
+          channel: string
+          created_at: string
+          id: string
+          message: string
+          name: string
+          recipients_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          sent_count: number | null
+          status: string
+          target_segment: string | null
+        }
+        Insert: {
+          center_id: string
+          channel?: string
+          created_at?: string
+          id?: string
+          message: string
+          name: string
+          recipients_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+          target_segment?: string | null
+        }
+        Update: {
+          center_id?: string
+          channel?: string
+          created_at?: string
+          id?: string
+          message?: string
+          name?: string
+          recipients_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+          target_segment?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_marketing_campaigns_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_notifications: {
+        Row: {
+          center_id: string
+          client_id: string | null
+          created_at: string
+          id: string
+          message: string | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          center_id: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          title: string
+          type?: string
+        }
+        Update: {
+          center_id?: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_notifications_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_notifications_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_packages: {
+        Row: {
+          center_id: string
+          created_at: string
+          description: string | null
+          discount_percent: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number
+          services_included: string[] | null
+          total_sessions: number | null
+          validity_days: number | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number
+          services_included?: string[] | null
+          total_sessions?: number | null
+          validity_days?: number | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          services_included?: string[] | null
+          total_sessions?: number | null
+          validity_days?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_packages_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cosmetology_photos: {
         Row: {
           caption: string | null
@@ -834,6 +1467,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "cosmetology_photos_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_promo_codes: {
+        Row: {
+          center_id: string
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          used_count: number | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          center_id: string
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          used_count?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          center_id?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          used_count?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_promo_codes_center_id_fkey"
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_cosmetology"
@@ -881,6 +1567,206 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_staff: {
+        Row: {
+          center_id: string
+          commission_percent: number | null
+          created_at: string
+          email: string | null
+          experience_years: number | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          phone: string | null
+          role: string
+          salary: number | null
+          schedule: string | null
+          specialization: string | null
+          updated_at: string
+        }
+        Insert: {
+          center_id: string
+          commission_percent?: number | null
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          phone?: string | null
+          role?: string
+          salary?: number | null
+          schedule?: string | null
+          specialization?: string | null
+          updated_at?: string
+        }
+        Update: {
+          center_id?: string
+          commission_percent?: number | null
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          phone?: string | null
+          role?: string
+          salary?: number | null
+          schedule?: string | null
+          specialization?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_staff_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_transactions: {
+        Row: {
+          amount: number
+          category: string
+          center_id: string
+          client_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          invoice_number: string | null
+          payment_method: string | null
+          reference_id: string | null
+          reference_type: string | null
+          status: string
+          transaction_date: string
+          type: string
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          center_id: string
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_number?: string | null
+          payment_method?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string
+          transaction_date?: string
+          type?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          center_id?: string
+          client_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          invoice_number?: string | null
+          payment_method?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string
+          transaction_date?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_transactions_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_transactions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_treatment_courses: {
+        Row: {
+          center_id: string
+          client_id: string
+          completed_sessions: number | null
+          course_name: string
+          created_at: string
+          expected_end_date: string | null
+          id: string
+          notes: string | null
+          paid_amount: number | null
+          service_type: string | null
+          staff_name: string | null
+          start_date: string | null
+          status: string
+          total_price: number | null
+          total_sessions: number
+          updated_at: string
+        }
+        Insert: {
+          center_id: string
+          client_id: string
+          completed_sessions?: number | null
+          course_name: string
+          created_at?: string
+          expected_end_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          service_type?: string | null
+          staff_name?: string | null
+          start_date?: string | null
+          status?: string
+          total_price?: number | null
+          total_sessions?: number
+          updated_at?: string
+        }
+        Update: {
+          center_id?: string
+          client_id?: string
+          completed_sessions?: number | null
+          course_name?: string
+          created_at?: string
+          expected_end_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          service_type?: string | null
+          staff_name?: string | null
+          start_date?: string | null
+          status?: string
+          total_price?: number | null
+          total_sessions?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_treatment_courses_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_treatment_courses_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
             referencedColumns: ["id"]
           },
         ]
