@@ -12,11 +12,19 @@ import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save,
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
-  Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings
+  Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
+  LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
+import DocOverview from "@/components/doctor/hms/DocOverview";
+import DocPatients from "@/components/doctor/hms/DocPatients";
+import DocAppointments from "@/components/doctor/hms/DocAppointments";
+import DocRecords from "@/components/doctor/hms/DocRecords";
+import DocLab from "@/components/doctor/hms/DocLab";
+import DocPlans from "@/components/doctor/hms/DocPlans";
+import DocFiles from "@/components/doctor/hms/DocFiles";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
@@ -40,7 +48,7 @@ const DoctorDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
-  const [tab, setTab] = useState("profile");
+  const [tab, setTab] = useState("overview");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -141,8 +149,15 @@ const DoctorDashboard = () => {
   }
 
   const sidebarItems: SidebarItem[] = [
+    { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard },
+    { id: "patients", label: "Bemorlar", icon: Users },
+    { id: "appointments", label: "Qabullar", icon: Calendar },
+    { id: "records", label: "Tibbiy yozuvlar", icon: FileText },
+    { id: "lab", label: "Laboratoriya", icon: FlaskConical },
+    { id: "plans", label: "Davolash kurslari", icon: Activity },
+    { id: "files", label: "Fayllar / Imaging", icon: ImageIcon },
     { id: "profile", label: "Profil", icon: User },
-    { id: "schedule", label: "Jadval", icon: Calendar },
+    { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "subscription", label: "Obuna", icon: Crown },
@@ -159,6 +174,14 @@ const DoctorDashboard = () => {
       activeTab={tab}
       onTabChange={setTab}
     >
+      {tab === "overview" && <DocOverview doctorId={doctor.id} />}
+      {tab === "patients" && <DocPatients doctorId={doctor.id} />}
+      {tab === "appointments" && <DocAppointments doctorId={doctor.id} />}
+      {tab === "records" && <DocRecords doctorId={doctor.id} />}
+      {tab === "lab" && <DocLab doctorId={doctor.id} />}
+      {tab === "plans" && <DocPlans doctorId={doctor.id} />}
+      {tab === "files" && <DocFiles doctorId={doctor.id} />}
+
       {tab === "profile" && (
         <div className="space-y-6">
           {/* Stats */}

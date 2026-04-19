@@ -3456,6 +3456,317 @@ export type Database = {
           },
         ]
       }
+      doctor_files: {
+        Row: {
+          category: string | null
+          created_at: string
+          doctor_id: string
+          file_name: string
+          file_type: string
+          file_url: string
+          id: string
+          notes: string | null
+          patient_id: string
+          taken_date: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          doctor_id: string
+          file_name: string
+          file_type?: string
+          file_url: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          taken_date?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          doctor_id?: string
+          file_name?: string
+          file_type?: string
+          file_url?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          taken_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_files_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_files_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_lab_orders: {
+        Row: {
+          clinical_info: string | null
+          completed_at: string | null
+          created_at: string
+          diag_center_id: string | null
+          doctor_id: string
+          id: string
+          ordered_at: string
+          patient_id: string
+          result_notes: string | null
+          result_url: string | null
+          status: string
+          test_types: string[]
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          clinical_info?: string | null
+          completed_at?: string | null
+          created_at?: string
+          diag_center_id?: string | null
+          doctor_id: string
+          id?: string
+          ordered_at?: string
+          patient_id: string
+          result_notes?: string | null
+          result_url?: string | null
+          status?: string
+          test_types?: string[]
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          clinical_info?: string | null
+          completed_at?: string | null
+          created_at?: string
+          diag_center_id?: string | null
+          doctor_id?: string
+          id?: string
+          ordered_at?: string
+          patient_id?: string
+          result_notes?: string | null
+          result_url?: string | null
+          status?: string
+          test_types?: string[]
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_lab_orders_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_lab_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_patients: {
+        Row: {
+          allergies: string | null
+          appointment_id: string | null
+          blood_group: string | null
+          chronic_conditions: string | null
+          created_at: string
+          date_of_birth: string | null
+          doctor_id: string
+          email: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          last_visit_date: string | null
+          notes: string | null
+          patient_user_id: string | null
+          phone: string
+          source: string
+          updated_at: string
+          visit_count: number | null
+        }
+        Insert: {
+          allergies?: string | null
+          appointment_id?: string | null
+          blood_group?: string | null
+          chronic_conditions?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          doctor_id: string
+          email?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_visit_date?: string | null
+          notes?: string | null
+          patient_user_id?: string | null
+          phone: string
+          source?: string
+          updated_at?: string
+          visit_count?: number | null
+        }
+        Update: {
+          allergies?: string | null
+          appointment_id?: string | null
+          blood_group?: string | null
+          chronic_conditions?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          doctor_id?: string
+          email?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_visit_date?: string | null
+          notes?: string | null
+          patient_user_id?: string | null
+          phone?: string
+          source?: string
+          updated_at?: string
+          visit_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_patients_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_records: {
+        Row: {
+          created_at: string
+          diagnosis: string
+          doctor_id: string
+          icd_code: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          record_date: string
+          symptoms: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          diagnosis: string
+          doctor_id: string
+          icd_code?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          record_date?: string
+          symptoms?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string
+          doctor_id?: string
+          icd_code?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          record_date?: string
+          symptoms?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_records_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_treatment_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          diagnosis: string
+          doctor_id: string
+          expected_end_date: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          progress_percent: number | null
+          start_date: string | null
+          status: string
+          steps: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          diagnosis: string
+          doctor_id: string
+          expected_end_date?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          progress_percent?: number | null
+          start_date?: string | null
+          status?: string
+          steps?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          diagnosis?: string
+          doctor_id?: string
+          expected_end_date?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          progress_percent?: number | null
+          start_date?: string | null
+          status?: string
+          steps?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_treatment_plans_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_treatment_plans_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           address: string | null
