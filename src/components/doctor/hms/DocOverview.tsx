@@ -19,22 +19,16 @@ const DocOverview = ({ doctorId }: Props) => {
   useEffect(() => {
     (async () => {
       const today = new Date().toISOString().split("T")[0];
-      const [p, a, l, pl, r, pr] = await Promise.all([
-        supabase.from("doctor_patients").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("appointment_date", today),
-        supabase.from("doctor_lab_orders").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("status", "pending"),
-        supabase.from("doctor_treatment_plans").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("status", "active"),
-        supabase.from("doctor_records").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId),
-        supabase.from("hms_prescriptions").select("id", { count: "exact", head: true } as any).eq("doctor_id" as any, doctorId),
+      const countOf = async (q: any) => (await q).count || 0;
+      const [patients, todayAppts, pendingLabs, activePlans, records, prescriptions] = await Promise.all([
+        countOf(supabase.from("doctor_patients").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId)),
+        countOf(supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("appointment_date", today)),
+        countOf(supabase.from("doctor_lab_orders").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("status", "pending")),
+        countOf(supabase.from("doctor_treatment_plans").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("status", "active")),
+        countOf(supabase.from("doctor_records").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId)),
+        countOf((supabase.from("hms_prescriptions") as any).select("id", { count: "exact", head: true }).eq("doctor_id", doctorId)),
       ]);
-      setStats({
-        patients: p.count || 0,
-        todayAppts: a.count || 0,
-        pendingLabs: l.count || 0,
-        activePlans: pl.count || 0,
-        records: r.count || 0,
-        prescriptions: pr.count || 0,
-      });
+      setStats({ patients, todayAppts, pendingLabs, activePlans, records, prescriptions });
     })();
   }, [doctorId]);
 
