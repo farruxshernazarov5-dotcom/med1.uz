@@ -12,11 +12,19 @@ import { cn } from "@/lib/utils";
 import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save,
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
-  Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings
+  Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
+  LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
+import DocOverview from "@/components/doctor/hms/DocOverview";
+import DocPatients from "@/components/doctor/hms/DocPatients";
+import DocAppointments from "@/components/doctor/hms/DocAppointments";
+import DocRecords from "@/components/doctor/hms/DocRecords";
+import DocLab from "@/components/doctor/hms/DocLab";
+import DocPlans from "@/components/doctor/hms/DocPlans";
+import DocFiles from "@/components/doctor/hms/DocFiles";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
