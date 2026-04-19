@@ -18,7 +18,7 @@ const DocRecords = ({ doctorId }: Props) => {
 
   const load = async () => {
     const [r, p] = await Promise.all([
-      supabase.from("medical_records").select("*").eq("doctor_id", doctorId).order("created_at", { ascending: false }).limit(50),
+      supabase.from("doctor_records").select("*, doctor_patients(full_name)").eq("doctor_id", doctorId).order("created_at", { ascending: false }).limit(50),
       supabase.from("doctor_patients").select("id, full_name").eq("doctor_id", doctorId),
     ]);
     setRecords(r.data || []); setPatients(p.data || []);
@@ -29,10 +29,9 @@ const DocRecords = ({ doctorId }: Props) => {
     if (!form.patient_id || !form.diagnosis.trim()) {
       toast({ title: "Bemor va tashxis majburiy", variant: "destructive" }); return;
     }
-    const patient = patients.find(p => p.id === form.patient_id);
-    const { error } = await supabase.from("medical_records").insert({
+    const { error } = await supabase.from("doctor_records").insert({
       doctor_id: doctorId,
-      patient_name: patient?.full_name || "",
+      patient_id: form.patient_id,
       diagnosis: form.diagnosis,
       symptoms: form.symptoms,
       icd_code: form.icd_code,
@@ -65,7 +64,7 @@ const DocRecords = ({ doctorId }: Props) => {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="font-semibold text-foreground">{r.diagnosis}</p>
-                  <p className="text-xs text-muted-foreground">{r.patient_name}</p>
+                  <p className="text-xs text-muted-foreground">{r.doctor_patients?.full_name || "—"}</p>
                 </div>
                 <span className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(r.record_date || r.created_at).toLocaleDateString("uz-UZ")}</span>
               </div>

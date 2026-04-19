@@ -24,8 +24,8 @@ const DocOverview = ({ doctorId }: Props) => {
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("appointment_date", today),
         supabase.from("doctor_lab_orders").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("status", "pending"),
         supabase.from("doctor_treatment_plans").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId).eq("status", "active"),
-        supabase.from("medical_records").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId),
-        supabase.from("hms_prescriptions").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId),
+        supabase.from("doctor_records").select("id", { count: "exact", head: true }).eq("doctor_id", doctorId),
+        supabase.from("hms_prescriptions").select("id", { count: "exact", head: true } as any).eq("doctor_id" as any, doctorId),
       ]);
       setStats({
         patients: p.count || 0,
