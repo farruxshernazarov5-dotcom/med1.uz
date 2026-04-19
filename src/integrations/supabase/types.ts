@@ -3576,6 +3576,53 @@ export type Database = {
           },
         ]
       }
+      doctor_leads: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          full_name: string
+          id: string
+          message: string | null
+          phone: string
+          reply: string | null
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          full_name: string
+          id?: string
+          message?: string | null
+          phone: string
+          reply?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          full_name?: string
+          id?: string
+          message?: string | null
+          phone?: string
+          reply?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_leads_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_patients: {
         Row: {
           allergies: string | null
@@ -3643,6 +3690,147 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "doctor_patients_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_posts: {
+        Row: {
+          content: string | null
+          created_at: string
+          doctor_id: string
+          id: string
+          is_published: boolean
+          media_type: string
+          media_url: string | null
+          post_type: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          doctor_id: string
+          id?: string
+          is_published?: boolean
+          media_type?: string
+          media_url?: string | null
+          post_type?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          is_published?: boolean
+          media_type?: string
+          media_url?: string | null
+          post_type?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_posts_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_profile_views: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          is_click: boolean
+          source: string | null
+          view_date: string
+          visitor_hash: string | null
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          is_click?: boolean
+          source?: string | null
+          view_date?: string
+          visitor_hash?: string | null
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          is_click?: boolean
+          source?: string | null
+          view_date?: string
+          visitor_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_profile_views_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_promos: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          doctor_id: string
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          doctor_id: string
+          id?: string
+          is_active?: boolean
+          title: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          doctor_id?: string
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_promos_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
