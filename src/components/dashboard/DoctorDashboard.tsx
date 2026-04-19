@@ -48,7 +48,7 @@ const DoctorDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
-  const [tab, setTab] = useState("profile");
+  const [tab, setTab] = useState("overview");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -149,8 +149,15 @@ const DoctorDashboard = () => {
   }
 
   const sidebarItems: SidebarItem[] = [
+    { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard },
+    { id: "patients", label: "Bemorlar", icon: Users },
+    { id: "appointments", label: "Qabullar", icon: Calendar },
+    { id: "records", label: "Tibbiy yozuvlar", icon: FileText },
+    { id: "lab", label: "Laboratoriya", icon: FlaskConical },
+    { id: "plans", label: "Davolash kurslari", icon: Activity },
+    { id: "files", label: "Fayllar / Imaging", icon: ImageIcon },
     { id: "profile", label: "Profil", icon: User },
-    { id: "schedule", label: "Jadval", icon: Calendar },
+    { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "subscription", label: "Obuna", icon: Crown },
@@ -167,6 +174,14 @@ const DoctorDashboard = () => {
       activeTab={tab}
       onTabChange={setTab}
     >
+      {tab === "overview" && <DocOverview doctorId={doctor.id} />}
+      {tab === "patients" && <DocPatients doctorId={doctor.id} />}
+      {tab === "appointments" && <DocAppointments doctorId={doctor.id} />}
+      {tab === "records" && <DocRecords doctorId={doctor.id} />}
+      {tab === "lab" && <DocLab doctorId={doctor.id} />}
+      {tab === "plans" && <DocPlans doctorId={doctor.id} />}
+      {tab === "files" && <DocFiles doctorId={doctor.id} />}
+
       {tab === "profile" && (
         <div className="space-y-6">
           {/* Stats */}
