@@ -13,7 +13,8 @@ import {
   Stethoscope, Camera, Award, Clock, Plus, X, Save,
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
-  LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon
+  LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
+  Megaphone, Gift, Inbox, BarChart3
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -25,6 +26,10 @@ import DocRecords from "@/components/doctor/hms/DocRecords";
 import DocLab from "@/components/doctor/hms/DocLab";
 import DocPlans from "@/components/doctor/hms/DocPlans";
 import DocFiles from "@/components/doctor/hms/DocFiles";
+import DocBrandPosts from "@/components/doctor/hms/DocBrandPosts";
+import DocBrandPromos from "@/components/doctor/hms/DocBrandPromos";
+import DocBrandLeads from "@/components/doctor/hms/DocBrandLeads";
+import DocBrandAnalytics from "@/components/doctor/hms/DocBrandAnalytics";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
@@ -156,6 +161,10 @@ const DoctorDashboard = () => {
     { id: "lab", label: "Laboratoriya", icon: FlaskConical },
     { id: "plans", label: "Davolash kurslari", icon: Activity },
     { id: "files", label: "Fayllar / Imaging", icon: ImageIcon },
+    { id: "posts", label: "Postlar / Kontent", icon: Megaphone },
+    { id: "promos", label: "Aksiyalar", icon: Gift },
+    { id: "leads", label: "Bemor xabarlari", icon: Inbox },
+    { id: "analytics", label: "Analitika", icon: BarChart3 },
     { id: "profile", label: "Profil", icon: User },
     { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
@@ -181,6 +190,10 @@ const DoctorDashboard = () => {
       {tab === "lab" && <DocLab doctorId={doctor.id} />}
       {tab === "plans" && <DocPlans doctorId={doctor.id} />}
       {tab === "files" && <DocFiles doctorId={doctor.id} />}
+      {tab === "posts" && <DocBrandPosts doctorId={doctor.id} />}
+      {tab === "promos" && <DocBrandPromos doctorId={doctor.id} />}
+      {tab === "leads" && <DocBrandLeads doctorId={doctor.id} />}
+      {tab === "analytics" && <DocBrandAnalytics doctorId={doctor.id} />}
 
       {tab === "profile" && (
         <div className="space-y-6">
