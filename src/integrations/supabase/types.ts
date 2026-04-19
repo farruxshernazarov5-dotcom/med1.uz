@@ -3650,6 +3650,60 @@ export type Database = {
           },
         ]
       }
+      doctor_records: {
+        Row: {
+          created_at: string
+          diagnosis: string
+          doctor_id: string
+          icd_code: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          record_date: string
+          symptoms: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          diagnosis: string
+          doctor_id: string
+          icd_code?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          record_date?: string
+          symptoms?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string
+          doctor_id?: string
+          icd_code?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          record_date?: string
+          symptoms?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_records_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_treatment_plans: {
         Row: {
           created_at: string
