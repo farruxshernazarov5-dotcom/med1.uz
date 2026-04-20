@@ -15,7 +15,7 @@ const PatientFiles = () => {
 
   const load = async () => {
     if (!user) return;
-    const { data } = await supabase.from("user_documents").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    const { data } = await (supabase as any).from("patient_documents").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
     setFiles(data || []);
   };
 
@@ -31,7 +31,7 @@ const PatientFiles = () => {
       const { error: upErr } = await supabase.storage.from("medical-documents").upload(path, file);
       if (upErr) throw upErr;
       const { data: { publicUrl } } = supabase.storage.from("medical-documents").getPublicUrl(path);
-      const { error } = await supabase.from("user_documents").insert({
+      const { error } = await (supabase as any).from("patient_documents").insert({
         user_id: user.id,
         title: file.name,
         category,
@@ -51,7 +51,7 @@ const PatientFiles = () => {
 
   const remove = async (id: string) => {
     if (!confirm("Faylni o'chirish?")) return;
-    await supabase.from("user_documents").delete().eq("id", id);
+    await (supabase as any).from("patient_documents").delete().eq("id", id);
     toast({ title: "O'chirildi" });
     load();
   };

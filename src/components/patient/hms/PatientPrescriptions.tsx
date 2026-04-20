@@ -14,10 +14,11 @@ const PatientPrescriptions = () => {
   const load = async () => {
     if (!user) return;
     setLoading(true);
+    const sb = supabase as any;
     const [hms, mat, ph] = await Promise.all([
-      (supabase.from("hms_prescriptions") as any).select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
-      supabase.from("maternity_prescriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
-      supabase.from("pharmacy_prescriptions").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("hms_prescriptions").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("maternity_prescriptions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("pharmacy_prescriptions").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
     ]);
     const combined = [
       ...(hms.data || []).map((r: any) => ({ ...r, _src: "Klinika" })),
@@ -29,7 +30,7 @@ const PatientPrescriptions = () => {
     // hms_prescription_items uchun
     const hmsIds = (hms.data || []).map((r: any) => r.id);
     if (hmsIds.length > 0) {
-      const { data: itemRows } = await (supabase.from("hms_prescription_items") as any).select("*").in("prescription_id", hmsIds);
+      const { data: itemRows } = await sb.from("hms_prescription_items").select("*").in("prescription_id", hmsIds);
       const grouped: Record<string, any[]> = {};
       (itemRows || []).forEach((it: any) => {
         if (!grouped[it.prescription_id]) grouped[it.prescription_id] = [];

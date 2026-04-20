@@ -25,17 +25,18 @@ const PatientOverview = ({ onNavigate }: { onNavigate?: (tab: string) => void })
   useEffect(() => {
     if (!user) return;
     (async () => {
+      const sb = supabase as any;
       const today = new Date().toISOString().split("T")[0];
       const countOf = async (q: any) => (await q).count || 0;
       const [upc, results, presc, family, logs, files, upcomingList, lastLog] = await Promise.all([
-        countOf(supabase.from("appointments").select("id", { count: "exact", head: true }).eq("patient_id", user.id).gte("appointment_date", today).in("status", ["pending", "confirmed"])),
-        countOf((supabase.from("hms_lab_results") as any).select("id", { count: "exact", head: true }).eq("patient_id", user.id).gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString())),
-        countOf((supabase.from("hms_prescriptions") as any).select("id", { count: "exact", head: true }).eq("patient_id", user.id)),
-        countOf(supabase.from("family_members").select("id", { count: "exact", head: true }).eq("user_id", user.id)),
-        countOf(supabase.from("patient_health_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id)),
-        countOf(supabase.from("user_documents").select("id", { count: "exact", head: true }).eq("user_id", user.id)),
-        supabase.from("appointments").select("*").eq("patient_id", user.id).gte("appointment_date", today).in("status", ["pending", "confirmed"]).order("appointment_date").limit(3),
-        supabase.from("patient_health_logs").select("*").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
+        countOf(sb.from("appointments").select("id", { count: "exact", head: true }).eq("patient_id", user.id).gte("appointment_date", today).in("status", ["pending", "confirmed"])),
+        countOf(sb.from("hms_lab_results").select("id", { count: "exact", head: true }).eq("patient_id", user.id).gte("created_at", new Date(Date.now() - 7 * 86400000).toISOString())),
+        countOf(sb.from("hms_prescriptions").select("id", { count: "exact", head: true }).eq("patient_id", user.id)),
+        countOf(sb.from("family_members").select("id", { count: "exact", head: true }).eq("user_id", user.id)),
+        countOf(sb.from("patient_health_logs").select("id", { count: "exact", head: true }).eq("user_id", user.id)),
+        countOf(sb.from("patient_documents").select("id", { count: "exact", head: true }).eq("user_id", user.id)),
+        sb.from("appointments").select("*").eq("patient_id", user.id).gte("appointment_date", today).in("status", ["pending", "confirmed"]).order("appointment_date").limit(3),
+        sb.from("patient_health_logs").select("*").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
       ]);
       setStats({ upcomingAppts: upc, newResults: results, prescriptions: presc, family, healthLogs: logs, files });
       setUpcoming(upcomingList.data || []);

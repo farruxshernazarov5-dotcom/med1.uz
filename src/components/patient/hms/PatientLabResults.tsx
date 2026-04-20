@@ -15,10 +15,11 @@ const PatientLabResults = () => {
     if (!user) return;
     setLoading(true);
     // HMS + Diagnostics + Maternity natijalarini agreggatsiya
+    const sb = supabase as any;
     const [hms, diag, mat] = await Promise.all([
-      (supabase.from("hms_lab_results") as any).select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
-      supabase.from("diagnostics_lab_results").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
-      supabase.from("maternity_lab_results").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("hms_lab_results").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("diagnostics_lab_results").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("maternity_lab_results").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
     ]);
     const combined = [
       ...(hms.data || []).map((r: any) => ({ ...r, _src: "HMS" })),
