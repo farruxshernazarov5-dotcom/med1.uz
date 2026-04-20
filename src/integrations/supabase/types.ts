@@ -4207,6 +4207,57 @@ export type Database = {
         }
         Relationships: []
       }
+      family_members: {
+        Row: {
+          allergies: string | null
+          avatar_url: string | null
+          blood_group: string | null
+          chronic_conditions: string | null
+          created_at: string
+          date_of_birth: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          notes: string | null
+          phone: string | null
+          relationship: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allergies?: string | null
+          avatar_url?: string | null
+          blood_group?: string | null
+          chronic_conditions?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          relationship?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allergies?: string | null
+          avatar_url?: string | null
+          blood_group?: string | null
+          chronic_conditions?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          relationship?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorite_clinics: {
         Row: {
           clinic_id: string
@@ -7887,6 +7938,65 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      patient_health_logs: {
+        Row: {
+          created_at: string
+          diastolic: number | null
+          family_member_id: string | null
+          glucose: number | null
+          heart_rate: number | null
+          height_cm: number | null
+          id: string
+          log_date: string
+          notes: string | null
+          spo2: number | null
+          systolic: number | null
+          temperature: number | null
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          created_at?: string
+          diastolic?: number | null
+          family_member_id?: string | null
+          glucose?: number | null
+          heart_rate?: number | null
+          height_cm?: number | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          spo2?: number | null
+          systolic?: number | null
+          temperature?: number | null
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          created_at?: string
+          diastolic?: number | null
+          family_member_id?: string | null
+          glucose?: number | null
+          heart_rate?: number | null
+          height_cm?: number | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          spo2?: number | null
+          systolic?: number | null
+          temperature?: number | null
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_health_logs_family_member_id_fkey"
+            columns: ["family_member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pharmacy_customers: {
         Row: {
