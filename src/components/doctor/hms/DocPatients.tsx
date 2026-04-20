@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Search, Pencil, Trash2, Phone, User, Calendar } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Phone, User, Calendar, Eye } from "lucide-react";
+import DocPatient360 from "./DocPatient360";
 
 interface Props { doctorId: string }
 
@@ -16,6 +17,7 @@ const DocPatients = ({ doctorId }: Props) => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
+  const [viewing, setViewing] = useState<any>(null);
   const [form, setForm] = useState({
     full_name: "", phone: "", email: "", date_of_birth: "", gender: "unspecified",
     blood_group: "", allergies: "", chronic_conditions: "", notes: "",
@@ -26,7 +28,14 @@ const DocPatients = ({ doctorId }: Props) => {
       .select("*").eq("doctor_id", doctorId).order("created_at", { ascending: false });
     setPatients(data || []);
   };
-  useEffect(() => { load(); }, [doctorId]);
+  useEffect(() => {
+    load();
+    const ch = supabase.channel(`doc-patients-${doctorId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "doctor_patients", filter: `doctor_id=eq.${doctorId}` },
+        () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [doctorId]);
 
   const openNew = () => {
     setEditing(null);
@@ -100,9 +109,12 @@ const DocPatients = ({ doctorId }: Props) => {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                   <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{p.phone}</span>
                   {p.date_of_birth && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(p.date_of_birth).toLocaleDateString("uz-UZ")}</span>}
-                  <span>Tashriflar: {p.visit_count || 0}</span>
+                  <span>Tashriflar: {p.total_visits || 0}</span>
+                  <span>Analiz: {p.total_lab_orders || 0}</span>
+                  <span>Yozuv: {p.total_records || 0}</span>
                 </div>
               </div>
+              <Button size="sm" variant="outline" onClick={() => setViewing(p)}><Eye className="w-3 h-3" /></Button>
               <Button size="sm" variant="outline" onClick={() => openEdit(p)}><Pencil className="w-3 h-3" /></Button>
               <Button size="sm" variant="ghost" className="text-destructive" onClick={() => remove(p.id)}><Trash2 className="w-3 h-3" /></Button>
             </div>
@@ -148,6 +160,8 @@ const DocPatients = ({ doctorId }: Props) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <DocPatient360 patient={viewing} doctorId={doctorId} open={!!viewing} onClose={() => setViewing(null)} />
     </div>
   );
 };

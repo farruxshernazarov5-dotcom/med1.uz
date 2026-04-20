@@ -37,19 +37,11 @@ const DocAppointments = ({ doctorId }: Props) => {
     toast({ title: "Status yangilandi" });
   };
 
-  // Auto-add to doctor_patients on completion
+  // DB trigger avtomatik doctor_patients ga sinxronlaydi
   const completeAndAdd = async (appt: any) => {
-    await supabase.from("appointments").update({ status: "completed" }).eq("id", appt.id);
-    await supabase.from("doctor_patients").upsert({
-      doctor_id: doctorId,
-      patient_user_id: appt.patient_id,
-      full_name: appt.patient_name,
-      phone: appt.patient_phone,
-      source: "appointment",
-      appointment_id: appt.id,
-      last_visit_date: new Date().toISOString(),
-    }, { onConflict: "doctor_id,phone", ignoreDuplicates: false });
-    toast({ title: "✅ Tugallandi va bemorlar ro'yxatiga qo'shildi" });
+    const { error } = await supabase.from("appointments").update({ status: "completed" }).eq("id", appt.id);
+    if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+    else toast({ title: "✅ Tugallandi va bemorlar ro'yxatiga qo'shildi" });
   };
 
   return (
