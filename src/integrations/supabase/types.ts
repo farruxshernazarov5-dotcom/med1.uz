@@ -3642,6 +3642,10 @@ export type Database = {
           patient_user_id: string | null
           phone: string
           source: string
+          total_lab_orders: number
+          total_prescriptions: number
+          total_records: number
+          total_visits: number
           updated_at: string
           visit_count: number | null
         }
@@ -3663,6 +3667,10 @@ export type Database = {
           patient_user_id?: string | null
           phone: string
           source?: string
+          total_lab_orders?: number
+          total_prescriptions?: number
+          total_records?: number
+          total_visits?: number
           updated_at?: string
           visit_count?: number | null
         }
@@ -3684,6 +3692,10 @@ export type Database = {
           patient_user_id?: string | null
           phone?: string
           source?: string
+          total_lab_orders?: number
+          total_prescriptions?: number
+          total_records?: number
+          total_visits?: number
           updated_at?: string
           visit_count?: number | null
         }
