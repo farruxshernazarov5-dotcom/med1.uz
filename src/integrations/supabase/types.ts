@@ -7939,6 +7939,53 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_documents: {
+        Row: {
+          category: string
+          created_at: string
+          family_member_id: string | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          notes: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          family_member_id?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          family_member_id?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_documents_family_member_id_fkey"
+            columns: ["family_member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_health_logs: {
         Row: {
           created_at: string
