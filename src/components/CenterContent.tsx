@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { Building2, Wrench, Activity, Pill, Droplets, Baby, Megaphone, Brain, Bot, FileText, HeartPulse, ArrowRight, Sparkles } from "lucide-react";
 import AppointmentBooking from "@/components/AppointmentBooking";
 import ServiceRegistration from "@/components/ServiceRegistration";
+import YandexRTB from "@/components/ads/YandexRTB";
+import QRPayButton from "@/components/payments/QRPayButton";
 
 const quickLinks = [
   { icon: Building2, label: "Klinikalar", href: "/clinics", gradient: "from-primary to-secondary" },
@@ -83,20 +85,20 @@ const CenterContent = () => {
         </div>
       </div>
 
-      {/* Ad Banner */}
-      <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden">
-        <div className="bg-accent/50 px-4 py-2 border-b border-border">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Megaphone className="w-3 h-3" />
-            <span>Reklama</span>
-          </div>
+      {/* Yandex RTB — maqolalar orasi (728x90 / responsive) */}
+      <YandexRTB label="Reklama" minHeight={120} />
+
+      {/* QR To'lov — tezkor amallar */}
+      <div className="bg-gradient-to-br from-primary/5 via-card to-secondary/5 rounded-2xl border border-primary/20 shadow-card p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="flex-1">
+          <h3 className="font-heading font-bold text-foreground text-sm mb-1">
+            Tez to'lov — QR-kod orqali
+          </h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Click, Payme yoki Uzum ilovasi bilan QR skanerlab tibbiy xizmatlar uchun to'lang.
+          </p>
         </div>
-        <div className="h-[120px] flex items-center justify-center bg-muted/30">
-          <div className="text-center">
-            <p className="text-sm font-heading font-semibold text-foreground mb-1">Reklama banner</p>
-            <p className="text-xs text-muted-foreground">728×90</p>
-          </div>
-        </div>
+        <QRPayButton label="QR to'lov" size="sm" />
       </div>
     </div>
   );
