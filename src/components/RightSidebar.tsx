@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Info, Briefcase, Phone, BookOpen } from "lucide-react";
 import AdBanner from "@/components/AdBanner";
+import YandexRTB from "@/components/ads/YandexRTB";
 
 const rightMenuItems = [
   { icon: Info, label: "Biz haqimizda", href: "/about" },
@@ -34,6 +35,9 @@ const RightSidebar = () => {
 
       {/* Ad Banner */}
       <AdBanner variant={0} />
+
+      {/* Yandex RTB — sidebar (300x250) */}
+      <YandexRTB label="Reklama" minHeight={250} />
 
       {/* Second Ad */}
       <AdBanner variant={1} />
