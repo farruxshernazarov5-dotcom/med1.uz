@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon } from "lucide-react";
+import { LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon, Users, Bot, LineChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,19 +20,25 @@ import PatientOverview from "@/components/patient/hms/PatientOverview";
 import PatientLabResults from "@/components/patient/hms/PatientLabResults";
 import PatientPrescriptions from "@/components/patient/hms/PatientPrescriptions";
 import PatientFiles from "@/components/patient/hms/PatientFiles";
+import PatientHealthTracking from "@/components/patient/hms/PatientHealthTracking";
+import PatientFamily from "@/components/patient/hms/PatientFamily";
+import PatientAIAssistant from "@/components/patient/hms/PatientAIAssistant";
 
 const tabs = [
   { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard },
+  { id: "ai-assistant", label: "AI Yordamchi", icon: Bot },
   { id: "appointments", label: "Qabullar", icon: Calendar },
   { id: "lab", label: "Analizlar", icon: FlaskConical },
   { id: "prescriptions", label: "Retseptlar", icon: Pill },
   { id: "files", label: "Fayllar", icon: ImageIcon },
+  { id: "tracking", label: "Monitoring", icon: LineChart },
+  { id: "family", label: "Oila", icon: Users },
   { id: "workflow", label: "QR/Workflow", icon: QrCode },
   { id: "nearby", label: "Yaqin xizmatlar", icon: MapPin },
   { id: "history", label: "Tibbiy tarix", icon: FolderOpen },
   { id: "ai-history", label: "AI tahlillar", icon: Brain },
   { id: "documents", label: "Hujjatlar", icon: FileText },
-  { id: "health", label: "Sog'liq", icon: Activity },
+  { id: "health", label: "BMI/Bosim", icon: Activity },
   { id: "security", label: "Xavfsizlik", icon: Shield },
   { id: "reviews", label: "Sharhlar", icon: Star },
   { id: "favorites", label: "Sevimlilar", icon: Heart },
@@ -96,10 +102,13 @@ const PatientDashboard = () => {
       {/* Tab content */}
       <div className="min-h-[400px]">
         {activeTab === "overview" && <PatientOverview onNavigate={(t) => setActiveTab(t as TabId)} />}
+        {activeTab === "ai-assistant" && <PatientAIAssistant />}
         {activeTab === "appointments" && <PatientAppointments />}
         {activeTab === "lab" && <PatientLabResults />}
         {activeTab === "prescriptions" && <PatientPrescriptions />}
         {activeTab === "files" && <PatientFiles />}
+        {activeTab === "tracking" && <PatientHealthTracking />}
+        {activeTab === "family" && <PatientFamily />}
         {activeTab === "workflow" && <PatientMedicalWorkflow />}
         {activeTab === "nearby" && <PatientNearby />}
         {activeTab === "history" && <PatientMedicalHistory />}
