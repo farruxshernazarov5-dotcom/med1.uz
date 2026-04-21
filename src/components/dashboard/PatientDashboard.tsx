@@ -124,8 +124,11 @@ const PatientDashboard = () => {
         {activeTab === "security" && <PatientSecurity />}
         {activeTab === "reviews" && <PatientReviews />}
         {activeTab === "favorites" && <PatientFavorites />}
+        {activeTab === "payments" && <PatientPayments />}
+        {activeTab === "promo" && <PatientPromo />}
         {activeTab === "profile" && <PatientProfileEditor />}
         {activeTab === "notifications" && <PatientNotifications />}
+        {activeTab === "settings" && <PatientSettings />}
       </div>
     </div>
   );
