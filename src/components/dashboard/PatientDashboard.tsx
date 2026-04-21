@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon, Users, Bot, LineChart } from "lucide-react";
+import { LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon, Users, Bot, LineChart, CreditCard, Tag, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +23,9 @@ import PatientFiles from "@/components/patient/hms/PatientFiles";
 import PatientHealthTracking from "@/components/patient/hms/PatientHealthTracking";
 import PatientFamily from "@/components/patient/hms/PatientFamily";
 import PatientAIAssistant from "@/components/patient/hms/PatientAIAssistant";
+import PatientPayments from "@/components/patient/hms/PatientPayments";
+import PatientPromo from "@/components/patient/hms/PatientPromo";
+import PatientSettings from "@/components/patient/hms/PatientSettings";
 
 const tabs = [
   { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard },
