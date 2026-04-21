@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon, Users, Bot, LineChart } from "lucide-react";
+import { LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin, FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon, Users, Bot, LineChart, CreditCard, Tag, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,6 +23,9 @@ import PatientFiles from "@/components/patient/hms/PatientFiles";
 import PatientHealthTracking from "@/components/patient/hms/PatientHealthTracking";
 import PatientFamily from "@/components/patient/hms/PatientFamily";
 import PatientAIAssistant from "@/components/patient/hms/PatientAIAssistant";
+import PatientPayments from "@/components/patient/hms/PatientPayments";
+import PatientPromo from "@/components/patient/hms/PatientPromo";
+import PatientSettings from "@/components/patient/hms/PatientSettings";
 
 const tabs = [
   { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard },
@@ -42,8 +45,11 @@ const tabs = [
   { id: "security", label: "Xavfsizlik", icon: Shield },
   { id: "reviews", label: "Sharhlar", icon: Star },
   { id: "favorites", label: "Sevimlilar", icon: Heart },
+  { id: "payments", label: "To'lovlar", icon: CreditCard },
+  { id: "promo", label: "Aksiyalar", icon: Tag },
   { id: "profile", label: "Profil", icon: User },
   { id: "notifications", label: "Xabarlar", icon: Bell },
+  { id: "settings", label: "Sozlamalar", icon: Settings },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -118,8 +124,11 @@ const PatientDashboard = () => {
         {activeTab === "security" && <PatientSecurity />}
         {activeTab === "reviews" && <PatientReviews />}
         {activeTab === "favorites" && <PatientFavorites />}
+        {activeTab === "payments" && <PatientPayments />}
+        {activeTab === "promo" && <PatientPromo />}
         {activeTab === "profile" && <PatientProfileEditor />}
         {activeTab === "notifications" && <PatientNotifications />}
+        {activeTab === "settings" && <PatientSettings />}
       </div>
     </div>
   );
