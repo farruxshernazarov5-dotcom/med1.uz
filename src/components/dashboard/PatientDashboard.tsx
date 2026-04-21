@@ -45,8 +45,11 @@ const tabs = [
   { id: "security", label: "Xavfsizlik", icon: Shield },
   { id: "reviews", label: "Sharhlar", icon: Star },
   { id: "favorites", label: "Sevimlilar", icon: Heart },
+  { id: "payments", label: "To'lovlar", icon: CreditCard },
+  { id: "promo", label: "Aksiyalar", icon: Tag },
   { id: "profile", label: "Profil", icon: User },
   { id: "notifications", label: "Xabarlar", icon: Bell },
+  { id: "settings", label: "Sozlamalar", icon: Settings },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
