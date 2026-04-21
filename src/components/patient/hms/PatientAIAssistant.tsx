@@ -38,17 +38,45 @@ const PatientAIAssistant = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("ai-chat", {
-        body: {
-          messages: [
-            { role: "system", content: "Siz Med1.uz platformasining tibbiy AI yordamchisisiz. O'zbek tilida javob bering. Markdown formatdan foydalaning. Foydali, qisqa va aniq tavsiyalar bering. ENG MUHIM: har bir javob oxirida shifokor bilan maslahatlashish zarurligini eslatib turing. Hech qachon aniq tashxis qo'ymang." },
-            ...newMsgs,
-          ],
+      const { data: { session } } = await supabase.auth.getSession();
+      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-doctor-chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
+        body: JSON.stringify({ messages: newMsgs }),
       });
-      if (error) throw error;
-      const reply = data?.message || data?.content || data?.choices?.[0]?.message?.content || "Kechirasiz, javob ololmadim.";
-      setMessages([...newMsgs, { role: "assistant", content: reply }]);
+      if (!res.ok) throw new Error((await res.json()).error || "AI xatosi");
+
+      // Stream SSE
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      setMessages([...newMsgs, { role: "assistant", content: "" }]);
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content || "";
+            if (delta) {
+              acc += delta;
+              setMessages([...newMsgs, { role: "assistant", content: acc }]);
+            }
+          } catch {}
+        }
+      }
     } catch (e: any) {
       toast({ title: "AI xatosi", description: e.message || "Javob olishda muammo", variant: "destructive" });
       setMessages([...newMsgs, { role: "assistant", content: "Kechirasiz, hozir javob bera olmayapman. Qaytadan urinib ko'ring." }]);
