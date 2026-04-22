@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,18 +6,26 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Search, Pencil, Trash2, Phone, User, Calendar, Eye } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Phone, User, Calendar, Eye, Filter } from "lucide-react";
 import DocPatient360 from "./DocPatient360";
 
 interface Props { doctorId: string }
 
+type StatusFilter = "all" | "new" | "active" | "completed";
+type TabFilter = "all" | "today";
+
 const DocPatients = ({ doctorId }: Props) => {
   const [patients, setPatients] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [diagnosisFilter, setDiagnosisFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [tabFilter, setTabFilter] = useState<TabFilter>("all");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [viewing, setViewing] = useState<any>(null);
+  const [todayPatientIds, setTodayPatientIds] = useState<Set<string>>(new Set());
   const [form, setForm] = useState({
     full_name: "", phone: "", email: "", date_of_birth: "", gender: "unspecified",
     blood_group: "", allergies: "", chronic_conditions: "", notes: "",
@@ -28,6 +36,21 @@ const DocPatients = ({ doctorId }: Props) => {
       .select("*").eq("doctor_id", doctorId).order("created_at", { ascending: false });
     setPatients(data || []);
   };
+
+  const loadToday = async () => {
+    const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("appointments")
+      .select("patient_phone")
+      .eq("doctor_id", doctorId)
+      .eq("appointment_date", today);
+    const phones = new Set((data || []).map((a: any) => a.patient_phone));
+    // map phones to doctor_patients ids
+    const ids = new Set<string>();
+    patients.forEach((p) => { if (phones.has(p.phone)) ids.add(p.id); });
+    setTodayPatientIds(ids);
+  };
+
   useEffect(() => {
     load();
     const ch = supabase.channel(`doc-patients-${doctorId}`)
@@ -36,6 +59,8 @@ const DocPatients = ({ doctorId }: Props) => {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [doctorId]);
+
+  useEffect(() => { if (patients.length) loadToday(); }, [patients]);
 
   const openNew = () => {
     setEditing(null);
@@ -70,55 +95,114 @@ const DocPatients = ({ doctorId }: Props) => {
     toast({ title: "O'chirildi" }); load();
   };
 
-  const filtered = patients.filter(p =>
-    p.full_name.toLowerCase().includes(search.toLowerCase()) || p.phone.includes(search)
-  );
+  // Compute status: new (0 visits), active (visits but recent <90d), completed (no visit >90d)
+  const computeStatus = (p: any): "new" | "active" | "completed" => {
+    if (!p.total_visits || p.total_visits === 0) return "new";
+    const last = p.last_visit_date ? new Date(p.last_visit_date) : null;
+    if (!last) return "new";
+    const days = (Date.now() - last.getTime()) / (1000 * 60 * 60 * 24);
+    return days > 90 ? "completed" : "active";
+  };
+
+  const allDiagnoses = useMemo(() => {
+    // We'll just use chronic_conditions field as a quick filter source
+    const set = new Set<string>();
+    patients.forEach((p) => { if (p.chronic_conditions) set.add(p.chronic_conditions); });
+    return Array.from(set).slice(0, 30);
+  }, [patients]);
+
+  const filtered = patients.filter((p) => {
+    const matchSearch = p.full_name.toLowerCase().includes(search.toLowerCase()) || p.phone.includes(search);
+    const matchDiag = !diagnosisFilter || (p.chronic_conditions || "").toLowerCase().includes(diagnosisFilter.toLowerCase());
+    const matchStatus = statusFilter === "all" || computeStatus(p) === statusFilter;
+    const matchTab = tabFilter === "all" || (tabFilter === "today" && todayPatientIds.has(p.id));
+    return matchSearch && matchDiag && matchStatus && matchTab;
+  });
+
+  const statusBadge = (s: string) => {
+    if (s === "new") return <Badge className="text-[10px] bg-blue-500/10 text-blue-600 border-blue-500/20">Yangi</Badge>;
+    if (s === "active") return <Badge className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Faol</Badge>;
+    return <Badge className="text-[10px] bg-muted text-muted-foreground border-border">Yakunlangan</Badge>;
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-        <h2 className="font-heading font-bold text-xl text-foreground">Bemorlar ({patients.length})</h2>
+        <div>
+          <h2 className="font-heading font-bold text-xl text-foreground">Bemorlar ({patients.length})</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Patient Management System</p>
+        </div>
         <Button onClick={openNew} className="bg-gradient-to-r from-secondary to-accent text-white border-0">
           <Plus className="w-4 h-4 mr-1" /> Yangi bemor
         </Button>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Ism yoki telefon bo'yicha qidirish..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+      {/* Tabs */}
+      <Tabs value={tabFilter} onValueChange={(v) => setTabFilter(v as TabFilter)}>
+        <TabsList>
+          <TabsTrigger value="all">Barchasi ({patients.length})</TabsTrigger>
+          <TabsTrigger value="today">Bugungi ({todayPatientIds.size})</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {/* Filters */}
+      <div className="grid sm:grid-cols-3 gap-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Ism yoki telefon..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+        </div>
+        <div className="relative">
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input list="diag-list" placeholder="Tashxis bo'yicha..." value={diagnosisFilter} onChange={(e) => setDiagnosisFilter(e.target.value)} className="pl-9" />
+          <datalist id="diag-list">
+            {allDiagnoses.map((d) => <option key={d} value={d} />)}
+          </datalist>
+        </div>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StatusFilter)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+          <option value="all">Barcha statuslar</option>
+          <option value="new">Yangi</option>
+          <option value="active">Faol</option>
+          <option value="completed">Yakunlangan</option>
+        </select>
       </div>
 
       {filtered.length === 0 ? (
         <div className="bg-card rounded-2xl border border-border p-12 text-center text-muted-foreground">
           <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          Hali bemorlar yo'q
+          Bemorlar topilmadi
         </div>
       ) : (
         <div className="grid gap-3">
-          {filtered.map((p) => (
-            <div key={p.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-full bg-secondary/10 flex items-center justify-center">
-                <User className="w-5 h-5 text-secondary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-semibold text-foreground">{p.full_name}</p>
-                  <Badge variant="outline" className="text-[10px]">{p.source === "manual" ? "Qo'lda" : "Avto"}</Badge>
-                  {p.blood_group && <Badge className="text-[10px] bg-rose-500/10 text-rose-600 border-rose-500/20">{p.blood_group}</Badge>}
+          {filtered.map((p) => {
+            const s = computeStatus(p);
+            return (
+              <div key={p.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4 hover:border-secondary/40 transition-colors">
+                <div className="w-11 h-11 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
+                  <User className="w-5 h-5 text-secondary" />
                 </div>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                  <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{p.phone}</span>
-                  {p.date_of_birth && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(p.date_of_birth).toLocaleDateString("uz-UZ")}</span>}
-                  <span>Tashriflar: {p.total_visits || 0}</span>
-                  <span>Analiz: {p.total_lab_orders || 0}</span>
-                  <span>Yozuv: {p.total_records || 0}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-semibold text-foreground">{p.full_name}</p>
+                    {statusBadge(s)}
+                    <Badge variant="outline" className="text-[10px]">{p.source === "manual" ? "Qo'lda" : "Avto"}</Badge>
+                    {p.blood_group && <Badge className="text-[10px] bg-rose-500/10 text-rose-600 border-rose-500/20">{p.blood_group}</Badge>}
+                    {todayPatientIds.has(p.id) && <Badge className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Bugun</Badge>}
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
+                    <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{p.phone}</span>
+                    {p.date_of_birth && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(p.date_of_birth).toLocaleDateString("uz-UZ")}</span>}
+                    <span>Tashriflar: {p.total_visits || 0}</span>
+                    <span>Analiz: {p.total_lab_orders || 0}</span>
+                    <span>Yozuv: {p.total_records || 0}</span>
+                    {p.chronic_conditions && <span className="text-amber-600">⚠ {p.chronic_conditions}</span>}
+                  </div>
                 </div>
+                <Button size="sm" variant="outline" onClick={() => setViewing(p)} title="Ko'rish"><Eye className="w-3 h-3" /></Button>
+                <Button size="sm" variant="outline" onClick={() => openEdit(p)} title="Tahrirlash"><Pencil className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="text-destructive" onClick={() => remove(p.id)} title="O'chirish"><Trash2 className="w-3 h-3" /></Button>
               </div>
-              <Button size="sm" variant="outline" onClick={() => setViewing(p)}><Eye className="w-3 h-3" /></Button>
-              <Button size="sm" variant="outline" onClick={() => openEdit(p)}><Pencil className="w-3 h-3" /></Button>
-              <Button size="sm" variant="ghost" className="text-destructive" onClick={() => remove(p.id)}><Trash2 className="w-3 h-3" /></Button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
