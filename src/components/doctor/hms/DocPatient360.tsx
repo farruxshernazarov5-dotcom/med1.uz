@@ -13,6 +13,12 @@ import {
   CreditCard, Stethoscope, ClipboardList,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import TemplatePicker from "./TemplatePicker";
+import {
+  DIAGNOSIS_TEMPLATES, DIAG_CATEGORIES,
+  LAB_TEMPLATES, LAB_CATEGORIES,
+  RX_TEMPLATES, RX_CATEGORIES,
+} from "./emrTemplates";
 
 interface Props {
   patient: any | null;
@@ -356,7 +362,23 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
       {/* Quick action dialogs */}
       <Dialog open={quick === "diagnosis"} onOpenChange={(o) => !o && setQuick(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>+ Tashxis yozish</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2">
+              <DialogTitle>+ Tashxis yozish</DialogTitle>
+              <TemplatePicker
+                templates={DIAGNOSIS_TEMPLATES}
+                categories={DIAG_CATEGORIES}
+                label="Tezkor matn"
+                preview={(t) => `${t.diagnosis}${t.icd_code ? ` • ${t.icd_code}` : ""}`}
+                onPick={(t) => setDiagForm({
+                  diagnosis: t.diagnosis,
+                  icd_code: t.icd_code,
+                  symptoms: t.symptoms,
+                  notes: t.notes,
+                })}
+              />
+            </div>
+          </DialogHeader>
           <div className="space-y-3">
             <div><Label className="text-xs">Tashxis *</Label><Input value={diagForm.diagnosis} onChange={(e) => setDiagForm({ ...diagForm, diagnosis: e.target.value })} /></div>
             <div><Label className="text-xs">ICD-10 kodi</Label><Input value={diagForm.icd_code} onChange={(e) => setDiagForm({ ...diagForm, icd_code: e.target.value })} placeholder="J06.9" /></div>
@@ -369,7 +391,21 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
 
       <Dialog open={quick === "lab"} onOpenChange={(o) => !o && setQuick(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>+ Analizga yuborish</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2">
+              <DialogTitle>+ Analizga yuborish</DialogTitle>
+              <TemplatePicker
+                templates={LAB_TEMPLATES}
+                categories={LAB_CATEGORIES}
+                label="Tezkor paket"
+                preview={(t) => t.tests.slice(0, 3).join(", ") + (t.tests.length > 3 ? "…" : "")}
+                onPick={(t) => setLabForm({
+                  tests: t.tests.join(", "),
+                  urgency: t.urgency,
+                })}
+              />
+            </div>
+          </DialogHeader>
           <div className="space-y-3">
             <div><Label className="text-xs">Tahlillar (vergul bilan)</Label><Textarea rows={3} value={labForm.tests} onChange={(e) => setLabForm({ ...labForm, tests: e.target.value })} placeholder="UAQ, biokimyo, TSH" /></div>
             <div>
@@ -387,7 +423,23 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
 
       <Dialog open={quick === "rx"} onOpenChange={(o) => !o && setQuick(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>+ Retsept</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2">
+              <DialogTitle>+ Retsept</DialogTitle>
+              <TemplatePicker
+                templates={RX_TEMPLATES}
+                categories={RX_CATEGORIES}
+                label="Tezkor matn"
+                preview={(t) => `${t.medication} • ${t.dosage} • ${t.duration}`}
+                onPick={(t) => setRxForm({
+                  medication: t.medication,
+                  dosage: t.dosage,
+                  duration: t.duration,
+                  instructions: t.instructions,
+                })}
+              />
+            </div>
+          </DialogHeader>
           <div className="space-y-3">
             <div><Label className="text-xs">Dori nomi *</Label><Input value={rxForm.medication} onChange={(e) => setRxForm({ ...rxForm, medication: e.target.value })} /></div>
             <div className="grid grid-cols-2 gap-3">

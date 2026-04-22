@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, FlaskConical, Send, X } from "lucide-react";
+import TemplatePicker from "./TemplatePicker";
+import { LAB_TEMPLATES, LAB_CATEGORIES } from "./emrTemplates";
 
 interface Props { doctorId: string }
 
@@ -107,7 +109,23 @@ const DocLab = ({ doctorId }: Props) => {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Yangi laboratoriya buyurtmasi</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2">
+              <DialogTitle>Yangi laboratoriya buyurtmasi</DialogTitle>
+              <TemplatePicker
+                templates={LAB_TEMPLATES}
+                categories={LAB_CATEGORIES}
+                label="Tezkor paket"
+                preview={(t) => t.tests.slice(0, 3).join(", ") + (t.tests.length > 3 ? "…" : "")}
+                onPick={(t) => setForm((p) => ({
+                  ...p,
+                  tests: Array.from(new Set([...(p.tests || []), ...t.tests])),
+                  urgency: t.urgency,
+                  clinical_info: t.clinical_info,
+                }))}
+              />
+            </div>
+          </DialogHeader>
           <div className="space-y-3">
             <div>
               <Label className="text-xs">Bemor *</Label>

@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, FileText, Calendar } from "lucide-react";
+import TemplatePicker from "./TemplatePicker";
+import { DIAGNOSIS_TEMPLATES, DIAG_CATEGORIES } from "./emrTemplates";
 
 interface Props { doctorId: string }
 
@@ -78,7 +80,24 @@ const DocRecords = ({ doctorId }: Props) => {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Yangi tibbiy yozuv</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2">
+              <DialogTitle>Yangi tibbiy yozuv</DialogTitle>
+              <TemplatePicker
+                templates={DIAGNOSIS_TEMPLATES}
+                categories={DIAG_CATEGORIES}
+                label="Tezkor matn"
+                preview={(t) => `${t.diagnosis}${t.icd_code ? ` • ${t.icd_code}` : ""}`}
+                onPick={(t) => setForm((p) => ({
+                  ...p,
+                  diagnosis: t.diagnosis,
+                  icd_code: t.icd_code,
+                  symptoms: t.symptoms,
+                  notes: t.notes,
+                }))}
+              />
+            </div>
+          </DialogHeader>
           <div className="space-y-3">
             <div>
               <Label className="text-xs">Bemor *</Label>
