@@ -317,7 +317,7 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
             <TabsContent value="plans" className="space-y-2 mt-4">
               {plans.map((p) => (
                 <div key={p.id} className="p-3 bg-muted/30 rounded-lg">
-                  <p className="font-medium text-sm">{p.title}</p>
+                  <p className="font-medium text-sm">{p.title || p.diagnosis}</p>
                   {p.description && <p className="text-xs text-muted-foreground mt-1 whitespace-pre-line">{p.description}</p>}
                   <Badge variant="outline" className="mt-1 text-xs">{p.status}</Badge>
                 </div>
