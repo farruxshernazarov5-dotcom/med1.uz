@@ -451,6 +451,8 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={quick === "appointment"} onOpenChange={(o) => !o && setQuick(null)}>
         <DialogContent>
           <DialogHeader><DialogTitle>+ Keyingi qabul</DialogTitle></DialogHeader>
           <div className="space-y-3">
