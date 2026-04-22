@@ -105,10 +105,10 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
     // Save as a treatment plan entry (works without dedicated rx table)
     const { error } = await supabase.from("doctor_treatment_plans").insert({
       doctor_id: doctorId, patient_id: patient.id,
-      title: `Retsept: ${rxForm.medication}`,
+      diagnosis: `Retsept: ${rxForm.medication}`,
       description: `${rxForm.dosage} | ${rxForm.duration}\n${rxForm.instructions}`,
       status: "active",
-    });
+    } as any);
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     else { toast({ title: "✅ Retsept saqlandi" }); setQuick(null); reload(); }
   };
@@ -142,10 +142,10 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
     // Record as a treatment plan note (no doctor_payments table)
     const { error } = await supabase.from("doctor_treatment_plans").insert({
       doctor_id: doctorId, patient_id: patient.id,
-      title: `To'lov: ${payForm.service || "Xizmat"}`,
+      diagnosis: `To'lov: ${payForm.service || "Xizmat"}`,
       description: `Summa: ${amt.toLocaleString()} so'm | Usul: ${payForm.method}`,
       status: "completed",
-    });
+    } as any);
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     else { toast({ title: "✅ To'lov yozildi" }); setQuick(null); reload(); }
   };
