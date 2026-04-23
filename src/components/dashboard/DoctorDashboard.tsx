@@ -14,7 +14,7 @@ import {
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
   LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
-  Megaphone, Gift, Inbox, BarChart3
+  Megaphone, Gift, Inbox, BarChart3, Pill
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -25,6 +25,7 @@ import DocAppointments from "@/components/doctor/hms/DocAppointments";
 import DocRecords from "@/components/doctor/hms/DocRecords";
 import DocLab from "@/components/doctor/hms/DocLab";
 import DocPlans from "@/components/doctor/hms/DocPlans";
+import DocPrescriptions from "@/components/doctor/hms/DocPrescriptions";
 import DocFiles from "@/components/doctor/hms/DocFiles";
 import DocBrandPosts from "@/components/doctor/hms/DocBrandPosts";
 import DocBrandPromos from "@/components/doctor/hms/DocBrandPromos";
@@ -160,6 +161,7 @@ const DoctorDashboard = () => {
     { id: "records", label: "Tibbiy yozuvlar", icon: FileText },
     { id: "lab", label: "Laboratoriya", icon: FlaskConical },
     { id: "plans", label: "Davolash kurslari", icon: Activity },
+    { id: "prescriptions", label: "Retseptlar", icon: Pill },
     { id: "files", label: "Fayllar / Imaging", icon: ImageIcon },
     { id: "posts", label: "Postlar / Kontent", icon: Megaphone },
     { id: "promos", label: "Aksiyalar", icon: Gift },
@@ -189,6 +191,7 @@ const DoctorDashboard = () => {
       {tab === "records" && <DocRecords doctorId={doctor.id} />}
       {tab === "lab" && <DocLab doctorId={doctor.id} />}
       {tab === "plans" && <DocPlans doctorId={doctor.id} />}
+      {tab === "prescriptions" && <DocPrescriptions doctorId={doctor.id} />}
       {tab === "files" && <DocFiles doctorId={doctor.id} />}
       {tab === "posts" && <DocBrandPosts doctorId={doctor.id} />}
       {tab === "promos" && <DocBrandPromos doctorId={doctor.id} />}
