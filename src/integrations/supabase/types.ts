@@ -3762,6 +3762,78 @@ export type Database = {
           },
         ]
       }
+      doctor_prescriptions: {
+        Row: {
+          created_at: string
+          diagnosis: string | null
+          doctor_id: string
+          general_instructions: string | null
+          icd_code: string | null
+          id: string
+          medications: Json
+          patient_id: string | null
+          patient_name: string
+          patient_phone: string | null
+          prescription_date: string
+          rx_number: string | null
+          status: string
+          updated_at: string
+          valid_until: string | null
+          warnings: string | null
+        }
+        Insert: {
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id: string
+          general_instructions?: string | null
+          icd_code?: string | null
+          id?: string
+          medications?: Json
+          patient_id?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          prescription_date?: string
+          rx_number?: string | null
+          status?: string
+          updated_at?: string
+          valid_until?: string | null
+          warnings?: string | null
+        }
+        Update: {
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string
+          general_instructions?: string | null
+          icd_code?: string | null
+          id?: string
+          medications?: Json
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          prescription_date?: string
+          rx_number?: string | null
+          status?: string
+          updated_at?: string
+          valid_until?: string | null
+          warnings?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_prescriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_profile_views: {
         Row: {
           created_at: string
