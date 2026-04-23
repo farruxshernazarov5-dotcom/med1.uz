@@ -14,7 +14,7 @@ import {
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
   LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
-  Megaphone, Gift, Inbox, BarChart3
+  Megaphone, Gift, Inbox, BarChart3, Pill
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
