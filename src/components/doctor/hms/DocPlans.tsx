@@ -8,8 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Activity, X } from "lucide-react";
+import TemplatePicker from "./TemplatePicker";
+import { COURSE_TEMPLATES, COURSE_CATEGORIES } from "./courseTemplates";
 
 interface Props { doctorId: string }
+
+const addDays = (n: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
 
 const DocPlans = ({ doctorId }: Props) => {
   const [plans, setPlans] = useState<any[]>([]);
@@ -106,7 +114,26 @@ const DocPlans = ({ doctorId }: Props) => {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Yangi davolash kursi</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2 pr-8">
+              <DialogTitle>Yangi davolash kursi</DialogTitle>
+              <TemplatePicker
+                templates={COURSE_TEMPLATES}
+                categories={COURSE_CATEGORIES}
+                label="Kurs shabloni"
+                preview={(t) => `${t.diagnosis} • ${t.duration_days} kun • ${t.steps.length} bosqich`}
+                onPick={(t) => setForm((p) => ({
+                  ...p,
+                  diagnosis: t.diagnosis,
+                  description: t.description,
+                  notes: t.notes,
+                  start_date: p.start_date || addDays(0),
+                  expected_end_date: p.expected_end_date || addDays(t.duration_days),
+                  steps: t.steps.map((s) => ({ ...s })),
+                }))}
+              />
+            </div>
+          </DialogHeader>
           <div className="space-y-3">
             <div>
               <Label className="text-xs">Bemor *</Label>
