@@ -191,6 +191,7 @@ const DoctorDashboard = () => {
       {tab === "records" && <DocRecords doctorId={doctor.id} />}
       {tab === "lab" && <DocLab doctorId={doctor.id} />}
       {tab === "plans" && <DocPlans doctorId={doctor.id} />}
+      {tab === "prescriptions" && <DocPrescriptions doctorId={doctor.id} />}
       {tab === "files" && <DocFiles doctorId={doctor.id} />}
       {tab === "posts" && <DocBrandPosts doctorId={doctor.id} />}
       {tab === "promos" && <DocBrandPromos doctorId={doctor.id} />}
