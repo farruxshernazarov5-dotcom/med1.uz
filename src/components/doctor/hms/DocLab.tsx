@@ -155,15 +155,15 @@ const DocLab = ({ doctorId }: Props) => {
       toast({ title: "Tashxis kiriting", variant: "destructive" });
       return;
     }
+    const linkedNotes = `[Lab buyurtma #${diagOrder.id.slice(0, 8)}]\n${diagForm.notes}`;
     const { error } = await supabase.from("doctor_records").insert({
       doctor_id: doctorId,
       patient_id: diagOrder.patient_id,
       diagnosis: diagForm.diagnosis,
       icd_code: diagForm.icd_code || null,
       symptoms: diagForm.symptoms,
-      notes: diagForm.notes,
-      lab_order_id: diagOrder.id,
-    } as any);
+      notes: linkedNotes,
+    });
     if (error) {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
