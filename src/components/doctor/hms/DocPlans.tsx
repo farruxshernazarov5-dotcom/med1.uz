@@ -8,8 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Activity, X } from "lucide-react";
+import TemplatePicker from "./TemplatePicker";
+import { COURSE_TEMPLATES, COURSE_CATEGORIES } from "./courseTemplates";
 
 interface Props { doctorId: string }
+
+const addDays = (n: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
 
 const DocPlans = ({ doctorId }: Props) => {
   const [plans, setPlans] = useState<any[]>([]);
