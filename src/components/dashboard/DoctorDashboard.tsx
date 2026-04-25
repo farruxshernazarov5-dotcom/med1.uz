@@ -163,6 +163,7 @@ const DoctorDashboard = () => {
     { id: "lab", label: "Laboratoriya", icon: FlaskConical },
     { id: "plans", label: "Davolash kurslari", icon: Activity },
     { id: "prescriptions", label: "Retseptlar", icon: Pill },
+    { id: "billing", label: "Billing / Moliya", icon: Wallet },
     { id: "files", label: "Fayllar / Imaging", icon: ImageIcon },
     { id: "posts", label: "Postlar / Kontent", icon: Megaphone },
     { id: "promos", label: "Aksiyalar", icon: Gift },
