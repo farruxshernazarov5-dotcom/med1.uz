@@ -213,9 +213,11 @@ const AuthPage = () => {
         toast({ title: "Xatolik", description: msg, variant: "destructive" });
       } else {
         toast({ title: "Xush kelibsiz!" });
+        // userRole yuklanishini kutib, aniq dashboard'ga yo'naltirish
+        // /dashboard route role'ni aniqlab redirect qiladi
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
-        }, 150);
+        }, 300);
       }
     } else {
       if (!fullName.trim()) {
@@ -235,9 +237,8 @@ const AuthPage = () => {
       } else {
         toast({ 
           title: "✅ Ro'yxatdan o'tdingiz!", 
-          description: regPhoneVerified 
-            ? "Emailingizni tasdiqlang. Telefon raqamingiz saqlandi." 
-            : "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." 
+          description: "📧 Tasdiqlash xati emailingizga yuborildi. Spam papkasini ham tekshiring (5-10 daq.)",
+          duration: 10000,
         });
         setMode("login");
       }

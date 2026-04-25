@@ -14,7 +14,7 @@ import {
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
   LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
-  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles
+  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles, Shield
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -34,6 +34,7 @@ import DocBrandPromos from "@/components/doctor/hms/DocBrandPromos";
 import DocBrandLeads from "@/components/doctor/hms/DocBrandLeads";
 import DocBrandAnalytics from "@/components/doctor/hms/DocBrandAnalytics";
 import DocAnalytics from "@/components/doctor/hms/DocAnalytics";
+import DocAudit from "@/components/doctor/hms/DocAudit";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
@@ -173,6 +174,7 @@ const DoctorDashboard = () => {
     { id: "leads", label: "Bemor xabarlari", icon: Inbox },
     { id: "stats", label: "Statistika & AI", icon: Sparkles },
     { id: "analytics", label: "Brend Analitika", icon: BarChart3 },
+    { id: "audit", label: "Audit Log & Xavfsizlik", icon: Shield },
     { id: "profile", label: "Profil", icon: User },
     { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
@@ -206,6 +208,7 @@ const DoctorDashboard = () => {
       {tab === "leads" && <DocBrandLeads doctorId={doctor.id} />}
       {tab === "stats" && <DocAnalytics doctorId={doctor.id} />}
       {tab === "analytics" && <DocBrandAnalytics doctorId={doctor.id} />}
+      {tab === "audit" && <DocAudit doctorId={doctor.id} />}
 
       {tab === "profile" && (
         <div className="space-y-6">
