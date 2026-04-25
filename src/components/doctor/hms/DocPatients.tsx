@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Search, Pencil, Trash2, Phone, User, Calendar, Eye, Filter } from "lucide-react";
 import DocPatient360 from "./DocPatient360";
+import { logDoctorAction } from "@/lib/auditLog";
 
 interface Props { doctorId: string }
 
@@ -82,16 +83,40 @@ const DocPatients = ({ doctorId }: Props) => {
       toast({ title: "Ism va telefon majburiy", variant: "destructive" }); return;
     }
     const payload = { ...form, doctor_id: doctorId, source: "manual", date_of_birth: form.date_of_birth || null };
-    const { error } = editing
-      ? await supabase.from("doctor_patients").update(payload).eq("id", editing.id)
-      : await supabase.from("doctor_patients").insert(payload);
+    const { error, data } = editing
+      ? await supabase.from("doctor_patients").update(payload).eq("id", editing.id).select().single()
+      : await supabase.from("doctor_patients").insert(payload).select().single();
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    else { toast({ title: editing ? "✅ Yangilandi" : "✅ Qo'shildi" }); setOpen(false); load(); }
+    else {
+      toast({ title: editing ? "✅ Yangilandi" : "✅ Qo'shildi" });
+      await logDoctorAction({
+        doctorId,
+        actionType: editing ? "update" : "create",
+        entityType: "patient",
+        entityId: data?.id || editing?.id,
+        entityName: form.full_name,
+        description: editing ? `Bemor ma'lumotlari yangilandi` : `Yangi bemor qo'shildi`,
+        oldData: editing,
+        newData: payload,
+      });
+      setOpen(false); load();
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Bemorni o'chirish?")) return;
+    const target = list.find((p: any) => p.id === id);
     await supabase.from("doctor_patients").delete().eq("id", id);
+    await logDoctorAction({
+      doctorId,
+      actionType: "delete",
+      entityType: "patient",
+      entityId: id,
+      entityName: target?.full_name,
+      description: `Bemor o'chirildi`,
+      oldData: target,
+      severity: "warning",
+    });
     toast({ title: "O'chirildi" }); load();
   };
 
