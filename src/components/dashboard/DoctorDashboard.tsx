@@ -14,7 +14,7 @@ import {
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
   LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
-  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles
+  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles, Shield
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -34,6 +34,7 @@ import DocBrandPromos from "@/components/doctor/hms/DocBrandPromos";
 import DocBrandLeads from "@/components/doctor/hms/DocBrandLeads";
 import DocBrandAnalytics from "@/components/doctor/hms/DocBrandAnalytics";
 import DocAnalytics from "@/components/doctor/hms/DocAnalytics";
+import DocAudit from "@/components/doctor/hms/DocAudit";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
