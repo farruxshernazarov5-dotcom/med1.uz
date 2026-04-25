@@ -4084,6 +4084,108 @@ export type Database = {
           },
         ]
       }
+      doctor_telemed_sessions: {
+        Row: {
+          actual_duration_minutes: number | null
+          chief_complaint: string | null
+          consultation_fee: number | null
+          consultation_type: string | null
+          created_at: string
+          diagnosis: string | null
+          doctor_id: string
+          doctor_notes: string | null
+          duration_minutes: number
+          ended_at: string | null
+          id: string
+          invoice_id: string | null
+          meeting_provider: string | null
+          meeting_url: string | null
+          patient_age: number | null
+          patient_feedback: string | null
+          patient_id: string | null
+          patient_name: string
+          patient_phone: string | null
+          patient_rating: number | null
+          payment_status: string | null
+          plan_id: string | null
+          prescription_id: string | null
+          recommendations: string | null
+          recording_url: string | null
+          room_id: string | null
+          scheduled_at: string
+          started_at: string | null
+          status: string
+          symptoms: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_duration_minutes?: number | null
+          chief_complaint?: string | null
+          consultation_fee?: number | null
+          consultation_type?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id: string
+          doctor_notes?: string | null
+          duration_minutes?: number
+          ended_at?: string | null
+          id?: string
+          invoice_id?: string | null
+          meeting_provider?: string | null
+          meeting_url?: string | null
+          patient_age?: number | null
+          patient_feedback?: string | null
+          patient_id?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          patient_rating?: number | null
+          payment_status?: string | null
+          plan_id?: string | null
+          prescription_id?: string | null
+          recommendations?: string | null
+          recording_url?: string | null
+          room_id?: string | null
+          scheduled_at: string
+          started_at?: string | null
+          status?: string
+          symptoms?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_duration_minutes?: number | null
+          chief_complaint?: string | null
+          consultation_fee?: number | null
+          consultation_type?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          doctor_id?: string
+          doctor_notes?: string | null
+          duration_minutes?: number
+          ended_at?: string | null
+          id?: string
+          invoice_id?: string | null
+          meeting_provider?: string | null
+          meeting_url?: string | null
+          patient_age?: number | null
+          patient_feedback?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          patient_rating?: number | null
+          payment_status?: string | null
+          plan_id?: string | null
+          prescription_id?: string | null
+          recommendations?: string | null
+          recording_url?: string | null
+          room_id?: string | null
+          scheduled_at?: string
+          started_at?: string | null
+          status?: string
+          symptoms?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       doctor_treatment_plans: {
         Row: {
           created_at: string
