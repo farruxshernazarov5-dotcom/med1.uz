@@ -76,7 +76,7 @@ serve(async (req) => {
           results.telegram = { success: false, error: "No telegram chat_id found" };
         }
       } catch (e) {
-        results.telegram = { success: false, error: e.message };
+        results.telegram = { success: false, error: e instanceof Error ? e.message : String(e) };
       }
     }
 
@@ -102,7 +102,7 @@ serve(async (req) => {
         if (error) throw error;
         results.email = { success: true };
       } catch (e) {
-        results.email = { success: false, error: e.message };
+        results.email = { success: false, error: e instanceof Error ? e.message : String(e) };
       }
     }
 
@@ -128,7 +128,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("Lab notify error:", e.message);
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
