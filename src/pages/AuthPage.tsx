@@ -237,9 +237,8 @@ const AuthPage = () => {
       } else {
         toast({ 
           title: "✅ Ro'yxatdan o'tdingiz!", 
-          description: regPhoneVerified 
-            ? "Emailingizni tasdiqlang. Telefon raqamingiz saqlandi." 
-            : "Emailingizni tasdiqlang. Tasdiqlagandan so'ng tizimga kiring." 
+          description: "📧 Tasdiqlash xati emailingizga yuborildi. Spam papkasini ham tekshiring (5-10 daq.)",
+          duration: 10000,
         });
         setMode("login");
       }
