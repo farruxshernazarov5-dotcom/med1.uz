@@ -44,13 +44,24 @@ const DashboardPage = () => {
 
   if (!user) return <Navigate to="/auth" replace />;
 
-  if (!type) return <Navigate to={getDashboardPath(userRole)} replace />;
+  // Foydalanuvchining haqiqiy roliga mos dashboard yo'li
+  const userDashboardPath = getDashboardPath(userRole);
+
+  // Agar URL'da type yo'q bo'lsa — o'z dashboardiga yuborish
+  if (!type) return <Navigate to={userDashboardPath} replace />;
 
   const dashboardType = type.toLowerCase();
   const DashboardComponent = DASHBOARD_MAP[dashboardType];
 
+  // Agar dashboard turi mavjud emas bo'lsa — o'z dashboardiga
   if (!DashboardComponent) {
-    return <Navigate to={getDashboardPath(userRole)} replace />;
+    return <Navigate to={userDashboardPath} replace />;
+  }
+
+  // QAT'IY ROLE GUARD: Agar URL roli foydalanuvchi roliga mos kelmasa
+  // (admin'dan tashqari — admin barcha dashboardlarni ko'ra oladi)
+  if (userRole && userRole !== "admin" && dashboardType !== userRole) {
+    return <Navigate to={userDashboardPath} replace />;
   }
 
   return <DashboardComponent />;
