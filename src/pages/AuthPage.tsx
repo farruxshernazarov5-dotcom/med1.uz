@@ -213,9 +213,11 @@ const AuthPage = () => {
         toast({ title: "Xatolik", description: msg, variant: "destructive" });
       } else {
         toast({ title: "Xush kelibsiz!" });
+        // userRole yuklanishini kutib, aniq dashboard'ga yo'naltirish
+        // /dashboard route role'ni aniqlab redirect qiladi
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
-        }, 150);
+        }, 300);
       }
     } else {
       if (!fullName.trim()) {
