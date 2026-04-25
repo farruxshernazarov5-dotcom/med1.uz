@@ -14,7 +14,7 @@ import {
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
   LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
-  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video
+  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -33,6 +33,7 @@ import DocBrandPosts from "@/components/doctor/hms/DocBrandPosts";
 import DocBrandPromos from "@/components/doctor/hms/DocBrandPromos";
 import DocBrandLeads from "@/components/doctor/hms/DocBrandLeads";
 import DocBrandAnalytics from "@/components/doctor/hms/DocBrandAnalytics";
+import DocAnalytics from "@/components/doctor/hms/DocAnalytics";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
@@ -170,7 +171,8 @@ const DoctorDashboard = () => {
     { id: "posts", label: "Postlar / Kontent", icon: Megaphone },
     { id: "promos", label: "Aksiyalar", icon: Gift },
     { id: "leads", label: "Bemor xabarlari", icon: Inbox },
-    { id: "analytics", label: "Analitika", icon: BarChart3 },
+    { id: "stats", label: "Statistika & AI", icon: Sparkles },
+    { id: "analytics", label: "Brend Analitika", icon: BarChart3 },
     { id: "profile", label: "Profil", icon: User },
     { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
@@ -202,6 +204,7 @@ const DoctorDashboard = () => {
       {tab === "posts" && <DocBrandPosts doctorId={doctor.id} />}
       {tab === "promos" && <DocBrandPromos doctorId={doctor.id} />}
       {tab === "leads" && <DocBrandLeads doctorId={doctor.id} />}
+      {tab === "stats" && <DocAnalytics doctorId={doctor.id} />}
       {tab === "analytics" && <DocBrandAnalytics doctorId={doctor.id} />}
 
       {tab === "profile" && (
