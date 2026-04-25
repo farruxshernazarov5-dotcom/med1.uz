@@ -105,7 +105,7 @@ const DocPatients = ({ doctorId }: Props) => {
 
   const remove = async (id: string) => {
     if (!confirm("Bemorni o'chirish?")) return;
-    const target = list.find((p: any) => p.id === id);
+    const target = patients.find((p: any) => p.id === id);
     await supabase.from("doctor_patients").delete().eq("id", id);
     await logDoctorAction({
       doctorId,
