@@ -174,6 +174,7 @@ const DoctorDashboard = () => {
     { id: "leads", label: "Bemor xabarlari", icon: Inbox },
     { id: "stats", label: "Statistika & AI", icon: Sparkles },
     { id: "analytics", label: "Brend Analitika", icon: BarChart3 },
+    { id: "audit", label: "Audit Log & Xavfsizlik", icon: Shield },
     { id: "profile", label: "Profil", icon: User },
     { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
@@ -207,6 +208,7 @@ const DoctorDashboard = () => {
       {tab === "leads" && <DocBrandLeads doctorId={doctor.id} />}
       {tab === "stats" && <DocAnalytics doctorId={doctor.id} />}
       {tab === "analytics" && <DocBrandAnalytics doctorId={doctor.id} />}
+      {tab === "audit" && <DocAudit doctorId={doctor.id} />}
 
       {tab === "profile" && (
         <div className="space-y-6">
