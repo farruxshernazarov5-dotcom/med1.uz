@@ -3456,6 +3456,42 @@ export type Database = {
           },
         ]
       }
+      doctor_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string | null
+          doctor_id: string
+          expense_date: string
+          id: string
+          payment_method: string | null
+          receipt_url: string | null
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          description?: string | null
+          doctor_id: string
+          expense_date?: string
+          id?: string
+          payment_method?: string | null
+          receipt_url?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          doctor_id?: string
+          expense_date?: string
+          id?: string
+          payment_method?: string | null
+          receipt_url?: string | null
+        }
+        Relationships: []
+      }
       doctor_files: {
         Row: {
           category: string | null
@@ -3509,6 +3545,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      doctor_invoices: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount: number
+          doctor_id: string
+          due_date: string | null
+          id: string
+          invoice_number: string | null
+          items: Json | null
+          notes: string | null
+          paid_amount: number
+          paid_at: string | null
+          patient_id: string | null
+          patient_name: string
+          patient_phone: string | null
+          payment_method: string | null
+          service_type: string
+          status: string
+          subtotal: number
+          tax: number
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount?: number
+          doctor_id: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string | null
+          items?: Json | null
+          notes?: string | null
+          paid_amount?: number
+          paid_at?: string | null
+          patient_id?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          payment_method?: string | null
+          service_type?: string
+          status?: string
+          subtotal?: number
+          tax?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount?: number
+          doctor_id?: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string | null
+          items?: Json | null
+          notes?: string | null
+          paid_amount?: number
+          paid_at?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          payment_method?: string | null
+          service_type?: string
+          status?: string
+          subtotal?: number
+          tax?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       doctor_lab_orders: {
         Row: {
