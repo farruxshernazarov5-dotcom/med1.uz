@@ -2,13 +2,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import {
-  Sparkles, Plus, Save, Loader2, Settings,
+  Sparkles, Plus, Settings,
   BarChart3, Users, Package, Image as ImageIcon, Wallet, Gift, Megaphone,
   Star, UserCog, Crown,
 } from "lucide-react";
@@ -25,22 +21,18 @@ import CosMarketing from "@/components/cosmetology/hms/CosMarketing";
 import CosFeedback from "@/components/cosmetology/hms/CosFeedback";
 import CosInventory from "@/components/cosmetology/hms/CosInventory";
 import CosStaff from "@/components/cosmetology/hms/CosStaff";
+import CosSettings from "@/components/cosmetology/hms/CosSettings";
 
 const CosmetologyDashboard = () => {
   const { user, profile } = useAuth();
   const [center, setCenter] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("overview");
-  const [profileForm, setProfileForm] = useState({ name: "", phone: "", email: "", address: "", description: "", website: "", telegram: "" });
-  const [saving, setSaving] = useState(false);
 
   const fetchCenter = async () => {
     if (!user) return;
     const { data } = await supabase.from("registered_cosmetology" as any).select("*").eq("owner_id", user.id).maybeSingle() as any;
-    if (data) {
-      setCenter(data);
-      setProfileForm({ name: data.name, phone: data.phone || "", email: data.email || "", address: data.address || "", description: data.description || "", website: data.website || "", telegram: data.telegram || "" });
-    }
+    if (data) setCenter(data);
     setLoading(false);
   };
   useEffect(() => { fetchCenter(); }, [user]);
@@ -53,16 +45,6 @@ const CosmetologyDashboard = () => {
     } as any);
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     else { toast({ title: "✅ Markaz yaratildi" }); fetchCenter(); }
-  };
-
-  const saveProfile = async () => {
-    if (!center) return;
-    setSaving(true);
-    const { error } = await supabase.from("registered_cosmetology" as any).update(profileForm as any).eq("id", center.id);
-    setSaving(false);
-    if (error) { toast({ title: "Xatolik", description: error.message, variant: "destructive" }); return; }
-    toast({ title: "✅ Profil yangilandi" });
-    fetchCenter();
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
@@ -115,21 +97,7 @@ const CosmetologyDashboard = () => {
       {tab === "inventory" && <CosInventory centerId={center.id} />}
       {tab === "staff" && <CosStaff centerId={center.id} />}
       {tab === "subscription" && <CosmetologySubscription />}
-      {tab === "settings" && (
-        <Card><CardContent className="p-5 space-y-4">
-          <h3 className="font-heading font-semibold text-lg">Markaz profili</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div><Label>Nomi</Label><Input value={profileForm.name} onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })} className="mt-1" /></div>
-            <div><Label>Telefon</Label><Input value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} className="mt-1" /></div>
-            <div><Label>Email</Label><Input value={profileForm.email} onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })} className="mt-1" /></div>
-            <div><Label>Manzil</Label><Input value={profileForm.address} onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })} className="mt-1" /></div>
-            <div><Label>Web sayt</Label><Input value={profileForm.website} onChange={(e) => setProfileForm({ ...profileForm, website: e.target.value })} className="mt-1" /></div>
-            <div><Label>Telegram</Label><Input value={profileForm.telegram} onChange={(e) => setProfileForm({ ...profileForm, telegram: e.target.value })} className="mt-1" /></div>
-            <div className="md:col-span-2"><Label>Tavsif</Label><Textarea rows={3} value={profileForm.description} onChange={(e) => setProfileForm({ ...profileForm, description: e.target.value })} className="mt-1" /></div>
-          </div>
-          <Button onClick={saveProfile} disabled={saving}>{saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />} Saqlash</Button>
-        </CardContent></Card>
-      )}
+      {tab === "settings" && <CosSettings centerId={center.id} />}
     </DashboardShell>
   );
 };
