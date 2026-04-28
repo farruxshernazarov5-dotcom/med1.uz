@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/body-button";
 import { toast } from "@/hooks/use-toast";
 import {
-  Sparkles, Plus, Save, Loader2, Settings,
+  Sparkles, Plus, Settings,
   BarChart3, Users, Package, Image as ImageIcon, Wallet, Gift, Megaphone,
   Star, UserCog, Crown,
 } from "lucide-react";
@@ -25,6 +21,7 @@ import CosMarketing from "@/components/cosmetology/hms/CosMarketing";
 import CosFeedback from "@/components/cosmetology/hms/CosFeedback";
 import CosInventory from "@/components/cosmetology/hms/CosInventory";
 import CosStaff from "@/components/cosmetology/hms/CosStaff";
+import CosSettings from "@/components/cosmetology/hms/CosSettings";
 
 const CosmetologyDashboard = () => {
   const { user, profile } = useAuth();
