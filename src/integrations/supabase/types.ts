@@ -980,6 +980,54 @@ export type Database = {
           },
         ]
       }
+      cosmetology_client_product_recommendations: {
+        Row: {
+          center_id: string
+          client_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          product_id: string
+          recommended_by: string | null
+          status: string | null
+        }
+        Insert: {
+          center_id: string
+          client_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          recommended_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          center_id?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          recommended_by?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_client_product_recommendations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_client_product_recommendations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cosmetology_client_visits: {
         Row: {
           amount: number | null
@@ -1276,8 +1324,10 @@ export type Database = {
           category: string | null
           center_id: string
           created_at: string
+          description: string | null
           expiry_date: string | null
           id: string
+          image_url: string | null
           is_active: boolean | null
           min_quantity: number | null
           name: string
@@ -1294,8 +1344,10 @@ export type Database = {
           category?: string | null
           center_id: string
           created_at?: string
+          description?: string | null
           expiry_date?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           min_quantity?: number | null
           name: string
@@ -1312,8 +1364,10 @@ export type Database = {
           category?: string | null
           center_id?: string
           created_at?: string
+          description?: string | null
           expiry_date?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           min_quantity?: number | null
           name?: string
@@ -1587,6 +1641,123 @@ export type Database = {
           },
         ]
       }
+      cosmetology_product_sales: {
+        Row: {
+          center_id: string
+          client_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          payment_method: string | null
+          product_id: string
+          quantity: number
+          sold_by: string | null
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          center_id: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          product_id: string
+          quantity?: number
+          sold_by?: string | null
+          total_price?: number
+          unit_price?: number
+        }
+        Update: {
+          center_id?: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          product_id?: string
+          quantity?: number
+          sold_by?: string | null
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_product_sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_product_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_product_usage: {
+        Row: {
+          center_id: string
+          client_id: string | null
+          cost: number | null
+          course_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          service_id: string | null
+          session_id: string | null
+          used_by: string | null
+        }
+        Insert: {
+          center_id: string
+          client_id?: string | null
+          cost?: number | null
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity?: number
+          service_id?: string | null
+          session_id?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          center_id?: string
+          client_id?: string | null
+          cost?: number | null
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          service_id?: string | null
+          session_id?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_product_usage_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cosmetology_product_usage_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cosmetology_promo_codes: {
         Row: {
           center_id: string
@@ -1800,6 +1971,50 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_cosmetology"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cosmetology_stock_movements: {
+        Row: {
+          center_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          movement_type: string
+          notes: string | null
+          product_id: string
+          quantity: number
+          reference_id: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          movement_type: string
+          notes?: string | null
+          product_id: string
+          quantity: number
+          reference_id?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          movement_type?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number
+          reference_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cosmetology_stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "cosmetology_inventory"
             referencedColumns: ["id"]
           },
         ]
