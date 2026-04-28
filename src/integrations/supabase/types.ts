@@ -1915,6 +1915,7 @@ export type Database = {
       }
       cosmetology_staff: {
         Row: {
+          avatar_url: string | null
           center_id: string
           commission_percent: number | null
           created_at: string
@@ -1929,9 +1930,11 @@ export type Database = {
           salary: number | null
           schedule: string | null
           specialization: string | null
+          start_date: string | null
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           center_id: string
           commission_percent?: number | null
           created_at?: string
@@ -1946,9 +1949,11 @@ export type Database = {
           salary?: number | null
           schedule?: string | null
           specialization?: string | null
+          start_date?: string | null
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           center_id?: string
           commission_percent?: number | null
           created_at?: string
@@ -1963,6 +1968,7 @@ export type Database = {
           salary?: number | null
           schedule?: string | null
           specialization?: string | null
+          start_date?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1974,6 +1980,141 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      cosmetology_staff_payouts: {
+        Row: {
+          amount: number
+          center_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          paid_at: string
+          payout_type: string
+          period_end: string | null
+          period_start: string | null
+          staff_id: string
+        }
+        Insert: {
+          amount?: number
+          center_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          payout_type?: string
+          period_end?: string | null
+          period_start?: string | null
+          staff_id: string
+        }
+        Update: {
+          amount?: number
+          center_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          payout_type?: string
+          period_end?: string | null
+          period_start?: string | null
+          staff_id?: string
+        }
+        Relationships: []
+      }
+      cosmetology_staff_ratings: {
+        Row: {
+          center_id: string
+          client_id: string | null
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          staff_id: string
+        }
+        Insert: {
+          center_id: string
+          client_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          staff_id: string
+        }
+        Update: {
+          center_id?: string
+          client_id?: string | null
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          staff_id?: string
+        }
+        Relationships: []
+      }
+      cosmetology_staff_schedule: {
+        Row: {
+          center_id: string
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          is_off: boolean
+          staff_id: string
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          day_of_week: number
+          end_time?: string
+          id?: string
+          is_off?: boolean
+          staff_id: string
+          start_time?: string
+          updated_at?: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_off?: boolean
+          staff_id?: string
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cosmetology_staff_services: {
+        Row: {
+          center_id: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          price: number
+          service_name: string
+          staff_id: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          price?: number
+          service_name: string
+          staff_id: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          price?: number
+          service_name?: string
+          staff_id?: string
+        }
+        Relationships: []
       }
       cosmetology_stock_movements: {
         Row: {
