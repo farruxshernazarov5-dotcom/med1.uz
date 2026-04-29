@@ -16,6 +16,7 @@ import DiagTemplates from "@/components/diagnostics/DiagTemplates";
 import DiagInventory from "@/components/diagnostics/DiagInventory";
 import DiagFinance from "@/components/diagnostics/DiagFinance";
 import DiagStaff from "@/components/diagnostics/DiagStaff";
+import DiagServices from "@/components/diagnostics/DiagServices";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
