@@ -16,6 +16,7 @@ import DiagTemplates from "@/components/diagnostics/DiagTemplates";
 import DiagInventory from "@/components/diagnostics/DiagInventory";
 import DiagFinance from "@/components/diagnostics/DiagFinance";
 import DiagStaff from "@/components/diagnostics/DiagStaff";
+import DiagServices from "@/components/diagnostics/DiagServices";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
@@ -145,27 +146,7 @@ const DiagnosticsDashboard = () => {
       )}
 
       {tab === "services" && (
-        <div className="space-y-4">
-          <h3 className="font-heading font-bold text-lg text-foreground">Diagnostika xizmatlari</h3>
-          <p className="text-sm text-muted-foreground">Xizmatlarni boshqarish uchun quyidagi ro'yxatdan foydalaning</p>
-          {services.length === 0 ? (
-            <Card><CardContent className="py-10 text-center text-muted-foreground">Xizmatlar topilmadi</CardContent></Card>
-          ) : (
-            <div className="space-y-2">
-              {services.map((svc: any) => (
-                <Card key={svc.id}>
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground">{svc.name}</p>
-                      <p className="text-xs text-muted-foreground">{svc.category} • {svc.duration_minutes} daqiqa</p>
-                    </div>
-                    <span className="text-sm font-semibold text-primary">{svc.price?.toLocaleString()} so'm</span>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
+        <DiagServices centerId={center.id} services={services} templates={templates} orders={orders} onReload={loadAll} />
       )}
 
       {tab === "inventory" && (
