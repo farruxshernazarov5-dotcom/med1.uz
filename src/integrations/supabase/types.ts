@@ -3803,6 +3803,79 @@ export type Database = {
           },
         ]
       }
+      diagnostics_radiology_studies: {
+        Row: {
+          body_part: string | null
+          center_id: string
+          created_at: string
+          findings: string | null
+          id: string
+          image_urls: string[] | null
+          impression: string | null
+          modality: string
+          order_id: string
+          patient_id: string
+          radiologist_name: string | null
+          service_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          body_part?: string | null
+          center_id: string
+          created_at?: string
+          findings?: string | null
+          id?: string
+          image_urls?: string[] | null
+          impression?: string | null
+          modality?: string
+          order_id: string
+          patient_id: string
+          radiologist_name?: string | null
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          body_part?: string | null
+          center_id?: string
+          created_at?: string
+          findings?: string | null
+          id?: string
+          image_urls?: string[] | null
+          impression?: string | null
+          modality?: string
+          order_id?: string
+          patient_id?: string
+          radiologist_name?: string | null
+          service_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_radiology_studies_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_lab_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_radiology_studies_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_radiology_studies_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diagnostics_samples: {
         Row: {
           assigned_to: string | null
@@ -3884,42 +3957,102 @@ export type Database = {
           },
         ]
       }
+      diagnostics_service_packages: {
+        Row: {
+          center_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          package_price: number
+          service_ids: string[]
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          package_price?: number
+          service_ids?: string[]
+          total_price?: number
+          updated_at?: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          package_price?: number
+          service_ids?: string[]
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       diagnostics_services: {
         Row: {
           category: string
           center_id: string
           created_at: string
           description: string | null
+          discount_price: number | null
           duration_minutes: number | null
           id: string
+          image_required: boolean | null
           is_active: boolean | null
           name: string
           preparation_info: string | null
           price: number
+          service_code: string | null
+          service_type: string
+          template_id: string | null
+          turnaround_hours: number | null
+          updated_at: string
         }
         Insert: {
           category?: string
           center_id: string
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           duration_minutes?: number | null
           id?: string
+          image_required?: boolean | null
           is_active?: boolean | null
           name: string
           preparation_info?: string | null
           price?: number
+          service_code?: string | null
+          service_type?: string
+          template_id?: string | null
+          turnaround_hours?: number | null
+          updated_at?: string
         }
         Update: {
           category?: string
           center_id?: string
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           duration_minutes?: number | null
           id?: string
+          image_required?: boolean | null
           is_active?: boolean | null
           name?: string
           preparation_info?: string | null
           price?: number
+          service_code?: string | null
+          service_type?: string
+          template_id?: string | null
+          turnaround_hours?: number | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -3927,6 +4060,13 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_services_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_test_templates"
             referencedColumns: ["id"]
           },
         ]
