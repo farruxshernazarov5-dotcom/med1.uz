@@ -3588,6 +3588,8 @@ export type Database = {
           priority: string | null
           service_id: string | null
           status: string
+          template_id: string | null
+          test_name: string | null
           total_price: number | null
           updated_at: string
         }
@@ -3603,6 +3605,8 @@ export type Database = {
           priority?: string | null
           service_id?: string | null
           status?: string
+          template_id?: string | null
+          test_name?: string | null
           total_price?: number | null
           updated_at?: string
         }
@@ -3618,6 +3622,8 @@ export type Database = {
           priority?: string | null
           service_id?: string | null
           status?: string
+          template_id?: string | null
+          test_name?: string | null
           total_price?: number | null
           updated_at?: string
         }
@@ -3641,6 +3647,13 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "diagnostics_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_lab_orders_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_test_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -3786,6 +3799,87 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_samples: {
+        Row: {
+          assigned_to: string | null
+          center_id: string
+          collected_at: string | null
+          collected_by: string | null
+          completed_at: string | null
+          container: string | null
+          created_at: string
+          current_location: string | null
+          id: string
+          notes: string | null
+          order_id: string
+          patient_id: string
+          processed_at: string | null
+          received_at: string | null
+          sample_code: string
+          sample_type: string
+          status: string
+          updated_at: string
+          volume: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          center_id: string
+          collected_at?: string | null
+          collected_by?: string | null
+          completed_at?: string | null
+          container?: string | null
+          created_at?: string
+          current_location?: string | null
+          id?: string
+          notes?: string | null
+          order_id: string
+          patient_id: string
+          processed_at?: string | null
+          received_at?: string | null
+          sample_code: string
+          sample_type?: string
+          status?: string
+          updated_at?: string
+          volume?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          center_id?: string
+          collected_at?: string | null
+          collected_by?: string | null
+          completed_at?: string | null
+          container?: string | null
+          created_at?: string
+          current_location?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string
+          patient_id?: string
+          processed_at?: string | null
+          received_at?: string | null
+          sample_code?: string
+          sample_type?: string
+          status?: string
+          updated_at?: string
+          volume?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_samples_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_lab_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_samples_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_patients"
             referencedColumns: ["id"]
           },
         ]
