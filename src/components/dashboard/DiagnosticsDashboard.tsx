@@ -115,6 +115,8 @@ const DiagnosticsDashboard = () => {
     { id: "templates", label: "Shablonlar", icon: BookTemplate, group: "Laboratoriya" },
     { id: "services", label: "Xizmatlar", icon: FlaskConical, group: "Boshqaruv" },
     { id: "inventory", label: "Reagentlar", icon: Package, group: "Ombor" },
+    { id: "sop", label: "SOP", icon: BookOpen, group: "Sifat" },
+    { id: "qc", label: "QC nazorat", icon: ShieldCheck, group: "Sifat" },
     { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
