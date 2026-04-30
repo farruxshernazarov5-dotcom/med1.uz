@@ -326,28 +326,25 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
   }
 
   // ===== ✦ CHORLOV (CTA) — Foydalanuvchi xizmatdan foydalanishga undash =====
-  const ctaY = pageH - 50;
+  // Pozitsiyani QR blokidan keyin, footer ustida joylashtiramiz
+  const ctaY = Math.max(y + 44, pageH - 38);
   doc.setFillColor(...COLORS.bgSoft);
   doc.setDrawColor(...COLORS.accent);
   doc.setLineWidth(0.4);
-  doc.roundedRect(margin, ctaY, pageW - margin * 2, 22, 2, 2, "FD");
+  doc.roundedRect(margin, ctaY, pageW - margin * 2, 14, 2, 2, "FD");
 
   doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.text("✦  Med1.uz xizmatlaridan to'liq foydalaning!", margin + 5, ctaY + 8);
+  doc.setFontSize(9.5);
+  doc.text("✦  Med1.uz xizmatlaridan to'liq foydalaning  →  med1.uz/dashboard", margin + 5, ctaY + 6);
 
   doc.setTextColor(...COLORS.text);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
+  doc.setFontSize(7.5);
   doc.text(
-    "Shaxsiy kabinetga kirib AI shifokor, retseptlar, tahlillar va onlayn navbatdan foydalaning.",
-    margin + 5, ctaY + 14
+    "AI shifokor, e-retsept, tahlillar, onlayn navbat va sog'liq monitoringi — barchasi shaxsiy kabinetda.",
+    margin + 5, ctaY + 11
   );
-  doc.setTextColor(...COLORS.accent);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("→ med1.uz/dashboard", margin + 5, ctaY + 19);
 
 
   const footerY = pageH - 22;
