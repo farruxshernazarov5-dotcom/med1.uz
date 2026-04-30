@@ -211,16 +211,58 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       return;
     }
-    // Buyurtmani completed ga o'tkazish
+    // Buyurtmani completed ga o'tkazish va tasdiqlashga yuborish
     await supabase
       .from("diagnostics_lab_orders" as any)
-      .update({ status: "completed", completed_at: new Date().toISOString() } as any)
+      .update({
+        status: "completed",
+        completed_at: new Date().toISOString(),
+        approval_status: "pending",
+        approved_by: null,
+        approved_at: null,
+        approval_note: null,
+      } as any)
       .eq("id", selectedOrder);
 
-    toast({ title: "✅ Natijalar saqlandi va buyurtma yopildi" });
+    toast({ title: "✅ Saqlandi", description: "Natijalar tasdiqlash uchun yuborildi" });
     setRows([]);
     setSelectedOrder("");
     setSelectedTemplate("");
+    onReload();
+  };
+
+  // Tasdiqlash / rad etish
+  const submitApproval = async (status: "approved" | "rejected") => {
+    if (!viewOrderId) return;
+    if (status === "rejected" && !approvalNote.trim()) {
+      toast({ title: "Rad etish uchun izoh majburiy", variant: "destructive" });
+      return;
+    }
+    const note = approvalNote.trim() || null;
+    const name = approverName.trim() || user?.email || "Tasdiqlovchi";
+
+    const { error: e1 } = await supabase.from("diagnostics_lab_orders" as any).update({
+      approval_status: status,
+      approved_by: user?.id || null,
+      approved_at: new Date().toISOString(),
+      approval_note: note,
+    } as any).eq("id", viewOrderId);
+    if (e1) { toast({ title: "Xatolik", description: e1.message, variant: "destructive" }); return; }
+
+    await supabase.from("diagnostics_result_approvals" as any).insert({
+      clinic_id: centerId,
+      order_id: viewOrderId,
+      approver_id: user?.id || null,
+      approver_name: name,
+      status,
+      note,
+    });
+
+    toast({ title: status === "approved" ? "✅ Tasdiqlandi" : "❌ Rad etildi" });
+    setApprovalNote("");
+    const { data } = await supabase.from("diagnostics_result_approvals" as any)
+      .select("*").eq("order_id", viewOrderId).order("created_at", { ascending: false }) as any;
+    setApprovalLogs(data || []);
     onReload();
   };
 
