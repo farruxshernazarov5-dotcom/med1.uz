@@ -2,9 +2,29 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
+import AIStatusWidget from "@/components/ai/AIStatusWidget";
+import { useAiAccess } from "@/hooks/useAiAccess";
+
+/* Map page href → service id used by ai-access RPC */
+const HREF_TO_SERVICE: Record<string, string> = {
+  "/symptom-checker": "symptom-checker",
+  "/ai-doctor-chat": "ai-doctor-chat",
+  "/ai-report-analysis": "ai-report-analysis",
+  "/ai-health-risk": "ai-health-risk",
+  "/ai-radiology": "ai-radiology",
+  "/ai-health-assistant": "ai-health-assistant",
+  "/ai-pregnancy": "ai-pregnancy",
+  "/ai-baby-care": "ai-baby-care",
+  "/ai-cosmetology": "ai-cosmetology",
+  "/ai-dietolog": "ai-dietolog",
+  "/ai-psixolog": "ai-psixolog",
+  "/ai-farmatsevt": "ai-farmatsevt",
+  "/ai-fitness": "ai-fitness",
+  "/ai-vital-signs": "ai-vital-signs",
+};
 
 const aiServices = [
   {
