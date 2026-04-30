@@ -3,6 +3,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CreditCard, CheckCircle2, Clock, XCircle, FileText, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
 
 const PatientPayments = () => {
   const { user } = useAuth();
