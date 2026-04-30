@@ -105,11 +105,12 @@ const PaymentMethodPicker = ({
     }
   };
 
-  const methods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string }[] = [
+  const allMethods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string }[] = [
     { id: "click", label: "Click", desc: "Online to'lov • bir necha soniyada", icon: CreditCard, color: "text-[#00B4E5]" },
     { id: "cash", label: "Naqd", desc: "Kassa yoki administrator orqali", icon: Banknote, color: "text-green-600" },
     { id: "bank", label: "Bank o'tkazma", desc: "Yuridik shaxslar uchun", icon: Building2, color: "text-blue-600" },
-  ].filter(m => allowed.includes(m.id));
+  ];
+  const methods = allMethods.filter(m => allowed.includes(m.id));
 
   return (
     <div className={cn("space-y-4", className)}>
