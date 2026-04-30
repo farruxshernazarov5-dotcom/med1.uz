@@ -250,19 +250,45 @@ const PaymentSuccessPage = () => {
                     <ArrowRight className="w-4 h-4 ml-auto" />
                   </Link>
                 </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => handleDownloadReceipt("a4")}
+                    disabled={downloading || !payment}
+                    variant="outline"
+                    size="lg"
+                    className="w-full gap-2 border-primary/30 hover:bg-primary/5"
+                  >
+                    {downloading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    A4 kvitansiya
+                  </Button>
+                  <Button
+                    onClick={() => handleDownloadReceipt("thermal")}
+                    disabled={downloading || !payment}
+                    variant="outline"
+                    size="lg"
+                    className="w-full gap-2 border-primary/30 hover:bg-primary/5"
+                  >
+                    {downloading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Printer className="w-4 h-4" />
+                    )}
+                    Chek (80mm)
+                  </Button>
+                </div>
                 <Button
-                  onClick={handleDownloadReceipt}
+                  onClick={() => handleDownloadReceipt("both")}
                   disabled={downloading || !payment}
-                  variant="outline"
-                  size="lg"
-                  className="w-full gap-2 border-primary/30 hover:bg-primary/5"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full gap-2 text-primary"
                 >
-                  {downloading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Download className="w-5 h-5" />
-                  )}
-                  {downloading ? "Yaratilmoqda..." : "Kvitansiyani PDF yuklab olish"}
+                  <Download className="w-4 h-4" />
+                  Ikkalasini birga yuklash
                 </Button>
                 {payment && (
                   <Button asChild variant="ghost" size="sm" className="w-full gap-2">
