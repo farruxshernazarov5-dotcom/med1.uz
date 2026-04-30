@@ -219,6 +219,31 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
           </div>
         </div>
       )}
+
+      {/* Payment Dialog */}
+      <Dialog open={payDialog.open} onOpenChange={(o) => setPayDialog({ open: o, plan: o ? payDialog.plan : null })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-primary" />
+              {payDialog.plan?.name} tarifiga obuna
+            </DialogTitle>
+          </DialogHeader>
+          {payDialog.plan && (
+            <PaymentMethodPicker
+              amount={payDialog.plan.price}
+              purpose={`dental_saas:${payDialog.plan.id}`}
+              referenceId={`DEN-SAAS-${clinic?.id || ""}-${Date.now()}`}
+              returnUrl={`${window.location.origin}/dashboard?paid=1`}
+              allowed={["click", "cash", "bank"]}
+              bankDetails={{
+                bank_name: "Med1.uz - SaaS to'lovi",
+                recipient: "Med1.uz MChJ",
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
