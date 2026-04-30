@@ -208,12 +208,65 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     y += 3;
   };
 
-  drawRow("Maqsad / Xizmat turi", data.purposeLabel, { bold: true });
+  // Asosiy xizmat nomi (agar berilgan bo'lsa)
+  if (data.serviceName) {
+    drawRow("Xizmat nomi", data.serviceName, { bold: true });
+  }
+  drawRow("To'lov maqsadi", data.purposeLabel);
+  if (data.planName) drawRow("Tarif rejasi", data.planName);
+  if (data.billingCycle) {
+    const cycleLabel: Record<string, string> = {
+      monthly: "Oylik obuna",
+      yearly: "Yillik obuna",
+      one_time: "Bir martalik to'lov",
+    };
+    drawRow("To'lov turi", cycleLabel[data.billingCycle] || data.billingCycle);
+  }
   drawRow("To'langan sana va vaqt", data.paidAt.toLocaleString("uz-UZ"));
   drawRow("Tranzaksiya identifikatori", data.paymentId);
   if (data.referenceId) drawRow("Provider reference", data.referenceId);
   if (data.payerName) drawRow("To'lovchi", data.payerName);
   if (data.payerEmail) drawRow("Email", data.payerEmail);
+
+  // ===== OBUNA AMAL QILISH MUDDATI (agar mavjud bo'lsa) =====
+  if (data.validFrom || data.validUntil) {
+    y += 4;
+    doc.setFillColor(...COLORS.bgSoft);
+    doc.setDrawColor(...COLORS.purple);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin, y, pageW - margin * 2, 22, 2, 2, "FD");
+
+    doc.setTextColor(...COLORS.purple);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("⏱  OBUNA AMAL QILISH MUDDATI", margin + 5, y + 7);
+
+    const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ", { day: "2-digit", month: "long", year: "numeric" }) : "—";
+    const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ", { day: "2-digit", month: "long", year: "numeric" }) : "—";
+
+    doc.setTextColor(...COLORS.muted);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Boshlanish:", margin + 5, y + 14);
+    doc.text("Tugash:", pageW / 2 + 5, y + 14);
+
+    doc.setTextColor(...COLORS.primary);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(from, margin + 5, y + 19);
+    doc.text(until, pageW / 2 + 5, y + 19);
+
+    // Qolgan kunlar
+    if (data.validUntil) {
+      const days = Math.max(0, Math.ceil((data.validUntil.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+      doc.setTextColor(...COLORS.green);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text(`✓  Qolgan: ${days} kun`, pageW - margin - 5, y + 19, { align: "right" });
+    }
+    y += 26;
+  }
+
 
   // ===== QR kod (verify URL) =====
   y += 8;
