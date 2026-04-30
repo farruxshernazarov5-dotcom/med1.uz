@@ -2,9 +2,29 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
+import AIStatusWidget from "@/components/ai/AIStatusWidget";
+import { useAiAccess } from "@/hooks/useAiAccess";
+
+/* Map page href → service id used by ai-access RPC */
+const HREF_TO_SERVICE: Record<string, string> = {
+  "/symptom-checker": "symptom-checker",
+  "/ai-doctor-chat": "ai-doctor-chat",
+  "/ai-report-analysis": "ai-report-analysis",
+  "/ai-health-risk": "ai-health-risk",
+  "/ai-radiology": "ai-radiology",
+  "/ai-health-assistant": "ai-health-assistant",
+  "/ai-pregnancy": "ai-pregnancy",
+  "/ai-baby-care": "ai-baby-care",
+  "/ai-cosmetology": "ai-cosmetology",
+  "/ai-dietolog": "ai-dietolog",
+  "/ai-psixolog": "ai-psixolog",
+  "/ai-farmatsevt": "ai-farmatsevt",
+  "/ai-fitness": "ai-fitness",
+  "/ai-vital-signs": "ai-vital-signs",
+};
 
 const aiServices = [
   {
@@ -79,7 +99,9 @@ const aiServices = [
   },
 ];
 
-const AIServicesPage = () => (
+const AIServicesPage = () => {
+  const { isServiceAllowed, loading: accessLoading } = useAiAccess();
+  return (
   <div className="min-h-screen bg-background">
     <Header />
     <Breadcrumb items={[
@@ -119,27 +141,48 @@ const AIServicesPage = () => (
             </Button>
           </Link>
         </div>
+        <div className="mt-6 text-center">
+          <Link to="/ai-subscription">
+            <Button size="lg">
+              <Crown className="w-5 h-5 mr-2" /> Obuna tariflari va narxlar
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
 
-    {/* Services grid */}
+    {/* Status widget */}
+    <section className="container mx-auto px-4 mb-6">
+      <div className="max-w-md mx-auto">
+        <AIStatusWidget />
+      </div>
+    </section>
     <section className="container mx-auto px-4 pb-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
         {aiServices.map((service) => {
           const Icon = service.icon;
+          const sid = HREF_TO_SERVICE[service.href];
+          const locked = !accessLoading && sid && !isServiceAllowed(sid);
           return (
             <Link key={service.href} to={service.href} className="group">
-              <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col group-hover:border-primary/30">
+              <div className={`relative bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col group-hover:border-primary/30 ${locked ? "opacity-80" : ""}`}>
                 <div className="flex items-start justify-between mb-4">
                   <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-md`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">{service.badge}</span>
+                  <div className="flex items-center gap-1.5">
+                    {locked && (
+                      <span className="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Premium
+                      </span>
+                    )}
+                    <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">{service.badge}</span>
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
                 <p className="text-sm text-muted-foreground flex-1 mb-4">{service.description}</p>
-                <div className="flex items-center gap-2 text-primary text-sm font-medium">
-                  Boshlash <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className={`flex items-center gap-2 text-sm font-medium ${locked ? "text-amber-700" : "text-primary"}`}>
+                  {locked ? <>Tarifni yangilash <Crown className="w-4 h-4" /></> : <>Boshlash <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>}
                 </div>
               </div>
             </Link>
@@ -188,6 +231,7 @@ const AIServicesPage = () => (
 
     <Footer />
   </div>
-);
+  );
+};
 
 export default AIServicesPage;

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2, Shield, Activity } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
+import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
 
@@ -128,6 +129,8 @@ const AIDoctorChatPage = () => {
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
+
+        <AIAccessBanner serviceId="ai-doctor-chat" serviceName="AI Shifokor Chat" />
 
         {/* Usage Guide */}
         <div className="mb-4">
