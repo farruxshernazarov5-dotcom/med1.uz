@@ -544,6 +544,62 @@ export type Database = {
         }
         Relationships: []
       }
+      click_webhook_log: {
+        Row: {
+          action: string
+          click_trans_id: string
+          created_at: string
+          error_note: string | null
+          id: string
+          merchant_trans_id: string | null
+          payment_id: string | null
+          request_body: Json | null
+          request_ip: string | null
+          response_body: Json | null
+          sign_string: string | null
+          sign_time: string | null
+          status: string
+        }
+        Insert: {
+          action: string
+          click_trans_id: string
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          merchant_trans_id?: string | null
+          payment_id?: string | null
+          request_body?: Json | null
+          request_ip?: string | null
+          response_body?: Json | null
+          sign_string?: string | null
+          sign_time?: string | null
+          status?: string
+        }
+        Update: {
+          action?: string
+          click_trans_id?: string
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          merchant_trans_id?: string | null
+          payment_id?: string | null
+          request_body?: Json | null
+          request_ip?: string | null
+          response_body?: Json | null
+          sign_string?: string | null
+          sign_time?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "click_webhook_log_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_payments: {
         Row: {
           amount: number
