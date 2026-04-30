@@ -165,8 +165,16 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.text("TO'LOV SUMMASI", margin + 5, y + 8);
   doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(24);
-  doc.text(fmtMoney(data.amount, data.currency), margin + 5, y + 21);
+  // Summa shriftini matn uzunligiga moslab kichraytiramiz
+  const amountText = fmtMoney(data.amount, data.currency);
+  const halfW = (pageW - margin * 2) / 2 - 10;
+  let amountSize = 24;
+  doc.setFontSize(amountSize);
+  while (amountSize > 12 && doc.getTextWidth(amountText) > halfW) {
+    amountSize -= 1;
+    doc.setFontSize(amountSize);
+  }
+  doc.text(amountText, margin + 5, y + 21);
 
   doc.setTextColor(...COLORS.muted);
   doc.setFont("helvetica", "normal");
@@ -174,8 +182,15 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.text("TO'LOV TIZIMI", pageW - margin - 5, y + 8, { align: "right" });
   doc.setTextColor(...COLORS.accent);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text(data.provider.toUpperCase(), pageW - margin - 5, y + 21, { align: "right" });
+  // Provider matnini sig'dirish uchun avtomatik shrift
+  const providerText = data.provider.toUpperCase();
+  let providerSize = 14;
+  doc.setFontSize(providerSize);
+  while (providerSize > 8 && doc.getTextWidth(providerText) > halfW) {
+    providerSize -= 1;
+    doc.setFontSize(providerSize);
+  }
+  doc.text(providerText, pageW - margin - 5, y + 21, { align: "right" });
 
   // TAFSILOTLAR
   y += 36;
@@ -189,17 +204,24 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.line(margin, y, margin + 60, y);
   y += 6;
 
-  const drawRow = (label: string, value: string, opts?: { bold?: boolean }) => {
+  // Uzun matnni belgilab break qilish (uzluksiz ID/email uchun)
+  const softBreak = (s: string, every = 32): string =>
+    s.replace(new RegExp(`(\\S{${every}})`, "g"), "$1\u200B");
+
+  const drawRow = (label: string, value: string, opts?: { bold?: boolean; mono?: boolean }) => {
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
     doc.text(label, margin, y);
     doc.setTextColor(...COLORS.text);
     doc.setFont("helvetica", opts?.bold ? "bold" : "normal");
-    doc.setFontSize(10);
-    const valLines = doc.splitTextToSize(value, 110);
+    // Mono qiymat (ID, email, reference) uchun kichikroq shrift
+    const fontSize = opts?.mono ? 8.5 : 10;
+    doc.setFontSize(fontSize);
+    const safeValue = opts?.mono ? softBreak(value, 28) : value;
+    const valLines = doc.splitTextToSize(safeValue, 115);
     doc.text(valLines, pageW - margin, y, { align: "right" });
-    y += Math.max(5, valLines.length * 4.5);
+    y += Math.max(5, valLines.length * (opts?.mono ? 4 : 4.5));
     doc.setDrawColor(...COLORS.border);
     doc.setLineWidth(0.15);
     doc.line(margin, y - 1, pageW - margin, y - 1);
@@ -211,10 +233,10 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   if (data.planName) drawRow("Tarif rejasi", data.planName);
   if (data.billingCycle) drawRow("To'lov turi", cycleLabel[data.billingCycle] || data.billingCycle);
   drawRow("To'langan sana va vaqt", data.paidAt.toLocaleString("uz-UZ"));
-  drawRow("Tranzaksiya identifikatori", data.paymentId);
-  if (data.referenceId) drawRow("Provider reference", data.referenceId);
+  drawRow("Tranzaksiya identifikatori", data.paymentId, { mono: true });
+  if (data.referenceId) drawRow("Provider reference", data.referenceId, { mono: true });
   if (data.payerName) drawRow("To'lovchi", data.payerName);
-  if (data.payerEmail) drawRow("Email", data.payerEmail);
+  if (data.payerEmail) drawRow("Email", data.payerEmail, { mono: true });
 
   // OBUNA MUDDATI
   if (data.validFrom || data.validUntil) {
