@@ -131,6 +131,47 @@ O'zbek tilida yozing.`;
       return new Response(JSON.stringify(parsed), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    if (action === "explain_results") {
+      const { patient_name, patient_gender, patient_dob, test_name, results_summary } = body;
+      const systemPrompt = `Siz tajribali shifokor-laborantsiz. Bemor uchun analiz natijalarini sodda, tushunarli o'zbek tilida tushuntiring.
+- Har bir abnormal qiymat nimani anglatishi mumkinligini ayting (umumiy ma'noda)
+- Tavsiyalar bering (ovqatlanish, turmush tarzi)
+- Qachon shifokorga murojaat qilish kerakligini aniq aytib bering
+- Bemorni qo'rqitmang, lekin jiddiy holatlarda ogohlantiring
+- Maksimum 250 so'z
+- Oxirida disclaimer: "Bu AI tushuntirish, to'liq tashxis uchun shifokorga murojaat qiling"`;
+
+      const userMsg = `Bemor: ${patient_name || "—"} (${patient_gender || "—"}, tug'ilgan: ${patient_dob || "—"})
+Tekshiruv: ${test_name}
+
+Natijalar:
+${results_summary}
+
+Iltimos, bu natijalarni tushuntiring.`;
+
+      const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMsg },
+          ],
+        }),
+      });
+
+      if (!aiRes.ok) {
+        if (aiRes.status === 429) return new Response(JSON.stringify({ error: "Rate limit" }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        if (aiRes.status === 402) return new Response(JSON.stringify({ error: "Credits exhausted" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        const t = await aiRes.text();
+        throw new Error(`AI: ${t}`);
+      }
+      const aiData = await aiRes.json();
+      const explanation = aiData.choices?.[0]?.message?.content || "AI javob bermadi";
+      return new Response(JSON.stringify({ explanation }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("diag-ai-workflow error:", e);
