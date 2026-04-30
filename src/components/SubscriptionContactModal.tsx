@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Phone, Mail, MessageSquare, Send, Crown, CheckCircle2 } from "lucide-react";
+import { Phone, Mail, MessageSquare, Send, Crown, CheckCircle2, CreditCard } from "lucide-react";
+import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
 
 interface SubscriptionContactModalProps {
   open: boolean;
