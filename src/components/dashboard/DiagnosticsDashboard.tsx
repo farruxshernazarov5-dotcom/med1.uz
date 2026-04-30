@@ -26,7 +26,7 @@ import DiagReferrals from "@/components/diagnostics/DiagReferrals";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
-  Package, DollarSign, UserCheck, Crown, Settings, Image as ImageIcon,
+  Package, DollarSign, UserCheck, Crown, Settings as SettingsIcon, Image as ImageIcon,
   BookOpen, ShieldCheck, Calendar, Send,
 } from "lucide-react";
 
@@ -45,6 +45,8 @@ const DiagnosticsDashboard = () => {
   const [inventory, setInventory] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [staff, setStaff] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [referrals, setReferrals] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) loadAll();
@@ -59,7 +61,7 @@ const DiagnosticsDashboard = () => {
       const c = centers[0];
       setCenter(c);
 
-      const [svcR, patR, ordR, resR, tplR, invR, txnR, stfR] = await Promise.all([
+      const [svcR, patR, ordR, resR, tplR, invR, txnR, stfR, apptR, refR] = await Promise.all([
         supabase.from("diagnostics_services" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
         supabase.from("diagnostics_patients" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
         supabase.from("diagnostics_lab_orders" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
@@ -68,6 +70,8 @@ const DiagnosticsDashboard = () => {
         supabase.from("diagnostics_inventory" as any).select("*").eq("center_id", c.id).order("name") as any,
         supabase.from("diagnostics_transactions" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
         supabase.from("diagnostics_staff" as any).select("*").eq("center_id", c.id).order("full_name") as any,
+        supabase.from("diagnostics_appointments" as any).select("*").eq("center_id", c.id).order("appointment_date", { ascending: false }).limit(200) as any,
+        supabase.from("diagnostics_referrals" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
       ]);
 
       setServices(svcR.data || []);
@@ -78,6 +82,8 @@ const DiagnosticsDashboard = () => {
       setInventory(invR.data || []);
       setTransactions(txnR.data || []);
       setStaff(stfR.data || []);
+      setAppointments(apptR.data || []);
+      setReferrals(refR.data || []);
     }
     setLoading(false);
   };
@@ -111,7 +117,9 @@ const DiagnosticsDashboard = () => {
 
   const sidebarItems: SidebarItem[] = [
     { id: "overview", label: "Bosh panel", icon: LayoutDashboard },
+    { id: "appointments", label: "Qabullar", icon: Calendar, group: "Boshqaruv" },
     { id: "patients", label: "Bemorlar", icon: Users, badge: patients.length, group: "Boshqaruv" },
+    { id: "referrals", label: "Yo'naltirishlar", icon: Send, group: "Boshqaruv" },
     { id: "lab-orders", label: "Buyurtmalar", icon: FlaskConical, badge: pendingOrders, group: "Laboratoriya" },
     { id: "results", label: "Natijalar", icon: FileText, group: "Laboratoriya" },
     { id: "radiology", label: "Radiologiya", icon: ImageIcon, group: "Laboratoriya" },
@@ -122,6 +130,7 @@ const DiagnosticsDashboard = () => {
     { id: "qc", label: "QC nazorat", icon: ShieldCheck, group: "Sifat" },
     { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
+    { id: "settings", label: "Sozlamalar", icon: SettingsIcon, group: "Tizim" },
     { id: "subscription", label: "Obuna", icon: Crown },
   ];
 
@@ -178,6 +187,16 @@ const DiagnosticsDashboard = () => {
       {tab === "sop" && <DiagSOP centerId={center.id} />}
 
       {tab === "qc" && <DiagQC centerId={center.id} />}
+
+      {tab === "appointments" && (
+        <DiagAppointments centerId={center.id} appointments={appointments} patients={patients} services={services} staff={staff} onReload={loadAll} />
+      )}
+
+      {tab === "referrals" && (
+        <DiagReferrals centerId={center.id} referrals={referrals} services={services} onReload={loadAll} />
+      )}
+
+      {tab === "settings" && <DiagSettings centerId={center.id} center={center} />}
 
       {tab === "subscription" && <DiagnosticsSubscription />}
     </DashboardShell>
