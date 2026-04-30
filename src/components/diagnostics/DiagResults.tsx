@@ -1,14 +1,16 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Save, X, FileText, Download, Sparkles, Wand2, Search, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Save, X, FileText, Download, Sparkles, Wand2, Search, AlertCircle, CheckCircle2, ShieldCheck, Clock, XCircle } from "lucide-react";
 import { downloadLabReportPDF } from "@/utils/downloadLabReport";
 
 interface LabOrder {
