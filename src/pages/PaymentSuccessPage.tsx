@@ -85,6 +85,43 @@ const PaymentSuccessPage = () => {
     };
   }, [paymentId, polls]);
 
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReceipt = async () => {
+    if (!payment) return;
+    setDownloading(true);
+    try {
+      const PURPOSE_LABELS: Record<string, string> = {
+        ai_subscription: "AI obuna",
+        saas_dental: "Dental SaaS tarif",
+        saas_doctor: "Shifokor SaaS tarif",
+        saas_clinic: "Klinika SaaS tarif",
+        saas_cosmetology: "Kosmetologiya SaaS tarif",
+        hms_invoice: "Klinika xizmati to'lovi",
+        ai_credits: "AI kredit to'ldirish",
+      };
+      await downloadPaymentReceipt({
+        paymentId: payment.id,
+        amount: Number(payment.amount),
+        currency: payment.currency,
+        purpose: payment.purpose,
+        purposeLabel: PURPOSE_LABELS[payment.purpose] || payment.purpose,
+        provider: payment.provider,
+        referenceId: payment.reference_id,
+        paidAt: payment.paid_at ? new Date(payment.paid_at) : new Date(payment.created_at),
+      });
+      toast({ title: "✓ Kvitansiya yuklandi", description: "PDF fayl muvaffaqiyatli saqlandi" });
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err?.message || "PDF yaratib bo'lmadi", variant: "destructive" });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Boshqa hooklarga ta'sir qilmaslik uchun bu yerda return yo'q — quyida davom etadi.
+  const _noop = () => {
+  }, [paymentId, polls]);
+
   const dashboardHref = useMemo(() => {
     const base = getDashboardPath(userRole);
     return `${base}?paid=1${paymentId ? `&pid=${paymentId}` : ""}`;
