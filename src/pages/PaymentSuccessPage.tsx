@@ -22,6 +22,7 @@ interface PaymentRow {
   provider: string;
   paid_at: string | null;
   created_at: string;
+  metadata?: any;
 }
 
 const PURPOSE_LABEL: Record<string, string> = {
