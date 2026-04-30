@@ -17,10 +17,11 @@ import DiagInventory from "@/components/diagnostics/DiagInventory";
 import DiagFinance from "@/components/diagnostics/DiagFinance";
 import DiagStaff from "@/components/diagnostics/DiagStaff";
 import DiagServices from "@/components/diagnostics/DiagServices";
+import DiagRadiology from "@/components/diagnostics/DiagRadiology";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
-  Package, DollarSign, UserCheck, Crown, Settings,
+  Package, DollarSign, UserCheck, Crown, Settings, Image as ImageIcon,
 } from "lucide-react";
 
 const DiagnosticsDashboard = () => {
@@ -107,8 +108,9 @@ const DiagnosticsDashboard = () => {
     { id: "patients", label: "Bemorlar", icon: Users, badge: patients.length, group: "Boshqaruv" },
     { id: "lab-orders", label: "Buyurtmalar", icon: FlaskConical, badge: pendingOrders, group: "Laboratoriya" },
     { id: "results", label: "Natijalar", icon: FileText, group: "Laboratoriya" },
+    { id: "radiology", label: "Radiologiya", icon: ImageIcon, group: "Laboratoriya" },
     { id: "templates", label: "Shablonlar", icon: BookTemplate, group: "Laboratoriya" },
-    { id: "services", label: "Xizmatlar", icon: Microscope, group: "Boshqaruv" },
+    { id: "services", label: "Xizmatlar", icon: FlaskConical, group: "Boshqaruv" },
     { id: "inventory", label: "Reagentlar", icon: Package, group: "Ombor" },
     { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
@@ -134,7 +136,11 @@ const DiagnosticsDashboard = () => {
       )}
 
       {tab === "lab-orders" && (
-        <DiagLabOrders centerId={center.id} orders={orders} patients={patients} services={services} onReload={loadAll} />
+        <DiagLabOrders centerId={center.id} orders={orders} patients={patients} services={services} staff={staff} onReload={loadAll} />
+      )}
+
+      {tab === "radiology" && (
+        <DiagRadiology centerId={center.id} orders={orders} patients={patients} staff={staff} onReload={loadAll} />
       )}
 
       {tab === "results" && (
