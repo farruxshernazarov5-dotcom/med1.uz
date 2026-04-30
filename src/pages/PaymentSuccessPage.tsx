@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
+import { downloadPaymentReceipt } from "@/utils/downloadPaymentReceipt";
+import { toast } from "@/hooks/use-toast";
 
 type Status = "loading" | "paid" | "pending" | "failed" | "not_found";
 
@@ -82,6 +84,40 @@ const PaymentSuccessPage = () => {
       if (timer) clearTimeout(timer);
     };
   }, [paymentId, polls]);
+
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReceipt = async () => {
+    if (!payment) return;
+    setDownloading(true);
+    try {
+      const PURPOSE_LABELS: Record<string, string> = {
+        ai_subscription: "AI obuna",
+        saas_dental: "Dental SaaS tarif",
+        saas_doctor: "Shifokor SaaS tarif",
+        saas_clinic: "Klinika SaaS tarif",
+        saas_cosmetology: "Kosmetologiya SaaS tarif",
+        hms_invoice: "Klinika xizmati to'lovi",
+        ai_credits: "AI kredit to'ldirish",
+      };
+      await downloadPaymentReceipt({
+        paymentId: payment.id,
+        amount: Number(payment.amount),
+        currency: payment.currency,
+        purpose: payment.purpose,
+        purposeLabel: PURPOSE_LABELS[payment.purpose] || payment.purpose,
+        provider: payment.provider,
+        referenceId: payment.reference_id,
+        paidAt: payment.paid_at ? new Date(payment.paid_at) : new Date(payment.created_at),
+      });
+      toast({ title: "✓ Kvitansiya yuklandi", description: "PDF fayl muvaffaqiyatli saqlandi" });
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err?.message || "PDF yaratib bo'lmadi", variant: "destructive" });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
 
   const dashboardHref = useMemo(() => {
     const base = getDashboardPath(userRole);
@@ -194,10 +230,24 @@ const PaymentSuccessPage = () => {
                     <ArrowRight className="w-4 h-4 ml-auto" />
                   </Link>
                 </Button>
+                <Button
+                  onClick={handleDownloadReceipt}
+                  disabled={downloading || !payment}
+                  variant="outline"
+                  size="lg"
+                  className="w-full gap-2 border-primary/30 hover:bg-primary/5"
+                >
+                  {downloading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Download className="w-5 h-5" />
+                  )}
+                  {downloading ? "Yaratilmoqda..." : "Kvitansiyani PDF yuklab olish"}
+                </Button>
                 {payment && (
-                  <Button asChild variant="outline" size="lg" className="w-full gap-2">
+                  <Button asChild variant="ghost" size="sm" className="w-full gap-2">
                     <Link to={`/verify?payment_id=${payment.id}`}>
-                      <Receipt className="w-5 h-5" /> Kvitansiya / Tasdiqlash
+                      <Receipt className="w-4 h-4" /> Onlayn tasdiqlash sahifasi
                     </Link>
                   </Button>
                 )}
