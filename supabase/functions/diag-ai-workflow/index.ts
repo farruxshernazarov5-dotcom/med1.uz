@@ -8,9 +8,12 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { action, orders, staff, modality, body_part, image_url } = await req.json();
+    const body = await req.json();
+    const action = body.action || body.mode;
+    const { orders, staff, modality, body_part, image_url } = body;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+
 
     if (action === "auto_assign") {
       const systemPrompt = `Siz diagnostika markazi ish jarayonini optimallashtiruvchi AI yordamchisiz.
