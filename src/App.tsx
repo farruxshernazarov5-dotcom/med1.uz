@@ -76,6 +76,7 @@ const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistra
 const DentalRegistrationPage = lazy(() => import("./pages/DentalRegistrationPage"));
 const UnsubscribePage = lazy(() => import("./pages/UnsubscribePage"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
+const DiagnosticsBookingPage = lazy(() => import("./pages/DiagnosticsBookingPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -178,6 +179,7 @@ const App = () => (
                 <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 <Route path="/payment/success" element={<PaymentSuccessPage />} />
                 <Route path="/payment/result" element={<PaymentSuccessPage />} />
+                <Route path="/diagnostics/:id/book" element={<DiagnosticsBookingPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
