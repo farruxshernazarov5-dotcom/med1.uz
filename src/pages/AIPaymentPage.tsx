@@ -34,7 +34,7 @@ const AIPaymentPage = () => {
   const [searchParams] = useSearchParams();
   const { user, profile } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState<"payme" | "click">("payme");
-  const [step, setStep] = useState<"details" | "payment" | "success">("details");
+  const [step, setStep] = useState<"details" | "payment" | "success" | "pending">("details");
   const [invoiceId, setInvoiceId] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -47,6 +47,7 @@ const AIPaymentPage = () => {
     setInvoiceId(`MED1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
   }, []);
 
+  // Online (Payme/Click) — to'lov darhol tasdiqlanadi va obuna aktivatsiya qilinadi
   const handlePayment = async () => {
     if (!user) {
       toast.error("Iltimos, avval tizimga kiring");
@@ -68,7 +69,6 @@ const AIPaymentPage = () => {
 
       if (error || data?.error) throw new Error(error?.message || data?.error);
 
-      // Create invoice record
       await supabase.from("invoices").insert({
         invoice_number: "",
         user_id: user.id,
@@ -117,6 +117,67 @@ const AIPaymentPage = () => {
       setLoading(false);
     }
   };
+
+  // Naqt yoki Bank o'tkazma — faqat PENDING invoice yaratiladi, obuna aktivatsiya QILINMAYDI.
+  // Admin to'lovni qabul qilgandan so'ng qo'lda tasdiqlaydi.
+  const handleManualPayment = async (method: "cash" | "bank") => {
+    if (!user) {
+      toast.error("Iltimos, avval tizimga kiring");
+      return;
+    }
+    setLoading(true);
+    try {
+      const methodLabel = method === "cash" ? "Naqt pul" : "Bank o'tkazma";
+      const { error } = await supabase.from("invoices").insert({
+        invoice_number: "",
+        user_id: user.id,
+        invoice_type: "ai_service",
+        service_type: "AI xizmatlar",
+        service_name: planNames[plan] || plan,
+        amount,
+        payment_method: methodLabel,
+        status: "pending", // ⚠️ Tasdiqlanmagan — admin qo'lda tasdiqlaydi
+        paid_at: null,
+        metadata: {
+          user_name: profile?.full_name || user.email,
+          user_phone: profile?.phone || "—",
+          user_email: user.email,
+          "Tarif rejasi": planNames[plan] || plan,
+          "Hisob davri": billing === "monthly" ? "Oylik" : "Yillik",
+          "Tanlangan xizmatlar": plan === "custom" && services.length > 0
+            ? services.map(s => serviceNames[s] || s).join(", ")
+            : "Barcha xizmatlar",
+          payment_status: "awaiting_confirmation",
+        },
+      });
+      if (error) throw error;
+
+      // Adminni xabardor qilish (Telegram)
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "ai_payment_pending",
+          data: {
+            user_id: user.id,
+            user_name: profile?.full_name || user.email,
+            user_phone: profile?.phone || "—",
+            plan_id: planNames[plan] || plan,
+            amount,
+            invoice_id: invoiceId,
+            payment_method: methodLabel,
+            status: "Tasdiqlash kutilmoqda",
+          },
+        },
+      }).catch(() => {});
+
+      toast.success("So'rovingiz qabul qilindi. To'lov tasdiqlangach obuna faollashadi.");
+      setStep("pending");
+      setLoading(false);
+    } catch (err: any) {
+      toast.error("Xatolik: " + err.message);
+      setLoading(false);
+    }
+  };
+
 
   const downloadInvoice = () => {
     const invoiceContent = `
