@@ -322,46 +322,23 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
 // THERMAL (80mm) LAYOUT — kichik chek
 // Avtomatik balandlik: kontentga qarab dinamik o'sadi
 // =====================================================================
-async function renderThermal(data: PaymentReceiptData): Promise<jsPDF> {
-  const W = 80; // mm
-  const M = 4;  // margin
+async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData: string | null,
+  receiptNumber: string, microId: string, qrDataUrl: string | null, stampPng: string | null): Promise<number> {
+  const W = 80;
+  const M = 4;
   const innerW = W - M * 2;
-
-  // Avval baland qog'oz yaratamiz, oxirida cropping qilmaymiz —
-  // jsPDF'da format birinchi yaratiladi, shuning uchun balandlikni hisoblaymiz.
-  const receiptNumber = buildReceiptNumber(data.paymentId, data.paidAt);
-  const microId = data.paymentId.slice(-6).toUpperCase();
-  const logoData = await getLogoDataUrl();
-
-  // Hisoblangan satrlar soni — balandlikni oldindan baholaymiz
-  const baseRows = 14;
-  const optionalRows =
-    (data.serviceName ? 2 : 0) +
-    (data.planName ? 1 : 0) +
-    (data.billingCycle ? 1 : 0) +
-    (data.referenceId ? 1 : 0) +
-    (data.payerName ? 1 : 0) +
-    (data.payerEmail ? 1 : 0) +
-    ((data.validFrom || data.validUntil) ? 4 : 0);
-  const estH = 90 + (baseRows + optionalRows) * 5 + 50; // QR + footer
-
-  const doc = new jsPDF({ unit: "mm", format: [W, estH] });
   let y = M + 2;
 
-  // LOGO + brend (markaz)
+  // LOGO + brend
   if (logoData) {
     const sz = 14;
     doc.addImage(logoData, "PNG", (W - sz) / 2, y, sz, sz);
     y += sz + 2;
   }
   doc.setTextColor(...COLORS.primary);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Med1.uz", W / 2, y, { align: "center" });
-  y += 4;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.5);
-  doc.setTextColor(...COLORS.muted);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(14);
+  doc.text("Med1.uz", W / 2, y, { align: "center" }); y += 4;
+  doc.setFont("helvetica", "normal"); doc.setFontSize(6.5); doc.setTextColor(...COLORS.muted);
   const sloganLines = doc.splitTextToSize(SLOGAN, innerW);
   doc.text(sloganLines, W / 2, y, { align: "center" });
   y += sloganLines.length * 3 + 1;
@@ -372,64 +349,38 @@ async function renderThermal(data: PaymentReceiptData): Promise<jsPDF> {
   doc.text("med1.uz  •  info@med1.uz", W / 2, y, { align: "center" }); y += 4;
 
   // Ajratuvchi
-  doc.setDrawColor(...COLORS.border);
-  doc.setLineDashPattern([0.6, 0.6], 0);
-  doc.line(M, y, W - M, y);
-  doc.setLineDashPattern([], 0);
-  y += 3.5;
+  doc.setDrawColor(...COLORS.border); doc.setLineDashPattern([0.6, 0.6], 0);
+  doc.line(M, y, W - M, y); doc.setLineDashPattern([], 0); y += 3.5;
 
-  // KVITANSIYA №
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(...COLORS.primary);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...COLORS.primary);
   doc.text("ELEKTRON KVITANSIYA", W / 2, y, { align: "center" }); y += 4;
   doc.setFontSize(10);
   doc.text(`№ ${receiptNumber}`, W / 2, y, { align: "center" }); y += 4;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.setTextColor(...COLORS.muted);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(...COLORS.muted);
   doc.text(data.paidAt.toLocaleString("uz-UZ"), W / 2, y, { align: "center" }); y += 4;
 
   // SUCCESS
-  doc.setFillColor(...COLORS.greenSoft);
-  doc.setDrawColor(...COLORS.green);
-  doc.setLineWidth(0.3);
+  doc.setFillColor(...COLORS.greenSoft); doc.setDrawColor(...COLORS.green); doc.setLineWidth(0.3);
   doc.roundedRect(M, y, innerW, 7, 1.5, 1.5, "FD");
-  doc.setTextColor(...COLORS.green);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text("✓ MUVAFFAQIYATLI TO'LANDI", W / 2, y + 4.7, { align: "center" });
-  y += 10;
+  doc.setTextColor(...COLORS.green); doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+  doc.text("✓ MUVAFFAQIYATLI TO'LANDI", W / 2, y + 4.7, { align: "center" }); y += 10;
 
-  // SUMMA — katta ko'rinadi
-  doc.setTextColor(...COLORS.muted);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  // SUMMA
+  doc.setTextColor(...COLORS.muted); doc.setFont("helvetica", "normal"); doc.setFontSize(7);
   doc.text("TO'LOV SUMMASI", W / 2, y, { align: "center" }); y += 4.5;
-  doc.setTextColor(...COLORS.primary);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(15);
+  doc.setTextColor(...COLORS.primary); doc.setFont("helvetica", "bold"); doc.setFontSize(15);
   doc.text(fmtMoney(data.amount, data.currency), W / 2, y, { align: "center" }); y += 5;
-  doc.setTextColor(...COLORS.accent);
-  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.accent); doc.setFontSize(9);
   doc.text(data.provider.toUpperCase(), W / 2, y, { align: "center" }); y += 4;
 
-  // Ajratuvchi
-  doc.setDrawColor(...COLORS.border);
-  doc.setLineDashPattern([0.6, 0.6], 0);
-  doc.line(M, y, W - M, y);
-  doc.setLineDashPattern([], 0);
-  y += 3;
+  doc.setDrawColor(...COLORS.border); doc.setLineDashPattern([0.6, 0.6], 0);
+  doc.line(M, y, W - M, y); doc.setLineDashPattern([], 0); y += 3;
 
-  // TAFSILOTLAR — label / value (chap-o'ng)
+  // ROWS
   const row = (label: string, value: string) => {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.8);
-    doc.setTextColor(...COLORS.muted);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(6.8); doc.setTextColor(...COLORS.muted);
     doc.text(label, M, y);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(7.2);
-    doc.setTextColor(...COLORS.text);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(7.2); doc.setTextColor(...COLORS.text);
     const lines = doc.splitTextToSize(value, innerW - 22);
     doc.text(lines, W - M, y, { align: "right" });
     y += Math.max(3.5, lines.length * 3.2) + 1;
@@ -445,92 +396,94 @@ async function renderThermal(data: PaymentReceiptData): Promise<jsPDF> {
   if (data.payerName) row("To'lovchi", data.payerName);
   if (data.payerEmail) row("Email", data.payerEmail);
 
-  // OBUNA MUDDATI
+  // OBUNA
   if (data.validFrom || data.validUntil) {
     y += 1.5;
-    doc.setDrawColor(...COLORS.purple);
-    doc.setLineWidth(0.3);
+    doc.setDrawColor(...COLORS.purple); doc.setLineWidth(0.3);
     doc.roundedRect(M, y, innerW, 14, 1, 1, "S");
-    doc.setTextColor(...COLORS.purple);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(7);
+    doc.setTextColor(...COLORS.purple); doc.setFont("helvetica", "bold"); doc.setFontSize(7);
     doc.text("OBUNA MUDDATI", W / 2, y + 3.5, { align: "center" });
     const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ") : "—";
     const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ") : "—";
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.8);
-    doc.setTextColor(...COLORS.text);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(6.8); doc.setTextColor(...COLORS.text);
     doc.text(`${from}  →  ${until}`, W / 2, y + 7.5, { align: "center" });
     if (data.validUntil) {
       const days = Math.max(0, Math.ceil((data.validUntil.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-      doc.setTextColor(...COLORS.green);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
+      doc.setTextColor(...COLORS.green); doc.setFont("helvetica", "bold"); doc.setFontSize(7);
       doc.text(`Qolgan: ${days} kun`, W / 2, y + 11.5, { align: "center" });
     }
     y += 16;
   }
 
-  // Ajratuvchi
-  doc.setDrawColor(...COLORS.border);
-  doc.setLineDashPattern([0.6, 0.6], 0);
-  doc.line(M, y, W - M, y);
-  doc.setLineDashPattern([], 0);
-  y += 3;
+  doc.setDrawColor(...COLORS.border); doc.setLineDashPattern([0.6, 0.6], 0);
+  doc.line(M, y, W - M, y); doc.setLineDashPattern([], 0); y += 3;
 
   // QR
-  const verifyUrl = `https://med1.uz/verify?payment_id=${data.paymentId}`;
-  try {
-    const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
-      margin: 1, width: 240,
-      color: { dark: "#0A2540", light: "#FFFFFF" },
-    });
+  if (qrDataUrl) {
     const qrSize = 28;
     doc.addImage(qrDataUrl, "PNG", (W - qrSize) / 2, y, qrSize, qrSize);
     y += qrSize + 2;
-    doc.setTextColor(...COLORS.muted);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
+    doc.setTextColor(...COLORS.muted); doc.setFont("helvetica", "normal"); doc.setFontSize(6);
     doc.text("QR orqali tasdiqlang:", W / 2, y, { align: "center" }); y += 2.8;
-    doc.setTextColor(...COLORS.accent);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(6);
+    doc.setTextColor(...COLORS.accent); doc.setFont("helvetica", "bold"); doc.setFontSize(6);
+    const verifyUrl = `https://med1.uz/verify?payment_id=${data.paymentId}`;
     const urlLines = doc.splitTextToSize(verifyUrl, innerW);
     doc.text(urlLines, W / 2, y, { align: "center" });
     y += urlLines.length * 2.6 + 2;
-  } catch {}
+  }
 
-  // Mini muhr (markazda)
-  try {
-    const stampPng = await generateStampDataUrl(
-      { receiptNumber, paidAt: data.paidAt, microId, amount: data.amount }, 400
-    );
+  // MUHR
+  if (stampPng) {
     const sz = 22;
     const gstate = (doc as any).GState ? new (doc as any).GState({ opacity: 0.85 }) : null;
     if (gstate) (doc as any).setGState(gstate);
     doc.addImage(stampPng, "PNG", (W - sz) / 2, y, sz, sz);
     if (gstate) (doc as any).setGState(new (doc as any).GState({ opacity: 1 }));
     y += sz + 2;
-  } catch {}
+  }
 
   // Footer
-  doc.setDrawColor(...COLORS.border);
-  doc.setLineDashPattern([0.6, 0.6], 0);
-  doc.line(M, y, W - M, y);
-  doc.setLineDashPattern([], 0);
-  y += 3;
-  doc.setTextColor(...COLORS.primary);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(7);
+  doc.setDrawColor(...COLORS.border); doc.setLineDashPattern([0.6, 0.6], 0);
+  doc.line(M, y, W - M, y); doc.setLineDashPattern([], 0); y += 3;
+  doc.setTextColor(...COLORS.primary); doc.setFont("helvetica", "bold"); doc.setFontSize(7);
   doc.text("Rahmat! Sog'lik tilaymiz", W / 2, y, { align: "center" }); y += 3.5;
-  doc.setTextColor(...COLORS.muted);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(5.8);
+  doc.setTextColor(...COLORS.muted); doc.setFont("helvetica", "normal"); doc.setFontSize(5.8);
   doc.text("med1.uz/dashboard — AI shifokor, e-retsept", W / 2, y, { align: "center" }); y += 2.5;
   doc.text("Elektron hujjat • Yuridik kuchga ega (Qonun 562)", W / 2, y, { align: "center" }); y += 2.5;
-  doc.text(PHONES, W / 2, y, { align: "center" });
+  doc.text(PHONES, W / 2, y, { align: "center" }); y += 2;
 
-  return doc;
+  return y + M; // bottom padding
+}
+
+async function renderThermal(data: PaymentReceiptData): Promise<jsPDF> {
+  const W = 80;
+  const receiptNumber = buildReceiptNumber(data.paymentId, data.paidAt);
+  const microId = data.paymentId.slice(-6).toUpperCase();
+  const logoData = await getLogoDataUrl();
+
+  // Resurslarni oldindan yuklab olamiz (har ikki render uchun)
+  let qrDataUrl: string | null = null;
+  try {
+    qrDataUrl = await QRCode.toDataURL(`https://med1.uz/verify?payment_id=${data.paymentId}`, {
+      margin: 1, width: 240, color: { dark: "#0A2540", light: "#FFFFFF" },
+    });
+  } catch {}
+  let stampPng: string | null = null;
+  try {
+    stampPng = await generateStampDataUrl(
+      { receiptNumber, paidAt: data.paidAt, microId, amount: data.amount }, 400
+    );
+  } catch {}
+
+  // 1-bosqich: o'lchov uchun katta qog'oz, kontent balandligini olamiz
+  const measureDoc = new jsPDF({ unit: "mm", format: [W, 400] });
+  const contentH = await drawThermalContent(measureDoc, data, logoData, receiptNumber, microId, qrDataUrl, stampPng);
+
+  // 2-bosqich: aniq balandlik bilan haqiqiy qog'oz
+  const finalDoc = new jsPDF({ unit: "mm", format: [W, contentH] });
+  await drawThermalContent(finalDoc, data, logoData, receiptNumber, microId, qrDataUrl, stampPng);
+
+  return finalDoc;
 }
 
 // =====================================================================
