@@ -617,6 +617,16 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
               <option value="in_progress">Jarayonda</option>
               <option value="completed">Yakunlangan</option>
             </select>
+            <select
+              value={filterApproval}
+              onChange={(e) => setFilterApproval(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="">Barcha tasdiq</option>
+              <option value="pending">Tasdiq kutmoqda</option>
+              <option value="approved">Tasdiqlangan</option>
+              <option value="rejected">Rad etilgan</option>
+            </select>
           </div>
         </CardHeader>
         <CardContent>
