@@ -3634,6 +3634,10 @@ export type Database = {
       diagnostics_lab_orders: {
         Row: {
           accepted_at: string | null
+          approval_note: string | null
+          approval_status: string | null
+          approved_at: string | null
+          approved_by: string | null
           assigned_staff_id: string | null
           center_id: string
           completed_at: string | null
@@ -3658,6 +3662,10 @@ export type Database = {
         }
         Insert: {
           accepted_at?: string | null
+          approval_note?: string | null
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           assigned_staff_id?: string | null
           center_id: string
           completed_at?: string | null
@@ -3682,6 +3690,10 @@ export type Database = {
         }
         Update: {
           accepted_at?: string | null
+          approval_note?: string | null
+          approval_status?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           assigned_staff_id?: string | null
           center_id?: string
           completed_at?: string | null
@@ -3945,6 +3957,63 @@ export type Database = {
           },
         ]
       }
+      diagnostics_qc_runs: {
+        Row: {
+          clinic_id: string
+          control_level: string | null
+          created_at: string
+          deviation_percent: number | null
+          expected_value: number | null
+          id: string
+          instrument: string | null
+          measured_value: number | null
+          notes: string | null
+          performed_by: string | null
+          qc_date: string
+          reagent_lot: string | null
+          status: string
+          test_name: string
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          control_level?: string | null
+          created_at?: string
+          deviation_percent?: number | null
+          expected_value?: number | null
+          id?: string
+          instrument?: string | null
+          measured_value?: number | null
+          notes?: string | null
+          performed_by?: string | null
+          qc_date?: string
+          reagent_lot?: string | null
+          status?: string
+          test_name: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          control_level?: string | null
+          created_at?: string
+          deviation_percent?: number | null
+          expected_value?: number | null
+          id?: string
+          instrument?: string | null
+          measured_value?: number | null
+          notes?: string | null
+          performed_by?: string | null
+          qc_date?: string
+          reagent_lot?: string | null
+          status?: string
+          test_name?: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       diagnostics_radiology_studies: {
         Row: {
           body_part: string | null
@@ -4017,6 +4086,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      diagnostics_result_approvals: {
+        Row: {
+          approver_id: string | null
+          approver_name: string | null
+          clinic_id: string
+          created_at: string
+          id: string
+          note: string | null
+          order_id: string
+          status: string
+        }
+        Insert: {
+          approver_id?: string | null
+          approver_name?: string | null
+          clinic_id: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id: string
+          status: string
+        }
+        Update: {
+          approver_id?: string | null
+          approver_name?: string | null
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          order_id?: string
+          status?: string
+        }
+        Relationships: []
       }
       diagnostics_samples: {
         Row: {
@@ -4212,6 +4314,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      diagnostics_sops: {
+        Row: {
+          category: string
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          steps: Json
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category?: string
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          steps?: Json
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          steps?: Json
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
       }
       diagnostics_staff: {
         Row: {
