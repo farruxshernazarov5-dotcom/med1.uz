@@ -411,8 +411,8 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
         </Card>
         <Card>
           <CardContent className="p-3">
-            <p className="text-xs text-muted-foreground">Jami parametr</p>
-            <p className="text-2xl font-bold">{stats.total}</p>
+            <p className="text-xs text-muted-foreground">Tasdiq kutmoqda</p>
+            <p className="text-2xl font-bold text-yellow-600">{stats.pendingApproval}</p>
           </CardContent>
         </Card>
       </div>
