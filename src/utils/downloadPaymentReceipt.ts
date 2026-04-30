@@ -325,24 +325,7 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     console.warn("Stamp generation failed", e);
   }
 
-  // ===== ✦ CHORLOV (CTA) — bitta ixcham qator (footer ustida) =====
-  const ctaY = pageH - 36;
-  doc.setFillColor(...COLORS.bgSoft);
-  doc.setDrawColor(...COLORS.accent);
-  doc.setLineWidth(0.4);
-  doc.roundedRect(margin, ctaY, pageW - margin * 2, 10, 2, 2, "FD");
-
-  doc.setTextColor(...COLORS.primary);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("✦  AI shifokor • e-retsept • tahlillar • onlayn navbat", margin + 4, ctaY + 6.5);
-
-  doc.setTextColor(...COLORS.accent);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.text("→  med1.uz/dashboard", pageW - margin - 4, ctaY + 6.5, { align: "right" });
-
-
+  // ===== FOOTER (CTA bilan birgalikda) =====
   const footerY = pageH - 22;
   // Accent strip
   doc.setFillColor(...COLORS.accent);
@@ -351,10 +334,14 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
   doc.setFillColor(...COLORS.primary);
   doc.rect(8, footerY - 7, pageW - 16, 15, "F");
 
+  // CTA chorlov — footer ichida birinchi qator
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text(`✚  ${SLOGAN}`, pageW / 2, footerY - 2, { align: "center" });
+  doc.setFontSize(9);
+  doc.text(
+    "✦  med1.uz/dashboard — AI shifokor, e-retsept, tahlillar va onlayn navbat",
+    pageW / 2, footerY - 2, { align: "center" }
+  );
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
