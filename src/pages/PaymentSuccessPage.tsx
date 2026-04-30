@@ -56,7 +56,7 @@ const PaymentSuccessPage = () => {
     const fetchOnce = async () => {
       const { data, error } = await supabase
         .from("platform_payments")
-        .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at")
+        .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata")
         .eq("id", paymentId)
         .maybeSingle();
 
