@@ -9943,6 +9943,57 @@ export type Database = {
           },
         ]
       }
+      platform_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json | null
+          paid_at: string | null
+          provider: string
+          provider_payment_id: string | null
+          provider_transaction_id: string | null
+          purpose: string
+          reference_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          provider: string
+          provider_payment_id?: string | null
+          provider_transaction_id?: string | null
+          purpose: string
+          reference_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          provider?: string
+          provider_payment_id?: string | null
+          provider_transaction_id?: string | null
+          purpose?: string
+          reference_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       platform_plans: {
         Row: {
           category: string
