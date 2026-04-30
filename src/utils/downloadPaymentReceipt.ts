@@ -44,6 +44,29 @@ const PHONES = "+998 99 214-41-03  •  +998 77 000-04-98";
 const COMPANY_LINE = "MED-ALL AI SYSTEM MChJ  •  Samarqand  •  STIR: 312972027";
 const CONTACT_LINE = `med1.uz  •  info@med1.uz  •  ${PHONES}`;
 
+/**
+ * jsPDF standart helvetica fonti faqat WinAnsi belgilarni qo'llab-quvvatlaydi.
+ * Buzilmaslik uchun ba'zi unicode belgilarni xavfsiz ekvivalentlarga almashtiramiz.
+ */
+function safeText(s: string): string {
+  if (!s) return s;
+  return s
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")  // curly single quotes -> '
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')  // curly double quotes -> "
+    .replace(/\u2014/g, "-")                       // em dash -> -
+    .replace(/\u2013/g, "-")                       // en dash -> -
+    .replace(/\u2192/g, "->")                      // → -> ->
+    .replace(/\u2190/g, "<-")                      // ←
+    .replace(/[\u2705\u2713\u2714]/g, "v")         // ✓ ✅ -> v
+    .replace(/\u2716/g, "x")                       // ✖
+    .replace(/[\u271A\u271D]/g, "+")               // ✚ ✝
+    .replace(/\u2666/g, "*")                       // ◆
+    .replace(/\u2726/g, "*")                       // ✦
+    .replace(/[\u23F1\u23F2\u23F0]/g, "")          // ⏱ ⏲ ⏰
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")        // emoji range
+    ;
+}
+
 let _logoCache: string | null = null;
 async function getLogoDataUrl(): Promise<string | null> {
   if (_logoCache) return _logoCache;
