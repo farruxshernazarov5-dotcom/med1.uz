@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { createHash } from "https://deno.land/std@0.168.0/hash/mod.ts";
+// MD5 — Web Crypto API'da yo'q, shuning uchun npm:blueimp-md5 ishlatamiz
+import md5 from "npm:blueimp-md5@2.19.0";
 
 // Click webhook — public endpoint
 // Himoya qatlamlari:
@@ -14,7 +15,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "*",
 };
 
-const md5 = (s: string) => createHash("md5").update(s).toString();
 const SIGN_TIME_MAX_AGE_SEC = 300; // 5 daqiqa
 const RATE_LIMIT_PER_MIN = 60;
 
