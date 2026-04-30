@@ -14,6 +14,16 @@ export interface PaymentReceiptData {
   paidAt: Date;
   payerName?: string;
   payerEmail?: string;
+  /** Aniq xizmat nomi, masalan: "AI Doktor — PRO tarif" */
+  serviceName?: string;
+  /** Obuna boshlanish sanasi */
+  validFrom?: Date;
+  /** Obuna tugash sanasi */
+  validUntil?: Date;
+  /** Tarif rejasi nomi (Free / Pro / Enterprise va h.k.) */
+  planName?: string;
+  /** Hisoblash davri: monthly / yearly / one_time */
+  billingCycle?: "monthly" | "yearly" | "one_time" | string;
 }
 
 // Med1.uz brend rangi
