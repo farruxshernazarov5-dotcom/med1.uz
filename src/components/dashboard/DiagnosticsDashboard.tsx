@@ -45,6 +45,8 @@ const DiagnosticsDashboard = () => {
   const [inventory, setInventory] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [staff, setStaff] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [referrals, setReferrals] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) loadAll();
