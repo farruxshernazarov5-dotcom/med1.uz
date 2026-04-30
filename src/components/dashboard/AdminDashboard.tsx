@@ -7,8 +7,9 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown
 } from "lucide-react";
+import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,7 @@ const sidebarSections = [
     label: "Tizim", items: [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
+      { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
       { id: "announcements", label: "E'lonlar", icon: Bell },
       { id: "promotions", label: "Aksiyalar", icon: Heart },
@@ -1308,6 +1310,8 @@ const AdminDashboard = () => {
           )}
 
           {/* ═══ AUDIT ═══ */}
+          {tab === "saas" && <SaaSAdminManager />}
+
           {tab === "audit" && (
             <div className="space-y-3">
               <SectionHeader icon={Shield} title="Audit loglar" count={auditLogs.length} />
