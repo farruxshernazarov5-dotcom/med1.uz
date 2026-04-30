@@ -25,6 +25,7 @@ const SubscriptionContactModal = ({
 }: SubscriptionContactModalProps) => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"contact" | "pay">("contact");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -32,6 +33,8 @@ const SubscriptionContactModal = ({
     organization: "",
     message: "",
   });
+
+  const numericPrice = Number((planPrice || "0").replace(/\s/g, "").replace(/,/g, "")) || 0;
 
   const handleSubmit = async () => {
     if (!form.name || !form.phone) {
