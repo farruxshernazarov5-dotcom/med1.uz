@@ -100,6 +100,18 @@ const PaymentSuccessPage = () => {
         hms_invoice: "Klinika xizmati to'lovi",
         ai_credits: "AI kredit to'ldirish",
       };
+      const meta: any = (payment as any).metadata || {};
+      const paidAt = payment.paid_at ? new Date(payment.paid_at) : new Date(payment.created_at);
+      // Obuna muddatini metadata yoki billing_cycle bo'yicha hisoblash
+      const cycle = meta.billing_cycle || (payment.purpose.startsWith("saas_") || payment.purpose === "ai_subscription" ? "monthly" : "one_time");
+      let validFrom: Date | undefined = meta.valid_from ? new Date(meta.valid_from) : (cycle !== "one_time" ? paidAt : undefined);
+      let validUntil: Date | undefined = meta.valid_until ? new Date(meta.valid_until) : undefined;
+      if (!validUntil && validFrom && cycle !== "one_time") {
+        validUntil = new Date(validFrom);
+        if (cycle === "yearly") validUntil.setFullYear(validUntil.getFullYear() + 1);
+        else validUntil.setMonth(validUntil.getMonth() + 1);
+      }
+
       await downloadPaymentReceipt({
         paymentId: payment.id,
         amount: Number(payment.amount),
@@ -108,7 +120,12 @@ const PaymentSuccessPage = () => {
         purposeLabel: PURPOSE_LABELS[payment.purpose] || payment.purpose,
         provider: payment.provider,
         referenceId: payment.reference_id,
-        paidAt: payment.paid_at ? new Date(payment.paid_at) : new Date(payment.created_at),
+        paidAt,
+        serviceName: meta.service_name || meta.plan_name || PURPOSE_LABELS[payment.purpose],
+        planName: meta.plan_name,
+        billingCycle: cycle,
+        validFrom,
+        validUntil,
       });
       toast({ title: "✓ Kvitansiya yuklandi", description: "PDF fayl muvaffaqiyatli saqlandi" });
     } catch (err: any) {
