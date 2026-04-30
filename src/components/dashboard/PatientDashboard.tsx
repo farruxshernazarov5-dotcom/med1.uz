@@ -245,7 +245,7 @@ const PatientDashboard = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-3">
+      <nav className="flex-1 min-h-0 overflow-y-auto py-2 px-2 space-y-3">
         {NAV_GROUPS.map((group) => (
           <div key={group.id}>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-2.5 mb-1.5 flex items-center gap-1.5">
