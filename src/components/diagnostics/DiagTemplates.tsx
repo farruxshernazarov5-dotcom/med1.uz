@@ -57,6 +57,20 @@ const emptyParam = (): TemplateParam => ({
   gender: "all",
 });
 
+// Preset (English) → UI category (Uzbek) mapping
+const PRESET_CAT_MAP: Record<string, string> = {
+  Hematology: "Qon analizi",
+  Biochemistry: "Biokimyo",
+  Hormones: "Gormonlar",
+  Urology: "Siydik",
+  Inflammation: "Immunologiya",
+  Serology: "Immunologiya",
+  Oncology: "Immunologiya",
+  Functional: "Funksional test",
+  Radiology: "Radiologiya (UZI/MRT/KT)",
+};
+const mapPresetCategory = (c: string) => PRESET_CAT_MAP[c] || "Boshqa";
+
 interface PresetTemplate {
   id: string;
   preset_key: string;
