@@ -53,6 +53,7 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
   const [currentPlan, setCurrentPlan] = useState("basic");
   const [billingHistory, setBillingHistory] = useState<any[]>([]);
   const [tab, setTab] = useState<"plans" | "billing" | "usage">("plans");
+  const [payDialog, setPayDialog] = useState<{ open: boolean; plan: any | null }>({ open: false, plan: null });
 
   const USAGE_DATA = [
     { module: "Bemorlar", used: 47, limit: currentPlan === "basic" ? 100 : currentPlan === "pro" ? 500 : 9999, icon: "👤" },
