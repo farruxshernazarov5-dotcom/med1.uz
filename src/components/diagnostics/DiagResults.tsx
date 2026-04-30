@@ -697,9 +697,11 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
 
       {/* View order results dialog */}
       <Dialog open={!!viewOrderId} onOpenChange={() => setViewOrderId(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Natijalar tafsiloti</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 flex-wrap">
+              Natijalar tafsiloti {viewedOrder && approvalBadge(viewedOrder.approval_status)}
+            </DialogTitle>
           </DialogHeader>
           {orderResults.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4">Natijalar yo'q</p>
@@ -738,14 +740,81 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
               </TableBody>
             </Table>
           )}
+
+          {/* APPROVAL BLOCK */}
           {viewOrderId && orderResults.length > 0 && (
-            <div className="flex gap-2 pt-3 border-t">
-              <Button size="sm" onClick={() => generatePDF(viewOrderId)}>
-                <Download className="w-3.5 h-3.5 mr-1" /> PDF yuklab olish
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => explainWithAI(viewOrderId)}>
-                <Sparkles className="w-3.5 h-3.5 mr-1" /> AI tushuntirish
-              </Button>
+            <div className="border-t pt-3 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <ShieldCheck className="w-4 h-4 text-primary" /> Tasdiqlash
+              </div>
+
+              {viewedApproval === "approved" && viewedOrder?.approval_note && (
+                <div className="p-2 rounded bg-green-50 dark:bg-green-950/30 text-xs">
+                  <strong>Tasdiq izohi:</strong> {viewedOrder.approval_note}
+                </div>
+              )}
+              {viewedApproval === "rejected" && viewedOrder?.approval_note && (
+                <div className="p-2 rounded bg-red-50 dark:bg-red-950/30 text-xs">
+                  <strong>Rad sababi:</strong> {viewedOrder.approval_note}
+                </div>
+              )}
+
+              {viewedApproval !== "approved" && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs">Tasdiqlovchi (ixtiyoriy)</Label>
+                      <Input value={approverName} onChange={(e) => setApproverName(e.target.value)}
+                        placeholder="F.I.Sh, lavozim" className="h-9" />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Izoh {viewedApproval === "rejected" ? "" : "(rad uchun majburiy)"}</Label>
+                      <Input value={approvalNote} onChange={(e) => setApprovalNote(e.target.value)}
+                        placeholder="Sharh..." className="h-9" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700"
+                      onClick={() => submitApproval("approved")}>
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Tasdiqlash
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => submitApproval("rejected")}>
+                      <XCircle className="w-3.5 h-3.5 mr-1" /> Rad etish
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {approvalLogs.length > 0 && (
+                <div className="space-y-1 max-h-40 overflow-y-auto">
+                  <p className="text-xs font-semibold text-muted-foreground">Tasdiqlash tarixi:</p>
+                  {approvalLogs.map((l) => (
+                    <div key={l.id} className="text-xs p-2 rounded border flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {approvalBadge(l.status)}
+                          <span className="text-muted-foreground">{l.approver_name || "—"}</span>
+                        </div>
+                        {l.note && <p className="text-muted-foreground mt-0.5">{l.note}</p>}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                        {new Date(l.created_at).toLocaleString("uz")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2 border-t">
+                <Button size="sm" disabled={viewedApproval !== "approved"}
+                  onClick={() => generatePDF(viewOrderId)}
+                  title={viewedApproval !== "approved" ? "Avval tasdiqlang" : ""}>
+                  <Download className="w-3.5 h-3.5 mr-1" /> PDF
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => explainWithAI(viewOrderId)}>
+                  <Sparkles className="w-3.5 h-3.5 mr-1" /> AI tushuntirish
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
