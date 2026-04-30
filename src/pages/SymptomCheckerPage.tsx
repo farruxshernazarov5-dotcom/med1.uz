@@ -108,6 +108,7 @@ const SymptomCheckerPage = () => {
       {/* Main content */}
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">
+          <AIAccessBanner serviceId="symptom-checker" serviceName="AI Erta Diagnostika" />
           {/* Usage Guide */}
           <div className="mb-6">
             <AIServiceUsageGuide
