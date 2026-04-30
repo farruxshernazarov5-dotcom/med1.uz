@@ -144,13 +144,85 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
     return "normal";
   };
 
+  // Bemor yoshi (yil)
+  const calcAge = (dob?: string): number | null => {
+    if (!dob) return null;
+    const d = new Date(dob);
+    if (isNaN(d.getTime())) return null;
+    return Math.floor((Date.now() - d.getTime()) / 31557600000);
+  };
+
+  const ageGroupOf = (age: number | null): "child" | "adult" | "elderly" | null => {
+    if (age === null) return null;
+    if (age < 18) return "child";
+    if (age >= 60) return "elderly";
+    return "adult";
+  };
+
+  // Smart param picker: agar bir nom uchun bir nechta variant bo'lsa, bemorga mosini tanlash
+  const pickBestParam = (
+    candidates: TemplateParam[],
+    age: number | null,
+    gender?: string
+  ): TemplateParam => {
+    const ag = ageGroupOf(age);
+    const g = (gender || "").toLowerCase();
+    let best = candidates[0];
+    let bestScore = -1;
+    for (const c of candidates) {
+      let score = 0;
+      if (c.gender && c.gender !== "all") {
+        if (g && c.gender.toLowerCase() === g) score += 2;
+        else if (g) continue; // jins mos kelmasa o'tkazib yuborish
+      } else score += 1;
+      if (c.age_group && c.age_group !== "all") {
+        if (ag && c.age_group === ag) score += 2;
+        else if (ag) continue;
+      } else score += 1;
+      if (score > bestScore) {
+        bestScore = score;
+        best = c;
+      }
+    }
+    return best;
+  };
+
   const applyTemplate = (templateId: string) => {
     setSelectedTemplate(templateId);
     const tpl = templates.find((t) => t.id === templateId);
     if (!tpl) return;
     const params: TemplateParam[] = Array.isArray(tpl.parameters) ? tpl.parameters : [];
+
+    // Bemor yoshi/jinsi
+    const order = orders.find((o) => o.id === selectedOrder);
+    const patient = order?.patient_id ? patientMap[order.patient_id] : undefined;
+    const age = calcAge(patient?.date_of_birth);
+    const gender = patient?.gender;
+
+    // Parametrlarni nom bo'yicha guruhlash
+    const grouped = new Map<string, TemplateParam[]>();
+    params.forEach((p) => {
+      const key = (p.name || "").trim().toLowerCase();
+      if (!key) return;
+      const arr = grouped.get(key) || [];
+      arr.push(p);
+      grouped.set(key, arr);
+    });
+
+    const finalParams: TemplateParam[] = [];
+    grouped.forEach((variants) => {
+      finalParams.push(pickBestParam(variants, age, gender));
+    });
+
+    if ((age !== null || gender) && finalParams.length < params.length) {
+      toast({
+        title: `🎯 Smart reference qo'llandi`,
+        description: `Bemor: ${age !== null ? age + " yosh" : ""}${gender ? " " + gender : ""} — mos normalar tanlandi`,
+      });
+    }
+
     setRows(
-      params.map((p) => ({
+      finalParams.map((p) => ({
         parameter_name: p.name || "",
         value: "",
         unit: p.unit || "",

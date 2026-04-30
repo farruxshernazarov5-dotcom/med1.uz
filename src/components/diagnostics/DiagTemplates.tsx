@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Save, X, Trash2, FlaskConical, Eye, Search } from "lucide-react";
+import { Plus, Save, X, Trash2, FlaskConical, Eye, Search, Library, Download } from "lucide-react";
 
 interface TemplateParam {
   name: string;
@@ -56,6 +57,29 @@ const emptyParam = (): TemplateParam => ({
   gender: "all",
 });
 
+// Preset (English) → UI category (Uzbek) mapping
+const PRESET_CAT_MAP: Record<string, string> = {
+  Hematology: "Qon analizi",
+  Biochemistry: "Biokimyo",
+  Hormones: "Gormonlar",
+  Urology: "Siydik",
+  Inflammation: "Immunologiya",
+  Serology: "Immunologiya",
+  Oncology: "Immunologiya",
+  Functional: "Funksional test",
+  Radiology: "Radiologiya (UZI/MRT/KT)",
+};
+const mapPresetCategory = (c: string) => PRESET_CAT_MAP[c] || "Boshqa";
+
+interface PresetTemplate {
+  id: string;
+  preset_key: string;
+  name: string;
+  category: string;
+  parameters: any;
+  description?: string | null;
+}
+
 const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -64,6 +88,76 @@ const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("");
   const [previewTpl, setPreviewTpl] = useState<Template | null>(null);
+  const [presetOpen, setPresetOpen] = useState(false);
+  const [presets, setPresets] = useState<PresetTemplate[]>([]);
+  const [presetLoading, setPresetLoading] = useState(false);
+  const [presetSearch, setPresetSearch] = useState("");
+  const [selectedPresets, setSelectedPresets] = useState<Set<string>>(new Set());
+  const [importing, setImporting] = useState(false);
+
+  const loadPresets = async () => {
+    setPresetLoading(true);
+    const { data, error } = await supabase
+      .from("diagnostics_preset_templates" as any)
+      .select("*")
+      .order("category");
+    if (error) {
+      toast({ title: "Preset yuklash xatoligi", description: error.message, variant: "destructive" });
+    } else {
+      setPresets((data as any) || []);
+    }
+    setPresetLoading(false);
+  };
+
+  const openPresets = () => {
+    setPresetOpen(true);
+    setSelectedPresets(new Set());
+    if (presets.length === 0) loadPresets();
+  };
+
+  const togglePreset = (id: string) => {
+    const s = new Set(selectedPresets);
+    s.has(id) ? s.delete(id) : s.add(id);
+    setSelectedPresets(s);
+  };
+
+  const importSelectedPresets = async () => {
+    if (selectedPresets.size === 0) {
+      toast({ title: "Hech narsa tanlanmagan", variant: "destructive" });
+      return;
+    }
+    setImporting(true);
+    const toImport = presets.filter((p) => selectedPresets.has(p.id));
+    const existingNames = new Set(templates.map((t) => t.name.toLowerCase().trim()));
+    const payload = toImport
+      .filter((p) => !existingNames.has(p.name.toLowerCase().trim()))
+      .map((p) => ({
+        center_id: centerId,
+        name: p.name,
+        category: mapPresetCategory(p.category),
+        parameters: p.parameters,
+        is_active: true,
+      }));
+    const skipped = toImport.length - payload.length;
+    if (payload.length === 0) {
+      toast({ title: "Barchasi mavjud", description: `${skipped} ta shablon allaqachon mavjud` });
+      setImporting(false);
+      return;
+    }
+    const { error } = await supabase.from("diagnostics_test_templates" as any).insert(payload as any);
+    setImporting(false);
+    if (error) {
+      toast({ title: "Import xatosi", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({
+      title: `✅ ${payload.length} ta shablon import qilindi`,
+      description: skipped > 0 ? `${skipped} ta dublikat o'tkazib yuborildi` : undefined,
+    });
+    setPresetOpen(false);
+    setSelectedPresets(new Set());
+    onReload();
+  };
 
   const resetForm = () => {
     setEditId(null);
@@ -164,9 +258,14 @@ const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
           <h3 className="font-heading font-bold text-lg text-foreground">Test shablonlari</h3>
           <p className="text-xs text-muted-foreground">Auto-fill, reference qiymatlari, yosh/jins bo'yicha</p>
         </div>
-        <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
-          <Plus className="w-4 h-4 mr-1" /> Yangi shablon
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={openPresets}>
+            <Library className="w-4 h-4 mr-1" /> Preset kutubxona
+          </Button>
+          <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
+            <Plus className="w-4 h-4 mr-1" /> Yangi shablon
+          </Button>
+        </div>
       </div>
 
       {/* Search + filter */}
@@ -469,6 +568,115 @@ const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
               </table>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Preset Library dialog */}
+      <Dialog open={presetOpen} onOpenChange={setPresetOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Library className="w-5 h-5 text-primary" /> Preset shablonlar kutubxonasi
+            </DialogTitle>
+            <DialogDescription>
+              22+ tayyor professional shablon (UMA, Biokimyo, Gormonlar va boshqalar). Tanlang va bir martada import qiling.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Preset qidirish (nom, kategoriya)..."
+                value={presetSearch}
+                onChange={(e) => setPresetSearch(e.target.value)}
+                className="pl-8 h-9"
+              />
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const filt = presets.filter((p) =>
+                  !presetSearch ||
+                  p.name.toLowerCase().includes(presetSearch.toLowerCase()) ||
+                  p.category.toLowerCase().includes(presetSearch.toLowerCase())
+                );
+                setSelectedPresets(new Set(filt.map((p) => p.id)));
+              }}
+            >
+              Hammasini tanlash
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedPresets(new Set())}>
+              Tozalash
+            </Button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+            {presetLoading ? (
+              <p className="text-sm text-muted-foreground text-center py-8">⏳ Yuklanmoqda...</p>
+            ) : presets.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">Preset topilmadi</p>
+            ) : (
+              presets
+                .filter((p) =>
+                  !presetSearch ||
+                  p.name.toLowerCase().includes(presetSearch.toLowerCase()) ||
+                  p.category.toLowerCase().includes(presetSearch.toLowerCase())
+                )
+                .map((p) => {
+                  const checked = selectedPresets.has(p.id);
+                  const exists = templates.some(
+                    (t) => t.name.toLowerCase().trim() === p.name.toLowerCase().trim()
+                  );
+                  const params = Array.isArray(p.parameters) ? p.parameters : [];
+                  return (
+                    <div
+                      key={p.id}
+                      className={`flex items-start gap-3 p-3 rounded-lg border transition cursor-pointer ${
+                        checked ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                      } ${exists ? "opacity-60" : ""}`}
+                      onClick={() => !exists && togglePreset(p.id)}
+                    >
+                      <Checkbox checked={checked} disabled={exists} className="mt-1" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-sm">{p.name}</p>
+                          <Badge variant="outline" className="text-[10px]">{mapPresetCategory(p.category)}</Badge>
+                          {exists && <Badge variant="secondary" className="text-[10px]">Mavjud</Badge>}
+                        </div>
+                        {p.description && (
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{p.description}</p>
+                        )}
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {params.slice(0, 6).map((par: any, i: number) => (
+                            <span key={i} className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
+                              {par.name} ({par.min}–{par.max} {par.unit})
+                            </span>
+                          ))}
+                          {params.length > 6 && (
+                            <span className="text-[10px] text-muted-foreground">+{params.length - 6} ta</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+            )}
+          </div>
+
+          <div className="flex items-center justify-between gap-2 pt-3 border-t">
+            <p className="text-xs text-muted-foreground">
+              Tanlangan: <strong>{selectedPresets.size}</strong> / {presets.length}
+            </p>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => setPresetOpen(false)}>Bekor</Button>
+              <Button size="sm" onClick={importSelectedPresets} disabled={importing || selectedPresets.size === 0}>
+                <Download className="w-4 h-4 mr-1" />
+                {importing ? "Import qilinmoqda..." : `Import (${selectedPresets.size})`}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
