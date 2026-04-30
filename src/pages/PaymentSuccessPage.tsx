@@ -89,7 +89,7 @@ const PaymentSuccessPage = () => {
 
   const [downloading, setDownloading] = useState(false);
 
-  const handleDownloadReceipt = async () => {
+  const handleDownloadReceipt = async (format: ReceiptFormat = "a4") => {
     if (!payment) return;
     setDownloading(true);
     try {
