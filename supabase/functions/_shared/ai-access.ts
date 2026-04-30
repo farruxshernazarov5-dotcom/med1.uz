@@ -53,7 +53,39 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
     const nowIso = now.toISOString();
     const creditCost = SERVICE_CREDITS[serviceId] ?? 5;
 
-    /* ─── Get active (non-expired) credit balance ─── */
+    /* ─── 1) Plan-based access: check tier, allowed_services, daily/monthly limits ─── */
+    try {
+      const { data: accessRows } = await admin.rpc("get_user_ai_access", { _user_id: userId });
+      const access = Array.isArray(accessRows) ? accessRows[0] : accessRows;
+      if (access) {
+        const allowed = (access.allowed_services as string[]) || [];
+        if (allowed.length > 0 && !allowed.includes(serviceId)) {
+          return {
+            allowed: false,
+            status: 403,
+            error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.`,
+          };
+        }
+        if (typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) {
+          return {
+            allowed: false,
+            status: 429,
+            error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}). Ertaga qaytadan urinib ko'ring yoki tarifni yangilang.`,
+          };
+        }
+        if (typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit) {
+          return {
+            allowed: false,
+            status: 429,
+            error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}). Tarifni yangilang.`,
+          };
+        }
+      }
+    } catch (planErr) {
+      console.warn("Plan access check skipped:", planErr);
+    }
+
+    /* ─── 2) Get active (non-expired) credit balance ─── */
     const { data: credits } = await admin
       .from("user_credits")
       .select("id, balance, expires_at")
