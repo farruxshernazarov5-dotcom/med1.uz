@@ -95,9 +95,18 @@ const PatientPayments = () => {
                         <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(p._date).toLocaleDateString("uz-UZ")} • {s.label}</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="font-bold text-sm text-foreground">{Number(p._amount).toLocaleString("uz-UZ")}</p>
                       <p className="text-[10px] text-muted-foreground">so'm</p>
+                      {(p._status === "pending" || p._status === "unpaid" || p._status === "partial") && (
+                        <Button
+                          size="sm"
+                          className="mt-2 h-7 text-xs px-2 bg-[#00B4E5] hover:bg-[#0098C2] text-white"
+                          onClick={() => setPayDialog({ open: true, item: p })}
+                        >
+                          To'lash
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
