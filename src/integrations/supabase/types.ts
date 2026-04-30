@@ -3575,6 +3575,51 @@ export type Database = {
           },
         ]
       }
+      diagnostics_expenses: {
+        Row: {
+          amount: number
+          category: string
+          center_id: string
+          created_at: string
+          created_by: string | null
+          description: string
+          expense_date: string
+          id: string
+          notes: string | null
+          payment_method: string | null
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          expense_date?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          expense_date?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: []
+      }
       diagnostics_inventory: {
         Row: {
           category: string | null
@@ -4522,37 +4567,46 @@ export type Database = {
           amount: number
           center_id: string
           created_at: string
+          description: string | null
           id: string
           invoice_number: string | null
           notes: string | null
           order_id: string | null
+          paid_at: string | null
           patient_id: string | null
           payment_method: string | null
           status: string | null
+          transaction_type: string | null
         }
         Insert: {
           amount?: number
           center_id: string
           created_at?: string
+          description?: string | null
           id?: string
           invoice_number?: string | null
           notes?: string | null
           order_id?: string | null
+          paid_at?: string | null
           patient_id?: string | null
           payment_method?: string | null
           status?: string | null
+          transaction_type?: string | null
         }
         Update: {
           amount?: number
           center_id?: string
           created_at?: string
+          description?: string | null
           id?: string
           invoice_number?: string | null
           notes?: string | null
           order_id?: string | null
+          paid_at?: string | null
           patient_id?: string | null
           payment_method?: string | null
           status?: string | null
+          transaction_type?: string | null
         }
         Relationships: [
           {
