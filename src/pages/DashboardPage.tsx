@@ -12,6 +12,7 @@ import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
 import DentalDashboard from "@/components/dashboard/DentalDashboard";
 import { getDashboardPath } from "@/lib/dashboard";
+import PaymentSuccessBanner from "@/components/payments/PaymentSuccessBanner";
 
 const DASHBOARD_MAP: Record<string, React.ComponentType> = {
   admin: AdminDashboard,
@@ -64,7 +65,12 @@ const DashboardPage = () => {
     return <Navigate to={userDashboardPath} replace />;
   }
 
-  return <DashboardComponent />;
+  return (
+    <>
+      <PaymentSuccessBanner />
+      <DashboardComponent />
+    </>
+  );
 };
 
 export default DashboardPage;

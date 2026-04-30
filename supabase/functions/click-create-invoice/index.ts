@@ -65,8 +65,21 @@ Deno.serve(async (req) => {
 
     if (payErr) throw payErr;
 
+    // return_url ga payment_id qo'shamiz — success sahifasi polling qilishi uchun
+    const returnWithId = (() => {
+      try {
+        const u = new URL(return_url);
+        u.searchParams.set("payment_id", payment.id);
+        u.searchParams.set("provider", "click");
+        return u.toString();
+      } catch {
+        const sep = return_url.includes("?") ? "&" : "?";
+        return `${return_url}${sep}payment_id=${payment.id}&provider=click`;
+      }
+    })();
+
     // Click checkout URL
-    const checkout_url = `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}&merchant_id=${encodeURIComponent(merchantId)}&amount=${amount}&transaction_param=${payment.id}&return_url=${encodeURIComponent(return_url)}`;
+    const checkout_url = `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}&merchant_id=${encodeURIComponent(merchantId)}&amount=${amount}&transaction_param=${payment.id}&return_url=${encodeURIComponent(returnWithId)}`;
 
     return new Response(JSON.stringify({ ok: true, payment, checkout_url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
