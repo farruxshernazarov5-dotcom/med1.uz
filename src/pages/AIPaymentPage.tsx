@@ -303,8 +303,8 @@ ${plan === "professional" || plan === "family" ? "âœ“ Barcha 13 ta AI xizmat\nâœ
                   purpose={`ai_subscription:${plan}:${billing}`}
                   referenceId={invoiceId}
                   returnUrl={`${window.location.origin}/ai-subscription?paid=1`}
-                  onCashSelected={handlePayment}
-                  onBankSelected={handlePayment}
+                  onCashSelected={() => handleManualPayment("cash")}
+                  onBankSelected={() => handleManualPayment("bank")}
                   allowed={["click", "cash", "bank"]}
                 />
               </div>
