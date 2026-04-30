@@ -14,6 +14,16 @@ export interface PaymentReceiptData {
   paidAt: Date;
   payerName?: string;
   payerEmail?: string;
+  /** Aniq xizmat nomi, masalan: "AI Doktor — PRO tarif" */
+  serviceName?: string;
+  /** Obuna boshlanish sanasi */
+  validFrom?: Date;
+  /** Obuna tugash sanasi */
+  validUntil?: Date;
+  /** Tarif rejasi nomi (Free / Pro / Enterprise va h.k.) */
+  planName?: string;
+  /** Hisoblash davri: monthly / yearly / one_time */
+  billingCycle?: "monthly" | "yearly" | "one_time" | string;
 }
 
 // Med1.uz brend rangi
@@ -191,19 +201,72 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     const valLines = doc.splitTextToSize(value, 110);
     doc.text(valLines, pageW - margin, y, { align: "right" });
 
-    y += Math.max(6, valLines.length * 5);
+    y += Math.max(5, valLines.length * 4.5);
     doc.setDrawColor(...COLORS.border);
     doc.setLineWidth(0.15);
     doc.line(margin, y - 1, pageW - margin, y - 1);
-    y += 3;
+    y += 2;
   };
 
-  drawRow("Maqsad / Xizmat turi", data.purposeLabel, { bold: true });
+  // Asosiy xizmat nomi (agar berilgan bo'lsa)
+  if (data.serviceName) {
+    drawRow("Xizmat nomi", data.serviceName, { bold: true });
+  }
+  drawRow("To'lov maqsadi", data.purposeLabel);
+  if (data.planName) drawRow("Tarif rejasi", data.planName);
+  if (data.billingCycle) {
+    const cycleLabel: Record<string, string> = {
+      monthly: "Oylik obuna",
+      yearly: "Yillik obuna",
+      one_time: "Bir martalik to'lov",
+    };
+    drawRow("To'lov turi", cycleLabel[data.billingCycle] || data.billingCycle);
+  }
   drawRow("To'langan sana va vaqt", data.paidAt.toLocaleString("uz-UZ"));
   drawRow("Tranzaksiya identifikatori", data.paymentId);
   if (data.referenceId) drawRow("Provider reference", data.referenceId);
   if (data.payerName) drawRow("To'lovchi", data.payerName);
   if (data.payerEmail) drawRow("Email", data.payerEmail);
+
+  // ===== OBUNA AMAL QILISH MUDDATI (agar mavjud bo'lsa) =====
+  if (data.validFrom || data.validUntil) {
+    y += 4;
+    doc.setFillColor(...COLORS.bgSoft);
+    doc.setDrawColor(...COLORS.purple);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin, y, pageW - margin * 2, 22, 2, 2, "FD");
+
+    doc.setTextColor(...COLORS.purple);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("⏱  OBUNA AMAL QILISH MUDDATI", margin + 5, y + 7);
+
+    const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ", { day: "2-digit", month: "long", year: "numeric" }) : "—";
+    const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ", { day: "2-digit", month: "long", year: "numeric" }) : "—";
+
+    doc.setTextColor(...COLORS.muted);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Boshlanish:", margin + 5, y + 14);
+    doc.text("Tugash:", pageW / 2 + 5, y + 14);
+
+    doc.setTextColor(...COLORS.primary);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(from, margin + 5, y + 19);
+    doc.text(until, pageW / 2 + 5, y + 19);
+
+    // Qolgan kunlar
+    if (data.validUntil) {
+      const days = Math.max(0, Math.ceil((data.validUntil.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+      doc.setTextColor(...COLORS.green);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text(`✓  Qolgan: ${days} kun`, pageW - margin - 5, y + 19, { align: "right" });
+    }
+    y += 26;
+  }
+
 
   // ===== QR kod (verify URL) =====
   y += 8;
@@ -238,9 +301,9 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
 
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "italic");
-    doc.setFontSize(7.5);
-    doc.text("Ushbu kvitansiya elektron tarzda yaratilgan", margin + 44, y + 30);
-    doc.text("va imzo talab qilmaydi (O'z.R Qonuni №562, 03.04.2018).", margin + 44, y + 34);
+    doc.setFontSize(7);
+    doc.text("Imzo talab qilmaydi (O'z.R Qonuni 562)", margin + 44, y + 30);
+    
   } catch (e) {
     console.warn("QR generation failed", e);
   }
@@ -262,7 +325,7 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     console.warn("Stamp generation failed", e);
   }
 
-  // ===== FOOTER =====
+  // ===== FOOTER (CTA bilan birgalikda) =====
   const footerY = pageH - 22;
   // Accent strip
   doc.setFillColor(...COLORS.accent);
@@ -271,10 +334,14 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
   doc.setFillColor(...COLORS.primary);
   doc.rect(8, footerY - 7, pageW - 16, 15, "F");
 
+  // CTA chorlov — footer ichida birinchi qator
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.5);
-  doc.text(`✚  ${SLOGAN}`, pageW / 2, footerY - 2, { align: "center" });
+  doc.setFontSize(9);
+  doc.text(
+    "✦  med1.uz/dashboard — AI shifokor, e-retsept, tahlillar va onlayn navbat",
+    pageW / 2, footerY - 2, { align: "center" }
+  );
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
