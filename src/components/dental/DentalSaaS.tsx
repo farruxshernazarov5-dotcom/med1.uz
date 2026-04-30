@@ -137,6 +137,7 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
                   className="w-full"
                   variant={isActive ? "outline" : "default"}
                   disabled={isActive}
+                  onClick={() => !isActive && setPayDialog({ open: true, plan })}
                 >
                   {isActive ? "✅ Joriy tarif" : "Tanlash"}
                 </Button>
