@@ -230,10 +230,24 @@ const PaymentSuccessPage = () => {
                     <ArrowRight className="w-4 h-4 ml-auto" />
                   </Link>
                 </Button>
+                <Button
+                  onClick={handleDownloadReceipt}
+                  disabled={downloading || !payment}
+                  variant="outline"
+                  size="lg"
+                  className="w-full gap-2 border-primary/30 hover:bg-primary/5"
+                >
+                  {downloading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Download className="w-5 h-5" />
+                  )}
+                  {downloading ? "Yaratilmoqda..." : "Kvitansiyani PDF yuklab olish"}
+                </Button>
                 {payment && (
-                  <Button asChild variant="outline" size="lg" className="w-full gap-2">
+                  <Button asChild variant="ghost" size="sm" className="w-full gap-2">
                     <Link to={`/verify?payment_id=${payment.id}`}>
-                      <Receipt className="w-5 h-5" /> Kvitansiya / Tasdiqlash
+                      <Receipt className="w-4 h-4" /> Onlayn tasdiqlash sahifasi
                     </Link>
                   </Button>
                 )}
