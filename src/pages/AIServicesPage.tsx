@@ -99,7 +99,9 @@ const aiServices = [
   },
 ];
 
-const AIServicesPage = () => (
+const AIServicesPage = () => {
+  const { isServiceAllowed, loading: accessLoading } = useAiAccess();
+  return (
   <div className="min-h-screen bg-background">
     <Header />
     <Breadcrumb items={[
@@ -139,10 +141,22 @@ const AIServicesPage = () => (
             </Button>
           </Link>
         </div>
+        <div className="mt-6 text-center">
+          <Link to="/ai-subscription">
+            <Button size="lg">
+              <Crown className="w-5 h-5 mr-2" /> Obuna tariflari va narxlar
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
 
-    {/* Services grid */}
+    {/* Status widget */}
+    <section className="container mx-auto px-4 mb-6">
+      <div className="max-w-md mx-auto">
+        <AIStatusWidget />
+      </div>
+    </section>
     <section className="container mx-auto px-4 pb-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
         {aiServices.map((service) => {
