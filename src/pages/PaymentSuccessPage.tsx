@@ -118,9 +118,6 @@ const PaymentSuccessPage = () => {
     }
   };
 
-  // Boshqa hooklarga ta'sir qilmaslik uchun bu yerda return yo'q — quyida davom etadi.
-  const _noop = () => {
-  }, [paymentId, polls]);
 
   const dashboardHref = useMemo(() => {
     const base = getDashboardPath(userRole);
