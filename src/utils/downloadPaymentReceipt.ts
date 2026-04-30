@@ -44,6 +44,29 @@ const PHONES = "+998 99 214-41-03  •  +998 77 000-04-98";
 const COMPANY_LINE = "MED-ALL AI SYSTEM MChJ  •  Samarqand  •  STIR: 312972027";
 const CONTACT_LINE = `med1.uz  •  info@med1.uz  •  ${PHONES}`;
 
+/**
+ * jsPDF standart helvetica fonti faqat WinAnsi belgilarni qo'llab-quvvatlaydi.
+ * Buzilmaslik uchun ba'zi unicode belgilarni xavfsiz ekvivalentlarga almashtiramiz.
+ */
+function safeText(s: string): string {
+  if (!s) return s;
+  return s
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")  // curly single quotes -> '
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')  // curly double quotes -> "
+    .replace(/\u2014/g, "-")                       // em dash -> -
+    .replace(/\u2013/g, "-")                       // en dash -> -
+    .replace(/\u2192/g, "->")                      // → -> ->
+    .replace(/\u2190/g, "<-")                      // ←
+    .replace(/[\u2705\u2713\u2714]/g, "v")         // ✓ ✅ -> v
+    .replace(/\u2716/g, "x")                       // ✖
+    .replace(/[\u271A\u271D]/g, "+")               // ✚ ✝
+    .replace(/\u2666/g, "*")                       // ◆
+    .replace(/\u2726/g, "*")                       // ✦
+    .replace(/[\u23F1\u23F2\u23F0]/g, "")          // ⏱ ⏲ ⏰
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")        // emoji range
+    ;
+}
+
 let _logoCache: string | null = null;
 async function getLogoDataUrl(): Promise<string | null> {
   if (_logoCache) return _logoCache;
@@ -91,29 +114,40 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
 
   const receiptNumber = buildReceiptNumber(data.paymentId, data.paidAt);
   const microId = data.paymentId.slice(-6).toUpperCase();
+  const logoData = await getLogoDataUrl();
 
   // ===== HEADER (brand bar) =====
   doc.setFillColor(...COLORS.primary);
   doc.rect(0, 0, pageW, 32, "F");
 
+  // Logo (oq doira fonida)
+  let textX = margin;
+  if (logoData) {
+    const logoSize = 18;
+    doc.setFillColor(255, 255, 255);
+    doc.circle(margin + logoSize / 2, 16, logoSize / 2 + 1, "F");
+    doc.addImage(logoData, "PNG", margin, 7, logoSize, logoSize);
+    textX = margin + logoSize + 5;
+  }
+
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.text("MED-ALL AI SYSTEM", margin, 14);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text("MAS'ULIYATI CHEKLANGAN JAMIYATI • SAMARQAND • STIR: 312972027", margin, 21);
-  doc.text(`med1.uz  |  info@med1.uz  |  ${PHONES}`, margin, 27);
-
-  // O'ng tomonda: KVITANSIYA №
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.text("KVITANSIYA", pageW - margin, 14, { align: "right" });
-  doc.setFontSize(13);
-  doc.text(`№ ${receiptNumber}`, pageW - margin, 22, { align: "right" });
+  doc.setFontSize(18);
+  doc.text(safeText("MED-ALL AI SYSTEM"), textX, 14);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(data.paidAt.toLocaleString("uz-UZ"), pageW - margin, 28, { align: "right" });
+  doc.text(safeText("MChJ  •  SAMARQAND  •  STIR: 312972027"), textX, 20);
+  doc.text(safeText(`med1.uz  |  info@med1.uz  |  ${PHONES}`), textX, 26);
+
+  // O'ng tomonda: KVITANSIYA №
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("KVITANSIYA", pageW - margin, 13, { align: "right" });
+  doc.setFontSize(12);
+  doc.text(safeText(`No ${receiptNumber}`), pageW - margin, 20, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text(data.paidAt.toLocaleString("uz-UZ"), pageW - margin, 27, { align: "right" });
 
   // ===== "MUVAFFAQIYATLI TO'LANDI" badge =====
   let y = 44;
@@ -123,19 +157,19 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(...COLORS.green);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("✓ TO'LOV MUVAFFAQIYATLI QABUL QILINDI", pageW / 2, y + 9, { align: "center" });
+  doc.text(safeText("v  TO'LOV MUVAFFAQIYATLI QABUL QILINDI"), pageW / 2, y + 9, { align: "center" });
 
   // ===== Asosiy summa =====
   y += 22;
   doc.setTextColor(...COLORS.muted);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-  doc.text("To'lov summasi", margin, y);
+  doc.text(safeText("To'lov summasi"), margin, y);
   doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(28);
   y += 10;
-  doc.text(fmtMoney(data.amount, data.currency), margin, y);
+  doc.text(safeText(fmtMoney(data.amount, data.currency)), margin, y);
 
   // ===== Tafsilotlar jadvali =====
   y += 12;
@@ -144,16 +178,20 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.line(margin, y, pageW - margin, y);
   y += 6;
 
+  // Label kengligi: 45mm; qiymat uchun qolgan kenglik
+  const labelW = 45;
+  const valueW = pageW - margin * 2 - labelW - 4;
+
   const drawRow = (label: string, value: string, opts?: { bold?: boolean }) => {
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.text(label, margin, y);
+    doc.text(safeText(label), margin, y);
 
     doc.setTextColor(...COLORS.text);
     doc.setFont("helvetica", opts?.bold ? "bold" : "normal");
     doc.setFontSize(10);
-    const valLines = doc.splitTextToSize(value, 110);
+    const valLines = doc.splitTextToSize(safeText(value), valueW);
     doc.text(valLines, pageW - margin, y, { align: "right" });
 
     y += Math.max(6, valLines.length * 5);
@@ -168,9 +206,9 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   if (data.planName) drawRow("Tarif rejasi", data.planName);
   if (data.billingCycle) drawRow("To'lov turi", cycleLabel[data.billingCycle] || data.billingCycle);
   if (data.validFrom || data.validUntil) {
-    const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ") : "—";
-    const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ") : "—";
-    drawRow("Amal qilish muddati", `${from}  →  ${until}`);
+    const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ") : "-";
+    const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ") : "-";
+    drawRow("Amal qilish muddati", `${from}  ->  ${until}`);
   }
   drawRow("Provider", data.provider.toUpperCase());
   drawRow("To'langan vaqt", data.paidAt.toLocaleString("uz-UZ"));
@@ -188,12 +226,14 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text("Tasdiqlash uchun QR kodni skanerlang yoki", margin + 40, y + 10);
+    doc.text(safeText("Tasdiqlash uchun QR kodni skanerlang yoki"), margin + 40, y + 10);
     doc.text("havola orqali kiring:", margin + 40, y + 15);
     doc.setTextColor(...COLORS.accent);
-    doc.text(verifyUrl, margin + 40, y + 22);
+    // URL'ni kerak bo'lsa wrap qilamiz
+    const urlLines = doc.splitTextToSize(verifyUrl, 95);
+    doc.text(urlLines, margin + 40, y + 22);
     doc.setTextColor(...COLORS.muted);
-    doc.text("Bu kvitansiya elektron tarzda yaratilgan", margin + 40, y + 30);
+    doc.text(safeText("Bu kvitansiya elektron tarzda yaratilgan"), margin + 40, y + 30);
     doc.text("va imzo talab qilmaydi.", margin + 40, y + 35);
   } catch (e) {
     console.warn("QR generation failed", e);
@@ -226,14 +266,14 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.5);
   doc.text(
-    "Ushbu kvitansiya MED-ALL AI SYSTEM MChJ tomonidan elektron tarzda yaratilgan. Yuridik kuchga ega.",
+    safeText("Ushbu kvitansiya MED-ALL AI SYSTEM MChJ tomonidan elektron tarzda yaratilgan. Yuridik kuchga ega."),
     pageW / 2, footerY, { align: "center" }
   );
   doc.text(
-    `Hujjat ID: ${data.paymentId}  •  Yaratildi: ${new Date().toLocaleString("uz-UZ")}`,
+    safeText(`Hujjat ID: ${data.paymentId}  •  Yaratildi: ${new Date().toLocaleString("uz-UZ")}`),
     pageW / 2, footerY + 4, { align: "center" }
   );
-  doc.text("med1.uz", pageW / 2, footerY + 8, { align: "center" });
+  doc.text(safeText(`med1.uz  •  ${PHONES}`), pageW / 2, footerY + 8, { align: "center" });
 }
 
 // =====================================================================
