@@ -81,7 +81,6 @@ const Index = () => {
 
       <ContactLocationSection />
       <Footer />
-      
     </div>
   );
 };
