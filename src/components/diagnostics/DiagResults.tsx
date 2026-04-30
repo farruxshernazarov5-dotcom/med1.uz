@@ -659,6 +659,7 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
                             <CheckCircle2 className="w-3 h-3 mr-1" /> Norma
                           </Badge>
                         )}
+                        {orRes.length > 0 && approvalBadge(o.approval_status)}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {patient?.full_name || "—"} • {orRes.length} parametr •{" "}
