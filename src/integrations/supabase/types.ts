@@ -56,6 +56,60 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_subscription_plans: {
+        Row: {
+          allowed_services: Json
+          created_at: string
+          daily_limit: number
+          features: Json
+          id: string
+          is_active: boolean
+          monthly_credits: number
+          monthly_limit: number
+          name: string
+          name_uz: string
+          price_monthly: number
+          price_yearly: number
+          sort_order: number
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          allowed_services?: Json
+          created_at?: string
+          daily_limit?: number
+          features?: Json
+          id: string
+          is_active?: boolean
+          monthly_credits?: number
+          monthly_limit?: number
+          name: string
+          name_uz: string
+          price_monthly?: number
+          price_yearly?: number
+          sort_order?: number
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          allowed_services?: Json
+          created_at?: string
+          daily_limit?: number
+          features?: Json
+          id?: string
+          is_active?: boolean
+          monthly_credits?: number
+          monthly_limit?: number
+          name?: string
+          name_uz?: string
+          price_monthly?: number
+          price_yearly?: number
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_subscriptions: {
         Row: {
           billing_period: string
@@ -11785,6 +11839,50 @@ export type Database = {
           },
         ]
       }
+      user_ai_subscriptions: {
+        Row: {
+          auto_renew: boolean
+          created_at: string
+          expires_at: string | null
+          id: string
+          plan_id: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_renew?: boolean
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_renew?: boolean
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_ai_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "ai_subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_credits: {
         Row: {
           balance: number
@@ -11990,6 +12088,20 @@ export type Database = {
           limits: Json
           status: string
           tier: string
+        }[]
+      }
+      get_user_ai_access: {
+        Args: { _user_id: string }
+        Returns: {
+          allowed_services: Json
+          daily_limit: number
+          expires_at: string
+          monthly_limit: number
+          plan_id: string
+          status: string
+          tier: string
+          used_month: number
+          used_today: number
         }[]
       }
       has_role: {
