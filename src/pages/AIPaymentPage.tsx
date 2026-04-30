@@ -34,7 +34,7 @@ const AIPaymentPage = () => {
   const [searchParams] = useSearchParams();
   const { user, profile } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState<"payme" | "click">("payme");
-  const [step, setStep] = useState<"details" | "payment" | "success">("details");
+  const [step, setStep] = useState<"details" | "payment" | "success" | "pending">("details");
   const [invoiceId, setInvoiceId] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -47,6 +47,7 @@ const AIPaymentPage = () => {
     setInvoiceId(`MED1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
   }, []);
 
+  // Online (Payme/Click) — to'lov darhol tasdiqlanadi va obuna aktivatsiya qilinadi
   const handlePayment = async () => {
     if (!user) {
       toast.error("Iltimos, avval tizimga kiring");
@@ -68,7 +69,6 @@ const AIPaymentPage = () => {
 
       if (error || data?.error) throw new Error(error?.message || data?.error);
 
-      // Create invoice record
       await supabase.from("invoices").insert({
         invoice_number: "",
         user_id: user.id,
@@ -117,6 +117,67 @@ const AIPaymentPage = () => {
       setLoading(false);
     }
   };
+
+  // Naqt yoki Bank o'tkazma — faqat PENDING invoice yaratiladi, obuna aktivatsiya QILINMAYDI.
+  // Admin to'lovni qabul qilgandan so'ng qo'lda tasdiqlaydi.
+  const handleManualPayment = async (method: "cash" | "bank") => {
+    if (!user) {
+      toast.error("Iltimos, avval tizimga kiring");
+      return;
+    }
+    setLoading(true);
+    try {
+      const methodLabel = method === "cash" ? "Naqt pul" : "Bank o'tkazma";
+      const { error } = await supabase.from("invoices").insert({
+        invoice_number: "",
+        user_id: user.id,
+        invoice_type: "ai_service",
+        service_type: "AI xizmatlar",
+        service_name: planNames[plan] || plan,
+        amount,
+        payment_method: methodLabel,
+        status: "pending", // ⚠️ Tasdiqlanmagan — admin qo'lda tasdiqlaydi
+        paid_at: null,
+        metadata: {
+          user_name: profile?.full_name || user.email,
+          user_phone: profile?.phone || "—",
+          user_email: user.email,
+          "Tarif rejasi": planNames[plan] || plan,
+          "Hisob davri": billing === "monthly" ? "Oylik" : "Yillik",
+          "Tanlangan xizmatlar": plan === "custom" && services.length > 0
+            ? services.map(s => serviceNames[s] || s).join(", ")
+            : "Barcha xizmatlar",
+          payment_status: "awaiting_confirmation",
+        },
+      });
+      if (error) throw error;
+
+      // Adminni xabardor qilish (Telegram)
+      supabase.functions.invoke("telegram-notify", {
+        body: {
+          type: "ai_payment_pending",
+          data: {
+            user_id: user.id,
+            user_name: profile?.full_name || user.email,
+            user_phone: profile?.phone || "—",
+            plan_id: planNames[plan] || plan,
+            amount,
+            invoice_id: invoiceId,
+            payment_method: methodLabel,
+            status: "Tasdiqlash kutilmoqda",
+          },
+        },
+      }).catch(() => {});
+
+      toast.success("So'rovingiz qabul qilindi. To'lov tasdiqlangach obuna faollashadi.");
+      setStep("pending");
+      setLoading(false);
+    } catch (err: any) {
+      toast.error("Xatolik: " + err.message);
+      setLoading(false);
+    }
+  };
+
 
   const downloadInvoice = () => {
     const invoiceContent = `
@@ -242,8 +303,8 @@ ${plan === "professional" || plan === "family" ? "✓ Barcha 13 ta AI xizmat\n�
                   purpose={`ai_subscription:${plan}:${billing}`}
                   referenceId={invoiceId}
                   returnUrl={`${window.location.origin}/ai-subscription?paid=1`}
-                  onCashSelected={handlePayment}
-                  onBankSelected={handlePayment}
+                  onCashSelected={() => handleManualPayment("cash")}
+                  onBankSelected={() => handleManualPayment("bank")}
                   allowed={["click", "cash", "bank"]}
                 />
               </div>
@@ -255,6 +316,49 @@ ${plan === "professional" || plan === "family" ? "✓ Barcha 13 ta AI xizmat\n�
                   <p className="text-sm font-medium text-foreground">Xavfsiz to'lov</p>
                   <p className="text-xs text-muted-foreground">Barcha to'lovlar shifrlangan va xavfsiz. Ma'lumotlaringiz himoyalangan.</p>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {step === "pending" && (
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto">
+                <Clock className="w-10 h-10 text-amber-500" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-heading font-bold text-foreground mb-2">
+                  ⏳ To'lov tasdiqlash kutilmoqda
+                </h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  So'rovingiz qabul qilindi. To'lovni amalga oshirgach, administrator uni qo'lda tasdiqlaydi va obunangiz <b>1-24 soat</b> ichida faollashtiriladi.
+                </p>
+              </div>
+
+              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-5 text-left max-w-md mx-auto space-y-3">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">Diqqat!</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Obuna <b>faqat to'lov kelib tushgandan so'ng</b> aktivlashtiriladi. Ayni paytda AI xizmatlardan foydalanib bo'lmaydi.
+                    </p>
+                  </div>
+                </div>
+                <div className="border-t border-amber-200 dark:border-amber-900/40 pt-3 space-y-1.5 text-sm">
+                  <div className="flex justify-between"><span className="text-muted-foreground">So'rov №:</span><span className="font-mono text-foreground text-xs">{invoiceId}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Tarif:</span><span className="text-foreground font-medium">{planNames[plan]}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Summa:</span><span className="text-amber-600 font-bold">{amount.toLocaleString("uz-UZ")} so'm</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Holat:</span><span className="text-amber-600 font-medium">Tasdiqlash kutilmoqda</span></div>
+                </div>
+              </div>
+
+              <div className="text-sm text-muted-foreground max-w-md mx-auto">
+                Savollar bo'lsa: <a href="tel:+998901234567" className="text-primary font-medium">+998 90 123 45 67</a>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link to="/dashboard"><Button variant="outline">Kabinetga o'tish</Button></Link>
+                <Link to="/contact"><Button>Aloqaga chiqish</Button></Link>
               </div>
             </div>
           )}
