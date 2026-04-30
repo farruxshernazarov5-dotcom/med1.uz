@@ -129,6 +129,8 @@ const AIDoctorChatPage = () => {
 
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
 
+        <AIAccessBanner serviceId="ai-doctor-chat" serviceName="AI Shifokor Chat" />
+
         {/* Usage Guide */}
         <div className="mb-4">
           <AIServiceUsageGuide
