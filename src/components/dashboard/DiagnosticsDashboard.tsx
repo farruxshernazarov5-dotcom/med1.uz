@@ -20,11 +20,14 @@ import DiagServices from "@/components/diagnostics/DiagServices";
 import DiagRadiology from "@/components/diagnostics/DiagRadiology";
 import DiagSOP from "@/components/diagnostics/DiagSOP";
 import DiagQC from "@/components/diagnostics/DiagQC";
+import DiagSettings from "@/components/diagnostics/DiagSettings";
+import DiagAppointments from "@/components/diagnostics/DiagAppointments";
+import DiagReferrals from "@/components/diagnostics/DiagReferrals";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
   Package, DollarSign, UserCheck, Crown, Settings, Image as ImageIcon,
-  BookOpen, ShieldCheck,
+  BookOpen, ShieldCheck, Calendar, Send,
 } from "lucide-react";
 
 const DiagnosticsDashboard = () => {
