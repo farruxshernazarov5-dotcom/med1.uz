@@ -4,12 +4,14 @@ import {
   LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin,
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
-  ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, X, Plus, Search,
+  ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
+  Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
+import { useTheme } from "next-themes";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useCredits } from "@/hooks/useCredits";
 import UpgradeModal from "@/components/saas/UpgradeModal";
