@@ -87,6 +87,7 @@ interface Props {
 }
 
 const DiagResults = ({ centerId, results, orders, templates, patients = [], services = [], onReload }: Props) => {
+  const { user } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [rows, setRows] = useState<
@@ -94,10 +95,24 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
   >([]);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [filterApproval, setFilterApproval] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
   const [aiText, setAiText] = useState<string>("");
   const [aiOpen, setAiOpen] = useState(false);
   const [viewOrderId, setViewOrderId] = useState<string | null>(null);
+  const [approvalNote, setApprovalNote] = useState("");
+  const [approvalLogs, setApprovalLogs] = useState<ApprovalLog[]>([]);
+  const [approverName, setApproverName] = useState("");
+
+  // Load approval logs for currently viewed order
+  useEffect(() => {
+    if (!viewOrderId) { setApprovalLogs([]); return; }
+    (async () => {
+      const { data } = await supabase.from("diagnostics_result_approvals" as any)
+        .select("*").eq("order_id", viewOrderId).order("created_at", { ascending: false }) as any;
+      setApprovalLogs(data || []);
+    })();
+  }, [viewOrderId]);
 
   const completedOrders = orders.filter((o) => ["accepted", "in_progress", "completed"].includes(o.status));
 
