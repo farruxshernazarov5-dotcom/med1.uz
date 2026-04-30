@@ -111,6 +111,35 @@ const SubscriptionContactModal = ({
               </DialogDescription>
             </DialogHeader>
 
+            {numericPrice > 0 && (
+              <div className="flex gap-2 p-1 bg-muted rounded-lg mt-3">
+                <button
+                  type="button"
+                  onClick={() => setMode("contact")}
+                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${mode === "contact" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}
+                >
+                  💬 So'rov yuborish
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("pay")}
+                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all ${mode === "pay" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}
+                >
+                  💳 Hoziroq to'lash
+                </button>
+              </div>
+            )}
+
+            {mode === "pay" && numericPrice > 0 ? (
+              <div className="mt-4">
+                <PaymentMethodPicker
+                  amount={numericPrice}
+                  purpose={`subscription:${category || "general"}:${planName || ""}`}
+                  referenceId={`SUB-${Date.now()}`}
+                  allowed={["click", "cash", "bank"]}
+                />
+              </div>
+            ) : (
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Input
