@@ -3519,42 +3519,66 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          appt_source: string | null
           center_id: string
           created_at: string
+          created_by: string | null
+          duration_min: number | null
           id: string
           notes: string | null
+          order_id: string | null
           patient_id: string
           patient_name: string
           patient_phone: string
+          referral_id: string | null
           service_id: string | null
+          service_name: string | null
+          staff_id: string | null
+          staff_name: string | null
           status: string
           updated_at: string
         }
         Insert: {
           appointment_date: string
           appointment_time: string
+          appt_source?: string | null
           center_id: string
           created_at?: string
+          created_by?: string | null
+          duration_min?: number | null
           id?: string
           notes?: string | null
+          order_id?: string | null
           patient_id: string
           patient_name: string
           patient_phone: string
+          referral_id?: string | null
           service_id?: string | null
+          service_name?: string | null
+          staff_id?: string | null
+          staff_name?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
           appointment_date?: string
           appointment_time?: string
+          appt_source?: string | null
           center_id?: string
           created_at?: string
+          created_by?: string | null
+          duration_min?: number | null
           id?: string
           notes?: string | null
+          order_id?: string | null
           patient_id?: string
           patient_name?: string
           patient_phone?: string
+          referral_id?: string | null
           service_id?: string | null
+          service_name?: string | null
+          staff_id?: string | null
+          staff_name?: string | null
           status?: string
           updated_at?: string
         }
@@ -4002,6 +4026,36 @@ export type Database = {
           },
         ]
       }
+      diagnostics_preset_templates: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          parameters: Json
+          preset_key: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          parameters: Json
+          preset_key: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          parameters?: Json
+          preset_key?: string
+        }
+        Relationships: []
+      }
       diagnostics_qc_runs: {
         Row: {
           clinic_id: string
@@ -4128,6 +4182,83 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "diagnostics_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_referrals: {
+        Row: {
+          appointment_id: string | null
+          center_id: string
+          created_at: string
+          created_by: string | null
+          diagnosis: string | null
+          direction: string
+          from_clinic_name: string | null
+          from_doctor_name: string | null
+          icd10_code: string | null
+          id: string
+          notes: string | null
+          patient_id: string | null
+          patient_name: string
+          patient_phone: string | null
+          reason: string | null
+          status: string | null
+          to_doctor_name: string | null
+          to_service_id: string | null
+          to_service_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          diagnosis?: string | null
+          direction: string
+          from_clinic_name?: string | null
+          from_doctor_name?: string | null
+          icd10_code?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          reason?: string | null
+          status?: string | null
+          to_doctor_name?: string | null
+          to_service_id?: string | null
+          to_service_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          diagnosis?: string | null
+          direction?: string
+          from_clinic_name?: string | null
+          from_doctor_name?: string | null
+          icd10_code?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          reason?: string | null
+          status?: string | null
+          to_doctor_name?: string | null
+          to_service_id?: string | null
+          to_service_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_referrals_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
             referencedColumns: ["id"]
           },
         ]
@@ -4360,6 +4491,92 @@ export type Database = {
           },
         ]
       }
+      diagnostics_settings: {
+        Row: {
+          address: string | null
+          ai_settings: Json | null
+          center_id: string
+          created_at: string
+          currency: string | null
+          date_format: string | null
+          display_name: string | null
+          email: string | null
+          file_settings: Json | null
+          id: string
+          lab_settings: Json | null
+          language: string | null
+          logo_url: string | null
+          notification_settings: Json | null
+          payment_settings: Json | null
+          phone: string | null
+          radiology_settings: Json | null
+          report_settings: Json | null
+          security_settings: Json | null
+          service_settings: Json | null
+          timezone: string | null
+          updated_at: string
+          working_hours: Json | null
+        }
+        Insert: {
+          address?: string | null
+          ai_settings?: Json | null
+          center_id: string
+          created_at?: string
+          currency?: string | null
+          date_format?: string | null
+          display_name?: string | null
+          email?: string | null
+          file_settings?: Json | null
+          id?: string
+          lab_settings?: Json | null
+          language?: string | null
+          logo_url?: string | null
+          notification_settings?: Json | null
+          payment_settings?: Json | null
+          phone?: string | null
+          radiology_settings?: Json | null
+          report_settings?: Json | null
+          security_settings?: Json | null
+          service_settings?: Json | null
+          timezone?: string | null
+          updated_at?: string
+          working_hours?: Json | null
+        }
+        Update: {
+          address?: string | null
+          ai_settings?: Json | null
+          center_id?: string
+          created_at?: string
+          currency?: string | null
+          date_format?: string | null
+          display_name?: string | null
+          email?: string | null
+          file_settings?: Json | null
+          id?: string
+          lab_settings?: Json | null
+          language?: string | null
+          logo_url?: string | null
+          notification_settings?: Json | null
+          payment_settings?: Json | null
+          phone?: string | null
+          radiology_settings?: Json | null
+          report_settings?: Json | null
+          security_settings?: Json | null
+          service_settings?: Json | null
+          timezone?: string | null
+          updated_at?: string
+          working_hours?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_settings_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: true
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diagnostics_sops: {
         Row: {
           category: string
@@ -4531,8 +4748,10 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean | null
+          is_preset: boolean | null
           name: string
           parameters: Json
+          preset_key: string | null
         }
         Insert: {
           category?: string | null
@@ -4540,8 +4759,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean | null
+          is_preset?: boolean | null
           name: string
           parameters?: Json
+          preset_key?: string | null
         }
         Update: {
           category?: string | null
@@ -4549,8 +4770,10 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean | null
+          is_preset?: boolean | null
           name?: string
           parameters?: Json
+          preset_key?: string | null
         }
         Relationships: [
           {
