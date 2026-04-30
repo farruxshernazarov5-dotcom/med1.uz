@@ -205,7 +205,7 @@ const PatientDashboard = () => {
   };
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full bg-card border-r border-border">
+    <div className="flex flex-col h-full w-full bg-card border-r border-border min-h-0">
       {/* User / Tier card */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3 mb-3">
