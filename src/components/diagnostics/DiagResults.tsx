@@ -360,7 +360,8 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
       (o.order_number || "").toLowerCase().includes(search.toLowerCase()) ||
       (p || "").includes(search.toLowerCase());
     const okStatus = !filterStatus || o.status === filterStatus;
-    return okSearch && okStatus;
+    const okApproval = !filterApproval || (o.approval_status || "pending") === filterApproval;
+    return okSearch && okStatus && okApproval;
   });
 
   // Statistika
@@ -371,10 +372,20 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
       todayCount: results.filter((r) => r.created_at?.slice(0, 10) === today).length,
       abnormal: results.filter((r) => r.status !== "normal").length,
       ready: orders.filter((o) => o.status === "completed").length,
+      pendingApproval: orders.filter((o) => o.status === "completed" && (o.approval_status || "pending") === "pending").length,
     };
   }, [results, orders]);
 
   const orderResults = viewOrderId ? results.filter((r) => r.order_id === viewOrderId) : [];
+  const viewedOrder = viewOrderId ? orders.find((o) => o.id === viewOrderId) : null;
+  const viewedApproval = (viewedOrder?.approval_status || "pending") as "pending" | "approved" | "rejected";
+
+  const approvalBadge = (s?: string | null) => {
+    const v = s || "pending";
+    if (v === "approved") return <Badge className="bg-green-500 text-[10px]"><ShieldCheck className="w-3 h-3 mr-1" />Tasdiqlangan</Badge>;
+    if (v === "rejected") return <Badge variant="destructive" className="text-[10px]"><XCircle className="w-3 h-3 mr-1" />Rad etilgan</Badge>;
+    return <Badge className="bg-yellow-500 text-[10px]"><Clock className="w-3 h-3 mr-1" />Tasdiqlanmagan</Badge>;
+  };
 
   return (
     <div className="space-y-4">
