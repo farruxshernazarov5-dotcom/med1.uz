@@ -325,7 +325,31 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     console.warn("Stamp generation failed", e);
   }
 
-  // ===== FOOTER =====
+  // ===== ✦ CHORLOV (CTA) — Foydalanuvchi xizmatdan foydalanishga undash =====
+  const ctaY = pageH - 50;
+  doc.setFillColor(...COLORS.bgSoft);
+  doc.setDrawColor(...COLORS.accent);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(margin, ctaY, pageW - margin * 2, 22, 2, 2, "FD");
+
+  doc.setTextColor(...COLORS.primary);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text("✦  Med1.uz xizmatlaridan to'liq foydalaning!", margin + 5, ctaY + 8);
+
+  doc.setTextColor(...COLORS.text);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.text(
+    "Shaxsiy kabinetga kirib AI shifokor, retseptlar, tahlillar va onlayn navbatdan foydalaning.",
+    margin + 5, ctaY + 14
+  );
+  doc.setTextColor(...COLORS.accent);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.text("→ med1.uz/dashboard", margin + 5, ctaY + 19);
+
+
   const footerY = pageH - 22;
   // Accent strip
   doc.setFillColor(...COLORS.accent);
