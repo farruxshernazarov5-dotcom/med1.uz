@@ -117,7 +117,9 @@ const DiagnosticsDashboard = () => {
 
   const sidebarItems: SidebarItem[] = [
     { id: "overview", label: "Bosh panel", icon: LayoutDashboard },
+    { id: "appointments", label: "Qabullar", icon: Calendar, group: "Boshqaruv" },
     { id: "patients", label: "Bemorlar", icon: Users, badge: patients.length, group: "Boshqaruv" },
+    { id: "referrals", label: "Yo'naltirishlar", icon: Send, group: "Boshqaruv" },
     { id: "lab-orders", label: "Buyurtmalar", icon: FlaskConical, badge: pendingOrders, group: "Laboratoriya" },
     { id: "results", label: "Natijalar", icon: FileText, group: "Laboratoriya" },
     { id: "radiology", label: "Radiologiya", icon: ImageIcon, group: "Laboratoriya" },
@@ -128,6 +130,7 @@ const DiagnosticsDashboard = () => {
     { id: "qc", label: "QC nazorat", icon: ShieldCheck, group: "Sifat" },
     { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
+    { id: "settings", label: "Sozlamalar", icon: SettingsIcon, group: "Tizim" },
     { id: "subscription", label: "Obuna", icon: Crown },
   ];
 
