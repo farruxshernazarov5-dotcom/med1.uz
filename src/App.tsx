@@ -196,6 +196,7 @@ const App = () => (
       </TooltipProvider>
       </CreditProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
