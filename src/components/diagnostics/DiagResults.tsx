@@ -266,10 +266,14 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
     onReload();
   };
 
-  // PDF eksport
+  // PDF eksport — faqat tasdiqlangan natijalar uchun
   const generatePDF = (orderId: string) => {
     const order = orders.find((o) => o.id === orderId);
     if (!order) return;
+    if (order.approval_status !== "approved") {
+      toast({ title: "Tasdiqlash kerak", description: "Avval natijani tasdiqlang", variant: "destructive" });
+      return;
+    }
     const orderResults = results.filter((r) => r.order_id === orderId);
     if (orderResults.length === 0) {
       toast({ title: "Natijalar topilmadi", variant: "destructive" });
