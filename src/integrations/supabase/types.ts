@@ -11495,6 +11495,164 @@ export type Database = {
           },
         ]
       }
+      saas_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string | null
+          detail: Json | null
+          id: string
+          ip: string | null
+          module_id: string | null
+          owner_id: string | null
+          resource: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string | null
+          detail?: Json | null
+          id?: string
+          ip?: string | null
+          module_id?: string | null
+          owner_id?: string | null
+          resource?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string | null
+          detail?: Json | null
+          id?: string
+          ip?: string | null
+          module_id?: string | null
+          owner_id?: string | null
+          resource?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      saas_modules: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      saas_plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean | null
+          is_popular: boolean | null
+          limits: Json
+          module_id: string
+          name: string
+          price_monthly: number
+          price_yearly: number
+          sort_order: number | null
+          tier: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          limits?: Json
+          module_id: string
+          name: string
+          price_monthly?: number
+          price_yearly?: number
+          sort_order?: number | null
+          tier: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          limits?: Json
+          module_id?: string
+          name?: string
+          price_monthly?: number
+          price_yearly?: number
+          sort_order?: number | null
+          tier?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saas_plans_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "saas_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saas_usage_counters: {
+        Row: {
+          id: string
+          metric: string
+          module_id: string
+          owner_id: string
+          period_start: string
+          updated_at: string | null
+          used: number
+        }
+        Insert: {
+          id?: string
+          metric: string
+          module_id: string
+          owner_id: string
+          period_start?: string
+          updated_at?: string | null
+          used?: number
+        }
+        Update: {
+          id?: string
+          metric?: string
+          module_id?: string
+          owner_id?: string
+          period_start?: string
+          updated_at?: string | null
+          used?: number
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -11551,6 +11709,81 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      tenant_subscriptions: {
+        Row: {
+          auto_renew: boolean | null
+          billing_period: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          last_invoice_id: string | null
+          metadata: Json | null
+          module_id: string
+          owner_id: string
+          plan_id: string | null
+          started_at: string | null
+          status: string
+          tenant_ref_id: string | null
+          tenant_type: string
+          tier: string
+          trial_ends_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_renew?: boolean | null
+          billing_period?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          last_invoice_id?: string | null
+          metadata?: Json | null
+          module_id: string
+          owner_id: string
+          plan_id?: string | null
+          started_at?: string | null
+          status?: string
+          tenant_ref_id?: string | null
+          tenant_type?: string
+          tier?: string
+          trial_ends_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_renew?: boolean | null
+          billing_period?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          last_invoice_id?: string | null
+          metadata?: Json | null
+          module_id?: string
+          owner_id?: string
+          plan_id?: string | null
+          started_at?: string | null
+          status?: string
+          tenant_ref_id?: string | null
+          tenant_type?: string
+          tier?: string
+          trial_ends_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_subscriptions_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "saas_modules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "saas_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_credits: {
         Row: {
@@ -11748,6 +11981,16 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_saas_access: {
+        Args: { _module: string; _owner_id: string }
+        Returns: {
+          expires_at: string
+          features: Json
+          limits: Json
+          status: string
+          tier: string
+        }[]
       }
       has_role: {
         Args: {
