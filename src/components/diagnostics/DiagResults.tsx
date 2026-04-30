@@ -1,14 +1,16 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Save, X, FileText, Download, Sparkles, Wand2, Search, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Save, X, FileText, Download, Sparkles, Wand2, Search, AlertCircle, CheckCircle2, ShieldCheck, Clock, XCircle } from "lucide-react";
 import { downloadLabReportPDF } from "@/utils/downloadLabReport";
 
 interface LabOrder {
@@ -21,6 +23,18 @@ interface LabOrder {
   completed_at?: string | null;
   test_name?: string | null;
   template_id?: string | null;
+  approval_status?: string | null;
+  approved_by?: string | null;
+  approved_at?: string | null;
+  approval_note?: string | null;
+}
+interface ApprovalLog {
+  id: string;
+  order_id: string;
+  approver_name: string | null;
+  status: string;
+  note: string | null;
+  created_at: string;
 }
 interface Patient {
   id: string;
@@ -73,6 +87,7 @@ interface Props {
 }
 
 const DiagResults = ({ centerId, results, orders, templates, patients = [], services = [], onReload }: Props) => {
+  const { user } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [rows, setRows] = useState<
@@ -80,10 +95,24 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
   >([]);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [filterApproval, setFilterApproval] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
   const [aiText, setAiText] = useState<string>("");
   const [aiOpen, setAiOpen] = useState(false);
   const [viewOrderId, setViewOrderId] = useState<string | null>(null);
+  const [approvalNote, setApprovalNote] = useState("");
+  const [approvalLogs, setApprovalLogs] = useState<ApprovalLog[]>([]);
+  const [approverName, setApproverName] = useState("");
+
+  // Load approval logs for currently viewed order
+  useEffect(() => {
+    if (!viewOrderId) { setApprovalLogs([]); return; }
+    (async () => {
+      const { data } = await supabase.from("diagnostics_result_approvals" as any)
+        .select("*").eq("order_id", viewOrderId).order("created_at", { ascending: false }) as any;
+      setApprovalLogs(data || []);
+    })();
+  }, [viewOrderId]);
 
   const completedOrders = orders.filter((o) => ["accepted", "in_progress", "completed"].includes(o.status));
 
@@ -182,23 +211,69 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       return;
     }
-    // Buyurtmani completed ga o'tkazish
+    // Buyurtmani completed ga o'tkazish va tasdiqlashga yuborish
     await supabase
       .from("diagnostics_lab_orders" as any)
-      .update({ status: "completed", completed_at: new Date().toISOString() } as any)
+      .update({
+        status: "completed",
+        completed_at: new Date().toISOString(),
+        approval_status: "pending",
+        approved_by: null,
+        approved_at: null,
+        approval_note: null,
+      } as any)
       .eq("id", selectedOrder);
 
-    toast({ title: "✅ Natijalar saqlandi va buyurtma yopildi" });
+    toast({ title: "✅ Saqlandi", description: "Natijalar tasdiqlash uchun yuborildi" });
     setRows([]);
     setSelectedOrder("");
     setSelectedTemplate("");
     onReload();
   };
 
-  // PDF eksport
+  // Tasdiqlash / rad etish
+  const submitApproval = async (status: "approved" | "rejected") => {
+    if (!viewOrderId) return;
+    if (status === "rejected" && !approvalNote.trim()) {
+      toast({ title: "Rad etish uchun izoh majburiy", variant: "destructive" });
+      return;
+    }
+    const note = approvalNote.trim() || null;
+    const name = approverName.trim() || user?.email || "Tasdiqlovchi";
+
+    const { error: e1 } = await supabase.from("diagnostics_lab_orders" as any).update({
+      approval_status: status,
+      approved_by: user?.id || null,
+      approved_at: new Date().toISOString(),
+      approval_note: note,
+    } as any).eq("id", viewOrderId);
+    if (e1) { toast({ title: "Xatolik", description: e1.message, variant: "destructive" }); return; }
+
+    await supabase.from("diagnostics_result_approvals" as any).insert({
+      clinic_id: centerId,
+      order_id: viewOrderId,
+      approver_id: user?.id || null,
+      approver_name: name,
+      status,
+      note,
+    });
+
+    toast({ title: status === "approved" ? "✅ Tasdiqlandi" : "❌ Rad etildi" });
+    setApprovalNote("");
+    const { data } = await supabase.from("diagnostics_result_approvals" as any)
+      .select("*").eq("order_id", viewOrderId).order("created_at", { ascending: false }) as any;
+    setApprovalLogs(data || []);
+    onReload();
+  };
+
+  // PDF eksport — faqat tasdiqlangan natijalar uchun
   const generatePDF = (orderId: string) => {
     const order = orders.find((o) => o.id === orderId);
     if (!order) return;
+    if (order.approval_status !== "approved") {
+      toast({ title: "Tasdiqlash kerak", description: "Avval natijani tasdiqlang", variant: "destructive" });
+      return;
+    }
     const orderResults = results.filter((r) => r.order_id === orderId);
     if (orderResults.length === 0) {
       toast({ title: "Natijalar topilmadi", variant: "destructive" });
@@ -285,7 +360,8 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
       (o.order_number || "").toLowerCase().includes(search.toLowerCase()) ||
       (p || "").includes(search.toLowerCase());
     const okStatus = !filterStatus || o.status === filterStatus;
-    return okSearch && okStatus;
+    const okApproval = !filterApproval || (o.approval_status || "pending") === filterApproval;
+    return okSearch && okStatus && okApproval;
   });
 
   // Statistika
@@ -296,10 +372,20 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
       todayCount: results.filter((r) => r.created_at?.slice(0, 10) === today).length,
       abnormal: results.filter((r) => r.status !== "normal").length,
       ready: orders.filter((o) => o.status === "completed").length,
+      pendingApproval: orders.filter((o) => o.status === "completed" && (o.approval_status || "pending") === "pending").length,
     };
   }, [results, orders]);
 
   const orderResults = viewOrderId ? results.filter((r) => r.order_id === viewOrderId) : [];
+  const viewedOrder = viewOrderId ? orders.find((o) => o.id === viewOrderId) : null;
+  const viewedApproval = (viewedOrder?.approval_status || "pending") as "pending" | "approved" | "rejected";
+
+  const approvalBadge = (s?: string | null) => {
+    const v = s || "pending";
+    if (v === "approved") return <Badge className="bg-green-500 text-[10px]"><ShieldCheck className="w-3 h-3 mr-1" />Tasdiqlangan</Badge>;
+    if (v === "rejected") return <Badge variant="destructive" className="text-[10px]"><XCircle className="w-3 h-3 mr-1" />Rad etilgan</Badge>;
+    return <Badge className="bg-yellow-500 text-[10px]"><Clock className="w-3 h-3 mr-1" />Tasdiqlanmagan</Badge>;
+  };
 
   return (
     <div className="space-y-4">
@@ -325,8 +411,8 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
         </Card>
         <Card>
           <CardContent className="p-3">
-            <p className="text-xs text-muted-foreground">Jami parametr</p>
-            <p className="text-2xl font-bold">{stats.total}</p>
+            <p className="text-xs text-muted-foreground">Tasdiq kutmoqda</p>
+            <p className="text-2xl font-bold text-yellow-600">{stats.pendingApproval}</p>
           </CardContent>
         </Card>
       </div>
@@ -531,6 +617,16 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
               <option value="in_progress">Jarayonda</option>
               <option value="completed">Yakunlangan</option>
             </select>
+            <select
+              value={filterApproval}
+              onChange={(e) => setFilterApproval(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="">Barcha tasdiq</option>
+              <option value="pending">Tasdiq kutmoqda</option>
+              <option value="approved">Tasdiqlangan</option>
+              <option value="rejected">Rad etilgan</option>
+            </select>
           </div>
         </CardHeader>
         <CardContent>
@@ -563,6 +659,7 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
                             <CheckCircle2 className="w-3 h-3 mr-1" /> Norma
                           </Badge>
                         )}
+                        {orRes.length > 0 && approvalBadge(o.approval_status)}
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {patient?.full_name || "—"} • {orRes.length} parametr •{" "}
@@ -600,9 +697,11 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
 
       {/* View order results dialog */}
       <Dialog open={!!viewOrderId} onOpenChange={() => setViewOrderId(null)}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Natijalar tafsiloti</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 flex-wrap">
+              Natijalar tafsiloti {viewedOrder && approvalBadge(viewedOrder.approval_status)}
+            </DialogTitle>
           </DialogHeader>
           {orderResults.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4">Natijalar yo'q</p>
@@ -641,14 +740,81 @@ const DiagResults = ({ centerId, results, orders, templates, patients = [], serv
               </TableBody>
             </Table>
           )}
+
+          {/* APPROVAL BLOCK */}
           {viewOrderId && orderResults.length > 0 && (
-            <div className="flex gap-2 pt-3 border-t">
-              <Button size="sm" onClick={() => generatePDF(viewOrderId)}>
-                <Download className="w-3.5 h-3.5 mr-1" /> PDF yuklab olish
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => explainWithAI(viewOrderId)}>
-                <Sparkles className="w-3.5 h-3.5 mr-1" /> AI tushuntirish
-              </Button>
+            <div className="border-t pt-3 space-y-3">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <ShieldCheck className="w-4 h-4 text-primary" /> Tasdiqlash
+              </div>
+
+              {viewedApproval === "approved" && viewedOrder?.approval_note && (
+                <div className="p-2 rounded bg-green-50 dark:bg-green-950/30 text-xs">
+                  <strong>Tasdiq izohi:</strong> {viewedOrder.approval_note}
+                </div>
+              )}
+              {viewedApproval === "rejected" && viewedOrder?.approval_note && (
+                <div className="p-2 rounded bg-red-50 dark:bg-red-950/30 text-xs">
+                  <strong>Rad sababi:</strong> {viewedOrder.approval_note}
+                </div>
+              )}
+
+              {viewedApproval !== "approved" && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs">Tasdiqlovchi (ixtiyoriy)</Label>
+                      <Input value={approverName} onChange={(e) => setApproverName(e.target.value)}
+                        placeholder="F.I.Sh, lavozim" className="h-9" />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Izoh {viewedApproval === "rejected" ? "" : "(rad uchun majburiy)"}</Label>
+                      <Input value={approvalNote} onChange={(e) => setApprovalNote(e.target.value)}
+                        placeholder="Sharh..." className="h-9" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700"
+                      onClick={() => submitApproval("approved")}>
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Tasdiqlash
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => submitApproval("rejected")}>
+                      <XCircle className="w-3.5 h-3.5 mr-1" /> Rad etish
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {approvalLogs.length > 0 && (
+                <div className="space-y-1 max-h-40 overflow-y-auto">
+                  <p className="text-xs font-semibold text-muted-foreground">Tasdiqlash tarixi:</p>
+                  {approvalLogs.map((l) => (
+                    <div key={l.id} className="text-xs p-2 rounded border flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {approvalBadge(l.status)}
+                          <span className="text-muted-foreground">{l.approver_name || "—"}</span>
+                        </div>
+                        {l.note && <p className="text-muted-foreground mt-0.5">{l.note}</p>}
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                        {new Date(l.created_at).toLocaleString("uz")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2 border-t">
+                <Button size="sm" disabled={viewedApproval !== "approved"}
+                  onClick={() => generatePDF(viewOrderId)}
+                  title={viewedApproval !== "approved" ? "Avval tasdiqlang" : ""}>
+                  <Download className="w-3.5 h-3.5 mr-1" /> PDF
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => explainWithAI(viewOrderId)}>
+                  <Sparkles className="w-3.5 h-3.5 mr-1" /> AI tushuntirish
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

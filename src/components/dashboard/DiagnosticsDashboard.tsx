@@ -18,10 +18,13 @@ import DiagFinance from "@/components/diagnostics/DiagFinance";
 import DiagStaff from "@/components/diagnostics/DiagStaff";
 import DiagServices from "@/components/diagnostics/DiagServices";
 import DiagRadiology from "@/components/diagnostics/DiagRadiology";
+import DiagSOP from "@/components/diagnostics/DiagSOP";
+import DiagQC from "@/components/diagnostics/DiagQC";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
   Package, DollarSign, UserCheck, Crown, Settings, Image as ImageIcon,
+  BookOpen, ShieldCheck,
 } from "lucide-react";
 
 const DiagnosticsDashboard = () => {
@@ -112,6 +115,8 @@ const DiagnosticsDashboard = () => {
     { id: "templates", label: "Shablonlar", icon: BookTemplate, group: "Laboratoriya" },
     { id: "services", label: "Xizmatlar", icon: FlaskConical, group: "Boshqaruv" },
     { id: "inventory", label: "Reagentlar", icon: Package, group: "Ombor" },
+    { id: "sop", label: "SOP", icon: BookOpen, group: "Sifat" },
+    { id: "qc", label: "QC nazorat", icon: ShieldCheck, group: "Sifat" },
     { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
@@ -166,6 +171,10 @@ const DiagnosticsDashboard = () => {
       {tab === "staff" && (
         <DiagStaff centerId={center.id} staff={staff} onReload={loadAll} />
       )}
+
+      {tab === "sop" && <DiagSOP centerId={center.id} />}
+
+      {tab === "qc" && <DiagQC centerId={center.id} />}
 
       {tab === "subscription" && <DiagnosticsSubscription />}
     </DashboardShell>
