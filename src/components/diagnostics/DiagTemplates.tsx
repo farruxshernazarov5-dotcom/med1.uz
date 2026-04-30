@@ -570,6 +570,115 @@ const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Preset Library dialog */}
+      <Dialog open={presetOpen} onOpenChange={setPresetOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Library className="w-5 h-5 text-primary" /> Preset shablonlar kutubxonasi
+            </DialogTitle>
+            <DialogDescription>
+              22+ tayyor professional shablon (UMA, Biokimyo, Gormonlar va boshqalar). Tanlang va bir martada import qiling.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Preset qidirish (nom, kategoriya)..."
+                value={presetSearch}
+                onChange={(e) => setPresetSearch(e.target.value)}
+                className="pl-8 h-9"
+              />
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const filt = presets.filter((p) =>
+                  !presetSearch ||
+                  p.name.toLowerCase().includes(presetSearch.toLowerCase()) ||
+                  p.category.toLowerCase().includes(presetSearch.toLowerCase())
+                );
+                setSelectedPresets(new Set(filt.map((p) => p.id)));
+              }}
+            >
+              Hammasini tanlash
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedPresets(new Set())}>
+              Tozalash
+            </Button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+            {presetLoading ? (
+              <p className="text-sm text-muted-foreground text-center py-8">⏳ Yuklanmoqda...</p>
+            ) : presets.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">Preset topilmadi</p>
+            ) : (
+              presets
+                .filter((p) =>
+                  !presetSearch ||
+                  p.name.toLowerCase().includes(presetSearch.toLowerCase()) ||
+                  p.category.toLowerCase().includes(presetSearch.toLowerCase())
+                )
+                .map((p) => {
+                  const checked = selectedPresets.has(p.id);
+                  const exists = templates.some(
+                    (t) => t.name.toLowerCase().trim() === p.name.toLowerCase().trim()
+                  );
+                  const params = Array.isArray(p.parameters) ? p.parameters : [];
+                  return (
+                    <div
+                      key={p.id}
+                      className={`flex items-start gap-3 p-3 rounded-lg border transition cursor-pointer ${
+                        checked ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                      } ${exists ? "opacity-60" : ""}`}
+                      onClick={() => !exists && togglePreset(p.id)}
+                    >
+                      <Checkbox checked={checked} disabled={exists} className="mt-1" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-medium text-sm">{p.name}</p>
+                          <Badge variant="outline" className="text-[10px]">{mapPresetCategory(p.category)}</Badge>
+                          {exists && <Badge variant="secondary" className="text-[10px]">Mavjud</Badge>}
+                        </div>
+                        {p.description && (
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{p.description}</p>
+                        )}
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {params.slice(0, 6).map((par: any, i: number) => (
+                            <span key={i} className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
+                              {par.name} ({par.min}–{par.max} {par.unit})
+                            </span>
+                          ))}
+                          {params.length > 6 && (
+                            <span className="text-[10px] text-muted-foreground">+{params.length - 6} ta</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+            )}
+          </div>
+
+          <div className="flex items-center justify-between gap-2 pt-3 border-t">
+            <p className="text-xs text-muted-foreground">
+              Tanlangan: <strong>{selectedPresets.size}</strong> / {presets.length}
+            </p>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => setPresetOpen(false)}>Bekor</Button>
+              <Button size="sm" onClick={importSelectedPresets} disabled={importing || selectedPresets.size === 0}>
+                <Download className="w-4 h-4 mr-1" />
+                {importing ? "Import qilinmoqda..." : `Import (${selectedPresets.size})`}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
