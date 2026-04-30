@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Brain, AlertTriangle, Shield, Activity } from "lucide-react";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
+import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import AIServiceHero from "@/components/AIServiceHero";
 import aiSymptomImg from "@/assets/ai-symptom-checker.jpg";
 import SymptomInput from "@/components/symptom-checker/SymptomInput";

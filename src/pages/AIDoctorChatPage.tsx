@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2, Shield, Activity } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
+import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
 
