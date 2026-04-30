@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
+import { ThemeProvider } from "next-themes";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -99,6 +100,7 @@ const PageLoader = () => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme">
     <AuthProvider>
       <CreditProvider>
       <TooltipProvider>
@@ -194,6 +196,7 @@ const App = () => (
       </TooltipProvider>
       </CreditProvider>
     </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

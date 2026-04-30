@@ -4,12 +4,14 @@ import {
   LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin,
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
-  ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, X, Plus, Search,
+  ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
+  Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
+import { useTheme } from "next-themes";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useCredits } from "@/hooks/useCredits";
 import UpgradeModal from "@/components/saas/UpgradeModal";
@@ -144,6 +146,7 @@ const PatientDashboard = () => {
   const { user, profile, signOut } = useAuth();
   const { access, remainingToday } = useAiAccess();
   const { balance } = useCredits();
+  const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -202,7 +205,7 @@ const PatientDashboard = () => {
   };
 
   const Sidebar = () => (
-    <div className="flex flex-col h-full bg-card border-r border-border">
+    <div className="flex flex-col h-full w-full bg-card border-r border-border min-h-0">
       {/* User / Tier card */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3 mb-3">
@@ -242,7 +245,7 @@ const PatientDashboard = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-3">
+      <nav className="flex-1 min-h-0 overflow-y-auto py-2 px-2 space-y-3">
         {NAV_GROUPS.map((group) => (
           <div key={group.id}>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold px-2.5 mb-1.5 flex items-center gap-1.5">
@@ -299,9 +302,9 @@ const PatientDashboard = () => {
   );
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] -mx-4 -my-6 md:-mx-6 bg-background">
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:block w-[260px] shrink-0 sticky top-0 h-screen">
+    <div className="fixed inset-0 flex bg-background z-10">
+      {/* Desktop sidebar — own column, full viewport height */}
+      <aside className="hidden lg:flex w-[260px] shrink-0 h-full">
         <Sidebar />
       </aside>
 
@@ -309,19 +312,20 @@ const PatientDashboard = () => {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-[280px] shadow-2xl">
+          <aside className="absolute left-0 top-0 bottom-0 w-[280px] shadow-2xl flex">
             <Sidebar />
           </aside>
         </div>
       )}
 
-      {/* Main */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      {/* Main column */}
+      <div className="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b border-border h-14 flex items-center px-4 gap-3">
+        <header className="shrink-0 bg-card border-b border-border h-14 flex items-center px-4 gap-3">
           <button
             className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted"
             onClick={() => setMobileOpen(true)}
+            aria-label="Menyu"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -331,7 +335,17 @@ const PatientDashboard = () => {
             </h1>
           </div>
 
-          {/* Quick AI status (mobile compact) */}
+          {/* Theme toggle (kun/tun) */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 rounded-lg hover:bg-muted text-foreground/70 hover:text-foreground transition"
+            aria-label="Mavzuni almashtirish"
+            title={theme === "dark" ? "Yorug' rejim" : "Qorong'i rejim"}
+          >
+            {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+
+          {/* Quick AI status */}
           <div className="hidden sm:flex items-center gap-2">
             <Link
               to="/ai-payment"
@@ -353,7 +367,7 @@ const PatientDashboard = () => {
         </header>
 
         {/* Quick actions strip */}
-        <div className="px-4 py-3 border-b border-border bg-muted/30 overflow-x-auto">
+        <div className="shrink-0 px-4 py-3 border-b border-border bg-muted/30 overflow-x-auto">
           <div className="flex gap-2 min-w-max">
             <QuickAction icon={Plus} label="Qabulga yozilish" to="/clinics" />
             <QuickAction icon={Search} label="Shifokor topish" to="/doctors" />
@@ -364,9 +378,8 @@ const PatientDashboard = () => {
           </div>
         </div>
 
-        {/* Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
-          {/* Limit warning banner */}
+        {/* Scrollable content */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {access && remainingToday <= 1 && tier !== "pro" && (
             <div className="mb-4 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-3 flex items-center gap-3">
               <Bell className="w-5 h-5 text-amber-600 shrink-0" />
