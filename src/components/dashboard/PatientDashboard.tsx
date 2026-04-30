@@ -146,6 +146,7 @@ const PatientDashboard = () => {
   const { user, profile, signOut } = useAuth();
   const { access, remainingToday } = useAiAccess();
   const { balance } = useCredits();
+  const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
