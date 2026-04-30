@@ -271,8 +271,12 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
     y += 26;
   }
 
-  // QR
+  // QR — footer ustida joylashishini ta'minlash uchun chegara qo'yamiz
   y += 8;
+  const qrBlockHeight = 40;
+  const footerTop = pageH - 22 - 8; // footer chizig'i + 1mm bo'sh joy
+  const maxQrY = footerTop - qrBlockHeight - 2;
+  if (y > maxQrY) y = maxQrY; // overflow bo'lsa QR'ni footer ustida joylash
   const verifyUrl = `https://med1.uz/verify?payment_id=${data.paymentId}`;
   try {
     const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
@@ -294,12 +298,15 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
     doc.text("havolaga o'ting:", margin + 44, y + 17.5);
     doc.setTextColor(...COLORS.accent);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
-    doc.text(verifyUrl, margin + 44, y + 23);
+    doc.setFontSize(7.5);
+    // Uzun URL'ni 2 qatorga sig'dirish uchun softBreak + wrap
+    const urlSafe = verifyUrl.replace(/(\S{40})/g, "$1\u200B");
+    const urlLines = doc.splitTextToSize(urlSafe, 95);
+    doc.text(urlLines.slice(0, 2), margin + 44, y + 23);
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "italic");
     doc.setFontSize(7);
-    doc.text("Imzo talab qilmaydi (O'z.R Qonuni 562)", margin + 44, y + 30);
+    doc.text("Imzo talab qilmaydi (O'z.R Qonuni 562)", margin + 44, y + 36);
   } catch (e) {
     console.warn("QR generation failed", e);
   }
