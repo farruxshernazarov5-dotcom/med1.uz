@@ -136,7 +136,11 @@ const DiagnosticsDashboard = () => {
       )}
 
       {tab === "lab-orders" && (
-        <DiagLabOrders centerId={center.id} orders={orders} patients={patients} services={services} onReload={loadAll} />
+        <DiagLabOrders centerId={center.id} orders={orders} patients={patients} services={services} staff={staff} onReload={loadAll} />
+      )}
+
+      {tab === "radiology" && (
+        <DiagRadiology centerId={center.id} orders={orders} patients={patients} staff={staff} onReload={loadAll} />
       )}
 
       {tab === "results" && (
