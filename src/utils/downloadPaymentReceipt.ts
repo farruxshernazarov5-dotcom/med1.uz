@@ -201,11 +201,11 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     const valLines = doc.splitTextToSize(value, 110);
     doc.text(valLines, pageW - margin, y, { align: "right" });
 
-    y += Math.max(6, valLines.length * 5);
+    y += Math.max(5, valLines.length * 4.5);
     doc.setDrawColor(...COLORS.border);
     doc.setLineWidth(0.15);
     doc.line(margin, y - 1, pageW - margin, y - 1);
-    y += 3;
+    y += 2;
   };
 
   // Asosiy xizmat nomi (agar berilgan bo'lsa)
