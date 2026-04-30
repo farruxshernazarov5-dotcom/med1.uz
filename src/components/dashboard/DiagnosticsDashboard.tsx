@@ -61,7 +61,7 @@ const DiagnosticsDashboard = () => {
       const c = centers[0];
       setCenter(c);
 
-      const [svcR, patR, ordR, resR, tplR, invR, txnR, stfR] = await Promise.all([
+      const [svcR, patR, ordR, resR, tplR, invR, txnR, stfR, apptR, refR] = await Promise.all([
         supabase.from("diagnostics_services" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
         supabase.from("diagnostics_patients" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }) as any,
         supabase.from("diagnostics_lab_orders" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
@@ -70,6 +70,8 @@ const DiagnosticsDashboard = () => {
         supabase.from("diagnostics_inventory" as any).select("*").eq("center_id", c.id).order("name") as any,
         supabase.from("diagnostics_transactions" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
         supabase.from("diagnostics_staff" as any).select("*").eq("center_id", c.id).order("full_name") as any,
+        supabase.from("diagnostics_appointments" as any).select("*").eq("center_id", c.id).order("appointment_date", { ascending: false }).limit(200) as any,
+        supabase.from("diagnostics_referrals" as any).select("*").eq("center_id", c.id).order("created_at", { ascending: false }).limit(100) as any,
       ]);
 
       setServices(svcR.data || []);
@@ -80,6 +82,8 @@ const DiagnosticsDashboard = () => {
       setInventory(invR.data || []);
       setTransactions(txnR.data || []);
       setStaff(stfR.data || []);
+      setAppointments(apptR.data || []);
+      setReferrals(refR.data || []);
     }
     setLoading(false);
   };
