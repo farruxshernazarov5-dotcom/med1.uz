@@ -3633,16 +3633,23 @@ export type Database = {
       }
       diagnostics_lab_orders: {
         Row: {
+          accepted_at: string | null
+          assigned_staff_id: string | null
           center_id: string
+          completed_at: string | null
           created_at: string
           doctor_name: string | null
           doctor_phone: string | null
+          expected_completion_at: string | null
           id: string
           notes: string | null
           order_number: string | null
+          order_type: string | null
           patient_id: string
+          payment_status: string | null
           priority: string | null
           service_id: string | null
+          started_at: string | null
           status: string
           template_id: string | null
           test_name: string | null
@@ -3650,16 +3657,23 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          accepted_at?: string | null
+          assigned_staff_id?: string | null
           center_id: string
+          completed_at?: string | null
           created_at?: string
           doctor_name?: string | null
           doctor_phone?: string | null
+          expected_completion_at?: string | null
           id?: string
           notes?: string | null
           order_number?: string | null
+          order_type?: string | null
           patient_id: string
+          payment_status?: string | null
           priority?: string | null
           service_id?: string | null
+          started_at?: string | null
           status?: string
           template_id?: string | null
           test_name?: string | null
@@ -3667,16 +3681,23 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          accepted_at?: string | null
+          assigned_staff_id?: string | null
           center_id?: string
+          completed_at?: string | null
           created_at?: string
           doctor_name?: string | null
           doctor_phone?: string | null
+          expected_completion_at?: string | null
           id?: string
           notes?: string | null
           order_number?: string | null
+          order_type?: string | null
           patient_id?: string
+          payment_status?: string | null
           priority?: string | null
           service_id?: string | null
+          started_at?: string | null
           status?: string
           template_id?: string | null
           test_name?: string | null
@@ -3684,6 +3705,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "diagnostics_lab_orders_assigned_staff_id_fkey"
+            columns: ["assigned_staff_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_staff"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "diagnostics_lab_orders_center_id_fkey"
             columns: ["center_id"]
@@ -3767,6 +3795,64 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "diagnostics_lab_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_notifications: {
+        Row: {
+          body: string | null
+          center_id: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          related_order_id: string | null
+          staff_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          center_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          related_order_id?: string | null
+          staff_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          body?: string | null
+          center_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          related_order_id?: string | null
+          staff_id?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_notifications_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_notifications_related_order_id_fkey"
+            columns: ["related_order_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_lab_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_notifications_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_staff"
             referencedColumns: ["id"]
           },
         ]
@@ -4129,40 +4215,58 @@ export type Database = {
       }
       diagnostics_staff: {
         Row: {
+          avatar_url: string | null
           center_id: string
           created_at: string
+          department: string | null
           email: string | null
+          experience_years: number | null
           full_name: string
           hire_date: string | null
           id: string
           is_active: boolean | null
+          is_on_duty: boolean | null
           notes: string | null
           phone: string | null
           role: string | null
+          schedule_type: string | null
+          specialization: string | null
         }
         Insert: {
+          avatar_url?: string | null
           center_id: string
           created_at?: string
+          department?: string | null
           email?: string | null
+          experience_years?: number | null
           full_name: string
           hire_date?: string | null
           id?: string
           is_active?: boolean | null
+          is_on_duty?: boolean | null
           notes?: string | null
           phone?: string | null
           role?: string | null
+          schedule_type?: string | null
+          specialization?: string | null
         }
         Update: {
+          avatar_url?: string | null
           center_id?: string
           created_at?: string
+          department?: string | null
           email?: string | null
+          experience_years?: number | null
           full_name?: string
           hire_date?: string | null
           id?: string
           is_active?: boolean | null
+          is_on_duty?: boolean | null
           notes?: string | null
           phone?: string | null
           role?: string | null
+          schedule_type?: string | null
+          specialization?: string | null
         }
         Relationships: [
           {
@@ -4170,6 +4274,63 @@ export type Database = {
             columns: ["center_id"]
             isOneToOne: false
             referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnostics_staff_schedules: {
+        Row: {
+          center_id: string
+          created_at: string
+          id: string
+          is_day_off: boolean | null
+          notes: string | null
+          shift_end: string | null
+          shift_start: string | null
+          shift_type: string | null
+          staff_id: string
+          updated_at: string
+          work_date: string
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          id?: string
+          is_day_off?: boolean | null
+          notes?: string | null
+          shift_end?: string | null
+          shift_start?: string | null
+          shift_type?: string | null
+          staff_id: string
+          updated_at?: string
+          work_date: string
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          id?: string
+          is_day_off?: boolean | null
+          notes?: string | null
+          shift_end?: string | null
+          shift_start?: string | null
+          shift_type?: string | null
+          staff_id?: string
+          updated_at?: string
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_staff_schedules_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "registered_diagnostics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnostics_staff_schedules_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostics_staff"
             referencedColumns: ["id"]
           },
         ]
