@@ -188,6 +188,16 @@ const DiagnosticsDashboard = () => {
 
       {tab === "qc" && <DiagQC centerId={center.id} />}
 
+      {tab === "appointments" && (
+        <DiagAppointments centerId={center.id} appointments={appointments} patients={patients} services={services} staff={staff} onReload={loadAll} />
+      )}
+
+      {tab === "referrals" && (
+        <DiagReferrals centerId={center.id} referrals={referrals} services={services} onReload={loadAll} />
+      )}
+
+      {tab === "settings" && <DiagSettings centerId={center.id} center={center} />}
+
       {tab === "subscription" && <DiagnosticsSubscription />}
     </DashboardShell>
   );
