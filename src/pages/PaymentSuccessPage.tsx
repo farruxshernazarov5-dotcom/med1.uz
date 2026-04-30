@@ -128,6 +128,7 @@ const PaymentSuccessPage = () => {
         billingCycle: cycle,
         validFrom,
         validUntil,
+        format,
       });
       toast({ title: "✓ Kvitansiya yuklandi", description: "PDF fayl muvaffaqiyatli saqlandi" });
     } catch (err: any) {
