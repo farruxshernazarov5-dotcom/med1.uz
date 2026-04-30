@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
-import { downloadPaymentReceipt } from "@/utils/downloadPaymentReceipt";
+import { downloadPaymentReceipt, type ReceiptFormat } from "@/utils/downloadPaymentReceipt";
+import { FileText, Printer } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 type Status = "loading" | "paid" | "pending" | "failed" | "not_found";
