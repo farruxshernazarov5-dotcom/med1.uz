@@ -303,7 +303,7 @@ export async function downloadPaymentReceipt(data: PaymentReceiptData): Promise<
     doc.setFont("helvetica", "italic");
     doc.setFontSize(7);
     doc.text("Imzo talab qilmaydi (O'z.R Qonuni 562)", margin + 44, y + 30);
-    doc.text("va imzo talab qilmaydi (O'z.R Qonuni №562, 03.04.2018).", margin + 44, y + 34);
+    
   } catch (e) {
     console.warn("QR generation failed", e);
   }
