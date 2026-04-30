@@ -44,29 +44,6 @@ const PHONES = "+998 99 214-41-03  •  +998 77 000-04-98";
 const COMPANY_LINE = "MED-ALL AI SYSTEM MChJ  •  Samarqand  •  STIR: 312972027";
 const CONTACT_LINE = `med1.uz  •  info@med1.uz  •  ${PHONES}`;
 
-/**
- * jsPDF standart helvetica fonti faqat WinAnsi belgilarni qo'llab-quvvatlaydi.
- * Buzilmaslik uchun ba'zi unicode belgilarni xavfsiz ekvivalentlarga almashtiramiz.
- */
-function safeText(s: string): string {
-  if (!s) return s;
-  return s
-    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")  // curly single quotes -> '
-    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')  // curly double quotes -> "
-    .replace(/\u2014/g, "-")                       // em dash -> -
-    .replace(/\u2013/g, "-")                       // en dash -> -
-    .replace(/\u2192/g, "->")                      // → -> ->
-    .replace(/\u2190/g, "<-")                      // ←
-    .replace(/[\u2705\u2713\u2714]/g, "v")         // ✓ ✅ -> v
-    .replace(/\u2716/g, "x")                       // ✖
-    .replace(/[\u271A\u271D]/g, "+")               // ✚ ✝
-    .replace(/\u2666/g, "*")                       // ◆
-    .replace(/\u2726/g, "*")                       // ✦
-    .replace(/[\u23F1\u23F2\u23F0]/g, "")          // ⏱ ⏲ ⏰
-    .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")        // emoji range
-    ;
-}
-
 let _logoCache: string | null = null;
 async function getLogoDataUrl(): Promise<string | null> {
   if (_logoCache) return _logoCache;
@@ -105,7 +82,7 @@ const cycleLabel: Record<string, string> = {
 };
 
 // =====================================================================
-// A4 LAYOUT — birinchi (oddiy, toza) dizayn
+// A4 LAYOUT
 // =====================================================================
 async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   const pageW = doc.internal.pageSize.getWidth();
@@ -116,138 +93,203 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   const microId = data.paymentId.slice(-6).toUpperCase();
   const logoData = await getLogoDataUrl();
 
-  // ===== HEADER (brand bar) =====
-  doc.setFillColor(...COLORS.primary);
-  doc.rect(0, 0, pageW, 32, "F");
+  // Tashqi ramka
+  doc.setDrawColor(...COLORS.accent);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(8, 8, pageW - 16, pageH - 16, 3, 3, "S");
 
-  // Logo (oq doira fonida)
-  let textX = margin;
+  // HEADER
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(8, 8, pageW - 16, 38, "F");
+  doc.setFillColor(...COLORS.accent);
+  doc.rect(8, 44, pageW - 16, 2, "F");
+
   if (logoData) {
-    const logoSize = 18;
+    const logoSize = 22;
     doc.setFillColor(255, 255, 255);
-    doc.circle(margin + logoSize / 2, 16, logoSize / 2 + 1, "F");
-    doc.addImage(logoData, "PNG", margin, 7, logoSize, logoSize);
-    textX = margin + logoSize + 5;
+    doc.circle(margin + logoSize / 2, 14 + logoSize / 2, logoSize / 2 + 1, "F");
+    doc.addImage(logoData, "PNG", margin, 14, logoSize, logoSize);
   }
 
+  const textX = margin + (logoData ? 28 : 0);
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text(safeText("MED-ALL AI SYSTEM"), textX, 14);
+  doc.setFontSize(20);
+  doc.text("Med1.uz", textX, 22);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(180, 215, 255);
+  doc.text(SLOGAN, textX, 28);
+  doc.setTextColor(220, 230, 245);
+  doc.setFontSize(7.5);
+  doc.text(COMPANY_LINE, textX, 33.5);
+  doc.text(CONTACT_LINE, textX, 38);
+
+  doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(safeText("MChJ  •  SAMARQAND  •  STIR: 312972027"), textX, 20);
-  doc.text(safeText(`med1.uz  |  info@med1.uz  |  ${PHONES}`), textX, 26);
-
-  // O'ng tomonda: KVITANSIYA №
-  doc.setFontSize(10);
+  doc.text("ELEKTRON KVITANSIYA", pageW - margin, 16, { align: "right" });
   doc.setFont("helvetica", "bold");
-  doc.text("KVITANSIYA", pageW - margin, 13, { align: "right" });
-  doc.setFontSize(12);
-  doc.text(safeText(`No ${receiptNumber}`), pageW - margin, 20, { align: "right" });
+  doc.setFontSize(13);
+  doc.text(`№ ${receiptNumber}`, pageW - margin, 23, { align: "right" });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(data.paidAt.toLocaleString("uz-UZ"), pageW - margin, 27, { align: "right" });
+  doc.setTextColor(180, 215, 255);
+  doc.text(data.paidAt.toLocaleString("uz-UZ"), pageW - margin, 29, { align: "right" });
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(255, 255, 255);
+  doc.text("✚ Medical Payment", pageW - margin, 38, { align: "right" });
 
-  // ===== "MUVAFFAQIYATLI TO'LANDI" badge =====
-  let y = 44;
-  doc.setFillColor(220, 252, 231);
+  // SUCCESS BADGE
+  let y = 56;
+  doc.setFillColor(...COLORS.greenSoft);
   doc.setDrawColor(...COLORS.green);
+  doc.setLineWidth(0.4);
   doc.roundedRect(margin, y, pageW - margin * 2, 14, 2, 2, "FD");
   doc.setTextColor(...COLORS.green);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text(safeText("v  TO'LOV MUVAFFAQIYATLI QABUL QILINDI"), pageW / 2, y + 9, { align: "center" });
+  doc.text("✓  TO'LOV MUVAFFAQIYATLI QABUL QILINDI", pageW / 2, y + 9, { align: "center" });
 
-  // ===== Asosiy summa =====
+  // SUMMA KARTASI
   y += 22;
+  doc.setFillColor(...COLORS.bgSoft);
+  doc.setDrawColor(...COLORS.accent);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(margin, y, pageW - margin * 2, 28, 2, 2, "FD");
+
   doc.setTextColor(...COLORS.muted);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(safeText("To'lov summasi"), margin, y);
+  doc.setFontSize(8.5);
+  doc.text("TO'LOV SUMMASI", margin + 5, y + 8);
   doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(28);
-  y += 10;
-  doc.text(safeText(fmtMoney(data.amount, data.currency)), margin, y);
+  doc.setFontSize(24);
+  doc.text(fmtMoney(data.amount, data.currency), margin + 5, y + 21);
 
-  // ===== Tafsilotlar jadvali =====
-  y += 12;
-  doc.setDrawColor(...COLORS.border);
-  doc.setLineWidth(0.3);
-  doc.line(margin, y, pageW - margin, y);
+  doc.setTextColor(...COLORS.muted);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.text("TO'LOV TIZIMI", pageW - margin - 5, y + 8, { align: "right" });
+  doc.setTextColor(...COLORS.accent);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text(data.provider.toUpperCase(), pageW - margin - 5, y + 21, { align: "right" });
+
+  // TAFSILOTLAR
+  y += 36;
+  doc.setTextColor(...COLORS.primary);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text("◆  TRANZAKSIYA TAFSILOTLARI", margin, y);
+  y += 4;
+  doc.setDrawColor(...COLORS.accent);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, margin + 60, y);
   y += 6;
-
-  // Label kengligi: 45mm; qiymat uchun qolgan kenglik
-  const labelW = 45;
-  const valueW = pageW - margin * 2 - labelW - 4;
 
   const drawRow = (label: string, value: string, opts?: { bold?: boolean }) => {
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(safeText(label), margin, y);
-
+    doc.setFontSize(8.5);
+    doc.text(label, margin, y);
     doc.setTextColor(...COLORS.text);
     doc.setFont("helvetica", opts?.bold ? "bold" : "normal");
     doc.setFontSize(10);
-    const valLines = doc.splitTextToSize(safeText(value), valueW);
+    const valLines = doc.splitTextToSize(value, 110);
     doc.text(valLines, pageW - margin, y, { align: "right" });
-
-    y += Math.max(6, valLines.length * 5);
+    y += Math.max(5, valLines.length * 4.5);
     doc.setDrawColor(...COLORS.border);
-    doc.setLineWidth(0.2);
+    doc.setLineWidth(0.15);
     doc.line(margin, y - 1, pageW - margin, y - 1);
-    y += 3;
+    y += 2;
   };
 
-  if (data.serviceName) drawRow("Xizmat", data.serviceName, { bold: true });
-  drawRow("Maqsad", data.purposeLabel, { bold: !data.serviceName });
+  if (data.serviceName) drawRow("Xizmat nomi", data.serviceName, { bold: true });
+  drawRow("To'lov maqsadi", data.purposeLabel);
   if (data.planName) drawRow("Tarif rejasi", data.planName);
   if (data.billingCycle) drawRow("To'lov turi", cycleLabel[data.billingCycle] || data.billingCycle);
-  if (data.validFrom || data.validUntil) {
-    const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ") : "-";
-    const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ") : "-";
-    drawRow("Amal qilish muddati", `${from}  ->  ${until}`);
-  }
-  drawRow("Provider", data.provider.toUpperCase());
-  drawRow("To'langan vaqt", data.paidAt.toLocaleString("uz-UZ"));
-  drawRow("Tranzaksiya ID", data.paymentId);
-  if (data.referenceId) drawRow("Reference", data.referenceId);
+  drawRow("To'langan sana va vaqt", data.paidAt.toLocaleString("uz-UZ"));
+  drawRow("Tranzaksiya identifikatori", data.paymentId);
+  if (data.referenceId) drawRow("Provider reference", data.referenceId);
   if (data.payerName) drawRow("To'lovchi", data.payerName);
   if (data.payerEmail) drawRow("Email", data.payerEmail);
 
-  // ===== QR kod (verify URL) =====
-  y += 6;
-  const verifyUrl = `https://med1.uz/verify?payment_id=${data.paymentId}`;
-  try {
-    const qrDataUrl = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 200, color: { dark: "#0A2540", light: "#FFFFFF" } });
-    doc.addImage(qrDataUrl, "PNG", margin, y, 35, 35);
+  // OBUNA MUDDATI
+  if (data.validFrom || data.validUntil) {
+    y += 4;
+    doc.setFillColor(...COLORS.bgSoft);
+    doc.setDrawColor(...COLORS.purple);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin, y, pageW - margin * 2, 22, 2, 2, "FD");
+    doc.setTextColor(...COLORS.purple);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("⏱  OBUNA AMAL QILISH MUDDATI", margin + 5, y + 7);
+    const from = data.validFrom ? data.validFrom.toLocaleDateString("uz-UZ", { day: "2-digit", month: "long", year: "numeric" }) : "—";
+    const until = data.validUntil ? data.validUntil.toLocaleDateString("uz-UZ", { day: "2-digit", month: "long", year: "numeric" }) : "—";
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(safeText("Tasdiqlash uchun QR kodni skanerlang yoki"), margin + 40, y + 10);
-    doc.text("havola orqali kiring:", margin + 40, y + 15);
-    doc.setTextColor(...COLORS.accent);
-    // URL'ni kerak bo'lsa wrap qilamiz
-    const urlLines = doc.splitTextToSize(verifyUrl, 95);
-    doc.text(urlLines, margin + 40, y + 22);
+    doc.text("Boshlanish:", margin + 5, y + 14);
+    doc.text("Tugash:", pageW / 2 + 5, y + 14);
+    doc.setTextColor(...COLORS.primary);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(from, margin + 5, y + 19);
+    doc.text(until, pageW / 2 + 5, y + 19);
+    if (data.validUntil) {
+      const days = Math.max(0, Math.ceil((data.validUntil.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+      doc.setTextColor(...COLORS.green);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text(`✓  Qolgan: ${days} kun`, pageW - margin - 5, y + 19, { align: "right" });
+    }
+    y += 26;
+  }
+
+  // QR
+  y += 8;
+  const verifyUrl = `https://med1.uz/verify?payment_id=${data.paymentId}`;
+  try {
+    const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+      margin: 1, width: 240,
+      color: { dark: "#0A2540", light: "#FFFFFF" },
+    });
+    doc.setDrawColor(...COLORS.accent);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin - 1, y - 1, 40, 40, 1, 1, "S");
+    doc.addImage(qrDataUrl, "PNG", margin, y, 38, 38);
+    doc.setTextColor(...COLORS.primary);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.text("ONLAYN TASDIQLASH", margin + 44, y + 6);
     doc.setTextColor(...COLORS.muted);
-    doc.text(safeText("Bu kvitansiya elektron tarzda yaratilgan"), margin + 40, y + 30);
-    doc.text("va imzo talab qilmaydi.", margin + 40, y + 35);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("QR kodni skanerlang yoki quyidagi", margin + 44, y + 13);
+    doc.text("havolaga o'ting:", margin + 44, y + 17.5);
+    doc.setTextColor(...COLORS.accent);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.text(verifyUrl, margin + 44, y + 23);
+    doc.setTextColor(...COLORS.muted);
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(7);
+    doc.text("Imzo talab qilmaydi (O'z.R Qonuni 562)", margin + 44, y + 30);
   } catch (e) {
     console.warn("QR generation failed", e);
   }
 
-  // ===== DINAMIK MUHR (har chek uchun noyob) =====
+  // MUHR
   try {
     const stampPng = await generateStampDataUrl(
-      { receiptNumber, paidAt: data.paidAt, microId, amount: data.amount },
-      560
+      { receiptNumber, paidAt: data.paidAt, microId, amount: data.amount }, 560
     );
-    const stampSize = 50;
+    const stampSize = 48;
     const stampX = pageW - margin - stampSize;
-    const stampY = y - 5;
+    const stampY = y - 4;
     const gstate = (doc as any).GState ? new (doc as any).GState({ opacity: 0.92 }) : null;
     if (gstate) (doc as any).setGState(gstate);
     doc.addImage(stampPng, "PNG", stampX, stampY, stampSize, stampSize);
@@ -256,24 +298,24 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
     console.warn("Stamp generation failed", e);
   }
 
-  // ===== FOOTER =====
-  const footerY = pageH - 18;
-  doc.setDrawColor(...COLORS.border);
-  doc.setLineWidth(0.3);
-  doc.line(margin, footerY - 4, pageW - margin, footerY - 4);
-
-  doc.setTextColor(...COLORS.muted);
+  // FOOTER
+  const footerY = pageH - 22;
+  doc.setFillColor(...COLORS.accent);
+  doc.rect(8, footerY - 8, pageW - 16, 1, "F");
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(8, footerY - 7, pageW - 16, 15, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.text("✦  med1.uz/dashboard — AI shifokor, e-retsept, tahlillar va onlayn navbat",
+    pageW / 2, footerY - 2, { align: "center" });
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  doc.text(
-    safeText("Ushbu kvitansiya MED-ALL AI SYSTEM MChJ tomonidan elektron tarzda yaratilgan. Yuridik kuchga ega."),
-    pageW / 2, footerY, { align: "center" }
-  );
-  doc.text(
-    safeText(`Hujjat ID: ${data.paymentId}  •  Yaratildi: ${new Date().toLocaleString("uz-UZ")}`),
-    pageW / 2, footerY + 4, { align: "center" }
-  );
-  doc.text(safeText(`med1.uz  •  ${PHONES}`), pageW / 2, footerY + 8, { align: "center" });
+  doc.setFontSize(7);
+  doc.setTextColor(180, 215, 255);
+  doc.text("MED-ALL AI SYSTEM MChJ tomonidan elektron tarzda yaratilgan • Yuridik kuchga ega",
+    pageW / 2, footerY + 2, { align: "center" });
+  doc.text(`Hujjat ID: ${data.paymentId}  •  ${PHONES}  •  med1.uz`,
+    pageW / 2, footerY + 6, { align: "center" });
 }
 
 // =====================================================================
