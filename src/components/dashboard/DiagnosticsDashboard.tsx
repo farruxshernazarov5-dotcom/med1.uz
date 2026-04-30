@@ -26,7 +26,7 @@ import DiagReferrals from "@/components/diagnostics/DiagReferrals";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
-  Package, DollarSign, UserCheck, Crown, Settings, Image as ImageIcon,
+  Package, DollarSign, UserCheck, Crown, Settings as SettingsIcon, Image as ImageIcon,
   BookOpen, ShieldCheck, Calendar, Send,
 } from "lucide-react";
 
