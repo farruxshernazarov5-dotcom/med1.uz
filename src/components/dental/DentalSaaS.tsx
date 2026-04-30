@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Crown, Check, Zap, Shield, Star, CreditCard, Calendar, TrendingUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
 
 const PLANS = [
   {
@@ -51,6 +53,7 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
   const [currentPlan, setCurrentPlan] = useState("basic");
   const [billingHistory, setBillingHistory] = useState<any[]>([]);
   const [tab, setTab] = useState<"plans" | "billing" | "usage">("plans");
+  const [payDialog, setPayDialog] = useState<{ open: boolean; plan: any | null }>({ open: false, plan: null });
 
   const USAGE_DATA = [
     { module: "Bemorlar", used: 47, limit: currentPlan === "basic" ? 100 : currentPlan === "pro" ? 500 : 9999, icon: "👤" },
@@ -134,6 +137,7 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
                   className="w-full"
                   variant={isActive ? "outline" : "default"}
                   disabled={isActive}
+                  onClick={() => !isActive && setPayDialog({ open: true, plan })}
                 >
                   {isActive ? "✅ Joriy tarif" : "Tanlash"}
                 </Button>
@@ -215,6 +219,31 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
           </div>
         </div>
       )}
+
+      {/* Payment Dialog */}
+      <Dialog open={payDialog.open} onOpenChange={(o) => setPayDialog({ open: o, plan: o ? payDialog.plan : null })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-primary" />
+              {payDialog.plan?.name} tarifiga obuna
+            </DialogTitle>
+          </DialogHeader>
+          {payDialog.plan && (
+            <PaymentMethodPicker
+              amount={payDialog.plan.price}
+              purpose={`dental_saas:${payDialog.plan.id}`}
+              referenceId={`DEN-SAAS-${clinic?.id || ""}-${Date.now()}`}
+              returnUrl={`${window.location.origin}/dashboard?paid=1`}
+              allowed={["click", "cash", "bank"]}
+              bankDetails={{
+                bank_name: "Med1.uz - SaaS to'lovi",
+                recipient: "Med1.uz MChJ",
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

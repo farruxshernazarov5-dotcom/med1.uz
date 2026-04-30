@@ -3,12 +3,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { CreditCard, CheckCircle2, Clock, XCircle, FileText, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
 
 const PatientPayments = () => {
   const { user } = useAuth();
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "paid" | "pending">("all");
+  const [payDialog, setPayDialog] = useState<{ open: boolean; item: any | null }>({ open: false, item: null });
 
   useEffect(() => {
     if (!user) return;
@@ -92,9 +95,18 @@ const PatientPayments = () => {
                         <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(p._date).toLocaleDateString("uz-UZ")} • {s.label}</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="font-bold text-sm text-foreground">{Number(p._amount).toLocaleString("uz-UZ")}</p>
                       <p className="text-[10px] text-muted-foreground">so'm</p>
+                      {(p._status === "pending" || p._status === "unpaid" || p._status === "partial") && (
+                        <Button
+                          size="sm"
+                          className="mt-2 h-7 text-xs px-2 bg-[#00B4E5] hover:bg-[#0098C2] text-white"
+                          onClick={() => setPayDialog({ open: true, item: p })}
+                        >
+                          To'lash
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -103,6 +115,34 @@ const PatientPayments = () => {
           </div>
         )
       }
+
+      <Dialog open={payDialog.open} onOpenChange={(o) => setPayDialog({ open: o, item: o ? payDialog.item : null })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-primary" />
+              Invoyni to'lash
+            </DialogTitle>
+          </DialogHeader>
+          {payDialog.item && (
+            <div className="space-y-3">
+              <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
+                <div className="flex justify-between"><span className="text-muted-foreground">Klinika:</span><span className="font-medium">{payDialog.item._name}</span></div>
+                {payDialog.item._invoice && <div className="flex justify-between"><span className="text-muted-foreground">Invoys:</span><span className="font-mono text-xs">{payDialog.item._invoice}</span></div>}
+                <div className="flex justify-between"><span className="text-muted-foreground">Summa:</span><span className="font-bold text-primary">{Number(payDialog.item._amount).toLocaleString("uz-UZ")} so'm</span></div>
+              </div>
+              <PaymentMethodPicker
+                amount={Number(payDialog.item._amount)}
+                purpose={`${payDialog.item._src === "Stomatologiya" ? "dental" : "clinic"}_invoice:${payDialog.item.id}`}
+                referenceId={payDialog.item._invoice || payDialog.item.id}
+                returnUrl={`${window.location.origin}/dashboard?paid=1`}
+                allowed={["click", "cash", "bank"]}
+                bankDetails={{ recipient: payDialog.item._name }}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
