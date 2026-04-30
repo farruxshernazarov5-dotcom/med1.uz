@@ -17,10 +17,11 @@ import DiagInventory from "@/components/diagnostics/DiagInventory";
 import DiagFinance from "@/components/diagnostics/DiagFinance";
 import DiagStaff from "@/components/diagnostics/DiagStaff";
 import DiagServices from "@/components/diagnostics/DiagServices";
+import DiagRadiology from "@/components/diagnostics/DiagRadiology";
 
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
-  Package, DollarSign, UserCheck, Crown, Settings,
+  Package, DollarSign, UserCheck, Crown, Settings, Image as ImageIcon,
 } from "lucide-react";
 
 const DiagnosticsDashboard = () => {
