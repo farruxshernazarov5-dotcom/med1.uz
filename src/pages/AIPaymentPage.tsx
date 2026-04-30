@@ -234,27 +234,17 @@ ${plan === "professional" || plan === "family" ? "âœ“ Barcha 13 ta AI xizmat\nâœ
                 </div>
               </div>
 
-              {/* Payment Method */}
+              {/* Payment Method - Universal Picker */}
               <div className="bg-card border border-border rounded-2xl p-6">
-                <h2 className="font-heading font-bold text-foreground text-lg mb-4 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-primary" /> To'lov usulini tanlang
-                </h2>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => setPaymentMethod("payme")}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${paymentMethod === "payme" ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground/30"}`}
-                  >
-                    <div className="text-2xl font-bold text-primary mb-1">Payme</div>
-                    <p className="text-xs text-muted-foreground">Karta orqali to'lov</p>
-                  </button>
-                  <button
-                    onClick={() => setPaymentMethod("click")}
-                    className={`p-4 rounded-xl border-2 text-center transition-all ${paymentMethod === "click" ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground/30"}`}
-                  >
-                    <div className="text-2xl font-bold text-blue-500 mb-1">Click</div>
-                    <p className="text-xs text-muted-foreground">Karta orqali to'lov</p>
-                  </button>
-                </div>
+                <PaymentMethodPicker
+                  amount={amount}
+                  purpose={`ai_subscription:${plan}:${billing}`}
+                  referenceId={invoiceId}
+                  returnUrl={`${window.location.origin}/ai-subscription?paid=1`}
+                  onCashSelected={handlePayment}
+                  onBankSelected={handlePayment}
+                  allowed={["click", "cash", "bank"]}
+                />
               </div>
 
               {/* Security Info */}
@@ -265,10 +255,6 @@ ${plan === "professional" || plan === "family" ? "âœ“ Barcha 13 ta AI xizmat\nâœ
                   <p className="text-xs text-muted-foreground">Barcha to'lovlar shifrlangan va xavfsiz. Ma'lumotlaringiz himoyalangan.</p>
                 </div>
               </div>
-
-              <Button onClick={handlePayment} className="w-full" size="lg" disabled={loading}>
-                {loading ? "Kuting..." : `${amount.toLocaleString("uz-UZ")} so'm to'lash`}
-              </Button>
             </div>
           )}
 
