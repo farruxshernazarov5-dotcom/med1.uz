@@ -320,6 +320,49 @@ ${plan === "professional" || plan === "family" ? "✓ Barcha 13 ta AI xizmat\n�
             </div>
           )}
 
+          {step === "pending" && (
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto">
+                <Clock className="w-10 h-10 text-amber-500" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-heading font-bold text-foreground mb-2">
+                  ⏳ To'lov tasdiqlash kutilmoqda
+                </h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  So'rovingiz qabul qilindi. To'lovni amalga oshirgach, administrator uni qo'lda tasdiqlaydi va obunangiz <b>1-24 soat</b> ichida faollashtiriladi.
+                </p>
+              </div>
+
+              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-2xl p-5 text-left max-w-md mx-auto space-y-3">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">Diqqat!</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Obuna <b>faqat to'lov kelib tushgandan so'ng</b> aktivlashtiriladi. Ayni paytda AI xizmatlardan foydalanib bo'lmaydi.
+                    </p>
+                  </div>
+                </div>
+                <div className="border-t border-amber-200 dark:border-amber-900/40 pt-3 space-y-1.5 text-sm">
+                  <div className="flex justify-between"><span className="text-muted-foreground">So'rov №:</span><span className="font-mono text-foreground text-xs">{invoiceId}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Tarif:</span><span className="text-foreground font-medium">{planNames[plan]}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Summa:</span><span className="text-amber-600 font-bold">{amount.toLocaleString("uz-UZ")} so'm</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Holat:</span><span className="text-amber-600 font-medium">Tasdiqlash kutilmoqda</span></div>
+                </div>
+              </div>
+
+              <div className="text-sm text-muted-foreground max-w-md mx-auto">
+                Savollar bo'lsa: <a href="tel:+998901234567" className="text-primary font-medium">+998 90 123 45 67</a>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link to="/dashboard"><Button variant="outline">Kabinetga o'tish</Button></Link>
+                <Link to="/contact"><Button>Aloqaga chiqish</Button></Link>
+              </div>
+            </div>
+          )}
+
           {step === "success" && (
             <div className="text-center space-y-6">
               <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto">
