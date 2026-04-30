@@ -192,6 +192,8 @@ const SubscriptionContactModal = ({
                 </a>
               </div>
             </div>
+            </>
+            )}
           </>
         ) : (
           <div className="text-center py-8">
