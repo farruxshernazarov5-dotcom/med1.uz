@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
+import { downloadPaymentReceipt } from "@/utils/downloadPaymentReceipt";
+import { toast } from "@/hooks/use-toast";
 
 type Status = "loading" | "paid" | "pending" | "failed" | "not_found";
 
