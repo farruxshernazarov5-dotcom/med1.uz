@@ -11,6 +11,7 @@ const PatientPayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "paid" | "pending">("all");
+  const [payDialog, setPayDialog] = useState<{ open: boolean; item: any | null }>({ open: false, item: null });
 
   useEffect(() => {
     if (!user) return;
