@@ -21,6 +21,18 @@ interface LabOrder {
   completed_at?: string | null;
   test_name?: string | null;
   template_id?: string | null;
+  approval_status?: string | null;
+  approved_by?: string | null;
+  approved_at?: string | null;
+  approval_note?: string | null;
+}
+interface ApprovalLog {
+  id: string;
+  order_id: string;
+  approver_name: string | null;
+  status: string;
+  note: string | null;
+  created_at: string;
 }
 interface Patient {
   id: string;
