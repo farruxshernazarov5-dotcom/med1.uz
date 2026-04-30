@@ -161,19 +161,28 @@ const AIServicesPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
         {aiServices.map((service) => {
           const Icon = service.icon;
+          const sid = HREF_TO_SERVICE[service.href];
+          const locked = !accessLoading && sid && !isServiceAllowed(sid);
           return (
             <Link key={service.href} to={service.href} className="group">
-              <div className="bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col group-hover:border-primary/30">
+              <div className={`relative bg-card border border-border rounded-2xl p-6 hover:shadow-lg transition-all duration-300 h-full flex flex-col group-hover:border-primary/30 ${locked ? "opacity-80" : ""}`}>
                 <div className="flex items-start justify-between mb-4">
                   <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-md`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">{service.badge}</span>
+                  <div className="flex items-center gap-1.5">
+                    {locked && (
+                      <span className="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Premium
+                      </span>
+                    )}
+                    <span className="text-xs font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">{service.badge}</span>
+                  </div>
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
                 <p className="text-sm text-muted-foreground flex-1 mb-4">{service.description}</p>
-                <div className="flex items-center gap-2 text-primary text-sm font-medium">
-                  Boshlash <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className={`flex items-center gap-2 text-sm font-medium ${locked ? "text-amber-700" : "text-primary"}`}>
+                  {locked ? <>Tarifni yangilash <Crown className="w-4 h-4" /></> : <>Boshlash <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>}
                 </div>
               </div>
             </Link>
@@ -222,6 +231,7 @@ const AIServicesPage = () => {
 
     <Footer />
   </div>
-);
+  );
+};
 
 export default AIServicesPage;
