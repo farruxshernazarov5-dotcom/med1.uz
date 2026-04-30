@@ -258,9 +258,14 @@ const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
           <h3 className="font-heading font-bold text-lg text-foreground">Test shablonlari</h3>
           <p className="text-xs text-muted-foreground">Auto-fill, reference qiymatlari, yosh/jins bo'yicha</p>
         </div>
-        <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
-          <Plus className="w-4 h-4 mr-1" /> Yangi shablon
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={openPresets}>
+            <Library className="w-4 h-4 mr-1" /> Preset kutubxona
+          </Button>
+          <Button size="sm" onClick={() => { resetForm(); setShowForm(true); }}>
+            <Plus className="w-4 h-4 mr-1" /> Yangi shablon
+          </Button>
+        </div>
       </div>
 
       {/* Search + filter */}
