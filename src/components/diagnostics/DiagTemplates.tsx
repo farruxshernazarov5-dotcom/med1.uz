@@ -57,6 +57,15 @@ const emptyParam = (): TemplateParam => ({
   gender: "all",
 });
 
+interface PresetTemplate {
+  id: string;
+  preset_key: string;
+  name: string;
+  category: string;
+  parameters: any;
+  description?: string | null;
+}
+
 const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -65,6 +74,76 @@ const DiagTemplates = ({ centerId, templates, onReload }: Props) => {
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("");
   const [previewTpl, setPreviewTpl] = useState<Template | null>(null);
+  const [presetOpen, setPresetOpen] = useState(false);
+  const [presets, setPresets] = useState<PresetTemplate[]>([]);
+  const [presetLoading, setPresetLoading] = useState(false);
+  const [presetSearch, setPresetSearch] = useState("");
+  const [selectedPresets, setSelectedPresets] = useState<Set<string>>(new Set());
+  const [importing, setImporting] = useState(false);
+
+  const loadPresets = async () => {
+    setPresetLoading(true);
+    const { data, error } = await supabase
+      .from("diagnostics_preset_templates" as any)
+      .select("*")
+      .order("category");
+    if (error) {
+      toast({ title: "Preset yuklash xatoligi", description: error.message, variant: "destructive" });
+    } else {
+      setPresets((data as any) || []);
+    }
+    setPresetLoading(false);
+  };
+
+  const openPresets = () => {
+    setPresetOpen(true);
+    setSelectedPresets(new Set());
+    if (presets.length === 0) loadPresets();
+  };
+
+  const togglePreset = (id: string) => {
+    const s = new Set(selectedPresets);
+    s.has(id) ? s.delete(id) : s.add(id);
+    setSelectedPresets(s);
+  };
+
+  const importSelectedPresets = async () => {
+    if (selectedPresets.size === 0) {
+      toast({ title: "Hech narsa tanlanmagan", variant: "destructive" });
+      return;
+    }
+    setImporting(true);
+    const toImport = presets.filter((p) => selectedPresets.has(p.id));
+    const existingNames = new Set(templates.map((t) => t.name.toLowerCase().trim()));
+    const payload = toImport
+      .filter((p) => !existingNames.has(p.name.toLowerCase().trim()))
+      .map((p) => ({
+        center_id: centerId,
+        name: p.name,
+        category: mapPresetCategory(p.category),
+        parameters: p.parameters,
+        is_active: true,
+      }));
+    const skipped = toImport.length - payload.length;
+    if (payload.length === 0) {
+      toast({ title: "Barchasi mavjud", description: `${skipped} ta shablon allaqachon mavjud` });
+      setImporting(false);
+      return;
+    }
+    const { error } = await supabase.from("diagnostics_test_templates" as any).insert(payload as any);
+    setImporting(false);
+    if (error) {
+      toast({ title: "Import xatosi", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({
+      title: `✅ ${payload.length} ta shablon import qilindi`,
+      description: skipped > 0 ? `${skipped} ta dublikat o'tkazib yuborildi` : undefined,
+    });
+    setPresetOpen(false);
+    setSelectedPresets(new Set());
+    onReload();
+  };
 
   const resetForm = () => {
     setEditId(null);
