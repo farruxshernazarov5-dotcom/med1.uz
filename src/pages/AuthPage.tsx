@@ -677,9 +677,25 @@ const AuthPage = () => {
                   </div>
                 )}
 
+                {mode === "register" && (
+                  <label className="flex items-start gap-2 text-xs text-muted-foreground p-3 rounded-lg bg-muted/40 border border-border cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={legalAccepted}
+                      onChange={(e) => setLegalAccepted(e.target.checked)}
+                      className="mt-0.5 accent-primary"
+                    />
+                    <span>
+                      Men <Link to="/terms" target="_blank" className="text-primary hover:underline">Foydalanish shartlari</Link>,{" "}
+                      <Link to="/privacy" target="_blank" className="text-primary hover:underline">Maxfiylik siyosati</Link> va{" "}
+                      <Link to="/disclaimer" target="_blank" className="text-primary hover:underline">Tibbiy ogohlantirish</Link>ga roziman.
+                    </span>
+                  </label>
+                )}
+
                 <Button
                   type="submit"
-                  disabled={submitting || (mode === "register" && !passwordStrong)}
+                  disabled={submitting || (mode === "register" && (!passwordStrong || !legalAccepted))}
                   className="w-full bg-hero-gradient text-primary-foreground border-0 h-11"
                 >
                   {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
