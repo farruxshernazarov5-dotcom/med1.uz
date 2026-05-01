@@ -15,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
+import LegalAcceptanceModal from "@/components/legal/LegalAcceptanceModal";
+import { useLegalAcceptance } from "@/hooks/useLegalAcceptance";
 
 const planNames: Record<string, string> = {
   free: "Bepul", starter: "Starter", professional: "Professional", family: "Oilaviy", custom: "Shaxsiy paket",
@@ -46,6 +48,19 @@ const AIPaymentPage = () => {
   useEffect(() => {
     setInvoiceId(`MED1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
   }, []);
+
+  const { allAccepted: saasAccepted, refresh: refreshLegal } = useLegalAcceptance(["saas_terms", "privacy", "disclaimer"]);
+  const [legalOpen, setLegalOpen] = useState(false);
+  const [pendingPayMethod, setPendingPayMethod] = useState<null | (() => void)>(null);
+
+  const guardWithLegal = (action: () => void) => {
+    if (!saasAccepted) {
+      setPendingPayMethod(() => action);
+      setLegalOpen(true);
+      return;
+    }
+    action();
+  };
 
   // Online (Payme/Click) — to'lov darhol tasdiqlanadi va obuna aktivatsiya qilinadi
   const handlePayment = async () => {
@@ -303,11 +318,25 @@ ${plan === "professional" || plan === "family" ? "✓ Barcha 13 ta AI xizmat\n�
                   purpose={`ai_subscription:${plan}:${billing}`}
                   referenceId={invoiceId}
                   returnUrl={`${window.location.origin}/ai-subscription?paid=1`}
-                  onCashSelected={() => handleManualPayment("cash")}
-                  onBankSelected={() => handleManualPayment("bank")}
+                  onCashSelected={() => guardWithLegal(() => handleManualPayment("cash"))}
+                  onBankSelected={() => guardWithLegal(() => handleManualPayment("bank"))}
                   allowed={["click", "cash", "bank"]}
                 />
               </div>
+
+              <LegalAcceptanceModal
+                open={legalOpen}
+                onOpenChange={setLegalOpen}
+                variant="saas"
+                context="saas_purchase"
+                onAccepted={() => {
+                  refreshLegal();
+                  if (pendingPayMethod) {
+                    pendingPayMethod();
+                    setPendingPayMethod(null);
+                  }
+                }}
+              />
 
               {/* Security Info */}
               <div className="bg-muted rounded-xl p-4 flex items-start gap-3">
