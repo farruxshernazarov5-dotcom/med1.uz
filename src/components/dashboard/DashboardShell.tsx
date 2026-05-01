@@ -176,6 +176,9 @@ const DashboardShell = ({
         <main className="flex-1 p-4 md:p-6 overflow-y-auto">
           {children}
         </main>
+        <footer className="py-3 px-4 text-center text-[11px] text-white/40 border-t border-white/10 bg-[hsl(213,73%,15%)]/40">
+          MED-ALL AI SYSTEM MCHJ © 2018–2026. Barcha huquqlar himoyalangan.
+        </footer>
       </div>
     </div>
   );
