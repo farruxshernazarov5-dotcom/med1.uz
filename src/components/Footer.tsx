@@ -26,6 +26,13 @@ const infoLinks = [
   { label: "Sayt xaritasi", href: "/sitemap" },
 ];
 
+const legalLinks = [
+  { label: "Foydalanish shartlari", href: "/terms" },
+  { label: "Maxfiylik siyosati", href: "/privacy" },
+  { label: "Tibbiy ogohlantirish", href: "/disclaimer" },
+  { label: "SaaS HMS shartlari", href: "/saas-terms" },
+];
+
 const Footer = () => {
   return (
     <footer className="bg-dark-gradient text-primary-foreground">
@@ -99,12 +106,21 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-primary-foreground/40">
-          <p>© 2026 Med1.uz. Barcha huquqlar himoyalangan.</p>
-          <div className="flex items-center gap-4">
-            <span>UZ</span>
-            <span>RU</span>
-            <span>EN</span>
+        <div className="border-t border-primary-foreground/10 mt-12 pt-6">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-primary-foreground/60 mb-4">
+            {legalLinks.map((l) => (
+              <Link key={l.href} to={l.href} className="hover:text-primary-foreground transition-colors">
+                {l.label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-primary-foreground/50">
+            <p className="text-center">MED-ALL AI SYSTEM MCHJ © 2018–2026. Barcha huquqlar himoyalangan.</p>
+            <div className="flex items-center gap-3">
+              <span>UZ</span>
+              <span>RU</span>
+              <span>EN</span>
+            </div>
           </div>
         </div>
       </div>
