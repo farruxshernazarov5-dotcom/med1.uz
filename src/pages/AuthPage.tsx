@@ -58,6 +58,7 @@ const AuthPage = () => {
   const [role, setRole] = useState("patient");
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [legalAccepted, setLegalAccepted] = useState(false);
 
   // Phone auth state (login)
   const [phone, setPhone] = useState("+998");
@@ -225,6 +226,11 @@ const AuthPage = () => {
         setSubmitting(false);
         return;
       }
+      if (!legalAccepted) {
+        toast({ title: "Iltimos, foydalanish shartlarini qabul qiling", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
       if (!passwordStrong) {
         toast({ title: "Parol yetarlicha kuchli emas", variant: "destructive" });
         setSubmitting(false);
@@ -240,6 +246,20 @@ const AuthPage = () => {
           description: "📧 Tasdiqlash xati emailingizga yuborildi. Spam papkasini ham tekshiring (5-10 daq.)",
           duration: 10000,
         });
+        // Log legal acceptance after successful signup
+        try {
+          const { data: { user: newUser } } = await supabase.auth.getUser();
+          if (newUser) {
+            const versions = ["global_terms","privacy","disclaimer"];
+            await Promise.all(versions.map(dt => (supabase as any).from("legal_acceptances").insert({
+              user_id: newUser.id,
+              doc_type: dt,
+              doc_version: "2026.04",
+              context: "signup",
+              user_agent: navigator.userAgent,
+            })));
+          }
+        } catch {}
         setMode("login");
       }
     }
