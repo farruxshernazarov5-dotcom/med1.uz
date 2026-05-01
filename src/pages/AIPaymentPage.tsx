@@ -15,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
+import LegalAcceptanceModal from "@/components/legal/LegalAcceptanceModal";
+import { useLegalAcceptance } from "@/hooks/useLegalAcceptance";
 
 const planNames: Record<string, string> = {
   free: "Bepul", starter: "Starter", professional: "Professional", family: "Oilaviy", custom: "Shaxsiy paket",
