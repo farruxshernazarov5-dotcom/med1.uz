@@ -7,9 +7,11 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
+import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
+import AdminDentalModule from "@/components/admin/AdminDentalModule";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +47,12 @@ const sidebarSections = [
       { id: "pharmacies_tab", label: "Dorixonalar", icon: Pill },
       { id: "bloodbanks_tab", label: "Qon banklari", icon: Droplets },
       { id: "medtech", label: "Med texnika", icon: Wrench },
+      { id: "dental_hms", label: "🦷 Stomatologiya HMS", icon: Stethoscope },
+    ]
+  },
+  {
+    label: "Biznes", items: [
+      { id: "marketing", label: "📢 Marketing", icon: Megaphone },
     ]
   },
   {
@@ -1311,6 +1319,8 @@ const AdminDashboard = () => {
 
           {/* ═══ AUDIT ═══ */}
           {tab === "saas" && <SaaSAdminManager />}
+          {tab === "marketing" && <AdminMarketingModule />}
+          {tab === "dental_hms" && <AdminDentalModule />}
 
           {tab === "audit" && (
             <div className="space-y-3">
