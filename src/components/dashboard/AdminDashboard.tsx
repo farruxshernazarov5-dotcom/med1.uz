@@ -10,6 +10,8 @@ import {
   Settings, Database, Wifi, Heart, Microscope, Menu, Crown
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
+import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
+import AdminDentalModule from "@/components/admin/AdminDentalModule";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
