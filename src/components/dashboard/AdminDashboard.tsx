@@ -47,6 +47,12 @@ const sidebarSections = [
       { id: "pharmacies_tab", label: "Dorixonalar", icon: Pill },
       { id: "bloodbanks_tab", label: "Qon banklari", icon: Droplets },
       { id: "medtech", label: "Med texnika", icon: Wrench },
+      { id: "dental_hms", label: "🦷 Stomatologiya HMS", icon: Stethoscope },
+    ]
+  },
+  {
+    label: "Biznes", items: [
+      { id: "marketing", label: "📢 Marketing", icon: Megaphone },
     ]
   },
   {
