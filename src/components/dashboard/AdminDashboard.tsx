@@ -1319,6 +1319,8 @@ const AdminDashboard = () => {
 
           {/* ═══ AUDIT ═══ */}
           {tab === "saas" && <SaaSAdminManager />}
+          {tab === "marketing" && <AdminMarketingModule />}
+          {tab === "dental_hms" && <AdminDentalModule />}
 
           {tab === "audit" && (
             <div className="space-y-3">
