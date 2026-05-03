@@ -82,6 +82,8 @@ const TermsPage = lazy(() => import("./pages/TermsPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const DisclaimerPage = lazy(() => import("./pages/DisclaimerPage"));
 const SaasTermsPage = lazy(() => import("./pages/SaasTermsPage"));
+const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
+const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -190,6 +192,8 @@ const App = () => (
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/disclaimer" element={<DisclaimerPage />} />
                 <Route path="/saas-terms" element={<SaasTermsPage />} />
+                <Route path="/knowledge" element={<KnowledgePage />} />
+                <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
