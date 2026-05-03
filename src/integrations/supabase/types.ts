@@ -8141,6 +8141,102 @@ export type Database = {
         }
         Relationships: []
       }
+      knowledge_articles: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          id: string
+          language: string
+          published: boolean
+          related_slugs: string[] | null
+          search_vector: unknown
+          slug: string
+          source_name: string | null
+          source_url: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          language: string
+          published?: boolean
+          related_slugs?: string[] | null
+          search_vector?: unknown
+          slug: string
+          source_name?: string | null
+          source_url?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          language?: string
+          published?: boolean
+          related_slugs?: string[] | null
+          search_vector?: unknown
+          slug?: string
+          source_name?: string | null
+          source_url?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
+      knowledge_imports: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          filename: string
+          id: string
+          language: string
+          status: string
+          total_inserted: number
+          total_parsed: number
+          total_updated: number
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          filename: string
+          id?: string
+          language: string
+          status?: string
+          total_inserted?: number
+          total_parsed?: number
+          total_updated?: number
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          filename?: string
+          id?: string
+          language?: string
+          status?: string
+          total_inserted?: number
+          total_parsed?: number
+          total_updated?: number
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       legal_acceptances: {
         Row: {
           accepted_at: string
@@ -12191,6 +12287,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_knowledge_view: {
+        Args: { _article_id: string }
+        Returns: undefined
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -12208,6 +12308,8 @@ export type Database = {
           read_ct: number
         }[]
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role:
