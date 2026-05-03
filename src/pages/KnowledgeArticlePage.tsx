@@ -25,7 +25,24 @@ type Article = {
 
 type Related = { id: string; slug: string; title: string; language: string };
 
-const cleanTitle = (t: string) => t.replace(/^[\*\s]+/, "").trim();
+const cleanTitle = (t: string) =>
+  t.replace(/\*+/g, "").replace(/^[#\s\-•]+/, "").replace(/\s+/g, " ").trim();
+
+// Render **bold** + inline markdown
+const renderInline = (text: string, linkify: (s: string) => (string | JSX.Element)[]): (string | JSX.Element)[] => {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  const out: (string | JSX.Element)[] = [];
+  parts.forEach((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      out.push(<strong key={`b-${i}`} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>);
+    } else if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+      out.push(<em key={`i-${i}`}>{part.slice(1, -1)}</em>);
+    } else if (part) {
+      linkify(part).forEach((p) => out.push(p));
+    }
+  });
+  return out;
+};
 
 const KnowledgeArticlePage = () => {
   const { lang = "uz", slug = "" } = useParams();
@@ -123,26 +140,61 @@ const KnowledgeArticlePage = () => {
     };
 
     const rendered = paragraphs.map((p, i) => {
-      const trimmed = p.trim().replace(/^\*+\s*/, "");
-      if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
-        return (
-          <li key={i} className="text-foreground/85 leading-relaxed ml-6 list-disc">
-            {linkify(trimmed.slice(2))}
-          </li>
-        );
-      }
-      if (trimmed.length < 80 && i > 0 && !trimmed.endsWith(".") && !trimmed.endsWith(",")) {
+      const raw = p.trim();
+
+      // Heading: ## or ### markdown, or ** wrapped short line
+      const headingMatch = raw.match(/^#{1,4}\s+(.+)$/);
+      const boldHeading = raw.match(/^\*\*(.+?)\*\*:?$/);
+      if (headingMatch || boldHeading) {
+        const text = (headingMatch?.[1] || boldHeading?.[1] || "").trim();
         const id = `h-${i}`;
-        toc.push({ id, text: trimmed });
+        toc.push({ id, text });
         return (
-          <h2 key={i} id={id} className="font-heading text-xl md:text-2xl font-bold text-foreground mt-8 mb-3 scroll-mt-24">
-            {trimmed}
+          <h2 key={i} id={id} className="font-heading text-xl md:text-2xl font-bold text-foreground mt-8 mb-3 scroll-mt-24 border-l-4 border-primary pl-3">
+            {text}
           </h2>
         );
       }
+
+      // Numbered list
+      const numMatch = raw.match(/^(\d+)[.)]\s+(.+)$/);
+      if (numMatch) {
+        return (
+          <div key={i} className="flex gap-3 items-start pl-2 mb-2">
+            <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0 mt-1">
+              {numMatch[1]}
+            </span>
+            <p className="text-foreground/85 leading-relaxed flex-1">{renderInline(numMatch[2], linkify)}</p>
+          </div>
+        );
+      }
+
+      // Bullet list
+      if (raw.startsWith("* ") || raw.startsWith("- ") || raw.startsWith("• ")) {
+        return (
+          <div key={i} className="flex gap-3 items-start pl-4 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 mt-2.5" />
+            <p className="text-foreground/85 leading-relaxed flex-1">
+              {renderInline(raw.replace(/^[\*\-•]\s+/, ""), linkify)}
+            </p>
+          </div>
+        );
+      }
+
+      // Short line as subheading
+      if (raw.length < 70 && i > 0 && !raw.endsWith(".") && !raw.endsWith(",") && !raw.endsWith(":")) {
+        const id = `h-${i}`;
+        toc.push({ id, text: raw });
+        return (
+          <h3 key={i} id={id} className="font-heading text-lg font-bold text-foreground mt-6 mb-2 scroll-mt-24">
+            {renderInline(raw, linkify)}
+          </h3>
+        );
+      }
+
       return (
         <p key={i} className="text-foreground/85 leading-relaxed mb-3">
-          {linkify(trimmed)}
+          {renderInline(raw, linkify)}
         </p>
       );
     });
