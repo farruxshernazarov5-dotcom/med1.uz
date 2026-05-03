@@ -36,7 +36,8 @@ const CATEGORIES = [
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const PAGE_SIZE = 30;
 
-const cleanTitle = (t: string) => t.replace(/^[\*\s]+/, "").trim();
+const cleanTitle = (t: string) =>
+  t.replace(/\*+/g, "").replace(/^[#\s\-•]+/, "").replace(/\s+/g, " ").trim();
 
 const KnowledgePage = () => {
   const [params, setParams] = useSearchParams();
@@ -158,7 +159,7 @@ const KnowledgePage = () => {
                   <button
                     key={s.id}
                     type="button"
-                    onMouseDown={() => navigate(`/knowledge/${s.language}/${s.slug}`)}
+                    onMouseDown={() => window.open(`/knowledge/${s.language}/${s.slug}`, "_blank", "noopener,noreferrer")}
                     className="w-full text-left px-4 py-2.5 hover:bg-accent flex items-center gap-3 border-b border-border last:border-0"
                   >
                     <BookOpen className="w-4 h-4 text-primary flex-shrink-0" />
@@ -248,6 +249,8 @@ const KnowledgePage = () => {
             <Link
               key={a.id}
               to={`/knowledge/${a.language}/${a.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group bg-card border border-border rounded-xl p-4 hover:border-primary hover:shadow-md transition-all"
             >
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
