@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
+import { formatArticleContent } from "@/lib/formatArticleContent";
 
 type Article = {
   id: string;
@@ -110,7 +111,8 @@ const KnowledgeArticlePage = () => {
   // Build TOC from headings
   const { renderedContent, toc } = useMemo(() => {
     if (!article) return { renderedContent: null as any, toc: [] as { id: string; text: string }[] };
-    const paragraphs = article.content.split("\n").filter(p => p.trim());
+    const formatted = formatArticleContent(article.content);
+    const paragraphs = formatted.split("\n").filter(p => p.trim());
     const linkKeys = Object.keys(linkMap).sort((a, b) => b.length - a.length).slice(0, 30);
     const toc: { id: string; text: string }[] = [];
 
