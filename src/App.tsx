@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
 import { ThemeProvider } from "next-themes";
@@ -118,7 +118,7 @@ const App = () => (
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/medicine" element={<MedicinePage />} />
+                <Route path="/medicine" element={<Navigate to="/knowledge" replace />} />
                 <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
                 <Route path="/health" element={<HealthPage />} />
                 <Route path="/diseases" element={<DiseasesPage />} />
