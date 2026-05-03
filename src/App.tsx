@@ -118,7 +118,7 @@ const App = () => (
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/medicine" element={<Navigate to="/knowledge" replace />} />
+                <Route path="/medicine" element={<MedicinePage />} />
                 <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
                 <Route path="/health" element={<HealthPage />} />
                 <Route path="/diseases" element={<DiseasesPage />} />
