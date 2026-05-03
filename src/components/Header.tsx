@@ -14,6 +14,7 @@ const navItems = [
   { label: "Salomatlik", href: "/health" },
   { label: "Kasalliklar", href: "/diseases" },
   { label: "Maqolalar", href: "/articles" },
+  { label: "📚 Ensiklopediya", href: "/knowledge" },
   { label: "Klinikalar", href: "/clinics" },
   { label: "🤖 AI xizmatlar", href: "/ai-services" },
   { label: "Med texnika", href: "/med-tech" },

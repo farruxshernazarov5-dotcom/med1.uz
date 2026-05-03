@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X, FileText, Stethoscope, Building2, Newspaper, BookOpen, Heart, Activity, Pill, Droplets, Baby, Wrench, ArrowRight } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 import { articleCategories } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import { diseaseCategories } from "@/data/diseases";
@@ -39,7 +40,35 @@ interface GlobalSearchProps {
 
 const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
   const [query, setQuery] = useState("");
+  const [knowledgeResults, setKnowledgeResults] = useState<SearchResult[]>([]);
   const navigate = useNavigate();
+
+  // Debounced live DB search across knowledge_articles
+  useEffect(() => {
+    if (!query.trim() || query.trim().length < 2) {
+      setKnowledgeResults([]);
+      return;
+    }
+    const t = setTimeout(async () => {
+      const { data } = await supabase
+        .from("knowledge_articles")
+        .select("id,language,slug,title,excerpt,category")
+        .eq("published", true)
+        .ilike("title", `%${query.trim()}%`)
+        .order("view_count", { ascending: false })
+        .limit(8);
+      setKnowledgeResults(
+        (data || []).map((a: any) => ({
+          title: a.title,
+          description: a.excerpt || a.category || "Tibbiy maqola",
+          href: `/knowledge/${a.language}/${a.slug}`,
+          category: a.language === "en" ? "Ensiklopediya (EN)" : "Ensiklopediya",
+          icon: <BookOpen className="w-4 h-4" />,
+        }))
+      );
+    }, 250);
+    return () => clearTimeout(t);
+  }, [query]);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -135,8 +164,8 @@ const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
       }
     });
 
-    return found.slice(0, 25);
-  }, [query]);
+    return [...knowledgeResults, ...found].slice(0, 30);
+  }, [query, knowledgeResults]);
 
   const handleSelect = useCallback(
     (href: string) => {
