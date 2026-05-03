@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X, FileText, Stethoscope, Building2, Newspaper, BookOpen, Heart, Activity, Pill, Droplets, Baby, Wrench, ArrowRight } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 import { articleCategories } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import { diseaseCategories } from "@/data/diseases";
