@@ -231,13 +231,66 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
         </TabsContent>
 
         <TabsContent value="qr" className="space-y-3">
-          <Card><CardHeader><CardTitle className="text-base flex items-center gap-2"><QrCode className="w-4 h-4" /> Dinamik QR</CardTitle></CardHeader>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2"><QrCode className="w-4 h-4" /> Dinamik QR Kod</CardTitle>
+            </CardHeader>
             <CardContent className="flex flex-col items-center gap-3">
               {qrImg ? <img src={qrImg} className="w-72 h-72" alt="QR" /> : <div className="w-72 h-72 bg-muted animate-pulse rounded" />}
-              {qrToken && <p className="text-xs text-muted-foreground">Yangilanadi: {format(new Date(qrToken.expires_at),"HH:mm:ss")}</p>}
-              <Button variant="outline" size="sm" onClick={generateQr}><RefreshCw className="w-4 h-4 mr-1" /> Hozir yangilash</Button>
-              <p className="text-xs text-muted-foreground text-center max-w-md">Xodim <code>/check-in</code> sahifasida skaner qiladi. Har {settings?.qr_rotate_seconds ?? 60} soniyada yangilanadi.</p>
-            </CardContent></Card>
+              {qrToken && <p className="text-xs text-muted-foreground">Amal qiladi: {format(new Date(qrToken.expires_at),"HH:mm:ss")} gacha</p>}
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={generateQr}><RefreshCw className="w-4 h-4 mr-1" /> Yangilash</Button>
+                <Button size="sm" onClick={() => window.open("/check-in", "_blank")}>📱 /check-in ochish</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/20 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="text-base">📖 Xodimlar uchun yo'riqnoma — QR orqali Check-in/Check-out</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div>
+                <h4 className="font-semibold text-primary mb-1">1️⃣ Tayyorgarlik (bir martalik)</h4>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                  <li>Xodim tizimda ro'yxatdan o'tgan bo'lishi kerak (email/telefon orqali).</li>
+                  <li>Admin "Xodimlar" tabidan xodimni qo'shadi va uning <b>User ID</b> sini bog'laydi.</li>
+                  <li>"Sozlamalar" tabida klinika joylashuvi (GPS) va ruxsat etilgan radius belgilanadi.</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-primary mb-1">2️⃣ Check-in qilish (ish boshlanganda)</h4>
+                <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+                  <li>Telefonda tizimga kiring va <code className="bg-background px-1 rounded">/check-in</code> sahifasini oching.</li>
+                  <li>Brauzerga <b>Kamera</b> va <b>Joylashuv</b> ruxsatlarini bering.</li>
+                  <li><b>"Check-in"</b> tugmasini bosing — kamera ochiladi.</li>
+                  <li>Klinikada osilgan QR kodga kamerani yo'naltiring (1-2 soniya).</li>
+                  <li>Tizim joylashuvingizni tekshiradi — ✅ tasdiq xabari chiqadi.</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold text-primary mb-1">3️⃣ Check-out qilish (ish tugaganda)</h4>
+                <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+                  <li>Yana <code className="bg-background px-1 rounded">/check-in</code> sahifasiga kiring.</li>
+                  <li><b>"Check-out"</b> tugmasini bosing va QR'ni qayta skaner qiling.</li>
+                  <li>Ishlangan vaqt avtomatik hisoblab chiqiladi.</li>
+                </ol>
+              </div>
+              <div>
+                <h4 className="font-semibold text-primary mb-1">⚠️ Muhim qoidalar</h4>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                  <li>QR kod har <b>{settings?.qr_rotate_seconds ?? 60} soniyada</b> avtomatik yangilanadi — eski screenshot ishlamaydi.</li>
+                  <li>Klinika hududidan <b>{settings?.radius_m ?? 100}m</b> uzoqdan check-in qilib bo'lmaydi.</li>
+                  <li>Soxta GPS aniqlansa, urinish bloklanadi va loglanadi.</li>
+                  <li>Kechikish: ish boshlanishidan {settings?.late_threshold_min ?? 10} daqiqa o'tgach "Kechikkan" deb belgilanadi.</li>
+                </ul>
+              </div>
+              <div className="rounded-lg bg-background border p-3">
+                <h4 className="font-semibold mb-1">💡 Maslahat admin uchun</h4>
+                <p className="text-muted-foreground">Bu sahifani katta ekran/planshetda ochib qoldiring va kirish eshigi yoniga qo'ying. Xodimlar kelganda telefon kamerasi bilan skaner qiladi. QR avtomatik yangilanib turadi.</p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-3">
