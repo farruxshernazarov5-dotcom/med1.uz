@@ -380,6 +380,7 @@ const DoctorDashboard = () => {
       )}
 
       {tab === "subscription" && <DoctorSubscription />}
+      {tab === "attendance" && <OrgAttendance orgType="doctor" orgName={doctor.full_name} />}
     </DashboardShell>
   );
 };
