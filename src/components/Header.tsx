@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, LogOut, Shield, Coins } from "lucide-react";
+import { Menu, X, Search, User, LogOut, Shield, Coins, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -111,6 +111,9 @@ const Header = () => {
                     <Coins className="w-3.5 h-3.5" />
                     🪙 {balance}
                   </Link>
+                  <Button asChild variant="ghost" size="sm" className="text-emerald-700 dark:text-emerald-400" title="Xodim Check-in/out">
+                    <Link to="/check-in"><ScanLine className="w-4 h-4 mr-1" /> Keldi-Ketdi</Link>
+                  </Button>
                   {userRole === "admin" && (
                     <Button asChild variant="ghost" size="sm" className="text-primary">
                       <Link to="/admin"><Shield className="w-4 h-4 mr-1" /> Admin</Link>
@@ -151,7 +154,10 @@ const Header = () => {
                   ))}
                 </div>
                 {user ? (
-                  <div className="flex flex-1 gap-2">
+                  <div className="flex flex-1 gap-2 flex-wrap">
+                    <Button asChild variant="outline" className="flex-1 min-w-[140px]">
+                      <Link to="/check-in" onClick={() => setIsOpen(false)}><ScanLine className="w-4 h-4 mr-1" /> Keldi-Ketdi</Link>
+                    </Button>
                     {userRole === "admin" && (
                       <Button asChild variant="outline" className="flex-1">
                         <Link to="/admin" onClick={() => setIsOpen(false)}><Shield className="w-4 h-4 mr-1" /> Admin</Link>
