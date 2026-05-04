@@ -34,8 +34,11 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
   const [qrImg, setQrImg] = useState<string>("");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().slice(0, 10));
   const [filterStaff, setFilterStaff] = useState<string>("");
-  const [staffForm, setStaffForm] = useState({ full_name: "", role: "", phone: "", user_id: "" });
+  const [staffForm, setStaffForm] = useState<{ id?: string; full_name: string; role: string; phone: string; user_id: string; is_active: boolean }>({ full_name: "", role: "", phone: "", user_id: "", is_active: true });
   const [openAdd, setOpenAdd] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
 
   const fetchAll = async () => {
     if (!owner) return;
