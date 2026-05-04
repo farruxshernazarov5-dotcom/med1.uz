@@ -29,6 +29,7 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
   const [settings, setSettings] = useState<any>(null);
   const [staff, setStaff] = useState<any[]>([]);
   const [records, setRecords] = useState<any[]>([]);
+  const [audits, setAudits] = useState<any[]>([]);
   const [qrToken, setQrToken] = useState<{ token: string; expires_at: string } | null>(null);
   const [qrImg, setQrImg] = useState<string>("");
   const [filterDate, setFilterDate] = useState(new Date().toISOString().slice(0, 10));
@@ -38,14 +39,16 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
 
   const fetchAll = async () => {
     if (!owner) return;
-    const [{ data: s }, { data: st }, { data: rec }] = await Promise.all([
+    const [{ data: s }, { data: st }, { data: rec }, { data: aud }] = await Promise.all([
       supabase.from("org_attendance_settings" as any).select("*").eq("owner_id", owner).maybeSingle(),
       supabase.from("org_attendance_staff" as any).select("*").eq("owner_id", owner).order("created_at", { ascending: false }),
       supabase.from("org_attendance_records" as any).select("*").eq("owner_id", owner).order("attendance_date", { ascending: false }).limit(500),
+      supabase.from("org_attendance_audit_logs" as any).select("*").eq("owner_id", owner).order("created_at", { ascending: false }).limit(500),
     ]);
     setSettings(s || { owner_id: owner, org_type: orgType, org_name: orgName, radius_m: 100, work_start: "09:00", work_end: "18:00", late_threshold_min: 10, qr_rotate_seconds: 60, enforce_geo: true, enforce_qr: true });
     setStaff((st as any[]) || []);
     setRecords((rec as any[]) || []);
+    setAudits((aud as any[]) || []);
   };
 
   useEffect(() => { fetchAll(); /* eslint-disable-next-line */ }, [owner]);
