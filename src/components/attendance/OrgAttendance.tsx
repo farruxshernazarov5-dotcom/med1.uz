@@ -297,6 +297,52 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
           </Card>
         </TabsContent>
 
+        <TabsContent value="audit" className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">Har bir check-in/out urinishi: QR token, vaqt, GPS, masofa, natija va sabab.</p>
+            <Button variant="outline" size="sm" onClick={() => {
+              const rows = [["Vaqt","Xodim","Action","Natija","Sabab","QR (qisqa)","Lat","Lng","Masofa(m)","Qurilma","IP"]];
+              audits.forEach((a) => rows.push([
+                format(new Date(a.created_at), "yyyy-MM-dd HH:mm:ss"),
+                staffName(a.staff_id) || "—",
+                a.action || "", a.result || "", a.reason || "",
+                a.qr_token || "", a.lat ?? "", a.lng ?? "", a.distance_m ?? "",
+                (a.device_info || "").slice(0,60), a.ip_address || "",
+              ]));
+              const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+              const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+              const a = document.createElement("a"); a.href = url; a.download = `attendance-audit-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+            }}><Download className="w-4 h-4 mr-1" /> CSV eksport</Button>
+          </div>
+          <Card><CardContent className="p-0">
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>Vaqt</TableHead><TableHead>Xodim</TableHead><TableHead>Action</TableHead>
+                <TableHead>Natija</TableHead><TableHead>Sabab</TableHead><TableHead>GPS</TableHead>
+                <TableHead>Masofa</TableHead><TableHead>QR</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {audits.map((a) => (<TableRow key={a.id}>
+                  <TableCell className="text-xs">{format(new Date(a.created_at), "dd.MM HH:mm:ss")}</TableCell>
+                  <TableCell className="text-xs">{staffName(a.staff_id)}</TableCell>
+                  <TableCell><Badge variant="outline">{a.action}</Badge></TableCell>
+                  <TableCell>
+                    {a.result === "success" ? <Badge className="bg-emerald-100 text-emerald-800">OK</Badge> :
+                     a.result === "late" ? <Badge className="bg-amber-100 text-amber-800">Kech</Badge> :
+                     a.result === "denied" ? <Badge variant="destructive">Rad</Badge> :
+                     <Badge variant="secondary">{a.result}</Badge>}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground max-w-[180px] truncate">{a.reason || "—"}</TableCell>
+                  <TableCell className="text-xs">{a.lat ? `${a.lat.toFixed(4)}, ${a.lng.toFixed(4)}` : "—"}</TableCell>
+                  <TableCell className="text-xs">{a.distance_m != null ? `${a.distance_m}m` : "—"}</TableCell>
+                  <TableCell className="text-xs font-mono">{a.qr_token || "—"}</TableCell>
+                </TableRow>))}
+                {audits.length===0 && <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-6">Audit yozuvi yo'q</TableCell></TableRow>}
+              </TableBody>
+            </Table>
+          </CardContent></Card>
+        </TabsContent>
+
         <TabsContent value="settings" className="space-y-3">
           {settings && (<Card><CardHeader><CardTitle className="text-base flex items-center gap-2"><MapPin className="w-4 h-4" /> Sozlamalar</CardTitle></CardHeader>
             <CardContent className="space-y-3">
