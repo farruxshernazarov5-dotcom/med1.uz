@@ -133,11 +133,12 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
         <h2 className="text-lg font-bold flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-primary" /> Attendance — Keldi-Ketdi</h2>
       </div>
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-5 w-full">
+        <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full">
           <TabsTrigger value="today">Bugun</TabsTrigger>
           <TabsTrigger value="list">Yozuvlar</TabsTrigger>
           <TabsTrigger value="staff">Xodimlar</TabsTrigger>
           <TabsTrigger value="qr">QR Kod</TabsTrigger>
+          <TabsTrigger value="audit">Audit</TabsTrigger>
           <TabsTrigger value="settings">Sozlamalar</TabsTrigger>
         </TabsList>
 
