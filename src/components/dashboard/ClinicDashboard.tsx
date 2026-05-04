@@ -47,7 +47,7 @@ import HMSInventory from "@/components/hms/HMSInventory";
 import HMSOverview from "@/components/hms/HMSOverview";
 import HMSAuditLog from "@/components/hms/HMSAuditLog";
 import HMSPaymentSettings from "@/components/hms/HMSPaymentSettings";
-import HMSAttendance from "@/components/hms/HMSAttendance";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
@@ -240,7 +240,7 @@ const ClinicDashboard = () => {
       {tab === "hms-inventory" && <HMSInventory clinicId={clinic.id} />}
       {tab === "hms-audit" && <HMSAuditLog clinicId={clinic.id} />}
       {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
-      {tab === "hms-attendance" && <HMSAttendance clinicId={clinic.id} />}
+      {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
     </DashboardShell>
   );
 };
