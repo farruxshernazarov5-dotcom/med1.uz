@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import DiagnosticsSubscription from "./DiagnosticsSubscription";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 
 import DiagOverview from "@/components/diagnostics/DiagOverview";
 import DiagPatients from "@/components/diagnostics/DiagPatients";
@@ -131,6 +132,7 @@ const DiagnosticsDashboard = () => {
     { id: "finance", label: "Moliya", icon: DollarSign, group: "Moliya" },
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
     { id: "settings", label: "Sozlamalar", icon: SettingsIcon, group: "Tizim" },
+    { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
   ];
 
@@ -199,6 +201,7 @@ const DiagnosticsDashboard = () => {
       {tab === "settings" && <DiagSettings centerId={center.id} center={center} />}
 
       {tab === "subscription" && <DiagnosticsSubscription />}
+      {tab === "attendance" && <OrgAttendance orgType="diagnostics" orgName={center.name} />}
     </DashboardShell>
   );
 };

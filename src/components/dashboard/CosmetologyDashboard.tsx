@@ -6,8 +6,9 @@ import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Plus, Settings,
   BarChart3, Users, Package, Image as ImageIcon, Wallet, Gift, Megaphone,
-  Star, UserCog, Crown,
+  Star, UserCog, Crown, ShieldCheck,
 } from "lucide-react";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
@@ -73,6 +74,7 @@ const CosmetologyDashboard = () => {
     { id: "feedback", label: "Sharhlar", icon: Star },
     { id: "inventory", label: "Mahsulotlar", icon: Package },
     { id: "staff", label: "Xodimlar", icon: UserCog },
+    { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "settings", label: "Sozlamalar", icon: Settings },
   ];
@@ -98,6 +100,7 @@ const CosmetologyDashboard = () => {
       {tab === "staff" && <CosStaff centerId={center.id} />}
       {tab === "subscription" && <CosmetologySubscription />}
       {tab === "settings" && <CosSettings centerId={center.id} />}
+      {tab === "attendance" && <OrgAttendance orgType="cosmetology" orgName={center.name} />}
     </DashboardShell>
   );
 };

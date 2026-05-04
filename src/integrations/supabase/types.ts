@@ -10051,6 +10051,209 @@ export type Database = {
         }
         Relationships: []
       }
+      org_attendance_qr_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          issued_at: string
+          owner_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_at?: string
+          owner_id: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_at?: string
+          owner_id?: string
+          token?: string
+        }
+        Relationships: []
+      }
+      org_attendance_records: {
+        Row: {
+          attendance_date: string
+          check_in: string | null
+          check_in_distance_m: number | null
+          check_in_lat: number | null
+          check_in_lng: number | null
+          check_out: string | null
+          check_out_distance_m: number | null
+          check_out_lat: number | null
+          check_out_lng: number | null
+          created_at: string
+          device_info: string | null
+          id: string
+          is_late: boolean | null
+          late_minutes: number | null
+          notes: string | null
+          owner_id: string
+          qr_token_id: string | null
+          staff_id: string
+          status: string | null
+          suspicious: boolean | null
+          updated_at: string
+          worked_minutes: number | null
+        }
+        Insert: {
+          attendance_date?: string
+          check_in?: string | null
+          check_in_distance_m?: number | null
+          check_in_lat?: number | null
+          check_in_lng?: number | null
+          check_out?: string | null
+          check_out_distance_m?: number | null
+          check_out_lat?: number | null
+          check_out_lng?: number | null
+          created_at?: string
+          device_info?: string | null
+          id?: string
+          is_late?: boolean | null
+          late_minutes?: number | null
+          notes?: string | null
+          owner_id: string
+          qr_token_id?: string | null
+          staff_id: string
+          status?: string | null
+          suspicious?: boolean | null
+          updated_at?: string
+          worked_minutes?: number | null
+        }
+        Update: {
+          attendance_date?: string
+          check_in?: string | null
+          check_in_distance_m?: number | null
+          check_in_lat?: number | null
+          check_in_lng?: number | null
+          check_out?: string | null
+          check_out_distance_m?: number | null
+          check_out_lat?: number | null
+          check_out_lng?: number | null
+          created_at?: string
+          device_info?: string | null
+          id?: string
+          is_late?: boolean | null
+          late_minutes?: number | null
+          notes?: string | null
+          owner_id?: string
+          qr_token_id?: string | null
+          staff_id?: string
+          status?: string | null
+          suspicious?: boolean | null
+          updated_at?: string
+          worked_minutes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_attendance_records_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "org_attendance_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_attendance_settings: {
+        Row: {
+          created_at: string
+          enforce_geo: boolean
+          enforce_qr: boolean
+          id: string
+          late_threshold_min: number
+          location_lat: number | null
+          location_lng: number | null
+          org_name: string | null
+          org_type: string
+          owner_id: string
+          qr_rotate_seconds: number
+          radius_m: number
+          updated_at: string
+          work_end: string
+          work_start: string
+        }
+        Insert: {
+          created_at?: string
+          enforce_geo?: boolean
+          enforce_qr?: boolean
+          id?: string
+          late_threshold_min?: number
+          location_lat?: number | null
+          location_lng?: number | null
+          org_name?: string | null
+          org_type?: string
+          owner_id: string
+          qr_rotate_seconds?: number
+          radius_m?: number
+          updated_at?: string
+          work_end?: string
+          work_start?: string
+        }
+        Update: {
+          created_at?: string
+          enforce_geo?: boolean
+          enforce_qr?: boolean
+          id?: string
+          late_threshold_min?: number
+          location_lat?: number | null
+          location_lng?: number | null
+          org_name?: string | null
+          org_type?: string
+          owner_id?: string
+          qr_rotate_seconds?: number
+          radius_m?: number
+          updated_at?: string
+          work_end?: string
+          work_start?: string
+        }
+        Relationships: []
+      }
+      org_attendance_staff: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          is_active: boolean
+          org_type: string
+          owner_id: string
+          phone: string | null
+          role: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          is_active?: boolean
+          org_type?: string
+          owner_id: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          org_type?: string
+          owner_id?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       patient_documents: {
         Row: {
           category: string

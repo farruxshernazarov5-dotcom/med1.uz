@@ -14,11 +14,12 @@ import {
   Eye, Star, Calendar, MessageCircle, GraduationCap, Languages,
   Phone, Mail, MapPin, Globe, ExternalLink, Crown, User, Settings,
   LayoutDashboard, Users, FileText, FlaskConical, Activity, ImageIcon,
-  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles, Shield
+  Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles, Shield, ShieldCheck
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DocOverview from "@/components/doctor/hms/DocOverview";
 import DocPatients from "@/components/doctor/hms/DocPatients";
 import DocAppointments from "@/components/doctor/hms/DocAppointments";
@@ -180,6 +181,7 @@ const DoctorDashboard = () => {
     { id: "reviews", label: "Sharhlar", icon: Star },
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
   ];
 
   return (
@@ -378,6 +380,7 @@ const DoctorDashboard = () => {
       )}
 
       {tab === "subscription" && <DoctorSubscription />}
+      {tab === "attendance" && <OrgAttendance orgType="doctor" orgName={doctor.full_name} />}
     </DashboardShell>
   );
 };

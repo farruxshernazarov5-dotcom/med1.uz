@@ -7,11 +7,12 @@ import { toast } from "@/hooks/use-toast";
 import {
   Stethoscope, Users, Calendar, DollarSign, Settings, BarChart3,
   Activity, Heart, Camera, FlaskConical, Package, Bell, FileText,
-  ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart
+  ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart, ShieldCheck
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import { writeAuditLog } from "@/utils/auditLog";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 
 import DentalOverview from "@/components/dental/DentalOverview";
 import DentalPatients from "@/components/dental/DentalPatients";
@@ -119,6 +120,7 @@ const DentalDashboard = () => {
     { id: "services", label: "Xizmatlar", icon: Stethoscope },
     { id: "reports", label: "Hisobotlar", icon: BarChart3 },
     { id: "settings", label: "Sozlamalar", icon: Settings },
+    { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
   ];
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
@@ -189,6 +191,7 @@ const DentalDashboard = () => {
       {tab === "services" && <DentalServicesManager clinicId={clinic.id} />}
       {tab === "reports" && <DentalReports patients={patients} appointments={appointments} treatments={treatments} services={services} clinicId={clinic.id} clinicName={clinic.name} />}
       {tab === "settings" && <DentalSettings clinic={clinic} onUpdate={fetchData} />}
+      {tab === "attendance" && <OrgAttendance orgType="dental" orgName={clinic.name} />}
     </DashboardShell>
   );
 };
