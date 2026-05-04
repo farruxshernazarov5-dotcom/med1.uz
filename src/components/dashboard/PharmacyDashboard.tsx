@@ -9,8 +9,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import {
   Pill, Plus, Package, ShoppingCart, BarChart3, Settings, FileText,
-  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt,
+  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck,
 } from "lucide-react";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import PhOverview from "@/components/pharmacy/PhOverview";
@@ -115,6 +116,7 @@ const PharmacyDashboard = () => {
     { id: "staff", label: "Xodimlar", icon: UserCog, group: "Boshqaruv" },
     { id: "finance", label: "Moliya", icon: Wallet, group: "Boshqaruv" },
     { id: "settings", label: "Sozlamalar", icon: Settings, group: "Tizim" },
+    { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
   ];
 
   return (
@@ -206,6 +208,7 @@ const PharmacyDashboard = () => {
           </Button>
         </div>
       )}
+      {tab === "attendance" && <OrgAttendance orgType="pharmacy" orgName={pharmacy.name} />}
     </DashboardShell>
   );
 };
