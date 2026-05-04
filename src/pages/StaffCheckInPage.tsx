@@ -43,7 +43,7 @@ const StaffCheckInPage = () => {
     try {
       const loc = coords || (await ensureLocation());
       setCoords(loc);
-      const { data, error } = await supabase.functions.invoke("attendance-checkin", {
+      const { data, error } = await supabase.functions.invoke("org-attendance-checkin", {
         body: { token, lat: loc.lat, lng: loc.lng, action },
       });
       if (error || data?.error) throw new Error(data?.error || error?.message);
