@@ -25,12 +25,24 @@ Deno.serve(async (req) => {
       return j({ error: "invalid params" }, 400);
 
     const admin = createClient(URL, SVC);
+    const ua = req.headers.get("user-agent") || "";
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "";
+    const audit = async (owner_id: string | null, staff_id: string | null, result: string, reason: string | null, qr_token_id: string | null, distance: number | null) => {
+      try {
+        await admin.from("org_attendance_audit_logs").insert({
+          owner_id: owner_id || u.user!.id, staff_id, user_id: u.user!.id, action,
+          result, reason, qr_token: token?.slice(0, 16), qr_token_id,
+          lat, lng, distance_m: distance, device_info: ua.slice(0, 200), ip_address: ip.slice(0, 80),
+        });
+      } catch {}
+    };
+
     const { data: tok } = await admin.from("org_attendance_qr_tokens").select("*").eq("token", token).maybeSingle();
-    if (!tok) return j({ error: "QR yaroqsiz" }, 400);
-    if (new Date(tok.expires_at).getTime() < Date.now()) return j({ error: "QR muddati tugagan" }, 400);
+    if (!tok) { await audit(null, null, "denied", "QR yaroqsiz", null, null); return j({ error: "QR yaroqsiz" }, 400); }
+    if (new Date(tok.expires_at).getTime() < Date.now()) { await audit(tok.owner_id, null, "denied", "QR muddati tugagan", tok.id, null); return j({ error: "QR muddati tugagan" }, 400); }
 
     const { data: staff } = await admin.from("org_attendance_staff").select("*").eq("owner_id", tok.owner_id).eq("user_id", u.user.id).eq("is_active", true).maybeSingle();
-    if (!staff) return j({ error: "Siz bu tashkilot xodimi sifatida ro'yxatdan o'tmagansiz" }, 403);
+    if (!staff) { await audit(tok.owner_id, null, "denied", "Xodim sifatida ro'yxatdan o'tmagan", tok.id, null); return j({ error: "Siz bu tashkilot xodimi sifatida ro'yxatdan o'tmagansiz" }, 403); }
 
     const { data: settings } = await admin.from("org_attendance_settings").select("*").eq("owner_id", tok.owner_id).maybeSingle();
     let distance = 0;
