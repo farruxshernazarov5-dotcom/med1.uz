@@ -36,6 +36,7 @@ const SitemapPage = lazy(() => import("./pages/SitemapPage"));
 const CosmetologyPage = lazy(() => import("./pages/CosmetologyPage"));
 const TermDetailPage = lazy(() => import("./pages/TermDetailPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const StaffCheckInPage = lazy(() => import("./pages/StaffCheckInPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const BookingPage = lazy(() => import("./pages/BookingPage"));
 const ClinicRegistrationPage = lazy(() => import("./pages/ClinicRegistrationPage"));
@@ -138,6 +139,7 @@ const App = () => (
                 <Route path="/maternity" element={<MaternityPage />} />
                 <Route path="/cosmetology" element={<CosmetologyPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/check-in" element={<StaffCheckInPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/dashboard/:type" element={<DashboardPage />} />
                 <Route path="/booking" element={<BookingPage />} />
