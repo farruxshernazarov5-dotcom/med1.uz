@@ -20,9 +20,9 @@ const StaffCheckInPage = () => {
   const fetchToday = async () => {
     if (!user) return;
     const date = new Date().toISOString().slice(0, 10);
-    const { data: staff } = await supabase.from("hms_staff").select("id").eq("user_id", user.id).limit(1).maybeSingle();
+    const { data: staff } = await supabase.from("org_attendance_staff" as any).select("id").eq("user_id", user.id).eq("is_active", true).limit(1).maybeSingle();
     if (!staff) return;
-    const { data } = await supabase.from("hms_attendance").select("*").eq("staff_id", staff.id).eq("attendance_date", date).maybeSingle();
+    const { data } = await supabase.from("org_attendance_records" as any).select("*").eq("staff_id", (staff as any).id).eq("attendance_date", date).maybeSingle();
     setToday(data);
   };
 
