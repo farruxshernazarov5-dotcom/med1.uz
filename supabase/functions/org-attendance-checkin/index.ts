@@ -48,17 +48,18 @@ Deno.serve(async (req) => {
     let distance = 0;
     if (settings?.enforce_geo && settings?.location_lat != null && settings?.location_lng != null) {
       distance = distM(lat, lng, settings.location_lat, settings.location_lng);
-      if (distance > (settings.radius_m ?? 100))
+      if (distance > (settings.radius_m ?? 100)) {
+        await audit(tok.owner_id, staff.id, "denied", `Joylashuv mos emas (${distance}m > ${settings.radius_m}m)`, tok.id, distance);
         return j({ error: `Joylashuv mos emas (${distance}m, ruxsat: ${settings.radius_m}m)` }, 400);
+      }
     }
 
     const today = new Date().toISOString().slice(0, 10);
     const { data: existing } = await admin.from("org_attendance_records").select("*").eq("staff_id", staff.id).eq("attendance_date", today).maybeSingle();
-    const ua = req.headers.get("user-agent") || "";
     const now = new Date();
 
     if (action === "check_in") {
-      if (existing?.check_in) return j({ error: "Bugun allaqachon check-in qilingan" }, 400);
+      if (existing?.check_in) { await audit(tok.owner_id, staff.id, "denied", "Bugun allaqachon check-in", tok.id, distance); return j({ error: "Bugun allaqachon check-in qilingan" }, 400); }
       let is_late = false, late_minutes = 0;
       if (settings?.work_start) {
         const [h, m] = settings.work_start.split(":").map(Number);
@@ -76,16 +77,18 @@ Deno.serve(async (req) => {
         ? admin.from("org_attendance_records").update(payload).eq("id", existing.id).select().single()
         : admin.from("org_attendance_records").insert(payload).select().single();
       const { data, error } = await q;
-      if (error) return j({ error: error.message }, 500);
+      if (error) { await audit(tok.owner_id, staff.id, "error", error.message, tok.id, distance); return j({ error: error.message }, 500); }
+      await audit(tok.owner_id, staff.id, is_late ? "late" : "success", is_late ? `Kechikish ${late_minutes}d` : null, tok.id, distance);
       return j({ ok: true, attendance: data, late: is_late, late_minutes });
     } else {
-      if (!existing?.check_in) return j({ error: "Avval check-in qiling" }, 400);
-      if (existing.check_out) return j({ error: "Bugun allaqachon check-out qilingan" }, 400);
+      if (!existing?.check_in) { await audit(tok.owner_id, staff.id, "denied", "Check-in qilinmagan", tok.id, distance); return j({ error: "Avval check-in qiling" }, 400); }
+      if (existing.check_out) { await audit(tok.owner_id, staff.id, "denied", "Bugun allaqachon check-out", tok.id, distance); return j({ error: "Bugun allaqachon check-out qilingan" }, 400); }
       const worked = Math.round((now.getTime() - new Date(existing.check_in).getTime()) / 60000);
       const { data, error } = await admin.from("org_attendance_records").update({
         check_out: now.toISOString(), check_out_lat: lat, check_out_lng: lng, check_out_distance_m: distance, worked_minutes: worked,
       }).eq("id", existing.id).select().single();
-      if (error) return j({ error: error.message }, 500);
+      if (error) { await audit(tok.owner_id, staff.id, "error", error.message, tok.id, distance); return j({ error: error.message }, 500); }
+      await audit(tok.owner_id, staff.id, "success", `Ishlangan ${worked}d`, tok.id, distance);
       return j({ ok: true, attendance: data, worked_minutes: worked });
     }
   } catch (e: any) { return j({ error: e?.message || "error" }, 500); }
