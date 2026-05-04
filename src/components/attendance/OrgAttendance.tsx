@@ -236,33 +236,79 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
         </TabsContent>
 
         <TabsContent value="staff" className="space-y-3">
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-3 text-xs space-y-1">
+              <p className="font-semibold flex items-center gap-1"><Link2 className="w-3 h-3" /> Xodimning User ID-sini qanday olish?</p>
+              <ol className="list-decimal pl-5 space-y-0.5 text-muted-foreground">
+                <li>Xodim avval <b>med1.uz</b> da ro'yxatdan o'tadi (email/telefon).</li>
+                <li>Quyidagi formada xodimning <b>email</b> yoki <b>telefon</b> raqamini yozing va "Qidirish" tugmasini bosing.</li>
+                <li>Topilgan foydalanuvchi yoniga "Bog'lash" bosing — User ID avtomatik to'ldiriladi.</li>
+                <li>Saqlangach, xodim <code className="bg-background px-1 rounded">/check-in</code> sahifasidan QR skaner qila oladi.</li>
+              </ol>
+            </CardContent>
+          </Card>
           <div className="flex justify-end">
-            <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-              <DialogTrigger asChild><Button><Plus className="w-4 h-4 mr-1" /> Xodim qo'shish</Button></DialogTrigger>
-              <DialogContent>
-                <DialogHeader><DialogTitle>Yangi xodim</DialogTitle></DialogHeader>
-                <div className="space-y-2">
+            <Dialog open={openAdd} onOpenChange={(v)=>{ setOpenAdd(v); if (!v) { resetStaffForm(); setSearchResults([]); setUserSearch(""); } }}>
+              <DialogTrigger asChild><Button onClick={()=>{ resetStaffForm(); }}><Plus className="w-4 h-4 mr-1" /> Xodim qo'shish</Button></DialogTrigger>
+              <DialogContent className="max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>{staffForm.id ? "Xodimni tahrirlash" : "Yangi xodim"}</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <div className="rounded-lg border p-2 space-y-2 bg-muted/30">
+                    <Label className="text-xs flex items-center gap-1"><Search className="w-3 h-3" /> Foydalanuvchini qidirish (email yoki telefon)</Label>
+                    <div className="flex gap-2">
+                      <Input placeholder="user@email.com yoki +998901234567" value={userSearch} onChange={(e)=>setUserSearch(e.target.value)} onKeyDown={(e)=>{ if(e.key==='Enter'){e.preventDefault();findUser();}}} />
+                      <Button type="button" size="sm" onClick={findUser} disabled={searching}>{searching?"...":"Qidirish"}</Button>
+                    </div>
+                    {searchResults.length>0 && (
+                      <div className="space-y-1 max-h-48 overflow-y-auto">
+                        {searchResults.map((r)=>(
+                          <div key={r.user_id} className="flex items-center justify-between gap-2 rounded border bg-background p-2 text-xs">
+                            <div className="min-w-0">
+                              <p className="font-medium truncate">{r.full_name || r.email || "—"}</p>
+                              <p className="text-muted-foreground truncate">{r.email || ""} {r.phone ? `· ${r.phone}` : ""}</p>
+                              <p className="font-mono text-[10px] text-muted-foreground truncate">{r.user_id}</p>
+                            </div>
+                            <Button type="button" size="sm" variant={staffForm.user_id===r.user_id?"secondary":"default"} onClick={()=>pickUser(r)}>
+                              {staffForm.user_id===r.user_id ? "✓" : "Bog'lash"}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div><Label>F.I.Sh *</Label><Input value={staffForm.full_name} onChange={(e)=>setStaffForm({...staffForm, full_name:e.target.value})} /></div>
-                  <div><Label>Lavozim</Label><Input value={staffForm.role} onChange={(e)=>setStaffForm({...staffForm, role:e.target.value})} /></div>
+                  <div><Label>Lavozim</Label><Input value={staffForm.role} onChange={(e)=>setStaffForm({...staffForm, role:e.target.value})} placeholder="Hamshira / Doktor / Admin" /></div>
                   <div><Label>Telefon</Label><Input value={staffForm.phone} onChange={(e)=>setStaffForm({...staffForm, phone:e.target.value})} /></div>
-                  <div><Label>User ID (ixtiyoriy)</Label><Input placeholder="UUID — check-in qila olish uchun" value={staffForm.user_id} onChange={(e)=>setStaffForm({...staffForm, user_id:e.target.value})} /></div>
-                  <Button onClick={addStaff} className="w-full">Saqlash</Button>
+                  <div>
+                    <Label>User ID</Label>
+                    <div className="flex gap-1">
+                      <Input placeholder="UUID — yuqoridan qidirib bog'lang" value={staffForm.user_id} onChange={(e)=>setStaffForm({...staffForm, user_id:e.target.value})} />
+                      {staffForm.user_id && <Button type="button" variant="outline" size="icon" onClick={()=>{navigator.clipboard.writeText(staffForm.user_id); toast({title:"Nusxa olindi"});}}><Copy className="w-4 h-4" /></Button>}
+                    </div>
+                    {!staffForm.user_id && <p className="text-[11px] text-amber-600 mt-1">⚠️ User ID bog'lanmasa, xodim check-in qila olmaydi.</p>}
+                  </div>
+                  <div className="flex items-center justify-between"><Label>Faol</Label><Switch checked={staffForm.is_active} onCheckedChange={(v)=>setStaffForm({...staffForm, is_active:v})} /></div>
+                  <Button onClick={saveStaff} className="w-full">{staffForm.id?"Yangilash":"Saqlash"}</Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
-          <Card><CardContent className="p-0">
+          <Card><CardContent className="p-0 overflow-x-auto">
             <Table>
-              <TableHeader><TableRow><TableHead>F.I.Sh</TableHead><TableHead>Lavozim</TableHead><TableHead>Telefon</TableHead><TableHead>Hisob</TableHead><TableHead></TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>F.I.Sh</TableHead><TableHead>Lavozim</TableHead><TableHead>Telefon</TableHead><TableHead>Hisob</TableHead><TableHead>Holat</TableHead><TableHead></TableHead></TableRow></TableHeader>
               <TableBody>
                 {staff.map((s)=>(<TableRow key={s.id}>
                   <TableCell className="font-medium">{s.full_name}</TableCell>
                   <TableCell>{s.role || "—"}</TableCell>
                   <TableCell>{s.phone || "—"}</TableCell>
-                  <TableCell>{s.user_id ? <Badge variant="secondary">Bog'langan</Badge> : <Badge variant="outline">Yo'q</Badge>}</TableCell>
-                  <TableCell><Button variant="ghost" size="icon" onClick={()=>removeStaff(s.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button></TableCell>
+                  <TableCell>{s.user_id ? <Badge variant="secondary" className="cursor-pointer" onClick={()=>{navigator.clipboard.writeText(s.user_id);toast({title:"Nusxa olindi"});}}>Bog'langan</Badge> : <Badge variant="outline" className="text-amber-600">Bog'lanmagan</Badge>}</TableCell>
+                  <TableCell>{s.is_active ? <Badge className="bg-emerald-100 text-emerald-800">Faol</Badge> : <Badge variant="outline">Nofaol</Badge>}</TableCell>
+                  <TableCell className="flex gap-1">
+                    <Button variant="ghost" size="icon" onClick={()=>editStaff(s)}><Pencil className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" onClick={()=>removeStaff(s.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  </TableCell>
                 </TableRow>))}
-                {staff.length===0 && <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">Xodim yo'q</TableCell></TableRow>}
+                {staff.length===0 && <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">Xodim yo'q</TableCell></TableRow>}
               </TableBody>
             </Table>
           </CardContent></Card>
