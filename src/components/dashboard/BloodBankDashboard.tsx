@@ -12,12 +12,13 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
   Droplets, Plus, Trash2, Edit, Save, X, Calendar,
-  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown,
+  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown, ShieldCheck,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
+import OrgAttendance from "@/components/attendance/OrgAttendance";
 
 interface BloodBank {
   id: string; name: string; address: string; phone: string; email: string;
@@ -128,6 +129,7 @@ const BloodBankDashboard = () => {
     { id: "donations", label: "Donatsiyalar", icon: Droplets, badge: pendingCount },
     { id: "stats", label: "Statistika", icon: BarChart3 },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "profile", label: "Profil", icon: Settings },
   ];
 
@@ -273,6 +275,7 @@ const BloodBankDashboard = () => {
             )}
           </CardContent></Card>
         </TabsContent>
+      {tab === "attendance" && <OrgAttendance orgType="bloodbank" orgName={bank.name} />}
     </DashboardShell>
   );
 };
