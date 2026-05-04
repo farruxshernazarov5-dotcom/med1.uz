@@ -6168,35 +6168,71 @@ export type Database = {
         Row: {
           attendance_date: string
           check_in: string | null
+          check_in_distance_m: number | null
+          check_in_lat: number | null
+          check_in_lng: number | null
           check_out: string | null
+          check_out_distance_m: number | null
+          check_out_lat: number | null
+          check_out_lng: number | null
           clinic_id: string
           created_at: string
+          device_info: string | null
           id: string
+          is_late: boolean | null
+          late_minutes: number | null
           notes: string | null
+          qr_token_id: string | null
           staff_id: string
           status: string | null
+          suspicious: boolean | null
+          worked_minutes: number | null
         }
         Insert: {
           attendance_date?: string
           check_in?: string | null
+          check_in_distance_m?: number | null
+          check_in_lat?: number | null
+          check_in_lng?: number | null
           check_out?: string | null
+          check_out_distance_m?: number | null
+          check_out_lat?: number | null
+          check_out_lng?: number | null
           clinic_id: string
           created_at?: string
+          device_info?: string | null
           id?: string
+          is_late?: boolean | null
+          late_minutes?: number | null
           notes?: string | null
+          qr_token_id?: string | null
           staff_id: string
           status?: string | null
+          suspicious?: boolean | null
+          worked_minutes?: number | null
         }
         Update: {
           attendance_date?: string
           check_in?: string | null
+          check_in_distance_m?: number | null
+          check_in_lat?: number | null
+          check_in_lng?: number | null
           check_out?: string | null
+          check_out_distance_m?: number | null
+          check_out_lat?: number | null
+          check_out_lng?: number | null
           clinic_id?: string
           created_at?: string
+          device_info?: string | null
           id?: string
+          is_late?: boolean | null
+          late_minutes?: number | null
           notes?: string | null
+          qr_token_id?: string | null
           staff_id?: string
           status?: string | null
+          suspicious?: boolean | null
+          worked_minutes?: number | null
         }
         Relationships: [
           {
@@ -6218,6 +6254,111 @@ export type Database = {
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "hms_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_attendance_qr_tokens: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          issued_at: string
+          token: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_at?: string
+          token: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_at?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_attendance_qr_tokens_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_attendance_qr_tokens_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hms_attendance_settings: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          enforce_geo: boolean
+          enforce_qr: boolean
+          id: string
+          late_threshold_min: number
+          location_lat: number | null
+          location_lng: number | null
+          qr_rotate_seconds: number
+          radius_m: number
+          updated_at: string
+          work_end: string
+          work_start: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          enforce_geo?: boolean
+          enforce_qr?: boolean
+          id?: string
+          late_threshold_min?: number
+          location_lat?: number | null
+          location_lng?: number | null
+          qr_rotate_seconds?: number
+          radius_m?: number
+          updated_at?: string
+          work_end?: string
+          work_start?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          enforce_geo?: boolean
+          enforce_qr?: boolean
+          id?: string
+          late_threshold_min?: number
+          location_lat?: number | null
+          location_lng?: number | null
+          qr_rotate_seconds?: number
+          radius_m?: number
+          updated_at?: string
+          work_end?: string
+          work_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hms_attendance_settings_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hms_attendance_settings_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
+            referencedRelation: "registered_clinics_public"
             referencedColumns: ["id"]
           },
         ]
@@ -7789,6 +7930,7 @@ export type Database = {
           role: string
           salary: number | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           clinic_id: string
@@ -7803,6 +7945,7 @@ export type Database = {
           role?: string
           salary?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           clinic_id?: string
@@ -7817,6 +7960,7 @@ export type Database = {
           role?: string
           salary?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
