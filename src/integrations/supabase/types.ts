@@ -10051,6 +10051,68 @@ export type Database = {
         }
         Relationships: []
       }
+      org_attendance_audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          device_info: string | null
+          distance_m: number | null
+          id: string
+          ip_address: string | null
+          lat: number | null
+          lng: number | null
+          owner_id: string
+          qr_token: string | null
+          qr_token_id: string | null
+          reason: string | null
+          result: string
+          staff_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          device_info?: string | null
+          distance_m?: number | null
+          id?: string
+          ip_address?: string | null
+          lat?: number | null
+          lng?: number | null
+          owner_id: string
+          qr_token?: string | null
+          qr_token_id?: string | null
+          reason?: string | null
+          result: string
+          staff_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          device_info?: string | null
+          distance_m?: number | null
+          id?: string
+          ip_address?: string | null
+          lat?: number | null
+          lng?: number | null
+          owner_id?: string
+          qr_token?: string | null
+          qr_token_id?: string | null
+          reason?: string | null
+          result?: string
+          staff_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_attendance_audit_logs_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "org_attendance_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       org_attendance_qr_tokens: {
         Row: {
           created_at: string
