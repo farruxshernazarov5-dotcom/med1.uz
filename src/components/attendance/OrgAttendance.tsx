@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { QrCode, MapPin, RefreshCw, Save, Users, Download, Plus, Trash2, ShieldCheck } from "lucide-react";
+import { QrCode, MapPin, RefreshCw, Save, Users, Download, Plus, Trash2, ShieldCheck, Pencil, Search, Copy, Link2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface Props {
