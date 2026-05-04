@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, LogOut, Shield, Coins } from "lucide-react";
+import { Menu, X, Search, User, LogOut, Shield, Coins, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -111,6 +111,9 @@ const Header = () => {
                     <Coins className="w-3.5 h-3.5" />
                     🪙 {balance}
                   </Link>
+                  <Button asChild variant="ghost" size="sm" className="text-emerald-700 dark:text-emerald-400" title="Xodim Check-in/out">
+                    <Link to="/check-in"><ScanLine className="w-4 h-4 mr-1" /> Keldi-Ketdi</Link>
+                  </Button>
                   {userRole === "admin" && (
                     <Button asChild variant="ghost" size="sm" className="text-primary">
                       <Link to="/admin"><Shield className="w-4 h-4 mr-1" /> Admin</Link>
