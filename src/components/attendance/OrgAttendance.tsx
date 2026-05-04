@@ -87,21 +87,52 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
     // eslint-disable-next-line
   }, [tab, settings?.qr_rotate_seconds, owner]);
 
-  const addStaff = async () => {
-    if (!staffForm.full_name) return;
-    const payload: any = { owner_id: owner, org_type: orgType, full_name: staffForm.full_name, role: staffForm.role || null, phone: staffForm.phone || null, user_id: staffForm.user_id || null };
-    const { error } = await supabase.from("org_attendance_staff" as any).insert(payload);
-    if (error) return toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-    toast({ title: "✅ Qo'shildi" });
-    setStaffForm({ full_name: "", role: "", phone: "", user_id: "" });
-    setOpenAdd(false);
+  const resetStaffForm = () => setStaffForm({ full_name: "", role: "", phone: "", user_id: "", is_active: true });
+
+  const saveStaff = async () => {
+    if (!staffForm.full_name) return toast({ title: "F.I.Sh majburiy", variant: "destructive" });
+    const payload: any = {
+      owner_id: owner, org_type: orgType,
+      full_name: staffForm.full_name,
+      role: staffForm.role || null,
+      phone: staffForm.phone || null,
+      user_id: staffForm.user_id || null,
+      is_active: staffForm.is_active,
+    };
+    const res = staffForm.id
+      ? await supabase.from("org_attendance_staff" as any).update(payload).eq("id", staffForm.id)
+      : await supabase.from("org_attendance_staff" as any).insert(payload);
+    if (res.error) return toast({ title: "Xatolik", description: res.error.message, variant: "destructive" });
+    toast({ title: staffForm.id ? "✅ Yangilandi" : "✅ Qo'shildi" });
+    resetStaffForm(); setOpenAdd(false); setSearchResults([]); setUserSearch("");
     fetchAll();
+  };
+
+  const editStaff = (s: any) => {
+    setStaffForm({ id: s.id, full_name: s.full_name || "", role: s.role || "", phone: s.phone || "", user_id: s.user_id || "", is_active: s.is_active ?? true });
+    setSearchResults([]); setUserSearch("");
+    setOpenAdd(true);
   };
 
   const removeStaff = async (id: string) => {
     if (!confirm("O'chirilsinmi?")) return;
     await supabase.from("org_attendance_staff" as any).delete().eq("id", id);
     fetchAll();
+  };
+
+  const findUser = async () => {
+    if (!userSearch.trim()) return;
+    setSearching(true);
+    const { data, error } = await supabase.functions.invoke("org-attendance-find-user", { body: { query: userSearch.trim() } });
+    setSearching(false);
+    if (error || (data as any)?.error) return toast({ title: "Xatolik", description: (data as any)?.error || error?.message, variant: "destructive" });
+    setSearchResults((data as any)?.results || []);
+    if (!(data as any)?.results?.length) toast({ title: "Topilmadi", description: "Bu email/telefon bo'yicha foydalanuvchi yo'q. Xodim avval ro'yxatdan o'tishi kerak." });
+  };
+
+  const pickUser = (r: any) => {
+    setStaffForm((f) => ({ ...f, user_id: r.user_id, full_name: f.full_name || r.full_name || "", phone: f.phone || r.phone || "" }));
+    toast({ title: "✅ User ID bog'landi" });
   };
 
   const today = new Date().toISOString().slice(0, 10);
