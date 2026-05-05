@@ -65,7 +65,7 @@ const DocAppointments = ({ doctorId }: Props) => {
         () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [doctorId]);
+  }, [doctorId, user?.id]);
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("appointments").update({ status }).eq("id", id);

@@ -90,7 +90,7 @@ const DiagServices = ({ centerId, services, templates, orders, onReload }: Props
       .subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line
-  }, [centerId]);
+  }, [centerId, user?.id]);
 
   // KPIs + Analytics
   const kpis = useMemo(() => {

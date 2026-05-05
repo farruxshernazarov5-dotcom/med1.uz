@@ -212,7 +212,7 @@ const AdminDashboard = () => {
         }).subscribe(),
     ];
     return () => { channels.forEach(ch => supabase.removeChannel(ch)); };
-  }, [toast]);
+  }, [toast, user?.id]);
 
   // ─── Chart builders ───
   const months = ["Yan", "Fev", "Mar", "Apr", "May", "Iyn", "Iyl", "Avg", "Sen", "Okt", "Noy", "Dek"];

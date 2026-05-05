@@ -121,7 +121,7 @@ const HMSQueue = ({ clinicId }: Props) => {
       .on("postgres_changes", { event: "*", schema: "public", table: "hms_queue", filter: `clinic_id=eq.${clinicId}` }, () => fetchData())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [clinicId]);
+  }, [clinicId, user?.id]);
 
   // Load voices
   useEffect(() => {

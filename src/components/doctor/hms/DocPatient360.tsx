@@ -75,7 +75,7 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patient?.id, open, doctorId]);
+  }, [patient?.id, open, doctorId, user?.id]);
 
   const openQuick = (type: QuickType) => {
     setDiagForm({ diagnosis: "", icd_code: "", symptoms: "", notes: "" });

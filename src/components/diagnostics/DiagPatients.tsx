@@ -95,7 +95,7 @@ const DiagPatients = ({ centerId, patients, onReload }: Props) => {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line
-  }, [centerId]);
+  }, [centerId, user?.id]);
 
   // === KPIs ===
   const kpis = useMemo(() => {

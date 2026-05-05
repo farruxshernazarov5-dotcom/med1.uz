@@ -58,7 +58,7 @@ const DentalReports = ({ patients, appointments, treatments, services, clinicId,
       .on("postgres_changes", { event: "*", schema: "public", table: "dental_plan_payments", filter: `clinic_id=eq.${clinicId}` }, () => fetch())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [clinicId]);
+  }, [clinicId, user?.id]);
 
   const inRange = (d: string | null) => {
     if (!d) return true;

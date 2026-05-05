@@ -62,7 +62,7 @@ const DocPatients = ({ doctorId }: Props) => {
         () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [doctorId]);
+  }, [doctorId, user?.id]);
 
   useEffect(() => { if (patients.length) loadToday(); }, [patients]);
 
