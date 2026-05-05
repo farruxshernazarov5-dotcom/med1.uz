@@ -302,6 +302,7 @@ const HMSEMR = ({ clinicId }: Props) => {
                 <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
                   <Badge className={cn("text-[10px]", typeColors[r.record_type] || "bg-muted text-muted-foreground")}>{typeLabels[r.record_type] || r.record_type}</Badge>
                   {r.is_confidential && <Badge className="text-[10px] bg-red-100 text-red-800">🔒 Maxfiy</Badge>}
+                  <Button variant="ghost" size="icon" className="h-7 w-7" title="Bemor 360°" onClick={() => openPatientProfile(r.patient_id)}><UserCircle2 className="w-3.5 h-3.5 text-primary" /></Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditing(r); setForm({ patient_id: r.patient_id, doctor_id: r.doctor_id || "", record_date: r.record_date, record_type: r.record_type, diagnosis: r.diagnosis || "", symptoms: r.symptoms || "", treatment: r.treatment || "", follow_up_date: r.follow_up_date || "", notes: r.notes || "", is_confidential: r.is_confidential }); setShowForm(true); }}><Edit2 className="w-3 h-3" /></Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
                 </div>
