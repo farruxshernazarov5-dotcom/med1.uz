@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { esc } from "@/lib/htmlEscape";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -214,18 +215,18 @@ const DocPrescriptions = ({ doctorId }: Props) => {
       <tr>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${i + 1}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">
-          <strong>${m.name}</strong> ${m.strength}<br/>
-          <span style="color:#6b7280;font-size:12px;">${m.generic}</span>
+          <strong>${esc(m.name)}</strong> ${esc(m.strength)}<br/>
+          <span style="color:#6b7280;font-size:12px;">${esc(m.generic)}</span>
         </td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${m.dosage}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${m.frequency}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${m.duration}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${esc(m.dosage)}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${esc(m.frequency)}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${esc(m.duration)}</td>
       </tr>
-      <tr><td colspan="5" style="padding:4px 8px 12px;color:#6b7280;font-size:12px;border-bottom:1px solid #e5e7eb;">${m.instructions || ""}</td></tr>
+      <tr><td colspan="5" style="padding:4px 8px 12px;color:#6b7280;font-size:12px;border-bottom:1px solid #e5e7eb;">${esc(m.instructions || "")}</td></tr>
     `).join("");
 
     w.document.write(`
-      <html><head><meta charset="utf-8"/><title>Retsept ${r.rx_number}</title>
+      <html><head><meta charset="utf-8"/><title>Retsept ${esc(r.rx_number)}</title>
       <style>body{font-family:system-ui,-apple-system,sans-serif;color:#0f172a;padding:32px;max-width:760px;margin:0 auto;}
       h1{color:#0ea5e9;margin:0 0 4px;font-size:24px;}
       .header{display:flex;justify-content:space-between;border-bottom:2px solid #0ea5e9;padding-bottom:16px;margin-bottom:24px;}
@@ -238,17 +239,17 @@ const DocPrescriptions = ({ doctorId }: Props) => {
       .footer{margin-top:48px;border-top:1px solid #e5e7eb;padding-top:16px;font-size:12px;color:#64748b;}
       </style></head><body>
       <div class="header">
-        <div><h1>📋 RETSEPT</h1><div class="label">№ ${r.rx_number}</div></div>
-        <div style="text-align:right;"><div class="label">Sana</div><div>${new Date(r.prescription_date).toLocaleDateString("uz-UZ")}</div></div>
+        <div><h1>📋 RETSEPT</h1><div class="label">№ ${esc(r.rx_number)}</div></div>
+        <div style="text-align:right;"><div class="label">Sana</div><div>${esc(new Date(r.prescription_date).toLocaleDateString("uz-UZ"))}</div></div>
       </div>
       <div class="info">
-        <div><div class="label">Bemor</div><strong>${r.patient_name}</strong>${r.patient_phone ? `<br/>${r.patient_phone}` : ""}</div>
-        <div><div class="label">Tashxis</div><strong>${r.diagnosis || "—"}</strong>${r.icd_code ? `<br/>ICD: ${r.icd_code}` : ""}</div>
+        <div><div class="label">Bemor</div><strong>${esc(r.patient_name)}</strong>${r.patient_phone ? `<br/>${esc(r.patient_phone)}` : ""}</div>
+        <div><div class="label">Tashxis</div><strong>${esc(r.diagnosis || "—")}</strong>${r.icd_code ? `<br/>ICD: ${esc(r.icd_code)}` : ""}</div>
       </div>
       <table><thead><tr><th>#</th><th>Dori</th><th>Doza</th><th>Qabul tartibi</th><th>Davomiyligi</th></tr></thead><tbody>${meds}</tbody></table>
-      ${r.general_instructions ? `<div style="margin-top:16px;padding:12px;background:#f0f9ff;border-radius:6px;"><div class="label">Umumiy ko'rsatmalar</div>${r.general_instructions}</div>` : ""}
-      ${r.warnings ? `<div class="warn"><strong>⚠️ Ogohlantirish:</strong> ${r.warnings}</div>` : ""}
-      <div class="footer">Amal qilish muddati: ${r.valid_until ? new Date(r.valid_until).toLocaleDateString("uz-UZ") : "—"} • Med1.uz</div>
+      ${r.general_instructions ? `<div style="margin-top:16px;padding:12px;background:#f0f9ff;border-radius:6px;"><div class="label">Umumiy ko'rsatmalar</div>${esc(r.general_instructions)}</div>` : ""}
+      ${r.warnings ? `<div class="warn"><strong>⚠️ Ogohlantirish:</strong> ${esc(r.warnings)}</div>` : ""}
+      <div class="footer">Amal qilish muddati: ${r.valid_until ? esc(new Date(r.valid_until).toLocaleDateString("uz-UZ")) : "—"} • Med1.uz</div>
       </body></html>
     `);
     w.document.close();
