@@ -3581,7 +3581,7 @@ export type Database = {
           id: string
           notes: string | null
           order_id: string | null
-          patient_id: string
+          patient_id: string | null
           patient_name: string
           patient_phone: string
           referral_id: string | null
@@ -3603,7 +3603,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_id?: string | null
-          patient_id: string
+          patient_id?: string | null
           patient_name: string
           patient_phone: string
           referral_id?: string | null
@@ -3625,7 +3625,7 @@ export type Database = {
           id?: string
           notes?: string | null
           order_id?: string | null
-          patient_id?: string
+          patient_id?: string | null
           patient_name?: string
           patient_phone?: string
           referral_id?: string | null
