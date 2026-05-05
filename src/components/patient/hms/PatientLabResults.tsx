@@ -33,7 +33,7 @@ const PatientLabResults = () => {
   useEffect(() => {
     load();
     if (!user) return;
-    const ch = supabase.channel(`patient-labs-${user.id}`)
+    const ch = supabase.channel(`user:${user.id}:patient-labs`)
       .on("postgres_changes", { event: "*", schema: "public", table: "hms_lab_results", filter: `patient_id=eq.${user.id}` }, () => load())
       .on("postgres_changes", { event: "*", schema: "public", table: "diagnostics_lab_results", filter: `patient_id=eq.${user.id}` }, () => load())
       .subscribe();

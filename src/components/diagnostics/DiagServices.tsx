@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +51,7 @@ const SERVICE_TYPES = [
 const RADIOLOGY_MODALITIES = ["X-ray", "UZI/USG", "MRT", "KT (CT)", "Mammografiya", "Fluorografiya"];
 
 const DiagServices = ({ centerId, services, templates, orders, onReload }: Props) => {
+  const { user } = useAuth();
   const sb = supabase as any;
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -81,7 +83,8 @@ const DiagServices = ({ centerId, services, templates, orders, onReload }: Props
 
   // Realtime
   useEffect(() => {
-    const ch = supabase.channel(`diag-svc-${centerId}`)
+    if (!user) return;
+    const ch = supabase.channel(`user:${user.id}:diag-svc:${centerId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "diagnostics_services", filter: `center_id=eq.${centerId}` }, () => onReload())
       .on("postgres_changes", { event: "*", schema: "public", table: "diagnostics_service_packages", filter: `center_id=eq.${centerId}` }, () => loadPackages())
       .subscribe();

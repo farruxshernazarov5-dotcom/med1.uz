@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ type StatusFilter = "all" | "new" | "active" | "completed";
 type TabFilter = "all" | "today";
 
 const DocPatients = ({ doctorId }: Props) => {
+  const { user } = useAuth();
   const [patients, setPatients] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [diagnosisFilter, setDiagnosisFilter] = useState("");
@@ -54,7 +56,8 @@ const DocPatients = ({ doctorId }: Props) => {
 
   useEffect(() => {
     load();
-    const ch = supabase.channel(`doc-patients-${doctorId}`)
+    if (!user) return;
+    const ch = supabase.channel(`user:${user.id}:doc-patients:${doctorId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "doctor_patients", filter: `doctor_id=eq.${doctorId}` },
         () => load())
       .subscribe();
