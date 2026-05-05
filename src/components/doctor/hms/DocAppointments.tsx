@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ type QuickType = null | "diagnosis" | "lab" | "rx";
 const todayStr = () => new Date().toISOString().split("T")[0];
 
 const DocAppointments = ({ doctorId }: Props) => {
+  const { user } = useAuth();
   const [appts, setAppts] = useState<any[]>([]);
   const [tab, setTab] = useState<TabKey>("today");
   const [view, setView] = useState<View>("list");
@@ -57,12 +59,13 @@ const DocAppointments = ({ doctorId }: Props) => {
 
   useEffect(() => {
     load();
-    const channel = supabase.channel("doc-appts")
+    if (!user) return;
+    const channel = supabase.channel(`user:${user.id}:doc-appts:${doctorId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "appointments", filter: `doctor_id=eq.${doctorId}` },
         () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [doctorId]);
+  }, [doctorId, user?.id]);
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("appointments").update({ status }).eq("id", id);

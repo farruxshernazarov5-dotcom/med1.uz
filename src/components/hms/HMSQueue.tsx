@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,7 @@ const findBestVoice = (lang: QueueLang, gender: VoiceGender = "female"): SpeechS
 };
 
 const HMSQueue = ({ clinicId }: Props) => {
+  const { user } = useAuth();
   const [queue, setQueue] = useState<any[]>([]);
   const [allQueue, setAllQueue] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
@@ -114,11 +116,12 @@ const HMSQueue = ({ clinicId }: Props) => {
 
   useEffect(() => {
     fetchData();
-    const channel = supabase.channel("queue-changes")
+    if (!user) return;
+    const channel = supabase.channel(`user:${user.id}:queue:${clinicId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "hms_queue", filter: `clinic_id=eq.${clinicId}` }, () => fetchData())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [clinicId]);
+  }, [clinicId, user?.id]);
 
   // Load voices
   useEffect(() => {

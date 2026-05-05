@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,7 @@ const SAMPLE_TYPES = [
 ];
 
 const DiagPatients = ({ centerId, patients, onReload }: Props) => {
+  const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -86,13 +88,14 @@ const DiagPatients = ({ centerId, patients, onReload }: Props) => {
 
   // Realtime
   useEffect(() => {
-    const ch = supabase.channel(`diag-lis-${centerId}`)
+    if (!user) return;
+    const ch = supabase.channel(`user:${user.id}:diag-lis:${centerId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "diagnostics_samples", filter: `center_id=eq.${centerId}` }, () => loadDashboard())
       .on("postgres_changes", { event: "*", schema: "public", table: "diagnostics_lab_orders", filter: `center_id=eq.${centerId}` }, () => loadDashboard())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line
-  }, [centerId]);
+  }, [centerId, user?.id]);
 
   // === KPIs ===
   const kpis = useMemo(() => {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ interface Props {
 type QuickType = null | "diagnosis" | "lab" | "rx" | "appointment" | "payment";
 
 const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
+  const { user } = useAuth();
   const [records, setRecords] = useState<any[]>([]);
   const [labs, setLabs] = useState<any[]>([]);
   const [plans, setPlans] = useState<any[]>([]);
@@ -66,13 +68,14 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
     setLoading(true);
     reload().finally(() => setLoading(false));
 
-    const ch = supabase.channel(`patient360-${patient.id}`)
+    if (!user) return;
+    const ch = supabase.channel(`user:${user.id}:patient360:${patient.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "doctor_records", filter: `patient_id=eq.${patient.id}` }, reload)
       .on("postgres_changes", { event: "*", schema: "public", table: "doctor_lab_orders", filter: `patient_id=eq.${patient.id}` }, reload)
       .subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patient?.id, open, doctorId]);
+  }, [patient?.id, open, doctorId, user?.id]);
 
   const openQuick = (type: QuickType) => {
     setDiagForm({ diagnosis: "", icd_code: "", symptoms: "", notes: "" });

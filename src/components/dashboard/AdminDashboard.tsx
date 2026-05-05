@@ -186,8 +186,9 @@ const AdminDashboard = () => {
 
   // ─── Real-time ───
   useEffect(() => {
+    if (!user) return;
     const channels = [
-      supabase.channel("admin-messages")
+      supabase.channel(`user:${user.id}:admin-messages`)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "contact_messages" }, (payload) => {
           const msg = payload.new as any;
           setNotifications(prev => [{ id: msg.id, type: "message", title: "📩 Yangi xabar", desc: `${msg.full_name}: ${msg.subject}`, time: new Date() }, ...prev].slice(0, 30));
@@ -195,14 +196,14 @@ const AdminDashboard = () => {
           setStats((prev: any) => ({ ...prev, newMessages: (prev.newMessages || 0) + 1, messages: (prev.messages || 0) + 1 }));
           toast({ title: "📩 Yangi xabar keldi!", description: msg.subject });
         }).subscribe(),
-      supabase.channel("admin-appointments")
+      supabase.channel(`user:${user.id}:admin-appointments`)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "appointments" }, (payload) => {
           const appt = payload.new as any;
           setNotifications(prev => [{ id: appt.id, type: "appointment", title: "📅 Yangi qabul", desc: `${appt.patient_name} — ${appt.appointment_date}`, time: new Date() }, ...prev].slice(0, 30));
           setAppointments(prev => [appt, ...prev]);
           toast({ title: "📅 Yangi qabul yozildi!", description: appt.patient_name });
         }).subscribe(),
-      supabase.channel("admin-clinics")
+      supabase.channel(`user:${user.id}:admin-clinics`)
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "registered_clinics" }, (payload) => {
           const clinic = payload.new as any;
           setNotifications(prev => [{ id: clinic.id, type: "clinic", title: "🏥 Yangi klinika", desc: clinic.name, time: new Date() }, ...prev].slice(0, 30));
@@ -211,7 +212,7 @@ const AdminDashboard = () => {
         }).subscribe(),
     ];
     return () => { channels.forEach(ch => supabase.removeChannel(ch)); };
-  }, [toast]);
+  }, [toast, user?.id]);
 
   // ─── Chart builders ───
   const months = ["Yan", "Fev", "Mar", "Apr", "May", "Iyn", "Iyl", "Avg", "Sen", "Okt", "Noy", "Dek"];

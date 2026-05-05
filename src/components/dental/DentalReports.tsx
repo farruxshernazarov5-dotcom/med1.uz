@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { BarChart3, TrendingUp, Users, Calendar, Download, DollarSign, Stethoscope, AlertTriangle, CreditCard, Banknote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area } from "recharts";
@@ -25,6 +26,7 @@ const PAY_LABELS: Record<string, string> = { cash: "Naqd", card: "Karta", click:
 type ReportTab = "financial" | "payments" | "debts" | "services" | "patients";
 
 const DentalReports = ({ patients, appointments, treatments, services, clinicId, clinicName }: DentalReportsProps) => {
+  const { user } = useAuth();
   const [tab, setTab] = useState<ReportTab>("financial");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -49,13 +51,14 @@ const DentalReports = ({ patients, appointments, treatments, services, clinicId,
     fetch();
 
     // realtime subscription
-    const channel = supabase.channel("dental-reports-rt")
+    if (!user) return;
+    const channel = supabase.channel(`user:${user.id}:dental-reports:${clinicId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "dental_transactions", filter: `clinic_id=eq.${clinicId}` }, () => fetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "dental_expenses", filter: `clinic_id=eq.${clinicId}` }, () => fetch())
       .on("postgres_changes", { event: "*", schema: "public", table: "dental_plan_payments", filter: `clinic_id=eq.${clinicId}` }, () => fetch())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [clinicId]);
+  }, [clinicId, user?.id]);
 
   const inRange = (d: string | null) => {
     if (!d) return true;
