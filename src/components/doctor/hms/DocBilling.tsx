@@ -218,24 +218,24 @@ const DocBilling = ({ doctorId }: Props) => {
         <div>
           <h1>🩺 Med1.uz</h1>
           <p class="meta">Tibbiy hisob-faktura</p>
-          <div class="invoice-no">${inv.invoice_number}</div>
+          <div class="invoice-no">${esc(inv.invoice_number)}</div>
         </div>
         <div style="text-align:right">
-          <p class="meta">Sana: ${new Date(inv.created_at).toLocaleDateString("uz-UZ")}</p>
-          <span class="badge ${inv.status === 'paid' ? 'paid' : 'unpaid'}">${STATUS_INFO[inv.status]?.label}</span>
+          <p class="meta">Sana: ${esc(new Date(inv.created_at).toLocaleDateString("uz-UZ"))}</p>
+          <span class="badge ${inv.status === 'paid' ? 'paid' : 'unpaid'}">${esc(STATUS_INFO[inv.status]?.label)}</span>
         </div>
       </div>
       <h3>Bemor</h3>
-      <div class="row"><span>Ism:</span><strong>${inv.patient_name}</strong></div>
-      ${inv.patient_phone ? `<div class="row"><span>Tel:</span><strong>${inv.patient_phone}</strong></div>` : ''}
+      <div class="row"><span>Ism:</span><strong>${esc(inv.patient_name)}</strong></div>
+      ${inv.patient_phone ? `<div class="row"><span>Tel:</span><strong>${esc(inv.patient_phone)}</strong></div>` : ''}
       <h3 style="margin-top:30px">Xizmat</h3>
-      <div class="row"><span>Turi:</span><strong>${SERVICE_TYPES.find(s => s.value === inv.service_type)?.label}</strong></div>
-      ${inv.description ? `<div class="row"><span>Tavsif:</span><strong>${inv.description}</strong></div>` : ''}
+      <div class="row"><span>Turi:</span><strong>${esc(SERVICE_TYPES.find(s => s.value === inv.service_type)?.label)}</strong></div>
+      ${inv.description ? `<div class="row"><span>Tavsif:</span><strong>${esc(inv.description)}</strong></div>` : ''}
       <div class="row"><span>Asosiy summa:</span><strong>${Number(inv.subtotal).toLocaleString()} so'm</strong></div>
       ${Number(inv.discount) > 0 ? `<div class="row"><span>Chegirma:</span><strong>-${Number(inv.discount).toLocaleString()} so'm</strong></div>` : ''}
       ${Number(inv.tax) > 0 ? `<div class="row"><span>Soliq:</span><strong>+${Number(inv.tax).toLocaleString()} so'm</strong></div>` : ''}
       <div class="total">JAMI: ${Number(inv.total_amount).toLocaleString()} so'm</div>
-      ${inv.notes ? `<p class="meta" style="margin-top:30px"><strong>Izoh:</strong> ${inv.notes}</p>` : ''}
+      ${inv.notes ? `<p class="meta" style="margin-top:30px"><strong>Izoh:</strong> ${esc(inv.notes)}</p>` : ''}
       <div style="margin-top:60px;padding-top:20px;border-top:1px solid #e5e7eb;text-align:center" class="meta">
         Med1.uz — Tibbiyot platformasi · med1.uz
       </div>
