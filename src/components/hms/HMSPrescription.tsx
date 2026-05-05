@@ -223,13 +223,13 @@ const HMSPrescription = ({ clinicId }: Props) => {
 
   const printRx = (rx: any) => {
     const rxMeds = Array.isArray(rx.medications) ? rx.medications : [];
-    const html = `<html><head><title>Retsept - ${rx.qr_code}</title><style>body{font-family:Arial;padding:40px;max-width:700px;margin:auto}h1{color:#1a5f7a;border-bottom:2px solid #1a5f7a;padding-bottom:10px}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#f0f8ff}.code{font-size:20px;font-weight:bold;color:#1a5f7a;background:#f0f8ff;padding:8px 16px;border-radius:8px;display:inline-block}.footer{margin-top:30px;padding-top:15px;border-top:1px solid #ddd;font-size:12px;color:#666}.verify{background:#e8f5e9;padding:12px;border-radius:8px;margin-top:15px;font-size:13px}</style></head><body>
-    <h1>🏥 ${clinicName || "Med1.uz"} — Elektron Retsept</h1><p class="code">🔐 ${rx.qr_code}</p>
-    <p><b>Bemor:</b> ${rx.patient_name}</p><p><b>Shifokor:</b> Dr. ${getDoctorName(rx.doctor_id)}</p><p><b>Tashxis:</b> ${rx.diagnosis || "—"}</p><p><b>Sana:</b> ${rx.prescription_date}</p><p><b>Amal qilish:</b> ${rx.valid_until || "—"}</p>
+    const html = `<html><head><title>Retsept - ${esc(rx.qr_code)}</title><style>body{font-family:Arial;padding:40px;max-width:700px;margin:auto}h1{color:#1a5f7a;border-bottom:2px solid #1a5f7a;padding-bottom:10px}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#f0f8ff}.code{font-size:20px;font-weight:bold;color:#1a5f7a;background:#f0f8ff;padding:8px 16px;border-radius:8px;display:inline-block}.footer{margin-top:30px;padding-top:15px;border-top:1px solid #ddd;font-size:12px;color:#666}.verify{background:#e8f5e9;padding:12px;border-radius:8px;margin-top:15px;font-size:13px}</style></head><body>
+    <h1>🏥 ${esc(clinicName || "Med1.uz")} — Elektron Retsept</h1><p class="code">🔐 ${esc(rx.qr_code)}</p>
+    <p><b>Bemor:</b> ${esc(rx.patient_name)}</p><p><b>Shifokor:</b> Dr. ${esc(getDoctorName(rx.doctor_id))}</p><p><b>Tashxis:</b> ${esc(rx.diagnosis || "—")}</p><p><b>Sana:</b> ${esc(rx.prescription_date)}</p><p><b>Amal qilish:</b> ${esc(rx.valid_until || "—")}</p>
     <table><tr><th>Dori nomi</th><th>Dozasi</th><th>Qabul qilish</th><th>Davomiylik</th></tr>
-    ${rxMeds.map((m: any) => `<tr><td><b>${m.name}</b></td><td>${m.dosage}</td><td>${m.frequency}</td><td>${m.duration}</td></tr>`).join("")}
-    </table><p><b>Ko'rsatmalar:</b> ${rx.instructions || "—"}</p>
-    <div class="verify"><b>✅ Verifikatsiya:</b> Bu retseptning haqiqiyligini tekshirish uchun <b>${rx.qr_code}</b> kodini Med1.uz platformasida kiriting.</div>
+    ${rxMeds.map((m: any) => `<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.dosage)}</td><td>${esc(m.frequency)}</td><td>${esc(m.duration)}</td></tr>`).join("")}
+    </table><p><b>Ko'rsatmalar:</b> ${esc(rx.instructions || "—")}</p>
+    <div class="verify"><b>✅ Verifikatsiya:</b> Bu retseptning haqiqiyligini tekshirish uchun <b>${esc(rx.qr_code)}</b> kodini Med1.uz platformasida kiriting.</div>
     <div class="footer"><p>Med1.uz — Tibbiy platforma</p><p>⚠️ Bu retsept faqat ko'rsatilgan muddatgacha amal qiladi. O'z-o'zini davolash xavfli!</p></div>
     </body></html>`;
     const w = window.open("", "_blank"); w?.document.write(html); w?.document.close(); w?.print();
