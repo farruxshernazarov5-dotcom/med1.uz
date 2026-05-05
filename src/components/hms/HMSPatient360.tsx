@@ -100,24 +100,24 @@ const HMSPatient360 = ({ clinicId, patient, onBack }: Props) => {
       <style>body{font-family:Arial;padding:24px;color:#0A2540}h1{color:#2F80ED}h2{border-bottom:2px solid #2F80ED;padding-bottom:4px;margin-top:24px}table{width:100%;border-collapse:collapse;margin:8px 0}td,th{border:1px solid #ddd;padding:6px;font-size:12px;text-align:left}</style>
       </head><body>
       <h1>📋 Elektron tibbiy karta (EMR)</h1>
-      <p><b>${patient.full_name}</b> · ${patient.phone} · ${patient.gender === "male" ? "Erkak" : "Ayol"}${age ? ` · ${age} yosh` : ""}</p>
-      <p>Manzil: ${patient.address || "—"} · Qon guruhi: ${patient.blood_group || "—"}${patient.rh_factor || ""}</p>
-      <p>Allergiya: ${patient.allergies || "—"}</p>
-      <p>Surunkali: ${patient.chronic_diseases || "—"}</p>
+      <p><b>${esc(patient.full_name)}</b> · ${esc(patient.phone)} · ${patient.gender === "male" ? "Erkak" : "Ayol"}${age ? ` · ${age} yosh` : ""}</p>
+      <p>Manzil: ${esc(patient.address || "—")} · Qon guruhi: ${esc(patient.blood_group || "—")}${esc(patient.rh_factor || "")}</p>
+      <p>Allergiya: ${esc(patient.allergies || "—")}</p>
+      <p>Surunkali: ${esc(patient.chronic_diseases || "—")}</p>
 
       <h2>Tibbiy yozuvlar (${records.length})</h2>
       <table><tr><th>Sana</th><th>Tur</th><th>Tashxis</th><th>Davolash</th></tr>
-      ${records.map(r => `<tr><td>${r.record_date}</td><td>${r.record_type}</td><td>${r.diagnosis || "—"}</td><td>${r.treatment || "—"}</td></tr>`).join("")}
+      ${records.map(r => `<tr><td>${esc(r.record_date)}</td><td>${esc(r.record_type)}</td><td>${esc(r.diagnosis || "—")}</td><td>${esc(r.treatment || "—")}</td></tr>`).join("")}
       </table>
 
       <h2>Retseptlar (${prescriptions.length})</h2>
       <table><tr><th>Sana</th><th>Tashxis</th><th>Status</th></tr>
-      ${prescriptions.map(p => `<tr><td>${p.prescription_date}</td><td>${p.diagnosis || "—"}</td><td>${p.status}</td></tr>`).join("")}
+      ${prescriptions.map(p => `<tr><td>${esc(p.prescription_date)}</td><td>${esc(p.diagnosis || "—")}</td><td>${esc(p.status)}</td></tr>`).join("")}
       </table>
 
       <h2>Laboratoriya (${labOrders.length})</h2>
       <table><tr><th>Sana</th><th>Test</th><th>Status</th></tr>
-      ${labOrders.map(l => `<tr><td>${(l.ordered_at || "").slice(0,10)}</td><td>${l.test_name}</td><td>${l.status}</td></tr>`).join("")}
+      ${labOrders.map(l => `<tr><td>${esc((l.ordered_at || "").slice(0,10))}</td><td>${esc(l.test_name)}</td><td>${esc(l.status)}</td></tr>`).join("")}
       </table>
 
       <h2>To'lovlar</h2>
