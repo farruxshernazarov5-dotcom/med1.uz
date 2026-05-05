@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Plus, X, Edit2, Trash2, FileText, Search, Calendar, User, Activity, Pill, TestTube, Stethoscope, Heart } from "lucide-react";
+import { Plus, X, Edit2, Trash2, FileText, Search, Calendar, User, Activity, Pill, TestTube, Stethoscope, Heart, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
+import HMSPatient360 from "./HMSPatient360";
 
 interface Props { clinicId: string; }
 
@@ -164,68 +165,14 @@ const HMSEMR = ({ clinicId }: Props) => {
     );
   }
 
-  // Patient profile
+  // Patient 360° profile (full EMR)
   if (activeTab === "profile" && patientProfile) {
-    const p = patientProfile;
-    const patientRecords = records.filter(r => r.patient_id === p.id);
     return (
-      <div>
-        <Button variant="ghost" size="sm" onClick={() => { setActiveTab("records"); setPatientProfile(null); setSelectedPatient(""); }} className="mb-4">← Orqaga</Button>
-        <div className="bg-card rounded-2xl border border-border p-6 mb-4">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <User className="w-7 h-7 text-primary" />
-            </div>
-            <div>
-              <h2 className="font-heading text-xl font-bold text-foreground">{p.full_name}</h2>
-              <p className="text-sm text-muted-foreground">{p.phone} • {p.gender === "male" ? "Erkak" : "Ayol"}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div className="bg-muted/50 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground">Jami yozuvlar</p>
-              <p className="text-lg font-bold text-foreground">{patientRecords.length}</p>
-            </div>
-            <div className="bg-muted/50 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground">Tashxislar</p>
-              <p className="text-lg font-bold text-foreground">{patientRecords.filter(r => r.record_type === "diagnosis").length}</p>
-            </div>
-            <div className="bg-muted/50 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground">Protseduralar</p>
-              <p className="text-lg font-bold text-foreground">{patientRecords.filter(r => r.record_type === "procedure").length}</p>
-            </div>
-            <div className="bg-muted/50 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground">Laboratoriya</p>
-              <p className="text-lg font-bold text-foreground">{patientRecords.filter(r => r.record_type === "lab").length}</p>
-            </div>
-          </div>
-        </div>
-
-        <h3 className="font-heading font-bold text-foreground mb-3">📋 Tibbiy tarix (Timeline)</h3>
-        <div className="space-y-3">
-          {patientRecords.map(r => {
-            const Icon = typeIcons[r.record_type] || FileText;
-            return (
-              <div key={r.id} className="flex gap-3 cursor-pointer" onClick={() => setSelectedRecord(r)}>
-                <div className="flex flex-col items-center">
-                  <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", typeColors[r.record_type] || "bg-muted text-muted-foreground")}>
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="w-px flex-1 bg-border" />
-                </div>
-                <div className="bg-card rounded-xl border border-border p-4 flex-1 mb-1 hover:border-primary/30 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-foreground text-sm">{typeLabels[r.record_type]}</p>
-                    <span className="text-xs text-muted-foreground">{r.record_date}</span>
-                  </div>
-                  {r.diagnosis && <p className="text-xs text-muted-foreground mt-1">{r.diagnosis}</p>}
-                  {r.treatment && <p className="text-xs text-primary mt-1">💊 {r.treatment}</p>}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <HMSPatient360
+        clinicId={clinicId}
+        patient={patientProfile}
+        onBack={() => { setActiveTab("records"); setPatientProfile(null); setSelectedPatient(""); }}
+      />
     );
   }
 
@@ -355,6 +302,7 @@ const HMSEMR = ({ clinicId }: Props) => {
                 <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
                   <Badge className={cn("text-[10px]", typeColors[r.record_type] || "bg-muted text-muted-foreground")}>{typeLabels[r.record_type] || r.record_type}</Badge>
                   {r.is_confidential && <Badge className="text-[10px] bg-red-100 text-red-800">🔒 Maxfiy</Badge>}
+                  <Button variant="ghost" size="icon" className="h-7 w-7" title="Bemor 360°" onClick={() => openPatientProfile(r.patient_id)}><UserCircle2 className="w-3.5 h-3.5 text-primary" /></Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditing(r); setForm({ patient_id: r.patient_id, doctor_id: r.doctor_id || "", record_date: r.record_date, record_type: r.record_type, diagnosis: r.diagnosis || "", symptoms: r.symptoms || "", treatment: r.treatment || "", follow_up_date: r.follow_up_date || "", notes: r.notes || "", is_confidential: r.is_confidential }); setShowForm(true); }}><Edit2 className="w-3 h-3" /></Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
                 </div>
