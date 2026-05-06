@@ -134,6 +134,7 @@ const DiagnosticsDashboard = () => {
     { id: "staff", label: "Xodimlar", icon: UserCheck, group: "Boshqaruv" },
     { id: "settings", label: "Sozlamalar", icon: SettingsIcon, group: "Tizim" },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
+    { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
   ];
 

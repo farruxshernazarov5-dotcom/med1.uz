@@ -6,9 +6,10 @@ import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Plus, Settings,
   BarChart3, Users, Package, Image as ImageIcon, Wallet, Gift, Megaphone,
-  Star, UserCog, Crown, ShieldCheck,
+  Star, UserCog, Crown, ShieldCheck, Shield,
 } from "lucide-react";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import InsuranceModule from "@/components/insurance/InsuranceModule";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
@@ -75,6 +76,7 @@ const CosmetologyDashboard = () => {
     { id: "inventory", label: "Mahsulotlar", icon: Package },
     { id: "staff", label: "Xodimlar", icon: UserCog },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
+    { id: "insurance", label: "Sug'urta", icon: Shield },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "settings", label: "Sozlamalar", icon: Settings },
   ];
@@ -101,6 +103,7 @@ const CosmetologyDashboard = () => {
       {tab === "subscription" && <CosmetologySubscription />}
       {tab === "settings" && <CosSettings centerId={center.id} />}
       {tab === "attendance" && <OrgAttendance orgType="cosmetology" orgName={center.name} />}
+      {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="cosmetology" />}
     </DashboardShell>
   );
 };
