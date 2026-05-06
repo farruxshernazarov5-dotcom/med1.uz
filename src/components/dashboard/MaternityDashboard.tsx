@@ -5,10 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Baby, LayoutDashboard, Users, Activity, FlaskConical, ScanLine, Heart,
-  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck,
+  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield,
 } from "lucide-react";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import InsuranceModule from "@/components/insurance/InsuranceModule";
 import { MatOverview } from "@/components/maternity/MatOverview";
 import { MatPatients } from "@/components/maternity/MatPatients";
 import { MatPregnancyTracking } from "@/components/maternity/MatPregnancyTracking";
@@ -37,6 +38,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "finance", label: "Moliya", icon: DollarSign, group: "Boshqaruv" },
   { id: "subscription", label: "Obuna", icon: CreditCard, group: "Boshqaruv" },
   { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
+  { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
 ];
 
 const MaternityDashboard = () => {
@@ -96,6 +98,7 @@ const MaternityDashboard = () => {
       {tab === "finance" && <MatFinance centerId={center.id} />}
       {tab === "subscription" && <MaternitySubscription />}
       {tab === "attendance" && <OrgAttendance orgType="maternity" orgName={center.name} />}
+      {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="maternity" />}
     </DashboardShell>
   );
 };

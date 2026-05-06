@@ -20,6 +20,7 @@ import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import InsuranceModule from "@/components/insurance/InsuranceModule";
 import DocOverview from "@/components/doctor/hms/DocOverview";
 import DocPatients from "@/components/doctor/hms/DocPatients";
 import DocAppointments from "@/components/doctor/hms/DocAppointments";
@@ -182,6 +183,7 @@ const DoctorDashboard = () => {
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
+    { id: "insurance", label: "Sug'urta", icon: Shield },
   ];
 
   return (
@@ -381,6 +383,7 @@ const DoctorDashboard = () => {
 
       {tab === "subscription" && <DoctorSubscription />}
       {tab === "attendance" && <OrgAttendance orgType="doctor" orgName={doctor.full_name} />}
+      {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="doctor" />}
     </DashboardShell>
   );
 };
