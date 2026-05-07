@@ -56,6 +56,72 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_recommendations: {
+        Row: {
+          ai_summary: string | null
+          created_at: string | null
+          detected_keywords: string[] | null
+          detected_specialties: string[] | null
+          detected_symptoms: string[] | null
+          id: string
+          input_text: string
+          intent_score: number | null
+          matched_clinic_ids: string[] | null
+          matched_doctor_ids: string[] | null
+          matched_promotion_ids: string[] | null
+          notification_channels: string[] | null
+          notification_sent: boolean | null
+          priority: string | null
+          session_id: string | null
+          source_channel: string | null
+          user_clicked: boolean | null
+          user_converted: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string | null
+          detected_keywords?: string[] | null
+          detected_specialties?: string[] | null
+          detected_symptoms?: string[] | null
+          id?: string
+          input_text: string
+          intent_score?: number | null
+          matched_clinic_ids?: string[] | null
+          matched_doctor_ids?: string[] | null
+          matched_promotion_ids?: string[] | null
+          notification_channels?: string[] | null
+          notification_sent?: boolean | null
+          priority?: string | null
+          session_id?: string | null
+          source_channel?: string | null
+          user_clicked?: boolean | null
+          user_converted?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string | null
+          detected_keywords?: string[] | null
+          detected_specialties?: string[] | null
+          detected_symptoms?: string[] | null
+          id?: string
+          input_text?: string
+          intent_score?: number | null
+          matched_clinic_ids?: string[] | null
+          matched_doctor_ids?: string[] | null
+          matched_promotion_ids?: string[] | null
+          notification_channels?: string[] | null
+          notification_sent?: boolean | null
+          priority?: string | null
+          session_id?: string | null
+          source_channel?: string | null
+          user_clicked?: boolean | null
+          user_converted?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_subscription_plans: {
         Row: {
           allowed_services: Json
@@ -8869,6 +8935,53 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_analytics: {
+        Row: {
+          clicks: number | null
+          clinic_id: string | null
+          conversion_rate: number | null
+          conversions: number | null
+          created_at: string | null
+          ctr: number | null
+          date: string | null
+          id: string
+          impressions: number | null
+          promotion_id: string | null
+        }
+        Insert: {
+          clicks?: number | null
+          clinic_id?: string | null
+          conversion_rate?: number | null
+          conversions?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          date?: string | null
+          id?: string
+          impressions?: number | null
+          promotion_id?: string | null
+        }
+        Update: {
+          clicks?: number | null
+          clinic_id?: string | null
+          conversion_rate?: number | null
+          conversions?: number | null
+          created_at?: string | null
+          ctr?: number | null
+          date?: string | null
+          id?: string
+          impressions?: number | null
+          promotion_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_analytics_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       maternity_appointments: {
         Row: {
           appointment_date: string
@@ -11907,6 +12020,78 @@ export type Database = {
         }
         Relationships: []
       }
+      promotions: {
+        Row: {
+          ai_generated: boolean | null
+          category: string | null
+          click_count: number | null
+          clinic_id: string | null
+          conversion_count: number | null
+          created_at: string | null
+          description: string | null
+          discount_percent: number | null
+          expires_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          keywords: string[] | null
+          original_price: number | null
+          owner_id: string | null
+          promo_price: number | null
+          specialties: string[] | null
+          starts_at: string | null
+          title: string
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          category?: string | null
+          click_count?: number | null
+          clinic_id?: string | null
+          conversion_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          keywords?: string[] | null
+          original_price?: number | null
+          owner_id?: string | null
+          promo_price?: number | null
+          specialties?: string[] | null
+          starts_at?: string | null
+          title: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          ai_generated?: boolean | null
+          category?: string | null
+          click_count?: number | null
+          clinic_id?: string | null
+          conversion_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          keywords?: string[] | null
+          original_price?: number | null
+          owner_id?: string | null
+          promo_price?: number | null
+          specialties?: string[] | null
+          starts_at?: string | null
+          title?: string
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       registered_clinics: {
         Row: {
           additional_phone: string | null
@@ -12896,6 +13081,51 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_segments: {
+        Row: {
+          created_at: string | null
+          id: string
+          intent_avg: number | null
+          last_activity_at: string | null
+          metadata: Json | null
+          preferred_specialties: string[] | null
+          segment: string
+          total_clicks: number | null
+          total_conversions: number | null
+          total_searches: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          intent_avg?: number | null
+          last_activity_at?: string | null
+          metadata?: Json | null
+          preferred_specialties?: string[] | null
+          segment?: string
+          total_clicks?: number | null
+          total_conversions?: number | null
+          total_searches?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          intent_avg?: number | null
+          last_activity_at?: string | null
+          metadata?: Json | null
+          preferred_specialties?: string[] | null
+          segment?: string
+          total_clicks?: number | null
+          total_conversions?: number | null
+          total_searches?: number | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
