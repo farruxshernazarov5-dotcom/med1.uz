@@ -26,6 +26,7 @@ import PatientDocuments from "./PatientDocuments";
 import PatientNearby from "./PatientNearby";
 import PatientMedicalHistory from "./PatientMedicalHistory";
 import PatientAIHistory from "./PatientAIHistory";
+import PatientRecommendations from "@/components/patient/PatientRecommendations";
 import PatientSecurity from "./PatientSecurity";
 import PatientMedicalWorkflow from "./PatientMedicalWorkflow";
 import PatientOverview from "@/components/patient/hms/PatientOverview";
