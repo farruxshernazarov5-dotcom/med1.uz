@@ -26,6 +26,7 @@ import PatientDocuments from "./PatientDocuments";
 import PatientNearby from "./PatientNearby";
 import PatientMedicalHistory from "./PatientMedicalHistory";
 import PatientAIHistory from "./PatientAIHistory";
+import PatientRecommendations from "@/components/patient/PatientRecommendations";
 import PatientSecurity from "./PatientSecurity";
 import PatientMedicalWorkflow from "./PatientMedicalWorkflow";
 import PatientOverview from "@/components/patient/hms/PatientOverview";
@@ -40,7 +41,7 @@ import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
 
 type TabId =
-  | "overview" | "ai-assistant" | "ai-history" | "health" | "tracking"
+  | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
   | "appointments" | "nearby" | "workflow"
   | "lab" | "prescriptions" | "files" | "documents" | "history"
   | "payments" | "promo"
@@ -77,6 +78,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Stethoscope,
     items: [
       { id: "ai-assistant", label: "AI Yordamchi", icon: Bot },
+      { id: "recommendations", label: "AI Tavsiyalar", icon: Sparkles },
       { id: "ai-history", label: "AI tahlillar", icon: Brain, premium: true },
       { id: "health", label: "BMI / Bosim", icon: Activity },
       { id: "tracking", label: "Monitoring", icon: LineChart, premium: true },
@@ -181,6 +183,7 @@ const PatientDashboard = () => {
       case "overview": return <PatientOverview onNavigate={(t) => setActiveTab(t as TabId)} />;
       case "ai-assistant": return <PatientAIAssistant />;
       case "ai-history": return <PatientAIHistory />;
+      case "recommendations": return <PatientRecommendations />;
       case "health": return <PatientHealth />;
       case "tracking": return <PatientHealthTracking />;
       case "appointments": return <PatientAppointments />;

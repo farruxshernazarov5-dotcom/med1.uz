@@ -88,6 +88,7 @@ const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
+import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import CookieConsent from "./components/CookieConsent";
 
@@ -114,6 +115,7 @@ const App = () => (
           <FloatingAISearch />
           <FloatingAIPanel />
           <FloatingServicesPanel />
+          <SmartMatchPanel />
           <CookieConsent />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
