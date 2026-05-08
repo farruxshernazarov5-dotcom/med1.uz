@@ -69,6 +69,9 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
     specialties: (clinic.specialties as string[]) || [],
     amenities: (clinic.amenities as string[]) || [],
     working_hours: (clinic.working_hours as Record<string, { open: string; close: string; closed?: boolean }>) || {},
+    service_radius_km: clinic.service_radius_km?.toString() || "15",
+    service_city: clinic.service_city || "",
+    accepts_remote_patients: clinic.accepts_remote_patients ?? true,
   });
   const [photos, setPhotos] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
