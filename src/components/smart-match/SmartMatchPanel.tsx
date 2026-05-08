@@ -57,6 +57,9 @@ export function SmartMatchPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        <div className="flex justify-end">
+          <LocationPreferences />
+        </div>
         {!result && !loading && (
           <>
             <p className="text-sm text-muted-foreground">Simptom yoki kerakli xizmatni yozing — AI sizga eng mos klinika va aksiyalarni topadi.</p>
