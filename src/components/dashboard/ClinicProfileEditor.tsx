@@ -340,6 +340,26 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
             />
           </div>
         )}
+
+        {/* Service coverage */}
+        <div className="mt-5 p-4 rounded-xl bg-muted/40 border border-border space-y-3">
+          <p className="text-sm font-semibold flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> Xizmat ko'rsatish hududi</p>
+          <p className="text-[11px] text-muted-foreground">Bemorlar AI Smart Match orqali sizni qaysi radiusda topishi va qaysi shaharda taklif qilishini sozlang.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Xizmat radiusi (km)</Label>
+              <Input type="number" min="1" max="500" value={form.service_radius_km} onChange={(e) => updateField("service_radius_km", e.target.value)} className="mt-1" placeholder="15" />
+            </div>
+            <div>
+              <Label className="text-xs">Shahar / hudud</Label>
+              <Input value={form.service_city} onChange={(e) => updateField("service_city", e.target.value)} className="mt-1" placeholder="Toshkent" />
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
+            <input type="checkbox" checked={form.accepts_remote_patients} onChange={(e) => updateField("accepts_remote_patients", e.target.checked)} className="rounded" />
+            Boshqa hududlardagi bemorlarni ham qabul qilaman (online/uzoq)
+          </label>
+        </div>
       </section>
 
       {/* Working Hours */}
