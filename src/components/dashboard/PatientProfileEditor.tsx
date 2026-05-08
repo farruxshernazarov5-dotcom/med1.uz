@@ -5,19 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { User, Camera, Save, Mail, Phone, MapPin, Calendar as CalendarIcon } from "lucide-react";
+import { User, Camera, Save, Mail, Phone, MapPin, Calendar as CalendarIcon, Navigation } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const PatientProfileEditor = () => {
   const { user, profile } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
     address: "",
     date_of_birth: "",
     avatar_url: "",
+    preferred_city: "",
+    preferred_radius_km: "10",
+    preferred_latitude: "",
+    preferred_longitude: "",
   });
 
   useEffect(() => {
