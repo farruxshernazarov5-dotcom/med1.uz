@@ -46,7 +46,10 @@ const PatientRecommendations = () => {
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-4">
-        <p className="text-sm font-semibold mb-2">Nima qidiryapsiz?</p>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-sm font-semibold">Nima qidiryapsiz?</p>
+          <LocationPreferences />
+        </div>
         <div className="flex gap-2">
           <Input
             value={text}
