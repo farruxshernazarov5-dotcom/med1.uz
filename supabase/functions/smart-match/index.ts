@@ -93,10 +93,10 @@ serve(async (req) => {
     if (orFilter.length) {
       const { data } = await supabase
         .from("registered_clinics")
-        .select("id, name, address, phone, category, latitude, longitude, logo_url")
+        .select("id, name, address, phone, category, latitude, longitude, logo_url, service_radius_km, service_city, accepts_remote_patients")
         .eq("is_active", true)
         .or(orFilter.join(","))
-        .limit(8);
+        .limit(40);
       clinics = data || [];
     }
 
