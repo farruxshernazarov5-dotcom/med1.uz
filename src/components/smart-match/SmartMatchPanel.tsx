@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSmartMatch } from "@/hooks/useSmartMatch";
 import { SmartMatchResults } from "./SmartMatchResults";
+import { LocationPreferences } from "./LocationPreferences";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = ["Tishim og'riyapti", "Yurak urishi tez", "Ko'zim qizaryapti", "Bolam yo'taliyapti"];
