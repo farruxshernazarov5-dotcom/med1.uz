@@ -187,6 +187,9 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
       specialties: form.specialties,
       amenities: form.amenities,
       working_hours: form.working_hours,
+      service_radius_km: form.service_radius_km ? parseInt(form.service_radius_km) : 15,
+      service_city: form.service_city.trim(),
+      accepts_remote_patients: form.accepts_remote_patients,
     }).eq("id", clinic.id);
     setSaving(false);
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
