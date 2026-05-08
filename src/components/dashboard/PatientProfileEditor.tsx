@@ -40,6 +40,10 @@ const PatientProfileEditor = () => {
             address: data.address || "",
             date_of_birth: data.date_of_birth || "",
             avatar_url: data.avatar_url || "",
+            preferred_city: (data as any).preferred_city || "",
+            preferred_radius_km: ((data as any).preferred_radius_km ?? 10).toString(),
+            preferred_latitude: (data as any).preferred_latitude?.toString() || "",
+            preferred_longitude: (data as any).preferred_longitude?.toString() || "",
           });
         }
       });
