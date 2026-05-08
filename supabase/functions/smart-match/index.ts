@@ -126,18 +126,40 @@ serve(async (req) => {
       promotions = data || [];
     }
 
-    // Distance sort if coords
+    // Distance + radius filtering
     if (latitude && longitude) {
+      const R = 6371;
       clinics = clinics.map((c: any) => {
         if (c.latitude && c.longitude) {
-          const R = 6371;
           const dLat = ((c.latitude - latitude) * Math.PI) / 180;
           const dLon = ((c.longitude - longitude) * Math.PI) / 180;
           const a = Math.sin(dLat / 2) ** 2 + Math.cos((latitude * Math.PI) / 180) * Math.cos((c.latitude * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
           c.distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
         return c;
-      }).sort((a: any, b: any) => (a.distance ?? 9999) - (b.distance ?? 9999));
+      });
+      // Apply radius filter (use min of user radius and clinic service radius)
+      if (effectiveRadius) {
+        const filtered = clinics.filter((c: any) => {
+          if (c.distance == null) return c.accepts_remote_patients !== false;
+          const clinicLimit = c.service_radius_km || 9999;
+          return c.distance <= effectiveRadius && c.distance <= clinicLimit;
+        });
+        // Keep some fallback if filter too strict
+        clinics = filtered.length > 0 ? filtered : clinics.filter((c: any) => c.accepts_remote_patients !== false).slice(0, 5);
+      }
+      clinics.sort((a: any, b: any) => (a.distance ?? 9999) - (b.distance ?? 9999));
+      clinics = clinics.slice(0, 8);
+    } else if (city) {
+      // No coords: bias by city match
+      clinics.sort((a: any, b: any) => {
+        const am = (a.service_city || a.address || "").toLowerCase().includes(city.toLowerCase()) ? 0 : 1;
+        const bm = (b.service_city || b.address || "").toLowerCase().includes(city.toLowerCase()) ? 0 : 1;
+        return am - bm;
+      });
+      clinics = clinics.slice(0, 8);
+    } else {
+      clinics = clinics.slice(0, 8);
     }
 
     // 5. Persist recommendation
