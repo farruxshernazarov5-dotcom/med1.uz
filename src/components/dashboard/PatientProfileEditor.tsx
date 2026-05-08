@@ -75,7 +75,11 @@ const PatientProfileEditor = () => {
         address: form.address,
         date_of_birth: form.date_of_birth || null,
         avatar_url: form.avatar_url,
-      })
+        preferred_city: form.preferred_city,
+        preferred_radius_km: form.preferred_radius_km ? parseInt(form.preferred_radius_km) : 10,
+        preferred_latitude: form.preferred_latitude ? parseFloat(form.preferred_latitude) : null,
+        preferred_longitude: form.preferred_longitude ? parseFloat(form.preferred_longitude) : null,
+      } as any)
       .eq("user_id", user.id);
     setSaving(false);
     if (error) {
@@ -83,6 +87,29 @@ const PatientProfileEditor = () => {
     } else {
       toast({ title: "Profil yangilandi ✅" });
     }
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Geolokatsiya qo'llab-quvvatlanmaydi", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setForm((f) => ({
+          ...f,
+          preferred_latitude: pos.coords.latitude.toFixed(6),
+          preferred_longitude: pos.coords.longitude.toFixed(6),
+        }));
+        setLocating(false);
+        toast({ title: "📍 Joylashuv aniqlandi" });
+      },
+      (err) => {
+        setLocating(false);
+        toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+      }
+    );
   };
 
   const initials = form.full_name
