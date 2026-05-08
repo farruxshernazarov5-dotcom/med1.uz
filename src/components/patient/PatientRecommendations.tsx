@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSmartMatch } from "@/hooks/useSmartMatch";
 import { SmartMatchResults } from "@/components/smart-match/SmartMatchResults";
+import { LocationPreferences } from "@/components/smart-match/LocationPreferences";
 
 const PatientRecommendations = () => {
   const { user } = useAuth();
