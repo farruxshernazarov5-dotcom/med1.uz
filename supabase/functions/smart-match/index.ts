@@ -30,12 +30,13 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { input_text, source_channel = "web_search", session_id, latitude, longitude } = await req.json();
+    const { input_text, source_channel = "web_search", session_id, latitude, longitude, radius_km, city } = await req.json();
     if (!input_text || typeof input_text !== "string" || input_text.trim().length < 2) {
       return new Response(JSON.stringify({ error: "Matn juda qisqa" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const effectiveRadius = typeof radius_km === "number" && radius_km > 0 ? Math.min(500, radius_km) : null;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
