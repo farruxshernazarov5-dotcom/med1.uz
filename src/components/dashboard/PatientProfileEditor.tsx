@@ -5,19 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { User, Camera, Save, Mail, Phone, MapPin, Calendar as CalendarIcon } from "lucide-react";
+import { User, Camera, Save, Mail, Phone, MapPin, Calendar as CalendarIcon, Navigation } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const PatientProfileEditor = () => {
   const { user, profile } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
     address: "",
     date_of_birth: "",
     avatar_url: "",
+    preferred_city: "",
+    preferred_radius_km: "10",
+    preferred_latitude: "",
+    preferred_longitude: "",
   });
 
   useEffect(() => {
@@ -35,6 +40,10 @@ const PatientProfileEditor = () => {
             address: data.address || "",
             date_of_birth: data.date_of_birth || "",
             avatar_url: data.avatar_url || "",
+            preferred_city: (data as any).preferred_city || "",
+            preferred_radius_km: ((data as any).preferred_radius_km ?? 10).toString(),
+            preferred_latitude: (data as any).preferred_latitude?.toString() || "",
+            preferred_longitude: (data as any).preferred_longitude?.toString() || "",
           });
         }
       });
@@ -66,7 +75,11 @@ const PatientProfileEditor = () => {
         address: form.address,
         date_of_birth: form.date_of_birth || null,
         avatar_url: form.avatar_url,
-      })
+        preferred_city: form.preferred_city,
+        preferred_radius_km: form.preferred_radius_km ? parseInt(form.preferred_radius_km) : 10,
+        preferred_latitude: form.preferred_latitude ? parseFloat(form.preferred_latitude) : null,
+        preferred_longitude: form.preferred_longitude ? parseFloat(form.preferred_longitude) : null,
+      } as any)
       .eq("user_id", user.id);
     setSaving(false);
     if (error) {
@@ -74,6 +87,29 @@ const PatientProfileEditor = () => {
     } else {
       toast({ title: "Profil yangilandi ✅" });
     }
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Geolokatsiya qo'llab-quvvatlanmaydi", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setForm((f) => ({
+          ...f,
+          preferred_latitude: pos.coords.latitude.toFixed(6),
+          preferred_longitude: pos.coords.longitude.toFixed(6),
+        }));
+        setLocating(false);
+        toast({ title: "📍 Joylashuv aniqlandi" });
+      },
+      (err) => {
+        setLocating(false);
+        toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+      }
+    );
   };
 
   const initials = form.full_name
@@ -131,6 +167,37 @@ const PatientProfileEditor = () => {
         <div>
           <Label className="flex items-center gap-2 mb-1.5"><MapPin className="w-4 h-4 text-primary" /> Manzil</Label>
           <Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="Shahar, tuman, ko'cha" />
+        </div>
+
+        {/* Smart Match location preferences */}
+        <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold flex items-center gap-2"><Navigation className="w-4 h-4 text-primary" /> Joylashuv preferensiyalari</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">AI Smart Match sizga yaqin klinikalarni topish uchun ishlatadi</p>
+            </div>
+            <Button type="button" size="sm" variant="outline" onClick={detectLocation} disabled={locating}>
+              <Navigation className="w-3 h-3 mr-1" /> {locating ? "..." : "Aniqla"}
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Shahar</Label>
+              <Input value={form.preferred_city} onChange={(e) => setForm((f) => ({ ...f, preferred_city: e.target.value }))} className="mt-1" placeholder="Toshkent" />
+            </div>
+            <div>
+              <Label className="text-xs">Qidiruv radiusi (km)</Label>
+              <Input type="number" min="1" max="500" value={form.preferred_radius_km} onChange={(e) => setForm((f) => ({ ...f, preferred_radius_km: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">Latitude</Label>
+              <Input type="number" step="any" value={form.preferred_latitude} onChange={(e) => setForm((f) => ({ ...f, preferred_latitude: e.target.value }))} className="mt-1" placeholder="41.31" />
+            </div>
+            <div>
+              <Label className="text-xs">Longitude</Label>
+              <Input type="number" step="any" value={form.preferred_longitude} onChange={(e) => setForm((f) => ({ ...f, preferred_longitude: e.target.value }))} className="mt-1" placeholder="69.24" />
+            </div>
+          </div>
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="bg-hero-gradient text-primary-foreground border-0 w-full sm:w-auto">

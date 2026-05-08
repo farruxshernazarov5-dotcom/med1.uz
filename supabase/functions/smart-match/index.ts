@@ -30,12 +30,13 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { input_text, source_channel = "web_search", session_id, latitude, longitude } = await req.json();
+    const { input_text, source_channel = "web_search", session_id, latitude, longitude, radius_km, city } = await req.json();
     if (!input_text || typeof input_text !== "string" || input_text.trim().length < 2) {
       return new Response(JSON.stringify({ error: "Matn juda qisqa" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const effectiveRadius = typeof radius_km === "number" && radius_km > 0 ? Math.min(500, radius_km) : null;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -92,10 +93,10 @@ serve(async (req) => {
     if (orFilter.length) {
       const { data } = await supabase
         .from("registered_clinics")
-        .select("id, name, address, phone, category, latitude, longitude, logo_url")
+        .select("id, name, address, phone, category, latitude, longitude, logo_url, service_radius_km, service_city, accepts_remote_patients")
         .eq("is_active", true)
         .or(orFilter.join(","))
-        .limit(8);
+        .limit(40);
       clinics = data || [];
     }
 
@@ -125,18 +126,40 @@ serve(async (req) => {
       promotions = data || [];
     }
 
-    // Distance sort if coords
+    // Distance + radius filtering
     if (latitude && longitude) {
+      const R = 6371;
       clinics = clinics.map((c: any) => {
         if (c.latitude && c.longitude) {
-          const R = 6371;
           const dLat = ((c.latitude - latitude) * Math.PI) / 180;
           const dLon = ((c.longitude - longitude) * Math.PI) / 180;
           const a = Math.sin(dLat / 2) ** 2 + Math.cos((latitude * Math.PI) / 180) * Math.cos((c.latitude * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
           c.distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
         return c;
-      }).sort((a: any, b: any) => (a.distance ?? 9999) - (b.distance ?? 9999));
+      });
+      // Apply radius filter (use min of user radius and clinic service radius)
+      if (effectiveRadius) {
+        const filtered = clinics.filter((c: any) => {
+          if (c.distance == null) return c.accepts_remote_patients !== false;
+          const clinicLimit = c.service_radius_km || 9999;
+          return c.distance <= effectiveRadius && c.distance <= clinicLimit;
+        });
+        // Keep some fallback if filter too strict
+        clinics = filtered.length > 0 ? filtered : clinics.filter((c: any) => c.accepts_remote_patients !== false).slice(0, 5);
+      }
+      clinics.sort((a: any, b: any) => (a.distance ?? 9999) - (b.distance ?? 9999));
+      clinics = clinics.slice(0, 8);
+    } else if (city) {
+      // No coords: bias by city match
+      clinics.sort((a: any, b: any) => {
+        const am = (a.service_city || a.address || "").toLowerCase().includes(city.toLowerCase()) ? 0 : 1;
+        const bm = (b.service_city || b.address || "").toLowerCase().includes(city.toLowerCase()) ? 0 : 1;
+        return am - bm;
+      });
+      clinics = clinics.slice(0, 8);
+    } else {
+      clinics = clinics.slice(0, 8);
     }
 
     // 5. Persist recommendation

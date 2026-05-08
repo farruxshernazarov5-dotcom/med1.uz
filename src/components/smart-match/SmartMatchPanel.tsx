@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSmartMatch } from "@/hooks/useSmartMatch";
 import { SmartMatchResults } from "./SmartMatchResults";
+import { LocationPreferences } from "./LocationPreferences";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = ["Tishim og'riyapti", "Yurak urishi tez", "Ko'zim qizaryapti", "Bolam yo'taliyapti"];
@@ -56,6 +57,9 @@ export function SmartMatchPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        <div className="flex justify-end">
+          <LocationPreferences />
+        </div>
         {!result && !loading && (
           <>
             <p className="text-sm text-muted-foreground">Simptom yoki kerakli xizmatni yozing — AI sizga eng mos klinika va aksiyalarni topadi.</p>

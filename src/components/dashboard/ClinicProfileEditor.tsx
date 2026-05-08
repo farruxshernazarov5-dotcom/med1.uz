@@ -69,6 +69,9 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
     specialties: (clinic.specialties as string[]) || [],
     amenities: (clinic.amenities as string[]) || [],
     working_hours: (clinic.working_hours as Record<string, { open: string; close: string; closed?: boolean }>) || {},
+    service_radius_km: clinic.service_radius_km?.toString() || "15",
+    service_city: clinic.service_city || "",
+    accepts_remote_patients: clinic.accepts_remote_patients ?? true,
   });
   const [photos, setPhotos] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -184,6 +187,9 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
       specialties: form.specialties,
       amenities: form.amenities,
       working_hours: form.working_hours,
+      service_radius_km: form.service_radius_km ? parseInt(form.service_radius_km) : 15,
+      service_city: form.service_city.trim(),
+      accepts_remote_patients: form.accepts_remote_patients,
     }).eq("id", clinic.id);
     setSaving(false);
     if (error) toast({ title: "Xatolik", description: error.message, variant: "destructive" });
@@ -334,6 +340,26 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
             />
           </div>
         )}
+
+        {/* Service coverage */}
+        <div className="mt-5 p-4 rounded-xl bg-muted/40 border border-border space-y-3">
+          <p className="text-sm font-semibold flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> Xizmat ko'rsatish hududi</p>
+          <p className="text-[11px] text-muted-foreground">Bemorlar AI Smart Match orqali sizni qaysi radiusda topishi va qaysi shaharda taklif qilishini sozlang.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Xizmat radiusi (km)</Label>
+              <Input type="number" min="1" max="500" value={form.service_radius_km} onChange={(e) => updateField("service_radius_km", e.target.value)} className="mt-1" placeholder="15" />
+            </div>
+            <div>
+              <Label className="text-xs">Shahar / hudud</Label>
+              <Input value={form.service_city} onChange={(e) => updateField("service_city", e.target.value)} className="mt-1" placeholder="Toshkent" />
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
+            <input type="checkbox" checked={form.accepts_remote_patients} onChange={(e) => updateField("accepts_remote_patients", e.target.checked)} className="rounded" />
+            Boshqa hududlardagi bemorlarni ham qabul qilaman (online/uzoq)
+          </label>
+        </div>
       </section>
 
       {/* Working Hours */}

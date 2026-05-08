@@ -22,12 +22,26 @@ export function useSmartMatch() {
   const [result, setResult] = useState<SmartMatchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const match = useCallback(async (input_text: string, opts?: { source_channel?: string; latitude?: number; longitude?: number }) => {
+  const match = useCallback(async (input_text: string, opts?: { source_channel?: string; latitude?: number | null; longitude?: number | null; radius_km?: number; city?: string }) => {
     setLoading(true);
     setError(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+      // Fall back to stored location prefs if not provided
+      let { latitude, longitude, radius_km, city } = opts || {};
+      if (latitude == null || longitude == null || radius_km == null) {
+        try {
+          const raw = localStorage.getItem("med1_location_prefs");
+          if (raw) {
+            const p = JSON.parse(raw);
+            latitude = latitude ?? p.latitude ?? undefined;
+            longitude = longitude ?? p.longitude ?? undefined;
+            radius_km = radius_km ?? p.radius_km ?? undefined;
+            city = city ?? p.city ?? undefined;
+          }
+        } catch {}
+      }
       const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-match`, {
         method: "POST",
         headers: {
@@ -38,8 +52,7 @@ export function useSmartMatch() {
         body: JSON.stringify({
           input_text,
           source_channel: opts?.source_channel || "web_search",
-          latitude: opts?.latitude,
-          longitude: opts?.longitude,
+          latitude, longitude, radius_km, city,
         }),
       });
       const data = await res.json();

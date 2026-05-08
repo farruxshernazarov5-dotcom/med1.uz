@@ -3,6 +3,7 @@ import { Brain, Search, ArrowRight, Sparkles, Stethoscope, Pill, Building2, Mic,
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { LocationPreferences } from "@/components/smart-match/LocationPreferences";
 
 const popularSearches = [
   { label: "Bosh og'rig'i", icon: Brain },
@@ -65,6 +66,10 @@ const AISearchSection = () => {
           </div>
 
           <div className="p-6">
+            {/* Location preferences chip */}
+            <div className="flex justify-end mb-3">
+              <LocationPreferences />
+            </div>
             {/* Search */}
             <div className="flex gap-3 mb-4">
               <div className="relative flex-1">
