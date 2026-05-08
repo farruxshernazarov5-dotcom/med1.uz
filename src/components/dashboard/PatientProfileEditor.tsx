@@ -169,6 +169,37 @@ const PatientProfileEditor = () => {
           <Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} placeholder="Shahar, tuman, ko'cha" />
         </div>
 
+        {/* Smart Match location preferences */}
+        <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold flex items-center gap-2"><Navigation className="w-4 h-4 text-primary" /> Joylashuv preferensiyalari</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">AI Smart Match sizga yaqin klinikalarni topish uchun ishlatadi</p>
+            </div>
+            <Button type="button" size="sm" variant="outline" onClick={detectLocation} disabled={locating}>
+              <Navigation className="w-3 h-3 mr-1" /> {locating ? "..." : "Aniqla"}
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Shahar</Label>
+              <Input value={form.preferred_city} onChange={(e) => setForm((f) => ({ ...f, preferred_city: e.target.value }))} className="mt-1" placeholder="Toshkent" />
+            </div>
+            <div>
+              <Label className="text-xs">Qidiruv radiusi (km)</Label>
+              <Input type="number" min="1" max="500" value={form.preferred_radius_km} onChange={(e) => setForm((f) => ({ ...f, preferred_radius_km: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">Latitude</Label>
+              <Input type="number" step="any" value={form.preferred_latitude} onChange={(e) => setForm((f) => ({ ...f, preferred_latitude: e.target.value }))} className="mt-1" placeholder="41.31" />
+            </div>
+            <div>
+              <Label className="text-xs">Longitude</Label>
+              <Input type="number" step="any" value={form.preferred_longitude} onChange={(e) => setForm((f) => ({ ...f, preferred_longitude: e.target.value }))} className="mt-1" placeholder="69.24" />
+            </div>
+          </div>
+        </div>
+
         <Button onClick={handleSave} disabled={saving} className="bg-hero-gradient text-primary-foreground border-0 w-full sm:w-auto">
           <Save className="w-4 h-4 mr-2" /> {saving ? "Saqlanmoqda..." : "Saqlash"}
         </Button>
