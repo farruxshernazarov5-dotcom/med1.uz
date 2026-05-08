@@ -11988,6 +11988,10 @@ export type Database = {
           id: string
           notification_channels: string[] | null
           phone: string | null
+          preferred_city: string | null
+          preferred_latitude: number | null
+          preferred_longitude: number | null
+          preferred_radius_km: number | null
           telegram_chat_id: string | null
           updated_at: string
           user_id: string
@@ -12001,6 +12005,10 @@ export type Database = {
           id?: string
           notification_channels?: string[] | null
           phone?: string | null
+          preferred_city?: string | null
+          preferred_latitude?: number | null
+          preferred_longitude?: number | null
+          preferred_radius_km?: number | null
           telegram_chat_id?: string | null
           updated_at?: string
           user_id: string
@@ -12014,6 +12022,10 @@ export type Database = {
           id?: string
           notification_channels?: string[] | null
           phone?: string | null
+          preferred_city?: string | null
+          preferred_latitude?: number | null
+          preferred_longitude?: number | null
+          preferred_radius_km?: number | null
           telegram_chat_id?: string | null
           updated_at?: string
           user_id?: string
@@ -12094,6 +12106,7 @@ export type Database = {
       }
       registered_clinics: {
         Row: {
+          accepts_remote_patients: boolean | null
           additional_phone: string | null
           address: string | null
           amenities: string[] | null
@@ -12119,6 +12132,8 @@ export type Database = {
           payme_merchant_id: string | null
           payment_enabled: boolean
           phone: string | null
+          service_city: string | null
+          service_radius_km: number | null
           social_links: Json | null
           specialties: string[] | null
           telegram: string | null
@@ -12127,6 +12142,7 @@ export type Database = {
           working_hours: Json | null
         }
         Insert: {
+          accepts_remote_patients?: boolean | null
           additional_phone?: string | null
           address?: string | null
           amenities?: string[] | null
@@ -12152,6 +12168,8 @@ export type Database = {
           payme_merchant_id?: string | null
           payment_enabled?: boolean
           phone?: string | null
+          service_city?: string | null
+          service_radius_km?: number | null
           social_links?: Json | null
           specialties?: string[] | null
           telegram?: string | null
@@ -12160,6 +12178,7 @@ export type Database = {
           working_hours?: Json | null
         }
         Update: {
+          accepts_remote_patients?: boolean | null
           additional_phone?: string | null
           address?: string | null
           amenities?: string[] | null
@@ -12185,6 +12204,8 @@ export type Database = {
           payme_merchant_id?: string | null
           payment_enabled?: boolean
           phone?: string | null
+          service_city?: string | null
+          service_radius_km?: number | null
           social_links?: Json | null
           specialties?: string[] | null
           telegram?: string | null
