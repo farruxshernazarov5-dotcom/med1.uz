@@ -18,6 +18,7 @@ import PartnerClinics from "@/components/PartnerClinics";
 import HomeAIServicesSection from "@/components/HomeAIServicesSection";
 import HomeServicesMenu from "@/components/HomeServicesMenu";
 import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
+import { NearbyMap } from "@/components/geo/NearbyMap";
 
 const Index = () => {
   return (
@@ -29,6 +30,11 @@ const Index = () => {
 
       {/* AI Search Section */}
       <AISearchSection />
+
+      {/* Nearby clinics map (geo promotions) */}
+      <section className="container mx-auto px-4 py-6">
+        <NearbyMap height={400} />
+      </section>
 
       {/* Main 3-column layout */}
       <section className="py-8 relative">

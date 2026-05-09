@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tag, Plus, Sparkles, Trash2, Eye, MousePointerClick, Loader2 } from "lucide-react";
+import { Tag, Plus, Sparkles, Trash2, Eye, MousePointerClick, Loader2, MapPin } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 
 interface Promo {
@@ -34,6 +36,7 @@ const ClinicPromotions = ({ clinicId }: Props) => {
   const [form, setForm] = useState({
     title: "", description: "", discount_percent: 0, original_price: 0, promo_price: 0,
     specialties: "", keywords: "", expires_at: "",
+    radius_m: 300, geo_trigger_enabled: false, creative_template: "",
   });
 
   const fetchItems = async () => {
@@ -66,6 +69,9 @@ const ClinicPromotions = ({ clinicId }: Props) => {
       keywords: form.keywords.split(",").map(s => s.trim()).filter(Boolean),
       expires_at: form.expires_at || null,
       is_active: true,
+      radius_m: form.radius_m,
+      geo_trigger_enabled: form.geo_trigger_enabled,
+      creative_template: form.creative_template.trim() || null,
     };
     const { error } = await supabase.from("promotions").insert(payload);
     setCreating(false);
@@ -74,7 +80,7 @@ const ClinicPromotions = ({ clinicId }: Props) => {
       return;
     }
     toast({ title: "Aksiya qo'shildi" });
-    setForm({ title: "", description: "", discount_percent: 0, original_price: 0, promo_price: 0, specialties: "", keywords: "", expires_at: "" });
+    setForm({ title: "", description: "", discount_percent: 0, original_price: 0, promo_price: 0, specialties: "", keywords: "", expires_at: "", radius_m: 300, geo_trigger_enabled: false, creative_template: "" });
     fetchItems();
   };
 
@@ -175,6 +181,35 @@ const ClinicPromotions = ({ clinicId }: Props) => {
         <Input placeholder="Mutaxassisliklar (vergul bilan): Stomatolog, Kardiolog" value={form.specialties} onChange={e => setForm(f => ({ ...f, specialties: e.target.value }))} />
         <Input placeholder="Kalit so'zlar: tish, og'riq, davolash" value={form.keywords} onChange={e => setForm(f => ({ ...f, keywords: e.target.value }))} />
         <Input type="date" value={form.expires_at} onChange={e => setForm(f => ({ ...f, expires_at: e.target.value }))} />
+
+        {/* Geo trigger settings */}
+        <div className="border border-dashed border-primary/30 rounded-xl p-3 space-y-3 bg-primary/5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold">Geo-trigger (yaqindan o'tganda)</span>
+            </div>
+            <Switch checked={form.geo_trigger_enabled} onCheckedChange={(v) => setForm(f => ({ ...f, geo_trigger_enabled: v }))} />
+          </div>
+          {form.geo_trigger_enabled && (
+            <>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">Radius</span>
+                  <span className="text-xs font-bold text-primary">{form.radius_m} m</span>
+                </div>
+                <Slider value={[form.radius_m]} onValueChange={(v) => setForm(f => ({ ...f, radius_m: v[0] }))} min={100} max={2000} step={50} />
+              </div>
+              <Textarea
+                placeholder="Kreativ matn (emoji + jozibali jumla, masalan: '🦷 Tabassumingizni unutmang! 50% chegirma')"
+                rows={2}
+                value={form.creative_template}
+                onChange={e => setForm(f => ({ ...f, creative_template: e.target.value }))}
+              />
+            </>
+          )}
+        </div>
+
         <Button onClick={submit} disabled={creating} className="w-full">
           {creating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
           Qo'shish

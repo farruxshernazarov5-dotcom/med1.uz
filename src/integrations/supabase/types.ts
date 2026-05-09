@@ -6152,6 +6152,122 @@ export type Database = {
           },
         ]
       }
+      geo_notifications: {
+        Row: {
+          channel: string
+          clinic_id: string | null
+          converted: boolean
+          distance_m: number | null
+          id: string
+          lat: number | null
+          lng: number | null
+          message: string | null
+          opened: boolean
+          promo_id: string | null
+          sent_at: string
+          user_id: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          channel?: string
+          clinic_id?: string | null
+          converted?: boolean
+          distance_m?: number | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          message?: string | null
+          opened?: boolean
+          promo_id?: string | null
+          sent_at?: string
+          user_id?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          channel?: string
+          clinic_id?: string | null
+          converted?: boolean
+          distance_m?: number | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          message?: string | null
+          opened?: boolean
+          promo_id?: string | null
+          sent_at?: string
+          user_id?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geo_notifications_promo_id_fkey"
+            columns: ["promo_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geo_notifications_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "geofence_zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geofence_zones: {
+        Row: {
+          active_hours: Json | null
+          center_lat: number
+          center_lng: number
+          clinic_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          name: string
+          promo_id: string | null
+          radius_m: number
+          updated_at: string
+        }
+        Insert: {
+          active_hours?: Json | null
+          center_lat: number
+          center_lng: number
+          clinic_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          promo_id?: string | null
+          radius_m?: number
+          updated_at?: string
+        }
+        Update: {
+          active_hours?: Json | null
+          center_lat?: number
+          center_lng?: number
+          clinic_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          promo_id?: string | null
+          radius_m?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geofence_zones_promo_id_fkey"
+            columns: ["promo_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       health_records: {
         Row: {
           created_at: string
@@ -12040,9 +12156,11 @@ export type Database = {
           clinic_id: string | null
           conversion_count: number | null
           created_at: string | null
+          creative_template: string | null
           description: string | null
           discount_percent: number | null
           expires_at: string | null
+          geo_trigger_enabled: boolean
           id: string
           image_url: string | null
           is_active: boolean | null
@@ -12050,6 +12168,7 @@ export type Database = {
           original_price: number | null
           owner_id: string | null
           promo_price: number | null
+          radius_m: number
           specialties: string[] | null
           starts_at: string | null
           title: string
@@ -12063,9 +12182,11 @@ export type Database = {
           clinic_id?: string | null
           conversion_count?: number | null
           created_at?: string | null
+          creative_template?: string | null
           description?: string | null
           discount_percent?: number | null
           expires_at?: string | null
+          geo_trigger_enabled?: boolean
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -12073,6 +12194,7 @@ export type Database = {
           original_price?: number | null
           owner_id?: string | null
           promo_price?: number | null
+          radius_m?: number
           specialties?: string[] | null
           starts_at?: string | null
           title: string
@@ -12086,9 +12208,11 @@ export type Database = {
           clinic_id?: string | null
           conversion_count?: number | null
           created_at?: string | null
+          creative_template?: string | null
           description?: string | null
           discount_percent?: number | null
           expires_at?: string | null
+          geo_trigger_enabled?: boolean
           id?: string
           image_url?: string | null
           is_active?: boolean | null
@@ -12096,6 +12220,7 @@ export type Database = {
           original_price?: number | null
           owner_id?: string | null
           promo_price?: number | null
+          radius_m?: number
           specialties?: string[] | null
           starts_at?: string | null
           title?: string
@@ -13083,6 +13208,39 @@ export type Database = {
           id?: string
           package_name?: string | null
           purchased_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_location_consent: {
+        Row: {
+          background_enabled: boolean
+          created_at: string
+          granted: boolean
+          last_lat: number | null
+          last_lng: number | null
+          last_seen_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          background_enabled?: boolean
+          created_at?: string
+          granted?: boolean
+          last_lat?: number | null
+          last_lng?: number | null
+          last_seen_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          background_enabled?: boolean
+          created_at?: string
+          granted?: boolean
+          last_lat?: number | null
+          last_lng?: number | null
+          last_seen_at?: string | null
           updated_at?: string
           user_id?: string
         }
