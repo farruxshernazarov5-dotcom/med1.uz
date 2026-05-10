@@ -13,6 +13,7 @@ import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
 import AdminDentalModule from "@/components/admin/AdminDentalModule";
 import AdminKnowledgeModule from "@/components/admin/AdminKnowledgeModule";
+import AdminGeoTemplates from "@/components/admin/AdminGeoTemplates";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +55,7 @@ const sidebarSections = [
   {
     label: "Biznes", items: [
       { id: "marketing", label: "📢 Marketing", icon: Megaphone },
+      { id: "geo_templates", label: "📍 Geo shablonlar", icon: Megaphone },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
     ]
   },
@@ -1323,6 +1325,7 @@ const AdminDashboard = () => {
           {/* ═══ AUDIT ═══ */}
           {tab === "saas" && <SaaSAdminManager />}
           {tab === "marketing" && <AdminMarketingModule />}
+          {tab === "geo_templates" && <AdminGeoTemplates />}
           {tab === "dental_hms" && <AdminDentalModule />}
           {tab === "knowledge" && <AdminKnowledgeModule />}
 

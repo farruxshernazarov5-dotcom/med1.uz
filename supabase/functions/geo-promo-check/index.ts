@@ -14,13 +14,27 @@ function haversineM(lat1: number, lon1: number, lat2: number, lon2: number) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-const CREATIVE_FALLBACKS: Record<string, string> = {
+const HARDCODED_FALLBACKS: Record<string, string> = {
   Stomatolog: "🦷 Tabassumingizni unutmang! Sizga yaqin stomatologiyada maxsus chegirma — hoziroq foydalaning.",
   Kardiolog: "❤️ Yuragingizni tekshiring — yonginangizdagi klinikada bepul ko'rik mavjud.",
   Kosmetolog: "💆‍♀️ O'zingizga vaqt ajrating ✨ Yaqin kosmetologiya markazida bonusli xizmatlar.",
   Pediatr: "👶 Bolangiz salomatligi — eng muhimi. Yaqin pediatriya markazida aksiya bor.",
+  Diagnostika: "🔬 Sog'ligingizni tekshiring — yaqin laboratoriyada chegirmali tahlillar.",
   Default: "📍 Sizga yaqin tibbiy markazda maxsus aksiya — ko'rib chiqing!",
 };
+
+async function loadTemplates(supabase: any): Promise<Record<string, string>> {
+  try {
+    const { data } = await supabase
+      .from("geo_creative_templates")
+      .select("category, template, priority")
+      .eq("is_active", true).eq("language", "uz")
+      .order("priority", { ascending: false });
+    const map: Record<string, string> = {};
+    for (const r of data || []) if (!map[r.category]) map[r.category] = r.template;
+    return { ...HARDCODED_FALLBACKS, ...map };
+  } catch { return HARDCODED_FALLBACKS; }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -86,6 +100,7 @@ serve(async (req) => {
       recentPromoIds = new Set((recent || []).map((r: any) => r.promo_id).filter(Boolean));
     }
 
+    const fallbacks = await loadTemplates(supabase);
     const matches: any[] = [];
     for (const p of promos || []) {
       if (recentPromoIds.has(p.id)) continue;
@@ -95,7 +110,8 @@ serve(async (req) => {
       if (clinic.distance_m > radius) continue;
       const cat = (clinic.category || "Default") as string;
       const message = p.creative_template ||
-        CREATIVE_FALLBACKS[cat] ||
+        fallbacks[cat] ||
+        fallbacks["Default"] ||
         `📍 ${clinic.name} sizdan ${clinic.distance_m}m uzoqlikda — ${p.title}!`;
       matches.push({
         promo_id: p.id, clinic_id: p.clinic_id, clinic_name: clinic.name,
