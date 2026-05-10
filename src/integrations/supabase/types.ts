@@ -6152,6 +6152,48 @@ export type Database = {
           },
         ]
       }
+      geo_creative_templates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          is_fallback: boolean
+          language: string
+          notes: string | null
+          priority: number
+          template: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          is_fallback?: boolean
+          language?: string
+          notes?: string | null
+          priority?: number
+          template: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          is_fallback?: boolean
+          language?: string
+          notes?: string | null
+          priority?: number
+          template?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       geo_notifications: {
         Row: {
           channel: string
