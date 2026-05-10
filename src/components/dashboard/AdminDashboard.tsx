@@ -13,6 +13,7 @@ import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
 import AdminDentalModule from "@/components/admin/AdminDentalModule";
 import AdminKnowledgeModule from "@/components/admin/AdminKnowledgeModule";
+import AdminGeoTemplates from "@/components/admin/AdminGeoTemplates";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
