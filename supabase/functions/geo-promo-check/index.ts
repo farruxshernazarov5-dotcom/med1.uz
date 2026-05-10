@@ -109,10 +109,16 @@ serve(async (req) => {
       const radius = p.radius_m || 300;
       if (clinic.distance_m > radius) continue;
       const cat = (clinic.category || "Default") as string;
-      const message = p.creative_template ||
+      const rawMsg = p.creative_template ||
         fallbacks[cat] ||
         fallbacks["Default"] ||
-        `📍 ${clinic.name} sizdan ${clinic.distance_m}m uzoqlikda — ${p.title}!`;
+        `📍 {clinic_name} sizdan {distance_m}m uzoqlikda — {title}!`;
+      const message = rawMsg
+        .replaceAll("{clinic_name}", clinic.name || "")
+        .replaceAll("{distance_m}", String(clinic.distance_m))
+        .replaceAll("{category}", cat)
+        .replaceAll("{title}", p.title || "")
+        .replaceAll("{discount}", p.discount_percent ? `${p.discount_percent}%` : "");
       matches.push({
         promo_id: p.id, clinic_id: p.clinic_id, clinic_name: clinic.name,
         clinic_lat: clinic.latitude, clinic_lng: clinic.longitude,
