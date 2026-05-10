@@ -47,6 +47,24 @@ const AdminGeoTemplates = () => {
   };
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    supabase.from("registered_clinics")
+      .select("id, name, category, address, logo_url")
+      .eq("is_active", true).order("name").limit(100)
+      .then(({ data }) => {
+        setClinics(data || []);
+        if (data?.[0]) setPreviewClinicId(data[0].id);
+      });
+  }, []);
+
+  const renderTemplate = (tpl: string, clinic: any, distance: number, discount: number, title: string) =>
+    (tpl || "")
+      .replaceAll("{clinic_name}", clinic?.name || "Klinika")
+      .replaceAll("{distance_m}", String(distance))
+      .replaceAll("{category}", clinic?.category || "Default")
+      .replaceAll("{title}", title || "")
+      .replaceAll("{discount}", discount ? `${discount}%` : "");
+
   const create = async () => {
     if (!form.template.trim()) { toast({ title: "Matn kiriting", variant: "destructive" }); return; }
     const { data: { user } } = await supabase.auth.getUser();
