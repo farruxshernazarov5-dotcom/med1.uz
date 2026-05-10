@@ -1325,6 +1325,7 @@ const AdminDashboard = () => {
           {/* ═══ AUDIT ═══ */}
           {tab === "saas" && <SaaSAdminManager />}
           {tab === "marketing" && <AdminMarketingModule />}
+          {tab === "geo_templates" && <AdminGeoTemplates />}
           {tab === "dental_hms" && <AdminDentalModule />}
           {tab === "knowledge" && <AdminKnowledgeModule />}
 
