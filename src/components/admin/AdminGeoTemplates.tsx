@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Sparkles, Plus, Trash2, Loader2, Save, Bot } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { MapPin, Sparkles, Plus, Trash2, Loader2, Save, Bot, Eye, Bell } from "lucide-react";
 
 interface Tpl {
   id: string;
