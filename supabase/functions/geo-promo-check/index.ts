@@ -100,6 +100,7 @@ serve(async (req) => {
       recentPromoIds = new Set((recent || []).map((r: any) => r.promo_id).filter(Boolean));
     }
 
+    const fallbacks = await loadTemplates(supabase);
     const matches: any[] = [];
     for (const p of promos || []) {
       if (recentPromoIds.has(p.id)) continue;
@@ -109,7 +110,8 @@ serve(async (req) => {
       if (clinic.distance_m > radius) continue;
       const cat = (clinic.category || "Default") as string;
       const message = p.creative_template ||
-        CREATIVE_FALLBACKS[cat] ||
+        fallbacks[cat] ||
+        fallbacks["Default"] ||
         `📍 ${clinic.name} sizdan ${clinic.distance_m}m uzoqlikda — ${p.title}!`;
       matches.push({
         promo_id: p.id, clinic_id: p.clinic_id, clinic_name: clinic.name,
