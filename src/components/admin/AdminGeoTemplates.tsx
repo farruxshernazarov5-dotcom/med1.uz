@@ -31,6 +31,14 @@ const AdminGeoTemplates = () => {
   const [aiBusy, setAiBusy] = useState<string | null>(null);
   const [form, setForm] = useState({ category: "Default", language: "uz", template: "", priority: 5, is_fallback: false, notes: "" });
 
+  // Preview state
+  const [clinics, setClinics] = useState<any[]>([]);
+  const [previewClinicId, setPreviewClinicId] = useState<string>("");
+  const [previewDistance, setPreviewDistance] = useState(150);
+  const [previewDiscount, setPreviewDiscount] = useState(25);
+  const [previewTitle, setPreviewTitle] = useState("Maxsus aksiya");
+  const [previewTplId, setPreviewTplId] = useState<string>("__form__");
+
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from("geo_creative_templates").select("*").order("category").order("priority", { ascending: false });
