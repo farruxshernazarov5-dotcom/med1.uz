@@ -59,11 +59,11 @@ const AdminGeoTemplates = () => {
 
   const renderTemplate = (tpl: string, clinic: any, distance: number, discount: number, title: string) =>
     (tpl || "")
-      .replaceAll("{clinic_name}", clinic?.name || "Klinika")
-      .replaceAll("{distance_m}", String(distance))
-      .replaceAll("{category}", clinic?.category || "Default")
-      .replaceAll("{title}", title || "")
-      .replaceAll("{discount}", discount ? `${discount}%` : "");
+      .split("{clinic_name}").join(clinic?.name || "Klinika")
+      .split("{distance_m}").join(String(distance))
+      .split("{category}").join(clinic?.category || "Default")
+      .split("{title}").join(title || "")
+      .split("{discount}").join(discount ? `${discount}%` : "");
 
   const create = async () => {
     if (!form.template.trim()) { toast({ title: "Matn kiriting", variant: "destructive" }); return; }
