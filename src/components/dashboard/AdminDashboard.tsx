@@ -54,6 +54,7 @@ const sidebarSections = [
   {
     label: "Biznes", items: [
       { id: "marketing", label: "📢 Marketing", icon: Megaphone },
+      { id: "geo_templates", label: "📍 Geo shablonlar", icon: Megaphone },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
     ]
   },
