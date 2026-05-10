@@ -181,6 +181,92 @@ const AdminGeoTemplates = () => {
         <Button onClick={create} className="w-full gap-2"><Plus className="w-4 h-4" />Qo'shish</Button>
       </div>
 
+      {/* Live Preview */}
+      {(() => {
+        const clinic = clinics.find(c => c.id === previewClinicId);
+        const tpl = previewTplId === "__form__"
+          ? form.template
+          : items.find(i => i.id === previewTplId)?.template || "";
+        const cat = clinic?.category || form.category;
+        const fallback = items.find(i => i.is_fallback && i.is_active && i.category === cat)?.template
+          || items.find(i => i.is_fallback && i.is_active && i.category === "Default")?.template
+          || "📍 {clinic_name} sizdan {distance_m}m uzoqlikda — {title}!";
+        const finalTpl = tpl?.trim() ? tpl : fallback;
+        const rendered = renderTemplate(finalTpl, clinic, previewDistance, previewDiscount, previewTitle);
+        const inRadius = previewDistance <= 2000;
+        return (
+          <div className="bg-gradient-to-br from-indigo-500/5 to-cyan-500/5 border border-indigo-500/20 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4 text-indigo-600" />
+              <h3 className="font-semibold text-sm">Live Preview</h3>
+              <Badge variant="outline" className="ml-auto text-[10px]">
+                {tpl?.trim() ? "Form shablon" : "AI Fallback"}
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <select value={previewClinicId} onChange={e => setPreviewClinicId(e.target.value)} className="border border-input rounded-md px-2 py-2 text-xs bg-background">
+                <option value="">— Klinika tanlang —</option>
+                {clinics.map(c => <option key={c.id} value={c.id}>{c.name} ({c.category || "?"})</option>)}
+              </select>
+              <select value={previewTplId} onChange={e => setPreviewTplId(e.target.value)} className="border border-input rounded-md px-2 py-2 text-xs bg-background">
+                <option value="__form__">Yuqoridagi forma matni</option>
+                {items.filter(i => !cat || i.category === cat || i.category === "Default").map(i => (
+                  <option key={i.id} value={i.id}>[{i.category}] {i.template.slice(0, 40)}...</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-muted-foreground">Masofa (simulyatsiya)</span>
+                <span className="text-xs font-bold text-indigo-600">{previewDistance} m</span>
+              </div>
+              <Slider value={[previewDistance]} onValueChange={v => setPreviewDistance(v[0])} min={10} max={2500} step={10} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Input type="number" placeholder="Chegirma %" value={previewDiscount} onChange={e => setPreviewDiscount(Number(e.target.value) || 0)} className="text-xs h-9" />
+              <Input placeholder="Aksiya nomi" value={previewTitle} onChange={e => setPreviewTitle(e.target.value)} className="text-xs h-9" />
+            </div>
+
+            {/* Mobile push mockup */}
+            <div className="bg-card rounded-2xl border border-border p-3 shadow-md max-w-sm mx-auto">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
+                  {clinic?.logo_url ? (
+                    <img src={clinic.logo_url} alt="" className="w-full h-full rounded-xl object-cover" />
+                  ) : (
+                    <Bell className="w-5 h-5 text-white" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-foreground">MED-ALL AI</span>
+                    <span className="text-[10px] text-muted-foreground">hozir</span>
+                  </div>
+                  <p className="text-sm text-foreground leading-snug mt-0.5">{rendered || "—"}</p>
+                  {clinic && (
+                    <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                      <MapPin className="w-2.5 h-2.5" /> {clinic.name} • {previewDistance}m
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 text-[10px]">
+              <Badge variant="secondary">{rendered.length} ta belgi</Badge>
+              {!inRadius && <Badge variant="destructive">2km dan tashqarida — yuborilmaydi</Badge>}
+              {inRadius && <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Trigger ichida</Badge>}
+              <span className="text-muted-foreground ml-auto">
+                Placeholderlar: <code>{"{clinic_name}"}</code> <code>{"{distance_m}"}</code> <code>{"{discount}"}</code> <code>{"{category}"}</code> <code>{"{title}"}</code>
+              </span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* List grouped */}
       {loading ? (
         <div className="text-center py-8 text-muted-foreground text-sm">Yuklanmoqda...</div>
