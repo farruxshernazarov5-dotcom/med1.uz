@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import {
   Pill, Plus, Package, ShoppingCart, BarChart3, Settings, FileText,
-  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck,, Crown
+  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck, Crown
 } from "lucide-react";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DashboardShell from "./DashboardShell";

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Baby, LayoutDashboard, Users, Activity, FlaskConical, ScanLine, Heart,
-  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield,, Crown
+  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield, Crown
 } from "lucide-react";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
