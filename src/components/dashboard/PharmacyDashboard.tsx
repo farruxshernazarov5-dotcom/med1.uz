@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import {
   Pill, Plus, Package, ShoppingCart, BarChart3, Settings, FileText,
-  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck,
+  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck,, Crown
 } from "lucide-react";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DashboardShell from "./DashboardShell";
@@ -24,6 +24,7 @@ import PhSuppliers from "@/components/pharmacy/PhSuppliers";
 import PhStaff from "@/components/pharmacy/PhStaff";
 import PhFinance from "@/components/pharmacy/PhFinance";
 import PhPromo from "@/components/pharmacy/PhPromo";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const PharmacyDashboard = () => {
   const { user, profile } = useAuth();
@@ -209,6 +210,7 @@ const PharmacyDashboard = () => {
         </div>
       )}
       {tab === "attendance" && <OrgAttendance orgType="pharmacy" orgName={pharmacy.name} />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="pharmacy" />}
     </DashboardShell>
   );
 };

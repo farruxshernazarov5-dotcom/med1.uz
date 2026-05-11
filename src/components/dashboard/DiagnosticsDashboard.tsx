@@ -31,6 +31,7 @@ import {
   BookOpen, ShieldCheck, Calendar, Send, Shield,
 } from "lucide-react";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const DiagnosticsDashboard = () => {
   const { user } = useAuth();
@@ -205,6 +206,7 @@ const DiagnosticsDashboard = () => {
       {tab === "subscription" && <DiagnosticsSubscription />}
       {tab === "attendance" && <OrgAttendance orgType="diagnostics" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="diagnostics" />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="diagnostics" />}
     </DashboardShell>
   );
 };

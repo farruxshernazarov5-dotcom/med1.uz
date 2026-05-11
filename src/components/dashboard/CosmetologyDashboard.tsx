@@ -24,6 +24,7 @@ import CosFeedback from "@/components/cosmetology/hms/CosFeedback";
 import CosInventory from "@/components/cosmetology/hms/CosInventory";
 import CosStaff from "@/components/cosmetology/hms/CosStaff";
 import CosSettings from "@/components/cosmetology/hms/CosSettings";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const CosmetologyDashboard = () => {
   const { user, profile } = useAuth();
@@ -104,6 +105,7 @@ const CosmetologyDashboard = () => {
       {tab === "settings" && <CosSettings centerId={center.id} />}
       {tab === "attendance" && <OrgAttendance orgType="cosmetology" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="cosmetology" />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="cosmetology" />}
     </DashboardShell>
   );
 };

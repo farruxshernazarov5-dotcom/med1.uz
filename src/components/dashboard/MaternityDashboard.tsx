@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Baby, LayoutDashboard, Users, Activity, FlaskConical, ScanLine, Heart,
-  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield,
+  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield,, Crown
 } from "lucide-react";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
@@ -21,6 +21,7 @@ import { MatStaff } from "@/components/maternity/MatStaff";
 import { MatPrescriptions } from "@/components/maternity/MatPrescriptions";
 import { MatFinance } from "@/components/maternity/MatFinance";
 import MaternitySubscription from "@/components/dashboard/MaternitySubscription";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard, group: "Asosiy" },
@@ -39,6 +40,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "subscription", label: "Obuna", icon: CreditCard, group: "Boshqaruv" },
   { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
   { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
+  { id: "premium", label: "💎 Premium", icon: Crown, group: "Boshqaruv" },
 ];
 
 const MaternityDashboard = () => {
@@ -99,6 +101,7 @@ const MaternityDashboard = () => {
       {tab === "subscription" && <MaternitySubscription />}
       {tab === "attendance" && <OrgAttendance orgType="maternity" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="maternity" />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="maternity" />}
     </DashboardShell>
   );
 };

@@ -37,6 +37,7 @@ import DocBrandLeads from "@/components/doctor/hms/DocBrandLeads";
 import DocBrandAnalytics from "@/components/doctor/hms/DocBrandAnalytics";
 import DocAnalytics from "@/components/doctor/hms/DocAnalytics";
 import DocAudit from "@/components/doctor/hms/DocAudit";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const SPECIALTIES = [
   "Kardiolog", "Stomatolog", "Pediatr", "Nevrolog", "Ortoped",
@@ -384,6 +385,7 @@ const DoctorDashboard = () => {
       {tab === "subscription" && <DoctorSubscription />}
       {tab === "attendance" && <OrgAttendance orgType="doctor" orgName={doctor.full_name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="doctor" />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="doctor" />}
     </DashboardShell>
   );
 };

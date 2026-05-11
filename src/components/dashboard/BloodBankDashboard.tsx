@@ -19,6 +19,7 @@ import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription"
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 interface BloodBank {
   id: string; name: string; address: string; phone: string; email: string;
@@ -276,6 +277,7 @@ const BloodBankDashboard = () => {
           </CardContent></Card>
         </TabsContent>
       {tab === "attendance" && <OrgAttendance orgType="bloodbank" orgName={bank.name} />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
     </DashboardShell>
   );
 };
