@@ -39,12 +39,13 @@ import PatientAIAssistant from "@/components/patient/hms/PatientAIAssistant";
 import PatientPayments from "@/components/patient/hms/PatientPayments";
 import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
   | "appointments" | "nearby" | "workflow"
   | "lab" | "prescriptions" | "files" | "documents" | "history"
-  | "payments" | "promo"
+  | "payments" | "promo" | "premium"
   | "family" | "favorites" | "reviews"
   | "profile" | "notifications" | "security" | "settings";
 
@@ -113,6 +114,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { id: "payments", label: "To'lovlar va cheklar", icon: CreditCard },
       { id: "promo", label: "Aksiyalar", icon: Tag },
+      { id: "premium", label: "💎 Premium", icon: Crown },
     ],
   },
   {
@@ -196,6 +198,7 @@ const PatientDashboard = () => {
       case "history": return <PatientMedicalHistory />;
       case "payments": return <PatientPayments />;
       case "promo": return <PatientPromo />;
+      case "premium": return <PremiumPerksPanel moduleId="clinic" />;
       case "family": return <PatientFamily />;
       case "favorites": return <PatientFavorites />;
       case "reviews": return <PatientReviews />;
