@@ -12136,6 +12136,60 @@ export type Database = {
           },
         ]
       }
+      premium_perks: {
+        Row: {
+          badge_text: string | null
+          category: string
+          created_at: string
+          cta_url: string | null
+          description: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          is_active: boolean
+          module_id: string
+          tier_required: string
+          title: string
+          updated_at: string
+          valid_until: string | null
+          value_text: string | null
+        }
+        Insert: {
+          badge_text?: string | null
+          category?: string
+          created_at?: string
+          cta_url?: string | null
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          module_id: string
+          tier_required?: string
+          title: string
+          updated_at?: string
+          valid_until?: string | null
+          value_text?: string | null
+        }
+        Update: {
+          badge_text?: string | null
+          category?: string
+          created_at?: string
+          cta_url?: string | null
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          module_id?: string
+          tier_required?: string
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+          value_text?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -12189,6 +12243,83 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          discount_pct: number
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          module_id: string | null
+          tier_required: string | null
+          updated_at: string
+          used_count: number
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_pct?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          module_id?: string | null
+          tier_required?: string | null
+          updated_at?: string
+          used_count?: number
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_pct?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          module_id?: string | null
+          tier_required?: string | null
+          updated_at?: string
+          used_count?: number
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
+      promo_redemptions: {
+        Row: {
+          id: string
+          module_id: string | null
+          promo_code_id: string
+          redeemed_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          module_id?: string | null
+          promo_code_id: string
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          module_id?: string | null
+          promo_code_id?: string
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_redemptions_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       promotions: {
         Row: {
