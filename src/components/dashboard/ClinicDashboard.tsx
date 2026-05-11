@@ -128,6 +128,7 @@ const ClinicDashboard = () => {
     { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingAppts.length },
     { id: "analytics", label: "Analitika", icon: BarChart3 },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     // HMS
     { id: "hms-patients", label: "Bemorlar", icon: Users, group: "HMS" },
     { id: "hms-lab", label: "Laboratoriya", icon: FlaskConical, group: "HMS" },
