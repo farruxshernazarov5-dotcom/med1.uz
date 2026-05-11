@@ -1,97 +1,91 @@
-## Smart Geo Promotion & Live Notification System
+## Premium Monetization & Discount Engine
 
-Foydalanuvchi klinika/dorixona/stomatologiya yaqinidan o'tganda real-time geofence trigger ishlab, AI tavsiyali kreativ notification yuboradigan tizim qurish.
+Build a unified "Discounts & Premium Features" module that surfaces in every dashboard, shows locked premium perks to all users, and unlocks based on their SaaS subscription tier.
 
 ### Architecture
 
-```text
-[Browser Geolocation watchPosition]
-        │
-        ▼
-[useGeoTracker hook] ── throttle 30s / 50m harakatda
-        │
-        ▼
-[Edge Fn: geo-promo-check]
-   • Haversine radius search (clinics + promotions)
-   • AI re-ranking (user history + intent)
-   • Cooldown check (geo_notifications)
-        │
-        ▼
-[Response: matched promos]
-        │
-        ├─► Floating promo popup (web)
-        ├─► Telegram push (telegram-notify)
-        └─► Map markers (Index map widget)
+Reuse existing infrastructure:
+- `useSaasPlan(moduleId)` — already returns tier/features/limits per module
+- `ModuleLock` + `UpgradeModal` — already handle the "click locked → upgrade popup" flow
+- `tenant_subscriptions` + `saas_plans` — tier definitions live here
+- Click/Payme/Stripe — already integrated in `/pricing`
+
+No new payment integration needed — the upgrade button routes to existing `/pricing?module=...`.
+
+### New database tables
+
+1. **`premium_perks`** — admin-managed catalog of premium offerings
+   - `id`, `module_id` (clinic/dental/...), `tier_required` (starter/pro/enterprise), `category` (discount/bonus/cashback/promo/ai/vip), `title`, `description`, `icon`, `value_text` (e.g. "50%"), `is_active`, `display_order`
+2. **`promo_codes`** — promo code redemption
+   - `id`, `code` (unique), `module_id`, `tier_required`, `discount_pct`, `valid_until`, `max_uses`, `used_count`, `is_active`
+3. **`promo_redemptions`** — log
+   - `id`, `user_id`, `promo_code_id`, `redeemed_at`
+
+RLS: public read on `is_active` perks/codes; admin-only writes; users can read their own redemptions.
+
+### New components
+
+```
+src/components/premium/
+  PremiumPerksPanel.tsx      # Main container — tabs: Chegirmalar | Bonuslar | Cashback | Promo
+  PerkCard.tsx               # Single perk card with lock overlay + glow
+  PromoCodeRedeem.tsx        # Input field to redeem promo codes
+  PremiumBenefitsPreview.tsx # "What you get" preview block
+  UpgradeNudge.tsx           # AI-style recommendation banner
+src/hooks/
+  usePremiumPerks.ts         # Fetch perks + check unlock status via useSaasPlan
+src/components/admin/
+  AdminPremiumPerks.tsx      # CRUD for perks + promo codes (new admin tab)
 ```
 
-### 1. Database (migration)
+### Integration points
 
-Yangi jadvallar:
-- **`geo_notifications`** — yuborilgan notification log (user_id, promo_id, clinic_id, lat/lng, channel, opened, converted, sent_at). Cooldown uchun (24h per promo per user).
-- **`user_location_consent`** — location ruxsati holati va oxirgi koordinata (user_id, granted, last_lat, last_lng, last_seen_at, background_enabled).
-- **`geofence_zones`** — admin/klinika tomonidan qo'shimcha zonalar (clinic_id, center_lat, center_lng, radius_m, active_hours, promo_id).
-- **`promotions` ga qo'shimcha**: `radius_m` (default 300), `geo_trigger_enabled`, `creative_template` (kreativ matn varianti).
+Add `<PremiumPerksPanel moduleId="..." />` as a new sidebar tab "💎 Premium" in:
+- ClinicDashboard, DentalDashboard, DiagnosticsDashboard, CosmetologyDashboard, PharmacyDashboard, MaternityDashboard, BloodBankDashboard, DoctorDashboard, PatientDashboard
 
-RLS: `geo_notifications` foydalanuvchi o'zinikini ko'radi; klinika o'z `clinic_id` bo'yicha; admin barchasini.
+For PatientDashboard, `moduleId="clinic"` (patients see clinic-tier perks they can claim).
 
-### 2. Edge Functions
+### Lock/unlock logic
 
-- **`geo-promo-check`** (yangi):
-  - Input: `{ latitude, longitude, accuracy }`
-  - Yaqin (≤2 km) klinikalarni Haversine bilan topadi
-  - Faol `promotions` (geo_trigger_enabled, expires_at) ni filterlaydi
-  - Cooldown: oxirgi 24 soatda yuborilmagan
-  - Smart Match `useSmartMatch` analitikasidan foydalanuvchi `preferred_specialties` bo'yicha re-rank
-  - Top 1-3 promo qaytaradi + `geo_notifications` ga insert (channel=web)
-  - Agar `telegram_chat_id` bor bo'lsa va priority≥high → `telegram-notify` chaqiradi
-- **`geo-creative-gen`** (kichik): Lovable AI orqali kreativ notification matn (emoji+CTA) generatsiya — promo creative_template bo'sh bo'lsa.
+```ts
+const { tier, isFeatureAllowed } = useSaasPlan(moduleId);
+const TIER_RANK = { free:0, starter:1, pro:2, enterprise:3 };
+const isUnlocked = TIER_RANK[tier] >= TIER_RANK[perk.tier_required];
+```
 
-### 3. Frontend
+Locked card: blurred value, lock icon overlay with pulse animation, gradient border, click → `UpgradeModal`.
+Unlocked card: full content, "Faollashtirish" button, premium glow.
 
-- **`src/hooks/useGeoTracker.tsx`** — `navigator.geolocation.watchPosition`, accuracy check, throttle (har 30s yoki 50m+), consent flow, `localStorage` ga last position.
-- **`src/components/geo/GeoConsentBanner.tsx`** — birinchi safar location ruxsati so'rash (privacy policy linki bilan).
-- **`src/components/geo/GeoPromoPopup.tsx`** — floating animatsiyali popup (kreativ kartochka, "Yo'l ko'rsatish", "Yozilish", "Keyinroq"). framer-motion bilan slide-in.
-- **`src/components/geo/NearbyMap.tsx`** — Leaflet (OpenStreetMap, kalitsiz) + promo markerlar. Google Maps API kerak emas → key talab qilmaslik uchun Leaflet ishlatamiz; foydalanuvchi xohlasa keyin Google Maps integratsiyasi qo'shiladi.
-- **`src/components/geo/GeoPromoProvider.tsx`** — App.tsx ga qo'shiladi, useGeoTracker ni geo-promo-check edge function bilan bog'laydi va popup chiqaradi.
+### UI/UX details
 
-### 4. Integration points
+- Premium glow: `shadow-[0_0_30px_hsl(var(--primary)/0.4)]` + animated gradient border
+- Lock animation: Framer Motion pulse on lock icon
+- Countdown for limited offers (using `valid_until`)
+- Trial CTA: "7 kun bepul sinab ko'ring" → routes to `/pricing`
 
-- **`App.tsx`** — `<GeoPromoProvider />` global mount.
-- **`Index.tsx`** — Hero ostiga `<NearbyMap />` widget (yaqin klinikalar + promo markerlar).
-- **Patient Dashboard** — "Geo tavsiyalar" bo'limi + history (`geo_notifications`).
-- **Clinic Dashboard (`ClinicPromotions.tsx`)** — promoga `radius_m` slider + "Geo trigger yoqish" toggle + analytics (impressions/clicks/conversions per geo).
-- **AdminDashboard** — `GeofenceManager` tab: barcha zonalar, radius o'rtacha, top performing promos.
+### AI Recommendation
 
-### 5. Notification channels
+Lightweight rule-based (no extra edge function needed):
+- If user is `free` and has used ≥80% of any limit → recommend `starter`
+- If `starter` and views perks 3+ times → recommend `pro`
+- Show as `UpgradeNudge` banner at top of `PremiumPerksPanel`
 
-- **Web push popup** — har 30 daqiqada max 1 popup (UX cooldown).
-- **Telegram** — mavjud `telegram-notify` edge function qayta ishlatiladi (kreativ matn + "Yo'l ko'rsatish" inline button bilan `https://www.google.com/maps/dir/?api=1&destination=lat,lng`).
-- **Browser Notification API** (foyda berilgan bo'lsa) — background tab uchun.
+### Admin panel
 
-### 6. Privacy & Consent
+New tab "💎 Premium" in `AdminDashboard`:
+- CRUD perks (per module, per tier)
+- CRUD promo codes
+- Toggle active/inactive
+- View redemption stats
 
-- Birinchi tracking oldidan modal: "Joylashuvga ruxsat berasizmi? Sizga yaqin chegirmalarni ko'rsatamiz." + `/privacy` link.
-- `user_location_consent.granted=false` → tracking butunlay o'chadi.
-- Coordinatlar faqat 100m precision (round) bilan saqlanadi; xom GPS log qilinmaydi.
+### Out of scope
 
-### 7. Mobile (Capacitor)
+- No new payment provider (Click/Payme/Stripe already wired via `/pricing`)
+- No new subscription logic (uses existing `tenant_subscriptions`)
+- No mobile app changes beyond responsive Tailwind
 
-- Mavjud `@capacitor/geolocation` va `@capacitor/push-notifications` plaginlari ishlatiladi (already in stack). Background location uchun keyingi bosqichda native config (placeholder TODO comment qo'yiladi).
+### Files
 
-### Chiqib ketadigan natijalar
+**New:** 4 components in `src/components/premium/`, `src/hooks/usePremiumPerks.ts`, `src/components/admin/AdminPremiumPerks.tsx`, 1 migration
 
-- Foydalanuvchi klinika yonidan o'tsa → 2-3 sek ichida kreativ promo popup chiqadi.
-- Telegram'ga emoji+CTA xabar.
-- Bosh sahifada interaktiv xarita yaqin klinikalar bilan.
-- Klinika dashboardida: promo geo-radius sozlash + conversion analitika.
-- Admin: barcha geo-trigger statistikasi.
-
-### Texnik tafsilotlar
-
-- Map: **Leaflet + react-leaflet** (kalitsiz, OSM tile) — Google Maps API kalitini talab qilmaydi. Agar foydalanuvchi keyin Google Maps istasa, oson almashtiriladi.
-- Distance: Haversine SQL function `nearby_clinics(lat, lng, radius_m)` — performance uchun.
-- Throttle: client-side 30s, server-side cooldown 30 daqiqa per user, 24 soat per (user, promo).
-- AI: `google/gemini-3-flash-preview` orqali kreativ matn (low cost).
-- RLS bilan to'liq ximoyalangan; faqat o'z `geo_notifications`'ini ko'rish.
-
-Tasdiqlasangiz boshlayman.
+**Edited:** 9 dashboard files (add Premium sidebar item + tab), `AdminDashboard.tsx` (add admin tab)

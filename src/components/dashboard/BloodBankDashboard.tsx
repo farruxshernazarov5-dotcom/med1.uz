@@ -19,6 +19,7 @@ import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription"
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 interface BloodBank {
   id: string; name: string; address: string; phone: string; email: string;
@@ -129,6 +130,7 @@ const BloodBankDashboard = () => {
     { id: "donations", label: "Donatsiyalar", icon: Droplets, badge: pendingCount },
     { id: "stats", label: "Statistika", icon: BarChart3 },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "profile", label: "Profil", icon: Settings },
   ];
@@ -276,6 +278,7 @@ const BloodBankDashboard = () => {
           </CardContent></Card>
         </TabsContent>
       {tab === "attendance" && <OrgAttendance orgType="bloodbank" orgName={bank.name} />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
     </DashboardShell>
   );
 };

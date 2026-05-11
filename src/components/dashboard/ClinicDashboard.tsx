@@ -48,6 +48,7 @@ import HMSOverview from "@/components/hms/HMSOverview";
 import HMSAuditLog from "@/components/hms/HMSAuditLog";
 import HMSPaymentSettings from "@/components/hms/HMSPaymentSettings";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
@@ -127,6 +128,7 @@ const ClinicDashboard = () => {
     { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingAppts.length },
     { id: "analytics", label: "Analitika", icon: BarChart3 },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     // HMS
     { id: "hms-patients", label: "Bemorlar", icon: Users, group: "HMS" },
     { id: "hms-lab", label: "Laboratoriya", icon: FlaskConical, group: "HMS" },
@@ -241,6 +243,7 @@ const ClinicDashboard = () => {
       {tab === "hms-audit" && <HMSAuditLog clinicId={clinic.id} />}
       {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
       {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
+          {tab === "premium" && <PremiumPerksPanel moduleId="clinic" />}
     </DashboardShell>
   );
 };
