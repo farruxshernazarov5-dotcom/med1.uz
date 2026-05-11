@@ -116,6 +116,7 @@ const PharmacyDashboard = () => {
     { id: "suppliers", label: "Yetkazib beruvchilar", icon: Truck, group: "Boshqaruv" },
     { id: "staff", label: "Xodimlar", icon: UserCog, group: "Boshqaruv" },
     { id: "finance", label: "Moliya", icon: Wallet, group: "Boshqaruv" },
+    { id: "premium", label: "💎 Premium", icon: Crown, group: "Tizim" },
     { id: "settings", label: "Sozlamalar", icon: Settings, group: "Tizim" },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
   ];

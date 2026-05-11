@@ -118,6 +118,7 @@ const DentalDashboard = () => {
     { id: "ai", label: "AI xizmatlari", icon: Brain },
     { id: "analytics", label: "Analitika", icon: PieChart },
     { id: "saas", label: "SaaS obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "audit", label: "Audit Log", icon: ScrollText },
     { id: "services", label: "Xizmatlar", icon: Stethoscope },
     { id: "reports", label: "Hisobotlar", icon: BarChart3 },
