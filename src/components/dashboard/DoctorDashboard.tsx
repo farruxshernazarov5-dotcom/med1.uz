@@ -183,6 +183,7 @@ const DoctorDashboard = () => {
     { id: "reviews", label: "Sharhlar", icon: Star },
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
   ];

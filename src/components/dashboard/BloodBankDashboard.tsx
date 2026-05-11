@@ -130,6 +130,7 @@ const BloodBankDashboard = () => {
     { id: "donations", label: "Donatsiyalar", icon: Droplets, badge: pendingCount },
     { id: "stats", label: "Statistika", icon: BarChart3 },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "profile", label: "Profil", icon: Settings },
   ];

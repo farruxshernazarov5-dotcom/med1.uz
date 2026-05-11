@@ -137,6 +137,7 @@ const DiagnosticsDashboard = () => {
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
     { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
   ];
 
   return (

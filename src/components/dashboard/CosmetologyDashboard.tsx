@@ -79,6 +79,7 @@ const CosmetologyDashboard = () => {
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
     { id: "subscription", label: "Obuna", icon: Crown },
+    { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "settings", label: "Sozlamalar", icon: Settings },
   ];
 
