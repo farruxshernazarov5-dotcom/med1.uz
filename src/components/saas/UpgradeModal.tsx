@@ -99,10 +99,18 @@ export const UpgradeModal = ({
     return () => { cancelled = true; };
   }, [open, moduleId, cur, req]);
 
+  // Reset promo when modal closes
+  useEffect(() => {
+    if (!open) {
+      setPromoInput("");
+      setPromoApplied(null);
+      setPromoError(null);
+    }
+  }, [open]);
+
   const curPlan = plans.find((p) => p.tier === cur);
   const reqPlan = plans.find((p) => p.tier === req);
 
-  // Build union of all features + limits (so user sees gaps)
   const allFeatures = Array.from(new Set([
     ...(curPlan?.features || []),
     ...(reqPlan?.features || []),
@@ -115,6 +123,47 @@ export const UpgradeModal = ({
 
   const hasFeature = (plan: PlanRow | undefined, f: string) =>
     !!plan?.features.includes(f);
+
+  // Pricing math
+  const basePrice = reqPlan?.price_uzs ?? 0;
+  const discountPct = promoApplied?.discount_pct ?? 0;
+  const discountAmount = Math.round((basePrice * discountPct) / 100);
+  const finalPrice = Math.max(0, basePrice - discountAmount);
+
+  const validatePromo = async () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    if (code.length > 32) { setPromoError("Kod juda uzun"); return; }
+    setPromoLoading(true);
+    setPromoError(null);
+    try {
+      const { data: pc, error } = await supabase
+        .from("promo_codes" as any)
+        .select("*")
+        .eq("code", code)
+        .eq("is_active", true)
+        .maybeSingle() as any;
+      if (error) throw error;
+      if (!pc) { setPromoError("Promo-kod topilmadi"); return; }
+      if (pc.module_id && pc.module_id !== moduleId) { setPromoError("Bu kod boshqa modul uchun"); return; }
+      if (pc.tier_required && pc.tier_required !== req) {
+        setPromoError(`Bu kod faqat ${String(pc.tier_required).toUpperCase()} tarif uchun`); return;
+      }
+      if (pc.valid_until && new Date(pc.valid_until) < new Date()) { setPromoError("Kod muddati tugagan"); return; }
+      if (pc.max_uses && pc.used_count >= pc.max_uses) { setPromoError("Kod limiti tugagan"); return; }
+      setPromoApplied({ code: pc.code, discount_pct: pc.discount_pct ?? 0, description: pc.description });
+    } catch (e: any) {
+      setPromoError(e?.message || "Tekshirishda xato");
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const removePromo = () => {
+    setPromoApplied(null);
+    setPromoInput("");
+    setPromoError(null);
+  };
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
