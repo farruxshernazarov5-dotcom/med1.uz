@@ -63,6 +63,12 @@ export const UpgradeModal = ({
   const [plans, setPlans] = useState<PlanRow[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Promo code state
+  const [promoInput, setPromoInput] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoApplied, setPromoApplied] = useState<{ code: string; discount_pct: number; description?: string | null } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
   // Resolve target tier: prop, or one step above currentTier
   const cur = (currentTier || "free").toLowerCase();
   const req = (requiredTier ||
