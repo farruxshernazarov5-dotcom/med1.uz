@@ -175,6 +175,7 @@ export const PerkCard = ({ perk, unlocked, moduleId, currentTier }: Props) => {
         moduleId={moduleId}
         feature={perk.title}
         currentTier={currentTier}
+        requiredTier={perk.tier_required}
       />
     </>
   );
