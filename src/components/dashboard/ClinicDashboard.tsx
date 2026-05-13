@@ -50,6 +50,7 @@ import HMSPaymentSettings from "@/components/hms/HMSPaymentSettings";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import UpgradeModal from "@/components/saas/UpgradeModal";
+import ServerSaaSGate from "@/components/saas/ServerSaaSGate";
 import { useSaasPlan } from "@/hooks/useSaasPlan";
 
 const ClinicDashboard = () => {
@@ -249,9 +250,17 @@ const ClinicDashboard = () => {
       {tab === "subscription" && <ClinicSubscription />}
 
       {tab === "hms-patients" && <HMSPatients clinicId={clinic.id} />}
-      {tab === "hms-lab" && <HMSLaboratory clinicId={clinic.id} />}
+      {tab === "hms-lab" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-lab" requiredTier="pro" label="Laboratoriya">
+          <HMSLaboratory clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-staff" && <HMSStaffManagement clinicId={clinic.id} />}
-      {tab === "hms-payroll" && <HMSPayroll clinicId={clinic.id} />}
+      {tab === "hms-payroll" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-payroll" requiredTier="pro" label="Ish haqi (Payroll)">
+          <HMSPayroll clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-pharmacy" && <HMSPharmacy clinicId={clinic.id} />}
       {tab === "hms-beds" && <HMSBeds clinicId={clinic.id} />}
       {tab === "hms-departments" && <HMSDepartments clinicId={clinic.id} />}
@@ -259,7 +268,11 @@ const ClinicDashboard = () => {
       {tab === "hms-files" && <HMSFilesAndDonors clinicId={clinic.id} />}
       {tab === "hms-surgery" && <HMSSurgery clinicId={clinic.id} />}
       {tab === "hms-insurance" && <HMSInsurance clinicId={clinic.id} />}
-      {tab === "hms-emr" && <HMSEMR clinicId={clinic.id} />}
+      {tab === "hms-emr" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-emr" requiredTier="pro" label="EMR (Tibbiy karta)">
+          <HMSEMR clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-equipment" && <HMSEquipment clinicId={clinic.id} />}
       {tab === "hms-queue" && <HMSQueue clinicId={clinic.id} />}
       {tab === "hms-emergency" && <HMSEmergency clinicId={clinic.id} />}
@@ -271,7 +284,11 @@ const ClinicDashboard = () => {
       {tab === "hms-schedule" && <HMSSchedule clinicId={clinic.id} />}
       {tab === "hms-teleconsultation" && <HMSTeleconsultation clinicId={clinic.id} />}
       {tab === "hms-prescription" && <HMSPrescription clinicId={clinic.id} />}
-      {tab === "hms-finance" && <HMSFinance clinicId={clinic.id} />}
+      {tab === "hms-finance" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-finance" requiredTier="pro" label="Moliya">
+          <HMSFinance clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-inventory" && <HMSInventory clinicId={clinic.id} />}
       {tab === "hms-audit" && <HMSAuditLog clinicId={clinic.id} />}
       {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
