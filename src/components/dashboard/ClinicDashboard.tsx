@@ -124,44 +124,72 @@ const ClinicDashboard = () => {
   const pendingAppts = appointments.filter((a) => a.status === "pending");
   const totalRevenue = appointments.filter((a) => a.status === "completed").reduce((s, a) => s + Number(a.total_price || 0), 0);
 
+  // Tier-based gating: free users see lock on premium modules
+  const tier = plan.tier || "free";
+  const isFreeOrStarter = tier === "free" || tier === "starter";
+  const isFree = tier === "free";
+
+  // Premium module IDs grouped by required tier
+  const PRO_MODULES = new Set([
+    "analytics", "hms-lab", "hms-emr", "hms-pharmacy", "hms-inventory",
+    "hms-payroll", "hms-finance", "hms-reports",
+  ]);
+  const ENTERPRISE_MODULES = new Set([
+    "hms-surgery", "hms-insurance", "hms-audit", "hms-emergency", "hms-infection", "hms-qa",
+  ]);
+
+  const lockOf = (id: string): { locked: boolean; requiredTier?: string } => {
+    if (PRO_MODULES.has(id) && isFreeOrStarter) return { locked: true, requiredTier: "pro" };
+    if (ENTERPRISE_MODULES.has(id) && tier !== "enterprise") return { locked: true, requiredTier: "enterprise" };
+    return { locked: false };
+  };
+
+  const mark = (item: SidebarItem): SidebarItem => ({ ...item, ...lockOf(item.id) });
+
   const sidebarItems: SidebarItem[] = [
-    { id: "overview", label: "Umumiy", icon: Building2 },
-    { id: "profile", label: "Profil", icon: Settings },
-    { id: "services", label: "Xizmatlar", icon: DollarSign },
-    { id: "doctors", label: "Shifokorlar", icon: Stethoscope },
-    { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingAppts.length },
-    { id: "analytics", label: "Analitika", icon: BarChart3 },
-    { id: "subscription", label: "Obuna", icon: Crown },
-    { id: "premium", label: "💎 Premium", icon: Crown },
-    // HMS
-    { id: "hms-patients", label: "Bemorlar", icon: Users, group: "HMS" },
-    { id: "hms-lab", label: "Laboratoriya", icon: FlaskConical, group: "HMS" },
-    { id: "hms-staff", label: "Xodimlar", icon: Users, group: "HMS" },
-    { id: "hms-payroll", label: "Ish haqi", icon: Wallet, group: "HMS" },
-    { id: "hms-pharmacy", label: "Dorixona", icon: Pill, group: "HMS" },
+    // ====== BEPUL — asosiy modullar (har doim ochiq) ======
+    { id: "overview", label: "Umumiy", icon: Building2, group: "BEPUL" },
+    { id: "profile", label: "Profil", icon: Settings, group: "BEPUL" },
+    { id: "doctors", label: "Shifokorlar", icon: Stethoscope, group: "BEPUL" },
+    { id: "hms-staff", label: "Xodimlar", icon: Users, group: "BEPUL" },
+    { id: "appointments", label: "Qabullar", icon: Calendar, badge: pendingAppts.length, group: "BEPUL" },
+    { id: "hms-patients", label: "Bemorlar", icon: Users, group: "BEPUL" },
+    { id: "hms-queue", label: "Navbat", icon: ListOrdered, group: "BEPUL" },
+    { id: "hms-schedule", label: "Jadval", icon: CalendarDays, group: "BEPUL" },
+    { id: "services", label: "Xizmatlar", icon: DollarSign, group: "BEPUL" },
+
+    // ====== PREMIUM — pullik modullar ======
+    mark({ id: "analytics", label: "Analitika & Hisobotlar", icon: BarChart3, group: "PREMIUM" }),
+    mark({ id: "hms-emr", label: "EMR (Tibbiy karta)", icon: FileText, group: "PREMIUM" }),
+    mark({ id: "hms-lab", label: "Laboratoriya", icon: FlaskConical, group: "PREMIUM" }),
+    mark({ id: "hms-pharmacy", label: "Dorixona", icon: Pill, group: "PREMIUM" }),
+    mark({ id: "hms-inventory", label: "Ombor", icon: FlaskConical, group: "PREMIUM" }),
+    mark({ id: "hms-payroll", label: "Ish haqi (Payroll)", icon: Wallet, group: "PREMIUM" }),
+    mark({ id: "hms-finance", label: "Moliya", icon: Receipt, group: "PREMIUM" }),
+    mark({ id: "hms-reports", label: "Murakkab hisobotlar", icon: PieChart, group: "PREMIUM" }),
+    mark({ id: "hms-surgery", label: "Operatsiya", icon: Scissors, group: "PREMIUM" }),
+    mark({ id: "hms-insurance", label: "Sug'urta", icon: Receipt, group: "PREMIUM" }),
+    mark({ id: "hms-emergency", label: "Tez yordam", icon: Siren, group: "PREMIUM" }),
+    mark({ id: "hms-infection", label: "Infektsiya nazorati", icon: ShieldAlert, group: "PREMIUM" }),
+    mark({ id: "hms-qa", label: "Sifat nazorati", icon: ShieldCheck, group: "PREMIUM" }),
+    mark({ id: "hms-audit", label: "Audit Log", icon: ShieldCheck, group: "PREMIUM" }),
+
+    // ====== QO'SHIMCHA HMS ======
     { id: "hms-beds", label: "To'shaklar", icon: BedDouble, group: "HMS" },
     { id: "hms-departments", label: "Bo'limlar", icon: Building2, group: "HMS" },
     { id: "hms-communication", label: "Aloqa", icon: Bell, group: "HMS" },
     { id: "hms-files", label: "Fayllar", icon: FileText, group: "HMS" },
-    { id: "hms-surgery", label: "Operatsiya", icon: Scissors, group: "HMS" },
-    { id: "hms-insurance", label: "Sug'urta", icon: Receipt, group: "HMS" },
-    { id: "hms-emr", label: "EMR", icon: FileText, group: "HMS" },
     { id: "hms-equipment", label: "Jihozlar", icon: Wrench, group: "HMS" },
-    { id: "hms-queue", label: "Navbat", icon: ListOrdered, group: "HMS" },
-    { id: "hms-emergency", label: "Tez yordam", icon: Siren, group: "HMS" },
-    { id: "hms-qa", label: "Sifat", icon: ShieldCheck, group: "HMS" },
-    { id: "hms-reports", label: "Hisobotlar", icon: PieChart, group: "HMS" },
     { id: "hms-appointment-portal", label: "Onlayn qabul", icon: Globe, group: "HMS" },
     { id: "hms-patient-portal", label: "Bemor portal", icon: User, group: "HMS" },
-    { id: "hms-infection", label: "Infektsiya", icon: ShieldAlert, group: "HMS" },
-    { id: "hms-schedule", label: "Jadval", icon: CalendarDays, group: "HMS" },
     { id: "hms-teleconsultation", label: "Telemeditsina", icon: Monitor, group: "HMS" },
     { id: "hms-prescription", label: "Retseptlar", icon: Pill, group: "HMS" },
-    { id: "hms-finance", label: "Moliya", icon: Receipt, group: "HMS" },
-    { id: "hms-inventory", label: "Ombor", icon: FlaskConical, group: "HMS" },
-    { id: "hms-audit", label: "Audit Log", icon: ShieldCheck, group: "HMS" },
     { id: "hms-payment-settings", label: "To'lov (SaaS)", icon: CreditCard, group: "HMS" },
     { id: "hms-attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "HMS" },
+
+    // ====== OBUNA ======
+    { id: "subscription", label: "Obuna", icon: Crown, group: "TARIF" },
+    { id: "premium", label: "💎 Premium imkoniyatlar", icon: Crown, group: "TARIF" },
   ];
 
   return (
@@ -173,6 +201,7 @@ const ClinicDashboard = () => {
       sidebarItems={sidebarItems}
       activeTab={tab}
       onTabChange={setTab}
+      onLockedClick={(item) => setLockedItem({ id: item.id, label: item.label, requiredTier: item.requiredTier })}
     >
       {tab === "overview" && (
         <HMSOverview clinicId={clinic.id} onNavigate={setTab} />
