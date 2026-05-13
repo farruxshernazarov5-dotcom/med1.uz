@@ -54,12 +54,14 @@ import { useSaasPlan } from "@/hooks/useSaasPlan";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
+  const plan = useSaasPlan("clinic");
   const [clinic, setClinic] = useState<any>(null);
   const [services, setServices] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("overview");
+  const [lockedItem, setLockedItem] = useState<{ id: string; label: string; requiredTier?: string } | null>(null);
 
   const fetchData = async () => {
     if (!user) return;
