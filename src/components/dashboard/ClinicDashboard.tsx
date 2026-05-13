@@ -49,6 +49,8 @@ import HMSAuditLog from "@/components/hms/HMSAuditLog";
 import HMSPaymentSettings from "@/components/hms/HMSPaymentSettings";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
+import UpgradeModal from "@/components/saas/UpgradeModal";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
