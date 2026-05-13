@@ -215,15 +215,29 @@ const SidebarButton = ({
       "flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all group relative",
       active
         ? "bg-[hsl(214,84%,56%)] text-white shadow-lg shadow-[hsl(214,84%,56%)]/20"
-        : "text-white/60 hover:text-white hover:bg-white/5",
+        : item.locked
+          ? "text-white/40 hover:text-white hover:bg-amber-400/10 opacity-80"
+          : "text-white/60 hover:text-white hover:bg-white/5",
       collapsed && "justify-center px-2"
     )}
+    title={item.locked ? `Premium • ${item.requiredTier?.toUpperCase() || "PRO"} tarif kerak` : undefined}
   >
-    <item.icon className="w-4 h-4 shrink-0" />
+    <item.icon className={cn("w-4 h-4 shrink-0", item.locked && "opacity-70")} />
     {!collapsed && (
-      <span className="truncate">{item.label}</span>
+      <span className={cn("truncate", item.locked && "italic")}>{item.label}</span>
     )}
-    {!collapsed && item.badge !== undefined && item.badge > 0 && (
+    {!collapsed && item.locked && (
+      <span className="ml-auto flex items-center gap-1">
+        <span className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-400/30 to-orange-400/30 text-amber-200 border border-amber-300/30">
+          Pro
+        </span>
+        <Lock className="w-3 h-3 text-amber-300/80" />
+      </span>
+    )}
+    {collapsed && item.locked && (
+      <Lock className="w-2.5 h-2.5 text-amber-300/80 absolute top-1 right-1" />
+    )}
+    {!collapsed && !item.locked && item.badge !== undefined && item.badge > 0 && (
       <span className={cn(
         "flex items-center justify-center text-[9px] font-bold rounded-full bg-red-500 text-white",
         "ml-auto w-5 h-5"
