@@ -42,6 +42,7 @@ const DashboardShell = ({
   onTabChange,
   children,
   headerActions,
+  onLockedClick,
 }: DashboardShellProps) => {
   const { signOut } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
