@@ -90,13 +90,20 @@ const DashboardShell = ({
             item={item}
             active={activeTab === item.id}
             collapsed={collapsed}
-            onClick={() => { onTabChange(item.id); setMobileOpen(false); }}
+            onClick={() => {
+              if (item.locked) { onLockedClick?.(item); return; }
+              onTabChange(item.id); setMobileOpen(false);
+            }}
           />
         ))}
         {groups.map((group) => (
           <div key={group.label} className="mt-4">
             {!collapsed && (
-              <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-3 mb-1.5">
+              <p className={cn(
+                "text-[10px] uppercase tracking-wider font-semibold px-3 mb-1.5 flex items-center gap-1.5",
+                group.label === "PREMIUM" ? "text-amber-300/80" : "text-white/30"
+              )}>
+                {group.label === "PREMIUM" && <Sparkles className="w-3 h-3" />}
                 {group.label}
               </p>
             )}
@@ -106,7 +113,10 @@ const DashboardShell = ({
                 item={item}
                 active={activeTab === item.id}
                 collapsed={collapsed}
-                onClick={() => { onTabChange(item.id); setMobileOpen(false); }}
+                onClick={() => {
+                  if (item.locked) { onLockedClick?.(item); return; }
+                  onTabChange(item.id); setMobileOpen(false);
+                }}
               />
             ))}
           </div>
