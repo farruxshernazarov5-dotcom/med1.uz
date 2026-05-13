@@ -250,9 +250,17 @@ const ClinicDashboard = () => {
       {tab === "subscription" && <ClinicSubscription />}
 
       {tab === "hms-patients" && <HMSPatients clinicId={clinic.id} />}
-      {tab === "hms-lab" && <HMSLaboratory clinicId={clinic.id} />}
+      {tab === "hms-lab" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-lab" requiredTier="pro" label="Laboratoriya">
+          <HMSLaboratory clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-staff" && <HMSStaffManagement clinicId={clinic.id} />}
-      {tab === "hms-payroll" && <HMSPayroll clinicId={clinic.id} />}
+      {tab === "hms-payroll" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-payroll" requiredTier="pro" label="Ish haqi (Payroll)">
+          <HMSPayroll clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-pharmacy" && <HMSPharmacy clinicId={clinic.id} />}
       {tab === "hms-beds" && <HMSBeds clinicId={clinic.id} />}
       {tab === "hms-departments" && <HMSDepartments clinicId={clinic.id} />}
