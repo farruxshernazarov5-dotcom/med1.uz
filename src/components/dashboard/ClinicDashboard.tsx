@@ -277,6 +277,16 @@ const ClinicDashboard = () => {
       {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
       {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="clinic" />}
+
+      <UpgradeModal
+        open={!!lockedItem}
+        onClose={() => setLockedItem(null)}
+        reason="feature_blocked"
+        moduleId="clinic"
+        feature={lockedItem?.id}
+        currentTier={tier}
+        requiredTier={lockedItem?.requiredTier}
+      />
     </DashboardShell>
   );
 };
