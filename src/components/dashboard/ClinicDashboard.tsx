@@ -268,7 +268,11 @@ const ClinicDashboard = () => {
       {tab === "hms-files" && <HMSFilesAndDonors clinicId={clinic.id} />}
       {tab === "hms-surgery" && <HMSSurgery clinicId={clinic.id} />}
       {tab === "hms-insurance" && <HMSInsurance clinicId={clinic.id} />}
-      {tab === "hms-emr" && <HMSEMR clinicId={clinic.id} />}
+      {tab === "hms-emr" && (
+        <ServerSaaSGate moduleId="clinic" feature="hms-emr" requiredTier="pro" label="EMR (Tibbiy karta)">
+          <HMSEMR clinicId={clinic.id} />
+        </ServerSaaSGate>
+      )}
       {tab === "hms-equipment" && <HMSEquipment clinicId={clinic.id} />}
       {tab === "hms-queue" && <HMSQueue clinicId={clinic.id} />}
       {tab === "hms-emergency" && <HMSEmergency clinicId={clinic.id} />}
