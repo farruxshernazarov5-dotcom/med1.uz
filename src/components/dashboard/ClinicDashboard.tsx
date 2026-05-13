@@ -50,6 +50,7 @@ import HMSPaymentSettings from "@/components/hms/HMSPaymentSettings";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import UpgradeModal from "@/components/saas/UpgradeModal";
+import ServerSaaSGate from "@/components/saas/ServerSaaSGate";
 import { useSaasPlan } from "@/hooks/useSaasPlan";
 
 const ClinicDashboard = () => {
