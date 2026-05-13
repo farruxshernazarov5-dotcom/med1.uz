@@ -28,6 +28,7 @@ interface DashboardShellProps {
   onTabChange: (tab: string) => void;
   children: ReactNode;
   headerActions?: ReactNode;
+  onLockedClick?: (item: SidebarItem) => void;
 }
 
 const DashboardShell = ({
