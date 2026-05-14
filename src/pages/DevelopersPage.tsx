@@ -87,6 +87,27 @@ export default function DevelopersPage() {
   });
 
   useEffect(() => {
+    document.title = "Developers — MED-ALL AI Healthcare API";
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "description");
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute(
+      "content",
+      "MED-ALL AI Enterprise Healthcare API. Klinikalar, shifokorlar, diagnostika, AI xizmatlarini integratsiya qiling."
+    );
+    let canon = document.querySelector('link[rel="canonical"]');
+    if (!canon) {
+      canon = document.createElement("link");
+      canon.setAttribute("rel", "canonical");
+      document.head.appendChild(canon);
+    }
+    canon.setAttribute("href", "https://med1.uz/developers");
+  }, []);
+
+  useEffect(() => {
     if (user?.email && !form.contact_email) {
       setForm((f) => ({ ...f, contact_email: user.email! }));
     }
