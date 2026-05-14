@@ -63,6 +63,9 @@ const Index = () => {
       {/* AI Services Section */}
       <HomeAIServicesSection />
 
+      {/* Connected ecosystem visualization */}
+      <HomeEcosystemSection />
+
       {/* Sponsors Leaderboard */}
       <SponsorsLeaderboard />
 
