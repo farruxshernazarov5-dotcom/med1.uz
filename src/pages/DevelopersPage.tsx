@@ -134,15 +134,6 @@ export default function DevelopersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Helmet>
-        <title>Developers — MED-ALL AI Healthcare API</title>
-        <meta
-          name="description"
-          content="MED-ALL AI Enterprise Healthcare API. Klinikalar, shifokorlar, diagnostika, AI xizmatlarini integratsiya qiling."
-        />
-        <link rel="canonical" href="https://med1.uz/developers" />
-      </Helmet>
-
       {/* Hero */}
       <section className="relative overflow-hidden border-b">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
