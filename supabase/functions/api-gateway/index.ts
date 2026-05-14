@@ -192,45 +192,152 @@ serve(async (req) => {
 
 // ---- Dispatcher: maps validated routes to handlers ----
 async function dispatch(supabase: any, path: string, req: Request, requestId: string): Promise<Response> {
+  const url = new URL(req.url);
+  const limit = Math.min(parseInt(url.searchParams.get("limit") || "50", 10) || 50, 100);
+  const offset = Math.max(parseInt(url.searchParams.get("offset") || "0", 10) || 0, 0);
+  const q = (url.searchParams.get("q") || "").trim();
+  const city = (url.searchParams.get("city") || "").trim();
+
   if (path === "/v1/ping") {
     return json(200, { pong: true, timestamp: new Date().toISOString() }, requestId);
   }
+
   if (path === "/v1/clinics" && req.method === "GET") {
-    const { data, error } = await supabase
-      .from("clinics")
-      .select("id, name, address, phone, type, working_hours, is_active")
+    let qry = supabase
+      .from("registered_clinics")
+      .select(
+        "id, name, category, address, service_city, phone, email, website, working_hours, specialties, latitude, longitude, logo_url",
+        { count: "exact" },
+      )
       .eq("is_active", true)
-      .limit(100);
+      .order("name", { ascending: true })
+      .range(offset, offset + limit - 1);
+    if (q) qry = qry.ilike("name", `%${q}%`);
+    if (city) qry = qry.ilike("service_city", `%${city}%`);
+    const { data, error, count } = await qry;
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
-    return json(200, { items: data ?? [], count: data?.length ?? 0 }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
+
   if (path === "/v1/doctors" && req.method === "GET") {
-    const { data, error } = await supabase
+    let qry = supabase
       .from("doctors")
-      .select("id, full_name, specialization, experience_years, rating, is_active")
+      .select(
+        "id, full_name, specialty, experience_years, consultation_price, avg_rating, review_count, languages, online_consultation, city, region, photo_url",
+        { count: "exact" },
+      )
       .eq("is_active", true)
-      .limit(100);
+      .order("avg_rating", { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (q) qry = qry.ilike("full_name", `%${q}%`);
+    if (city) qry = qry.ilike("city", `%${city}%`);
+    const specialty = url.searchParams.get("specialty");
+    if (specialty) qry = qry.ilike("specialty", `%${specialty}%`);
+    const { data, error, count } = await qry;
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
-    return json(200, { items: data ?? [], count: data?.length ?? 0 }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
+
   if (path === "/v1/diagnostics" && req.method === "GET") {
-    const { data, error } = await supabase
-      .from("diagnostics_centers")
-      .select("id, name, address, phone, services, is_active")
+    let qry = supabase
+      .from("registered_diagnostics")
+      .select(
+        "id, name, address, city, region, phone, email, website, working_hours, specialties, equipment_info, latitude, longitude, logo_url",
+        { count: "exact" },
+      )
       .eq("is_active", true)
-      .limit(100);
+      .order("name", { ascending: true })
+      .range(offset, offset + limit - 1);
+    if (q) qry = qry.ilike("name", `%${q}%`);
+    if (city) qry = qry.ilike("city", `%${city}%`);
+    const { data, error, count } = await qry;
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
-    return json(200, { items: data ?? [], count: data?.length ?? 0 }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
+
   if (path === "/v1/pharmacies" && req.method === "GET") {
-    const { data, error } = await supabase
-      .from("pharmacies")
-      .select("id, name, address, phone, working_hours, is_active")
+    let qry = supabase
+      .from("registered_pharmacies")
+      .select(
+        "id, name, pharmacy_type, address, city, region, phone, email, website, working_hours, is_24h, has_delivery, avg_rating, review_count, latitude, longitude, logo_url",
+        { count: "exact" },
+      )
       .eq("is_active", true)
-      .limit(100);
+      .order("avg_rating", { ascending: false })
+      .range(offset, offset + limit - 1);
+    if (q) qry = qry.ilike("name", `%${q}%`);
+    if (city) qry = qry.ilike("city", `%${city}%`);
+    if (url.searchParams.get("is_24h") === "true") qry = qry.eq("is_24h", true);
+    if (url.searchParams.get("has_delivery") === "true") qry = qry.eq("has_delivery", true);
+    const { data, error, count } = await qry;
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
-    return json(200, { items: data ?? [], count: data?.length ?? 0 }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
-  // Phase-5 endpoints (booking, ai/chat) will land here in the next iteration.
-  return json(501, { code: "not_implemented", message: `${path} handler pending Phase 5` }, requestId);
+
+  if (path === "/v1/ai/chat" && req.method === "POST") {
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      return json(500, { code: "ai_unconfigured", message: "AI gateway is not configured" }, requestId);
+    }
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return json(400, { code: "invalid_json", message: "Body must be JSON" }, requestId);
+    }
+    const messages = Array.isArray(body?.messages) ? body.messages : null;
+    if (!messages || messages.length === 0) {
+      return json(400, { code: "invalid_messages", message: "`messages` array required" }, requestId);
+    }
+    if (messages.length > 30) {
+      return json(400, { code: "too_many_messages", message: "Max 30 messages per request" }, requestId);
+    }
+    const allowedModels = new Set([
+      "google/gemini-3-flash-preview",
+      "google/gemini-2.5-flash",
+      "google/gemini-2.5-flash-lite",
+      "google/gemini-2.5-pro",
+      "openai/gpt-5-mini",
+      "openai/gpt-5-nano",
+    ]);
+    const model = typeof body?.model === "string" && allowedModels.has(body.model)
+      ? body.model
+      : "google/gemini-3-flash-preview";
+
+    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: typeof body?.temperature === "number" ? body.temperature : 0.7,
+      }),
+    });
+
+    if (aiRes.status === 429) {
+      return json(429, { code: "ai_rate_limited", message: "AI rate limit reached, retry later" }, requestId);
+    }
+    if (aiRes.status === 402) {
+      return json(402, { code: "ai_credits_exhausted", message: "AI credits exhausted" }, requestId);
+    }
+    if (!aiRes.ok) {
+      const txt = await aiRes.text();
+      return json(502, { code: "ai_upstream_error", message: txt.slice(0, 300) }, requestId);
+    }
+    const ai = await aiRes.json();
+    return json(
+      200,
+      {
+        model,
+        message: ai?.choices?.[0]?.message ?? null,
+        usage: ai?.usage ?? null,
+      },
+      requestId,
+    );
+  }
+
+  return json(501, { code: "not_implemented", message: `${path} handler pending` }, requestId);
 }
