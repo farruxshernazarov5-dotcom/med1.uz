@@ -15,6 +15,7 @@ import AdminDentalModule from "@/components/admin/AdminDentalModule";
 import AdminKnowledgeModule from "@/components/admin/AdminKnowledgeModule";
 import AdminGeoTemplates from "@/components/admin/AdminGeoTemplates";
 import AdminPremiumPerks from "@/components/admin/AdminPremiumPerks";
+import AdminApiPartners from "@/components/admin/AdminApiPartners";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
