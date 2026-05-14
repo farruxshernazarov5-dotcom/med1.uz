@@ -17,6 +17,7 @@ import HealthDashboardWidget from "@/components/HealthDashboardWidget";
 import PartnerClinics from "@/components/PartnerClinics";
 import HomeAIServicesSection from "@/components/HomeAIServicesSection";
 import HomeServicesMenu from "@/components/HomeServicesMenu";
+import HomeEcosystemSection from "@/components/HomeEcosystemSection";
 import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
 import { NearbyMap } from "@/components/geo/NearbyMap";
 
@@ -61,6 +62,9 @@ const Index = () => {
 
       {/* AI Services Section */}
       <HomeAIServicesSection />
+
+      {/* Connected ecosystem visualization */}
+      <HomeEcosystemSection />
 
       {/* Sponsors Leaderboard */}
       <SponsorsLeaderboard />

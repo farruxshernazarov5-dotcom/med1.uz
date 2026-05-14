@@ -2,6 +2,7 @@ import { useState, ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { FuturisticBackground } from "@/components/futuristic";
 import {
   LogOut, Menu, X, ChevronLeft, ChevronRight, Lock, Sparkles,
 } from "lucide-react";
@@ -140,7 +141,8 @@ const DashboardShell = ({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[hsl(213,73%,15%)] via-[hsl(213,60%,18%)] to-[hsl(213,73%,15%)] flex">
+    <div className="relative min-h-screen bg-gradient-to-br from-[hsl(213,73%,10%)] via-[hsl(213,60%,14%)] to-[hsl(213,73%,10%)] flex isolate overflow-hidden">
+      <FuturisticBackground variant="dark" particles={10} className="fixed" />
       {/* Desktop Sidebar */}
       <aside
         className={cn(
