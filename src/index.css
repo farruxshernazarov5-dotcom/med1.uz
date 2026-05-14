@@ -431,7 +431,7 @@
 }
 
 /* Text colors → light variants */
-.cinematic-page :where(.text-foreground, [class*="text-medical-navy"], [class*="text-primary-foreground"]) {
+.cinematic-page :where(.text-foreground, .text-medical-navy, .text-primary-foreground) {
   color: hsl(0 0% 96%);
 }
 .cinematic-page :where(.text-muted-foreground) {
@@ -442,7 +442,7 @@
 }
 
 /* Borders → soft white */
-.cinematic-page :where(.border, .border-border, [class*="border-medical"]) {
+.cinematic-page :where(.border, .border-border) {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
