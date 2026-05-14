@@ -403,3 +403,89 @@
   70%  { box-shadow: 0 0 0 10px hsl(145 63% 50% / 0); }
   100% { box-shadow: 0 0 0 0 hsl(145 63% 50% / 0); }
 }
+
+/* ============================================================
+   CINEMATIC PAGE SCOPE
+   Re-tokens common classes inside .cinematic-page so existing
+   light-themed sections (white cards, light text) automatically
+   adopt the futuristic dark look without rewriting each file.
+   Wrap a page region with <div className="cinematic-page"> ...
+   ============================================================ */
+
+.cinematic-page {
+  background: transparent;
+  color: hsl(0 0% 96%);
+}
+
+/* Section / wrapper backgrounds → transparent so animated layer shows through */
+.cinematic-page :where(section, .bg-background, .bg-white, .bg-medical-light, .bg-muted) {
+  background-color: transparent;
+}
+
+/* Card / surface backgrounds → glass-dark equivalent */
+.cinematic-page :where(.bg-card, .bg-popover) {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Text colors → light variants */
+.cinematic-page :where(.text-foreground, .text-medical-navy, .text-primary-foreground) {
+  color: hsl(0 0% 96%);
+}
+.cinematic-page :where(.text-muted-foreground) {
+  color: hsl(0 0% 75% / 0.7);
+}
+.cinematic-page :where(h1, h2, h3, h4, h5, h6) {
+  color: hsl(0 0% 98%);
+}
+
+/* Borders → soft white */
+.cinematic-page :where(.border, .border-border) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Hover lifts on cards */
+.cinematic-page :where(.hover\:shadow-md, .hover\:shadow-card-hover, .hover\:shadow-lg):hover {
+  box-shadow: 0 12px 40px -10px hsl(214 84% 56% / 0.35);
+  border-color: rgba(47, 128, 237, 0.4);
+}
+
+/* Section divider glow between sections */
+.cinematic-page > section + section::before,
+.cinematic-page > div + section::before {
+  content: "";
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(47,128,237,0.35), rgba(123,97,255,0.35), transparent);
+  margin: 0 auto;
+  max-width: 80%;
+  opacity: 0.5;
+}
+
+/* Buttons inside cinematic — keep primary brand vibrancy but lift outlines */
+.cinematic-page button[class*="variant-outline"],
+.cinematic-page .btn-outline {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: hsl(0 0% 96%);
+}
+
+/* Inputs → glass */
+.cinematic-page :where(input, textarea, select) {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: hsl(0 0% 96%);
+}
+.cinematic-page :where(input::placeholder, textarea::placeholder) {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Skip cinematic restyle for elements that opt out */
+.cinematic-page .no-cinematic,
+.cinematic-page .no-cinematic * {
+  background-color: revert;
+  color: revert;
+  border-color: revert;
+}
+
