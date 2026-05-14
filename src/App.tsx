@@ -203,6 +203,7 @@ const App = () => (
                 <Route path="/knowledge" element={<KnowledgePage />} />
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
+                <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
