@@ -23,6 +23,7 @@ const infoLinks = [
   { label: "Biz haqimizda", href: "/about" },
   { label: "Xizmatlarimiz", href: "/services" },
   { label: "Qo'llanma", href: "/user-guide" },
+  { label: "Developers / API", href: "/developers" },
   { label: "Sayt xaritasi", href: "/sitemap" },
 ];
 
