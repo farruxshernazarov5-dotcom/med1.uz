@@ -13975,6 +13975,10 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      enqueue_webhook_event: {
+        Args: { _event: string; _payload: Json }
+        Returns: number
+      }
       get_saas_access: {
         Args: { _module: string; _owner_id: string }
         Returns: {
