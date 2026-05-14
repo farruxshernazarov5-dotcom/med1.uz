@@ -201,6 +201,7 @@ const App = () => (
                 <Route path="/saas-terms" element={<SaasTermsPage />} />
                 <Route path="/knowledge" element={<KnowledgePage />} />
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
+                <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
