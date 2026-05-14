@@ -113,6 +113,11 @@ serve(async (req) => {
           "X-MedAll-Delivery": r.id,
           "X-MedAll-Timestamp": timestamp,
           "X-MedAll-Signature": `t=${timestamp},v1=${signature}`,
+          // Standard alias used by many partner SDKs
+          "X-Webhook-Signature": `sha256=${signature}`,
+          "X-Webhook-Timestamp": timestamp,
+          "X-Webhook-Event": r.event,
+          "X-Webhook-Id": r.id,
         },
         body: bodyStr,
         signal: ctrl.signal,
