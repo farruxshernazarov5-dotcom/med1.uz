@@ -274,3 +274,132 @@
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+/* ============================================================
+   FUTURISTIC DESIGN SYSTEM (Phase 1)
+   Reusable utilities for the platform-wide cinematic look.
+   ============================================================ */
+
+@layer utilities {
+  /* Holographic gradient text */
+  .text-holo {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      120deg,
+      hsl(214, 84%, 66%) 0%,
+      hsl(250, 100%, 75%) 35%,
+      hsl(190, 95%, 65%) 70%,
+      hsl(214, 84%, 66%) 100%
+    );
+    background-size: 200% 100%;
+    animation: holo-shift 8s linear infinite;
+  }
+
+  /* Neon outline ring */
+  .ring-neon {
+    box-shadow:
+      0 0 0 1px hsl(214 84% 56% / 0.4),
+      0 0 24px hsl(214 84% 56% / 0.35),
+      inset 0 0 24px hsl(250 100% 69% / 0.08);
+  }
+
+  .ring-neon-purple {
+    box-shadow:
+      0 0 0 1px hsl(250 100% 69% / 0.45),
+      0 0 28px hsl(250 100% 69% / 0.4),
+      inset 0 0 24px hsl(250 100% 69% / 0.1);
+  }
+
+  /* Premium dark glass card on cinematic backgrounds */
+  .glass-dark {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+  }
+
+  .glass-dark:hover {
+    border-color: rgba(47, 128, 237, 0.45);
+    box-shadow:
+      0 12px 48px -12px hsl(214 84% 56% / 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Magnetic / lift button */
+  .btn-magnetic {
+    @apply relative overflow-hidden transition-all duration-300;
+  }
+  .btn-magnetic::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  .btn-magnetic:hover::before { transform: translateX(100%); }
+  .btn-magnetic:hover { transform: translateY(-2px); }
+
+  /* Animated grid background utility (for sections) */
+  .bg-grid-tech {
+    background-image:
+      linear-gradient(rgba(47, 128, 237, 0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47, 128, 237, 0.18) 1px, transparent 1px);
+    background-size: 44px 44px;
+    animation: grid-pan 28s linear infinite;
+  }
+
+  /* Soft pulse dot — live status indicator */
+  .live-dot {
+    position: relative;
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 9999px;
+    background: hsl(145 63% 50%);
+    box-shadow: 0 0 0 0 hsl(145 63% 50% / 0.7);
+    animation: live-pulse 2s ease-out infinite;
+  }
+
+  /* Glow blob (for hero / dashboard background) */
+  .glow-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(120px);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .animate-holo-shift { animation: holo-shift 8s linear infinite; }
+  .animate-float-y { animation: float-y 6s ease-in-out infinite alternate; }
+}
+
+@keyframes holo-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes grid-pan {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 44px 44px, 44px 44px; }
+}
+
+@keyframes float-y {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-14px); }
+}
+
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 hsl(145 63% 50% / 0.6); }
+  70%  { box-shadow: 0 0 0 10px hsl(145 63% 50% / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(145 63% 50% / 0); }
+}
