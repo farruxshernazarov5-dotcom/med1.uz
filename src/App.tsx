@@ -86,6 +86,7 @@ const SaasTermsPage = lazy(() => import("./pages/SaasTermsPage"));
 const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
 const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
+const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -202,6 +203,7 @@ const App = () => (
                 <Route path="/knowledge" element={<KnowledgePage />} />
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
+                <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
