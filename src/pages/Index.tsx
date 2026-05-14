@@ -10,7 +10,6 @@ import AISearchSection from "@/components/AISearchSection";
 import HomeNewsSection from "@/components/HomeNewsSection";
 import HomeSectionsPreview from "@/components/HomeSectionsPreview";
 import HomeArticlesPreview from "@/components/HomeArticlesPreview";
-import AnimatedBackground from "@/components/AnimatedBackground";
 import SectionTicker from "@/components/SectionTicker";
 import CosmetologyPromo from "@/components/CosmetologyPromo";
 import HealthDashboardWidget from "@/components/HealthDashboardWidget";
@@ -20,77 +19,79 @@ import HomeServicesMenu from "@/components/HomeServicesMenu";
 import HomeEcosystemSection from "@/components/HomeEcosystemSection";
 import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
 import { NearbyMap } from "@/components/geo/NearbyMap";
+import { FuturisticBackground } from "@/components/futuristic";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <SectionTicker />
-      <HeroSection />
-      <HomeServicesMenu />
+    <div className="cinematic-page relative min-h-screen bg-[hsl(213,73%,8%)] isolate overflow-hidden">
+      {/* Single global animated infrastructure layer (fixed, behind everything) */}
+      <FuturisticBackground variant="dark" particles={22} className="fixed" />
 
-      {/* AI Search Section */}
-      <AISearchSection />
-
-      {/* Nearby clinics map (geo promotions) */}
-      <section className="container mx-auto px-4 py-6">
-        <NearbyMap height={400} />
-      </section>
-
-      {/* Main 3-column layout */}
-      <section className="py-8 relative">
-        <AnimatedBackground variant="dna" />
-        <div className="container mx-auto px-4 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_260px] gap-5">
-            <aside className="hidden lg:block">
-              <div className="sticky top-20">
-                <LeftMenu />
-              </div>
-            </aside>
-            <main>
-              <CenterContent />
-            </main>
-            <aside className="hidden lg:block">
-              <div className="sticky top-20 space-y-4">
-                <RightSidebar />
-                <HealthDashboardWidget />
-              </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      {/* AI Services Section */}
-      <HomeAIServicesSection />
-
-      {/* Connected ecosystem visualization */}
-      <HomeEcosystemSection />
-
-      {/* Sponsors Leaderboard */}
-      <SponsorsLeaderboard />
-
-      {/* Cosmetology Promo Section */}
-      <CosmetologyPromo />
-
-      {/* Partner Clinics */}
-      <PartnerClinics />
-
-      {/* All Sections Preview */}
-      <HomeSectionsPreview />
-
-      {/* Articles Preview */}
-      <HomeArticlesPreview />
-
-      {/* News Section with animation */}
-      <div className="relative">
-        <AnimatedBackground variant="heartbeat" />
-        <div className="relative">
-          <HomeNewsSection />
-        </div>
+      {/* Header opts out of cinematic restyle to keep its branding */}
+      <div className="no-cinematic relative z-10">
+        <Header />
+        <SectionTicker />
       </div>
 
-      <ContactLocationSection />
-      <Footer />
+      {/* Hero already brings its own dark cinematic styling */}
+      <div className="no-cinematic relative z-10">
+        <HeroSection />
+      </div>
+
+      <div className="relative z-10">
+        <HomeServicesMenu />
+
+        <AISearchSection />
+
+        <section className="container mx-auto px-4 py-6">
+          <NearbyMap height={400} />
+        </section>
+
+        {/* Main 3-column layout */}
+        <section className="py-8 relative">
+          <div className="container mx-auto px-4 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_260px] gap-5">
+              <aside className="hidden lg:block">
+                <div className="sticky top-20">
+                  <LeftMenu />
+                </div>
+              </aside>
+              <main>
+                <CenterContent />
+              </main>
+              <aside className="hidden lg:block">
+                <div className="sticky top-20 space-y-4">
+                  <RightSidebar />
+                  <HealthDashboardWidget />
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        {/* AI Services (already cinematic) */}
+        <div className="no-cinematic">
+          <HomeAIServicesSection />
+        </div>
+
+        {/* Ecosystem (already cinematic) */}
+        <div className="no-cinematic">
+          <HomeEcosystemSection />
+        </div>
+
+        <SponsorsLeaderboard />
+        <CosmetologyPromo />
+        <PartnerClinics />
+        <HomeSectionsPreview />
+        <HomeArticlesPreview />
+        <HomeNewsSection />
+        <ContactLocationSection />
+      </div>
+
+      {/* Footer also opts out */}
+      <div className="no-cinematic relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };
