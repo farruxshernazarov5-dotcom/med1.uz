@@ -85,6 +85,7 @@ const DisclaimerPage = lazy(() => import("./pages/DisclaimerPage"));
 const SaasTermsPage = lazy(() => import("./pages/SaasTermsPage"));
 const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
 const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
+const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
