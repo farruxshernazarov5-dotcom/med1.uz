@@ -54,24 +54,20 @@ const FuturisticBackground = ({
         }}
       />
 
-      {/* Glow blobs */}
+      {/* Glow blobs (smaller, no animation for perf) */}
       <div
-        className="glow-blob bg-[hsl(214,84%,56%)] animate-pulse-slow"
-        style={{ top: "-8rem", left: "-8rem", width: 520, height: 520, opacity: isDark ? 0.35 : 0.15 }}
+        className="glow-blob bg-[hsl(214,84%,56%)]"
+        style={{ top: "-6rem", left: "-6rem", width: 360, height: 360, opacity: isDark ? 0.28 : 0.12 }}
       />
       <div
-        className="glow-blob bg-[hsl(250,100%,69%)] animate-pulse-slow"
-        style={{ top: "30%", right: "-10rem", width: 600, height: 600, opacity: isDark ? 0.32 : 0.14 }}
-      />
-      <div
-        className="glow-blob bg-cyan-400 animate-pulse-slow"
-        style={{ bottom: 0, left: "30%", width: 480, height: 480, opacity: isDark ? 0.18 : 0.08 }}
+        className="glow-blob bg-[hsl(250,100%,69%)]"
+        style={{ top: "30%", right: "-8rem", width: 420, height: 420, opacity: isDark ? 0.25 : 0.1 }}
       />
 
-      {/* Particles */}
+      {/* Particles (CSS-only, capped) */}
       {particles > 0 && (
-        <svg className={cn("absolute inset-0 w-full h-full", isDark ? "opacity-60" : "opacity-40")}>
-          {Array.from({ length: particles }).map((_, i) => {
+        <svg className={cn("absolute inset-0 w-full h-full", isDark ? "opacity-50" : "opacity-30")}>
+          {Array.from({ length: Math.min(particles, 10) }).map((_, i) => {
             const cx = (i * 137) % 100;
             const cy = (i * 53) % 100;
             const r = (i % 3) + 1;
@@ -85,7 +81,6 @@ const FuturisticBackground = ({
                 r={r}
                 fill={colors[i % 3]}
                 style={{
-                  filter: "drop-shadow(0 0 6px currentColor)",
                   animation: `float-y ${dur}s ease-in-out ${i * 0.3}s infinite alternate`,
                 }}
               />
