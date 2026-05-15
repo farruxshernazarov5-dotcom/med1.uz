@@ -14,12 +14,14 @@ type Variant = "dark" | "subtle" | "panel";
 interface Props {
   variant?: Variant;
   particles?: number;
+  aurora?: boolean;
   className?: string;
 }
 
 const FuturisticBackground = ({
   variant = "dark",
   particles = 18,
+  aurora = false,
   className,
 }: Props) => {
   const isDark = variant !== "subtle";
@@ -53,6 +55,9 @@ const FuturisticBackground = ({
             "radial-gradient(ellipse at 50% 0%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 90%)",
         }}
       />
+
+      {/* Moving aurora inspired by premium AI interfaces */}
+      {variant === "dark" && aurora && <div className="aurora-gemini" />}
 
       {/* Glow blobs (smaller, no animation for perf) */}
       <div

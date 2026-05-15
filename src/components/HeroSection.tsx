@@ -21,13 +21,12 @@ const HeroSection = () => {
             className="w-full h-full object-cover opacity-25"
             width={1920}
             height={1080}
-            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[hsl(213,73%,8%)]/95 via-[hsl(213,73%,10%)]/92 to-[hsl(213,73%,8%)]" />
         </div>
 
         {/* Futuristic animated layer */}
-        <FuturisticBackground variant="dark" particles={20} />
+        <FuturisticBackground variant="dark" particles={6} />
 
         <div className="relative container mx-auto px-4 py-16 md:py-28 lg:py-32">
           <div className="grid lg:grid-cols-[1.3fr_1fr] gap-10 items-center">
