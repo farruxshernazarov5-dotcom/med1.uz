@@ -25,7 +25,7 @@ const Index = () => {
   return (
     <div className="cinematic-page relative min-h-screen bg-[hsl(213,73%,8%)] isolate overflow-hidden">
       {/* Single global animated infrastructure layer (fixed, behind everything) */}
-      <FuturisticBackground variant="dark" particles={22} className="fixed" />
+      <FuturisticBackground variant="dark" particles={8} className="fixed" />
 
       {/* Header opts out of cinematic restyle to keep its branding */}
       <div className="no-cinematic relative z-10">
