@@ -88,8 +88,8 @@ const Index = () => {
         <ContactLocationSection />
       </div>
 
-      {/* Footer also opts out */}
-      <div className="no-cinematic relative z-10">
+      {/* Footer uses the same cinematic readability and aurora system */}
+      <div className="relative z-10">
         <Footer />
       </div>
     </div>
