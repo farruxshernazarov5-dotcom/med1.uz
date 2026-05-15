@@ -36,8 +36,9 @@ const legalLinks = [
 
 const Footer = () => {
   return (
-    <footer className="bg-dark-gradient text-primary-foreground">
-      <div className="container mx-auto px-4 py-16">
+    <footer className="relative overflow-hidden bg-dark-gradient text-primary-foreground">
+      <div className="aurora-gemini opacity-40" aria-hidden />
+      <div className="container relative z-10 mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
@@ -47,7 +48,7 @@ const Footer = () => {
               </div>
               <span className="font-heading font-bold text-xl">Med1.uz</span>
             </div>
-            <p className="text-primary-foreground/60 text-sm leading-relaxed mb-4">
+            <p className="text-primary-foreground/85 text-sm leading-relaxed mb-4">
               O'zbekistonning yetakchi tibbiy ma'lumotlar portali. 20,000+ tibbiy atamalar va ma'lumotlar bazasi.
             </p>
           </div>
@@ -55,10 +56,10 @@ const Footer = () => {
           {/* Xizmatlar */}
           <div>
             <h4 className="font-heading font-semibold mb-4">Xizmatlar</h4>
-            <ul className="space-y-2 text-sm text-primary-foreground/60">
+            <ul className="space-y-2 text-sm text-primary-foreground/80">
               {serviceLinks.map((item) => (
                 <li key={item.href}>
-                  <Link to={item.href} className="hover:text-primary-foreground transition-colors">{item.label}</Link>
+                  <Link to={item.href} className="transition-colors hover:text-primary-foreground">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -67,10 +68,10 @@ const Footer = () => {
           {/* Entsiklopediya */}
           <div>
             <h4 className="font-heading font-semibold mb-4">Entsiklopediya</h4>
-            <ul className="space-y-2 text-sm text-primary-foreground/60">
+            <ul className="space-y-2 text-sm text-primary-foreground/80">
               {encyclopediaLinks.map((item) => (
                 <li key={item.href}>
-                  <Link to={item.href} className="hover:text-primary-foreground transition-colors">{item.label}</Link>
+                  <Link to={item.href} className="transition-colors hover:text-primary-foreground">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -79,28 +80,28 @@ const Footer = () => {
           {/* Ma'lumot & Aloqa */}
           <div>
             <h4 className="font-heading font-semibold mb-4">Ma'lumot</h4>
-            <ul className="space-y-2 text-sm text-primary-foreground/60 mb-6">
+            <ul className="space-y-2 text-sm text-primary-foreground/80 mb-6">
               {infoLinks.map((item) => (
                 <li key={item.href}>
-                  <Link to={item.href} className="hover:text-primary-foreground transition-colors">{item.label}</Link>
+                  <Link to={item.href} className="transition-colors hover:text-primary-foreground">{item.label}</Link>
                 </li>
               ))}
             </ul>
-            <ul className="space-y-3 text-sm text-primary-foreground/60">
+            <ul className="space-y-3 text-sm text-primary-foreground/85">
               <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-primary" />
+                <Phone className="w-4 h-4 text-secondary" />
                 <div className="space-y-0.5">
-                  <a href="tel:+998992144103" className="block hover:text-primary-foreground transition-colors">+998 99 214 41 03</a>
-                  <a href="tel:+998777770463" className="block hover:text-primary-foreground transition-colors">+998 77 777 04 63</a>
-                  <a href="tel:+998770000498" className="block hover:text-primary-foreground transition-colors">+998 77 000 04 98</a>
+                  <a href="tel:+998992144103" className="block transition-colors hover:text-primary-foreground">+998 99 214 41 03</a>
+                  <a href="tel:+998777770463" className="block transition-colors hover:text-primary-foreground">+998 77 777 04 63</a>
+                  <a href="tel:+998770000498" className="block transition-colors hover:text-primary-foreground">+998 77 000 04 98</a>
                 </div>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-primary" />
+                <Mail className="w-4 h-4 text-secondary" />
                 info@med1.uz
               </li>
               <li className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
+                <MapPin className="w-4 h-4 text-secondary" />
                 Toshkent, O'zbekiston
               </li>
             </ul>
@@ -108,14 +109,14 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-6">
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-primary-foreground/60 mb-4">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-primary-foreground/80 mb-4">
             {legalLinks.map((l) => (
-              <Link key={l.href} to={l.href} className="hover:text-primary-foreground transition-colors">
+              <Link key={l.href} to={l.href} className="transition-colors hover:text-primary-foreground">
                 {l.label}
               </Link>
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-primary-foreground/50">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-primary-foreground/75">
             <p className="text-center">MED-ALL AI SYSTEM MCHJ © 2018–2026. Barcha huquqlar himoyalangan.</p>
             <div className="flex items-center gap-3">
               <span>UZ</span>
