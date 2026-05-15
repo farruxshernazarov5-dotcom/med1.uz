@@ -531,6 +531,18 @@
   }
 }
 
+@media (max-width: 640px) {
+  .aurora-gemini {
+    height: 36%;
+    filter: blur(22px);
+    opacity: 0.42;
+  }
+
+  .cinematic-page {
+    text-shadow: 0 1px 8px hsl(213 73% 5% / 0.45);
+  }
+}
+
 /* Buttons inside cinematic — keep primary brand vibrancy but lift outlines */
 .cinematic-page button[class*="variant-outline"],
 .cinematic-page .btn-outline {
