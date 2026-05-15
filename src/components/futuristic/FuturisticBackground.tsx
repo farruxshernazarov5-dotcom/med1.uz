@@ -14,12 +14,14 @@ type Variant = "dark" | "subtle" | "panel";
 interface Props {
   variant?: Variant;
   particles?: number;
+  aurora?: boolean;
   className?: string;
 }
 
 const FuturisticBackground = ({
   variant = "dark",
   particles = 18,
+  aurora = false,
   className,
 }: Props) => {
   const isDark = variant !== "subtle";
@@ -55,7 +57,7 @@ const FuturisticBackground = ({
       />
 
       {/* Moving aurora inspired by premium AI interfaces */}
-      {variant === "dark" && <div className="aurora-gemini" />}
+      {variant === "dark" && aurora && <div className="aurora-gemini" />}
 
       {/* Glow blobs (smaller, no animation for perf) */}
       <div
