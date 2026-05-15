@@ -21,7 +21,6 @@ const HeroSection = () => {
             className="w-full h-full object-cover opacity-25"
             width={1920}
             height={1080}
-            fetchpriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[hsl(213,73%,8%)]/95 via-[hsl(213,73%,10%)]/92 to-[hsl(213,73%,8%)]" />
         </div>
