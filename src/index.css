@@ -58,6 +58,9 @@
     --medical-red: 0 72% 55%;
     --medical-orange: 32 87% 62%;
     --medical-purple: 250 100% 69%;
+    --aurora-blue: 214 84% 56%;
+    --aurora-purple: 250 100% 69%;
+    --aurora-cyan: 190 95% 65%;
 
     /* Professional Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(213, 73%, 15%), hsl(216, 59%, 26%), hsl(214, 84%, 56%));
@@ -292,7 +295,37 @@
       hsl(214, 84%, 66%) 100%
     );
     background-size: 200% 100%;
-    animation: holo-shift 8s linear infinite;
+    animation: holo-shift 12s linear infinite;
+  }
+
+  /* Gemini-like moving aurora layer — one lightweight gradient surface */
+  .aurora-gemini {
+    position: absolute;
+    left: -12%;
+    right: -12%;
+    bottom: -20%;
+    height: 48%;
+    pointer-events: none;
+    opacity: 0.58;
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    filter: blur(28px);
+    background:
+      radial-gradient(42% 82% at 16% 100%, hsl(var(--aurora-blue) / 0.7), transparent 66%),
+      radial-gradient(48% 88% at 50% 96%, hsl(var(--aurora-purple) / 0.55), transparent 68%),
+      radial-gradient(42% 78% at 82% 100%, hsl(var(--aurora-cyan) / 0.58), transparent 68%),
+      linear-gradient(to top, hsl(var(--primary) / 0.85), transparent 78%);
+    animation: aurora-drift 14s ease-in-out infinite alternate;
+  }
+
+  .aurora-gemini::before {
+    content: "";
+    position: absolute;
+    inset: 12% 5% 8%;
+    border-radius: 9999px 9999px 0 0;
+    background: linear-gradient(90deg, transparent, hsl(var(--secondary) / 0.5), hsl(var(--accent) / 0.42), transparent);
+    opacity: 0.7;
+    animation: aurora-wave 10s ease-in-out infinite alternate;
   }
 
   /* Neon outline ring */
@@ -355,8 +388,8 @@
     background-image:
       linear-gradient(rgba(47, 128, 237, 0.18) 1px, transparent 1px),
       linear-gradient(90deg, rgba(47, 128, 237, 0.18) 1px, transparent 1px);
-    background-size: 44px 44px;
-    animation: grid-pan 28s linear infinite;
+    background-size: 56px 56px;
+    animation: grid-pan 48s linear infinite;
   }
 
   /* Soft pulse dot — live status indicator */
