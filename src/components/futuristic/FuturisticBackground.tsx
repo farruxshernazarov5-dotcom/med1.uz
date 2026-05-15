@@ -54,6 +54,9 @@ const FuturisticBackground = ({
         }}
       />
 
+      {/* Moving aurora inspired by premium AI interfaces */}
+      {variant === "dark" && <div className="aurora-gemini" />}
+
       {/* Glow blobs (smaller, no animation for perf) */}
       <div
         className="glow-blob bg-[hsl(214,84%,56%)]"
