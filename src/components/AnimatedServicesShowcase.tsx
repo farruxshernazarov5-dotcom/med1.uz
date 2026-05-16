@@ -101,7 +101,7 @@ const AnimatedServicesShowcase = () => {
       <div className="relative container mx-auto px-4">
         {/* Heading */}
         <div className="mx-auto mb-12 max-w-3xl text-center">
-          <LiveStatusPill label="Live ekotizim · 14 modul" tone="purple" className="mb-5" />
+          <LiveStatusPill label="Live ekotizim · 14 modul" tone="blue" className="mb-5" />
           <h2 className="font-heading text-3xl font-bold leading-tight text-white md:text-5xl">
             Bog'langan{" "}
             <span className="text-holo">AI tibbiyot</span> ekotizimi
@@ -170,7 +170,7 @@ const AnimatedServicesShowcase = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-l from-[hsl(213,73%,8%)]/85 via-[hsl(213,73%,8%)]/35 to-transparent" />
             <div className="absolute inset-y-0 right-0 flex max-w-md flex-col justify-center p-6 text-right md:p-8">
-              <LiveStatusPill label="99% aniqlik" tone="purple" className="mb-3 ml-auto w-fit" />
+              <LiveStatusPill label="99% aniqlik" tone="blue" className="mb-3 ml-auto w-fit" />
               <h3 className="font-heading text-xl font-bold text-white md:text-2xl">
                 Erta diagnostika tizimi
               </h3>
