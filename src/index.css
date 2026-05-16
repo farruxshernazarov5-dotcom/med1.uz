@@ -568,3 +568,14 @@
   border-color: revert;
 }
 
+
+/* Animated dashed connector lines for service grid */
+@keyframes svc-dash-flow {
+  to { stroke-dashoffset: -120; }
+}
+.svc-line-dash {
+  animation: svc-dash-flow 6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .svc-line-dash { animation: none; }
+}
