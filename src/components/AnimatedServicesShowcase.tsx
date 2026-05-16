@@ -208,40 +208,114 @@ const AnimatedServicesShowcase = () => {
           </div>
         </div>
 
-        {/* Service grid */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
-          {services.map((s) => {
-            const Icon = s.icon;
-            return (
-              <Link key={s.title} to={s.href} className="group block">
-                <TiltCard className="h-full p-5">
-                  <div className="relative z-10 flex flex-col gap-3">
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${s.tone} shadow-lg transition-transform duration-300 group-hover:scale-110`}
-                    >
-                      <Icon className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-heading text-sm font-semibold text-white md:text-base">
-                        {s.title}
-                      </h4>
-                      <p className="mt-1 text-xs leading-relaxed text-white/60">
-                        {s.desc}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] font-medium text-white/50 transition-colors group-hover:text-white">
-                      Batafsil <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                  {/* Animated border line */}
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#7B61FF]/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        {/* Service grid with animated network overlay */}
+        <div className="relative">
+          {/* Network connection layer — animated lines + pulsing digital nodes */}
+          <svg
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="svc-line" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="#2F80ED" stopOpacity="0" />
+                <stop offset="50%" stopColor="#7B61FF" stopOpacity="0.55" />
+                <stop offset="100%" stopColor="#22D3EE" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient id="svc-line-v" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="#2F80ED" stopOpacity="0" />
+                <stop offset="50%" stopColor="#7B61FF" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#22D3EE" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+
+            {/* Horizontal lattice lines (between card rows) */}
+            {[33.33, 66.66].map((y, i) => (
+              <g key={`h-${i}`}>
+                <line
+                  x1="0%" x2="100%" y1={`${y}%`} y2={`${y}%`}
+                  stroke="url(#svc-line)" strokeWidth="1"
+                  strokeDasharray="4 8"
+                  className="svc-line-dash"
+                  style={{ animationDelay: `${i * 0.6}s` }}
+                />
+                <circle r="3" fill="#22D3EE" style={{ filter: "drop-shadow(0 0 6px #22D3EE)" }}>
+                  <animateMotion
+                    dur={`${5 + i}s`}
+                    repeatCount="indefinite"
+                    path={`M 0 ${y * 5} L 1200 ${y * 5}`}
                   />
-                </TiltCard>
-              </Link>
-            );
-          })}
+                </circle>
+              </g>
+            ))}
+
+            {/* Vertical lattice lines (between card cols, lg only) */}
+            {[25, 50, 75].map((x, i) => (
+              <line
+                key={`v-${i}`}
+                x1={`${x}%`} x2={`${x}%`} y1="0%" y2="100%"
+                stroke="url(#svc-line-v)" strokeWidth="1"
+                strokeDasharray="3 9"
+                className="hidden lg:block svc-line-dash"
+                style={{ animationDelay: `${i * 0.4 + 0.2}s` }}
+              />
+            ))}
+          </svg>
+
+          <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
+            {services.map((s, idx) => {
+              const Icon = s.icon;
+              return (
+                <Link key={s.title} to={s.href} className="group block">
+                  <TiltCard className="h-full p-5">
+                    {/* Pulsing digital node (connection point) */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute right-3 top-3 z-20 flex h-2.5 w-2.5"
+                      style={{ animationDelay: `${(idx % 6) * 0.25}s` }}
+                    >
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22D3EE] opacity-70" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#7B61FF] shadow-[0_0_8px_#7B61FF]" />
+                    </span>
+
+                    {/* Corner connector ticks */}
+                    <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-3 w-3 border-l border-t border-[#2F80ED]/40" />
+                    <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-3 w-3 border-b border-r border-[#7B61FF]/40" />
+
+                    <div className="relative z-10 flex flex-col gap-3">
+                      <div
+                        className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${s.tone} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+                      >
+                        <Icon className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-heading text-sm font-semibold text-white md:text-base">
+                          {s.title}
+                        </h4>
+                        <p className="mt-1 text-xs leading-relaxed text-white/60">
+                          {s.desc}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] font-medium text-white/50 transition-colors group-hover:text-white">
+                        Batafsil <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </div>
+
+                    {/* Hover glow line */}
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-[#7B61FF]/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    />
+                    {/* Hover: outgoing connection beam (top edge) */}
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute -top-px left-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[#22D3EE] via-[#7B61FF] to-transparent opacity-0 transition-all duration-500 group-hover:scale-x-100 group-hover:opacity-80"
+                    />
+                  </TiltCard>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* CTA */}
