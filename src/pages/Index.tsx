@@ -17,6 +17,7 @@ import PartnerClinics from "@/components/PartnerClinics";
 import HomeAIServicesSection from "@/components/HomeAIServicesSection";
 import HomeServicesMenu from "@/components/HomeServicesMenu";
 import HomeEcosystemSection from "@/components/HomeEcosystemSection";
+import AnimatedServicesShowcase from "@/components/AnimatedServicesShowcase";
 import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
 import { NearbyMap } from "@/components/geo/NearbyMap";
 import { FuturisticBackground } from "@/components/futuristic";
@@ -36,6 +37,11 @@ const Index = () => {
       {/* Hero already brings its own dark cinematic styling */}
       <div className="no-cinematic relative z-10">
         <HeroSection />
+      </div>
+
+      {/* Cinematic animated services showcase (NEW) */}
+      <div className="no-cinematic relative z-10">
+        <AnimatedServicesShowcase />
       </div>
 
       <div className="relative z-10">
