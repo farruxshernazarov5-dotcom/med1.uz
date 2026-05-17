@@ -7,7 +7,7 @@
  * - Floating, glassy, holographic feel
  * - Pure CSS animations (no extra deps) for perf
  */
-import { useRef, MouseEvent } from "react";
+import { useRef, useState, useEffect, MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   Stethoscope, UserRound, Microscope, Brain, Pill, Smile,
