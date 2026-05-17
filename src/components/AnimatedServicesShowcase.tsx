@@ -234,7 +234,72 @@ const AnimatedServicesShowcase = () => {
         </div>
 
         {/* Service grid with animated network overlay */}
-        <div className="relative">
+        <div className="svc-net relative" style={netStyle}>
+          {/* Network settings */}
+          <div className="absolute -top-2 right-0 z-30 sm:-top-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 gap-1.5 rounded-full border-white/15 bg-white/5 px-3 text-[11px] text-white/80 backdrop-blur-md hover:bg-white/10 hover:text-white"
+                >
+                  <Settings2 className="h-3.5 w-3.5" />
+                  Tarmoq
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-72 border-white/10 bg-[hsl(213,60%,10%)]/95 text-white backdrop-blur-xl"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-xs font-semibold text-white/90">Tarmoq animatsiyasi</p>
+                  <button
+                    onClick={() => setNet(DEFAULTS)}
+                    className="inline-flex items-center gap-1 text-[10px] text-white/60 hover:text-white"
+                  >
+                    <RotateCcw className="h-3 w-3" /> reset
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <div className="mb-1.5 flex justify-between text-[11px] text-white/70">
+                      <span>Tezlik</span>
+                      <span className="text-white/50">{(12 - net.speed).toFixed(1)}×</span>
+                    </div>
+                    <Slider
+                      min={2} max={12} step={0.5}
+                      value={[12 - net.speed]}
+                      onValueChange={(v) => setNet((n) => ({ ...n, speed: 12 - v[0] }))}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1.5 flex justify-between text-[11px] text-white/70">
+                      <span>Rang intensivligi</span>
+                      <span className="text-white/50">{net.intensity.toFixed(2)}</span>
+                    </div>
+                    <Slider
+                      min={0.2} max={1.6} step={0.05}
+                      value={[net.intensity]}
+                      onValueChange={(v) => setNet((n) => ({ ...n, intensity: v[0] }))}
+                    />
+                  </div>
+                  <div>
+                    <div className="mb-1.5 flex justify-between text-[11px] text-white/70">
+                      <span>Puls chastotasi</span>
+                      <span className="text-white/50">{(3 - net.pulse).toFixed(2)} Hz</span>
+                    </div>
+                    <Slider
+                      min={0.4} max={2.8} step={0.1}
+                      value={[3 - net.pulse]}
+                      onValueChange={(v) => setNet((n) => ({ ...n, pulse: 3 - v[0] }))}
+                    />
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           {/* Network connection layer — animated lines + pulsing digital nodes */}
           <svg
             aria-hidden
