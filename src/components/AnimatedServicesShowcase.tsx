@@ -329,7 +329,7 @@ const AnimatedServicesShowcase = () => {
                   className="svc-line-dash"
                   style={{ animationDelay: `${i * 0.6}s` }}
                 />
-                <circle r="3" fill="#22D3EE" style={{ filter: "drop-shadow(0 0 6px #22D3EE)" }}>
+                <circle r="3" fill="#22D3EE" className="svc-travel-node">
                   <animateMotion
                     dur={`${5 + i}s`}
                     repeatCount="indefinite"
