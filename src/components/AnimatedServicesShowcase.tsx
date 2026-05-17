@@ -364,8 +364,8 @@ const AnimatedServicesShowcase = () => {
                       className="pointer-events-none absolute right-3 top-3 z-20 flex h-2.5 w-2.5"
                       style={{ animationDelay: `${(idx % 6) * 0.25}s` }}
                     >
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#22D3EE] opacity-70" />
-                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#7B61FF] shadow-[0_0_8px_#7B61FF]" />
+                      <span className="svc-pulse-ping absolute inline-flex h-full w-full rounded-full bg-[#22D3EE]" />
+                      <span className="svc-pulse-core relative inline-flex h-2.5 w-2.5 rounded-full bg-[#7B61FF]" />
                     </span>
 
                     {/* Corner connector ticks */}
