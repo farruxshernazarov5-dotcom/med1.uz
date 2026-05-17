@@ -95,7 +95,29 @@ const TiltCard = ({ children, className = "" }: { children: React.ReactNode; cla
   );
 };
 
+const NET_KEY = "med1.svcNetSettings.v1";
+const DEFAULTS = { speed: 6, intensity: 1, pulse: 1.4 };
+
 const AnimatedServicesShowcase = () => {
+  const [net, setNet] = useState(DEFAULTS);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(NET_KEY);
+      if (raw) setNet({ ...DEFAULTS, ...JSON.parse(raw) });
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try { localStorage.setItem(NET_KEY, JSON.stringify(net)); } catch {}
+  }, [net]);
+
+  const netStyle = {
+    ["--svc-speed" as any]: `${net.speed}s`,
+    ["--svc-intensity" as any]: `${net.intensity}`,
+    ["--svc-pulse" as any]: `${net.pulse}s`,
+  } as React.CSSProperties;
+
   return (
     <section className="relative isolate overflow-hidden py-20">
       <div className="absolute inset-0 -z-20 bg-[hsl(213,73%,8%)]" />
