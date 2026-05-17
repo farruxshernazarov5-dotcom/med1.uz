@@ -12,9 +12,12 @@ import { Link } from "react-router-dom";
 import {
   Stethoscope, UserRound, Microscope, Brain, Pill, Smile,
   Sparkles, ShieldCheck, FileText, CalendarCheck, Bot, BookOpen,
-  ArrowRight, Zap,
+  ArrowRight, Zap, Settings2, RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { useEffect, useState } from "react";
 import { FuturisticBackground, LiveStatusPill } from "@/components/futuristic";
 import patientImg from "@/assets/showcase-patient-ecosystem.jpg";
 import doctorImg from "@/assets/showcase-ai-doctor.jpg";
