@@ -569,13 +569,28 @@
 }
 
 
-/* Animated dashed connector lines for service grid */
+/* Animated dashed connector lines for service grid (configurable via CSS vars) */
 @keyframes svc-dash-flow {
   to { stroke-dashoffset: -120; }
 }
-.svc-line-dash {
-  animation: svc-dash-flow 6s linear infinite;
+.svc-net {
+  --svc-speed: 6s;          /* lower = faster */
+  --svc-intensity: 1;       /* 0..1.6 line/glow strength */
+  --svc-pulse: 1.4s;        /* node ping frequency */
+}
+.svc-net .svc-line-dash {
+  animation: svc-dash-flow var(--svc-speed) linear infinite;
+  opacity: calc(0.55 * var(--svc-intensity));
+}
+.svc-net .svc-travel-node { filter: drop-shadow(0 0 calc(6px * var(--svc-intensity)) #22D3EE); }
+.svc-net .svc-pulse-ping {
+  animation: ping var(--svc-pulse) cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: calc(0.7 * var(--svc-intensity));
+}
+.svc-net .svc-pulse-core {
+  box-shadow: 0 0 calc(8px * var(--svc-intensity)) #7B61FF;
 }
 @media (prefers-reduced-motion: reduce) {
-  .svc-line-dash { animation: none; }
+  .svc-net .svc-line-dash,
+  .svc-net .svc-pulse-ping { animation: none; }
 }
