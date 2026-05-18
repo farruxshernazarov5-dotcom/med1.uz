@@ -28,8 +28,9 @@ import DiagReferrals from "@/components/diagnostics/DiagReferrals";
 import {
   LayoutDashboard, Users, FlaskConical, FileText, BookTemplate,
   Package, DollarSign, UserCheck, Crown, Settings as SettingsIcon, Image as ImageIcon,
-  BookOpen, ShieldCheck, Calendar, Send, Shield,
+  BookOpen, ShieldCheck, Calendar, Send, Shield, Gift,
 } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
@@ -138,6 +139,7 @@ const DiagnosticsDashboard = () => {
     { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
   ];
 
   return (
@@ -208,6 +210,7 @@ const DiagnosticsDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="diagnostics" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="diagnostics" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="diagnostics" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

@@ -9,8 +9,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import {
   Pill, Plus, Package, ShoppingCart, BarChart3, Settings, FileText,
-  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck, Crown
+  Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck, Crown, Gift
 } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -119,6 +120,7 @@ const PharmacyDashboard = () => {
     { id: "premium", label: "💎 Premium", icon: Crown, group: "Tizim" },
     { id: "settings", label: "Sozlamalar", icon: Settings, group: "Tizim" },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Tizim" },
   ];
 
   return (
@@ -142,6 +144,7 @@ const PharmacyDashboard = () => {
       {tab === "suppliers" && <PhSuppliers pharmacyId={pharmacy.id} />}
       {tab === "staff" && <PhStaff pharmacyId={pharmacy.id} />}
       {tab === "finance" && <PhFinance pharmacyId={pharmacy.id} />}
+      {tab === "partner-referral" && <ReferralPanel />}
 
       {tab === "products" && (
         <div className="space-y-4">

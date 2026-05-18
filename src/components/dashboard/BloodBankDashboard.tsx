@@ -12,8 +12,9 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
   Droplets, Plus, Trash2, Edit, Save, X, Calendar,
-  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown, ShieldCheck,
+  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown, ShieldCheck, Gift,
 } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription";
 import DashboardShell from "./DashboardShell";
@@ -132,6 +133,7 @@ const BloodBankDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "profile", label: "Profil", icon: Settings },
   ];
 
@@ -279,6 +281,7 @@ const BloodBankDashboard = () => {
         </TabsContent>
       {tab === "attendance" && <OrgAttendance orgType="bloodbank" orgName={bank.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

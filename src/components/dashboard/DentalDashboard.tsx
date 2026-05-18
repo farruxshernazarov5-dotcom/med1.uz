@@ -7,9 +7,10 @@ import { toast } from "@/hooks/use-toast";
 import {
   Stethoscope, Users, Calendar, DollarSign, Settings, BarChart3,
   Activity, Heart, Camera, FlaskConical, Package, Bell, FileText,
-  ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart, ShieldCheck, Shield
+  ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart, ShieldCheck, Shield, Gift
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import type { SidebarItem } from "./DashboardShell";
 import { writeAuditLog } from "@/utils/auditLog";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
@@ -125,6 +126,7 @@ const DentalDashboard = () => {
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
   ];
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
@@ -198,6 +200,7 @@ const DentalDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="dental" orgName={clinic.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="dental" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="dental" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

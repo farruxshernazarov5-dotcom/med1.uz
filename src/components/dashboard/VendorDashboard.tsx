@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Package, Wrench, Calendar, Users, Box, UserCog, DollarSign, BarChart3, LayoutDashboard } from "lucide-react";
+import { ShoppingCart, Package, Wrench, Calendar, Users, Box, UserCog, DollarSign, BarChart3, LayoutDashboard, Gift } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import MTOverview from "@/components/medtech/MTOverview";
@@ -53,6 +54,7 @@ const VendorDashboard = () => {
     { id: "inventory", label: "Ombor", icon: Box },
     { id: "technicians", label: "Texniklar", icon: UserCog },
     { id: "finance", label: "Moliya", icon: DollarSign },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift },
   ];
 
   return (
@@ -66,6 +68,7 @@ const VendorDashboard = () => {
       {tab === "inventory" && <MTInventory vendorId={vendorId} />}
       {tab === "technicians" && <MTTechnicians vendorId={vendorId} />}
       {tab === "finance" && <MTFinance vendorId={vendorId} />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

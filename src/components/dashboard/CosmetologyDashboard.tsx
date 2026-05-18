@@ -9,6 +9,7 @@ import {
   Star, UserCog, Crown, ShieldCheck, Shield,
 } from "lucide-react";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -80,6 +81,7 @@ const CosmetologyDashboard = () => {
     { id: "insurance", label: "Sug'urta", icon: Shield },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "settings", label: "Sozlamalar", icon: Settings },
   ];
 
@@ -107,6 +109,7 @@ const CosmetologyDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="cosmetology" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="cosmetology" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="cosmetology" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

@@ -52,6 +52,8 @@ import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import UpgradeModal from "@/components/saas/UpgradeModal";
 import ServerSaaSGate from "@/components/saas/ServerSaaSGate";
 import { useSaasPlan } from "@/hooks/useSaasPlan";
+import ReferralPanel from "@/components/referral/ReferralPanel";
+import { Gift } from "lucide-react";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
@@ -191,6 +193,7 @@ const ClinicDashboard = () => {
     // ====== OBUNA ======
     { id: "subscription", label: "Obuna", icon: Crown, group: "TARIF" },
     { id: "premium", label: "💎 Premium imkoniyatlar", icon: Crown, group: "TARIF" },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift, group: "TARIF" },
   ];
 
   return (
@@ -294,6 +297,7 @@ const ClinicDashboard = () => {
       {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
       {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="clinic" />}
+          {tab === "partner-referral" && <ReferralPanel />}
 
       <UpgradeModal
         open={!!lockedItem}

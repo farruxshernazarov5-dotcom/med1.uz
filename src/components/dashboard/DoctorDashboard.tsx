@@ -17,6 +17,7 @@ import {
   Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles, Shield, ShieldCheck
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
@@ -186,6 +187,7 @@ const DoctorDashboard = () => {
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
   ];
 
   return (
@@ -387,6 +389,7 @@ const DoctorDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="doctor" orgName={doctor.full_name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="doctor" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="doctor" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };
