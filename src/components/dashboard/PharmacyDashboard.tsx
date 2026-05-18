@@ -144,6 +144,7 @@ const PharmacyDashboard = () => {
       {tab === "suppliers" && <PhSuppliers pharmacyId={pharmacy.id} />}
       {tab === "staff" && <PhStaff pharmacyId={pharmacy.id} />}
       {tab === "finance" && <PhFinance pharmacyId={pharmacy.id} />}
+      {tab === "partner-referral" && <ReferralPanel />}
 
       {tab === "products" && (
         <div className="space-y-4">
