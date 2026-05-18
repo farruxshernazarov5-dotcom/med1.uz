@@ -94,6 +94,7 @@ import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
 import { GeoPromoProvider } from "./components/geo/GeoPromoProvider";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import CookieConsent from "./components/CookieConsent";
+import ReferralCapture from "./components/referral/ReferralCapture";
 
 const queryClient = new QueryClient();
 
@@ -115,6 +116,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ReferralCapture />
           <FloatingAISearch />
           <FloatingAIPanel />
           <FloatingServicesPanel />

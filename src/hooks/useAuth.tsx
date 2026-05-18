@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import { getStoredReferralCode, getStoredReferralMeta, clearReferralCode } from "@/lib/referralCapture";
 
 interface AuthContextType {
   user: User | null;
@@ -61,14 +62,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, role = "patient", phone = "") => {
+    const referralCode = getStoredReferralCode();
+    const referralMeta = getStoredReferralMeta();
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, role, phone },
+        data: {
+          full_name: fullName,
+          role,
+          phone,
+          ...(referralCode
+            ? {
+                referral_code: referralCode,
+                referral_source: referralMeta?.source ?? null,
+                referral_captured_at: referralMeta?.capturedAt ?? null,
+              }
+            : {}),
+        },
         emailRedirectTo: window.location.origin,
       },
     });
+    if (!error && referralCode) {
+      // Keep code until trigger persists referral row; clear after a short delay.
+      setTimeout(() => clearReferralCode(), 5000);
+    }
     return { error };
   };
 
