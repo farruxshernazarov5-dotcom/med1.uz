@@ -1,7 +1,7 @@
 // Generates public/sitemap.xml from app routes + static data files.
 // Runs before `vite dev` and `vite build` via predev/prebuild hooks.
 
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import { resolve } from "path";
 
 const BASE_URL = "https://med1.uz";
