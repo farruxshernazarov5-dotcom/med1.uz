@@ -297,6 +297,7 @@ const ClinicDashboard = () => {
       {tab === "hms-payment-settings" && <HMSPaymentSettings clinicId={clinic.id} />}
       {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="clinic" />}
+          {tab === "partner-referral" && <ReferralPanel />}
 
       <UpgradeModal
         open={!!lockedItem}
