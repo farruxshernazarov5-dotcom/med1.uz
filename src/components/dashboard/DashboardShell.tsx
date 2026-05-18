@@ -186,6 +186,7 @@ const DashboardShell = ({
             <h1 className="text-lg font-bold text-foreground">{title}</h1>
           </div>
           <div className="flex-1" />
+          <ReferralNotificationBell />
           {headerActions}
         </header>
 
