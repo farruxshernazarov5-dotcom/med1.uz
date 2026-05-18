@@ -138,6 +138,7 @@ const DiagnosticsDashboard = () => {
     { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
   ];
 
   return (
@@ -208,6 +209,7 @@ const DiagnosticsDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="diagnostics" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="diagnostics" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="diagnostics" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

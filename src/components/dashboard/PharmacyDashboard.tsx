@@ -119,6 +119,7 @@ const PharmacyDashboard = () => {
     { id: "premium", label: "💎 Premium", icon: Crown, group: "Tizim" },
     { id: "settings", label: "Sozlamalar", icon: Settings, group: "Tizim" },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Tizim" },
   ];
 
   return (

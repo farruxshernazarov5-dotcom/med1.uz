@@ -186,6 +186,7 @@ const DoctorDashboard = () => {
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
   ];
 
   return (
@@ -387,6 +388,7 @@ const DoctorDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="doctor" orgName={doctor.full_name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="doctor" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="doctor" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

@@ -80,6 +80,7 @@ const CosmetologyDashboard = () => {
     { id: "insurance", label: "Sug'urta", icon: Shield },
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "settings", label: "Sozlamalar", icon: Settings },
   ];
 
@@ -107,6 +108,7 @@ const CosmetologyDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="cosmetology" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="cosmetology" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="cosmetology" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

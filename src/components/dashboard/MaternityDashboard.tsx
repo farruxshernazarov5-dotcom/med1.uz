@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Baby, LayoutDashboard, Users, Activity, FlaskConical, ScanLine, Heart,
-  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield, Crown
+  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield, Crown, Gift
 } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
@@ -41,6 +42,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
   { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
   { id: "premium", label: "💎 Premium", icon: Crown, group: "Boshqaruv" },
+  { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Boshqaruv" },
 ];
 
 const MaternityDashboard = () => {
@@ -102,6 +104,7 @@ const MaternityDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="maternity" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="maternity" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="maternity" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };

@@ -132,6 +132,7 @@ const BloodBankDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
+    { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "profile", label: "Profil", icon: Settings },
   ];
 
@@ -279,6 +280,7 @@ const BloodBankDashboard = () => {
         </TabsContent>
       {tab === "attendance" && <OrgAttendance orgType="bloodbank" orgName={bank.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
+      {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
 };
