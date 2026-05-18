@@ -19,13 +19,11 @@ const STEPS = [
 ];
 
 export default function ReferralPage() {
+  useEffect(() => {
+    document.title = "Referral dasturi — Do'stingizni taklif qiling | Med1.uz";
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
-      <Helmet>
-        <title>Referral dasturi — Do'stingizni taklif qiling | Med1.uz</title>
-        <meta name="description" content="Med1.uz referral dasturi: do'stlaringizni taklif qiling, har bir obuna uchun credits, bonus oylar va AI limit oling. Tier tizimi va leaderboard." />
-        <link rel="canonical" href="https://med1.uz/referral" />
-      </Helmet>
 
       {/* Hero */}
       <section className="container mx-auto px-4 pt-16 pb-12 text-center">
