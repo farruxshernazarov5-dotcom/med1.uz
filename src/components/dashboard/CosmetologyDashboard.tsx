@@ -9,6 +9,7 @@ import {
   Star, UserCog, Crown, ShieldCheck, Shield,
 } from "lucide-react";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";

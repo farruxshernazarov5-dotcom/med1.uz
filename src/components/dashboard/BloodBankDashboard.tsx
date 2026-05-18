@@ -12,8 +12,9 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
   Droplets, Plus, Trash2, Edit, Save, X, Calendar,
-  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown, ShieldCheck,
+  TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown, ShieldCheck, Gift,
 } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription";
 import DashboardShell from "./DashboardShell";

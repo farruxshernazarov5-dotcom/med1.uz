@@ -17,6 +17,7 @@ import {
   Megaphone, Gift, Inbox, BarChart3, Pill, Wallet, Video, Sparkles, Shield, ShieldCheck
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
