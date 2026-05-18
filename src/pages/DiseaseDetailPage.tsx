@@ -28,6 +28,31 @@ const DiseaseDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${disease.name} — sabablari, alomatlari va davolash | Med1.uz`}
+        description={disease.desc || disease.fullDesc?.slice(0, 150) || `${disease.name} — kasallik haqida batafsil ma'lumot.`}
+        path={`/diseases/${category.id}/${disease.slug}`}
+        ogType="article"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "MedicalCondition",
+            name: disease.name,
+            description: disease.fullDesc,
+            possibleTreatment: disease.treatment ? { "@type": "MedicalTherapy", name: disease.treatment } : undefined,
+            cause: disease.origin ? { "@type": "MedicalCause", name: disease.origin } : undefined,
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Kasalliklar", item: "https://med1.uz/diseases" },
+              { "@type": "ListItem", position: 2, name: category.name ?? category.id, item: `https://med1.uz/diseases/${category.id}` },
+              { "@type": "ListItem", position: 3, name: disease.name },
+            ],
+          },
+        ]}
+      />
       <Header />
       <section className="bg-hero-gradient py-12 md:py-16">
         <div className="container mx-auto px-4">
