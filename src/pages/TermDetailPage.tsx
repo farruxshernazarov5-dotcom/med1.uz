@@ -56,6 +56,20 @@ const TermDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${term.term} — tibbiy atama ta'rifi | Med1.uz`}
+        description={term.shortDesc || `${term.term} (${term.category}) — Med1.uz tibbiy ensiklopediyasi.`}
+        path={`/medicine/term/${term.id}`}
+        ogType="article"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "DefinedTerm",
+          name: term.term,
+          description: term.shortDesc,
+          inDefinedTermSet: { "@type": "DefinedTermSet", name: "Med1.uz tibbiy entsiklopediya" },
+          termCode: term.id,
+        }}
+      />
       <Header />
 
       {/* Hero */}
