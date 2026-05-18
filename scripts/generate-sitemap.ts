@@ -46,18 +46,19 @@ const staticEntries: Entry[] = [
 const dynamicEntries: Entry[] = [];
 
 async function loadDynamic() {
-  // Diseases: /diseases/:categoryId/:slug — parse source via regex (avoids jpg imports)
+  // Diseases: /diseases/:categoryId/:slug — split source by category blocks
   try {
     const src = readFileSync(resolve("src/data/diseases.ts"), "utf8");
-    // Match category blocks: id: "<catId>", then capture all slug: "<x>" inside its diseases array
-    const catRe = /id:\s*"([^"]+)"[\s\S]*?diseases:\s*\[([\s\S]*?)\]\s*\}/g;
-    let m: RegExpExecArray | null;
-    while ((m = catRe.exec(src)) !== null) {
-      const catId = m[1];
-      const block = m[2];
+    // Split on top-level category id markers
+    const parts = src.split(/(?=\{\s*id:\s*")/);
+    for (const part of parts) {
+      const catMatch = part.match(/^\{\s*id:\s*"([^"]+)"/);
+      if (!catMatch) continue;
+      const catId = catMatch[1];
+      if (!/diseases:\s*\[/.test(part)) continue;
       const slugRe = /slug:\s*"([^"]+)"/g;
       let sm: RegExpExecArray | null;
-      while ((sm = slugRe.exec(block)) !== null) {
+      while ((sm = slugRe.exec(part)) !== null) {
         dynamicEntries.push({
           path: `/diseases/${catId}/${sm[1]}`,
           changefreq: "monthly",
@@ -70,10 +71,12 @@ async function loadDynamic() {
   // Articles: /articles/:categoryId and /articles/:categoryId/:slug
   try {
     const src = readFileSync(resolve("src/data/articles.ts"), "utf8");
-    const catRe = /id:\s*"([^"]+)"[\s\S]*?articles:\s*\[([\s\S]*?)\]\s*\}/g;
-    let m: RegExpExecArray | null;
-    while ((m = catRe.exec(src)) !== null) {
-      const catId = m[1];
+    const parts = src.split(/(?=\{\s*id:\s*")/);
+    for (const part of parts) {
+      const catMatch = part.match(/^\{\s*id:\s*"([^"]+)"/);
+      if (!catMatch) continue;
+      const catId = catMatch[1];
+      if (!/title:\s*"/.test(part)) continue;
       dynamicEntries.push({
         path: `/articles/${catId}`,
         changefreq: "weekly",
@@ -81,7 +84,7 @@ async function loadDynamic() {
       });
       const slugRe = /slug:\s*"([^"]+)"/g;
       let sm: RegExpExecArray | null;
-      while ((sm = slugRe.exec(m[2])) !== null) {
+      while ((sm = slugRe.exec(part)) !== null) {
         dynamicEntries.push({
           path: `/articles/${catId}/${sm[1]}`,
           changefreq: "monthly",
