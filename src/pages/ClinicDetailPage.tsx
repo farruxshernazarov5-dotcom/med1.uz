@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useMemo } from "react";
+import SEO from "@/components/SEO";
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import ShareButton from "@/components/ShareButton";
@@ -48,6 +49,25 @@ const ClinicDetailPage = () => {
       subtitle={`${clinic.address} — ${clinic.city}`}
       icon={<Building2 className="w-7 h-7 text-primary-foreground" />}
     >
+      <SEO
+        title={`${clinic.name} — ${clinic.city} | Med1.uz`}
+        description={`${clinic.name} (${clinic.city}). Manzil: ${clinic.address}. Aloqa, ish vaqti va xizmatlar Med1.uz katalogida.`}
+        path={`/clinics/${clinic.id}`}
+        ogType="profile"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "MedicalOrganization",
+          name: clinic.name,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: clinic.address,
+            addressLocality: clinic.city,
+            addressCountry: "UZ",
+          },
+          telephone: (clinic as any).phone ?? undefined,
+          url: `https://med1.uz/clinics/${clinic.id}`,
+        }}
+      />
       <Breadcrumb items={[
         { label: "Klinikalar", href: "/clinics" },
         { label: clinic.name },

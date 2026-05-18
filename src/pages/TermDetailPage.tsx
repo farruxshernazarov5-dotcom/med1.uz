@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { BookOpen, Stethoscope, Shield, Lightbulb, AlertTriangle, Info, ArrowLeft, Share2, Link as LinkIcon, Check } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -55,6 +56,20 @@ const TermDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${term.term} — tibbiy atama ta'rifi | Med1.uz`}
+        description={term.shortDesc || `${term.term} (${term.category}) — Med1.uz tibbiy ensiklopediyasi.`}
+        path={`/medicine/term/${term.id}`}
+        ogType="article"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "DefinedTerm",
+          name: term.term,
+          description: term.shortDesc,
+          inDefinedTermSet: { "@type": "DefinedTermSet", name: "Med1.uz tibbiy entsiklopediya" },
+          termCode: term.id,
+        }}
+      />
       <Header />
 
       {/* Hero */}

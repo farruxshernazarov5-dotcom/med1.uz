@@ -1,0 +1,69 @@
+# Med1.uz
+
+> O'zbekistonning yetakchi raqamli tibbiy portali — 20 000+ tibbiy atama, kasalliklar entsiklopediyasi, klinikalar, dorixonalar, diagnostika markazlari va AI asosidagi tibbiy maslahat xizmatlari.
+
+Med1.uz MED-ALL AI SYSTEM MCHJ tomonidan ishlab chiqilgan ko'p tilli (UZ / RU / EN) tibbiy ma'lumotlar va xizmatlar platformasi. Platforma fuqarolar, shifokorlar va tibbiyot muassasalari uchun mo'ljallangan.
+
+## Asosiy sahifalar
+
+- [Bosh sahifa](/): Med1.uz platformasiga kirish va asosiy xizmatlar ko'rinishi.
+- [Tibbiy atamalar](/medicine): 20 000+ tibbiy atama va kasallik nomlari entsiklopediyasi.
+- [Sog'liq](/health): Sog'liq va profilaktika bo'yicha umumiy ma'lumotlar.
+- [Kasalliklar](/diseases): Kasalliklar katalogi — kategoriyalar va batafsil tavsiflar.
+- [Maqolalar](/articles): Tibbiy mavzularda mualliflik maqolalar.
+- [Yangiliklar](/news): Tibbiyot sohasidagi yangiliklar.
+- [Klinikalar](/clinics): O'zbekiston bo'yicha klinikalar katalogi va profil sahifalari.
+- [Diagnostika markazlari](/diagnostics): MRT, KT, UTS va lab xizmatlari.
+- [Dorixonalar](/pharmacies): Dorixonalar va dori topish.
+- [Qon banklari](/blood-banks): Qon donorlik va qon banklari xaritasi.
+- [Tug'ruqxonalar](/maternity): Onalik va bolalik xizmatlari.
+- [Kosmetologiya](/cosmetology): Kosmetologiya markazlari katalogi.
+- [Tibbiy texnika](/med-tech): Tibbiy uskunalar va texnologiyalar.
+- [Bilim bazasi](/knowledge): Tibbiy ilmiy maqolalar (UZ / EN).
+
+## AI xizmatlari
+
+- [AI xizmatlar](/ai-services): Med1.uz AI tibbiy xizmatlari ro'yxati.
+- [AI Sog'liq yordamchisi](/ai-health-assistant): Umumiy tibbiy maslahat AI bot.
+- [Simptom analizator](/ai-doctor-chat): Simptomlar bo'yicha dastlabki tahlil.
+- [AI Diagnostika](/ai-diagnostika): Radiologiya va laboratoriya hisobotlarini tahlil.
+- [AI Vital Signs](/ai-vital-signs): Kameraga asoslangan PPG, SpO2 o'lchov.
+- [AI Reproduktiv salomatlik](/ai-pregnancy): Homiladorlik va onalik bo'yicha AI maslahat.
+- [AI Bolalar parvarishi](/ai-baby-care): Yangi tug'ilgan chaqaloq parvarishi.
+- [AI Dietolog](/ai-dietolog): Shaxsiy ovqatlanish rejasi.
+- [AI Fitness](/ai-fitness): Mashqlar va sport rejasi.
+- [AI Psixolog](/ai-psixolog): Psixologik yordam suhbati.
+- [AI Farmatsevt](/ai-farmatsevt): Dorilar haqida AI maslahat.
+- [AI Kosmetologiya](/ai-cosmetology): Teri va sochlar bo'yicha tavsiyalar.
+- [AI Sog'liq risk skoreri](/ai-health-risk): Yurak, diabet va kasallik risklari.
+
+## Hisob va xizmatlar
+
+- [Ro'yxatdan o'tish / Kirish](/auth): Foydalanuvchi autentifikatsiyasi.
+- [Klinika ro'yxatdan o'tish](/clinic-register): Klinikalar uchun SaaS HMS onboarding.
+- [Diagnostika markazi ro'yxat](/diagnostics-register): Lab/diagnostika onboarding.
+- [Stomatologiya HMS](/dental-register): Tish klinikalari uchun.
+- [Tug'ruqxona HMS](/maternity-register): Onalik markazlari uchun.
+- [Kosmetologiya HMS](/cosmetology-register): Kosmetologiya markazlari uchun.
+- [Dorixona ro'yxati](/pharmacy-register): Dorixonalar onboarding.
+- [Vendor ro'yxati](/vendor-register): Tibbiy texnika vendorlari.
+- [Qon donorlik ro'yxati](/blood-donor-register): Donor sifatida ro'yxat.
+- [Referral dasturi](/referral): Do'stlarni taklif qilish dasturi.
+- [Bron qilish](/booking): Klinika va xizmatlarga yozilish.
+
+## Qonuniy va kompaniya
+
+- [Biz haqimizda](/about): MED-ALL AI SYSTEM MCHJ haqida.
+- [Bog'lanish](/contact): Aloqa ma'lumotlari.
+- [Foydalanish shartlari](/terms): Global Terms of Service.
+- [Maxfiylik siyosati](/privacy): Privacy Policy.
+- [Tibbiy ogohlantirish](/disclaimer): Medical Disclaimer.
+- [SaaS HMS shartlari](/saas-terms): Klinikalar uchun SaaS shartlari.
+- [Referral shartlari](/referral-terms): Referral dasturi qoidalari.
+- [Dasturchilar](/developers): API hujjatlari va integratsiya.
+
+## Optional
+
+- [Verify portal](/verify): Med1.uz tomonidan berilgan resept/hujjatlarni tekshirish.
+- [Tibbiy hisobot tahlili](/ai-report-analysis): Lab natijalarini AI yordamida o'qish.
+- [Radiologiya AI](/ai-radiology): Rentgen va MRT tasvirlarini tahlil.

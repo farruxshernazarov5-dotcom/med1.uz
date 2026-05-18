@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { newsItems, newsCategories } from "@/data/news";
+import SEO from "@/components/SEO";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ShareButton from "@/components/ShareButton";
@@ -27,6 +28,23 @@ const NewsDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${item.title} | Med1.uz Yangiliklar`}
+        description={(item.content?.[0] ?? item.title).slice(0, 155)}
+        path={`/news/${item.id}`}
+        ogType="article"
+        ogImage={item.image}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "NewsArticle",
+          headline: item.title,
+          image: item.image,
+          datePublished: item.date,
+          articleSection: category?.title,
+          publisher: { "@type": "Organization", name: "Med1.uz", url: "https://med1.uz" },
+          mainEntityOfPage: `https://med1.uz/news/${item.id}`,
+        }}
+      />
       <Header />
       <section className="bg-hero-gradient py-12 md:py-16">
         <div className="container mx-auto px-4">
