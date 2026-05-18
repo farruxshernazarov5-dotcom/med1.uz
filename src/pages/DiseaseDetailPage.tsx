@@ -47,7 +47,7 @@ const DiseaseDetailPage = () => {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Kasalliklar", item: "https://med1.uz/diseases" },
-              { "@type": "ListItem", position: 2, name: category.name ?? category.id, item: `https://med1.uz/diseases/${category.id}` },
+              { "@type": "ListItem", position: 2, name: category.title ?? category.id, item: `https://med1.uz/diseases/${category.id}` },
               { "@type": "ListItem", position: 3, name: disease.name },
             ],
           },
