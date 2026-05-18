@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { findArticle, getCategoryArticleCount, getAllArticlesForCategory, articleCategories, getCategoryIdForArticle } from "@/data/articles";
 import { newArticles } from "@/data/new_articles/allArticles";
 import { newsItems } from "@/data/news";
