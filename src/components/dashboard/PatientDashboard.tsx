@@ -5,8 +5,9 @@ import {
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
   ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
-  Sun, Moon,
+  Sun, Moon, Gift,
 } from "lucide-react";
+import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,7 +46,7 @@ type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
   | "appointments" | "nearby" | "workflow"
   | "lab" | "prescriptions" | "files" | "documents" | "history"
-  | "payments" | "promo" | "premium"
+  | "payments" | "promo" | "premium" | "partner-referral"
   | "family" | "favorites" | "reviews"
   | "profile" | "notifications" | "security" | "settings";
 
@@ -114,6 +115,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { id: "payments", label: "To'lovlar va cheklar", icon: CreditCard },
       { id: "promo", label: "Aksiyalar", icon: Tag },
+      { id: "partner-referral", label: "Referral & Bonus", icon: Gift },
       { id: "premium", label: "💎 Premium", icon: Crown },
     ],
   },
@@ -199,6 +201,7 @@ const PatientDashboard = () => {
       case "payments": return <PatientPayments />;
       case "promo": return <PatientPromo />;
       case "premium": return <PremiumPerksPanel moduleId="clinic" />;
+      case "partner-referral": return <ReferralPanel compact />;
       case "family": return <PatientFamily />;
       case "favorites": return <PatientFavorites />;
       case "reviews": return <PatientReviews />;
