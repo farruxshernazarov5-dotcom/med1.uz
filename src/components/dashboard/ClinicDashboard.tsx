@@ -52,6 +52,8 @@ import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import UpgradeModal from "@/components/saas/UpgradeModal";
 import ServerSaaSGate from "@/components/saas/ServerSaaSGate";
 import { useSaasPlan } from "@/hooks/useSaasPlan";
+import ReferralPanel from "@/components/referral/ReferralPanel";
+import { Gift } from "lucide-react";
 
 const ClinicDashboard = () => {
   const { user, profile } = useAuth();
