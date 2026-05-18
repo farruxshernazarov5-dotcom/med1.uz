@@ -48,6 +48,24 @@ const ArticleDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${article.title} | Med1.uz`}
+        description={article.summary || article.title}
+        path={`/articles/${categoryId}/${slug}`}
+        ogType="article"
+        ogImage={article.image}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.title,
+          description: article.summary,
+          image: article.image,
+          datePublished: article.date,
+          author: { "@type": "Person", name: article.author ?? "Med1.uz" },
+          publisher: { "@type": "Organization", name: "Med1.uz", url: "https://med1.uz" },
+          mainEntityOfPage: `https://med1.uz/articles/${categoryId}/${slug}`,
+        }}
+      />
       <Header />
 
       {/* Hero */}
