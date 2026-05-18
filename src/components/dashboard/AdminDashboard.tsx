@@ -62,6 +62,7 @@ const sidebarSections = [
       { id: "premium_perks", label: "💎 Premium & Promo", icon: Megaphone },
       { id: "api_partners", label: "🔌 API Hamkorlar", icon: Plug },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
+      { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
     ]
   },
   {
