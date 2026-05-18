@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground } from "@/components/futuristic";
+import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import {
   LogOut, Menu, X, ChevronLeft, ChevronRight, Lock, Sparkles,
 } from "lucide-react";
