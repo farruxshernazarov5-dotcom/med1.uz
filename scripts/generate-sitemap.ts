@@ -46,13 +46,20 @@ const staticEntries: Entry[] = [
 const dynamicEntries: Entry[] = [];
 
 async function loadDynamic() {
-  // Diseases: /diseases/:categoryId/:slug
+  // Diseases: /diseases/:categoryId/:slug — parse source via regex (avoids jpg imports)
   try {
-    const { diseaseCategories } = await import("../src/data/diseases");
-    for (const cat of diseaseCategories) {
-      for (const d of cat.diseases ?? []) {
+    const src = readFileSync(resolve("src/data/diseases.ts"), "utf8");
+    // Match category blocks: id: "<catId>", then capture all slug: "<x>" inside its diseases array
+    const catRe = /id:\s*"([^"]+)"[\s\S]*?diseases:\s*\[([\s\S]*?)\]\s*\}/g;
+    let m: RegExpExecArray | null;
+    while ((m = catRe.exec(src)) !== null) {
+      const catId = m[1];
+      const block = m[2];
+      const slugRe = /slug:\s*"([^"]+)"/g;
+      let sm: RegExpExecArray | null;
+      while ((sm = slugRe.exec(block)) !== null) {
         dynamicEntries.push({
-          path: `/diseases/${cat.id}/${d.slug}`,
+          path: `/diseases/${catId}/${sm[1]}`,
           changefreq: "monthly",
           priority: "0.7",
         });
@@ -62,17 +69,21 @@ async function loadDynamic() {
 
   // Articles: /articles/:categoryId and /articles/:categoryId/:slug
   try {
-    const mod: any = await import("../src/data/articles");
-    const cats = mod.articleCategories ?? [];
-    for (const cat of cats) {
+    const src = readFileSync(resolve("src/data/articles.ts"), "utf8");
+    const catRe = /id:\s*"([^"]+)"[\s\S]*?articles:\s*\[([\s\S]*?)\]\s*\}/g;
+    let m: RegExpExecArray | null;
+    while ((m = catRe.exec(src)) !== null) {
+      const catId = m[1];
       dynamicEntries.push({
-        path: `/articles/${cat.id ?? cat.slug}`,
+        path: `/articles/${catId}`,
         changefreq: "weekly",
         priority: "0.7",
       });
-      for (const a of cat.articles ?? []) {
+      const slugRe = /slug:\s*"([^"]+)"/g;
+      let sm: RegExpExecArray | null;
+      while ((sm = slugRe.exec(m[2])) !== null) {
         dynamicEntries.push({
-          path: `/articles/${cat.id ?? cat.slug}/${a.slug}`,
+          path: `/articles/${catId}/${sm[1]}`,
           changefreq: "monthly",
           priority: "0.6",
         });
