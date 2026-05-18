@@ -32,6 +32,7 @@ const legalLinks = [
   { label: "Maxfiylik siyosati", href: "/privacy" },
   { label: "Tibbiy ogohlantirish", href: "/disclaimer" },
   { label: "SaaS HMS shartlari", href: "/saas-terms" },
+  { label: "Referral dasturi", href: "/referral" },
 ];
 
 const Footer = () => {
