@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { newsItems, newsCategories } from "@/data/news";
+import SEO from "@/components/SEO";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ShareButton from "@/components/ShareButton";
