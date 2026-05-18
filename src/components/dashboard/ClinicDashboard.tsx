@@ -53,6 +53,7 @@ import UpgradeModal from "@/components/saas/UpgradeModal";
 import ServerSaaSGate from "@/components/saas/ServerSaaSGate";
 import { useSaasPlan } from "@/hooks/useSaasPlan";
 import ReferralPanel from "@/components/referral/ReferralPanel";
+import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import { Gift } from "lucide-react";
 
 const ClinicDashboard = () => {

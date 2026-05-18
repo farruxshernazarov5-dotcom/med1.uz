@@ -15,6 +15,7 @@ import {
   TrendingUp, Clock, CheckCircle, BarChart3, Loader2, Settings, Users, Crown, ShieldCheck, Gift,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
+import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription";
 import DashboardShell from "./DashboardShell";

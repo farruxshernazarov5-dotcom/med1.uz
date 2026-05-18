@@ -31,6 +31,7 @@ import {
   BookOpen, ShieldCheck, Calendar, Send, Shield, Gift,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
+import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 

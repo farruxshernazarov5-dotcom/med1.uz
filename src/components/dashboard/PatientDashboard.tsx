@@ -8,6 +8,7 @@ import {
   Sun, Moon, Gift,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
+import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
