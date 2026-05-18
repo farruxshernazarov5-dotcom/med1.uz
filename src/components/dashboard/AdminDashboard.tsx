@@ -64,6 +64,7 @@ const sidebarSections = [
       { id: "api_partners", label: "🔌 API Hamkorlar", icon: Plug },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
       { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
+      { id: "referral_fraud", label: "🛡️ Fraud & Security", icon: ShieldAlert },
     ]
   },
   {
