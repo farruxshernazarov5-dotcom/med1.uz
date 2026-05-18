@@ -193,6 +193,7 @@ const ClinicDashboard = () => {
     // ====== OBUNA ======
     { id: "subscription", label: "Obuna", icon: Crown, group: "TARIF" },
     { id: "premium", label: "💎 Premium imkoniyatlar", icon: Crown, group: "TARIF" },
+    { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift, group: "TARIF" },
   ];
 
   return (
