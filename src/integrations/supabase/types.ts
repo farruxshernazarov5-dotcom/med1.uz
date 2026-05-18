@@ -12749,6 +12749,411 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          kind: string
+          org_role: string | null
+          owner_id: string
+          total_rewards_credits: number
+          total_rewards_months: number
+          total_uses: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          org_role?: string | null
+          owner_id: string
+          total_rewards_credits?: number
+          total_rewards_months?: number
+          total_uses?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          org_role?: string | null
+          owner_id?: string
+          total_rewards_credits?: number
+          total_rewards_months?: number
+          total_uses?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referral_fraud_log: {
+        Row: {
+          created_at: string
+          data: Json
+          device_fingerprint: string | null
+          id: string
+          ip_address: string | null
+          reason: string
+          referral_id: string | null
+          severity: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          device_fingerprint?: string | null
+          id?: string
+          ip_address?: string | null
+          reason: string
+          referral_id?: string | null
+          severity?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          device_fingerprint?: string | null
+          id?: string
+          ip_address?: string | null
+          reason?: string
+          referral_id?: string | null
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_fraud_log_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          data: Json
+          id: string
+          is_read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          is_read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          is_read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referral_promo_codes: {
+        Row: {
+          applicable_modules: Json
+          applicable_tiers: Json
+          bonus_ai_credits: number
+          bonus_credits: number
+          bonus_months: number
+          code: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          discount_pct: number
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          updated_at: string
+          used_count: number
+          valid_from: string
+          valid_until: string | null
+        }
+        Insert: {
+          applicable_modules?: Json
+          applicable_tiers?: Json
+          bonus_ai_credits?: number
+          bonus_credits?: number
+          bonus_months?: number
+          code: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_pct?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Update: {
+          applicable_modules?: Json
+          applicable_tiers?: Json
+          bonus_ai_credits?: number
+          bonus_credits?: number
+          bonus_months?: number
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_pct?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
+      referral_rewards_ledger: {
+        Row: {
+          amount: number
+          applied_to: string
+          balance_after: number | null
+          balance_before: number | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["referral_reward_kind"]
+          notes: string | null
+          referral_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          applied_to?: string
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["referral_reward_kind"]
+          notes?: string | null
+          referral_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          applied_to?: string
+          balance_after?: number | null
+          balance_before?: number | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["referral_reward_kind"]
+          notes?: string | null
+          referral_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_rewards_ledger_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_settings: {
+        Row: {
+          auto_approve: boolean
+          base_reward_ai: Json
+          base_reward_basic: Json
+          base_reward_premium: Json
+          block_self_referral: boolean
+          id: number
+          max_referrals_per_ip_24h: number
+          require_subscription: boolean
+          updated_at: string
+        }
+        Insert: {
+          auto_approve?: boolean
+          base_reward_ai?: Json
+          base_reward_basic?: Json
+          base_reward_premium?: Json
+          block_self_referral?: boolean
+          id?: number
+          max_referrals_per_ip_24h?: number
+          require_subscription?: boolean
+          updated_at?: string
+        }
+        Update: {
+          auto_approve?: boolean
+          base_reward_ai?: Json
+          base_reward_basic?: Json
+          base_reward_premium?: Json
+          block_self_referral?: boolean
+          id?: number
+          max_referrals_per_ip_24h?: number
+          require_subscription?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referral_tiers: {
+        Row: {
+          bonus_multiplier: number
+          color: string | null
+          display_name: string
+          icon: string | null
+          level: Database["public"]["Enums"]["referral_tier_level"]
+          min_referrals: number
+          perks: Json
+        }
+        Insert: {
+          bonus_multiplier?: number
+          color?: string | null
+          display_name: string
+          icon?: string | null
+          level: Database["public"]["Enums"]["referral_tier_level"]
+          min_referrals: number
+          perks?: Json
+        }
+        Update: {
+          bonus_multiplier?: number
+          color?: string | null
+          display_name?: string
+          icon?: string | null
+          level?: Database["public"]["Enums"]["referral_tier_level"]
+          min_referrals?: number
+          perks?: Json
+        }
+        Relationships: []
+      }
+      referral_wallet: {
+        Row: {
+          ai_credits_balance: number
+          credits_balance: number
+          lifetime_earned: number
+          lifetime_spent: number
+          months_balance: number
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          ai_credits_balance?: number
+          credits_balance?: number
+          lifetime_earned?: number
+          lifetime_spent?: number
+          months_balance?: number
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          ai_credits_balance?: number
+          credits_balance?: number
+          lifetime_earned?: number
+          lifetime_spent?: number
+          months_balance?: number
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          approved_at: string | null
+          code_id: string | null
+          code_text: string | null
+          created_at: string
+          device_fingerprint: string | null
+          id: string
+          ip_address: string | null
+          meta: Json
+          referred_email: string | null
+          referred_org_role: string | null
+          referred_user_id: string | null
+          referrer_id: string
+          registered_at: string | null
+          rejected_at: string | null
+          rejected_reason: string | null
+          reward_ai_credits: number
+          reward_credits: number
+          reward_months: number
+          status: Database["public"]["Enums"]["referral_status"]
+          subscribed_at: string | null
+          subscription_module: string | null
+          subscription_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          code_id?: string | null
+          code_text?: string | null
+          created_at?: string
+          device_fingerprint?: string | null
+          id?: string
+          ip_address?: string | null
+          meta?: Json
+          referred_email?: string | null
+          referred_org_role?: string | null
+          referred_user_id?: string | null
+          referrer_id: string
+          registered_at?: string | null
+          rejected_at?: string | null
+          rejected_reason?: string | null
+          reward_ai_credits?: number
+          reward_credits?: number
+          reward_months?: number
+          status?: Database["public"]["Enums"]["referral_status"]
+          subscribed_at?: string | null
+          subscription_module?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          code_id?: string | null
+          code_text?: string | null
+          created_at?: string
+          device_fingerprint?: string | null
+          id?: string
+          ip_address?: string | null
+          meta?: Json
+          referred_email?: string | null
+          referred_org_role?: string | null
+          referred_user_id?: string | null
+          referrer_id?: string
+          registered_at?: string | null
+          rejected_at?: string | null
+          rejected_reason?: string | null
+          reward_ai_credits?: number
+          reward_credits?: number
+          reward_months?: number
+          status?: Database["public"]["Enums"]["referral_status"]
+          subscribed_at?: string | null
+          subscription_module?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registered_clinics: {
         Row: {
           accepts_remote_patients: boolean | null
@@ -13875,6 +14280,16 @@ export type Database = {
       }
     }
     Views: {
+      referral_leaderboard: {
+        Row: {
+          org_role: string | null
+          owner_id: string | null
+          rank: number | null
+          total_rewards_credits: number | null
+          total_uses: number | null
+        }
+        Relationships: []
+      }
       registered_clinics_public: {
         Row: {
           additional_phone: string | null
@@ -13967,6 +14382,10 @@ export type Database = {
       }
     }
     Functions: {
+      apply_referral_reward: {
+        Args: { _referral_id: string }
+        Returns: undefined
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -13978,6 +14397,26 @@ export type Database = {
       enqueue_webhook_event: {
         Args: { _event: string; _payload: Json }
         Returns: number
+      }
+      ensure_referral_wallet: {
+        Args: { _owner_id: string }
+        Returns: undefined
+      }
+      generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_referral_stats: {
+        Args: { _owner_id: string }
+        Returns: {
+          approved_count: number
+          conversion_rate: number
+          current_tier: string
+          next_tier_min: number
+          pending_count: number
+          subscribed_count: number
+          total_ai_credits: number
+          total_credits: number
+          total_invites: number
+          total_months: number
+        }[]
       }
       get_saas_access: {
         Args: { _module: string; _owner_id: string }
@@ -14047,6 +14486,15 @@ export type Database = {
         | "pharmacy"
         | "bloodbank"
         | "dental"
+      referral_reward_kind: "credits" | "months" | "ai_credits"
+      referral_status:
+        | "pending"
+        | "registered"
+        | "subscribed"
+        | "approved"
+        | "rejected"
+        | "fraud"
+      referral_tier_level: "bronze" | "silver" | "gold" | "platinum" | "vip"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -14187,6 +14635,16 @@ export const Constants = {
         "bloodbank",
         "dental",
       ],
+      referral_reward_kind: ["credits", "months", "ai_credits"],
+      referral_status: [
+        "pending",
+        "registered",
+        "subscribed",
+        "approved",
+        "rejected",
+        "fraud",
+      ],
+      referral_tier_level: ["bronze", "silver", "gold", "platinum", "vip"],
     },
   },
 } as const
