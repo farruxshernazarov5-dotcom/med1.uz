@@ -1339,6 +1339,7 @@ const AdminDashboard = () => {
           {tab === "dental_hms" && <AdminDentalModule />}
           {tab === "knowledge" && <AdminKnowledgeModule />}
           {tab === "referral_admin" && <ReferralAdmin />}
+          {tab === "referral_fraud" && <ReferralFraudAdmin />}
 
           {tab === "audit" && (
             <div className="space-y-3">
