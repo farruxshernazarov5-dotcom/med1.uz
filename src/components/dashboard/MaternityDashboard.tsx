@@ -8,7 +8,6 @@ import {
   UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield, Crown, Gift
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
-import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import InsuranceModule from "@/components/insurance/InsuranceModule";

@@ -12,7 +12,6 @@ import {
   Save, Loader2, Users, Truck, Wallet, Tag, UserCog, Receipt, ShieldCheck, Crown, Gift
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
-import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";

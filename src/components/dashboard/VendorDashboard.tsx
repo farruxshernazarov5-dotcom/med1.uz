@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Package, Wrench, Calendar, Users, Box, UserCog, DollarSign, BarChart3, LayoutDashboard, Gift } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
-import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import MTOverview from "@/components/medtech/MTOverview";

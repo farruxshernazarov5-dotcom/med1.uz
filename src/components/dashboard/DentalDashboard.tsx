@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import ReferralPanel from "@/components/referral/ReferralPanel";
-import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import type { SidebarItem } from "./DashboardShell";
 import { writeAuditLog } from "@/utils/auditLog";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
