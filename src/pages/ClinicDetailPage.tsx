@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useMemo } from "react";
+import SEO from "@/components/SEO";
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import ShareButton from "@/components/ShareButton";
