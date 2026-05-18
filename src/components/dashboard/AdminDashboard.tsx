@@ -7,7 +7,7 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
@@ -16,6 +16,7 @@ import AdminKnowledgeModule from "@/components/admin/AdminKnowledgeModule";
 import AdminGeoTemplates from "@/components/admin/AdminGeoTemplates";
 import AdminPremiumPerks from "@/components/admin/AdminPremiumPerks";
 import AdminApiPartners from "@/components/admin/AdminApiPartners";
+import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,7 @@ const sidebarSections = [
       { id: "premium_perks", label: "💎 Premium & Promo", icon: Megaphone },
       { id: "api_partners", label: "🔌 API Hamkorlar", icon: Plug },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
+      { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
     ]
   },
   {
@@ -1334,6 +1336,7 @@ const AdminDashboard = () => {
           {tab === "api_partners" && <AdminApiPartners />}
           {tab === "dental_hms" && <AdminDentalModule />}
           {tab === "knowledge" && <AdminKnowledgeModule />}
+          {tab === "referral_admin" && <ReferralAdmin />}
 
           {tab === "audit" && (
             <div className="space-y-3">
