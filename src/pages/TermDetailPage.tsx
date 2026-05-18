@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { BookOpen, Stethoscope, Shield, Lightbulb, AlertTriangle, Info, ArrowLeft, Share2, Link as LinkIcon, Check } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
