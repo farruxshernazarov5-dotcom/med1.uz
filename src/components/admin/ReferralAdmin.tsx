@@ -60,6 +60,11 @@ type Settings = {
   auto_approve: boolean;
   block_self_referral: boolean;
   ip_device_limit: number;
+  min_subscription_amount?: number;
+  qualify_within_days?: number;
+  reward_hold_days?: number;
+  cancel_on_refund?: boolean;
+  cancel_on_unsubscribe_days?: number;
 };
 
 type FraudLog = {
@@ -503,10 +508,22 @@ function SettingsForm({ settings, reload }: { settings: Settings | null; reload:
       auto_approve: form.auto_approve,
       block_self_referral: form.block_self_referral,
       ip_device_limit: Number(form.ip_device_limit) || 3,
+      min_subscription_amount: Number(form.min_subscription_amount) || 0,
+      qualify_within_days: Number(form.qualify_within_days) || 0,
+      reward_hold_days: Number(form.reward_hold_days) || 0,
+      cancel_on_refund: !!form.cancel_on_refund,
+      cancel_on_unsubscribe_days: Number(form.cancel_on_unsubscribe_days) || 0,
       updated_at: new Date().toISOString(),
     });
     if (error) { toast({ title: "Xato", description: error.message, variant: "destructive" }); return; }
     toast({ title: "✅ Sozlamalar saqlandi" });
+    reload();
+  };
+
+  const releaseHeld = async () => {
+    const { data, error } = await sb.rpc("release_held_referral_rewards");
+    if (error) { toast({ title: "Xato", description: error.message, variant: "destructive" }); return; }
+    toast({ title: `✅ ${data ?? 0} ta hold ostidagi bonus faollashtirildi` });
     reload();
   };
 
@@ -528,30 +545,73 @@ function SettingsForm({ settings, reload }: { settings: Settings | null; reload:
   };
 
   return (
-    <Card>
-      <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Gift className="w-4 h-4" /> Asosiy bonus matritsasi (har bir tier uchun)</CardTitle></CardHeader>
-      <CardContent className="space-y-4">
-        <TierRow tier="basic" label="Basic" />
-        <TierRow tier="premium" label="Premium" />
-        <TierRow tier="ai" label="AI / Pro" />
+    <div className="space-y-4">
+      <Card>
+        <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Gift className="w-4 h-4" /> Asosiy bonus matritsasi (har bir tier uchun)</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <TierRow tier="basic" label="Basic" />
+          <TierRow tier="premium" label="Premium" />
+          <TierRow tier="ai" label="AI / Pro" />
+        </CardContent>
+      </Card>
 
-        <div className="border-t border-border pt-4 space-y-3">
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={!!form.auto_approve} onChange={(e) => setForm({ ...form, auto_approve: e.target.checked })} />
-            Avtomatik tasdiqlash (subscribed bo'lgach reward darhol beriladi)
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={!!form.block_self_referral} onChange={(e) => setForm({ ...form, block_self_referral: e.target.checked })} />
-            Self-referralni bloklash
-          </label>
-          <div>
-            <label className="text-xs text-muted-foreground">Bir IP/device dan maksimal referrals</label>
-            <Input type="number" className="mt-1 w-32" value={form.ip_device_limit ?? 3} onChange={(e) => setForm({ ...form, ip_device_limit: Number(e.target.value) })} />
+      <Card>
+        <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Settings2 className="w-4 h-4" /> Bonus hisoblash qoidalari</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Minimal obuna summasi (UZS)</label>
+              <Input type="number" min={0} className="mt-1" value={form.min_subscription_amount ?? 0}
+                onChange={(e) => setForm({ ...form, min_subscription_amount: Number(e.target.value) })} />
+              <p className="text-[10px] text-muted-foreground mt-1">Shu summadan kam to'lov bonusga sabab bo'lmaydi (0 = limit yo'q)</p>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Konversiya vaqti limiti (kun)</label>
+              <Input type="number" min={0} className="mt-1" value={form.qualify_within_days ?? 30}
+                onChange={(e) => setForm({ ...form, qualify_within_days: Number(e.target.value) })} />
+              <p className="text-[10px] text-muted-foreground mt-1">Ro'yxatdan o'tgandan keyin shu kun ichida obuna bo'lmasa — `expired`</p>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Bonus hold muddati (kun)</label>
+              <Input type="number" min={0} className="mt-1" value={form.reward_hold_days ?? 0}
+                onChange={(e) => setForm({ ...form, reward_hold_days: Number(e.target.value) })} />
+              <p className="text-[10px] text-muted-foreground mt-1">Hamyonga o'tishdan oldin necha kun "hold" bo'lib turadi (chargeback himoyasi)</p>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Avto-bekor: obunadan chiqish oynasi (kun)</label>
+              <Input type="number" min={0} className="mt-1" value={form.cancel_on_unsubscribe_days ?? 0}
+                onChange={(e) => setForm({ ...form, cancel_on_unsubscribe_days: Number(e.target.value) })} />
+              <p className="text-[10px] text-muted-foreground mt-1">Shu muddat ichida obuna bekor qilinsa — bonus revoke qilinadi (0 = o'chiq)</p>
+            </div>
           </div>
-        </div>
 
-        <Button onClick={save}>Saqlash</Button>
-      </CardContent>
-    </Card>
+          <div className="border-t border-border pt-4 space-y-3">
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={!!form.cancel_on_refund} onChange={(e) => setForm({ ...form, cancel_on_refund: e.target.checked })} />
+              To'lov qaytarilsa (refund/chargeback) — bonusni avtomatik bekor qilish
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={!!form.auto_approve} onChange={(e) => setForm({ ...form, auto_approve: e.target.checked })} />
+              Avtomatik tasdiqlash (subscribed bo'lgach reward darhol beriladi)
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={!!form.block_self_referral} onChange={(e) => setForm({ ...form, block_self_referral: e.target.checked })} />
+              Self-referralni bloklash
+            </label>
+            <div>
+              <label className="text-xs text-muted-foreground">Bir IP/device dan maksimal referrals</label>
+              <Input type="number" className="mt-1 w-32" value={form.ip_device_limit ?? 3} onChange={(e) => setForm({ ...form, ip_device_limit: Number(e.target.value) })} />
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button onClick={save}>Saqlash</Button>
+            <Button variant="outline" onClick={releaseHeld}>
+              <RefreshCw className="w-4 h-4 mr-1.5" /> Hold ostidagilarni faollashtirish
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

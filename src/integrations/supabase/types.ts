@@ -12979,9 +12979,14 @@ export type Database = {
           base_reward_basic: Json
           base_reward_premium: Json
           block_self_referral: boolean
+          cancel_on_refund: boolean
+          cancel_on_unsubscribe_days: number
           id: number
           max_referrals_per_ip_24h: number
+          min_subscription_amount: number
+          qualify_within_days: number
           require_subscription: boolean
+          reward_hold_days: number
           updated_at: string
         }
         Insert: {
@@ -12990,9 +12995,14 @@ export type Database = {
           base_reward_basic?: Json
           base_reward_premium?: Json
           block_self_referral?: boolean
+          cancel_on_refund?: boolean
+          cancel_on_unsubscribe_days?: number
           id?: number
           max_referrals_per_ip_24h?: number
+          min_subscription_amount?: number
+          qualify_within_days?: number
           require_subscription?: boolean
+          reward_hold_days?: number
           updated_at?: string
         }
         Update: {
@@ -13001,9 +13011,14 @@ export type Database = {
           base_reward_basic?: Json
           base_reward_premium?: Json
           block_self_referral?: boolean
+          cancel_on_refund?: boolean
+          cancel_on_unsubscribe_days?: number
           id?: number
           max_referrals_per_ip_24h?: number
+          min_subscription_amount?: number
+          qualify_within_days?: number
           require_subscription?: boolean
+          reward_hold_days?: number
           updated_at?: string
         }
         Relationships: []
@@ -13071,10 +13086,13 @@ export type Database = {
       referrals: {
         Row: {
           approved_at: string | null
+          cancelled_at: string | null
+          cancelled_reason: string | null
           code_id: string | null
           code_text: string | null
           created_at: string
           device_fingerprint: string | null
+          hold_until: string | null
           id: string
           ip_address: string | null
           meta: Json
@@ -13090,16 +13108,20 @@ export type Database = {
           reward_months: number
           status: Database["public"]["Enums"]["referral_status"]
           subscribed_at: string | null
+          subscription_amount: number | null
           subscription_module: string | null
           subscription_tier: string | null
           updated_at: string
         }
         Insert: {
           approved_at?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
           code_id?: string | null
           code_text?: string | null
           created_at?: string
           device_fingerprint?: string | null
+          hold_until?: string | null
           id?: string
           ip_address?: string | null
           meta?: Json
@@ -13115,16 +13137,20 @@ export type Database = {
           reward_months?: number
           status?: Database["public"]["Enums"]["referral_status"]
           subscribed_at?: string | null
+          subscription_amount?: number | null
           subscription_module?: string | null
           subscription_tier?: string | null
           updated_at?: string
         }
         Update: {
           approved_at?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
           code_id?: string | null
           code_text?: string | null
           created_at?: string
           device_fingerprint?: string | null
+          hold_until?: string | null
           id?: string
           ip_address?: string | null
           meta?: Json
@@ -13140,6 +13166,7 @@ export type Database = {
           reward_months?: number
           status?: Database["public"]["Enums"]["referral_status"]
           subscribed_at?: string | null
+          subscription_amount?: number | null
           subscription_module?: string | null
           subscription_tier?: string | null
           updated_at?: string
@@ -14474,6 +14501,11 @@ export type Database = {
           read_ct: number
         }[]
       }
+      release_held_referral_rewards: { Args: never; Returns: number }
+      revoke_referral_reward: {
+        Args: { _reason?: string; _referral_id: string }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
@@ -14498,6 +14530,8 @@ export type Database = {
         | "approved"
         | "rejected"
         | "fraud"
+        | "expired"
+        | "cancelled"
       referral_tier_level: "bronze" | "silver" | "gold" | "platinum" | "vip"
     }
     CompositeTypes: {
@@ -14647,6 +14681,8 @@ export const Constants = {
         "approved",
         "rejected",
         "fraud",
+        "expired",
+        "cancelled",
       ],
       referral_tier_level: ["bronze", "silver", "gold", "platinum", "vip"],
     },
