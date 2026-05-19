@@ -14398,6 +14398,10 @@ export type Database = {
         Args: { _event: string; _payload: Json }
         Returns: number
       }
+      ensure_referral_code: {
+        Args: { _kind?: string; _org_role?: string; _owner_id: string }
+        Returns: string
+      }
       ensure_referral_wallet: {
         Args: { _owner_id: string }
         Returns: undefined
