@@ -60,6 +60,11 @@ type Settings = {
   auto_approve: boolean;
   block_self_referral: boolean;
   ip_device_limit: number;
+  min_subscription_amount?: number;
+  qualify_within_days?: number;
+  reward_hold_days?: number;
+  cancel_on_refund?: boolean;
+  cancel_on_unsubscribe_days?: number;
 };
 
 type FraudLog = {
