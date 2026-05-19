@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Baby, LayoutDashboard, Users, Activity, FlaskConical, ScanLine, Heart,
-  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield, Crown, Gift
+  UserCog, Pill, DollarSign, CreditCard, Loader2, ShieldCheck, Shield, Crown, Gift,
+  Stethoscope, Bed, Siren, Bot
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
@@ -14,13 +15,18 @@ import InsuranceModule from "@/components/insurance/InsuranceModule";
 import { MatOverview } from "@/components/maternity/MatOverview";
 import { MatPatients } from "@/components/maternity/MatPatients";
 import { MatPregnancyTracking } from "@/components/maternity/MatPregnancyTracking";
+import { MatAntenatal } from "@/components/maternity/MatAntenatal";
 import { MatLab } from "@/components/maternity/MatLab";
 import { MatUltrasound } from "@/components/maternity/MatUltrasound";
 import { MatDeliveries } from "@/components/maternity/MatDeliveries";
 import { MatNewborns } from "@/components/maternity/MatNewborns";
+import { MatPostpartum } from "@/components/maternity/MatPostpartum";
 import { MatStaff } from "@/components/maternity/MatStaff";
 import { MatPrescriptions } from "@/components/maternity/MatPrescriptions";
 import { MatFinance } from "@/components/maternity/MatFinance";
+import { MatBeds } from "@/components/maternity/MatBeds";
+import { MatEmergency } from "@/components/maternity/MatEmergency";
+import { MatAIAssistant } from "@/components/maternity/MatAIAssistant";
 import MaternitySubscription from "@/components/dashboard/MaternitySubscription";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
@@ -28,14 +34,19 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "overview", label: "Bosh sahifa", icon: LayoutDashboard, group: "Asosiy" },
   { id: "patients", label: "Homiladorlar", icon: Users, group: "Asosiy" },
   { id: "tracking", label: "Kuzatuv", icon: Activity, group: "Asosiy" },
+  { id: "antenatal", label: "Antenatal", icon: Stethoscope, group: "Asosiy" },
 
   { id: "lab", label: "Laboratoriya", icon: FlaskConical, group: "Tibbiy" },
   { id: "ultrasound", label: "UZI", icon: ScanLine, group: "Tibbiy" },
   { id: "prescriptions", label: "Retseptlar", icon: Pill, group: "Tibbiy" },
+  { id: "ai-assistant", label: "🤖 AI Assistent", icon: Bot, group: "Tibbiy" },
 
+  { id: "emergency", label: "🚨 Emergency", icon: Siren, group: "Tug'ruq" },
   { id: "deliveries", label: "Tug'ruqlar", icon: Heart, group: "Tug'ruq" },
   { id: "newborns", label: "Chaqaloqlar", icon: Baby, group: "Tug'ruq" },
+  { id: "postpartum", label: "Postpartum", icon: Heart, group: "Tug'ruq" },
 
+  { id: "beds", label: "Karavotlar", icon: Bed, group: "Boshqaruv" },
   { id: "staff", label: "Xodimlar", icon: UserCog, group: "Boshqaruv" },
   { id: "finance", label: "Moliya", icon: DollarSign, group: "Boshqaruv" },
   { id: "subscription", label: "Obuna", icon: CreditCard, group: "Boshqaruv" },
@@ -93,17 +104,22 @@ const MaternityDashboard = () => {
       {tab === "overview" && <MatOverview centerId={center.id} />}
       {tab === "patients" && <MatPatients centerId={center.id} />}
       {tab === "tracking" && <MatPregnancyTracking centerId={center.id} />}
+      {tab === "antenatal" && <MatAntenatal centerId={center.id} />}
       {tab === "lab" && <MatLab centerId={center.id} />}
       {tab === "ultrasound" && <MatUltrasound centerId={center.id} />}
+      {tab === "ai-assistant" && <MatAIAssistant />}
+      {tab === "emergency" && <MatEmergency centerId={center.id} />}
       {tab === "deliveries" && <MatDeliveries centerId={center.id} />}
       {tab === "newborns" && <MatNewborns centerId={center.id} />}
+      {tab === "postpartum" && <MatPostpartum centerId={center.id} />}
       {tab === "prescriptions" && <MatPrescriptions centerId={center.id} />}
+      {tab === "beds" && <MatBeds centerId={center.id} />}
       {tab === "staff" && <MatStaff centerId={center.id} />}
       {tab === "finance" && <MatFinance centerId={center.id} />}
       {tab === "subscription" && <MaternitySubscription />}
       {tab === "attendance" && <OrgAttendance orgType="maternity" orgName={center.name} />}
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="maternity" />}
-          {tab === "premium" && <PremiumPerksPanel moduleId="maternity" />}
+      {tab === "premium" && <PremiumPerksPanel moduleId="maternity" />}
       {tab === "partner-referral" && <ReferralPanel />}
     </DashboardShell>
   );
