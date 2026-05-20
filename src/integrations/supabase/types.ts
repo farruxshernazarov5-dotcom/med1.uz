@@ -1269,6 +1269,485 @@ export type Database = {
         }
         Relationships: []
       }
+      contract_access_log: {
+        Row: {
+          action: string
+          contract_id: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          meta: Json
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          contract_id: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          meta?: Json
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          contract_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          meta?: Json
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_access_log_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_categories: {
+        Row: {
+          created_at: string
+          description_ru: string | null
+          description_uz: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name_ru: string
+          name_uz: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_ru?: string | null
+          description_uz?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name_ru: string
+          name_uz: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_ru?: string | null
+          description_uz?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name_ru?: string
+          name_uz?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contract_notifications: {
+        Row: {
+          body: string | null
+          contract_id: string | null
+          created_at: string
+          data: Json
+          id: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          contract_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          contract_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_notifications_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_signature_otps: {
+        Row: {
+          attempts: number
+          channel: string
+          consumed_at: string | null
+          contract_id: string
+          created_at: string
+          destination: string
+          expires_at: string
+          id: string
+          otp_code: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          channel?: string
+          consumed_at?: string | null
+          contract_id: string
+          created_at?: string
+          destination: string
+          expires_at?: string
+          id?: string
+          otp_code: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          consumed_at?: string | null
+          contract_id?: string
+          created_at?: string
+          destination?: string
+          expires_at?: string
+          id?: string
+          otp_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signature_otps_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_signatures: {
+        Row: {
+          contract_id: string
+          device_type: string | null
+          geo_city: string | null
+          geo_country: string | null
+          id: string
+          ip_address: string | null
+          is_valid: boolean
+          method: Database["public"]["Enums"]["signature_method"]
+          otp_channel: string | null
+          otp_verified: boolean
+          revoked_at: string | null
+          revoked_reason: string | null
+          signature_hash: string
+          signature_image_url: string | null
+          signed_at: string
+          signer_email: string | null
+          signer_id: string
+          signer_name: string
+          signer_phone: string | null
+          signer_role: Database["public"]["Enums"]["contract_party_role"]
+          user_agent: string | null
+        }
+        Insert: {
+          contract_id: string
+          device_type?: string | null
+          geo_city?: string | null
+          geo_country?: string | null
+          id?: string
+          ip_address?: string | null
+          is_valid?: boolean
+          method?: Database["public"]["Enums"]["signature_method"]
+          otp_channel?: string | null
+          otp_verified?: boolean
+          revoked_at?: string | null
+          revoked_reason?: string | null
+          signature_hash: string
+          signature_image_url?: string | null
+          signed_at?: string
+          signer_email?: string | null
+          signer_id: string
+          signer_name: string
+          signer_phone?: string | null
+          signer_role?: Database["public"]["Enums"]["contract_party_role"]
+          user_agent?: string | null
+        }
+        Update: {
+          contract_id?: string
+          device_type?: string | null
+          geo_city?: string | null
+          geo_country?: string | null
+          id?: string
+          ip_address?: string | null
+          is_valid?: boolean
+          method?: Database["public"]["Enums"]["signature_method"]
+          otp_channel?: string | null
+          otp_verified?: boolean
+          revoked_at?: string | null
+          revoked_reason?: string | null
+          signature_hash?: string
+          signature_image_url?: string | null
+          signed_at?: string
+          signer_email?: string | null
+          signer_id?: string
+          signer_name?: string
+          signer_phone?: string | null
+          signer_role?: Database["public"]["Enums"]["contract_party_role"]
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signatures_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_template_versions: {
+        Row: {
+          body_ru: string
+          body_uz: string
+          change_notes: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          template_id: string
+          title_ru: string
+          title_uz: string
+          version: string
+        }
+        Insert: {
+          body_ru: string
+          body_uz: string
+          change_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          template_id: string
+          title_ru: string
+          title_uz: string
+          version: string
+        }
+        Update: {
+          body_ru?: string
+          body_uz?: string
+          change_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          template_id?: string
+          title_ru?: string
+          title_uz?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_template_versions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "contract_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_templates: {
+        Row: {
+          allowed_roles: string[]
+          body_ru: string
+          body_uz: string
+          category_id: string | null
+          created_at: string
+          created_by: string | null
+          current_version: string
+          id: string
+          is_active: boolean
+          is_mandatory: boolean
+          jurisdiction: string
+          required_signature: Database["public"]["Enums"]["signature_method"]
+          slug: string
+          summary_ru: string | null
+          summary_uz: string | null
+          title_ru: string
+          title_uz: string
+          updated_at: string
+          valid_for_days: number | null
+          variables: Json
+        }
+        Insert: {
+          allowed_roles?: string[]
+          body_ru: string
+          body_uz: string
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_version?: string
+          id?: string
+          is_active?: boolean
+          is_mandatory?: boolean
+          jurisdiction?: string
+          required_signature?: Database["public"]["Enums"]["signature_method"]
+          slug: string
+          summary_ru?: string | null
+          summary_uz?: string | null
+          title_ru: string
+          title_uz: string
+          updated_at?: string
+          valid_for_days?: number | null
+          variables?: Json
+        }
+        Update: {
+          allowed_roles?: string[]
+          body_ru?: string
+          body_uz?: string
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_version?: string
+          id?: string
+          is_active?: boolean
+          is_mandatory?: boolean
+          jurisdiction?: string
+          required_signature?: Database["public"]["Enums"]["signature_method"]
+          slug?: string
+          summary_ru?: string | null
+          summary_uz?: string | null
+          title_ru?: string
+          title_uz?: string
+          updated_at?: string
+          valid_for_days?: number | null
+          variables?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_templates_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "contract_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracts: {
+        Row: {
+          body_ru: string
+          body_uz: string
+          category_slug: string | null
+          contract_number: string
+          counterparty_id: string | null
+          counterparty_name: string | null
+          created_at: string
+          effective_from: string | null
+          effective_until: string | null
+          filled_data: Json
+          hash_id: string
+          id: string
+          language: string
+          meta: Json
+          organization_id: string | null
+          owner_id: string
+          owner_role: Database["public"]["Enums"]["contract_party_role"]
+          pdf_url: string | null
+          pdf_watermark: string | null
+          signed_at: string | null
+          status: Database["public"]["Enums"]["contract_status"]
+          template_id: string | null
+          template_version: string
+          terminated_at: string | null
+          terminated_reason: string | null
+          title_ru: string
+          title_uz: string
+          updated_at: string
+        }
+        Insert: {
+          body_ru: string
+          body_uz: string
+          category_slug?: string | null
+          contract_number: string
+          counterparty_id?: string | null
+          counterparty_name?: string | null
+          created_at?: string
+          effective_from?: string | null
+          effective_until?: string | null
+          filled_data?: Json
+          hash_id?: string
+          id?: string
+          language?: string
+          meta?: Json
+          organization_id?: string | null
+          owner_id: string
+          owner_role?: Database["public"]["Enums"]["contract_party_role"]
+          pdf_url?: string | null
+          pdf_watermark?: string | null
+          signed_at?: string | null
+          status?: Database["public"]["Enums"]["contract_status"]
+          template_id?: string | null
+          template_version: string
+          terminated_at?: string | null
+          terminated_reason?: string | null
+          title_ru: string
+          title_uz: string
+          updated_at?: string
+        }
+        Update: {
+          body_ru?: string
+          body_uz?: string
+          category_slug?: string | null
+          contract_number?: string
+          counterparty_id?: string | null
+          counterparty_name?: string | null
+          created_at?: string
+          effective_from?: string | null
+          effective_until?: string | null
+          filled_data?: Json
+          hash_id?: string
+          id?: string
+          language?: string
+          meta?: Json
+          organization_id?: string | null
+          owner_id?: string
+          owner_role?: Database["public"]["Enums"]["contract_party_role"]
+          pdf_url?: string | null
+          pdf_watermark?: string | null
+          signed_at?: string | null
+          status?: Database["public"]["Enums"]["contract_status"]
+          template_id?: string | null
+          template_version?: string
+          terminated_at?: string | null
+          terminated_reason?: string | null
+          title_ru?: string
+          title_uz?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "contract_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cosmetology_appointments: {
         Row: {
           appointment_date: string
@@ -14744,6 +15223,21 @@ export type Database = {
         | "pharmacy"
         | "bloodbank"
         | "dental"
+      contract_party_role:
+        | "platform"
+        | "clinic"
+        | "partner"
+        | "patient"
+        | "api_partner"
+        | "organization"
+        | "staff"
+      contract_status:
+        | "draft"
+        | "pending_signature"
+        | "active"
+        | "expired"
+        | "terminated"
+        | "cancelled"
       referral_reward_kind: "credits" | "months" | "ai_credits"
       referral_status:
         | "pending"
@@ -14755,6 +15249,7 @@ export type Database = {
         | "expired"
         | "cancelled"
       referral_tier_level: "bronze" | "silver" | "gold" | "platinum" | "vip"
+      signature_method: "otp" | "canvas" | "otp_canvas" | "checkbox"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -14895,6 +15390,23 @@ export const Constants = {
         "bloodbank",
         "dental",
       ],
+      contract_party_role: [
+        "platform",
+        "clinic",
+        "partner",
+        "patient",
+        "api_partner",
+        "organization",
+        "staff",
+      ],
+      contract_status: [
+        "draft",
+        "pending_signature",
+        "active",
+        "expired",
+        "terminated",
+        "cancelled",
+      ],
       referral_reward_kind: ["credits", "months", "ai_credits"],
       referral_status: [
         "pending",
@@ -14907,6 +15419,7 @@ export const Constants = {
         "cancelled",
       ],
       referral_tier_level: ["bronze", "silver", "gold", "platinum", "vip"],
+      signature_method: ["otp", "canvas", "otp_canvas", "checkbox"],
     },
   },
 } as const
