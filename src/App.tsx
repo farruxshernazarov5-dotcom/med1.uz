@@ -73,6 +73,7 @@ const AISubscriptionPage = lazy(() => import("./pages/AISubscriptionPage"));
 const AIPaymentPage = lazy(() => import("./pages/AIPaymentPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
+const AdminLegalPage = lazy(() => import("./pages/AdminLegalPage"));
 const AIVitalSignsPage = lazy(() => import("./pages/AIVitalSignsPage"));
 const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistrationPage"));
 const DentalRegistrationPage = lazy(() => import("./pages/DentalRegistrationPage"));
@@ -193,6 +194,7 @@ const App = () => (
                 <Route path="/ai-payment" element={<AIPaymentPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin/legal" element={<AdminLegalPage />} />
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
                 <Route path="/blood-donor-register" element={<BloodDonorRegistrationPage />} />
                 <Route path="/dental-register" element={<DentalRegistrationPage />} />
