@@ -73,6 +73,7 @@ const AISubscriptionPage = lazy(() => import("./pages/AISubscriptionPage"));
 const AIPaymentPage = lazy(() => import("./pages/AIPaymentPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
+const AdminLegalPage = lazy(() => import("./pages/AdminLegalPage"));
 const AIVitalSignsPage = lazy(() => import("./pages/AIVitalSignsPage"));
 const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistrationPage"));
 const DentalRegistrationPage = lazy(() => import("./pages/DentalRegistrationPage"));
