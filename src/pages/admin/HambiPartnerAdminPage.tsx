@@ -26,6 +26,7 @@ import {
   Network, Sparkles, ChevronRight, Menu, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import UsersModule from "@/components/admin/hambi/UsersModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
