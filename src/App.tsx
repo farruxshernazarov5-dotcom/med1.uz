@@ -201,6 +201,8 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />
+                <Route path="/admin/partners/:slug" element={<HambiPartnerAdminPage />} />
+                <Route path="/admin/partners" element={<HambiPartnerAdminPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
                 <Route path="/legal" element={<LegalCenterPage />} />
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
