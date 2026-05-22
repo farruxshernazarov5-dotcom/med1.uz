@@ -18,6 +18,7 @@ import AdminPremiumPerks from "@/components/admin/AdminPremiumPerks";
 import AdminApiPartners from "@/components/admin/AdminApiPartners";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
+import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
