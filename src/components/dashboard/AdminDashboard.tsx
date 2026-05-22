@@ -69,6 +69,11 @@ const sidebarSections = [
     ]
   },
   {
+    label: "Hujjatlar", items: [
+      { id: "legal", label: "📜 Legal Shartnomalar", icon: FileText },
+    ]
+  },
+  {
     label: "Tizim", items: [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
