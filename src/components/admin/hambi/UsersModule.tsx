@@ -111,7 +111,7 @@ const UsersModule = ({ slug, lang }: Props) => {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: profiles, count }, { data: hambiVisits }] = await Promise.all([
+    const [profilesRes, visitsRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id,full_name,phone,created_at", { count: "exact" })
@@ -119,6 +119,9 @@ const UsersModule = ({ slug, lang }: Props) => {
         .limit(80),
       supabase.from("partner_visits").select("id", { count: "exact", head: true }).eq("source_slug", slug),
     ]);
+    const profiles = profilesRes.data as any[] | null;
+    const count = profilesRes.count as number | null;
+    const hambiVisits = visitsRes.count as number | null;
 
     const sources = ["hambi", "unitel", "direct", "telegram", "web"];
     const regions = ["Toshkent", "Samarqand", "Buxoro", "Andijon", "Farg'ona", "Namangan"];
