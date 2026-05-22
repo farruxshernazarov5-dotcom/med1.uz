@@ -92,12 +92,14 @@ const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
+const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
 import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
 import { GeoPromoProvider } from "./components/geo/GeoPromoProvider";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
+import HambiReturnButton from "./components/partner/HambiReturnButton";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 
