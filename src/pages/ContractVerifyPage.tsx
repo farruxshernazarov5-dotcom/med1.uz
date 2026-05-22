@@ -59,10 +59,10 @@ export default function ContractVerifyPage() {
     setSearched(true);
     setContract(null);
     setSignatures([]);
-    const { data: c } = await supabase.rpc("verify_contract_by_hash", { _hash_id: h.trim() });
+    const { data: c } = await (supabase.rpc as any)("verify_contract_by_hash", { _hash_id: h.trim() });
     if (c && (c as any[]).length > 0) {
       setContract((c as any[])[0]);
-      const { data: s } = await supabase.rpc("verify_contract_signatures", { _hash_id: h.trim() });
+      const { data: s } = await (supabase.rpc as any)("verify_contract_signatures", { _hash_id: h.trim() });
       setSignatures((s as Signature[]) || []);
     }
     setLoading(false);
