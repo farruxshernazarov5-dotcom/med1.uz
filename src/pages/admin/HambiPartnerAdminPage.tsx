@@ -23,13 +23,16 @@ import {
   ArrowLeft, Users, MousePointerClick, TrendingUp, Wallet, Activity, Cpu,
   Hospital, CalendarCheck, Gift, MapPin, Bell, BarChart3, Globe2, ShieldCheck,
   Handshake, BookOpen, Languages, Search, Download, Radio, Zap, Database,
-  Network, Sparkles, ChevronRight, Menu, X,
+  Network, Sparkles, ChevronRight, Menu, X, CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
 import AiServicesModule from "@/components/admin/hambi/AiServicesModule";
 import WebViewModule from "@/components/admin/hambi/WebViewModule";
-import LegalModule from "@/components/admin/hambi/LegalModule";
+import SubscriptionsModule from "@/components/admin/hambi/SubscriptionsModule";
+import RevenueModule from "@/components/admin/hambi/RevenueModule";
+import PaymentsModule from "@/components/admin/hambi/PaymentsModule";
+import DocumentsModule from "@/components/admin/hambi/DocumentsModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
@@ -46,6 +49,7 @@ const I18N: Record<string, Record<Lang, string>> = {
   users:          { uz: "Foydalanuvchilar", ru: "Пользователи", en: "Users" },
   subs:           { uz: "Obunalar", ru: "Подписки", en: "Subscriptions" },
   revenue:        { uz: "Daromad / RevShare", ru: "Доход / RevShare", en: "Revenue / RevShare" },
+  payments:       { uz: "To'lovlar", ru: "Платежи", en: "Payments" },
   ai:             { uz: "AI xizmatlari", ru: "AI-сервисы", en: "AI services" },
   clinics:        { uz: "Klinikalar", ru: "Клиники", en: "Clinics" },
   bookings:       { uz: "Bronlar", ru: "Записи", en: "Bookings" },
@@ -142,6 +146,7 @@ const MODULES = [
   { id: "users",    labelKey: "users",    icon: Users },
   { id: "subs",     labelKey: "subs",     icon: Wallet },
   { id: "revenue",  labelKey: "revenue",  icon: TrendingUp },
+  { id: "payments", labelKey: "payments", icon: CreditCard },
   { id: "ai",       labelKey: "ai",       icon: Cpu },
   { id: "clinics",  labelKey: "clinics",  icon: Hospital },
   { id: "bookings", labelKey: "bookings", icon: CalendarCheck },
@@ -467,8 +472,9 @@ const HambiPartnerAdminPage = () => {
   const SECTION: Record<string, JSX.Element> = {
     overview: OverviewSection,
     users:    <UsersModule slug={slug} lang={lang} />,
-    subs:     VisualSection(t("subs", lang),     Wallet,         "Faol/tugagan/bepul, AI kredit sarfi, avto-yangilash."),
-    revenue:  VisualSection(t("revenue", lang),  TrendingUp,     "Daromad, komissiyalar, ARPU, oylik to'lovlar."),
+    subs:     <SubscriptionsModule slug={slug} lang={lang} />,
+    revenue:  <RevenueModule slug={slug} lang={lang} />,
+    payments: <PaymentsModule slug={slug} lang={lang} />,
     ai:       <AiServicesModule slug={slug} lang={lang} />,
     clinics:  VisualSection(t("clinics", lang),  Hospital,       "Klinikalar, doktorlar, diagnostika, dorixonalar — moderatsiya."),
     bookings: VisualSection(t("bookings", lang), CalendarCheck,  "HAMBI bronlari: pending / confirmed / completed / cancelled."),
@@ -478,7 +484,7 @@ const HambiPartnerAdminPage = () => {
     webview:  <WebViewModule slug={slug} lang={lang} />,
     security: VisualSection(t("security", lang), ShieldCheck,    "Rollar, audit-loglar, sessiya kuzatuvi, firibgarlik aniqlash."),
     partners: VisualSection(t("partners", lang), Handshake,      "UNITEL, klinika, API va SaaS hamkorlar — RevShare."),
-    docs:     <LegalModule slug={slug} lang={lang} />,
+    docs:     <DocumentsModule slug={slug} lang={lang} />,
   };
 
   // ─────────── Render ───────────
