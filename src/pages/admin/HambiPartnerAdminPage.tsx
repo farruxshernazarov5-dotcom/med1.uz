@@ -145,6 +145,7 @@ const MODULES = [
   { id: "users",    labelKey: "users",    icon: Users },
   { id: "subs",     labelKey: "subs",     icon: Wallet },
   { id: "revenue",  labelKey: "revenue",  icon: TrendingUp },
+  { id: "payments", labelKey: "payments", icon: CreditCard },
   { id: "ai",       labelKey: "ai",       icon: Cpu },
   { id: "clinics",  labelKey: "clinics",  icon: Hospital },
   { id: "bookings", labelKey: "bookings", icon: CalendarCheck },
