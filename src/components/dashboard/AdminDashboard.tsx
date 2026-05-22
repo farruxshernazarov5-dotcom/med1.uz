@@ -71,6 +71,7 @@ const sidebarSections = [
   {
     label: "Hujjatlar", items: [
       { id: "legal", label: "📜 Legal Shartnomalar", icon: FileText },
+      { id: "master_contracts", label: "📑 Bosh Shartnoma (UZ/RU/EN)", icon: FileText },
     ]
   },
   {
