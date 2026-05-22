@@ -1313,11 +1313,13 @@ export type Database = {
       contract_categories: {
         Row: {
           created_at: string
+          description_en: string | null
           description_ru: string | null
           description_uz: string | null
           icon: string | null
           id: string
           is_active: boolean
+          name_en: string | null
           name_ru: string
           name_uz: string
           slug: string
@@ -1326,11 +1328,13 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description_en?: string | null
           description_ru?: string | null
           description_uz?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean
+          name_en?: string | null
           name_ru: string
           name_uz: string
           slug: string
@@ -1339,11 +1343,13 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description_en?: string | null
           description_ru?: string | null
           description_uz?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean
+          name_en?: string | null
           name_ru?: string
           name_uz?: string
           slug?: string
@@ -1573,6 +1579,7 @@ export type Database = {
       contract_templates: {
         Row: {
           allowed_roles: string[]
+          body_en: string | null
           body_ru: string
           body_uz: string
           category_id: string | null
@@ -1585,8 +1592,10 @@ export type Database = {
           jurisdiction: string
           required_signature: Database["public"]["Enums"]["signature_method"]
           slug: string
+          summary_en: string | null
           summary_ru: string | null
           summary_uz: string | null
+          title_en: string | null
           title_ru: string
           title_uz: string
           updated_at: string
@@ -1595,6 +1604,7 @@ export type Database = {
         }
         Insert: {
           allowed_roles?: string[]
+          body_en?: string | null
           body_ru: string
           body_uz: string
           category_id?: string | null
@@ -1607,8 +1617,10 @@ export type Database = {
           jurisdiction?: string
           required_signature?: Database["public"]["Enums"]["signature_method"]
           slug: string
+          summary_en?: string | null
           summary_ru?: string | null
           summary_uz?: string | null
+          title_en?: string | null
           title_ru: string
           title_uz: string
           updated_at?: string
@@ -1617,6 +1629,7 @@ export type Database = {
         }
         Update: {
           allowed_roles?: string[]
+          body_en?: string | null
           body_ru?: string
           body_uz?: string
           category_id?: string | null
@@ -1629,8 +1642,10 @@ export type Database = {
           jurisdiction?: string
           required_signature?: Database["public"]["Enums"]["signature_method"]
           slug?: string
+          summary_en?: string | null
           summary_ru?: string | null
           summary_uz?: string | null
+          title_en?: string | null
           title_ru?: string
           title_uz?: string
           updated_at?: string
@@ -1653,6 +1668,7 @@ export type Database = {
           approval_status: Database["public"]["Enums"]["contract_approval_status"]
           approved_at: string | null
           approved_by: string | null
+          body_en: string | null
           body_ru: string
           body_uz: string
           category_slug: string | null
@@ -1681,6 +1697,7 @@ export type Database = {
           template_version: string
           terminated_at: string | null
           terminated_reason: string | null
+          title_en: string | null
           title_ru: string
           title_uz: string
           updated_at: string
@@ -1690,6 +1707,7 @@ export type Database = {
           approval_status?: Database["public"]["Enums"]["contract_approval_status"]
           approved_at?: string | null
           approved_by?: string | null
+          body_en?: string | null
           body_ru: string
           body_uz: string
           category_slug?: string | null
@@ -1718,6 +1736,7 @@ export type Database = {
           template_version: string
           terminated_at?: string | null
           terminated_reason?: string | null
+          title_en?: string | null
           title_ru: string
           title_uz: string
           updated_at?: string
@@ -1727,6 +1746,7 @@ export type Database = {
           approval_status?: Database["public"]["Enums"]["contract_approval_status"]
           approved_at?: string | null
           approved_by?: string | null
+          body_en?: string | null
           body_ru?: string
           body_uz?: string
           category_slug?: string | null
@@ -1755,6 +1775,7 @@ export type Database = {
           template_version?: string
           terminated_at?: string | null
           terminated_reason?: string | null
+          title_en?: string | null
           title_ru?: string
           title_uz?: string
           updated_at?: string
@@ -15138,6 +15159,7 @@ export type Database = {
           approval_status: Database["public"]["Enums"]["contract_approval_status"]
           approved_at: string | null
           approved_by: string | null
+          body_en: string | null
           body_ru: string
           body_uz: string
           category_slug: string | null
@@ -15166,6 +15188,7 @@ export type Database = {
           template_version: string
           terminated_at: string | null
           terminated_reason: string | null
+          title_en: string | null
           title_ru: string
           title_uz: string
           updated_at: string
