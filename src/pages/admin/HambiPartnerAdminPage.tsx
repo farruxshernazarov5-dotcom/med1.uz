@@ -468,7 +468,7 @@ const HambiPartnerAdminPage = () => {
     users:    <UsersModule slug={slug} lang={lang} />,
     subs:     VisualSection(t("subs", lang),     Wallet,         "Faol/tugagan/bepul, AI kredit sarfi, avto-yangilash."),
     revenue:  VisualSection(t("revenue", lang),  TrendingUp,     "Daromad, komissiyalar, ARPU, oylik to'lovlar."),
-    ai:       VisualSection(t("ai", lang),       Cpu,            "AI so'rovlar, token sarfi, abuse-detection, kredit balanslari."),
+    ai:       <AiServicesModule slug={slug} lang={lang} />,
     clinics:  VisualSection(t("clinics", lang),  Hospital,       "Klinikalar, doktorlar, diagnostika, dorixonalar — moderatsiya."),
     bookings: VisualSection(t("bookings", lang), CalendarCheck,  "HAMBI bronlari: pending / confirmed / completed / cancelled."),
     promos:   VisualSection(t("promos", lang),   Gift,           "Push, geo-aksiyalar, referral bonuslari, AI chegirmalari."),
