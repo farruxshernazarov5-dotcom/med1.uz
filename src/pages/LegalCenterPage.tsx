@@ -152,8 +152,34 @@ export default function LegalCenterPage() {
               </div>
             ))}
           </div>
+
+          {/* Master Contract download strip */}
+          <div className="mt-5 p-4 rounded-xl bg-gradient-to-r from-[#2F80ED]/15 to-[#7B61FF]/15 border border-white/10 backdrop-blur">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <Scale className="w-5 h-5 text-[#2F80ED]" />
+                <div>
+                  <div className="font-semibold text-sm">Bosh Shartnoma (Master Agreement)</div>
+                  <div className="text-xs text-white/60">№ LGL-MASTER-2026-0001 • Direktor: Shernazarov Farrux • INN: 312972027</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {["UZ","RU","EN"].map(l => (
+                  <div key={l} className="flex gap-1">
+                    <a href={`/contracts/Shartnoma-MED1UZ-Master-${l}.pdf`} download>
+                      <Button size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/10">{l} PDF</Button>
+                    </a>
+                    <a href={`/contracts/Shartnoma-MED1UZ-Master-${l}.docx`} download>
+                      <Button size="sm" variant="ghost" className="text-white hover:bg-white/10">DOCX</Button>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
 
       {/* Filters */}
       <div className="container mx-auto px-4 py-6">

@@ -19,6 +19,7 @@ import AdminApiPartners from "@/components/admin/AdminApiPartners";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
 import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
+import MasterContractsArchive from "@/components/admin/legal/MasterContractsArchive";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -71,6 +72,7 @@ const sidebarSections = [
   {
     label: "Hujjatlar", items: [
       { id: "legal", label: "📜 Legal Shartnomalar", icon: FileText },
+      { id: "master_contracts", label: "📑 Bosh Shartnoma (UZ/RU/EN)", icon: FileText },
     ]
   },
   {
@@ -1347,6 +1349,7 @@ const AdminDashboard = () => {
           {tab === "referral_admin" && <ReferralAdmin />}
           {tab === "referral_fraud" && <ReferralFraudAdmin />}
           {tab === "legal" && <LegalAdminDashboard />}
+          {tab === "master_contracts" && <MasterContractsArchive />}
 
           {tab === "audit" && (
             <div className="space-y-3">
