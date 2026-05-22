@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye, ShieldCheck, Check, X, Clock, Download, QrCode } from "lucide-react";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
+import LegalAnalyticsBar from "./LegalAnalyticsBar";
 
 
 type Category = {
@@ -62,7 +63,9 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function LegalAdminDashboard() {
   return (
-    <Tabs defaultValue="approvals" className="w-full">
+    <div>
+      <LegalAnalyticsBar />
+      <Tabs defaultValue="approvals" className="w-full">
       <TabsList className="grid grid-cols-5 w-full max-w-3xl">
         <TabsTrigger value="approvals"><ShieldCheck className="w-4 h-4 mr-1" /> Tasdiqlash</TabsTrigger>
         <TabsTrigger value="categories"><FolderOpen className="w-4 h-4 mr-1" /> Kategoriyalar</TabsTrigger>
