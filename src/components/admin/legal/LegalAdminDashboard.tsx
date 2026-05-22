@@ -79,6 +79,7 @@ export default function LegalAdminDashboard() {
       <TabsContent value="versions" className="mt-4"><VersionsTab /></TabsContent>
       <TabsContent value="contracts" className="mt-4"><ContractsTab /></TabsContent>
     </Tabs>
+    </div>
   );
 }
 
