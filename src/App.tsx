@@ -92,12 +92,14 @@ const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
+const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
 import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
 import { GeoPromoProvider } from "./components/geo/GeoPromoProvider";
 import FloatingServicesPanel from "./components/FloatingServicesPanel";
+import HambiReturnButton from "./components/partner/HambiReturnButton";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 
@@ -128,6 +130,7 @@ const App = () => (
           <SmartMatchPanel />
           <GeoPromoProvider />
           <CookieConsent />
+          <HambiReturnButton />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
@@ -198,6 +201,8 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />
+                <Route path="/admin/partners/:slug" element={<HambiPartnerAdminPage />} />
+                <Route path="/admin/partners" element={<HambiPartnerAdminPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
                 <Route path="/legal" element={<LegalCenterPage />} />
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
