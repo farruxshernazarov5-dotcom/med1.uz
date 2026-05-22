@@ -49,6 +49,7 @@ const I18N: Record<string, Record<Lang, string>> = {
   users:          { uz: "Foydalanuvchilar", ru: "Пользователи", en: "Users" },
   subs:           { uz: "Obunalar", ru: "Подписки", en: "Subscriptions" },
   revenue:        { uz: "Daromad / RevShare", ru: "Доход / RevShare", en: "Revenue / RevShare" },
+  payments:       { uz: "To'lovlar", ru: "Платежи", en: "Payments" },
   ai:             { uz: "AI xizmatlari", ru: "AI-сервисы", en: "AI services" },
   clinics:        { uz: "Klinikalar", ru: "Клиники", en: "Clinics" },
   bookings:       { uz: "Bronlar", ru: "Записи", en: "Bookings" },
