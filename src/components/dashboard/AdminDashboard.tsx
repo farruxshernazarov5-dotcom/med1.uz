@@ -18,6 +18,7 @@ import AdminPremiumPerks from "@/components/admin/AdminPremiumPerks";
 import AdminApiPartners from "@/components/admin/AdminApiPartners";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
+import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +66,11 @@ const sidebarSections = [
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
       { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
       { id: "referral_fraud", label: "🛡️ Fraud & Security", icon: ShieldAlert },
+    ]
+  },
+  {
+    label: "Hujjatlar", items: [
+      { id: "legal", label: "📜 Legal Shartnomalar", icon: FileText },
     ]
   },
   {
@@ -1340,6 +1346,7 @@ const AdminDashboard = () => {
           {tab === "knowledge" && <AdminKnowledgeModule />}
           {tab === "referral_admin" && <ReferralAdmin />}
           {tab === "referral_fraud" && <ReferralFraudAdmin />}
+          {tab === "legal" && <LegalAdminDashboard />}
 
           {tab === "audit" && (
             <div className="space-y-3">
