@@ -471,8 +471,9 @@ const HambiPartnerAdminPage = () => {
   const SECTION: Record<string, JSX.Element> = {
     overview: OverviewSection,
     users:    <UsersModule slug={slug} lang={lang} />,
-    subs:     VisualSection(t("subs", lang),     Wallet,         "Faol/tugagan/bepul, AI kredit sarfi, avto-yangilash."),
-    revenue:  VisualSection(t("revenue", lang),  TrendingUp,     "Daromad, komissiyalar, ARPU, oylik to'lovlar."),
+    subs:     <SubscriptionsModule slug={slug} lang={lang} />,
+    revenue:  <RevenueModule slug={slug} lang={lang} />,
+    payments: <PaymentsModule slug={slug} lang={lang} />,
     ai:       <AiServicesModule slug={slug} lang={lang} />,
     clinics:  VisualSection(t("clinics", lang),  Hospital,       "Klinikalar, doktorlar, diagnostika, dorixonalar — moderatsiya."),
     bookings: VisualSection(t("bookings", lang), CalendarCheck,  "HAMBI bronlari: pending / confirmed / completed / cancelled."),
@@ -482,7 +483,7 @@ const HambiPartnerAdminPage = () => {
     webview:  <WebViewModule slug={slug} lang={lang} />,
     security: VisualSection(t("security", lang), ShieldCheck,    "Rollar, audit-loglar, sessiya kuzatuvi, firibgarlik aniqlash."),
     partners: VisualSection(t("partners", lang), Handshake,      "UNITEL, klinika, API va SaaS hamkorlar — RevShare."),
-    docs:     <LegalModule slug={slug} lang={lang} />,
+    docs:     <DocumentsModule slug={slug} lang={lang} />,
   };
 
   // ─────────── Render ───────────
