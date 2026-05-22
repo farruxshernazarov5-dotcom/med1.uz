@@ -60,13 +60,15 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function LegalAdminDashboard() {
   return (
-    <Tabs defaultValue="categories" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+    <Tabs defaultValue="approvals" className="w-full">
+      <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsTrigger value="approvals"><ShieldCheck className="w-4 h-4 mr-1" /> Tasdiqlash</TabsTrigger>
         <TabsTrigger value="categories"><FolderOpen className="w-4 h-4 mr-1" /> Kategoriyalar</TabsTrigger>
         <TabsTrigger value="templates"><FileText className="w-4 h-4 mr-1" /> Andozalar</TabsTrigger>
         <TabsTrigger value="versions"><GitBranch className="w-4 h-4 mr-1" /> Versiyalar</TabsTrigger>
         <TabsTrigger value="contracts"><FileSignature className="w-4 h-4 mr-1" /> Shartnomalar</TabsTrigger>
       </TabsList>
+      <TabsContent value="approvals" className="mt-4"><ApprovalsTab /></TabsContent>
       <TabsContent value="categories" className="mt-4"><CategoriesTab /></TabsContent>
       <TabsContent value="templates" className="mt-4"><TemplatesTab /></TabsContent>
       <TabsContent value="versions" className="mt-4"><VersionsTab /></TabsContent>
