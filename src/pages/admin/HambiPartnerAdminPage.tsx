@@ -474,7 +474,7 @@ const HambiPartnerAdminPage = () => {
     promos:   VisualSection(t("promos", lang),   Gift,           "Push, geo-aksiyalar, referral bonuslari, AI chegirmalari."),
     geo:      VisualSection(t("geo", lang),      MapPin,         "Geofencing, heatmap, yaqin atrofdagi klinikalar."),
     notif:    VisualSection(t("notif", lang),    Bell,           "Telegram / SMS / Push / Email — kampaniya builder."),
-    webview:  VisualSection(t("webview", lang),  Globe2,         "Web-View trafigi, sessiyalar, 'HAMBI ga qaytish' tugmasi."),
+    webview:  <WebViewModule slug={slug} lang={lang} />,
     security: VisualSection(t("security", lang), ShieldCheck,    "Rollar, audit-loglar, sessiya kuzatuvi, firibgarlik aniqlash."),
     partners: VisualSection(t("partners", lang), Handshake,      "UNITEL, klinika, API va SaaS hamkorlar — RevShare."),
     docs:     VisualSection(t("docs", lang),     BookOpen,       "API hujjatlar, integratsiya qo'llanmalari, onboarding."),
