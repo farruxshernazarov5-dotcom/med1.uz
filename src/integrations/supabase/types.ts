@@ -12058,6 +12058,146 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_conversions: {
+        Row: {
+          amount: number | null
+          conversion_type: string
+          created_at: string
+          currency: string | null
+          id: string
+          meta: Json | null
+          module: string | null
+          revshare_amount: number | null
+          source_slug: string
+          status: string
+          tier: string | null
+          updated_at: string
+          user_id: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          conversion_type: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          meta?: Json | null
+          module?: string | null
+          revshare_amount?: number | null
+          source_slug: string
+          status?: string
+          tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          conversion_type?: string
+          created_at?: string
+          currency?: string | null
+          id?: string
+          meta?: Json | null
+          module?: string | null
+          revshare_amount?: number | null
+          source_slug?: string
+          status?: string
+          tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_conversions_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "partner_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_sources: {
+        Row: {
+          brand_color: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          meta: Json | null
+          name: string
+          return_url: string | null
+          revshare_percent: number | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          brand_color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          meta?: Json | null
+          name: string
+          return_url?: string | null
+          revshare_percent?: number | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          brand_color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          meta?: Json | null
+          name?: string
+          return_url?: string | null
+          revshare_percent?: number | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      partner_visits: {
+        Row: {
+          created_at: string
+          id: string
+          ip_hash: string | null
+          landing_path: string | null
+          referrer: string | null
+          session_id: string | null
+          source_slug: string
+          user_agent: string | null
+          user_id: string | null
+          utm: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          landing_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          source_slug: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          landing_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          source_slug?: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm?: Json | null
+        }
+        Relationships: []
+      }
       patient_documents: {
         Row: {
           category: string
