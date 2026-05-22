@@ -60,6 +60,7 @@ const AIRadiologyPage = lazy(() => import("./pages/AIRadiologyPage"));
 const AIHealthAssistantPage = lazy(() => import("./pages/AIHealthAssistantPage"));
 const PartnershipPage = lazy(() => import("./pages/PartnershipPage"));
 const ReportVerificationPage = lazy(() => import("./pages/ReportVerificationPage"));
+const ContractVerifyPage = lazy(() => import("./pages/ContractVerifyPage"));
 const PharmacyRegistrationPage = lazy(() => import("./pages/PharmacyRegistrationPage"));
 const AIPregnancyPage = lazy(() => import("./pages/AIPregnancyPage"));
 const AIBabyCarePage = lazy(() => import("./pages/AIBabyCarePage"));
