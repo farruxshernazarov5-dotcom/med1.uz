@@ -130,6 +130,7 @@ const App = () => (
           <SmartMatchPanel />
           <GeoPromoProvider />
           <CookieConsent />
+          <HambiReturnButton />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
