@@ -463,7 +463,7 @@ const HambiPartnerAdminPage = () => {
 
   const SECTION: Record<string, JSX.Element> = {
     overview: OverviewSection,
-    users:    VisualSection(t("users", lang),    Users,          "HAMBI orqali kelgan foydalanuvchilar, sessiyalar, qurilmalar."),
+    users:    <UsersModule slug={slug} lang={lang} />,
     subs:     VisualSection(t("subs", lang),     Wallet,         "Faol/tugagan/bepul, AI kredit sarfi, avto-yangilash."),
     revenue:  VisualSection(t("revenue", lang),  TrendingUp,     "Daromad, komissiyalar, ARPU, oylik to'lovlar."),
     ai:       VisualSection(t("ai", lang),       Cpu,            "AI so'rovlar, token sarfi, abuse-detection, kredit balanslari."),
