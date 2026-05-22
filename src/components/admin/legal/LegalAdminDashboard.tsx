@@ -16,7 +16,9 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye, ShieldCheck, Check, X, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye, ShieldCheck, Check, X, Clock, Download, QrCode } from "lucide-react";
+import { downloadContractPDF } from "@/utils/downloadContractPDF";
+
 
 type Category = {
   id: string; slug: string; name_uz: string; name_ru: string;
@@ -585,6 +587,40 @@ function ContractsTab() {
                 <b>Matn:</b>
                 <pre className="whitespace-pre-wrap text-xs bg-muted p-3 rounded mt-1 max-h-96 overflow-y-auto">{preview?.body_uz}</pre>
               </div>
+              {preview && (
+                <div className="flex flex-wrap gap-2 pt-3 border-t">
+                  <Button size="sm" variant="outline" onClick={async () => {
+                    const { data: sigs } = await (supabase as any).from("contract_signatures")
+                      .select("signer_name,signer_role,method,signed_at,signature_hash")
+                      .eq("contract_id", preview.id).order("signed_at", { ascending: true });
+                    await downloadContractPDF({
+                      hashId: (preview as any).hash_id,
+                      contractNumber: preview.contract_number,
+                      title: preview.title_uz,
+                      body: preview.body_uz,
+                      language: preview.language || "uz",
+                      status: preview.status,
+                      signedAt: preview.signed_at ? new Date(preview.signed_at) : null,
+                      effectiveFrom: preview.effective_from ? new Date(preview.effective_from) : null,
+                      effectiveUntil: preview.effective_until ? new Date(preview.effective_until) : null,
+                      counterpartyName: preview.counterparty_name,
+                      signatures: sigs || [],
+                    });
+                    toast({ title: "PDF yuklab olindi" });
+                  }}>
+                    <Download className="w-4 h-4 mr-1" /> PDF eksport
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    const url = `${window.location.origin}/verify/contract/${(preview as any).hash_id}`;
+                    window.open(url, "_blank");
+                  }}>
+                    <QrCode className="w-4 h-4 mr-1" /> Verify portal
+                  </Button>
+                  <code className="text-[10px] bg-muted px-2 py-1 rounded font-mono break-all">
+                    {(preview as any).hash_id}
+                  </code>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>

@@ -7,7 +7,8 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Mail, Send, ShieldCheck, Eraser, FileSignature } from "lucide-react";
+import { Mail, Send, ShieldCheck, Eraser, FileSignature, Download } from "lucide-react";
+import { downloadContractPDF } from "@/utils/downloadContractPDF";
 
 interface Props {
   open: boolean;
@@ -33,6 +34,36 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
   const [destMasked, setDestMasked] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const { data: c } = await (supabase as any).from("contracts")
+        .select("hash_id,contract_number,title_uz,title_ru,body_uz,body_ru,language,status,signed_at,effective_from,effective_until,counterparty_name")
+        .eq("id", contract.id).maybeSingle();
+      if (!c) throw new Error("Topilmadi");
+      const { data: sigs } = await (supabase as any).from("contract_signatures")
+        .select("signer_name,signer_role,method,signed_at,signature_hash")
+        .eq("contract_id", contract.id).order("signed_at", { ascending: true });
+      await downloadContractPDF({
+        hashId: c.hash_id, contractNumber: c.contract_number,
+        title: c.language === "ru" ? c.title_ru : c.title_uz,
+        body: c.language === "ru" ? c.body_ru : c.body_uz,
+        language: c.language, status: c.status,
+        signedAt: c.signed_at ? new Date(c.signed_at) : null,
+        effectiveFrom: c.effective_from ? new Date(c.effective_from) : null,
+        effectiveUntil: c.effective_until ? new Date(c.effective_until) : null,
+        counterpartyName: c.counterparty_name,
+        signatures: sigs || [],
+      });
+      toast.success("PDF yuklab olindi");
+    } catch (e: any) {
+      toast.error(e?.message || "PDF yaratishda xatolik");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     if (open) {
@@ -141,6 +172,9 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
               {contract.body_uz}
             </ScrollArea>
             <DialogFooter className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" size="sm" onClick={handleDownload} disabled={downloading}>
+                <Download className="w-4 h-4 mr-1" /> {downloading ? "Yaratilmoqda..." : "PDF yuklab olish"}
+              </Button>
               <div className="flex-1 flex gap-2">
                 <Button variant={channel === "email" ? "default" : "outline"} size="sm" onClick={() => setChannel("email")}>
                   <Mail className="w-4 h-4 mr-1" /> Email

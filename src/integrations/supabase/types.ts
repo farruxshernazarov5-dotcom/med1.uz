@@ -15276,6 +15276,17 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      verify_contract_signatures: {
+        Args: { _hash_id: string }
+        Returns: {
+          is_valid: boolean
+          method: Database["public"]["Enums"]["signature_method"]
+          signature_hash: string
+          signed_at: string
+          signer_name: string
+          signer_role: Database["public"]["Enums"]["contract_party_role"]
+        }[]
+      }
     }
     Enums: {
       app_role:

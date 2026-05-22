@@ -60,6 +60,7 @@ const AIRadiologyPage = lazy(() => import("./pages/AIRadiologyPage"));
 const AIHealthAssistantPage = lazy(() => import("./pages/AIHealthAssistantPage"));
 const PartnershipPage = lazy(() => import("./pages/PartnershipPage"));
 const ReportVerificationPage = lazy(() => import("./pages/ReportVerificationPage"));
+const ContractVerifyPage = lazy(() => import("./pages/ContractVerifyPage"));
 const PharmacyRegistrationPage = lazy(() => import("./pages/PharmacyRegistrationPage"));
 const AIPregnancyPage = lazy(() => import("./pages/AIPregnancyPage"));
 const AIBabyCarePage = lazy(() => import("./pages/AIBabyCarePage"));
@@ -181,6 +182,7 @@ const App = () => (
                 <Route path="/report/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/verify" element={<ReportVerificationPage />} />
                 <Route path="/verify/:reportId" element={<ReportVerificationPage />} />
+                <Route path="/verify/contract/:hashId" element={<ContractVerifyPage />} />
                 <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
                 <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
                 <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
