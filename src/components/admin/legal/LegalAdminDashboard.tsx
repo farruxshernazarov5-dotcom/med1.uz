@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye, ShieldCheck, Check, X, Clock } from "lucide-react";
 
 type Category = {
   id: string; slug: string; name_uz: string; name_ru: string;
