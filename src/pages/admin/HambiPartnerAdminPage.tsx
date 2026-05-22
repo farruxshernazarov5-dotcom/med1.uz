@@ -23,13 +23,16 @@ import {
   ArrowLeft, Users, MousePointerClick, TrendingUp, Wallet, Activity, Cpu,
   Hospital, CalendarCheck, Gift, MapPin, Bell, BarChart3, Globe2, ShieldCheck,
   Handshake, BookOpen, Languages, Search, Download, Radio, Zap, Database,
-  Network, Sparkles, ChevronRight, Menu, X,
+  Network, Sparkles, ChevronRight, Menu, X, CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
 import AiServicesModule from "@/components/admin/hambi/AiServicesModule";
 import WebViewModule from "@/components/admin/hambi/WebViewModule";
-import LegalModule from "@/components/admin/hambi/LegalModule";
+import SubscriptionsModule from "@/components/admin/hambi/SubscriptionsModule";
+import RevenueModule from "@/components/admin/hambi/RevenueModule";
+import PaymentsModule from "@/components/admin/hambi/PaymentsModule";
+import DocumentsModule from "@/components/admin/hambi/DocumentsModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
