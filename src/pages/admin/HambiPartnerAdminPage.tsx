@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
 import AiServicesModule from "@/components/admin/hambi/AiServicesModule";
 import WebViewModule from "@/components/admin/hambi/WebViewModule";
+import LegalModule from "@/components/admin/hambi/LegalModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
@@ -477,7 +478,7 @@ const HambiPartnerAdminPage = () => {
     webview:  <WebViewModule slug={slug} lang={lang} />,
     security: VisualSection(t("security", lang), ShieldCheck,    "Rollar, audit-loglar, sessiya kuzatuvi, firibgarlik aniqlash."),
     partners: VisualSection(t("partners", lang), Handshake,      "UNITEL, klinika, API va SaaS hamkorlar — RevShare."),
-    docs:     VisualSection(t("docs", lang),     BookOpen,       "API hujjatlar, integratsiya qo'llanmalari, onboarding."),
+    docs:     <LegalModule slug={slug} lang={lang} />,
   };
 
   // ─────────── Render ───────────
