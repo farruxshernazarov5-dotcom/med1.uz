@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
+import AiServicesModule from "@/components/admin/hambi/AiServicesModule";
+import WebViewModule from "@/components/admin/hambi/WebViewModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
