@@ -1649,9 +1649,14 @@ export type Database = {
       }
       contracts: {
         Row: {
+          approval_notes: string | null
+          approval_status: Database["public"]["Enums"]["contract_approval_status"]
+          approved_at: string | null
+          approved_by: string | null
           body_ru: string
           body_uz: string
           category_slug: string | null
+          collected_signatures: number
           contract_number: string
           counterparty_id: string | null
           counterparty_name: string | null
@@ -1668,6 +1673,8 @@ export type Database = {
           owner_role: Database["public"]["Enums"]["contract_party_role"]
           pdf_url: string | null
           pdf_watermark: string | null
+          rejected_reason: string | null
+          required_signatures: number
           signed_at: string | null
           status: Database["public"]["Enums"]["contract_status"]
           template_id: string | null
@@ -1679,9 +1686,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approval_notes?: string | null
+          approval_status?: Database["public"]["Enums"]["contract_approval_status"]
+          approved_at?: string | null
+          approved_by?: string | null
           body_ru: string
           body_uz: string
           category_slug?: string | null
+          collected_signatures?: number
           contract_number: string
           counterparty_id?: string | null
           counterparty_name?: string | null
@@ -1698,6 +1710,8 @@ export type Database = {
           owner_role?: Database["public"]["Enums"]["contract_party_role"]
           pdf_url?: string | null
           pdf_watermark?: string | null
+          rejected_reason?: string | null
+          required_signatures?: number
           signed_at?: string | null
           status?: Database["public"]["Enums"]["contract_status"]
           template_id?: string | null
@@ -1709,9 +1723,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approval_notes?: string | null
+          approval_status?: Database["public"]["Enums"]["contract_approval_status"]
+          approved_at?: string | null
+          approved_by?: string | null
           body_ru?: string
           body_uz?: string
           category_slug?: string | null
+          collected_signatures?: number
           contract_number?: string
           counterparty_id?: string | null
           counterparty_name?: string | null
@@ -1728,6 +1747,8 @@ export type Database = {
           owner_role?: Database["public"]["Enums"]["contract_party_role"]
           pdf_url?: string | null
           pdf_watermark?: string | null
+          rejected_reason?: string | null
+          required_signatures?: number
           signed_at?: string | null
           status?: Database["public"]["Enums"]["contract_status"]
           template_id?: string | null
@@ -15110,6 +15131,52 @@ export type Database = {
       }
     }
     Functions: {
+      admin_review_contract: {
+        Args: { _contract_id: string; _decision: string; _notes?: string }
+        Returns: {
+          approval_notes: string | null
+          approval_status: Database["public"]["Enums"]["contract_approval_status"]
+          approved_at: string | null
+          approved_by: string | null
+          body_ru: string
+          body_uz: string
+          category_slug: string | null
+          collected_signatures: number
+          contract_number: string
+          counterparty_id: string | null
+          counterparty_name: string | null
+          created_at: string
+          effective_from: string | null
+          effective_until: string | null
+          filled_data: Json
+          hash_id: string
+          id: string
+          language: string
+          meta: Json
+          organization_id: string | null
+          owner_id: string
+          owner_role: Database["public"]["Enums"]["contract_party_role"]
+          pdf_url: string | null
+          pdf_watermark: string | null
+          rejected_reason: string | null
+          required_signatures: number
+          signed_at: string | null
+          status: Database["public"]["Enums"]["contract_status"]
+          template_id: string | null
+          template_version: string
+          terminated_at: string | null
+          terminated_reason: string | null
+          title_ru: string
+          title_uz: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "contracts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       apply_referral_reward: {
         Args: { _referral_id: string }
         Returns: undefined
@@ -15223,6 +15290,11 @@ export type Database = {
         | "pharmacy"
         | "bloodbank"
         | "dental"
+      contract_approval_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "not_required"
       contract_party_role:
         | "platform"
         | "clinic"
@@ -15389,6 +15461,12 @@ export const Constants = {
         "pharmacy",
         "bloodbank",
         "dental",
+      ],
+      contract_approval_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "not_required",
       ],
       contract_party_role: [
         "platform",

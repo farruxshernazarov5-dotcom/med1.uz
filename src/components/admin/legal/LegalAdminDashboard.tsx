@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye, ShieldCheck, Check, X, Clock } from "lucide-react";
 
 type Category = {
   id: string; slug: string; name_uz: string; name_ru: string;
@@ -60,13 +60,15 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function LegalAdminDashboard() {
   return (
-    <Tabs defaultValue="categories" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+    <Tabs defaultValue="approvals" className="w-full">
+      <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsTrigger value="approvals"><ShieldCheck className="w-4 h-4 mr-1" /> Tasdiqlash</TabsTrigger>
         <TabsTrigger value="categories"><FolderOpen className="w-4 h-4 mr-1" /> Kategoriyalar</TabsTrigger>
         <TabsTrigger value="templates"><FileText className="w-4 h-4 mr-1" /> Andozalar</TabsTrigger>
         <TabsTrigger value="versions"><GitBranch className="w-4 h-4 mr-1" /> Versiyalar</TabsTrigger>
         <TabsTrigger value="contracts"><FileSignature className="w-4 h-4 mr-1" /> Shartnomalar</TabsTrigger>
       </TabsList>
+      <TabsContent value="approvals" className="mt-4"><ApprovalsTab /></TabsContent>
       <TabsContent value="categories" className="mt-4"><CategoriesTab /></TabsContent>
       <TabsContent value="templates" className="mt-4"><TemplatesTab /></TabsContent>
       <TabsContent value="versions" className="mt-4"><VersionsTab /></TabsContent>
@@ -584,6 +586,147 @@ function ContractsTab() {
                 <pre className="whitespace-pre-wrap text-xs bg-muted p-3 rounded mt-1 max-h-96 overflow-y-auto">{preview?.body_uz}</pre>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* =================== APPROVALS =================== */
+type PendingContract = {
+  id: string; contract_number: string; title_uz: string;
+  owner_id: string; created_at: string; status: string;
+  approval_status: string; counterparty_name: string | null;
+  required_signatures: number; collected_signatures: number;
+  body_uz: string;
+};
+
+function ApprovalsTab() {
+  const [rows, setRows] = useState<PendingContract[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"pending" | "approved" | "rejected">("pending");
+  const [selected, setSelected] = useState<PendingContract | null>(null);
+  const [notes, setNotes] = useState("");
+  const [busy, setBusy] = useState(false);
+  const { toast } = useToast();
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await (supabase as any)
+      .from("contracts")
+      .select("id, contract_number, title_uz, owner_id, created_at, status, approval_status, counterparty_name, required_signatures, collected_signatures, body_uz")
+      .eq("approval_status", filter)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
+    setRows(data || []);
+    setLoading(false);
+  }, [filter, toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const review = async (decision: "approved" | "rejected") => {
+    if (!selected) return;
+    if (decision === "rejected" && !notes.trim()) {
+      return toast({ title: "Sabab kiriting", variant: "destructive" });
+    }
+    setBusy(true);
+    const { error } = await (supabase as any).rpc("admin_review_contract", {
+      _contract_id: selected.id,
+      _decision: decision,
+      _notes: notes || null,
+    });
+    setBusy(false);
+    if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    toast({ title: decision === "approved" ? "Tasdiqlandi ✓" : "Rad etildi" });
+    setSelected(null);
+    setNotes("");
+    load();
+  };
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="flex items-center gap-2"><ShieldCheck className="w-5 h-5" /> Tasdiqlash kutilayotgan shartnomalar</CardTitle>
+          <CardDescription>Adminlar tomonidan ko'rib chiqilishi kerak bo'lgan kontraktlar</CardDescription>
+        </div>
+        <div className="flex gap-2">
+          {(["pending", "approved", "rejected"] as const).map((f) => (
+            <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} onClick={() => setFilter(f)}>
+              {f === "pending" && <Clock className="w-3 h-3 mr-1" />}
+              {f === "approved" && <Check className="w-3 h-3 mr-1" />}
+              {f === "rejected" && <X className="w-3 h-3 mr-1" />}
+              {f}
+            </Button>
+          ))}
+          <Button size="sm" variant="ghost" onClick={load}><RefreshCw className="w-4 h-4" /></Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="text-center text-muted-foreground py-6">Yuklanmoqda...</div>
+        ) : rows.length === 0 ? (
+          <div className="text-center text-muted-foreground py-6">Bo'sh</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>№</TableHead>
+                <TableHead>Sarlavha</TableHead>
+                <TableHead>Imzolar</TableHead>
+                <TableHead>Holat</TableHead>
+                <TableHead>Sana</TableHead>
+                <TableHead className="text-right">Amal</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((c) => (
+                <TableRow key={c.id}>
+                  <TableCell className="font-mono text-xs">{c.contract_number}</TableCell>
+                  <TableCell className="max-w-xs truncate">{c.title_uz}</TableCell>
+                  <TableCell>{c.collected_signatures}/{c.required_signatures}</TableCell>
+                  <TableCell>
+                    <Badge className={STATUS_COLORS[c.status] || ""}>{c.status}</Badge>
+                  </TableCell>
+                  <TableCell className="text-xs">{new Date(c.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-right">
+                    <Button size="sm" variant="outline" onClick={() => { setSelected(c); setNotes(""); }}>
+                      <Eye className="w-3 h-3 mr-1" /> Ko'rish
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+
+        <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>{selected?.title_uz}</DialogTitle>
+              <DialogDescription>№ {selected?.contract_number} · Holat: {selected?.approval_status}</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[40vh] overflow-auto border rounded-md p-3 text-sm whitespace-pre-wrap bg-muted/30">
+              {selected?.body_uz}
+            </div>
+            {filter === "pending" && (
+              <>
+                <div>
+                  <Label>Izoh / sabab</Label>
+                  <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Tasdiqlash izohi yoki rad etish sababi..." rows={3} />
+                </div>
+                <DialogFooter className="gap-2">
+                  <Button variant="destructive" onClick={() => review("rejected")} disabled={busy}>
+                    <X className="w-4 h-4 mr-1" /> Rad etish
+                  </Button>
+                  <Button onClick={() => review("approved")} disabled={busy}>
+                    <Check className="w-4 h-4 mr-1" /> Tasdiqlash
+                  </Button>
+                </DialogFooter>
+              </>
+            )}
           </DialogContent>
         </Dialog>
       </CardContent>
