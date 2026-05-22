@@ -18,7 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, FileText, FolderOpen, GitBranch, FileSignature, RefreshCw, Eye, ShieldCheck, Check, X, Clock, Download, QrCode } from "lucide-react";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
-import QRCode from "qrcode";
+
 
 type Category = {
   id: string; slug: string; name_uz: string; name_ru: string;
