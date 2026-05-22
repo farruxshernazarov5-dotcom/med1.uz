@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
+import AiServicesModule from "@/components/admin/hambi/AiServicesModule";
+import WebViewModule from "@/components/admin/hambi/WebViewModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
@@ -466,13 +468,13 @@ const HambiPartnerAdminPage = () => {
     users:    <UsersModule slug={slug} lang={lang} />,
     subs:     VisualSection(t("subs", lang),     Wallet,         "Faol/tugagan/bepul, AI kredit sarfi, avto-yangilash."),
     revenue:  VisualSection(t("revenue", lang),  TrendingUp,     "Daromad, komissiyalar, ARPU, oylik to'lovlar."),
-    ai:       VisualSection(t("ai", lang),       Cpu,            "AI so'rovlar, token sarfi, abuse-detection, kredit balanslari."),
+    ai:       <AiServicesModule slug={slug} lang={lang} />,
     clinics:  VisualSection(t("clinics", lang),  Hospital,       "Klinikalar, doktorlar, diagnostika, dorixonalar — moderatsiya."),
     bookings: VisualSection(t("bookings", lang), CalendarCheck,  "HAMBI bronlari: pending / confirmed / completed / cancelled."),
     promos:   VisualSection(t("promos", lang),   Gift,           "Push, geo-aksiyalar, referral bonuslari, AI chegirmalari."),
     geo:      VisualSection(t("geo", lang),      MapPin,         "Geofencing, heatmap, yaqin atrofdagi klinikalar."),
     notif:    VisualSection(t("notif", lang),    Bell,           "Telegram / SMS / Push / Email — kampaniya builder."),
-    webview:  VisualSection(t("webview", lang),  Globe2,         "Web-View trafigi, sessiyalar, 'HAMBI ga qaytish' tugmasi."),
+    webview:  <WebViewModule slug={slug} lang={lang} />,
     security: VisualSection(t("security", lang), ShieldCheck,    "Rollar, audit-loglar, sessiya kuzatuvi, firibgarlik aniqlash."),
     partners: VisualSection(t("partners", lang), Handshake,      "UNITEL, klinika, API va SaaS hamkorlar — RevShare."),
     docs:     VisualSection(t("docs", lang),     BookOpen,       "API hujjatlar, integratsiya qo'llanmalari, onboarding."),
