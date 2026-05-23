@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,7 +67,7 @@ serve(async (req) => {
       });
     }
 
-    const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = await req.json();
+    const __body = await req.json(); const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -86,7 +87,7 @@ serve(async (req) => {
     userText += `\nTasvirni diqqat bilan o'rganib, BARCHA anatomik strukturalar va patologik o'zgarishlarni aniqla. Har bir topilmani lokalizatsiya, o'lcham va xarakteri bilan tavsifla. JSON formatda javob ber.`;
 
     const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
       {
         role: "user",
         content: [
