@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -79,7 +80,7 @@ serve(async (req) => {
       });
     }
 
-    const body = await req.json();
+    const body = await req.json(); const __lang = normalizeLang((body as any)?.lang);
     const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
       existingConditions, familyHistory, diet, sleepHours, stressLevel,
       medications, labResults, symptoms } = body;
@@ -115,7 +116,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
           { role: "user", content: userMessage },
         ],
       }),

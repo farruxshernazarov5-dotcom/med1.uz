@@ -7,35 +7,37 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
 import { useCredits } from "@/hooks/useCredits";
+import { useLanguage, LANGUAGE_LABELS } from "@/hooks/useLanguage";
+import type { SupportedLanguage } from "@/i18n/config";
 import logoImg from "@/assets/logo.png";
-
-const navItems = [
-  { label: "Tibbiyot", href: "/medicine" },
-  { label: "Salomatlik", href: "/health" },
-  { label: "Kasalliklar", href: "/diseases" },
-  { label: "Maqolalar", href: "/articles" },
-  { label: "📚 Ensiklopediya", href: "/knowledge" },
-  { label: "Klinikalar", href: "/clinics" },
-  { label: "🤖 AI xizmatlar", href: "/ai-services" },
-  { label: "Med texnika", href: "/med-tech" },
-  { label: "Yangiliklar", href: "/news" },
-  { label: "Diagnostika", href: "/diagnostics" },
-  { label: "Dorixonalar", href: "/pharmacies" },
-  { label: "Qon banklari", href: "/blood-banks" },
-  { label: "Tug'ruqxonalar", href: "/maternity" },
-  { label: "Kosmetologiya", href: "/cosmetology" },
-  { label: "Hamkorlik", href: "/partnership" },
-];
-
-const languages = ["UZ", "RU", "EN"];
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("UZ");
   const [searchOpen, setSearchOpen] = useState(false);
   const { user, profile, userRole, signOut } = useAuth();
   const { balance } = useCredits();
+  const { lang, setLanguage, t } = useLanguage();
   const dashboardPath = getDashboardPath(userRole);
+
+  const navItems = [
+    { label: t("nav.medicine"), href: "/medicine" },
+    { label: t("nav.health"), href: "/health" },
+    { label: t("nav.diseases"), href: "/diseases" },
+    { label: t("nav.articles"), href: "/articles" },
+    { label: t("nav.encyclopedia"), href: "/knowledge" },
+    { label: t("nav.clinics"), href: "/clinics" },
+    { label: t("nav.aiServices"), href: "/ai-services" },
+    { label: t("nav.medtech"), href: "/med-tech" },
+    { label: t("nav.news"), href: "/news" },
+    { label: t("nav.diagnostics"), href: "/diagnostics" },
+    { label: t("nav.pharmacies"), href: "/pharmacies" },
+    { label: t("nav.bloodBanks"), href: "/blood-banks" },
+    { label: t("nav.maternity"), href: "/maternity" },
+    { label: t("nav.cosmetology"), href: "/cosmetology" },
+    { label: t("nav.partnership"), href: "/partnership" },
+  ];
+
+  const languages: SupportedLanguage[] = ["uz", "ru", "en"];
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -98,9 +100,9 @@ const Header = () => {
 
               <ThemeToggle />
               <div className="hidden sm:flex items-center gap-1 bg-muted rounded-lg p-1">
-                {languages.map((lang) => (
-                  <button key={lang} onClick={() => setCurrentLang(lang)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${currentLang === lang ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                    {lang}
+                {languages.map((code) => (
+                  <button key={code} onClick={() => setLanguage(code)} title={LANGUAGE_LABELS[code].label} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${lang === code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                    {LANGUAGE_LABELS[code].code}
                   </button>
                 ))}
               </div>
@@ -147,9 +149,9 @@ const Header = () => {
               </div>
               <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
                 <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                  {languages.map((lang) => (
-                    <button key={lang} onClick={() => setCurrentLang(lang)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${currentLang === lang ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                      {lang}
+                  {languages.map((code) => (
+                    <button key={code} onClick={() => setLanguage(code)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${lang === code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                      {LANGUAGE_LABELS[code].code}
                     </button>
                   ))}
                 </div>
