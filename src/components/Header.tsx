@@ -100,9 +100,9 @@ const Header = () => {
 
               <ThemeToggle />
               <div className="hidden sm:flex items-center gap-1 bg-muted rounded-lg p-1">
-                {languages.map((lang) => (
-                  <button key={lang} onClick={() => setCurrentLang(lang)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${currentLang === lang ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                    {lang}
+                {languages.map((code) => (
+                  <button key={code} onClick={() => setLanguage(code)} title={LANGUAGE_LABELS[code].label} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${lang === code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                    {LANGUAGE_LABELS[code].code}
                   </button>
                 ))}
               </div>
@@ -149,9 +149,9 @@ const Header = () => {
               </div>
               <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
                 <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                  {languages.map((lang) => (
-                    <button key={lang} onClick={() => setCurrentLang(lang)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${currentLang === lang ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                      {lang}
+                  {languages.map((code) => (
+                    <button key={code} onClick={() => setLanguage(code)} className={`px-2 py-1 text-xs font-medium rounded-md transition-all ${lang === code ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                      {LANGUAGE_LABELS[code].code}
                     </button>
                   ))}
                 </div>
