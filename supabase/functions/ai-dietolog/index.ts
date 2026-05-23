@@ -40,7 +40,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemContent = context ? `${SYSTEM_PROMPT}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : SYSTEM_PROMPT;
+    const systemContent = context ? `${(SYSTEM_PROMPT + languageInstruction(__lang))}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : (SYSTEM_PROMPT + languageInstruction(__lang));
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

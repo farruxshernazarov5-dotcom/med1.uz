@@ -61,7 +61,7 @@ serve(async (req) => {
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
-        messages: [{ role: "system", content: SYSTEM_PROMPT + profileContext }, ...messages],
+        messages: [{ role: "system", content: (SYSTEM_PROMPT + languageInstruction(__lang)) + profileContext }, ...messages],
         stream: true,
       }),
     });
