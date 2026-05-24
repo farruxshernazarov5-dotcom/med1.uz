@@ -145,10 +145,10 @@ const AIPsixologPage = () => {
               <span className="font-medium">AI Psixolog</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Ruhiy Salomatlik Yordamchisi
+              {t("ai.services.ai-psixolog.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Stress, tashvish va his-tuyg'ularingiz haqida xavfsiz muhitda gaplashing. Men sizni tinglashga va yordam berishga tayyorman.
+              {t("aiPages.ai-psixolog.description")}
             </p>
           </div>
 
