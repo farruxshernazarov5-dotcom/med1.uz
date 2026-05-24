@@ -14,6 +14,7 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiAssistantImg from "@/assets/ai-health-assistant.jpg";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Mode = "general" | "symptom" | "lab" | "advice";
@@ -63,6 +64,7 @@ const QUICK_BY_MODE: Record<Mode, string[]> = {
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-health-assistant`;
 
 const AIHealthAssistantPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -170,22 +172,22 @@ const AIHealthAssistantPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "AI Sog'liq Assistenti" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
+        { label: t("aiPages.ai-health-assistant.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiAssistantImg}
-        title="Shaxsiy sog'liq assistenti"
-        subtitle="AI Personal Health Assistant"
-        description="24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar. Har qanday sog'liq savolingizga javob."
+        title={t("ai.services.ai-health-assistant.title")}
+        subtitle={t("aiPages.ai-health-assistant.subtitle")}
+        description={t("aiPages.ai-health-assistant.description")}
         icon={<UserCheck className="w-4 h-4" />}
         gradient="from-teal-700/90 to-teal-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "4 ta rejim" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "24/7 faol" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Ko'p tilli" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-assistant.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-assistant.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-assistant.f3") },
         ]}
       />
 

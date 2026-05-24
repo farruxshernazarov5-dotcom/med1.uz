@@ -15,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
+import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 interface Indicator {
   name: string;
@@ -59,6 +61,7 @@ const statusConfig = {
 };
 
 const AIReportAnalysisPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -197,22 +200,22 @@ const AIReportAnalysisPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "Analiz Tahlili" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
+        { label: t("aiPages.ai-report-analysis.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiReportImg}
-        title="Laboratoriya natijalarini AI tahlili"
-        subtitle="AI Report Analysis"
-        description="Analiz natijalaringizni yuklang yoki kiriting — AI tizimi har bir ko'rsatkichni tahlil qilib, tibbiy izoh va tavsiya beradi. ICD-10 kodlari bilan professional darajada."
+        title={t("ai.services.ai-report-analysis.title")}
+        subtitle={t("aiPages.ai-report-analysis.subtitle")}
+        description={t("aiPages.ai-report-analysis.description")}
         icon={<FileText className="w-4 h-4" />}
         gradient="from-emerald-700/90 to-emerald-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "OCR rasm tanish" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "ICD-10 kodlari" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI interpretatsiya" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-report-analysis.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-report-analysis.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-report-analysis.f3") },
         ]}
       />
 

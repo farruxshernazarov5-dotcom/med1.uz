@@ -13,8 +13,11 @@ import FollowUpQuestions from "@/components/symptom-checker/FollowUpQuestions";
 import type { SymptomAnalysis, PatientInfo } from "@/components/symptom-checker/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 const SymptomCheckerPage = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<"input" | "followup" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [analysis, setAnalysis] = useState<SymptomAnalysis | null>(null);
@@ -26,7 +29,7 @@ const SymptomCheckerPage = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
-        body: {
+        body: withLang({
           symptoms: info.symptoms,
           age: info.age,
           gender: info.gender,
@@ -34,7 +37,7 @@ const SymptomCheckerPage = () => {
           painLevel: info.painLevel,
           existingConditions: info.existingConditions,
           allergies: info.allergies,
-        },
+        }),
       });
 
       if (error) throw error;
@@ -59,10 +62,10 @@ const SymptomCheckerPage = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
-        body: {
+        body: withLang({
           ...patientInfo,
           followUpAnswers: answers,
-        },
+        }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -86,37 +89,37 @@ const SymptomCheckerPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
+        { label: t("common.home"), href: "/" },
         { label: "Xizmatlar", href: "/services" },
-        { label: "AI Diagnostika" },
+        { label: t("aiPages.symptom-checker.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiSymptomImg}
-        title="Sun'iy intellekt asosidagi erta diagnostika"
-        subtitle="AI Symptom Checker"
-        description="Simptomlaringizni kiriting — AI tizimi ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini beradi. Zamonaviy tibbiy bilim bazasi va klinik protokollar asosida ishlaydi."
+        title={t("ai.services.symptom-checker.title")}
+        subtitle={t("aiPages.symptom-checker.subtitle")}
+        description={t("aiPages.symptom-checker.description")}
         icon={<Brain className="w-4 h-4" />}
         gradient="from-primary/90 to-blue-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "Ma'lumotlar maxfiy" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Real vaqt tahlili" },
-          { icon: <AlertTriangle className="w-3.5 h-3.5" />, text: "Tibbiy maslahat emas" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.symptom-checker.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.symptom-checker.f2") },
+          { icon: <AlertTriangle className="w-3.5 h-3.5" />, text: t("aiPages.symptom-checker.f3") },
         ]}
       />
 
       {/* Main content */}
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">
-          <AIAccessBanner serviceId="symptom-checker" serviceName="AI Erta Diagnostika" />
+          <AIAccessBanner serviceId="symptom-checker" serviceName={t("ai.services.symptom-checker.title")} />
           {/* Usage Guide */}
           <div className="mb-6">
             <AIServiceUsageGuide
-              serviceName="AI Erta Diagnostika"
+              serviceName={t("ai.services.symptom-checker.title")}
               steps={[
-                { title: "Simptomlarni kiriting", desc: "Sezayotgan belgilaringiz, yoshingiz va jinsni ko'rsating" },
-                { title: "AI tahlil qiladi", desc: "Sun'iy intellekt ma'lumotlaringizni ICD-10 standartlari asosida tahlil qiladi" },
-                { title: "Natijalar va tavsiyalar", desc: "Ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini ko'ring" },
+                { title: t("aiPages.symptom-checker.s1t"), desc: t("aiPages.symptom-checker.s1d") },
+                { title: t("aiPages.symptom-checker.s2t"), desc: t("aiPages.symptom-checker.s2d") },
+                { title: t("aiPages.symptom-checker.s3t"), desc: t("aiPages.symptom-checker.s3d") },
               ]}
             />
           </div>

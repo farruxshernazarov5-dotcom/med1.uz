@@ -22,6 +22,7 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiBabyCareImg from "@/assets/ai-baby-care.jpg";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 /* ——— Types ——— */
 interface BabyProfile {
@@ -166,6 +167,7 @@ async function streamChat({ messages, babyAgeMonths, mode, onDelta, onDone }: {
 
 /* ——— Main Component ——— */
 const AIBabyCarePage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>("profile");
   const [baby, setBaby] = useState<BabyProfile | null>(null);
@@ -327,15 +329,15 @@ const AIBabyCarePage = () => {
 
       <AIServiceHero
         image={aiBabyCareImg}
-        title="AI Bola Parvarishi"
+        title={t("ai.services.ai-baby-care.title")}
         subtitle={baby ? `${baby.baby_name || "Chaqaloq"} · ${babyAgeDays} kun (${babyAgeMonths} oy)` : "Tug'ruqdan keyingi parvarish"}
-        description="Chaqaloq rivojlanishi, emlash jadvali, o'sish monitoringi va ota-onalar uchun AI maslahatlar. Har bir bosqichda professional yordam."
+        description={t("aiPages.ai-baby-care.description")}
         icon={<Baby className="w-4 h-4" />}
         gradient="from-amber-600/90 to-amber-900/80"
         features={[
-          { icon: <ShieldCheck className="w-3.5 h-3.5" />, text: "Emlash jadvali" },
-          { icon: <Scale className="w-3.5 h-3.5" />, text: "O'sish monitoringi" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI maslahatlar" },
+          { icon: <ShieldCheck className="w-3.5 h-3.5" />, text: t("aiPages.ai-baby-care.f1") },
+          { icon: <Scale className="w-3.5 h-3.5" />, text: t("aiPages.ai-baby-care.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-baby-care.f3") },
         ]}
       />
 

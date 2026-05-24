@@ -20,6 +20,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
+import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 interface AnatomicalStructure {
   name: string;
@@ -80,6 +82,7 @@ const riskConfig = {
 };
 
 const AIRadiologyPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -175,7 +178,7 @@ const AIRadiologyPage = () => {
         record_type: "test_result",
         title: `AI ${scanLabel}: ${bodyPart || "Umumiy"}`,
         description,
-        doctor_name: "AI Radiologiya",
+        doctor_name: t("aiPages.ai-radiology.breadcrumb"),
         clinic_name: "Med1.uz AI",
         record_date: new Date().toISOString().slice(0, 10),
       });
@@ -206,22 +209,22 @@ const AIRadiologyPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
         { label: "AI Radiologiya" },
       ]} />
 
       <AIServiceHero
         image={aiRadiologyImg}
-        title="Rentgen, MRT va KT tasvirlarini AI tahlili"
-        subtitle="AI Radiology Pro"
-        description="Tibbiy tasviringizni yuklang — AI tizimi patologik o'zgarishlarni aniqlaydi, anatomik tuzilmalarni baholaydi va mutaxassis tavsiya qiladi."
+        title={t("ai.services.ai-radiology.title")}
+        subtitle={t("aiPages.ai-radiology.subtitle")}
+        description={t("aiPages.ai-radiology.description")}
         icon={<Eye className="w-4 h-4" />}
         gradient="from-violet-700/90 to-violet-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "DICOM qo'llab-quvvat" },
-          { icon: <Scan className="w-3.5 h-3.5" />, text: "Patologiya aniqlash" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "ICD-10 klassifikatsiya" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-radiology.f1") },
+          { icon: <Scan className="w-3.5 h-3.5" />, text: t("aiPages.ai-radiology.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-radiology.f3") },
         ]}
       />
 

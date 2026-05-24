@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Send, Bot, User, Brain, Heart, Smile, Frown, Meh, Loader2, Phone } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -25,6 +26,7 @@ const moodEmojis = [
 ];
 
 const AIPsixologPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -143,10 +145,10 @@ const AIPsixologPage = () => {
               <span className="font-medium">AI Psixolog</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Ruhiy Salomatlik Yordamchisi
+              {t("ai.services.ai-psixolog.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Stress, tashvish va his-tuyg'ularingiz haqida xavfsiz muhitda gaplashing. Men sizni tinglashga va yordam berishga tayyorman.
+              {t("aiPages.ai-psixolog.description")}
             </p>
           </div>
 

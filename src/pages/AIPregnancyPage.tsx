@@ -20,9 +20,11 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiPregnancyImg from "@/assets/ai-pregnancy.jpg";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 /* ——— Helpers ——— */
-const addDays = (d: Date, n: number) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+const addDays = (d: Date, n: number) => {
+  const r = new Date(d); r.setDate(r.getDate() + n); return r; };
 const diffDays = (a: Date, b: Date) => Math.floor((b.getTime() - a.getTime()) / 86400000);
 const fmt = (d: Date) => d.toLocaleDateString("uz-UZ", { year: "numeric", month: "long", day: "numeric" });
 
@@ -72,6 +74,7 @@ type TabId = "overview" | "weekly" | "chat" | "kicks" | "reminders";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-pregnancy`;
 
 const AIPregnancyPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [pregnancy, setPregnancy] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -280,15 +283,15 @@ const AIPregnancyPage = () => {
       <Header />
       <AIServiceHero
         image={aiPregnancyImg}
-        title="AI Homiladorlik Assistenti"
+        title={t("ai.services.ai-pregnancy.title")}
         subtitle={`${currentWeek}-hafta · ${trimester}-trimester · Tug'ruqqa ${daysLeft} kun`}
-        description="Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari, harakatlar monitoringi va AI tibbiy maslahatlar olish imkoniyati."
+        description={t("aiPages.ai-pregnancy.description")}
         icon={<Baby className="w-4 h-4" />}
         gradient="from-pink-600/90 to-pink-900/80"
         features={[
-          { icon: <Heart className="w-3.5 h-3.5" />, text: "Haftalik kuzatuv" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Harakat monitoringi" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI maslahatlar" },
+          { icon: <Heart className="w-3.5 h-3.5" />, text: t("aiPages.ai-pregnancy.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-pregnancy.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-pregnancy.f3") },
         ]}
       />
 

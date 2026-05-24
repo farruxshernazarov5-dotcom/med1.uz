@@ -19,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
+import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 interface RiskItem {
   disease: string;
@@ -103,6 +105,7 @@ const categoryIcons: Record<string, string> = {
 };
 
 const AIHealthRiskPage = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<"input" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<HealthRiskResult | null>(null);
@@ -132,7 +135,7 @@ const AIHealthRiskPage = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("ai-health-risk", {
-        body: { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise, existingConditions, familyHistory, diet, sleepHours, stressLevel, medications, labResults, symptoms },
+        body: withLang({ age, gender, weight, height, bloodPressure, smoking, alcohol, exercise, existingConditions, familyHistory, diet, sleepHours, stressLevel, medications, labResults, symptoms }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -163,22 +166,22 @@ const AIHealthRiskPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "Kasallik Prognozi" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
+        { label: t("aiPages.ai-health-risk.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiHealthRiskImg}
-        title="AI kasallik prognozlash tizimi"
-        subtitle="Predictive Diagnostics AI"
-        description="Sog'liq ma'lumotlaringiz, simptomlar, analizlar va tibbiy tarixingiz asosida kelajakdagi kasallik xavflarini sun'iy intellekt prognoz qiladi va oldini olish tavsiyalari beradi."
+        title={t("ai.services.ai-health-risk.title")}
+        subtitle={t("aiPages.ai-health-risk.subtitle")}
+        description={t("aiPages.ai-health-risk.description")}
         icon={<HeartPulse className="w-4 h-4" />}
         gradient="from-rose-700/90 to-rose-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "Risk Score hisoblash" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Health Index" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Profilaktik tavsiyalar" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-risk.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-risk.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-risk.f3") },
         ]}
       />
 

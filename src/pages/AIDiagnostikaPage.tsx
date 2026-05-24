@@ -25,6 +25,8 @@ import AIHealthRiskMini from "@/components/ai-diagnostika/AIHealthRiskMini";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 const PROCESS_STEPS = [
   { icon: ClipboardList, title: "Simptomlar kiritish", desc: "Simptomlaringizni tanlang yoki yozing" },
@@ -42,6 +44,7 @@ const FEATURES = [
 ];
 
 const AIDiagnostikaPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("symptoms");
 
@@ -56,7 +59,7 @@ const AIDiagnostikaPage = () => {
     setIsSymptomLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
-        body: {
+        body: withLang({
           symptoms: info.symptoms,
           age: info.age,
           gender: info.gender,
@@ -64,7 +67,7 @@ const AIDiagnostikaPage = () => {
           painLevel: info.painLevel,
           existingConditions: info.existingConditions,
           allergies: info.allergies,
-        },
+        }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -86,7 +89,7 @@ const AIDiagnostikaPage = () => {
     setIsSymptomLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
-        body: { ...patientInfo, followUpAnswers: answers },
+        body: withLang({ ...patientInfo, followUpAnswers: answers }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -111,7 +114,7 @@ const AIDiagnostikaPage = () => {
       <Breadcrumb items={[
         { label: "Bosh sahifa", href: "/" },
         { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "AI Erta Diagnostika" },
+        { label: t("aiPages.symptom-checker.breadcrumb") },
       ]} />
 
       {/* Hero */}

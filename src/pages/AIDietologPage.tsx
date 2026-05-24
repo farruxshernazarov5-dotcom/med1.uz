@@ -12,6 +12,7 @@ import { Send, Bot, User, Apple, Calculator, Utensils, Loader2 } from "lucide-re
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -28,6 +29,7 @@ interface UserProfile {
 }
 
 const AIDietologPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -157,10 +159,10 @@ const AIDietologPage = () => {
               <span className="font-medium">AI Dietolog</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Shaxsiy Ovqatlanish Maslahatchisi
+              {t("ai.services.ai-dietolog.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Sun'iy intellekt yordamida shaxsiy ovqatlanish rejasi, kaloriya hisoblash va sog'lom turmush tarzi bo'yicha maslahatlar oling
+              {t("aiPages.ai-dietolog.description")}
             </p>
           </div>
 

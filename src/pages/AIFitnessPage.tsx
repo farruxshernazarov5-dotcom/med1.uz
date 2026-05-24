@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Send, Bot, User, Dumbbell, Target, Clock, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -43,6 +44,7 @@ const limitationOptions = [
 ];
 
 const AIFitnessPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -180,10 +182,10 @@ const AIFitnessPage = () => {
               <span className="font-medium">AI Fitness Trener</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Shaxsiy Mashq Dasturi
+              {t("ai.services.ai-fitness.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Sun'iy intellekt yordamida sizning maqsadlaringizga mos mashq dasturlari, posture tahlili va reabilitatsiya mashqlari
+              {t("aiPages.ai-fitness.description")}
             </p>
           </div>
 

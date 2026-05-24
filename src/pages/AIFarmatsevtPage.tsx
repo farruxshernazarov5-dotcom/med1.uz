@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Pill, AlertTriangle, Plus, X, Loader2, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -17,6 +18,7 @@ interface Message {
 }
 
 const AIFarmatsevtPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -133,19 +135,19 @@ const AIFarmatsevtPage = () => {
               <span className="font-medium">AI Farmatsevt</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Dori-darmonlar Maslahatchisi
+              {t("ai.services.ai-farmatsevt.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Dorilar o'zaro ta'siri, analoglar, dozalash va saqlash shartlari haqida ma'lumot oling
+              {t("aiPages.ai-farmatsevt.description")}
             </p>
           </div>
 
           <AIServiceUsageGuide
-            serviceName="AI Farmatsevt"
+            serviceName={t("ai.services.ai-farmatsevt.title")}
             steps={[
-              { title: "Dori nomini kiriting", desc: "Foydalanayotgan yoki qiziqtirgan dori nomini yozing" },
-              { title: "O'zaro ta'sirni tekshiring", desc: "Ikki yoki undan ortiq dori qo'shib, ularning o'zaro ta'sirini aniqlang" },
-              { title: "Natija va tavsiyalar", desc: "AI dori analoglarini, dozalash va saqlash shartlarini ko'rsatadi" },
+              { title: t("aiPages.ai-farmatsevt.s1t"), desc: t("aiPages.ai-farmatsevt.s1d") },
+              { title: t("aiPages.ai-farmatsevt.s2t"), desc: t("aiPages.ai-farmatsevt.s2d") },
+              { title: t("aiPages.ai-farmatsevt.s3t"), desc: t("aiPages.ai-farmatsevt.s3d") },
             ]}
           />
 

@@ -18,6 +18,8 @@ import type { VoiceLang } from "@/hooks/useVoiceGuidance";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, LineChart, Line } from "recharts";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 /* ── helpers ── */
 const getPulseStatus = (v: number) => {
@@ -38,6 +40,7 @@ const getSpo2Status = (v: number) => {
 };
 
 const AIVitalSignsPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [pulse, setPulse] = useState("");
   const [systolic, setSystolic] = useState("");
@@ -107,7 +110,7 @@ const AIVitalSignsPage = () => {
     voice.speakKey("health_score");
     try {
       const message = `Foydalanuvchi vital ko'rsatkichlari:\n${pulse ? `Yurak urishi: ${pulse} bpm\n` : ""}${systolic && diastolic ? `Qon bosimi: ${systolic}/${diastolic} mmHg\n` : ""}${spo2 ? `SpO2: ${spo2}%\n` : ""}${bmiValue ? `BMI: ${bmiValue}\n` : ""}\nIltimos quyidagilarni bering:\n1. Har bir ko'rsatkichning holati va izohi\n2. Xavf darajasi\n3. Qisqa tavsiyalar\n4. Qaysi shifokorga murojaat qilish kerakligi\n5. Umumiy sog'liq bahosi\n\nJavobni o'zbek tilida bering.`;
-      const { data, error } = await supabase.functions.invoke("ai-health-assistant", { body: { message } });
+      const { data, error } = await supabase.functions.invoke("ai-health-assistant", { body: withLang({ message }) });
       if (error) throw error;
       setAiResult(data?.response || data?.text || "Javob olinmadi");
     } catch {
@@ -155,7 +158,7 @@ const AIVitalSignsPage = () => {
               <Heart className={cn("w-12 h-12 text-white transition-all duration-300", animPulse ? "scale-125" : "scale-100")} fill="currentColor" />
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">AI Vital Signs Monitor</h1>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">{t("ai.services.ai-vital-signs.title")}</h1>
               <p className="text-white/80 text-lg">Yurak urishi, qon bosimi, SpO2 va BMI — sun'iy intellekt yordamida to'liq sog'liq monitoring</p>
             </div>
             <div className="flex items-center gap-2">
@@ -184,11 +187,11 @@ const AIVitalSignsPage = () => {
         {/* Usage Guide */}
         <div className="mb-8">
           <AIServiceUsageGuide
-            serviceName="AI Vital Signs Monitor"
+            serviceName={t("ai.services.ai-vital-signs.title")}
             steps={[
-              { title: "Ko'rsatkichlarni kiriting", desc: "Kamera sensori yoki qo'lda puls, bosim, SpO2 va BMI kiriting" },
-              { title: "AI tahlil qiladi", desc: "Sun'iy intellekt barcha ko'rsatkichlarni birgalikda tahlil qiladi" },
-              { title: "Natija va tavsiyalar", desc: "Sog'liq bahosi, xavf darajasi va shifokor tavsiyasini oling" },
+              { title: t("aiPages.ai-vital-signs.s1t"), desc: t("aiPages.ai-vital-signs.s1d") },
+              { title: t("aiPages.ai-vital-signs.s2t"), desc: t("aiPages.ai-vital-signs.s2d") },
+              { title: t("aiPages.ai-vital-signs.s3t"), desc: t("aiPages.ai-vital-signs.s3d") },
             ]}
           />
         </div>

@@ -11,6 +11,7 @@ import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -26,6 +27,7 @@ const QUICK_QUESTIONS = [
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-doctor-chat`;
 
 const AIDoctorChatPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +64,7 @@ const AIDoctorChatPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: allMessages }),
+        body: JSON.stringify({ messages: allMessages, lang: (await import("@/lib/aiLang")).currentLang() }),
       });
 
       if (!resp.ok || !resp.body) {
@@ -109,37 +111,37 @@ const AIDoctorChatPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "AI Shifokor Chat" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
+        { label: t("aiPages.ai-doctor-chat.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiDoctorImg}
-        title="AI Shifokor bilan suhbatlashing"
-        subtitle="AI Tibbiy Maslahatchi"
-        description="Sun'iy intellekt bilan real vaqtda suhbatlashing — sog'liq savollaringizga tezkor va ishonchli javob oling. 24/7 istalgan vaqtda murojaat qiling."
+        title={t("ai.services.ai-doctor-chat.title")}
+        subtitle={t("aiPages.ai-doctor-chat.subtitle")}
+        description={t("aiPages.ai-doctor-chat.description")}
         icon={<Bot className="w-4 h-4" />}
         gradient="from-blue-600/90 to-blue-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "Xavfsiz suhbat" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Real vaqt javob" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Gemini AI modeli" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-doctor-chat.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-doctor-chat.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-doctor-chat.f3") },
         ]}
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
 
-        <AIAccessBanner serviceId="ai-doctor-chat" serviceName="AI Shifokor Chat" />
+        <AIAccessBanner serviceId="ai-doctor-chat" serviceName={t("ai.services.ai-doctor-chat.title")} />
 
         {/* Usage Guide */}
         <div className="mb-4">
           <AIServiceUsageGuide
-            serviceName="AI Shifokor Chat"
+            serviceName={t("ai.services.ai-doctor-chat.title")}
             steps={[
-              { title: "Savolingizni yozing", desc: "Sog'liq haqida savolingizni yoki simptomlaringizni yozing" },
-              { title: "AI javob beradi", desc: "Sun'iy intellekt real vaqtda tibbiy maslahat beradi" },
-              { title: "Tavsiyalarga amal qiling", desc: "AI tavsiyalarini ko'rib, kerak bo'lsa shifokorga murojaat qiling" },
+              { title: t("aiPages.ai-doctor-chat.s1t"), desc: t("aiPages.ai-doctor-chat.s1d") },
+              { title: t("aiPages.ai-doctor-chat.s2t"), desc: t("aiPages.ai-doctor-chat.s2d") },
+              { title: t("aiPages.ai-doctor-chat.s3t"), desc: t("aiPages.ai-doctor-chat.s3d") },
             ]}
           />
         </div>
