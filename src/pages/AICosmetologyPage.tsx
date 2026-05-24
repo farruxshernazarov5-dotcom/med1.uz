@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
 import aiCosmetologyImg from "@/assets/ai-cosmetology.jpg";
+import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -100,6 +101,7 @@ interface ScanResult {
 }
 
 const AICosmetologyPage = () => {
+  const { t } = useTranslation();
   const [tab, setTab] = useState("scanner");
   const [skinType, setSkinType] = useState("");
   const [age, setAge] = useState("");
@@ -205,7 +207,7 @@ const AICosmetologyPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <Breadcrumb items={[{ label: "Bosh sahifa", href: "/" }, { label: "AI Xizmatlar", href: "/ai-services" }, { label: "AI Kosmetologiya" }]} />
+      <Breadcrumb items={[{ label: t("common.home"), href: "/" }, { label: t("ai.breadcrumb"), href: "/ai-services" }, { label: "AI Kosmetologiya" }]} />
 
       <AIServiceHero
         image={aiCosmetologyImg}

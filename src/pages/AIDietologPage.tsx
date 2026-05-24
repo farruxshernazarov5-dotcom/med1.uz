@@ -12,6 +12,7 @@ import { Send, Bot, User, Apple, Calculator, Utensils, Loader2 } from "lucide-re
 import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -28,6 +29,7 @@ interface UserProfile {
 }
 
 const AIDietologPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);

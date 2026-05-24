@@ -13,8 +13,10 @@ import FollowUpQuestions from "@/components/symptom-checker/FollowUpQuestions";
 import type { SymptomAnalysis, PatientInfo } from "@/components/symptom-checker/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const SymptomCheckerPage = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<"input" | "followup" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [analysis, setAnalysis] = useState<SymptomAnalysis | null>(null);
@@ -86,7 +88,7 @@ const SymptomCheckerPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
+        { label: t("common.home"), href: "/" },
         { label: "Xizmatlar", href: "/services" },
         { label: "AI Diagnostika" },
       ]} />
@@ -108,7 +110,7 @@ const SymptomCheckerPage = () => {
       {/* Main content */}
       <section className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto">
-          <AIAccessBanner serviceId="symptom-checker" serviceName="AI Erta Diagnostika" />
+          <AIAccessBanner serviceId="symptom-checker" serviceName={t("ai.services.symptom-checker.title")} />
           {/* Usage Guide */}
           <div className="mb-6">
             <AIServiceUsageGuide

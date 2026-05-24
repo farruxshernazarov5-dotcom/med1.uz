@@ -11,6 +11,7 @@ import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -26,6 +27,7 @@ const QUICK_QUESTIONS = [
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-doctor-chat`;
 
 const AIDoctorChatPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -109,8 +111,8 @@ const AIDoctorChatPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
         { label: "AI Shifokor Chat" },
       ]} />
 
@@ -130,7 +132,7 @@ const AIDoctorChatPage = () => {
 
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
 
-        <AIAccessBanner serviceId="ai-doctor-chat" serviceName="AI Shifokor Chat" />
+        <AIAccessBanner serviceId="ai-doctor-chat" serviceName={t("ai.services.ai-doctor-chat.title")} />
 
         {/* Usage Guide */}
         <div className="mb-4">

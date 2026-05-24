@@ -20,9 +20,11 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiPregnancyImg from "@/assets/ai-pregnancy.jpg";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 /* ——— Helpers ——— */
-const addDays = (d: Date, n: number) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+const addDays = (d: Date, n: number) => {
+  const { t } = useTranslation(); const r = new Date(d); r.setDate(r.getDate() + n); return r; };
 const diffDays = (a: Date, b: Date) => Math.floor((b.getTime() - a.getTime()) / 86400000);
 const fmt = (d: Date) => d.toLocaleDateString("uz-UZ", { year: "numeric", month: "long", day: "numeric" });
 

@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
+import { useTranslation } from "react-i18next";
 
 interface RiskItem {
   disease: string;
@@ -103,6 +104,7 @@ const categoryIcons: Record<string, string> = {
 };
 
 const AIHealthRiskPage = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<"input" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<HealthRiskResult | null>(null);
@@ -163,8 +165,8 @@ const AIHealthRiskPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
         { label: "Kasallik Prognozi" },
       ]} />
 

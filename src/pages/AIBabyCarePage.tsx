@@ -22,6 +22,7 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiBabyCareImg from "@/assets/ai-baby-care.jpg";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 /* ——— Types ——— */
 interface BabyProfile {
@@ -59,6 +60,7 @@ type TabId = "profile" | "growth" | "vaccination" | "development" | "mother" | "
 
 /* ——— Helpers ——— */
 const diffMonths = (birth: Date, now: Date) => {
+  const { t } = useTranslation();
   return (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
 };
 const diffDays = (a: Date, b: Date) => Math.floor((b.getTime() - a.getTime()) / 86400000);

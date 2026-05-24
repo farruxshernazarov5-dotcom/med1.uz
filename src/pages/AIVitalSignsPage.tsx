@@ -18,9 +18,11 @@ import type { VoiceLang } from "@/hooks/useVoiceGuidance";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, LineChart, Line } from "recharts";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 /* ── helpers ── */
 const getPulseStatus = (v: number) => {
+  const { t } = useTranslation();
   if (v < 60) return { label: "Past (Bradikardiya)", color: "text-blue-500", bg: "bg-blue-500" };
   if (v <= 100) return { label: "Normal", color: "text-green-500", bg: "bg-green-500" };
   return { label: "Yuqori (Taxikardiya)", color: "text-red-500", bg: "bg-red-500" };

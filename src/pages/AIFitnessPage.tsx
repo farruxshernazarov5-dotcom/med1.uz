@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Send, Bot, User, Dumbbell, Target, Clock, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -43,6 +44,7 @@ const limitationOptions = [
 ];
 
 const AIFitnessPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);

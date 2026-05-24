@@ -14,6 +14,7 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiAssistantImg from "@/assets/ai-health-assistant.jpg";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Mode = "general" | "symptom" | "lab" | "advice";
@@ -63,6 +64,7 @@ const QUICK_BY_MODE: Record<Mode, string[]> = {
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-health-assistant`;
 
 const AIHealthAssistantPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -170,8 +172,8 @@ const AIHealthAssistantPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <Breadcrumb items={[
-        { label: "Bosh sahifa", href: "/" },
-        { label: "AI Xizmatlar", href: "/ai-services" },
+        { label: t("common.home"), href: "/" },
+        { label: t("ai.breadcrumb"), href: "/ai-services" },
         { label: "AI Sog'liq Assistenti" },
       ]} />
 

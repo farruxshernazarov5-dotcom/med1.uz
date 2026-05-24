@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Send, Bot, User, Brain, Heart, Smile, Frown, Meh, Loader2, Phone } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Message {
   role: "user" | "assistant";
@@ -25,6 +26,7 @@ const moodEmojis = [
 ];
 
 const AIPsixologPage = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
