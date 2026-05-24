@@ -60,7 +60,6 @@ type TabId = "profile" | "growth" | "vaccination" | "development" | "mother" | "
 
 /* ——— Helpers ——— */
 const diffMonths = (birth: Date, now: Date) => {
-  const { t } = useTranslation();
   return (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
 };
 const diffDays = (a: Date, b: Date) => Math.floor((b.getTime() - a.getTime()) / 86400000);
