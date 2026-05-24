@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import ContactMessageForm from "@/components/ContactMessageForm";
 import { Phone, Mail, MapPin, Clock, MessageSquare } from "lucide-react";
@@ -6,8 +7,20 @@ import { Phone, Mail, MapPin, Clock, MessageSquare } from "lucide-react";
 const ContactPage = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Aloqa — Med1.uz qo'llab-quvvatlash xizmati"
+        description="Med1.uz bilan bog'laning: telefon, email va onlayn xabar yuborish. 24/7 qo'llab-quvvatlash, Toshkent, O'zbekiston."
+        path="/contact"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "Med1.uz aloqa",
+          url: "https://med1.uz/contact",
+        }}
+      />
       <Header />
       <div className="container mx-auto px-4 py-8">
+        <h1 className="sr-only">Med1.uz aloqa sahifasi</h1>
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Biz bilan bog'laning</h1>
           <p className="text-muted-foreground">Savollaringiz bormi? Biz bilan bog'laning!</p>
