@@ -122,13 +122,19 @@ async function loadDynamic() {
     }
   } catch (e) { console.warn("clinics load failed:", (e as Error).message); }
 
-  // News: /news/:newsId
+  // News: /news/:newsId — regex parse to avoid loading image assets via tsx
   try {
-    const mod: any = await import("../src/data/news");
-    const list = mod.newsItems ?? [];
-    for (const n of list) {
-      if (n.id) dynamicEntries.push({
-        path: `/news/${n.id}`,
+    const src = readFileSync(resolve("src/data/news.ts"), "utf8");
+    const idRe = /id:\s*"([^"]+)"/g;
+    const seen = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = idRe.exec(src)) !== null) {
+      const id = m[1];
+      // skip category ids (short slugs like "research"); news ids look like "news-..." in this dataset
+      if (seen.has(id)) continue;
+      seen.add(id);
+      dynamicEntries.push({
+        path: `/news/${id}`,
         changefreq: "monthly",
         priority: "0.6",
       });
@@ -137,11 +143,18 @@ async function loadDynamic() {
 
   // MedTech: /med-tech/:equipmentId
   try {
-    const mod: any = await import("../src/data/medtech");
-    const list = mod.medTechEquipment ?? mod.equipment ?? [];
-    for (const eq of list) {
-      if (eq.id) dynamicEntries.push({
-        path: `/med-tech/${eq.id}`,
+    const src = readFileSync(resolve("src/data/medtech.ts"), "utf8");
+    // Capture ids inside medTechEquipment block only
+    const block = src.split("medTechEquipment")[1] ?? "";
+    const idRe = /id:\s*"([^"]+)"/g;
+    const seen = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = idRe.exec(block)) !== null) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      seen.add(id);
+      dynamicEntries.push({
+        path: `/med-tech/${id}`,
         changefreq: "monthly",
         priority: "0.5",
       });
