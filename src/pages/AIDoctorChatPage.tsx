@@ -124,9 +124,9 @@ const AIDoctorChatPage = () => {
         icon={<Bot className="w-4 h-4" />}
         gradient="from-blue-600/90 to-blue-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "Xavfsiz suhbat" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Real vaqt javob" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Gemini AI modeli" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-doctor-chat.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-doctor-chat.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-doctor-chat.f3") },
         ]}
       />
 

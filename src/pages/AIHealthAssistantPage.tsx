@@ -185,9 +185,9 @@ const AIHealthAssistantPage = () => {
         icon={<UserCheck className="w-4 h-4" />}
         gradient="from-teal-700/90 to-teal-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "4 ta rejim" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "24/7 faol" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Ko'p tilli" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-assistant.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-assistant.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-assistant.f3") },
         ]}
       />
 

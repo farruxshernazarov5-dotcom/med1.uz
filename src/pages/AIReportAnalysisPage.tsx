@@ -212,9 +212,9 @@ const AIReportAnalysisPage = () => {
         icon={<FileText className="w-4 h-4" />}
         gradient="from-emerald-700/90 to-emerald-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "OCR rasm tanish" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "ICD-10 kodlari" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI interpretatsiya" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-report-analysis.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-report-analysis.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-report-analysis.f3") },
         ]}
       />
 

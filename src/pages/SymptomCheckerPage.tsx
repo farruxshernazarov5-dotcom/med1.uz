@@ -101,9 +101,9 @@ const SymptomCheckerPage = () => {
         icon={<Brain className="w-4 h-4" />}
         gradient="from-primary/90 to-blue-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "Ma'lumotlar maxfiy" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Real vaqt tahlili" },
-          { icon: <AlertTriangle className="w-3.5 h-3.5" />, text: "Tibbiy maslahat emas" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.symptom-checker.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.symptom-checker.f2") },
+          { icon: <AlertTriangle className="w-3.5 h-3.5" />, text: t("aiPages.symptom-checker.f3") },
         ]}
       />
 

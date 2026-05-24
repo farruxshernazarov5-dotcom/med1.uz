@@ -335,9 +335,9 @@ const AIBabyCarePage = () => {
         icon={<Baby className="w-4 h-4" />}
         gradient="from-amber-600/90 to-amber-900/80"
         features={[
-          { icon: <ShieldCheck className="w-3.5 h-3.5" />, text: "Emlash jadvali" },
-          { icon: <Scale className="w-3.5 h-3.5" />, text: "O'sish monitoringi" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI maslahatlar" },
+          { icon: <ShieldCheck className="w-3.5 h-3.5" />, text: t("aiPages.ai-baby-care.f1") },
+          { icon: <Scale className="w-3.5 h-3.5" />, text: t("aiPages.ai-baby-care.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-baby-care.f3") },
         ]}
       />
 

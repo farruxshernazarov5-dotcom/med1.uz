@@ -178,9 +178,9 @@ const AIHealthRiskPage = () => {
         icon={<HeartPulse className="w-4 h-4" />}
         gradient="from-rose-700/90 to-rose-900/80"
         features={[
-          { icon: <Shield className="w-3.5 h-3.5" />, text: "Risk Score hisoblash" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Health Index" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "Profilaktik tavsiyalar" },
+          { icon: <Shield className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-risk.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-risk.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-health-risk.f3") },
         ]}
       />
 

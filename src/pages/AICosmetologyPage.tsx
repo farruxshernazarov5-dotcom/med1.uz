@@ -217,9 +217,9 @@ const AICosmetologyPage = () => {
         icon={<Palette className="w-4 h-4" />}
         gradient="from-violet-600/90 to-purple-900/80"
         features={[
-          { icon: <Scan className="w-3.5 h-3.5" />, text: "Teri skaneri" },
-          { icon: <Heart className="w-3.5 h-3.5" />, text: "Parvarish rejasi" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI muolajalar" },
+          { icon: <Scan className="w-3.5 h-3.5" />, text: t("aiPages.ai-cosmetology.f1") },
+          { icon: <Heart className="w-3.5 h-3.5" />, text: t("aiPages.ai-cosmetology.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-cosmetology.f3") },
         ]}
       />
 

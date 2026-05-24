@@ -288,9 +288,9 @@ const AIPregnancyPage = () => {
         icon={<Baby className="w-4 h-4" />}
         gradient="from-pink-600/90 to-pink-900/80"
         features={[
-          { icon: <Heart className="w-3.5 h-3.5" />, text: "Haftalik kuzatuv" },
-          { icon: <Activity className="w-3.5 h-3.5" />, text: "Harakat monitoringi" },
-          { icon: <Sparkles className="w-3.5 h-3.5" />, text: "AI maslahatlar" },
+          { icon: <Heart className="w-3.5 h-3.5" />, text: t("aiPages.ai-pregnancy.f1") },
+          { icon: <Activity className="w-3.5 h-3.5" />, text: t("aiPages.ai-pregnancy.f2") },
+          { icon: <Sparkles className="w-3.5 h-3.5" />, text: t("aiPages.ai-pregnancy.f3") },
         ]}
       />
 
