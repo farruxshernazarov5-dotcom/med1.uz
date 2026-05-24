@@ -158,7 +158,7 @@ const AIVitalSignsPage = () => {
               <Heart className={cn("w-12 h-12 text-white transition-all duration-300", animPulse ? "scale-125" : "scale-100")} fill="currentColor" />
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">AI Vital Signs Monitor</h1>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">{t("ai.services.ai-vital-signs.title")}</h1>
               <p className="text-white/80 text-lg">Yurak urishi, qon bosimi, SpO2 va BMI — sun'iy intellekt yordamida to'liq sog'liq monitoring</p>
             </div>
             <div className="flex items-center gap-2">
