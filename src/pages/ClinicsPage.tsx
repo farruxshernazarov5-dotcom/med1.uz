@@ -641,6 +641,7 @@ const ClinicsPage = () => {
         <LogoTicker />
       </div>
     </SectionLayout>
+    </>
   );
 };
 
