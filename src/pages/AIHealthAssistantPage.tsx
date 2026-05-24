@@ -174,14 +174,14 @@ const AIHealthAssistantPage = () => {
       <Breadcrumb items={[
         { label: t("common.home"), href: "/" },
         { label: t("ai.breadcrumb"), href: "/ai-services" },
-        { label: "AI Sog'liq Assistenti" },
+        { label: t("aiPages.ai-health-assistant.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiAssistantImg}
-        title="Shaxsiy sog'liq assistenti"
-        subtitle="AI Personal Health Assistant"
-        description="24/7 ishlaydigan shaxsiy sog'liq yordamchingiz — simptom tahlili, analiz tushuntirish, shifokor tavsiyasi va individual maslahatlar. Har qanday sog'liq savolingizga javob."
+        title={t("ai.services.ai-health-assistant.title")}
+        subtitle={t("aiPages.ai-health-assistant.subtitle")}
+        description={t("aiPages.ai-health-assistant.description")}
         icon={<UserCheck className="w-4 h-4" />}
         gradient="from-teal-700/90 to-teal-900/80"
         features={[

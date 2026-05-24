@@ -113,14 +113,14 @@ const AIDoctorChatPage = () => {
       <Breadcrumb items={[
         { label: t("common.home"), href: "/" },
         { label: t("ai.breadcrumb"), href: "/ai-services" },
-        { label: "AI Shifokor Chat" },
+        { label: t("aiPages.ai-doctor-chat.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiDoctorImg}
-        title="AI Shifokor bilan suhbatlashing"
-        subtitle="AI Tibbiy Maslahatchi"
-        description="Sun'iy intellekt bilan real vaqtda suhbatlashing — sog'liq savollaringizga tezkor va ishonchli javob oling. 24/7 istalgan vaqtda murojaat qiling."
+        title={t("ai.services.ai-doctor-chat.title")}
+        subtitle={t("aiPages.ai-doctor-chat.subtitle")}
+        description={t("aiPages.ai-doctor-chat.description")}
         icon={<Bot className="w-4 h-4" />}
         gradient="from-blue-600/90 to-blue-900/80"
         features={[
@@ -137,11 +137,11 @@ const AIDoctorChatPage = () => {
         {/* Usage Guide */}
         <div className="mb-4">
           <AIServiceUsageGuide
-            serviceName="AI Shifokor Chat"
+            serviceName={t("ai.services.ai-doctor-chat.title")}
             steps={[
-              { title: "Savolingizni yozing", desc: "Sog'liq haqida savolingizni yoki simptomlaringizni yozing" },
-              { title: "AI javob beradi", desc: "Sun'iy intellekt real vaqtda tibbiy maslahat beradi" },
-              { title: "Tavsiyalarga amal qiling", desc: "AI tavsiyalarini ko'rib, kerak bo'lsa shifokorga murojaat qiling" },
+              { title: t("aiPages.ai-doctor-chat.s1t"), desc: t("aiPages.ai-doctor-chat.s1d") },
+              { title: t("aiPages.ai-doctor-chat.s2t"), desc: t("aiPages.ai-doctor-chat.s2d") },
+              { title: t("aiPages.ai-doctor-chat.s3t"), desc: t("aiPages.ai-doctor-chat.s3d") },
             ]}
           />
         </div>

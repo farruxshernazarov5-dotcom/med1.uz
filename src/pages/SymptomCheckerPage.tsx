@@ -90,14 +90,14 @@ const SymptomCheckerPage = () => {
       <Breadcrumb items={[
         { label: t("common.home"), href: "/" },
         { label: "Xizmatlar", href: "/services" },
-        { label: "AI Diagnostika" },
+        { label: t("aiPages.symptom-checker.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiSymptomImg}
-        title="Sun'iy intellekt asosidagi erta diagnostika"
-        subtitle="AI Symptom Checker"
-        description="Simptomlaringizni kiriting — AI tizimi ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini beradi. Zamonaviy tibbiy bilim bazasi va klinik protokollar asosida ishlaydi."
+        title={t("ai.services.symptom-checker.title")}
+        subtitle={t("aiPages.symptom-checker.subtitle")}
+        description={t("aiPages.symptom-checker.description")}
         icon={<Brain className="w-4 h-4" />}
         gradient="from-primary/90 to-blue-900/80"
         features={[
@@ -114,11 +114,11 @@ const SymptomCheckerPage = () => {
           {/* Usage Guide */}
           <div className="mb-6">
             <AIServiceUsageGuide
-              serviceName="AI Erta Diagnostika"
+              serviceName={t("ai.services.symptom-checker.title")}
               steps={[
-                { title: "Simptomlarni kiriting", desc: "Sezayotgan belgilaringiz, yoshingiz va jinsni ko'rsating" },
-                { title: "AI tahlil qiladi", desc: "Sun'iy intellekt ma'lumotlaringizni ICD-10 standartlari asosida tahlil qiladi" },
-                { title: "Natijalar va tavsiyalar", desc: "Ehtimoliy kasalliklar, xavf darajasi va mos shifokor tavsiyasini ko'ring" },
+                { title: t("aiPages.symptom-checker.s1t"), desc: t("aiPages.symptom-checker.s1d") },
+                { title: t("aiPages.symptom-checker.s2t"), desc: t("aiPages.symptom-checker.s2d") },
+                { title: t("aiPages.symptom-checker.s3t"), desc: t("aiPages.symptom-checker.s3d") },
               ]}
             />
           </div>

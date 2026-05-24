@@ -167,14 +167,14 @@ const AIHealthRiskPage = () => {
       <Breadcrumb items={[
         { label: t("common.home"), href: "/" },
         { label: t("ai.breadcrumb"), href: "/ai-services" },
-        { label: "Kasallik Prognozi" },
+        { label: t("aiPages.ai-health-risk.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiHealthRiskImg}
-        title="AI kasallik prognozlash tizimi"
-        subtitle="Predictive Diagnostics AI"
-        description="Sog'liq ma'lumotlaringiz, simptomlar, analizlar va tibbiy tarixingiz asosida kelajakdagi kasallik xavflarini sun'iy intellekt prognoz qiladi va oldini olish tavsiyalari beradi."
+        title={t("ai.services.ai-health-risk.title")}
+        subtitle={t("aiPages.ai-health-risk.subtitle")}
+        description={t("aiPages.ai-health-risk.description")}
         icon={<HeartPulse className="w-4 h-4" />}
         gradient="from-rose-700/90 to-rose-900/80"
         features={[

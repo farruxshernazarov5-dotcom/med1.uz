@@ -177,7 +177,7 @@ const AIRadiologyPage = () => {
         record_type: "test_result",
         title: `AI ${scanLabel}: ${bodyPart || "Umumiy"}`,
         description,
-        doctor_name: "AI Radiologiya",
+        doctor_name: t("aiPages.ai-radiology.breadcrumb"),
         clinic_name: "Med1.uz AI",
         record_date: new Date().toISOString().slice(0, 10),
       });
@@ -215,9 +215,9 @@ const AIRadiologyPage = () => {
 
       <AIServiceHero
         image={aiRadiologyImg}
-        title="Rentgen, MRT va KT tasvirlarini AI tahlili"
-        subtitle="AI Radiology Pro"
-        description="Tibbiy tasviringizni yuklang — AI tizimi patologik o'zgarishlarni aniqlaydi, anatomik tuzilmalarni baholaydi va mutaxassis tavsiya qiladi."
+        title={t("ai.services.ai-radiology.title")}
+        subtitle={t("aiPages.ai-radiology.subtitle")}
+        description={t("aiPages.ai-radiology.description")}
         icon={<Eye className="w-4 h-4" />}
         gradient="from-violet-700/90 to-violet-900/80"
         features={[

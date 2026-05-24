@@ -282,9 +282,9 @@ const AIPregnancyPage = () => {
       <Header />
       <AIServiceHero
         image={aiPregnancyImg}
-        title="AI Homiladorlik Assistenti"
+        title={t("ai.services.ai-pregnancy.title")}
         subtitle={`${currentWeek}-hafta · ${trimester}-trimester · Tug'ruqqa ${daysLeft} kun`}
-        description="Homiladorlik davrida haftalik homila rivojlanishi, ovqatlanish tavsiyalari, harakatlar monitoringi va AI tibbiy maslahatlar olish imkoniyati."
+        description={t("aiPages.ai-pregnancy.description")}
         icon={<Baby className="w-4 h-4" />}
         gradient="from-pink-600/90 to-pink-900/80"
         features={[

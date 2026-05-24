@@ -111,7 +111,7 @@ const AIDiagnostikaPage = () => {
       <Breadcrumb items={[
         { label: "Bosh sahifa", href: "/" },
         { label: "AI Xizmatlar", href: "/ai-services" },
-        { label: "AI Erta Diagnostika" },
+        { label: t("aiPages.symptom-checker.breadcrumb") },
       ]} />
 
       {/* Hero */}

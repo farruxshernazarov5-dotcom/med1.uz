@@ -329,9 +329,9 @@ const AIBabyCarePage = () => {
 
       <AIServiceHero
         image={aiBabyCareImg}
-        title="AI Bola Parvarishi"
+        title={t("ai.services.ai-baby-care.title")}
         subtitle={baby ? `${baby.baby_name || "Chaqaloq"} · ${babyAgeDays} kun (${babyAgeMonths} oy)` : "Tug'ruqdan keyingi parvarish"}
-        description="Chaqaloq rivojlanishi, emlash jadvali, o'sish monitoringi va ota-onalar uchun AI maslahatlar. Har bir bosqichda professional yordam."
+        description={t("aiPages.ai-baby-care.description")}
         icon={<Baby className="w-4 h-4" />}
         gradient="from-amber-600/90 to-amber-900/80"
         features={[

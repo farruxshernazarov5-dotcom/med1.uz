@@ -186,11 +186,11 @@ const AIVitalSignsPage = () => {
         {/* Usage Guide */}
         <div className="mb-8">
           <AIServiceUsageGuide
-            serviceName="AI Vital Signs Monitor"
+            serviceName={t("ai.services.ai-vital-signs.title")}
             steps={[
-              { title: "Ko'rsatkichlarni kiriting", desc: "Kamera sensori yoki qo'lda puls, bosim, SpO2 va BMI kiriting" },
-              { title: "AI tahlil qiladi", desc: "Sun'iy intellekt barcha ko'rsatkichlarni birgalikda tahlil qiladi" },
-              { title: "Natija va tavsiyalar", desc: "Sog'liq bahosi, xavf darajasi va shifokor tavsiyasini oling" },
+              { title: t("aiPages.ai-vital-signs.s1t"), desc: t("aiPages.ai-vital-signs.s1d") },
+              { title: t("aiPages.ai-vital-signs.s2t"), desc: t("aiPages.ai-vital-signs.s2d") },
+              { title: t("aiPages.ai-vital-signs.s3t"), desc: t("aiPages.ai-vital-signs.s3d") },
             ]}
           />
         </div>

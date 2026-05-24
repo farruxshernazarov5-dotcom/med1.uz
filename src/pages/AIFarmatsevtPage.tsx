@@ -143,11 +143,11 @@ const AIFarmatsevtPage = () => {
           </div>
 
           <AIServiceUsageGuide
-            serviceName="AI Farmatsevt"
+            serviceName={t("ai.services.ai-farmatsevt.title")}
             steps={[
-              { title: "Dori nomini kiriting", desc: "Foydalanayotgan yoki qiziqtirgan dori nomini yozing" },
-              { title: "O'zaro ta'sirni tekshiring", desc: "Ikki yoki undan ortiq dori qo'shib, ularning o'zaro ta'sirini aniqlang" },
-              { title: "Natija va tavsiyalar", desc: "AI dori analoglarini, dozalash va saqlash shartlarini ko'rsatadi" },
+              { title: t("aiPages.ai-farmatsevt.s1t"), desc: t("aiPages.ai-farmatsevt.s1d") },
+              { title: t("aiPages.ai-farmatsevt.s2t"), desc: t("aiPages.ai-farmatsevt.s2d") },
+              { title: t("aiPages.ai-farmatsevt.s3t"), desc: t("aiPages.ai-farmatsevt.s3d") },
             ]}
           />
 

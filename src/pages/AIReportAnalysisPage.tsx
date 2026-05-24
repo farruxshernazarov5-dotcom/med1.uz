@@ -201,14 +201,14 @@ const AIReportAnalysisPage = () => {
       <Breadcrumb items={[
         { label: t("common.home"), href: "/" },
         { label: t("ai.breadcrumb"), href: "/ai-services" },
-        { label: "Analiz Tahlili" },
+        { label: t("aiPages.ai-report-analysis.breadcrumb") },
       ]} />
 
       <AIServiceHero
         image={aiReportImg}
-        title="Laboratoriya natijalarini AI tahlili"
-        subtitle="AI Report Analysis"
-        description="Analiz natijalaringizni yuklang yoki kiriting — AI tizimi har bir ko'rsatkichni tahlil qilib, tibbiy izoh va tavsiya beradi. ICD-10 kodlari bilan professional darajada."
+        title={t("ai.services.ai-report-analysis.title")}
+        subtitle={t("aiPages.ai-report-analysis.subtitle")}
+        description={t("aiPages.ai-report-analysis.description")}
         icon={<FileText className="w-4 h-4" />}
         gradient="from-emerald-700/90 to-emerald-900/80"
         features={[

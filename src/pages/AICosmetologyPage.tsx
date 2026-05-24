@@ -207,13 +207,13 @@ const AICosmetologyPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <Breadcrumb items={[{ label: t("common.home"), href: "/" }, { label: t("ai.breadcrumb"), href: "/ai-services" }, { label: "AI Kosmetologiya" }]} />
+      <Breadcrumb items={[{ label: t("common.home"), href: "/" }, { label: t("ai.breadcrumb"), href: "/ai-services" }, { label: t("aiPages.ai-cosmetology.breadcrumb") }]} />
 
       <AIServiceHero
         image={aiCosmetologyImg}
-        title="AI Teri Skaneri va Kosmetologiya"
-        subtitle="AI Kosmetologiya Assistenti v2.0"
-        description="Sun'iy intellekt teringiz holatini tahlil qilib, individual parvarish rejasi yaratadi va professional kosmetologiya klinikalarini tavsiya qiladi."
+        title={t("ai.services.ai-cosmetology.title")}
+        subtitle={t("aiPages.ai-cosmetology.subtitle")}
+        description={t("aiPages.ai-cosmetology.description")}
         icon={<Palette className="w-4 h-4" />}
         gradient="from-violet-600/90 to-purple-900/80"
         features={[
