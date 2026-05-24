@@ -14,6 +14,7 @@ import type { SymptomAnalysis, PatientInfo } from "@/components/symptom-checker/
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 const SymptomCheckerPage = () => {
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ const SymptomCheckerPage = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
-        body: {
+        body: withLang({
           symptoms: info.symptoms,
           age: info.age,
           gender: info.gender,
@@ -36,7 +37,7 @@ const SymptomCheckerPage = () => {
           painLevel: info.painLevel,
           existingConditions: info.existingConditions,
           allergies: info.allergies,
-        },
+        }),
       });
 
       if (error) throw error;
@@ -61,10 +62,10 @@ const SymptomCheckerPage = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
-        body: {
+        body: withLang({
           ...patientInfo,
           followUpAnswers: answers,
-        },
+        }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

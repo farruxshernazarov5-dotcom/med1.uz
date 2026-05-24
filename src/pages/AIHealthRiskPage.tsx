@@ -20,6 +20,7 @@ import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 interface RiskItem {
   disease: string;
@@ -134,7 +135,7 @@ const AIHealthRiskPage = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("ai-health-risk", {
-        body: { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise, existingConditions, familyHistory, diet, sleepHours, stressLevel, medications, labResults, symptoms },
+        body: withLang({ age, gender, weight, height, bloodPressure, smoking, alcohol, exercise, existingConditions, familyHistory, diet, sleepHours, stressLevel, medications, labResults, symptoms }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

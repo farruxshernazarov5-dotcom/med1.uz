@@ -21,6 +21,7 @@ import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 interface AnatomicalStructure {
   name: string;

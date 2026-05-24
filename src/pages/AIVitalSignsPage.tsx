@@ -19,6 +19,7 @@ import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, A
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { withLang } from "@/lib/aiLang";
 
 /* ── helpers ── */
 const getPulseStatus = (v: number) => {
@@ -109,7 +110,7 @@ const AIVitalSignsPage = () => {
     voice.speakKey("health_score");
     try {
       const message = `Foydalanuvchi vital ko'rsatkichlari:\n${pulse ? `Yurak urishi: ${pulse} bpm\n` : ""}${systolic && diastolic ? `Qon bosimi: ${systolic}/${diastolic} mmHg\n` : ""}${spo2 ? `SpO2: ${spo2}%\n` : ""}${bmiValue ? `BMI: ${bmiValue}\n` : ""}\nIltimos quyidagilarni bering:\n1. Har bir ko'rsatkichning holati va izohi\n2. Xavf darajasi\n3. Qisqa tavsiyalar\n4. Qaysi shifokorga murojaat qilish kerakligi\n5. Umumiy sog'liq bahosi\n\nJavobni o'zbek tilida bering.`;
-      const { data, error } = await supabase.functions.invoke("ai-health-assistant", { body: { message } });
+      const { data, error } = await supabase.functions.invoke("ai-health-assistant", { body: withLang({ message }) });
       if (error) throw error;
       setAiResult(data?.response || data?.text || "Javob olinmadi");
     } catch {
