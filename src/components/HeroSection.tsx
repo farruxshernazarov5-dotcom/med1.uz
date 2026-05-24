@@ -18,6 +18,8 @@ const HeroSection = () => {
             src={heroImage}
             alt=""
             aria-hidden
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover opacity-25"
             width={1920}
             height={1080}
