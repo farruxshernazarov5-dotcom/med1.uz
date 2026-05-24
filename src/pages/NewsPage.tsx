@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import SectionLayout from "@/components/SectionLayout";
 import { Newspaper, Search, X, ArrowRight, Clock, ExternalLink, Flame, TrendingUp } from "lucide-react";
 import { newsCategories, newsItems, totalNewsItems, totalNewsCategories } from "@/data/news";
@@ -20,6 +21,19 @@ const NewsPage = () => {
   const featured = newsItems.filter((n) => n.isFeatured);
 
   return (
+    <>
+      <SEO
+        title="Tibbiy yangiliklar — jahon va O'zbekiston tibbiyoti | Med1.uz"
+        description="Eng so'nggi tibbiy yangiliklar: ilmiy izlanishlar, AI tibbiyoti, vaktsinalar, transplantatsiya va sog'liqni saqlash innovatsiyalari."
+        path="/news"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Tibbiy yangiliklar",
+          url: "https://med1.uz/news",
+          numberOfItems: totalNewsItems,
+        }}
+      />
     <SectionLayout
       title="Tibbiy Yangiliklar"
       subtitle={`${totalNewsCategories} ta yo'nalish, ${totalNewsItems} ta yangilik — jahon tibbiyotining eng so'nggi yangiliklari`}
@@ -224,6 +238,7 @@ const NewsPage = () => {
         )}
       </div>
     </SectionLayout>
+    </>
   );
 };
 

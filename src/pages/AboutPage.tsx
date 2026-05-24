@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import {
@@ -29,6 +30,17 @@ const values = [
 const AboutPage = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Med1.uz haqida — O'zbekiston raqamli tibbiy ekotizimi"
+        description="Med1.uz — 2018 yildan beri O'zbekiston tibbiyotini raqamlashtirayotgan platforma. Bizning missiya, qadriyatlar va jamoa haqida."
+        path="/about"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          name: "Med1.uz haqida",
+          url: "https://med1.uz/about",
+        }}
+      />
       <Header />
 
       {/* Hero */}

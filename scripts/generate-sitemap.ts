@@ -121,6 +121,45 @@ async function loadDynamic() {
       });
     }
   } catch (e) { console.warn("clinics load failed:", (e as Error).message); }
+
+  // News: /news/:newsId — regex parse to avoid loading image assets via tsx
+  try {
+    const src = readFileSync(resolve("src/data/news.ts"), "utf8");
+    const idRe = /id:\s*"([^"]+)"/g;
+    const seen = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = idRe.exec(src)) !== null) {
+      const id = m[1];
+      // skip category ids (short slugs like "research"); news ids look like "news-..." in this dataset
+      if (seen.has(id)) continue;
+      seen.add(id);
+      dynamicEntries.push({
+        path: `/news/${id}`,
+        changefreq: "monthly",
+        priority: "0.6",
+      });
+    }
+  } catch (e) { console.warn("news load failed:", (e as Error).message); }
+
+  // MedTech: /med-tech/:equipmentId
+  try {
+    const src = readFileSync(resolve("src/data/medtech.ts"), "utf8");
+    // Capture ids inside medTechEquipment block only
+    const block = src.split("medTechEquipment")[1] ?? "";
+    const idRe = /id:\s*"([^"]+)"/g;
+    const seen = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = idRe.exec(block)) !== null) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      seen.add(id);
+      dynamicEntries.push({
+        path: `/med-tech/${id}`,
+        changefreq: "monthly",
+        priority: "0.5",
+      });
+    }
+  } catch (e) { console.warn("medtech load failed:", (e as Error).message); }
 }
 
 function build(entries: Entry[]) {

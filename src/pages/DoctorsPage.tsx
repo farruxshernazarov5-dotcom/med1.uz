@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -56,6 +57,18 @@ const DoctorsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Shifokorlar — O'zbekiston mutaxassislar katalogi | Med1.uz"
+        description="O'zbekistondagi tasdiqlangan shifokorlar: mutaxassisliklar, reytinglar va onlayn qabulga yozilish. Eng yaxshi tibbiyot mutaxassislarini toping."
+        path="/doctors"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Shifokorlar katalogi",
+          url: "https://med1.uz/doctors",
+          about: { "@type": "MedicalBusiness", name: "Med1.uz shifokorlar" },
+        }}
+      />
       <Header />
 
       {/* Hero */}
