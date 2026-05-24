@@ -159,10 +159,10 @@ const AIDietologPage = () => {
               <span className="font-medium">AI Dietolog</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Shaxsiy Ovqatlanish Maslahatchisi
+              {t("ai.services.ai-dietolog.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Sun'iy intellekt yordamida shaxsiy ovqatlanish rejasi, kaloriya hisoblash va sog'lom turmush tarzi bo'yicha maslahatlar oling
+              {t("aiPages.ai-dietolog.description")}
             </p>
           </div>
 
