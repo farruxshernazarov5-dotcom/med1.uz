@@ -89,16 +89,16 @@ const ContactMessageForm = () => {
         <MessageSquare className="w-5 h-5 text-primary" />
         <h3 className="text-lg font-semibold text-foreground">Xabar qoldirish</h3>
       </div>
-      <Input placeholder="To'liq ismingiz *" value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} required maxLength={100} />
-      <Input placeholder="+998XXXXXXXXX *" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required maxLength={13} />
-      <Input placeholder="Email (ixtiyoriy)" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} maxLength={255} />
+      <Input aria-label="To'liq ismingiz" placeholder="To'liq ismingiz *" value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} required maxLength={100} />
+      <Input aria-label="Telefon raqami" placeholder="+998XXXXXXXXX *" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required maxLength={13} />
+      <Input aria-label="Email" placeholder="Email (ixtiyoriy)" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} maxLength={255} />
       <Select value={form.subject} onValueChange={v => setForm(f => ({ ...f, subject: v }))}>
-        <SelectTrigger><SelectValue placeholder="Mavzu tanlang" /></SelectTrigger>
+        <SelectTrigger aria-label="Mavzu tanlang"><SelectValue placeholder="Mavzu tanlang" /></SelectTrigger>
         <SelectContent>
           {subjects.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
         </SelectContent>
       </Select>
-      <Textarea placeholder="Xabaringiz *" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} required maxLength={1000} rows={4} />
+      <Textarea aria-label="Xabaringiz" placeholder="Xabaringiz *" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} required maxLength={1000} rows={4} />
       <Button type="submit" className="w-full" disabled={loading}>
         <Send className="w-4 h-4 mr-2" />
         {loading ? "Yuborilmoqda..." : "Yuborish"}
