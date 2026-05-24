@@ -53,9 +53,9 @@ const ContactPage = () => {
             <div className="bg-primary/5 rounded-2xl border border-primary/20 p-6">
               <h4 className="font-semibold text-foreground mb-2">Telegram orqali bog'laning</h4>
               <p className="text-sm text-muted-foreground mb-3">Tezkor javob olish uchun Telegram botimizga yozing</p>
-              <a href="https://t.me/Med1uzOTP_Bot" target="_blank" rel="noopener noreferrer"
+              <a href="https://t.me/med1uz" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-                <MessageSquare className="w-4 h-4" /> @Med1uzOTP_Bot
+                <MessageSquare className="w-4 h-4" /> @med1uz
               </a>
             </div>
           </div>

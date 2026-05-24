@@ -102,6 +102,7 @@ import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import HambiReturnButton from "./components/partner/HambiReturnButton";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
+import YandexAdsManager from "./components/ads/YandexAdsManager";
 
 const queryClient = new QueryClient();
 
@@ -124,6 +125,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ReferralCapture />
+          <YandexAdsManager />
           <FloatingAISearch />
           <FloatingAIPanel />
           <FloatingServicesPanel />
