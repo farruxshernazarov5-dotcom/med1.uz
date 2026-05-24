@@ -121,6 +121,32 @@ async function loadDynamic() {
       });
     }
   } catch (e) { console.warn("clinics load failed:", (e as Error).message); }
+
+  // News: /news/:newsId
+  try {
+    const mod: any = await import("../src/data/news");
+    const list = mod.newsItems ?? [];
+    for (const n of list) {
+      if (n.id) dynamicEntries.push({
+        path: `/news/${n.id}`,
+        changefreq: "monthly",
+        priority: "0.6",
+      });
+    }
+  } catch (e) { console.warn("news load failed:", (e as Error).message); }
+
+  // MedTech: /med-tech/:equipmentId
+  try {
+    const mod: any = await import("../src/data/medtech");
+    const list = mod.medTechEquipment ?? mod.equipment ?? [];
+    for (const eq of list) {
+      if (eq.id) dynamicEntries.push({
+        path: `/med-tech/${eq.id}`,
+        changefreq: "monthly",
+        priority: "0.5",
+      });
+    }
+  } catch (e) { console.warn("medtech load failed:", (e as Error).message); }
 }
 
 function build(entries: Entry[]) {
