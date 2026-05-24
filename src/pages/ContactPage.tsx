@@ -20,7 +20,6 @@ const ContactPage = () => {
       />
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="sr-only">Med1.uz aloqa sahifasi</h1>
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Biz bilan bog'laning</h1>
           <p className="text-muted-foreground">Savollaringiz bormi? Biz bilan bog'laning!</p>
