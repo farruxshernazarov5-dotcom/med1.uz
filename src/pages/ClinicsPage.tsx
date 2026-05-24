@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import SectionLayout from "@/components/SectionLayout";
@@ -444,6 +445,20 @@ const ClinicsPage = () => {
   const hasFilters = search || selectedRegion || selectedSpecialty || selectedDirection;
 
   return (
+    <>
+      <SEO
+        title="Klinikalar — O'zbekiston tibbiy markazlari katalogi | Med1.uz"
+        description="O'zbekistondagi davlat va xususiy klinikalar, poliklinikalar va shoshilinch yordam markazlari. Manzil, mutaxassisliklar va kontaktlar bo'yicha qidiruv."
+        path="/clinics"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Klinikalar katalogi",
+          description: "O'zbekistondagi tibbiy markazlar to'plami",
+          url: "https://med1.uz/clinics",
+          about: { "@type": "MedicalOrganization", name: "Med1.uz" },
+        }}
+      />
     <SectionLayout
       title="Klinikalar bo'limi"
       subtitle="O'zbekistondagi barcha klinikalar — davlat, xususiy, poliklinikalar"
