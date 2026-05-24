@@ -167,6 +167,7 @@ async function streamChat({ messages, babyAgeMonths, mode, onDelta, onDone }: {
 
 /* ——— Main Component ——— */
 const AIBabyCarePage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>("profile");
   const [baby, setBaby] = useState<BabyProfile | null>(null);

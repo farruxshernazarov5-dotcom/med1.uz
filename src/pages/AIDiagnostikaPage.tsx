@@ -25,6 +25,7 @@ import AIHealthRiskMini from "@/components/ai-diagnostika/AIHealthRiskMini";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const PROCESS_STEPS = [
   { icon: ClipboardList, title: "Simptomlar kiritish", desc: "Simptomlaringizni tanlang yoki yozing" },
@@ -42,6 +43,7 @@ const FEATURES = [
 ];
 
 const AIDiagnostikaPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("symptoms");
 

@@ -39,6 +39,7 @@ const getSpo2Status = (v: number) => {
 };
 
 const AIVitalSignsPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [pulse, setPulse] = useState("");
   const [systolic, setSystolic] = useState("");

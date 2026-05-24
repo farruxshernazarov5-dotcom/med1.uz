@@ -74,6 +74,7 @@ type TabId = "overview" | "weekly" | "chat" | "kicks" | "reminders";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-pregnancy`;
 
 const AIPregnancyPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [pregnancy, setPregnancy] = useState<any>(null);
   const [loading, setLoading] = useState(true);
