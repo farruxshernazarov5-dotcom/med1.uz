@@ -135,10 +135,10 @@ const AIFarmatsevtPage = () => {
               <span className="font-medium">AI Farmatsevt</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Dori-darmonlar Maslahatchisi
+              {t("ai.services.ai-farmatsevt.title")}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Dorilar o'zaro ta'siri, analoglar, dozalash va saqlash shartlari haqida ma'lumot oling
+              {t("aiPages.ai-farmatsevt.description")}
             </p>
           </div>
 
