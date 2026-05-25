@@ -27,20 +27,20 @@ interface FitnessProfile {
 }
 
 const equipmentOptions = [
-  { id: "bodyweight", label: "Faqat tana og'irligi" },
-  { id: "dumbbells", label: "Gantellar" },
-  { id: "barbell", label: "Shtanga" },
-  { id: "pullupbar", label: "Turnik" },
-  { id: "resistance", label: "Rezinka tasmalar" },
-  { id: "gym", label: "To'liq sport zali" },
+  { id: "bodyweight", labelKey: "aiForms.fitness.eq_bodyweight" },
+  { id: "dumbbells", labelKey: "aiForms.fitness.eq_dumbbells" },
+  { id: "barbell", labelKey: "aiForms.fitness.eq_barbell" },
+  { id: "pullupbar", labelKey: "aiForms.fitness.eq_pullupbar" },
+  { id: "resistance", labelKey: "aiForms.fitness.eq_resistance" },
+  { id: "gym", labelKey: "aiForms.fitness.eq_gym" },
 ];
 
 const limitationOptions = [
-  { id: "back", label: "Bel og'rig'i" },
-  { id: "knee", label: "Tizza muammosi" },
-  { id: "shoulder", label: "Yelka shikasti" },
-  { id: "heart", label: "Yurak kasalligi" },
-  { id: "none", label: "Cheklovlar yo'q" },
+  { id: "back", labelKey: "aiForms.fitness.lim_back" },
+  { id: "knee", labelKey: "aiForms.fitness.lim_knee" },
+  { id: "shoulder", labelKey: "aiForms.fitness.lim_shoulder" },
+  { id: "heart", labelKey: "aiForms.fitness.lim_heart" },
+  { id: "none", labelKey: "aiForms.fitness.lim_none" },
 ];
 
 const AIFitnessPage = () => {
