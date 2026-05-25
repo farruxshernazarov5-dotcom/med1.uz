@@ -27,20 +27,20 @@ interface FitnessProfile {
 }
 
 const equipmentOptions = [
-  { id: "bodyweight", label: "Faqat tana og'irligi" },
-  { id: "dumbbells", label: "Gantellar" },
-  { id: "barbell", label: "Shtanga" },
-  { id: "pullupbar", label: "Turnik" },
-  { id: "resistance", label: "Rezinka tasmalar" },
-  { id: "gym", label: "To'liq sport zali" },
+  { id: "bodyweight", labelKey: "aiForms.fitness.eq_bodyweight" },
+  { id: "dumbbells", labelKey: "aiForms.fitness.eq_dumbbells" },
+  { id: "barbell", labelKey: "aiForms.fitness.eq_barbell" },
+  { id: "pullupbar", labelKey: "aiForms.fitness.eq_pullupbar" },
+  { id: "resistance", labelKey: "aiForms.fitness.eq_resistance" },
+  { id: "gym", labelKey: "aiForms.fitness.eq_gym" },
 ];
 
 const limitationOptions = [
-  { id: "back", label: "Bel og'rig'i" },
-  { id: "knee", label: "Tizza muammosi" },
-  { id: "shoulder", label: "Yelka shikasti" },
-  { id: "heart", label: "Yurak kasalligi" },
-  { id: "none", label: "Cheklovlar yo'q" },
+  { id: "back", labelKey: "aiForms.fitness.lim_back" },
+  { id: "knee", labelKey: "aiForms.fitness.lim_knee" },
+  { id: "shoulder", labelKey: "aiForms.fitness.lim_shoulder" },
+  { id: "heart", labelKey: "aiForms.fitness.lim_heart" },
+  { id: "none", labelKey: "aiForms.fitness.lim_none" },
 ];
 
 const AIFitnessPage = () => {
@@ -195,38 +195,38 @@ const AIFitnessPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="w-5 h-5" />
-                  Sizning Profilingiz
+                  {t("aiForms.fitness.yourProfile")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Tajriba darajasi</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.fitness.level")}</label>
                   <Select value={profile.level} onValueChange={v => setProfile(p => ({ ...p, level: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="beginner">Boshlang'ich</SelectItem>
-                      <SelectItem value="intermediate">O'rta</SelectItem>
-                      <SelectItem value="advanced">Ilg'or</SelectItem>
-                      <SelectItem value="athlete">Sportchi</SelectItem>
+                      <SelectItem value="beginner">{t("aiForms.fitness.level_beginner")}</SelectItem>
+                      <SelectItem value="intermediate">{t("aiForms.fitness.level_intermediate")}</SelectItem>
+                      <SelectItem value="advanced">{t("aiForms.fitness.level_advanced")}</SelectItem>
+                      <SelectItem value="athlete">{t("aiForms.fitness.level_athlete")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Maqsad</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.fitness.goal")}</label>
                   <Select value={profile.goal} onValueChange={v => setProfile(p => ({ ...p, goal: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="general">Umumiy fitness</SelectItem>
-                      <SelectItem value="strength">Kuch oshirish</SelectItem>
-                      <SelectItem value="cardio">Kardio/Chidamlilik</SelectItem>
-                      <SelectItem value="weight_loss">Vazn yo'qotish</SelectItem>
-                      <SelectItem value="muscle">Mushak o'stirish</SelectItem>
-                      <SelectItem value="flexibility">Egiluvchanlik</SelectItem>
+                      <SelectItem value="general">{t("aiForms.fitness.goal_general")}</SelectItem>
+                      <SelectItem value="strength">{t("aiForms.fitness.goal_strength")}</SelectItem>
+                      <SelectItem value="cardio">{t("aiForms.fitness.goal_cardio")}</SelectItem>
+                      <SelectItem value="weight_loss">{t("aiForms.fitness.goal_weight_loss")}</SelectItem>
+                      <SelectItem value="muscle">{t("aiForms.fitness.goal_muscle")}</SelectItem>
+                      <SelectItem value="flexibility">{t("aiForms.fitness.goal_flexibility")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -234,24 +234,24 @@ const AIFitnessPage = () => {
                 <div>
                   <label className="text-sm font-medium mb-2 block flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Mashq davomiyligi
+                    {t("aiForms.fitness.duration")}
                   </label>
                   <Select value={profile.duration} onValueChange={v => setProfile(p => ({ ...p, duration: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="15">15 daqiqa</SelectItem>
-                      <SelectItem value="30">30 daqiqa</SelectItem>
-                      <SelectItem value="45">45 daqiqa</SelectItem>
-                      <SelectItem value="60">1 soat</SelectItem>
-                      <SelectItem value="90">1.5 soat</SelectItem>
+                      <SelectItem value="15">{t("aiForms.fitness.min15")}</SelectItem>
+                      <SelectItem value="30">{t("aiForms.fitness.min30")}</SelectItem>
+                      <SelectItem value="45">{t("aiForms.fitness.min45")}</SelectItem>
+                      <SelectItem value="60">{t("aiForms.fitness.hour1")}</SelectItem>
+                      <SelectItem value="90">{t("aiForms.fitness.hour1half")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-3 block">Mavjud jihozlar</label>
+                  <label className="text-sm font-medium mb-3 block">{t("aiForms.fitness.equipment")}</label>
                   <div className="space-y-2">
                     {equipmentOptions.map(eq => (
                       <div key={eq.id} className="flex items-center space-x-2">
@@ -261,7 +261,7 @@ const AIFitnessPage = () => {
                           onCheckedChange={() => toggleEquipment(eq.id)}
                         />
                         <label htmlFor={eq.id} className="text-sm cursor-pointer">
-                          {eq.label}
+                          {t(eq.labelKey)}
                         </label>
                       </div>
                     ))}
@@ -269,7 +269,7 @@ const AIFitnessPage = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-3 block">Cheklovlar/Shikastlar</label>
+                  <label className="text-sm font-medium mb-3 block">{t("aiForms.fitness.limitations")}</label>
                   <div className="space-y-2">
                     {limitationOptions.map(lim => (
                       <div key={lim.id} className="flex items-center space-x-2">
@@ -279,7 +279,7 @@ const AIFitnessPage = () => {
                           onCheckedChange={() => toggleLimitation(lim.id)}
                         />
                         <label htmlFor={lim.id} className="text-sm cursor-pointer">
-                          {lim.label}
+                          {t(lim.labelKey)}
                         </label>
                       </div>
                     ))}
@@ -288,7 +288,7 @@ const AIFitnessPage = () => {
 
                 <Button onClick={generateWorkout} className="w-full bg-orange-500 hover:bg-orange-600">
                   <Dumbbell className="w-4 h-4 mr-2" />
-                  Mashq dasturi yaratish
+                  {t("aiForms.fitness.generateWorkout")}
                 </Button>
               </CardContent>
             </Card>
@@ -298,7 +298,7 @@ const AIFitnessPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Dumbbell className="w-5 h-5" />
-                  Trener bilan Suhbat
+                  {t("aiForms.fitness.chatTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -306,12 +306,12 @@ const AIFitnessPage = () => {
                   {messages.length === 0 ? (
                     <div className="text-center text-muted-foreground py-12">
                       <Dumbbell className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p className="mb-2">Salom! Men sizning shaxsiy fitness treneringizman.</p>
+                      <p className="mb-2">{t("aiForms.fitness.emptyHello")}</p>
                       <p className="text-sm mb-6">
-                        Mashqlar, posture, reabilitatsiya yoki ovqatlanish haqida savollaringizni bering.
+                        {t("aiForms.fitness.emptyHint")}
                       </p>
                       <div className="flex flex-wrap justify-center gap-2">
-                        {["Uy sharoitida mashqlar", "Bel og'rig'i uchun", "Cho'zish mashqlari", "Ertalabki zaryadka"].map(topic => (
+                        {[t("aiForms.fitness.topic1"), t("aiForms.fitness.topic2"), t("aiForms.fitness.topic3"), t("aiForms.fitness.topic4")].map(topic => (
                           <Button
                             key={topic}
                             variant="outline"
@@ -362,7 +362,7 @@ const AIFitnessPage = () => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                    placeholder="Mashqlar haqida savol bering..."
+                    placeholder={t("aiForms.fitness.chatPlaceholder")}
                     disabled={isLoading}
                     className="flex-1"
                   />

@@ -315,7 +315,7 @@ const AIBabyCarePage = () => {
       <Header />
       <div className="container mx-auto px-4 py-20 text-center">
         <Baby className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h1 className="text-2xl font-bold mb-2">AI Bola Parvarishi</h1>
+        <h1 className="text-2xl font-bold mb-2">{t("aiForms.baby.title")}</h1>
         <p className="text-muted-foreground mb-4">Tizimga kiring</p>
         <Button onClick={() => window.location.href = "/auth"}>Kirish</Button>
       </div>
@@ -364,31 +364,31 @@ const AIBabyCarePage = () => {
             {activeTab === "profile" && (
               <div className="max-w-2xl mx-auto space-y-6">
                 <Card>
-                  <CardHeader><CardTitle className="flex items-center gap-2"><Baby className="w-5 h-5 text-pink-500" />Chaqaloq ma'lumotlari</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Baby className="w-5 h-5 text-pink-500" />{t("aiForms.baby.babyData")}</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><Label>Chaqaloq ismi</Label><Input value={formName} onChange={e => setFormName(e.target.value)} placeholder="Ism" /></div>
-                      <div><Label>Tug'ilgan sana</Label><Input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} /></div>
-                      <div><Label>Tug'ilgan vazni (gramm)</Label><Input type="number" value={formWeight} onChange={e => setFormWeight(e.target.value)} placeholder="3500" /></div>
-                      <div><Label>Tug'ilgan bo'yi (sm)</Label><Input type="number" value={formHeight} onChange={e => setFormHeight(e.target.value)} placeholder="50" /></div>
+                      <div><Label>{t("aiForms.baby.babyName")}</Label><Input value={formName} onChange={e => setFormName(e.target.value)} placeholder={t("aiForms.baby.namePlaceholder")} /></div>
+                      <div><Label>{t("aiForms.baby.birthDate")}</Label><Input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} /></div>
+                      <div><Label>{t("aiForms.baby.birthWeight")}</Label><Input type="number" value={formWeight} onChange={e => setFormWeight(e.target.value)} placeholder="3500" /></div>
+                      <div><Label>{t("aiForms.baby.birthHeight")}</Label><Input type="number" value={formHeight} onChange={e => setFormHeight(e.target.value)} placeholder="50" /></div>
                       <div>
-                        <Label>Jinsi</Label>
+                        <Label>{t("aiForms.baby.gender")}</Label>
                         <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={formGender} onChange={e => setFormGender(e.target.value)}>
-                          <option value="male">O'g'il</option><option value="female">Qiz</option>
+                          <option value="male">{t("aiForms.common.boy")}</option><option value="female">{t("aiForms.common.girl")}</option>
                         </select>
                       </div>
                       <div>
-                        <Label>Tug'ruq turi</Label>
+                        <Label>{t("aiForms.baby.birthType")}</Label>
                         <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={formBirthType} onChange={e => setFormBirthType(e.target.value)}>
-                          <option value="natural">Tabiiy</option><option value="cesarean">Kesarcha</option>
+                          <option value="natural">{t("aiForms.baby.natural")}</option><option value="cesarean">{t("aiForms.baby.cesarean")}</option>
                         </select>
                       </div>
                     </div>
-                    <div><Label>Tug'ruqxona</Label><Input value={formHospital} onChange={e => setFormHospital(e.target.value)} placeholder="Tug'ruqxona nomi" /></div>
-                    <div><Label>Ona sog'ligi holati</Label><Textarea value={formMotherNotes} onChange={e => setFormMotherNotes(e.target.value)} placeholder="Qo'shimcha ma'lumotlar..." rows={3} /></div>
+                    <div><Label>{t("aiForms.baby.hospital")}</Label><Input value={formHospital} onChange={e => setFormHospital(e.target.value)} placeholder={t("aiForms.baby.hospitalPlaceholder")} /></div>
+                    <div><Label>{t("aiForms.baby.motherHealth")}</Label><Textarea value={formMotherNotes} onChange={e => setFormMotherNotes(e.target.value)} placeholder={t("aiForms.baby.motherPlaceholder")} rows={3} /></div>
                     <Button onClick={saveBaby} disabled={saving} className="w-full">
                       {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                      {baby ? "Yangilash" : "Saqlash"}
+                      {baby ? t("aiForms.common.update") : t("aiForms.common.save")}
                     </Button>
                   </CardContent>
                 </Card>
@@ -398,23 +398,23 @@ const AIBabyCarePage = () => {
             {/* ——— GROWTH TAB ——— */}
             {activeTab === "growth" && (
               <div className="max-w-2xl mx-auto space-y-6">
-                {!baby ? <p className="text-center text-muted-foreground py-10">Avval chaqaloq profilini yarating</p> : (
+                {!baby ? <p className="text-center text-muted-foreground py-10">{t("aiForms.baby.createFirst")}</p> : (
                   <>
                     <Card>
-                      <CardHeader><CardTitle className="flex items-center gap-2"><Scale className="w-5 h-5 text-blue-500" />Yangi o'lchov qo'shish</CardTitle></CardHeader>
+                      <CardHeader><CardTitle className="flex items-center gap-2"><Scale className="w-5 h-5 text-blue-500" />{t("aiForms.baby.addMeasure")}</CardTitle></CardHeader>
                       <CardContent>
                         <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div><Label>Vazn (g)</Label><Input type="number" value={gWeight} onChange={e => setGWeight(e.target.value)} placeholder="4200" /></div>
-                          <div><Label>Bo'y (sm)</Label><Input type="number" value={gHeight} onChange={e => setGHeight(e.target.value)} placeholder="55" /></div>
-                          <div><Label>Bosh (sm)</Label><Input type="number" value={gHead} onChange={e => setGHead(e.target.value)} placeholder="37" /></div>
+                          <div><Label>{t("aiForms.baby.weightG")}</Label><Input type="number" value={gWeight} onChange={e => setGWeight(e.target.value)} placeholder="4200" /></div>
+                          <div><Label>{t("aiForms.baby.heightCm")}</Label><Input type="number" value={gHeight} onChange={e => setGHeight(e.target.value)} placeholder="55" /></div>
+                          <div><Label>{t("aiForms.baby.headCm")}</Label><Input type="number" value={gHead} onChange={e => setGHead(e.target.value)} placeholder="37" /></div>
                         </div>
-                        <Button onClick={addGrowthLog} className="w-full"><Plus className="w-4 h-4 mr-1" />Qo'shish</Button>
+                        <Button onClick={addGrowthLog} className="w-full"><Plus className="w-4 h-4 mr-1" />{t("aiForms.common.add")}</Button>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardHeader><CardTitle>O'sish tarixi</CardTitle></CardHeader>
+                      <CardHeader><CardTitle>{t("aiForms.baby.growthHistory")}</CardTitle></CardHeader>
                       <CardContent>
-                        {growthLogs.length === 0 ? <p className="text-muted-foreground text-sm text-center py-6">Hali o'lchov yo'q</p> : (
+                        {growthLogs.length === 0 ? <p className="text-muted-foreground text-sm text-center py-6">{t("aiForms.baby.noMeasures")}</p> : (
                           <div className="space-y-3">
                             {growthLogs.map(g => (
                               <div key={g.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
@@ -593,7 +593,7 @@ const AIBabyCarePage = () => {
                     )}
                   </div>
                   <div className="border-t p-3 flex gap-2">
-                    <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Savolingizni yozing..."
+                    <Input value={input} onChange={e => setInput(e.target.value)} placeholder={t("aiForms.common.askQuestion")}
                       onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()} disabled={streaming} />
                     <Button onClick={sendChat} disabled={streaming || !input.trim()} size="icon"><Send className="w-4 h-4" /></Button>
                   </div>

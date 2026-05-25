@@ -210,12 +210,12 @@ const AIVitalSignsPage = () => {
                 <Heart className="w-6 h-6 text-white" fill="currentColor" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground">Yurak urishi</h3>
-                <p className="text-xs text-muted-foreground">Normal: 60-100 bpm</p>
+                <h3 className="font-bold text-foreground">{t("aiForms.vital.pulseTitle")}</h3>
+                <p className="text-xs text-muted-foreground">{t("aiForms.vital.pulseNormal")}</p>
               </div>
             </div>
             <div className="mb-4">
-              <Label className="text-xs text-muted-foreground">Puls (bpm)</Label>
+              <Label className="text-xs text-muted-foreground">{t("aiForms.vital.pulseLabel")}</Label>
               <Input type="number" value={pulse} onChange={e => setPulse(e.target.value)} placeholder="72" min={30} max={220} className="mt-1" />
             </div>
             {pulseVal && (
@@ -229,7 +229,7 @@ const AIVitalSignsPage = () => {
               </div>
             )}
             <Button size="sm" disabled={!pulseVal || saving} onClick={() => saveVital("vital_pulse", { pulse: pulseVal })} className="w-full bg-gradient-to-r from-red-500 to-rose-400 text-white border-0">
-              <Save className="w-3.5 h-3.5 mr-1" /> Saqlash
+              <Save className="w-3.5 h-3.5 mr-1" /> {t("aiForms.common.save")}
             </Button>
           </div>
 
@@ -240,17 +240,17 @@ const AIVitalSignsPage = () => {
                 <Droplets className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground">Qon bosimi</h3>
-                <p className="text-xs text-muted-foreground">Normal: 120/80 mmHg</p>
+                <h3 className="font-bold text-foreground">{t("aiForms.vital.bpTitle")}</h3>
+                <p className="text-xs text-muted-foreground">{t("aiForms.vital.bpNormal")}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 mb-4">
               <div>
-                <Label className="text-xs text-muted-foreground">Sistolik</Label>
+                <Label className="text-xs text-muted-foreground">{t("aiForms.vital.systolic")}</Label>
                 <Input type="number" value={systolic} onChange={e => setSystolic(e.target.value)} placeholder="120" className="mt-1" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Diastolik</Label>
+                <Label className="text-xs text-muted-foreground">{t("aiForms.vital.diastolic")}</Label>
                 <Input type="number" value={diastolic} onChange={e => setDiastolic(e.target.value)} placeholder="80" className="mt-1" />
               </div>
             </div>
@@ -262,7 +262,7 @@ const AIVitalSignsPage = () => {
               </div>
             )}
             <Button size="sm" disabled={!sysVal || !diaVal || saving} onClick={() => saveVital("vital_bp", { systolic: sysVal, diastolic: diaVal })} className="w-full bg-gradient-to-r from-blue-500 to-indigo-400 text-white border-0">
-              <Save className="w-3.5 h-3.5 mr-1" /> Saqlash
+              <Save className="w-3.5 h-3.5 mr-1" /> {t("aiForms.common.save")}
             </Button>
           </div>
 
@@ -273,18 +273,18 @@ const AIVitalSignsPage = () => {
                 <Wind className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-foreground">SpO2 Saturatsiya</h3>
-                <p className="text-xs text-muted-foreground">Normal: 95-100%</p>
+                <h3 className="font-bold text-foreground">{t("aiForms.vital.spo2Title")}</h3>
+                <p className="text-xs text-muted-foreground">{t("aiForms.vital.spo2Normal")}</p>
               </div>
             </div>
             <div className="mb-4">
-              <Label className="text-xs text-muted-foreground">SpO2 (%)</Label>
+              <Label className="text-xs text-muted-foreground">{t("aiForms.vital.spo2Label")}</Label>
               <Input type="number" value={spo2} onChange={e => setSpo2(e.target.value)} placeholder="98" min={50} max={100} className="mt-1" />
             </div>
             {spo2Val && (
               <div className="bg-muted/50 rounded-xl p-4 mb-3 text-center">
                 <p className="text-4xl font-bold text-foreground mb-1">{spo2Val}%</p>
-                <p className="text-xs text-muted-foreground mb-2">kislorod darajasi</p>
+                <p className="text-xs text-muted-foreground mb-2">{t("aiForms.vital.spo2OxygenLevel")}</p>
                 <p className={cn("text-sm font-semibold", getSpo2Status(spo2Val).color)}>{getSpo2Status(spo2Val).label}</p>
                 <div className="w-full bg-muted rounded-full h-2 mt-3">
                   <div className={cn("h-2 rounded-full transition-all", getSpo2Status(spo2Val).bg)} style={{ width: `${spo2Val}%` }} />
@@ -292,7 +292,7 @@ const AIVitalSignsPage = () => {
               </div>
             )}
             <Button size="sm" disabled={!spo2Val || saving} onClick={() => saveVital("vital_spo2", { spo2: spo2Val })} className="w-full bg-gradient-to-r from-teal-500 to-emerald-400 text-white border-0">
-              <Save className="w-3.5 h-3.5 mr-1" /> Saqlash
+              <Save className="w-3.5 h-3.5 mr-1" /> {t("aiForms.common.save")}
             </Button>
           </div>
 
@@ -315,15 +315,15 @@ const AIVitalSignsPage = () => {
           />
 
           <div className="md:col-span-2 flex flex-col items-center justify-center bg-card border border-border rounded-2xl p-8">
-            <h3 className="font-bold text-foreground mb-3 text-lg">🧠 AI bilan tahlil qilish</h3>
+            <h3 className="font-bold text-foreground mb-3 text-lg">{t("aiForms.vital.aiAnalyzeTitle")}</h3>
             <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
-              Barcha ko'rsatkichlaringizni kiritib, AI tahlil tugmasini bosing. Sun'iy intellekt sizga batafsil xulosa va tavsiyalar beradi.
+              {t("aiForms.vital.aiAnalyzeDesc")}
             </p>
             <Button onClick={analyzeWithAI} disabled={aiLoading} size="lg" className="bg-gradient-to-r from-[#0A2540] via-[#2F80ED] to-[#7B61FF] text-white border-0 px-10 py-6 text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all">
               {aiLoading ? (
-                <><Activity className="w-5 h-5 mr-2 animate-spin" /> AI tahlil qilmoqda...</>
+                <><Activity className="w-5 h-5 mr-2 animate-spin" /> {t("aiForms.vital.aiAnalyzing")}</>
               ) : (
-                <><TrendingUp className="w-5 h-5 mr-2" /> 🧠 AI Tahlil qilish</>
+                <><TrendingUp className="w-5 h-5 mr-2" /> {t("aiForms.vital.aiAnalyze")}</>
               )}
             </Button>
           </div>

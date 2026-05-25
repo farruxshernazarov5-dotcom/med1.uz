@@ -217,7 +217,7 @@ const AIDoctorChatPage = () => {
                 </Button>
               )}
               <Input
-                placeholder="Savolingizni yozing..."
+                placeholder={t("aiForms.common.askQuestion")}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage(input)}

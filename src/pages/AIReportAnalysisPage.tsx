@@ -352,7 +352,7 @@ const AIReportAnalysisPage = () => {
                   </h3>
                   <p className="text-xs text-muted-foreground">Har bir ko'rsatkichni nomi va qiymati bilan yozing. Masalan: "Gemoglobin - 140 g/l, Leykotsitlar - 5.2 x10^9/l"</p>
                   <Textarea
-                    placeholder="Analiz natijalarini shu yerga ko'chiring yoki yozing..."
+                    placeholder={t("aiForms.report.pasteResults")}
                     value={reportText}
                     onChange={(e) => setReportText(e.target.value)}
                     rows={8}
