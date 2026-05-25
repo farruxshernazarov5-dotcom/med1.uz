@@ -593,7 +593,7 @@ const AIBabyCarePage = () => {
                     )}
                   </div>
                   <div className="border-t p-3 flex gap-2">
-                    <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Savolingizni yozing..."
+                    <Input value={input} onChange={e => setInput(e.target.value)} placeholder={t("aiForms.common.askQuestion")}
                       onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()} disabled={streaming} />
                     <Button onClick={sendChat} disabled={streaming || !input.trim()} size="icon"><Send className="w-4 h-4" /></Button>
                   </div>
