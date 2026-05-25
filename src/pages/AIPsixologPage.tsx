@@ -132,7 +132,7 @@ const AIPsixologPage = () => {
                 <div className="flex-1">
                   <p className="font-medium text-red-700 dark:text-red-400">{t("aiForms.psixolog.emergencyTitle")}</p>
                   <p className="text-sm text-red-600 dark:text-red-300">
-                    {t("aiForms.psixolog.emergencyText")} <strong>103</strong> ({t("aiForms.psixolog.emergencyEmergency")}) {t("ai.services.ai-doctor-chat.cta") /* "or" word fallback */ ? "/" : "/"} <strong>1008</strong> ({t("aiForms.psixolog.emergencyHotline")}) {t("aiForms.psixolog.emergencyCall")}
+                    {t("aiForms.psixolog.emergencyText")} <strong>103</strong> ({t("aiForms.psixolog.emergencyEmergency")}) / <strong>1008</strong> ({t("aiForms.psixolog.emergencyHotline")}) {t("aiForms.psixolog.emergencyCall")}
                   </p>
                 </div>
               </div>
