@@ -467,7 +467,7 @@ const AIPregnancyPage = () => {
                   <div ref={chatEndRef} />
                 </div>
                 <div className="flex gap-2">
-                  <Input value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Savolingizni yozing..."
+                  <Input value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder={t("aiForms.common.askQuestion")}
                     onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()} disabled={streaming} />
                   <Button onClick={() => sendChat()} disabled={streaming || !chatInput.trim()}>
                     {streaming ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

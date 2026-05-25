@@ -166,7 +166,7 @@ const AIFarmatsevtPage = () => {
                     value={newMed}
                     onChange={e => setNewMed(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && addMedication()}
-                    placeholder="Dori nomini kiriting..."
+                    placeholder={t("aiForms.pharmacist.drugPlaceholder")}
                     className="flex-1"
                   />
                   <Button size="icon" onClick={addMedication}>
@@ -280,7 +280,7 @@ const AIFarmatsevtPage = () => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                    placeholder="Dori haqida savol bering..."
+                    placeholder={t("aiForms.pharmacist.chatPlaceholder")}
                     disabled={isLoading}
                     className="flex-1"
                   />

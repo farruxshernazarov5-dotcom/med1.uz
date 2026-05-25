@@ -306,7 +306,7 @@ const AIRadiologyPage = () => {
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Klinik ma'lumot (ixtiyoriy)</label>
-                  <Textarea placeholder="Masalan: 3 kundan beri yo'tal, harorat 38°C..." value={clinicalInfo} onChange={(e) => setClinicalInfo(e.target.value)} rows={2} />
+                  <Textarea placeholder={t("aiForms.radiology.clinicalPlaceholder")} value={clinicalInfo} onChange={(e) => setClinicalInfo(e.target.value)} rows={2} />
                 </div>
               </div>
 
