@@ -364,31 +364,31 @@ const AIBabyCarePage = () => {
             {activeTab === "profile" && (
               <div className="max-w-2xl mx-auto space-y-6">
                 <Card>
-                  <CardHeader><CardTitle className="flex items-center gap-2"><Baby className="w-5 h-5 text-pink-500" />Chaqaloq ma'lumotlari</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Baby className="w-5 h-5 text-pink-500" />{t("aiForms.baby.babyData")}</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><Label>Chaqaloq ismi</Label><Input value={formName} onChange={e => setFormName(e.target.value)} placeholder="Ism" /></div>
-                      <div><Label>Tug'ilgan sana</Label><Input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} /></div>
-                      <div><Label>Tug'ilgan vazni (gramm)</Label><Input type="number" value={formWeight} onChange={e => setFormWeight(e.target.value)} placeholder="3500" /></div>
-                      <div><Label>Tug'ilgan bo'yi (sm)</Label><Input type="number" value={formHeight} onChange={e => setFormHeight(e.target.value)} placeholder="50" /></div>
+                      <div><Label>{t("aiForms.baby.babyName")}</Label><Input value={formName} onChange={e => setFormName(e.target.value)} placeholder={t("aiForms.baby.namePlaceholder")} /></div>
+                      <div><Label>{t("aiForms.baby.birthDate")}</Label><Input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} /></div>
+                      <div><Label>{t("aiForms.baby.birthWeight")}</Label><Input type="number" value={formWeight} onChange={e => setFormWeight(e.target.value)} placeholder="3500" /></div>
+                      <div><Label>{t("aiForms.baby.birthHeight")}</Label><Input type="number" value={formHeight} onChange={e => setFormHeight(e.target.value)} placeholder="50" /></div>
                       <div>
-                        <Label>Jinsi</Label>
+                        <Label>{t("aiForms.baby.gender")}</Label>
                         <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={formGender} onChange={e => setFormGender(e.target.value)}>
-                          <option value="male">O'g'il</option><option value="female">Qiz</option>
+                          <option value="male">{t("aiForms.common.boy")}</option><option value="female">{t("aiForms.common.girl")}</option>
                         </select>
                       </div>
                       <div>
-                        <Label>Tug'ruq turi</Label>
+                        <Label>{t("aiForms.baby.birthType")}</Label>
                         <select className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm" value={formBirthType} onChange={e => setFormBirthType(e.target.value)}>
-                          <option value="natural">Tabiiy</option><option value="cesarean">Kesarcha</option>
+                          <option value="natural">{t("aiForms.baby.natural")}</option><option value="cesarean">{t("aiForms.baby.cesarean")}</option>
                         </select>
                       </div>
                     </div>
-                    <div><Label>Tug'ruqxona</Label><Input value={formHospital} onChange={e => setFormHospital(e.target.value)} placeholder="Tug'ruqxona nomi" /></div>
-                    <div><Label>Ona sog'ligi holati</Label><Textarea value={formMotherNotes} onChange={e => setFormMotherNotes(e.target.value)} placeholder="Qo'shimcha ma'lumotlar..." rows={3} /></div>
+                    <div><Label>{t("aiForms.baby.hospital")}</Label><Input value={formHospital} onChange={e => setFormHospital(e.target.value)} placeholder={t("aiForms.baby.hospitalPlaceholder")} /></div>
+                    <div><Label>{t("aiForms.baby.motherHealth")}</Label><Textarea value={formMotherNotes} onChange={e => setFormMotherNotes(e.target.value)} placeholder={t("aiForms.baby.motherPlaceholder")} rows={3} /></div>
                     <Button onClick={saveBaby} disabled={saving} className="w-full">
                       {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                      {baby ? "Yangilash" : "Saqlash"}
+                      {baby ? t("aiForms.common.update") : t("aiForms.common.save")}
                     </Button>
                   </CardContent>
                 </Card>
