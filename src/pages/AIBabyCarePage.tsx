@@ -315,7 +315,7 @@ const AIBabyCarePage = () => {
       <Header />
       <div className="container mx-auto px-4 py-20 text-center">
         <Baby className="w-16 h-16 text-primary mx-auto mb-4" />
-        <h1 className="text-2xl font-bold mb-2">AI Bola Parvarishi</h1>
+        <h1 className="text-2xl font-bold mb-2">{t("aiForms.baby.title")}</h1>
         <p className="text-muted-foreground mb-4">Tizimga kiring</p>
         <Button onClick={() => window.location.href = "/auth"}>Kirish</Button>
       </div>
