@@ -398,23 +398,23 @@ const AIBabyCarePage = () => {
             {/* ——— GROWTH TAB ——— */}
             {activeTab === "growth" && (
               <div className="max-w-2xl mx-auto space-y-6">
-                {!baby ? <p className="text-center text-muted-foreground py-10">Avval chaqaloq profilini yarating</p> : (
+                {!baby ? <p className="text-center text-muted-foreground py-10">{t("aiForms.baby.createFirst")}</p> : (
                   <>
                     <Card>
-                      <CardHeader><CardTitle className="flex items-center gap-2"><Scale className="w-5 h-5 text-blue-500" />Yangi o'lchov qo'shish</CardTitle></CardHeader>
+                      <CardHeader><CardTitle className="flex items-center gap-2"><Scale className="w-5 h-5 text-blue-500" />{t("aiForms.baby.addMeasure")}</CardTitle></CardHeader>
                       <CardContent>
                         <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div><Label>Vazn (g)</Label><Input type="number" value={gWeight} onChange={e => setGWeight(e.target.value)} placeholder="4200" /></div>
-                          <div><Label>Bo'y (sm)</Label><Input type="number" value={gHeight} onChange={e => setGHeight(e.target.value)} placeholder="55" /></div>
-                          <div><Label>Bosh (sm)</Label><Input type="number" value={gHead} onChange={e => setGHead(e.target.value)} placeholder="37" /></div>
+                          <div><Label>{t("aiForms.baby.weightG")}</Label><Input type="number" value={gWeight} onChange={e => setGWeight(e.target.value)} placeholder="4200" /></div>
+                          <div><Label>{t("aiForms.baby.heightCm")}</Label><Input type="number" value={gHeight} onChange={e => setGHeight(e.target.value)} placeholder="55" /></div>
+                          <div><Label>{t("aiForms.baby.headCm")}</Label><Input type="number" value={gHead} onChange={e => setGHead(e.target.value)} placeholder="37" /></div>
                         </div>
-                        <Button onClick={addGrowthLog} className="w-full"><Plus className="w-4 h-4 mr-1" />Qo'shish</Button>
+                        <Button onClick={addGrowthLog} className="w-full"><Plus className="w-4 h-4 mr-1" />{t("aiForms.common.add")}</Button>
                       </CardContent>
                     </Card>
                     <Card>
-                      <CardHeader><CardTitle>O'sish tarixi</CardTitle></CardHeader>
+                      <CardHeader><CardTitle>{t("aiForms.baby.growthHistory")}</CardTitle></CardHeader>
                       <CardContent>
-                        {growthLogs.length === 0 ? <p className="text-muted-foreground text-sm text-center py-6">Hali o'lchov yo'q</p> : (
+                        {growthLogs.length === 0 ? <p className="text-muted-foreground text-sm text-center py-6">{t("aiForms.baby.noMeasures")}</p> : (
                           <div className="space-y-3">
                             {growthLogs.map(g => (
                               <div key={g.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
