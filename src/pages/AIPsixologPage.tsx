@@ -18,11 +18,11 @@ interface Message {
 }
 
 const moodEmojis = [
-  { value: 1, emoji: "😢", label: "Juda yomon" },
-  { value: 3, emoji: "😔", label: "Yomon" },
-  { value: 5, emoji: "😐", label: "O'rtacha" },
-  { value: 7, emoji: "🙂", label: "Yaxshi" },
-  { value: 10, emoji: "😊", label: "A'lo" },
+  { value: 1, emoji: "😢", labelKey: "aiForms.psixolog.mood_veryBad" },
+  { value: 3, emoji: "😔", labelKey: "aiForms.psixolog.mood_bad" },
+  { value: 5, emoji: "😐", labelKey: "aiForms.psixolog.mood_average" },
+  { value: 7, emoji: "🙂", labelKey: "aiForms.psixolog.mood_good" },
+  { value: 10, emoji: "😊", labelKey: "aiForms.psixolog.mood_great" },
 ];
 
 const AIPsixologPage = () => {
