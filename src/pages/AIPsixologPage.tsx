@@ -130,9 +130,9 @@ const AIPsixologPage = () => {
               <div className="flex items-center gap-4">
                 <Phone className="w-8 h-8 text-red-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-red-700 dark:text-red-400">Favqulodda holat?</p>
+                  <p className="font-medium text-red-700 dark:text-red-400">{t("aiForms.psixolog.emergencyTitle")}</p>
                   <p className="text-sm text-red-600 dark:text-red-300">
-                    Agar o'zingizga zarar yetkazish haqida o'ylayotgan bo'lsangiz, darhol <strong>103</strong> (Tez yordam) yoki <strong>1008</strong> (Ishonch telefoni) ga qo'ng'iroq qiling
+                    {t("aiForms.psixolog.emergencyText")} <strong>103</strong> ({t("aiForms.psixolog.emergencyEmergency")}) {t("ai.services.ai-doctor-chat.cta") /* "or" word fallback */ ? "/" : "/"} <strong>1008</strong> ({t("aiForms.psixolog.emergencyHotline")}) {t("aiForms.psixolog.emergencyCall")}
                   </p>
                 </div>
               </div>
@@ -156,9 +156,9 @@ const AIPsixologPage = () => {
           <Card className="mb-6">
             <CardContent className="py-6">
               <div className="flex items-center justify-between mb-4">
-                <span className="font-medium">Bugun kayfiyatingiz qanday?</span>
+                <span className="font-medium">{t("aiForms.psixolog.moodQuestion")}</span>
                 <Badge variant="outline" className="text-lg px-3 py-1">
-                  {getMoodEmoji(mood).emoji} {getMoodEmoji(mood).label}
+                  {getMoodEmoji(mood).emoji} {t(getMoodEmoji(mood).labelKey)}
                 </Badge>
               </div>
               <Slider
@@ -184,7 +184,7 @@ const AIPsixologPage = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Heart className="w-5 h-5 text-purple-500" />
-                Xavfsiz Suhbat
+                {t("aiForms.psixolog.chatTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -192,12 +192,12 @@ const AIPsixologPage = () => {
                 {messages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-12">
                     <Heart className="w-12 h-12 mx-auto mb-4 opacity-50 text-purple-400" />
-                    <p className="mb-2">Salom! Men sizni tinglashga tayyorman.</p>
+                    <p className="mb-2">{t("aiForms.psixolog.emptyHello")}</p>
                     <p className="text-sm">
-                      Bu yerda hech kim sizni hukm qilmaydi. O'zingizni qanday his qilayotganingizni baham ko'ring.
+                      {t("aiForms.psixolog.emptyHint")}
                     </p>
                     <div className="flex flex-wrap justify-center gap-2 mt-6">
-                      {["Stress bilan kurashish", "Yaxshi uxlay olmayapman", "Tashvishlarim bor", "O'zimni yolg'iz his qilaman"].map(topic => (
+                      {[t("aiForms.psixolog.topic1"), t("aiForms.psixolog.topic2"), t("aiForms.psixolog.topic3"), t("aiForms.psixolog.topic4")].map(topic => (
                         <Button
                           key={topic}
                           variant="outline"
@@ -249,7 +249,7 @@ const AIPsixologPage = () => {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                  placeholder="O'zingizni qanday his qilayotganingizni yozing..."
+                  placeholder={t("aiForms.psixolog.chatPlaceholder")}
                   disabled={isLoading}
                   className="flex-1"
                 />
@@ -259,7 +259,7 @@ const AIPsixologPage = () => {
               </div>
 
               <p className="text-xs text-muted-foreground mt-4 text-center">
-                Bu AI psixolog professional shifokorni o'rnini bosmaydi. Jiddiy muammolar uchun mutaxassisga murojaat qiling.
+                {t("aiForms.psixolog.disclaimer")}
               </p>
             </CardContent>
           </Card>
