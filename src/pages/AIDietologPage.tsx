@@ -172,12 +172,12 @@ const AIDietologPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="w-5 h-5" />
-                  Sizning Ma'lumotlaringiz
+                  {t("aiForms.dietolog.yourData")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Yosh: {profile.age}</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.dietolog.age")}: {profile.age}</label>
                   <Slider
                     value={[profile.age]}
                     onValueChange={([age]) => setProfile(p => ({ ...p, age }))}
@@ -188,7 +188,7 @@ const AIDietologPage = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Vazn: {profile.weight} kg</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.dietolog.weight")}: {profile.weight} kg</label>
                   <Slider
                     value={[profile.weight]}
                     onValueChange={([weight]) => setProfile(p => ({ ...p, weight }))}
@@ -199,7 +199,7 @@ const AIDietologPage = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Bo'y: {profile.height} cm</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.dietolog.height")}: {profile.height} cm</label>
                   <Slider
                     value={[profile.height]}
                     onValueChange={([height]) => setProfile(p => ({ ...p, height }))}
@@ -210,45 +210,45 @@ const AIDietologPage = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Jins</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.dietolog.gender")}</label>
                   <Select value={profile.gender} onValueChange={(v: "male" | "female") => setProfile(p => ({ ...p, gender: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="male">Erkak</SelectItem>
-                      <SelectItem value="female">Ayol</SelectItem>
+                      <SelectItem value="male">{t("aiForms.common.male")}</SelectItem>
+                      <SelectItem value="female">{t("aiForms.common.female")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Faollik darajasi</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.dietolog.activity")}</label>
                   <Select value={profile.activityLevel} onValueChange={v => setProfile(p => ({ ...p, activityLevel: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="sedentary">Kam harakatli</SelectItem>
-                      <SelectItem value="light">Yengil faollik</SelectItem>
-                      <SelectItem value="moderate">O'rtacha faollik</SelectItem>
-                      <SelectItem value="active">Faol</SelectItem>
-                      <SelectItem value="veryActive">Juda faol</SelectItem>
+                      <SelectItem value="sedentary">{t("aiForms.dietolog.activity_sedentary")}</SelectItem>
+                      <SelectItem value="light">{t("aiForms.dietolog.activity_light")}</SelectItem>
+                      <SelectItem value="moderate">{t("aiForms.dietolog.activity_moderate")}</SelectItem>
+                      <SelectItem value="active">{t("aiForms.dietolog.activity_active")}</SelectItem>
+                      <SelectItem value="veryActive">{t("aiForms.dietolog.activity_veryActive")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Maqsad</label>
+                  <label className="text-sm font-medium mb-2 block">{t("aiForms.dietolog.goal")}</label>
                   <Select value={profile.goal} onValueChange={v => setProfile(p => ({ ...p, goal: v }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="lose">Vazn yo'qotish</SelectItem>
-                      <SelectItem value="maintain">Vaznni saqlash</SelectItem>
-                      <SelectItem value="gain">Vazn olish</SelectItem>
-                      <SelectItem value="muscle">Mushak o'stirish</SelectItem>
+                      <SelectItem value="lose">{t("aiForms.dietolog.goal_lose")}</SelectItem>
+                      <SelectItem value="maintain">{t("aiForms.dietolog.goal_maintain")}</SelectItem>
+                      <SelectItem value="gain">{t("aiForms.dietolog.goal_gain")}</SelectItem>
+                      <SelectItem value="muscle">{t("aiForms.dietolog.goal_muscle")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -265,7 +265,7 @@ const AIDietologPage = () => {
                     <span className="font-medium">{calculateBMR()} kcal</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Kunlik kaloriya:</span>
+                    <span className="text-muted-foreground">{t("aiForms.dietolog.dailyCalories")}:</span>
                     <span className="font-medium text-green-600">{calculateTDEE()} kcal</span>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ const AIDietologPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Utensils className="w-5 h-5" />
-                  Dietolog bilan Suhbat
+                  {t("aiForms.dietolog.chatTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -285,8 +285,8 @@ const AIDietologPage = () => {
                   {messages.length === 0 ? (
                     <div className="text-center text-muted-foreground py-12">
                       <Apple className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>Salom! Men sizning shaxsiy dietologingizman.</p>
-                      <p className="text-sm mt-2">Ovqatlanish, kaloriya yoki sog'lom turmush tarzi haqida savollaringizni bering.</p>
+                      <p>{t("aiForms.dietolog.emptyHello")}</p>
+                      <p className="text-sm mt-2">{t("aiForms.dietolog.emptyHint")}</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -327,7 +327,7 @@ const AIDietologPage = () => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                    placeholder="Ovqatlanish haqida savol bering..."
+                    placeholder={t("aiForms.dietolog.chatPlaceholder")}
                     disabled={isLoading}
                     className="flex-1"
                   />
@@ -340,6 +340,7 @@ const AIDietologPage = () => {
           </div>
         </div>
       </main>
+
 
       <Footer />
     </div>
