@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Search, Plus, X, Loader2, Stethoscope } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 import type { PatientInfo } from "./types";
 
 const COMMON_SYMPTOMS = [
