@@ -336,7 +336,14 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
 };
 
 const DiseaseCard = ({ disease, rank }: { disease: DiseaseResult; rank: number }) => {
-  const risk = riskConfig[disease.riskLevel] || riskConfig.low;
+  const { t } = useLanguage();
+  const riskMap: Record<string, { label: string; color: string }> = {
+    high: { label: t("sxResults.riskHigh"), color: "bg-destructive text-destructive-foreground" },
+    medium: { label: t("sxResults.riskMedium"), color: "bg-amber-500 text-white" },
+    low: { label: t("sxResults.riskLow"), color: "bg-secondary text-secondary-foreground" },
+  };
+  const risk = riskMap[disease.riskLevel] || riskMap.low;
+
 
   return (
     <div className="border border-border rounded-lg p-4 space-y-3">
