@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Search, Plus, X, Loader2, Stethoscope } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 import type { PatientInfo } from "./types";
 
 const COMMON_SYMPTOMS = [
@@ -33,6 +34,7 @@ interface Props {
 }
 
 const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
+  const { t } = useLanguage();
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [customSymptom, setCustomSymptom] = useState("");
   const [age, setAge] = useState("");
@@ -80,7 +82,7 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
       {/* Selected symptoms */}
       {selectedSymptoms.length > 0 && (
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Tanlangan simptomlar ({selectedSymptoms.length})</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t("sx.selectedTitle")} ({selectedSymptoms.length})</h3>
           <div className="flex flex-wrap gap-2">
             {selectedSymptoms.map((s) => (
               <Badge key={s} variant="secondary" className="gap-1 pr-1">
@@ -96,7 +98,7 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
 
       {/* Body parts map */}
       <div className="bg-card border border-border rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Tana qismlari bo'yicha tanlash</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">{t("sx.bodyMapTitle")}</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {BODY_PARTS.map((part) => (
             <button
@@ -130,11 +132,11 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
 
       {/* Symptom search + list */}
       <div className="bg-card border border-border rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Simptomlar ro'yxatidan tanlash</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">{t("sx.listTitle")}</h3>
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Simptom qidirish..."
+            placeholder={t("sx.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -156,10 +158,10 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
 
       {/* Custom symptom */}
       <div className="bg-card border border-border rounded-xl p-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Boshqa simptom qo'shish</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">{t("sx.customTitle")}</h3>
         <div className="flex gap-2">
           <Input
-            placeholder="Simptomni yozing..."
+            placeholder={t("sx.customPlaceholder")}
             value={customSymptom}
             onChange={(e) => setCustomSymptom(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
@@ -172,16 +174,16 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
 
       {/* Patient info */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-sm font-semibold text-foreground">Bemor ma'lumotlari</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("sx.patientInfo")}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Yosh</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("sx.age")}</label>
             <Input type="number" placeholder="25" value={age} onChange={(e) => setAge(e.target.value)} />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Jins</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("sx.gender")}</label>
             <div className="flex gap-2">
-              {[{ value: "male", label: "Erkak" }, { value: "female", label: "Ayol" }].map((g) => (
+              {[{ value: "male", label: t("sx.male") }, { value: "female", label: t("sx.female") }].map((g) => (
                 <Button
                   key={g.value}
                   variant={gender === g.value ? "default" : "outline"}
@@ -195,27 +197,27 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
             </div>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Davomiyligi</label>
-            <Input placeholder="3 kun" value={duration} onChange={(e) => setDuration(e.target.value)} />
+            <label className="text-xs text-muted-foreground mb-1 block">{t("sx.duration")}</label>
+            <Input placeholder={t("sx.durationPlaceholder")} value={duration} onChange={(e) => setDuration(e.target.value)} />
           </div>
         </div>
 
         <div>
-          <label className="text-xs text-muted-foreground mb-2 block">Og'riq darajasi: <strong>{painLevel[0]}/10</strong></label>
+          <label className="text-xs text-muted-foreground mb-2 block">{t("sx.painLevel")}: <strong>{painLevel[0]}/10</strong></label>
           <Slider value={painLevel} onValueChange={setPainLevel} max={10} min={1} step={1} />
           <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-            <span>Yengil</span><span>O'rtacha</span><span>Kuchli</span>
+            <span>{t("sx.mild")}</span><span>{t("sx.moderate")}</span><span>{t("sx.severe")}</span>
           </div>
         </div>
 
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Mavjud kasalliklar (ixtiyoriy)</label>
-          <Textarea placeholder="Masalan: Qandli diabet, gipertoniya..." value={existingConditions} onChange={(e) => setExistingConditions(e.target.value)} rows={2} />
+          <label className="text-xs text-muted-foreground mb-1 block">{t("sx.existingConditions")}</label>
+          <Textarea placeholder={t("sx.existingPlaceholder")} value={existingConditions} onChange={(e) => setExistingConditions(e.target.value)} rows={2} />
         </div>
 
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Allergiyalar (ixtiyoriy)</label>
-          <Input placeholder="Masalan: penitsillin" value={allergies} onChange={(e) => setAllergies(e.target.value)} />
+          <label className="text-xs text-muted-foreground mb-1 block">{t("sx.allergies")}</label>
+          <Input placeholder={t("sx.allergiesPlaceholder")} value={allergies} onChange={(e) => setAllergies(e.target.value)} />
         </div>
       </div>
 
@@ -227,9 +229,9 @@ const SymptomInput = ({ onAnalyze, isLoading }: Props) => {
         size="lg"
       >
         {isLoading ? (
-          <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Tahlil qilinmoqda...</>
+          <><Loader2 className="w-5 h-5 animate-spin mr-2" /> {t("sx.analyzing")}</>
         ) : (
-          <><Stethoscope className="w-5 h-5 mr-2" /> AI Tahlilni boshlash</>
+          <><Stethoscope className="w-5 h-5 mr-2" /> {t("sx.startAnalysis")}</>
         )}
       </Button>
     </div>
