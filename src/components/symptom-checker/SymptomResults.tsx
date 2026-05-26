@@ -70,12 +70,12 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
             <Phone className="w-6 h-6 text-destructive" />
           </div>
           <div>
-            <h3 className="font-bold text-destructive text-lg">Tezkor tibbiy yordam talab qilinadi!</h3>
+            <h3 className="font-bold text-destructive text-lg">{t("sxResults.urgentTitle")}</h3>
             <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-              Simptomlaringiz shoshilinch tibbiy yordamni talab qilishi mumkin. Iltimos, darhol shifokorga yoki tez yordamga murojaat qiling.
+              {t("sxResults.urgentDesc")}
             </p>
             <a href="tel:103" className="inline-flex items-center gap-2 mt-3 bg-destructive text-destructive-foreground px-4 py-2 rounded-lg font-semibold text-sm">
-              <Phone className="w-4 h-4" /> 103 ga qo'ng'iroq qilish
+              <Phone className="w-4 h-4" /> {t("sxResults.call103")}
             </a>
           </div>
         </div>
@@ -88,7 +88,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
             <RiskIcon className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Umumiy xavf darajasi</h3>
+            <h3 className="font-semibold text-foreground">{t("sxResults.riskTitle")}</h3>
             <Badge className={risk.color}>{risk.label}</Badge>
           </div>
         </div>
@@ -99,11 +99,11 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
         <div className="bg-card border border-primary/20 rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
             <Microscope className="w-5 h-5 text-primary" />
-            Differensial diagnostika
+            {t("sxResults.differential")}
           </h3>
           <div className="space-y-3">
             <div>
-              <p className="text-sm font-medium text-foreground">Asosiy taxmin:</p>
+              <p className="text-sm font-medium text-foreground">{t("sxResults.primarySuspect")}</p>
               <Badge className="bg-primary text-primary-foreground mt-1">{analysis.differentialDiagnosis.primarySuspect}</Badge>
             </div>
             {analysis.differentialDiagnosis.clinicalReasoning && (
@@ -113,7 +113,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
             )}
             {analysis.differentialDiagnosis.ruledOut?.length > 0 && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Istisno qilingan:</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{t("sxResults.ruledOut")}</p>
                 <div className="flex flex-wrap gap-1">
                   {analysis.differentialDiagnosis.ruledOut.map((d, i) => (
                     <Badge key={i} variant="outline" className="text-xs line-through opacity-60">{d}</Badge>
@@ -123,7 +123,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
             )}
             {analysis.differentialDiagnosis.needsMoreInfo?.length > 0 && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Qo'shimcha ma'lumot kerak:</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">{t("sxResults.needsMore")}</p>
                 <div className="flex flex-wrap gap-1">
                   {analysis.differentialDiagnosis.needsMoreInfo.map((d, i) => (
                     <Badge key={i} variant="outline" className="text-xs border-amber-300 text-amber-700 dark:text-amber-300">{d}</Badge>
@@ -139,7 +139,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
           <Stethoscope className="w-5 h-5 text-primary" />
-          Ehtimoliy kasalliklar (ICD-10 asosida)
+          {t("sxResults.diseasesTitle")}
         </h3>
         <div className="space-y-4">
           {analysis.diseases.map((d, i) => (
@@ -147,7 +147,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
           ))}
           {analysis.diseases.length === 0 && (
             <p className="text-muted-foreground text-sm text-center py-4">
-              AI simptomlaringiz bo'yicha aniq kasallik aniqlay olmadi. Shifokorga murojaat qiling.
+              {t("sxResults.noDisease")}
             </p>
           )}
         </div>
@@ -158,7 +158,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
             <FlaskConical className="w-5 h-5 text-emerald-500" />
-            Tavsiya etilgan laboratoriya tahlillari
+            {t("sxResults.labTitle")}
           </h3>
           <div className="space-y-2">
             {analysis.suggestedLabTests.map((test, i) => (
@@ -168,13 +168,13 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
                   <p className="text-xs text-muted-foreground">{test.purpose}</p>
                 </div>
                 <Badge variant={test.urgency === "urgent" ? "destructive" : "secondary"} className="text-xs">
-                  {test.urgency === "urgent" ? "Shoshilinch" : "Rejalashtirilgan"}
+                  {test.urgency === "urgent" ? t("sxResults.urgent") : t("sxResults.scheduled")}
                 </Badge>
               </div>
             ))}
           </div>
           <Link to="/diagnostics" className="inline-flex items-center gap-1 text-sm text-primary mt-3 hover:underline">
-            Diagnostika markazlarini ko'rish <ExternalLink className="w-3 h-3" />
+            {t("sxResults.viewDiag")} <ExternalLink className="w-3 h-3" />
           </Link>
         </div>
       )}
@@ -184,7 +184,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
             <ScanLine className="w-5 h-5 text-blue-500" />
-            Tavsiya etilgan tasviriy diagnostika
+            {t("sxResults.imagingTitle")}
           </h3>
           <div className="grid sm:grid-cols-2 gap-2">
             {analysis.suggestedImaging.map((img, i) => (
@@ -226,14 +226,14 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-violet-500" />
-            Ilmiy manbalar va tibbiy bazalar
-            {loadingRefs && <span className="text-xs text-muted-foreground animate-pulse">yuklanmoqda...</span>}
+            {t("sxResults.refsTitle")}
+            {loadingRefs && <span className="text-xs text-muted-foreground animate-pulse">{t("sxResults.loading")}</span>}
           </h3>
 
           {/* AI provided references */}
           {analysis.medicalReferences && analysis.medicalReferences.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">AI tavsiya etgan manbalar:</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">{t("sxResults.aiRefs")}</p>
               <div className="space-y-2">
                 {analysis.medicalReferences.map((ref, i) => (
                   <div key={i} className="p-2 bg-muted/30 rounded-lg">
@@ -252,7 +252,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
           {medicalKnowledge?.pubmedArticles && medicalKnowledge.pubmedArticles.length > 0 && (
             <div className="mb-4">
               <p className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
-                <FileText className="w-3 h-3" /> PubMed ilmiy maqolalar:
+                <FileText className="w-3 h-3" /> {t("sxResults.pubmed")}
               </p>
               <div className="space-y-2">
                 {medicalKnowledge.pubmedArticles.map((article) => (
@@ -283,7 +283,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
           {/* MedlinePlus */}
           {medicalKnowledge?.medlinePlusResults && medicalKnowledge.medlinePlusResults.length > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">MedlinePlus ma'lumotlar:</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">{t("sxResults.medlinePlus")}</p>
               <div className="flex flex-wrap gap-2">
                 {medicalKnowledge.medlinePlusResults.map((r, i) => (
                   <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
@@ -298,7 +298,7 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
           {/* ICD references */}
           {medicalKnowledge?.icdReferences && medicalKnowledge.icdReferences.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">ICD-10 havolalar:</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">{t("sxResults.icdLinks")}</p>
               <div className="flex flex-wrap gap-2">
                 {medicalKnowledge.icdReferences.map((ref, i) => (
                   <a key={i} href={ref.url} target="_blank" rel="noopener noreferrer"
@@ -316,18 +316,18 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Link to="/clinics">
           <Button className="w-full bg-hero-gradient text-primary-foreground" size="lg">
-            <Building2 className="w-4 h-4 mr-2" /> Barcha klinikalar
+            <Building2 className="w-4 h-4 mr-2" /> {t("sxResults.allClinics")}
           </Button>
         </Link>
         <Button variant="outline" size="lg" onClick={onReset}>
-          <RefreshCcw className="w-4 h-4 mr-2" /> Qaytadan tekshirish
+          <RefreshCcw className="w-4 h-4 mr-2" /> {t("sxResults.retry")}
         </Button>
       </div>
 
       {/* Final disclaimer */}
       <div className="bg-muted rounded-xl p-4 text-center">
         <p className="text-xs text-muted-foreground">
-          ⚠️ Ushbu natijalar tibbiy tashxis emas. AI tahlili ICD-10, SNOMED CT va PubMed ma'lumotlariga asoslangan bo'lsa-da, 
+          ⚠️ {t("sxResults.finalDisclaimer")}
           faqat ma'lumot maqsadida beriladi. Aniq tashxis va davolash uchun malakali shifokorga murojaat qiling.
         </p>
       </div>
@@ -383,7 +383,7 @@ const DiseaseCard = ({ disease, rank }: { disease: DiseaseResult; rank: number }
 
       <div>
         <div className="flex items-center justify-between text-xs mb-1">
-          <span className="text-muted-foreground">Ehtimollik</span>
+          <span className="text-muted-foreground">{t("sxResults.probability")}</span>
           <span className="font-semibold text-foreground">{disease.probability}%</span>
         </div>
         <Progress value={disease.probability} className="h-2" />
@@ -391,7 +391,7 @@ const DiseaseCard = ({ disease, rank }: { disease: DiseaseResult; rank: number }
 
       {disease.matchingSymptoms.length > 0 && (
         <div>
-          <p className="text-xs text-muted-foreground mb-1">Mos simptomlar:</p>
+          <p className="text-xs text-muted-foreground mb-1">{t("sxResults.matchingSymptoms")}</p>
           <div className="flex flex-wrap gap-1">
             {disease.matchingSymptoms.map((s) => (
               <Badge key={s} variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">{s}</Badge>
@@ -402,7 +402,7 @@ const DiseaseCard = ({ disease, rank }: { disease: DiseaseResult; rank: number }
 
       {disease.nonMatchingSymptoms && disease.nonMatchingSymptoms.length > 0 && (
         <div>
-          <p className="text-xs text-muted-foreground mb-1">Mos kelmaydigan simptomlar:</p>
+          <p className="text-xs text-muted-foreground mb-1">{t("sxResults.nonMatching")}</p>
           <div className="flex flex-wrap gap-1">
             {disease.nonMatchingSymptoms.map((s) => (
               <Badge key={s} variant="outline" className="text-xs opacity-50 line-through">{s}</Badge>
@@ -422,7 +422,7 @@ const DiseaseCard = ({ disease, rank }: { disease: DiseaseResult; rank: number }
       {/* Suggested tests */}
       {disease.suggestedTests && disease.suggestedTests.length > 0 && (
         <div className="flex flex-wrap gap-1">
-          <span className="text-xs text-muted-foreground mr-1">Tahlillar:</span>
+          <span className="text-xs text-muted-foreground mr-1">{t("sxResults.tests")}</span>
           {disease.suggestedTests.map((t) => (
             <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
           ))}
@@ -431,7 +431,7 @@ const DiseaseCard = ({ disease, rank }: { disease: DiseaseResult; rank: number }
 
       <div className="flex items-center gap-2 text-sm text-primary">
         <Stethoscope className="w-4 h-4" />
-        <span>Tavsiya: <strong>{disease.specialist}</strong></span>
+        <span>{t("sxResults.suggestion")} <strong>{disease.specialist}</strong></span>
       </div>
     </div>
   );
