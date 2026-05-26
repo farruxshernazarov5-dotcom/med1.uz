@@ -327,9 +327,9 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
       {/* Final disclaimer */}
       <div className="bg-muted rounded-xl p-4 text-center">
         <p className="text-xs text-muted-foreground">
-          ⚠️ {t("sxResults.finalDisclaimer")}
-          faqat ma'lumot maqsadida beriladi. Aniq tashxis va davolash uchun malakali shifokorga murojaat qiling.
+          {t("sxResults.finalDisclaimer")}
         </p>
+
       </div>
     </div>
   );
