@@ -11,12 +11,7 @@ import {
 import type { SymptomAnalysis, DiseaseResult, MedicalKnowledgeResult, PubMedArticle } from "./types";
 import RecommendedClinics from "./RecommendedClinics";
 import { supabase } from "@/integrations/supabase/client";
-
-const riskConfig = {
-  high: { label: "Yuqori xavf", color: "bg-destructive text-destructive-foreground", icon: AlertTriangle, bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800" },
-  medium: { label: "O'rtacha xavf", color: "bg-amber-500 text-white", icon: Activity, bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800" },
-  low: { label: "Past xavf", color: "bg-secondary text-secondary-foreground", icon: ShieldCheck, bg: "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800" },
-};
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Props {
   analysis: SymptomAnalysis;
@@ -24,6 +19,12 @@ interface Props {
 }
 
 const SymptomResults = ({ analysis, onReset }: Props) => {
+  const { t } = useLanguage();
+  const riskConfig = {
+    high: { label: t("sxResults.riskHigh"), color: "bg-destructive text-destructive-foreground", icon: AlertTriangle, bg: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800" },
+    medium: { label: t("sxResults.riskMedium"), color: "bg-amber-500 text-white", icon: Activity, bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800" },
+    low: { label: t("sxResults.riskLow"), color: "bg-secondary text-secondary-foreground", icon: ShieldCheck, bg: "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800" },
+  } as const;
   const risk = riskConfig[analysis.riskLevel] || riskConfig.low;
   const RiskIcon = risk.icon;
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
