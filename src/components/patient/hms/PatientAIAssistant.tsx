@@ -6,24 +6,25 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Bot, Send, Sparkles, AlertTriangle, User as UserIcon, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const SUGGESTIONS = [
-  "Boshim og'riyapti, nima qilsam?",
-  "Tomog'im og'riyapti, qanday davolanish kerak?",
-  "Yuqori qon bosimini qanday tushiraman?",
-  "Sog'lom ovqatlanish bo'yicha maslahat bering",
-];
-
 const PatientAIAssistant = () => {
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
+  const suggestions = (t("patientAi.suggestions", { returnObjects: true }) as unknown as string[]) || [];
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "Salom! Men sizning AI sog'liq yordamchingizman 🩺\n\nMen sizga simptomlar, dorilar va sog'lom turmush tarzi bo'yicha maslahat bera olaman. Lekin **rasmiy tashxis emas** — har doim shifokor bilan maslahatlashing.\n\nQanday yordam kerak?" },
+    { role: "assistant", content: t("patientAi.greeting") },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages((prev) => prev.length <= 1 ? [{ role: "assistant", content: t("patientAi.greeting") }] : prev);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -47,11 +48,10 @@ const PatientAIAssistant = () => {
           Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ messages: newMsgs }),
+        body: JSON.stringify({ messages: newMsgs, lang }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || "AI xatosi");
+      if (!res.ok) throw new Error((await res.json()).error || t("patientAi.errorTitle"));
 
-      // Stream SSE
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
       let acc = "";
@@ -78,8 +78,8 @@ const PatientAIAssistant = () => {
         }
       }
     } catch (e: any) {
-      toast({ title: "AI xatosi", description: e.message || "Javob olishda muammo", variant: "destructive" });
-      setMessages([...newMsgs, { role: "assistant", content: "Kechirasiz, hozir javob bera olmayapman. Qaytadan urinib ko'ring." }]);
+      toast({ title: t("patientAi.errorTitle"), description: e.message || t("patientAi.errorDesc"), variant: "destructive" });
+      setMessages([...newMsgs, { role: "assistant", content: t("patientAi.errorReply") }]);
     } finally {
       setLoading(false);
     }
@@ -92,14 +92,14 @@ const PatientAIAssistant = () => {
           <Bot className="w-6 h-6 text-primary-foreground" />
         </div>
         <div>
-          <h2 className="font-heading text-xl font-bold text-foreground">AI Sog'liq yordamchisi</h2>
-          <p className="text-xs text-muted-foreground">Tezkor tibbiy maslahatlar uchun</p>
+          <h2 className="font-heading text-xl font-bold text-foreground">{t("patientAi.title")}</h2>
+          <p className="text-xs text-muted-foreground">{t("patientAi.subtitle")}</p>
         </div>
       </div>
 
       <div className="flex items-start gap-2 p-3 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
         <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-700 dark:text-amber-400">AI maslahatlar rasmiy tashxis emas. Jiddiy holatlar uchun shifokorga murojaat qiling.</p>
+        <p className="text-xs text-amber-700 dark:text-amber-400">{t("patientAi.disclaimer")}</p>
       </div>
 
       <div ref={scrollRef} className="bg-card rounded-2xl border border-border h-[420px] overflow-y-auto p-4 mb-3 space-y-3">
@@ -132,9 +132,9 @@ const PatientAIAssistant = () => {
         )}
       </div>
 
-      {messages.length <= 1 && (
+      {messages.length <= 1 && Array.isArray(suggestions) && (
         <div className="flex flex-wrap gap-2 mb-3">
-          {SUGGESTIONS.map(s => (
+          {suggestions.map((s) => (
             <button key={s} onClick={() => send(s)} className="text-xs px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-foreground transition">
               {s}
             </button>
@@ -147,7 +147,7 @@ const PatientAIAssistant = () => {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === "Enter" && send()}
-          placeholder="Savolingizni yozing..."
+          placeholder={t("patientAi.inputPlaceholder")}
           disabled={loading}
         />
         <Button onClick={() => send()} disabled={loading || !input.trim()} className="bg-hero-gradient text-primary-foreground border-0">

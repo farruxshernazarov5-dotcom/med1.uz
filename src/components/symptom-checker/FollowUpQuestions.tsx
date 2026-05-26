@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircleQuestion, Loader2, SkipForward } from "lucide-react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Props {
   questions: string[];
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const FollowUpQuestions = ({ questions, onSubmit, onSkip, isLoading }: Props) => {
+  const { t } = useLanguage();
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   const handleSubmit = () => {
@@ -25,8 +27,8 @@ const FollowUpQuestions = ({ questions, onSubmit, onSkip, isLoading }: Props) =>
           <MessageCircleQuestion className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h3 className="font-semibold text-foreground">Qo'shimcha savollar</h3>
-          <p className="text-sm text-muted-foreground">Aniqroq natija uchun javob bering</p>
+          <h3 className="font-semibold text-foreground">{t("sx.followUpTitle")}</h3>
+          <p className="text-sm text-muted-foreground">{t("sx.followUpSubtitle")}</p>
         </div>
       </div>
 
@@ -35,7 +37,7 @@ const FollowUpQuestions = ({ questions, onSubmit, onSkip, isLoading }: Props) =>
           <div key={i}>
             <label className="text-sm font-medium text-foreground mb-1.5 block">{q}</label>
             <Input
-              placeholder="Javobingiz..."
+              placeholder={t("sx.answerPlaceholder")}
               value={answers[i] || ""}
               onChange={(e) => setAnswers((prev) => ({ ...prev, [i]: e.target.value }))}
             />
@@ -46,10 +48,10 @@ const FollowUpQuestions = ({ questions, onSubmit, onSkip, isLoading }: Props) =>
       <div className="flex gap-3">
         <Button onClick={handleSubmit} disabled={isLoading} className="flex-1 bg-hero-gradient text-primary-foreground">
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-          Tahlilni davom ettirish
+          {t("sx.continueAnalysis")}
         </Button>
         <Button variant="outline" onClick={onSkip} disabled={isLoading}>
-          <SkipForward className="w-4 h-4 mr-1" /> O'tkazib yuborish
+          <SkipForward className="w-4 h-4 mr-1" /> {t("sx.skip")}
         </Button>
       </div>
     </div>
