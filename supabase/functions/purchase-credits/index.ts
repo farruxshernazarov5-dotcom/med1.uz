@@ -30,13 +30,26 @@ serve(async (req) => {
     }
 
     const userId = authData.user.id;
-    const { package_id, amount, credits, bonus } = await req.json();
+
+    // SECURITY: This endpoint must NOT be callable by regular users — it would let them
+    // grant themselves arbitrary credits for free. Only admins may insert credits directly;
+    // normal purchases must come through a payment webhook (Click/Payme) using service role.
+    const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
+    if (!isAdmin) {
+      return new Response(JSON.stringify({
+        error: "Kreditlarni xarid qilish faqat to'lov webhook orqali mumkin. Iltimos, to'lovni amalga oshiring.",
+      }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const { package_id, amount, credits, bonus, target_user_id } = await req.json();
 
     if (!package_id || typeof amount !== "number" || typeof credits !== "number") {
       return new Response(JSON.stringify({ error: "To'lov ma'lumotlari to'liq emas" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    // Admin may target a specific user; default = self
+    const recipientUserId = target_user_id || userId;
 
     const totalCredits = credits + (bonus || 0);
     const now = new Date();
@@ -44,8 +57,9 @@ serve(async (req) => {
     expiresAt.setDate(expiresAt.getDate() + 30);
 
     // Add credits
+    // Add credits to the recipient
     const { error: creditError } = await admin.from("user_credits").insert({
-      user_id: userId,
+      user_id: recipientUserId,
       balance: totalCredits,
       purchased_at: now.toISOString(),
       expires_at: expiresAt.toISOString(),
@@ -58,14 +72,14 @@ serve(async (req) => {
     const { data: allCredits } = await admin
       .from("user_credits")
       .select("balance")
-      .eq("user_id", userId)
+      .eq("user_id", recipientUserId)
       .gt("expires_at", now.toISOString())
       .gt("balance", 0);
 
     const totalBalance = (allCredits || []).reduce((sum, c) => sum + c.balance, 0);
 
     await admin.from("credit_history").insert({
-      user_id: userId,
+      user_id: recipientUserId,
       amount: totalCredits,
       type: "purchase",
       description: `${package_id} paket sotib olish (${credits} + ${bonus || 0} bonus)`,
@@ -75,13 +89,13 @@ serve(async (req) => {
     // Record payment
     const invoiceId = `CRD-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     await admin.from("ai_payments").insert({
-      user_id: userId,
+      user_id: recipientUserId,
       invoice_id: invoiceId,
       plan_id: package_id,
       billing_period: "one-time",
       amount,
       services: [],
-      payment_method: "simulated",
+      payment_method: "admin_grant",
       status: "paid",
       paid_at: now.toISOString(),
     });
@@ -96,7 +110,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("purchase-credits error:", error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Noma'lum xatolik" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

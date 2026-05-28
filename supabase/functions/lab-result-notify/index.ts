@@ -40,6 +40,23 @@ serve(async (req) => {
       throw new Error("lab_result_id or patient_id is required");
     }
 
+    // SECURITY: caller must be the patient themselves, OR an admin/clinic/diagnostics role.
+    // Otherwise any authenticated user could spam fake "lab results ready" Telegram messages.
+    const callerId = userData.user.id;
+    if (patient_id && patient_id !== callerId) {
+      const { data: rolesRows } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerId);
+      const allowedRoles = new Set(["admin", "clinic", "diagnostics", "doctor"]);
+      const isAllowed = (rolesRows || []).some((r: any) => allowedRoles.has(r.role));
+      if (!isAllowed) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const activeChannels = channels || ["telegram", "email"];
     const results: Record<string, { success: boolean; error?: string }> = {};
 

@@ -107,7 +107,7 @@ serve(async (req) => {
       })
       .select()
       .single();
-    if (insErr) return json({ error: insErr.message }, 500);
+    if (insErr) { console.error("referral-apply insert error:", insErr); return json({ error: "Internal server error" }, 500); }
 
     // 6) Bump counters
     await admin

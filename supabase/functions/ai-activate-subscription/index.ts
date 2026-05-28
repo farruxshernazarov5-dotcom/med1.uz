@@ -33,12 +33,41 @@ serve(async (req) => {
     }
 
     const userId = authData.user.id;
+
+    // SECURITY: This endpoint must NOT be callable by regular users — it would let them
+    // self-activate premium subscriptions for free. Only admins (or the payment webhook
+    // using service role) may activate subscriptions here.
+    const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
+    if (!isAdmin) {
+      return new Response(JSON.stringify({
+        error: "Obunani faollashtirish faqat to'lov webhook orqali mumkin. Iltimos, to'lovni amalga oshiring.",
+      }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const { invoice_id, plan_id, billing_period, amount, services, tier } = await req.json();
 
     if (!invoice_id || !plan_id || !billing_period || typeof amount !== "number") {
       return new Response(JSON.stringify({ error: "To'lov ma'lumotlari to'liq emas" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Server-side lookup: never trust client-supplied amount/tier/services for free plans
+    const { data: planRow } = await admin
+      .from("ai_subscription_plans")
+      .select("id, tier, price_monthly, price_yearly, allowed_services")
+      .eq("id", plan_id)
+      .maybeSingle();
+    if (!planRow) {
+      return new Response(JSON.stringify({ error: "Tarif topilmadi" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const expectedAmount = billing_period === "yearly" ? Number(planRow.price_yearly) : Number(planRow.price_monthly);
+    if (Number(amount) < expectedAmount) {
+      return new Response(JSON.stringify({ error: "Noto'g'ri to'lov summasi" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -100,7 +129,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("ai-activate-subscription error:", error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Noma'lum xatolik" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

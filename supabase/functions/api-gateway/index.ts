@@ -215,7 +215,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     if (q) qry = qry.ilike("name", `%${q}%`);
     if (city) qry = qry.ilike("service_city", `%${city}%`);
     const { data, error, count } = await qry;
-    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (error) { console.error("api-gateway clinics error:", error); return json(500, { code: "db_error", message: "Internal server error" }, requestId); }
     return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
 
@@ -234,7 +234,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     const specialty = url.searchParams.get("specialty");
     if (specialty) qry = qry.ilike("specialty", `%${specialty}%`);
     const { data, error, count } = await qry;
-    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (error) { console.error("api-gateway doctors error:", error); return json(500, { code: "db_error", message: "Internal server error" }, requestId); }
     return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
 
@@ -251,7 +251,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     if (q) qry = qry.ilike("name", `%${q}%`);
     if (city) qry = qry.ilike("city", `%${city}%`);
     const { data, error, count } = await qry;
-    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (error) { console.error("api-gateway diagnostics error:", error); return json(500, { code: "db_error", message: "Internal server error" }, requestId); }
     return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
 
@@ -270,7 +270,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     if (url.searchParams.get("is_24h") === "true") qry = qry.eq("is_24h", true);
     if (url.searchParams.get("has_delivery") === "true") qry = qry.eq("has_delivery", true);
     const { data, error, count } = await qry;
-    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (error) { console.error("api-gateway pharmacies error:", error); return json(500, { code: "db_error", message: "Internal server error" }, requestId); }
     return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
   }
 
