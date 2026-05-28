@@ -219,7 +219,8 @@ Deno.serve(async (req) => {
       }).select().single();
 
       if (sigErr) {
-        return new Response(JSON.stringify({ error: sigErr.message }), {
+        console.error("contract-signature insert error:", sigErr);
+        return new Response(JSON.stringify({ error: "Internal server error" }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }

@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
         ? admin.from("hms_attendance").update(payload).eq("id", existing.id).select().single()
         : admin.from("hms_attendance").insert(payload).select().single();
       const { data, error } = await q;
-      if (error) return j({ error: error.message }, 500);
+      if (error) { console.error("attendance-checkin error:", error); return j({ error: "Internal server error" }, 500); }
       return j({ ok: true, attendance: data, late: is_late, late_minutes });
     } else {
       if (!existing?.check_in) return j({ error: "Avval check-in qiling" }, 400);
@@ -104,11 +104,12 @@ Deno.serve(async (req) => {
           worked_minutes: worked,
         })
         .eq("id", existing.id).select().single();
-      if (error) return j({ error: error.message }, 500);
+      if (error) { console.error("attendance-checkin error:", error); return j({ error: "Internal server error" }, 500); }
       return j({ ok: true, attendance: data, worked_minutes: worked });
     }
   } catch (e: any) {
-    return j({ error: e?.message || "error" }, 500);
+    console.error("attendance-checkin exception:", e);
+    return j({ error: "Internal server error" }, 500);
   }
 });
 

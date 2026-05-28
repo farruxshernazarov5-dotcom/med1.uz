@@ -1,4 +1,6 @@
 // AI Legal Assistant — shartnomalarni tushuntiradi, xulosa qiladi, xavflarni belgilaydi
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -6,6 +8,7 @@ const corsHeaders = {
 };
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+
 
 interface Body {
   action: "summarize" | "explain_clause" | "risks";
@@ -32,6 +35,21 @@ const PROMPTS = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
+    // Require authentication — burns LOVABLE AI credits
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const _admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: _u } = await _admin.auth.getUser(authHeader.replace("Bearer ", ""));
+    if (!_u?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { action, language = "uz", title = "", body = "", clause = "" } = (await req.json()) as Body;
     if (!body && !clause) {
       return new Response(JSON.stringify({ error: "body or clause required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -59,6 +77,7 @@ Deno.serve(async (req) => {
     const summary = j?.choices?.[0]?.message?.content || "—";
     return new Response(JSON.stringify({ summary }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    console.error("legal-assistant error:", e);
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });

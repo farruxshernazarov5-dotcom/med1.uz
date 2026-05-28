@@ -38,10 +38,13 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const { clinic_id, appointment_id, patient_id, amount, provider, description } = await req.json();
+    const { clinic_id, appointment_id, amount, provider, description } = await req.json();
 
-    if (!clinic_id || !patient_id || !amount) {
-      return new Response(JSON.stringify({ error: 'clinic_id, patient_id, amount required' }), {
+    // SECURITY: patient_id is ALWAYS the calling user — never trust client-supplied value
+    const patient_id = claimsData.claims.sub as string;
+
+    if (!clinic_id || !amount) {
+      return new Response(JSON.stringify({ error: 'clinic_id, amount required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }

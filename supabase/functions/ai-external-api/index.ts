@@ -29,7 +29,7 @@ serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Authenticate via x-api-key header (user's API key from ai_api_keys table or bearer token)
+    // Authenticate via x-api-key header — validate against api_keys table (SHA-256 hash)
     const apiKey = req.headers.get("x-api-key") || req.headers.get("authorization")?.replace("Bearer ", "");
     if (!apiKey) {
       return new Response(JSON.stringify({
@@ -37,6 +37,31 @@ serve(async (req) => {
         docs: "https://med1.uz/ai-services#api",
       }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+
+    // SHA-256 hash lookup against api_keys
+    const enc = new TextEncoder().encode(apiKey);
+    const hashBuf = await crypto.subtle.digest("SHA-256", enc);
+    const keyHash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+    const { data: keyRow } = await supabase
+      .from("api_keys")
+      .select("id, partner_id, expires_at, is_active")
+      .eq("key_hash", keyHash)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!keyRow) {
+      return new Response(JSON.stringify({ error: "Yaroqsiz API kalit" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (keyRow.expires_at && new Date(keyRow.expires_at) < new Date()) {
+      return new Response(JSON.stringify({ error: "API kalit muddati tugagan" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // Update last_used_at (best-effort)
+    await supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id);
 
     const body = req.method === "POST" ? await req.json() : {};
     const action = pathParts[pathParts.length - 1] || body.action;

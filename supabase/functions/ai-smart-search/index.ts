@@ -55,6 +55,23 @@ serve(async (req) => {
   }
 
   try {
+    // Require authentication to prevent anonymous AI credit drain
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Tizimga kirish talab qilinadi" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const _supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const _serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const _authCheck = createClient(_supabaseUrl, _serviceKey);
+    const { data: _u } = await _authCheck.auth.getUser(authHeader.replace("Bearer ", ""));
+    if (!_u?.user) {
+      return new Response(JSON.stringify({ error: "Sessiya yaroqsiz" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { query, latitude, longitude, filters } = await req.json();
 
     if (!query || typeof query !== "string" || query.trim().length < 2) {
@@ -230,7 +247,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("ai-smart-search error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Noma'lum xato" }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
