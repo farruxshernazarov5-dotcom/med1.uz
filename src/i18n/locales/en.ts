@@ -501,4 +501,30 @@ export const en: Dict = {
     deleteConfirm: "Are you sure you want to delete your account? This cannot be undone!",
     deleteSupport: "To delete your account, contact support@med1.uz",
   },
+  aiHistory: {
+    title: "AI services history",
+    allServices: "All AI services",
+    emptyTitle: "No AI history yet",
+    emptyDesc: "When you use AI services, results will be saved here",
+    tryServices: "Try AI services:",
+    open: "Open",
+    riskSuffix: "risk",
+    risk: { low: "low", mid: "medium", high: "high" },
+    services: {
+      symptom: { label: "Early Diagnostics", desc: "Analyze symptoms" },
+      doctorChat: { label: "AI Doctor Chat", desc: "Chat with AI" },
+      report: { label: "Report Analysis", desc: "Lab results analysis" },
+      healthRisk: { label: "Health Forecast", desc: "Assess risk level" },
+      radiology: { label: "Radiology", desc: "MRI/CT/X-ray analysis" },
+      assistant: { label: "Health Assistant", desc: "24/7 AI helper" },
+    },
+  },
+  cosmetologyChat: {
+    title: "AI Cosmetologist Chat",
+    emptyTitle: "Chat with AI Cosmetologist",
+    emptyDesc: "Ask about skincare, treatments and dermatology",
+    suggestions: ["Acne treatment options", "How to choose SPF?", "What is mesotherapy?", "Dry skin care"],
+    inputPlaceholder: "Ask about skincare...",
+  },
 };
+

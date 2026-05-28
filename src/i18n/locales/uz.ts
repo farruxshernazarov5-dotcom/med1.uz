@@ -499,5 +499,30 @@ export const uz = {
     deleteConfirm: "Akkauntni o'chirish ishonchingiz komilmi? Bu amalni qaytarib bo'lmaydi!",
     deleteSupport: "Akkauntni o'chirish uchun support@med1.uz ga murojaat qiling",
   },
+  aiHistory: {
+    title: "AI xizmatlar tarixi",
+    allServices: "Barcha AI xizmatlar",
+    emptyTitle: "AI tahlil tarixi yo'q",
+    emptyDesc: "AI xizmatlardan foydalanganingizda natijalar shu yerda saqlanadi",
+    tryServices: "AI xizmatlarni sinab ko'ring:",
+    open: "Ochish",
+    riskSuffix: "xavf",
+    risk: { low: "past", mid: "o'rtacha", high: "yuqori" },
+    services: {
+      symptom: { label: "Erta Diagnostika", desc: "Simptomlarni tahlil qiling" },
+      doctorChat: { label: "AI Shifokor Chat", desc: "AI bilan suhbat" },
+      report: { label: "Analiz Tahlili", desc: "Lab natijalarini tahlil" },
+      healthRisk: { label: "Sog'liq Prognozi", desc: "Xavf darajasini baholash" },
+      radiology: { label: "Radiologiya", desc: "MRT/KT/Rentgen tahlili" },
+      assistant: { label: "Sog'liq Assistenti", desc: "24/7 AI yordamchi" },
+    },
+  },
+  cosmetologyChat: {
+    title: "AI Kosmetolog Chat",
+    emptyTitle: "AI Kosmetolog bilan suhbatlashing",
+    emptyDesc: "Teri parvarishi, muolajalar va dermatologiya bo'yicha savollar bering",
+    suggestions: ["Akne davolash usullari", "SPF qanday tanlash kerak?", "Mezoterapiya nima?", "Quruq teriga parvarish"],
+    inputPlaceholder: "Teri parvarishi haqida savol bering...",
+  },
 };
 export type Dict = typeof uz;
