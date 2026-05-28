@@ -1,4 +1,6 @@
 // AI Workflow function for Diagnostics: auto-assign orders to staff and radiology assistance
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -8,11 +10,38 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Require authentication — burns LOVABLE AI credits
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const _admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: _u } = await _admin.auth.getUser(authHeader.replace("Bearer ", ""));
+    if (!_u?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
     const action = body.action || body.mode;
     const { orders, staff, modality, body_part, image_url } = body;
+
+    // SSRF protection: only allow image_url from Supabase storage origin
+    if (image_url && typeof image_url === "string") {
+      const allowed = (Deno.env.get("SUPABASE_URL") || "");
+      if (!image_url.startsWith(allowed) && !image_url.startsWith("https://wiqcfyecdmararxqdmfk.supabase.co")) {
+        return new Response(JSON.stringify({ error: "image_url manbai ruxsat etilmagan" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+
+
 
 
     if (action === "auto_assign") {

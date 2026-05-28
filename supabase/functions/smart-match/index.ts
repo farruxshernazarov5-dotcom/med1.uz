@@ -41,16 +41,23 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    // Identify user
+    // Require authentication to prevent anonymous AI credit drain
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    let userId: string | null = null;
     const auth = req.headers.get("Authorization");
-    if (auth?.startsWith("Bearer ")) {
-      const { data } = await supabase.auth.getUser(auth.replace("Bearer ", ""));
-      userId = data.user?.id ?? null;
+    if (!auth?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Tizimga kirish talab qilinadi" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { data: userData } = await supabase.auth.getUser(auth.replace("Bearer ", ""));
+    const userId = userData.user?.id ?? null;
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Sessiya yaroqsiz" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // 1. AI analysis
@@ -211,7 +218,7 @@ serve(async (req) => {
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("smart-match error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
