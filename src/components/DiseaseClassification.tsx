@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { ArrowRight, Layers } from "lucide-react";
 
-import catAllergy from "@/assets/cat-allergy.jpg";
-import catNeurology from "@/assets/cat-neurology.jpg";
-import catInfectious from "@/assets/cat-infectious.jpg";
-import catCardiology from "@/assets/cat-cardiology.jpg";
-import catSurgery from "@/assets/cat-surgery.jpg";
-import catPediatrics from "@/assets/cat-pediatrics.jpg";
-import catEye from "@/assets/cat-eye.jpg";
-import catDental from "@/assets/cat-dental.jpg";
-import catOncology from "@/assets/cat-oncology.jpg";
-import catGastro from "@/assets/cat-gastro.jpg";
-import anatomyImg from "@/assets/medicine-anatomy.jpg";
-import researchImg from "@/assets/medicine-research.jpg";
-import pillsImg from "@/assets/medicine-pills.jpg";
+import catAllergy from "@/assets/cat-allergy.webp";
+import catNeurology from "@/assets/cat-neurology.webp";
+import catInfectious from "@/assets/cat-infectious.webp";
+import catCardiology from "@/assets/cat-cardiology.webp";
+import catSurgery from "@/assets/cat-surgery.webp";
+import catPediatrics from "@/assets/cat-pediatrics.webp";
+import catEye from "@/assets/cat-eye.webp";
+import catDental from "@/assets/cat-dental.webp";
+import catOncology from "@/assets/cat-oncology.webp";
+import catGastro from "@/assets/cat-gastro.webp";
+import anatomyImg from "@/assets/medicine-anatomy.webp";
+import researchImg from "@/assets/medicine-research.webp";
+import pillsImg from "@/assets/medicine-pills.webp";
 
 type Category = {
   title: string;

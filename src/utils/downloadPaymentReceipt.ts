@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
 import { generateStampDataUrl } from "./generatePaymentStamp";
-import logoUrl from "@/assets/logo.png";
+import logoUrl from "@/assets/logo.webp";
 
 export type ReceiptFormat = "a4" | "thermal" | "both";
 

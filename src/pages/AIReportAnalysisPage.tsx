@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Loader2, AlertTriangle, CheckCircle2, ArrowUp, ArrowDown, Minus, Stethoscope, RefreshCcw, Activity, Upload, Image, X, Save, Camera, Link2, FlaskConical, Search, MapPin, Download, Shield, Sparkles } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiReportImg from "@/assets/ai-report-analysis.jpg";
+import aiReportImg from "@/assets/ai-report-analysis.webp";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";

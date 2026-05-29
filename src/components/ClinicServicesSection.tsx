@@ -5,10 +5,10 @@ import {
   Building2, Zap, Globe, HeartHandshake
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import clinicMarketingImg from "@/assets/clinic-service-marketing.jpg";
-import clinicBookingImg from "@/assets/clinic-service-booking.jpg";
-import clinicTeamImg from "@/assets/clinic-service-team.jpg";
-import clinicBrandImg from "@/assets/clinic-service-brand.jpg";
+import clinicMarketingImg from "@/assets/clinic-service-marketing.webp";
+import clinicBookingImg from "@/assets/clinic-service-booking.webp";
+import clinicTeamImg from "@/assets/clinic-service-team.webp";
+import clinicBrandImg from "@/assets/clinic-service-brand.webp";
 
 const clinicServices = [
   {

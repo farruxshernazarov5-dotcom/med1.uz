@@ -1,10 +1,10 @@
 import { CheckCircle2, Brain, MessageCircle, FileText, HeartPulse, Scan, Bot, Baby, Sparkles, Shield, Zap, Globe, TrendingUp, ArrowRight, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import aiDiagnosticsImg from "@/assets/ai-service-diagnostics.jpg";
-import aiChatImg from "@/assets/ai-service-chat.jpg";
-import aiReportImg from "@/assets/ai-service-report.jpg";
-import aiPredictionImg from "@/assets/ai-service-prediction.jpg";
+import aiDiagnosticsImg from "@/assets/ai-service-diagnostics.webp";
+import aiChatImg from "@/assets/ai-service-chat.webp";
+import aiReportImg from "@/assets/ai-service-report.webp";
+import aiPredictionImg from "@/assets/ai-service-prediction.webp";
 
 const aiModules = [
   {

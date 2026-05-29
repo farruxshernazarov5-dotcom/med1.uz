@@ -1,12 +1,12 @@
-import catPsychiatry from "@/assets/cat-psychiatry.jpg";
-import catCardiology from "@/assets/cat-cardiology.jpg";
-import catSurgery from "@/assets/cat-surgery.jpg";
-import catPulmonology from "@/assets/cat-pulmonology.jpg";
-import catEndocrinology from "@/assets/cat-endocrinology.jpg";
-import catPediatrics from "@/assets/cat-pediatrics.jpg";
-import catGastro from "@/assets/cat-gastro.jpg";
-import catUrology from "@/assets/cat-urology.jpg";
-import catOrthopedics from "@/assets/cat-orthopedics.jpg";
+import catPsychiatry from "@/assets/cat-psychiatry.webp";
+import catCardiology from "@/assets/cat-cardiology.webp";
+import catSurgery from "@/assets/cat-surgery.webp";
+import catPulmonology from "@/assets/cat-pulmonology.webp";
+import catEndocrinology from "@/assets/cat-endocrinology.webp";
+import catPediatrics from "@/assets/cat-pediatrics.webp";
+import catGastro from "@/assets/cat-gastro.webp";
+import catUrology from "@/assets/cat-urology.webp";
+import catOrthopedics from "@/assets/cat-orthopedics.webp";
 import type { Article } from "./articles";
 
 export type ExtraArticleCategory = {

@@ -9,10 +9,10 @@ import AdBanner from "@/components/AdBanner";
 import Breadcrumb from "@/components/Breadcrumb";
 import MedicalTermModal from "@/components/MedicalTermModal";
 import { termsByLetter, alphabet, totalTermsCount, medicalQuotes, type MedicalTerm } from "@/data/medicalTerms";
-import medicineHero from "@/assets/medicine-hero.jpg";
-import anatomyImg from "@/assets/medicine-anatomy.jpg";
-import researchImg from "@/assets/medicine-research.jpg";
-import pillsImg from "@/assets/medicine-pills.jpg";
+import medicineHero from "@/assets/medicine-hero.webp";
+import anatomyImg from "@/assets/medicine-anatomy.webp";
+import researchImg from "@/assets/medicine-research.webp";
+import pillsImg from "@/assets/medicine-pills.webp";
 
 const categories = [
   { icon: Brain, title: "Nevrologiya", count: "2,400+", desc: "Nerv tizimi va miya kasalliklari", image: anatomyImg },

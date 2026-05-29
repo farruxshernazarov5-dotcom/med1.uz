@@ -19,14 +19,14 @@ import {
   type MedicineCategory,
 } from "@/data/pharmacies";
 import { regions } from "@/data/clinics";
-import pharmInteriorImg from "@/assets/pharm-interior.jpg";
-import pharmPillsImg from "@/assets/pharm-pills.jpg";
-import pharmConsultImg from "@/assets/pharm-consult.jpg";
-import pharmHerbalImg from "@/assets/pharm-herbal.jpg";
-import pharm24hImg from "@/assets/pharm-24h.jpg";
-import pharmDeliveryImg from "@/assets/pharm-delivery.jpg";
-import doctorMaleImg from "@/assets/doctor-male.jpg";
-import doctorFemaleImg from "@/assets/doctor-female.jpg";
+import pharmInteriorImg from "@/assets/pharm-interior.webp";
+import pharmPillsImg from "@/assets/pharm-pills.webp";
+import pharmConsultImg from "@/assets/pharm-consult.webp";
+import pharmHerbalImg from "@/assets/pharm-herbal.webp";
+import pharm24hImg from "@/assets/pharm-24h.webp";
+import pharmDeliveryImg from "@/assets/pharm-delivery.webp";
+import doctorMaleImg from "@/assets/doctor-male.webp";
+import doctorFemaleImg from "@/assets/doctor-female.webp";
 
 const getPharmImage = (pharmacy: Pharmacy) => {
   if (pharmacy.has24h) return pharm24hImg;

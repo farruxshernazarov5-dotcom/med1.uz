@@ -4,10 +4,10 @@ import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import { cosmetologyServices, cosmetologyInfo } from "@/data/cosmetology";
 import ShareButton from "@/components/ShareButton";
-import cosmetologyHappy1 from "@/assets/cosmetology-happy1.jpg";
-import cosmetologyHappy2 from "@/assets/cosmetology-happy2.jpg";
-import cosmetologyHappy3 from "@/assets/cosmetology-happy3.jpg";
-import cosmetologyHappy4 from "@/assets/cosmetology-happy4.jpg";
+import cosmetologyHappy1 from "@/assets/cosmetology-happy1.webp";
+import cosmetologyHappy2 from "@/assets/cosmetology-happy2.webp";
+import cosmetologyHappy3 from "@/assets/cosmetology-happy3.webp";
+import cosmetologyHappy4 from "@/assets/cosmetology-happy4.webp";
 
 const CosmetologyPage = () => {
   return (

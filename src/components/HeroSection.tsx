@@ -4,7 +4,7 @@ import { Search, Sparkles, ArrowRight, Stethoscope, Activity, ShieldCheck } from
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/GlobalSearch";
 import { FuturisticBackground, GlowCard, LiveStatusPill } from "@/components/futuristic";
-import heroImage from "@/assets/hero-medical.jpg";
+import heroImage from "@/assets/hero-medical.webp";
 
 const HeroSection = () => {
   const [searchOpen, setSearchOpen] = useState(false);

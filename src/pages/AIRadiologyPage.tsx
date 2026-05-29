@@ -13,7 +13,7 @@ import {
   ShieldAlert, FlaskConical, Brain, Scan, Download, Shield, Sparkles,
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiRadiologyImg from "@/assets/ai-radiology.jpg";
+import aiRadiologyImg from "@/assets/ai-radiology.webp";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";

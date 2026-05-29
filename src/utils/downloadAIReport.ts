@@ -64,7 +64,7 @@ function generateReportHTML(data: ReportData): string {
     user-select:none;
     width:420px;
     height:420px;
-    background-image:url('/images/med1-logo-watermark.png');
+    background-image:url('/images/med1-logo-watermark.webp');
     background-repeat:no-repeat;
     background-position:center;
     background-size:contain;

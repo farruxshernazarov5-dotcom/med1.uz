@@ -6,7 +6,7 @@ import { Brain, AlertTriangle, Shield, Activity } from "lucide-react";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiSymptomImg from "@/assets/ai-symptom-checker.jpg";
+import aiSymptomImg from "@/assets/ai-symptom-checker.webp";
 import SymptomInput from "@/components/symptom-checker/SymptomInput";
 import SymptomResults from "@/components/symptom-checker/SymptomResults";
 import FollowUpQuestions from "@/components/symptom-checker/FollowUpQuestions";

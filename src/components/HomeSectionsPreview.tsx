@@ -4,19 +4,19 @@ import {
   Newspaper, Activity, Pill, Droplets, Baby, ArrowRight, Eye, Sparkles
 } from "lucide-react";
 
-import medicinePills from "@/assets/medicine-pills.jpg";
-import healthPrevention from "@/assets/health-prevention.jpg";
-import catGynecology from "@/assets/cat-gynecology.jpg";
-import artSelected from "@/assets/art-selected.jpg";
-import clinicPrivate from "@/assets/clinic-private.jpg";
-import medtechMri from "@/assets/medtech-mri.jpg";
-import newsResearch from "@/assets/news-research.jpg";
-import diagCenter from "@/assets/diag-center.jpg";
-import pharmInterior from "@/assets/pharm-interior.jpg";
-import bloodDonation from "@/assets/blood-donation.jpg";
-import maternityHospital from "@/assets/maternity-hospital.jpg";
-import eyeCataract from "@/assets/eye-cataract.jpg";
-import cosmetologyHero from "@/assets/cosmetology-hero.jpg";
+import medicinePills from "@/assets/medicine-pills.webp";
+import healthPrevention from "@/assets/health-prevention.webp";
+import catGynecology from "@/assets/cat-gynecology.webp";
+import artSelected from "@/assets/art-selected.webp";
+import clinicPrivate from "@/assets/clinic-private.webp";
+import medtechMri from "@/assets/medtech-mri.webp";
+import newsResearch from "@/assets/news-research.webp";
+import diagCenter from "@/assets/diag-center.webp";
+import pharmInterior from "@/assets/pharm-interior.webp";
+import bloodDonation from "@/assets/blood-donation.webp";
+import maternityHospital from "@/assets/maternity-hospital.webp";
+import eyeCataract from "@/assets/eye-cataract.webp";
+import cosmetologyHero from "@/assets/cosmetology-hero.webp";
 
 const sections = [
   {

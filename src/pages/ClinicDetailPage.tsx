@@ -10,10 +10,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { clinics } from "@/data/clinics";
 import { externalClinics } from "@/data/clinicsExternal";
-import clinicPrivateImg from "@/assets/clinic-private.jpg";
-import clinicStateImg from "@/assets/clinic-state.jpg";
-import clinicPolyclinicImg from "@/assets/clinic-polyclinic.jpg";
-import clinicEmergencyImg from "@/assets/clinic-emergency.jpg";
+import clinicPrivateImg from "@/assets/clinic-private.webp";
+import clinicStateImg from "@/assets/clinic-state.webp";
+import clinicPolyclinicImg from "@/assets/clinic-polyclinic.webp";
+import clinicEmergencyImg from "@/assets/clinic-emergency.webp";
 import type { Clinic } from "@/data/clinics";
 
 const getClinicImage = (type: Clinic["type"]) => {

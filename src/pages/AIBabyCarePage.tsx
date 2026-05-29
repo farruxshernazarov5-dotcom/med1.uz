@@ -20,7 +20,7 @@ import {
   ChevronRight, Shield, Sparkles
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiBabyCareImg from "@/assets/ai-baby-care.jpg";
+import aiBabyCareImg from "@/assets/ai-baby-care.webp";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 

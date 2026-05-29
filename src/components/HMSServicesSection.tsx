@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { CheckCircle2, ArrowRight, Star, Shield, Zap, Clock, Users, Monitor, BarChart3, Stethoscope, FlaskConical, Pill, BedDouble, Building, Heart, Wallet, MessageSquare, FileText, Bell, Mail, Phone, Calendar, UserCheck, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import hmsDashboardImg from "@/assets/hms-dashboard.jpg";
-import hmsLabImg from "@/assets/hms-laboratory.jpg";
-import hmsFinanceImg from "@/assets/hms-finance.jpg";
-import hmsPharmacyImg from "@/assets/hms-pharmacy.jpg";
+import hmsDashboardImg from "@/assets/hms-dashboard.webp";
+import hmsLabImg from "@/assets/hms-laboratory.webp";
+import hmsFinanceImg from "@/assets/hms-finance.webp";
+import hmsPharmacyImg from "@/assets/hms-pharmacy.webp";
 
 const hmsModules = [
   {

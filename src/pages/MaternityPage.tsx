@@ -16,14 +16,14 @@ import {
   type MaternityHospital,
 } from "@/data/maternity";
 import { regions } from "@/data/clinics";
-import maternityHospitalImg from "@/assets/maternity-hospital.jpg";
-import maternityNurseryImg from "@/assets/maternity-nursery.jpg";
-import maternityUltrasoundImg from "@/assets/maternity-ultrasound.jpg";
-import maternityDeliveryImg from "@/assets/maternity-delivery.jpg";
-import maternityVipImg from "@/assets/maternity-vip.jpg";
-import maternityNicuImg from "@/assets/maternity-nicu.jpg";
-import doctorMaleImg from "@/assets/doctor-male.jpg";
-import doctorFemaleImg from "@/assets/doctor-female.jpg";
+import maternityHospitalImg from "@/assets/maternity-hospital.webp";
+import maternityNurseryImg from "@/assets/maternity-nursery.webp";
+import maternityUltrasoundImg from "@/assets/maternity-ultrasound.webp";
+import maternityDeliveryImg from "@/assets/maternity-delivery.webp";
+import maternityVipImg from "@/assets/maternity-vip.webp";
+import maternityNicuImg from "@/assets/maternity-nicu.webp";
+import doctorMaleImg from "@/assets/doctor-male.webp";
+import doctorFemaleImg from "@/assets/doctor-female.webp";
 
 const getHospitalImage = (h: MaternityHospital) => {
   if (h.hasVIP && h.type === "xususiy") return maternityVipImg;

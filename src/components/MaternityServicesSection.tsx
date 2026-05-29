@@ -5,10 +5,10 @@ import {
   Baby, Zap, Globe, HeartHandshake, Heart, Stethoscope
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import maternityReceptionImg from "@/assets/maternity-service-reception.jpg";
-import maternityBookingImg from "@/assets/maternity-service-booking.jpg";
-import maternityAnalyticsImg from "@/assets/maternity-service-analytics.jpg";
-import maternityAIImg from "@/assets/maternity-service-ai.jpg";
+import maternityReceptionImg from "@/assets/maternity-service-reception.webp";
+import maternityBookingImg from "@/assets/maternity-service-booking.webp";
+import maternityAnalyticsImg from "@/assets/maternity-service-analytics.webp";
+import maternityAIImg from "@/assets/maternity-service-ai.webp";
 
 const maternityServices = [
   {

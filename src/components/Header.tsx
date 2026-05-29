@@ -9,7 +9,7 @@ import { getDashboardPath } from "@/lib/dashboard";
 import { useCredits } from "@/hooks/useCredits";
 import { useLanguage, LANGUAGE_LABELS } from "@/hooks/useLanguage";
 import type { SupportedLanguage } from "@/i18n/config";
-import logoImg from "@/assets/logo.png";
+import logoImg from "@/assets/logo.webp";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);

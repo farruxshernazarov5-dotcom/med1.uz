@@ -19,10 +19,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Slider } from "@/components/ui/slider";
 
 import { FuturisticBackground, LiveStatusPill } from "@/components/futuristic";
-import patientImg from "@/assets/showcase-patient-ecosystem.jpg";
-import doctorImg from "@/assets/showcase-ai-doctor.jpg";
-import networkImg from "@/assets/showcase-network-3d.jpg";
-import diagImg from "@/assets/showcase-ai-diagnostics.jpg";
+import patientImg from "@/assets/showcase-patient-ecosystem.webp";
+import doctorImg from "@/assets/showcase-ai-doctor.webp";
+import networkImg from "@/assets/showcase-network-3d.webp";
+import diagImg from "@/assets/showcase-ai-diagnostics.webp";
 
 type Service = {
   icon: React.ElementType;

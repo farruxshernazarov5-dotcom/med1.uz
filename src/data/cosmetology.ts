@@ -1,4 +1,4 @@
-import cosmetologyHero from "@/assets/cosmetology-hero.jpg";
+import cosmetologyHero from "@/assets/cosmetology-hero.webp";
 
 export interface CosmetologyService {
   id: string;
