@@ -42,10 +42,20 @@ interface DeliveryRow {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+  // Auth: require either the service-role key OR a shared internal secret in the Authorization header.
+  // This endpoint is only meant to be invoked by pg_cron / server-side schedulers, never by end users.
+  const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const INTERNAL_SECRET = Deno.env.get("WEBHOOK_DISPATCHER_SECRET") || SERVICE_KEY;
+  const authHeader = req.headers.get("Authorization") || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  if (token !== SERVICE_KEY && token !== INTERNAL_SECRET) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const supabase = createClient(Deno.env.get("SUPABASE_URL")!, SERVICE_KEY);
 
   let limit = 50;
   try {

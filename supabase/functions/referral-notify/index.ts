@@ -41,8 +41,18 @@ serve(async (req) => {
     if (!payload?.user_id || !payload?.type || !payload?.title) {
       return json({ error: "missing_fields" }, 400);
     }
-    const channels = payload.channels ?? ["in_app"];
+
+    // Authorization: caller may only notify themselves, unless they are an admin.
     const admin = createClient(SUPABASE_URL, SERVICE);
+    if (payload.user_id !== u.user.id) {
+      const { data: isAdmin } = await admin.rpc("has_role", {
+        _user_id: u.user.id,
+        _role: "admin",
+      });
+      if (!isAdmin) return json({ error: "Forbidden" }, 403);
+    }
+
+    const channels = payload.channels ?? ["in_app"];
     const results: Record<string, unknown> = {};
 
     // ── 1) In-app
