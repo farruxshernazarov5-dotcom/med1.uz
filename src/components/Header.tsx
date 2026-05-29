@@ -124,7 +124,7 @@ const Header = () => {
                   <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
                     <Link to={dashboardPath}><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" aria-label="Chiqish" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
                 </div>
               ) : (
                 <Button asChild variant="default" size="sm" className="hidden sm:flex bg-hero-gradient hover:opacity-90 text-primary-foreground border-0">
