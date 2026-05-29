@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -110,6 +111,11 @@ const AIDiagnostikaPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="AI Erta Diagnostika — Simptom tekshirgich va tahlil | Med1.uz"
+        description="Sun'iy intellekt asosida simptomlarni tekshiring, tibbiy hujjatlarni tahlil qiling va sog'liq xavflarini baholang. ICD-10 asosidagi xulosalar."
+        path="/ai-diagnostika"
+      />
       <Header />
       <Breadcrumb items={[
         { label: "Bosh sahifa", href: "/" },

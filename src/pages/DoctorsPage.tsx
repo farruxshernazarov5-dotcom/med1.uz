@@ -147,8 +147,9 @@ const DoctorsPage = () => {
       </section>
 
       {/* Results */}
-      <section className="py-8 md:py-12">
+      <section className="py-8 md:py-12" aria-labelledby="doctors-results-heading">
         <div className="container mx-auto px-4 max-w-6xl">
+          <h2 id="doctors-results-heading" className="sr-only">Mutaxassislar ro'yxati</h2>
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-muted-foreground">
               {loading ? "Yuklanmoqda..." : `${filtered.length} ta shifokor topildi`}
@@ -195,7 +196,7 @@ const DoctorsPage = () => {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-heading font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                        <h3 className="font-heading font-bold text-base text-foreground group-hover:text-primary transition-colors truncate">
                           {doc.full_name}
                         </h3>
                         <p className="text-sm text-primary font-medium">{doc.specialty}</p>

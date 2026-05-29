@@ -94,7 +94,7 @@ const Header = () => {
                   ⌘K
                 </kbd>
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground sm:hidden" onClick={() => setSearchOpen(true)}>
+              <Button variant="ghost" size="icon" aria-label="Qidiruv" className="text-muted-foreground sm:hidden" onClick={() => setSearchOpen(true)}>
                 <Search className="w-5 h-5" />
               </Button>
 
@@ -124,7 +124,7 @@ const Header = () => {
                   <Button asChild variant="ghost" size="sm" className="text-muted-foreground">
                     <Link to={dashboardPath}><User className="w-4 h-4 mr-1" /> {profile?.full_name?.split(" ")[0] || "Panel"}</Link>
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" aria-label="Chiqish" onClick={signOut} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
                 </div>
               ) : (
                 <Button asChild variant="default" size="sm" className="hidden sm:flex bg-hero-gradient hover:opacity-90 text-primary-foreground border-0">
@@ -132,7 +132,7 @@ const Header = () => {
                 </Button>
               )}
 
-              <button className="lg:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
+              <button aria-label={isOpen ? "Menyuni yopish" : "Menyuni ochish"} aria-expanded={isOpen} className="lg:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
