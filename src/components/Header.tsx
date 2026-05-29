@@ -94,7 +94,7 @@ const Header = () => {
                   ⌘K
                 </kbd>
               </Button>
-              <Button variant="ghost" size="icon" className="text-muted-foreground sm:hidden" onClick={() => setSearchOpen(true)}>
+              <Button variant="ghost" size="icon" aria-label="Qidiruv" className="text-muted-foreground sm:hidden" onClick={() => setSearchOpen(true)}>
                 <Search className="w-5 h-5" />
               </Button>
 
