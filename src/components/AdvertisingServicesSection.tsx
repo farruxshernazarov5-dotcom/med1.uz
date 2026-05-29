@@ -1,10 +1,10 @@
 import { CheckCircle2, Megaphone, BarChart3, Target, Video, Star, Shield, Zap, Eye, TrendingUp, ArrowRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import adBannerImg from "@/assets/ad-service-banner.jpg";
-import adPremiumImg from "@/assets/ad-service-premium.jpg";
-import adAnalyticsImg from "@/assets/ad-service-analytics.jpg";
-import adTargetingImg from "@/assets/ad-service-targeting.jpg";
+import adBannerImg from "@/assets/ad-service-banner.webp";
+import adPremiumImg from "@/assets/ad-service-premium.webp";
+import adAnalyticsImg from "@/assets/ad-service-analytics.webp";
+import adTargetingImg from "@/assets/ad-service-targeting.webp";
 
 const services = [
   {

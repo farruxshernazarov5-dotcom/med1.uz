@@ -73,7 +73,7 @@ function generateHTML(data: HMSReportData): string {
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Inter',system-ui,sans-serif;color:#1e293b;line-height:1.7;background:#f8fafc;min-height:100vh}
   .page-wrapper{max-width:800px;margin:0 auto;background:#fff;min-height:100vh;position:relative;overflow:hidden}
-  .watermark-logo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;user-select:none;width:420px;height:420px;background-image:url('/images/med1-logo-watermark.png');background-repeat:no-repeat;background-position:center;background-size:contain;opacity:0.06}
+  .watermark-logo{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;user-select:none;width:420px;height:420px;background-image:url('/images/med1-logo-watermark.webp');background-repeat:no-repeat;background-position:center;background-size:contain;opacity:0.06}
   .content{position:relative;z-index:1}
   .report-header{background:linear-gradient(135deg,#0284c7 0%,#0ea5e9 40%,#06b6d4 100%);padding:28px 40px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px}
   .header-left{display:flex;align-items:center;gap:14px}

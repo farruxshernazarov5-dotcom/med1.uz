@@ -3,14 +3,14 @@ import SectionLayout from "@/components/SectionLayout";
 import { Heart, Apple, Dumbbell, Brain, Moon, Cross, Droplets, Shield, ChevronRight, ChevronLeft, BookOpen } from "lucide-react";
 import { healthCategoriesData } from "@/data/healthTips";
 
-import healthNutrition from "@/assets/health-nutrition.jpg";
-import healthExercise from "@/assets/health-exercise.jpg";
-import healthMental from "@/assets/health-mental.jpg";
-import healthSleep from "@/assets/health-sleep.jpg";
-import healthFirstaid from "@/assets/health-firstaid.jpg";
-import healthVitamins from "@/assets/health-vitamins.jpg";
-import healthWater from "@/assets/health-water.jpg";
-import healthPrevention from "@/assets/health-prevention.jpg";
+import healthNutrition from "@/assets/health-nutrition.webp";
+import healthExercise from "@/assets/health-exercise.webp";
+import healthMental from "@/assets/health-mental.webp";
+import healthSleep from "@/assets/health-sleep.webp";
+import healthFirstaid from "@/assets/health-firstaid.webp";
+import healthVitamins from "@/assets/health-vitamins.webp";
+import healthWater from "@/assets/health-water.webp";
+import healthPrevention from "@/assets/health-prevention.webp";
 
 const iconMap: Record<string, any> = {
   nutrition: Apple,

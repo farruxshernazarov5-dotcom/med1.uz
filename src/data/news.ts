@@ -1,13 +1,13 @@
-import newsResearch from "@/assets/news-research.jpg";
-import newsAi from "@/assets/news-ai.jpg";
-import newsVaccine from "@/assets/news-vaccine.jpg";
-import newsGlobal from "@/assets/news-global.jpg";
-import newsPharma from "@/assets/news-pharma.jpg";
-import newsTelemed from "@/assets/news-telemed.jpg";
-import newsTransplant from "@/assets/news-transplant.jpg";
-import newsMental from "@/assets/news-mental.jpg";
-import newsGenetics from "@/assets/news-genetics.jpg";
-import newsChildren from "@/assets/news-children.jpg";
+import newsResearch from "@/assets/news-research.webp";
+import newsAi from "@/assets/news-ai.webp";
+import newsVaccine from "@/assets/news-vaccine.webp";
+import newsGlobal from "@/assets/news-global.webp";
+import newsPharma from "@/assets/news-pharma.webp";
+import newsTelemed from "@/assets/news-telemed.webp";
+import newsTransplant from "@/assets/news-transplant.webp";
+import newsMental from "@/assets/news-mental.webp";
+import newsGenetics from "@/assets/news-genetics.webp";
+import newsChildren from "@/assets/news-children.webp";
 
 export type NewsCategory = {
   id: string;

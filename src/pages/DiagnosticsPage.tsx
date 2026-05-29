@@ -20,16 +20,16 @@ import {
   type DiagnosticType,
 } from "@/data/diagnostics";
 import { regions } from "@/data/clinics";
-import diagMrtImg from "@/assets/diag-mrt.jpg";
-import diagUziImg from "@/assets/diag-uzi.jpg";
-import diagLabImg from "@/assets/diag-lab.jpg";
-import diagKtImg from "@/assets/diag-kt.jpg";
-import diagRentgenImg from "@/assets/diag-rentgen.jpg";
-import diagEndoscopyImg from "@/assets/diag-endoscopy.jpg";
-import diagEkgImg from "@/assets/diag-ekg.jpg";
-import diagCenterImg from "@/assets/diag-center.jpg";
-import doctorMaleImg from "@/assets/doctor-male.jpg";
-import doctorFemaleImg from "@/assets/doctor-female.jpg";
+import diagMrtImg from "@/assets/diag-mrt.webp";
+import diagUziImg from "@/assets/diag-uzi.webp";
+import diagLabImg from "@/assets/diag-lab.webp";
+import diagKtImg from "@/assets/diag-kt.webp";
+import diagRentgenImg from "@/assets/diag-rentgen.webp";
+import diagEndoscopyImg from "@/assets/diag-endoscopy.webp";
+import diagEkgImg from "@/assets/diag-ekg.webp";
+import diagCenterImg from "@/assets/diag-center.webp";
+import doctorMaleImg from "@/assets/doctor-male.webp";
+import doctorFemaleImg from "@/assets/doctor-female.webp";
 
 const getDiagImage = (types: string[]) => {
   if (types.includes("MRT")) return diagMrtImg;

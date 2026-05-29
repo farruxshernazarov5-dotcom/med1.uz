@@ -7,9 +7,9 @@ import {
   Eye, Code, ArrowLeft, Heart, Lightbulb, TrendingUp,
   Monitor, Database, Lock, Stethoscope
 } from "lucide-react";
-import founderImg from "@/assets/founder-farrukh.jpg";
-import seoImg from "@/assets/seo-javokhir.jpg";
-import missionImg from "@/assets/about-mission.jpg";
+import founderImg from "@/assets/founder-farrukh.webp";
+import seoImg from "@/assets/seo-javokhir.webp";
+import missionImg from "@/assets/about-mission.webp";
 
 const milestones = [
   { year: "2018", title: "Loyiha asos solinishi", desc: "Med1.uz g'oyasi tug'ildi — O'zbekiston tibbiyotini raqamlashtirish maqsadida", icon: Lightbulb },

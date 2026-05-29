@@ -4,10 +4,10 @@ import {
   Droplets, Zap, Globe, HeartHandshake, Heart, BarChart3, Calendar, Brain, Siren
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import bloodCenterImg from "@/assets/blood-service-center.jpg";
-import bloodManagementImg from "@/assets/blood-service-management.jpg";
-import bloodAnalyticsImg from "@/assets/blood-service-analytics.jpg";
-import bloodEmergencyImg from "@/assets/blood-service-emergency.jpg";
+import bloodCenterImg from "@/assets/blood-service-center.webp";
+import bloodManagementImg from "@/assets/blood-service-management.webp";
+import bloodAnalyticsImg from "@/assets/blood-service-analytics.webp";
+import bloodEmergencyImg from "@/assets/blood-service-emergency.webp";
 
 const bloodBankServices = [
   {

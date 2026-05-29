@@ -5,10 +5,10 @@ import {
   Sparkles, Zap, Globe, HeartHandshake, Heart, Palette
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import cosmetologyClinicImg from "@/assets/cosmetology-service-clinic.jpg";
-import cosmetologyBookingImg from "@/assets/cosmetology-service-booking.jpg";
-import cosmetologyAnalyticsImg from "@/assets/cosmetology-service-analytics.jpg";
-import cosmetologyAIImg from "@/assets/cosmetology-service-ai.jpg";
+import cosmetologyClinicImg from "@/assets/cosmetology-service-clinic.webp";
+import cosmetologyBookingImg from "@/assets/cosmetology-service-booking.webp";
+import cosmetologyAnalyticsImg from "@/assets/cosmetology-service-analytics.webp";
+import cosmetologyAIImg from "@/assets/cosmetology-service-ai.webp";
 
 const cosmetologyServices = [
   {

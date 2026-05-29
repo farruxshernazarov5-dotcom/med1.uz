@@ -5,10 +5,10 @@ import {
   Globe, TrendingUp, FileText, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import diagImagingImg from "@/assets/diag-service-imaging.jpg";
-import diagLabImg from "@/assets/diag-service-lab.jpg";
-import diagBookingImg from "@/assets/diag-service-booking.jpg";
-import diagAnalyticsImg from "@/assets/diag-service-analytics.jpg";
+import diagImagingImg from "@/assets/diag-service-imaging.webp";
+import diagLabImg from "@/assets/diag-service-lab.webp";
+import diagBookingImg from "@/assets/diag-service-booking.webp";
+import diagAnalyticsImg from "@/assets/diag-service-analytics.webp";
 
 const diagServices = [
   {

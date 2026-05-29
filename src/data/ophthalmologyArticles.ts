@@ -1,13 +1,13 @@
-import eyeCataract from "@/assets/eye-cataract.jpg";
-import eyeGlaucoma from "@/assets/eye-glaucoma.jpg";
-import eyeLasik from "@/assets/eye-lasik.jpg";
-import eyePediatric from "@/assets/eye-pediatric.jpg";
-import eyeRetina from "@/assets/eye-retina.jpg";
-import eyeDryeye from "@/assets/eye-dryeye.jpg";
-import eyeDiabetic from "@/assets/eye-diabetic.jpg";
-import eyeTrauma from "@/assets/eye-trauma.jpg";
-import eyeComputer from "@/assets/eye-computer.jpg";
-import eyeOncology from "@/assets/eye-oncology.jpg";
+import eyeCataract from "@/assets/eye-cataract.webp";
+import eyeGlaucoma from "@/assets/eye-glaucoma.webp";
+import eyeLasik from "@/assets/eye-lasik.webp";
+import eyePediatric from "@/assets/eye-pediatric.webp";
+import eyeRetina from "@/assets/eye-retina.webp";
+import eyeDryeye from "@/assets/eye-dryeye.webp";
+import eyeDiabetic from "@/assets/eye-diabetic.webp";
+import eyeTrauma from "@/assets/eye-trauma.webp";
+import eyeComputer from "@/assets/eye-computer.webp";
+import eyeOncology from "@/assets/eye-oncology.webp";
 import type { Article } from "./articles";
 
 const author = "Shernazarov Farrukh Farkhadovich, oftalmolog";

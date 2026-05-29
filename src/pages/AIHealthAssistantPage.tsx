@@ -12,7 +12,7 @@ import {
   Utensils, Dumbbell, Search, Building2, Moon, UserCheck
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiAssistantImg from "@/assets/ai-health-assistant.jpg";
+import aiAssistantImg from "@/assets/ai-health-assistant.webp";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 

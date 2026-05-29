@@ -1,11 +1,11 @@
-import medtechMri from "@/assets/medtech-mri.jpg";
-import medtechUltrasound from "@/assets/medtech-ultrasound.jpg";
-import medtechSurgery from "@/assets/medtech-surgery.jpg";
-import medtechLab from "@/assets/medtech-lab.jpg";
-import medtechCardio from "@/assets/medtech-cardio.jpg";
-import medtechDental from "@/assets/medtech-dental.jpg";
-import medtechEye from "@/assets/medtech-eye.jpg";
-import medtechRehab from "@/assets/medtech-rehab.jpg";
+import medtechMri from "@/assets/medtech-mri.webp";
+import medtechUltrasound from "@/assets/medtech-ultrasound.webp";
+import medtechSurgery from "@/assets/medtech-surgery.webp";
+import medtechLab from "@/assets/medtech-lab.webp";
+import medtechCardio from "@/assets/medtech-cardio.webp";
+import medtechDental from "@/assets/medtech-dental.webp";
+import medtechEye from "@/assets/medtech-eye.webp";
+import medtechRehab from "@/assets/medtech-rehab.webp";
 
 export interface MedTechEquipment {
   id: string;

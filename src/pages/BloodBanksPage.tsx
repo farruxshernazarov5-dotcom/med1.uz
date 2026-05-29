@@ -22,13 +22,13 @@ import {
   type BloodGroupInfo,
 } from "@/data/bloodBanks";
 import { regions } from "@/data/clinics";
-import bloodDonationImg from "@/assets/blood-donation.jpg";
-import bloodStorageImg from "@/assets/blood-storage.jpg";
-import bloodLabImg from "@/assets/blood-lab.jpg";
-import bloodDonorImg from "@/assets/blood-donor.jpg";
-import bloodMobileImg from "@/assets/blood-mobile.jpg";
-import doctorMaleImg from "@/assets/doctor-male.jpg";
-import doctorFemaleImg from "@/assets/doctor-female.jpg";
+import bloodDonationImg from "@/assets/blood-donation.webp";
+import bloodStorageImg from "@/assets/blood-storage.webp";
+import bloodLabImg from "@/assets/blood-lab.webp";
+import bloodDonorImg from "@/assets/blood-donor.webp";
+import bloodMobileImg from "@/assets/blood-mobile.webp";
+import doctorMaleImg from "@/assets/doctor-male.webp";
+import doctorFemaleImg from "@/assets/doctor-female.webp";
 
 const getBankImage = (bank: BloodBank) => {
   if (bank.type === "mobil") return bloodMobileImg;

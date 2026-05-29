@@ -9,7 +9,7 @@ import { Bot, Send, Loader2, AlertTriangle, User, Sparkles, Trash2, Shield, Acti
 import AIServiceHero from "@/components/AIServiceHero";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
-import aiDoctorImg from "@/assets/ai-doctor-chat.jpg";
+import aiDoctorImg from "@/assets/ai-doctor-chat.webp";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 

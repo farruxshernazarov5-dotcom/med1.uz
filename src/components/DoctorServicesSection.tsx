@@ -1,10 +1,10 @@
 import { CheckCircle2, UserCheck, Calendar, BarChart3, Video, Star, Shield, Zap, Heart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import doctorProfileImg from "@/assets/doctor-service-profile.jpg";
-import doctorBookingImg from "@/assets/doctor-service-booking.jpg";
-import doctorAnalyticsImg from "@/assets/doctor-service-analytics.jpg";
-import doctorOnlineImg from "@/assets/doctor-service-online.jpg";
+import doctorProfileImg from "@/assets/doctor-service-profile.webp";
+import doctorBookingImg from "@/assets/doctor-service-booking.webp";
+import doctorAnalyticsImg from "@/assets/doctor-service-analytics.webp";
+import doctorOnlineImg from "@/assets/doctor-service-online.webp";
 
 const services = [
   {

@@ -21,12 +21,12 @@ import {
 } from "@/data/clinics";
 import { externalClinics } from "@/data/clinicsExternal";
 import ShareButton from "@/components/ShareButton";
-import clinicPrivateImg from "@/assets/clinic-private.jpg";
-import clinicStateImg from "@/assets/clinic-state.jpg";
-import clinicPolyclinicImg from "@/assets/clinic-polyclinic.jpg";
-import doctorMaleImg from "@/assets/doctor-male.jpg";
-import doctorFemaleImg from "@/assets/doctor-female.jpg";
-import clinicEmergencyImg from "@/assets/clinic-emergency.jpg";
+import clinicPrivateImg from "@/assets/clinic-private.webp";
+import clinicStateImg from "@/assets/clinic-state.webp";
+import clinicPolyclinicImg from "@/assets/clinic-polyclinic.webp";
+import doctorMaleImg from "@/assets/doctor-male.webp";
+import doctorFemaleImg from "@/assets/doctor-female.webp";
+import clinicEmergencyImg from "@/assets/clinic-emergency.webp";
 
 const getClinicImage = (type: Clinic["type"]) => {
   if (type === "xususiy") return clinicPrivateImg;

@@ -14,7 +14,7 @@ import {
   Moon, Flame, Eye, Search, Building2, Download, Sparkles
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiHealthRiskImg from "@/assets/ai-health-risk.jpg";
+import aiHealthRiskImg from "@/assets/ai-health-risk.webp";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";

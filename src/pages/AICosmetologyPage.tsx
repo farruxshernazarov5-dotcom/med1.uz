@@ -20,7 +20,7 @@ import {
   FileDown, Building2, BarChart3, Activity, Palette,
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
-import aiCosmetologyImg from "@/assets/ai-cosmetology.jpg";
+import aiCosmetologyImg from "@/assets/ai-cosmetology.webp";
 import { useTranslation } from "react-i18next";
 
 type Msg = { role: "user" | "assistant"; content: string };
