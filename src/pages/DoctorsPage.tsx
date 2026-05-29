@@ -196,7 +196,7 @@ const DoctorsPage = () => {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-heading font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                        <h3 className="font-heading font-bold text-base text-foreground group-hover:text-primary transition-colors truncate">
                           {doc.full_name}
                         </h3>
                         <p className="text-sm text-primary font-medium">{doc.specialty}</p>
