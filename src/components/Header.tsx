@@ -132,7 +132,7 @@ const Header = () => {
                 </Button>
               )}
 
-              <button className="lg:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
+              <button aria-label={isOpen ? "Menyuni yopish" : "Menyuni ochish"} aria-expanded={isOpen} className="lg:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
