@@ -605,7 +605,7 @@ const ClinicsPage = () => {
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-tech-electric flex items-center justify-center">
                       <Stethoscope className="w-4 h-4 text-primary-foreground" />
                     </div>
-                    <h3 className="font-heading text-lg font-bold text-foreground">{tag}</h3>
+                    <h2 className="font-heading text-lg font-bold text-foreground">{tag}</h2>
                     <Badge variant="secondary" className="text-xs">{tagClinics.length} ta</Badge>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
