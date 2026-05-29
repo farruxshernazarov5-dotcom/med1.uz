@@ -18,6 +18,7 @@ import {
   Stethoscope, Bell, Trash2, Shield, Sparkles
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
+import SEO from "@/components/SEO";
 import aiPregnancyImg from "@/assets/ai-pregnancy.webp";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
