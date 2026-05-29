@@ -280,6 +280,11 @@ const AIPregnancyPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="AI Homiladorlik Assistenti — Haftalik kuzatuv | Med1.uz"
+        description="Sun'iy intellekt asosida homiladorlikni kuzatib boring: haftalik homila rivojlanishi, harakat kuzatuvi, eslatmalar va shaxsiy maslahatlar."
+        path="/ai-pregnancy"
+      />
       <Header />
       <AIServiceHero
         image={aiPregnancyImg}
