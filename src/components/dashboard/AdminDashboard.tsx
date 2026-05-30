@@ -7,7 +7,7 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
@@ -16,6 +16,7 @@ import AdminKnowledgeModule from "@/components/admin/AdminKnowledgeModule";
 import AdminGeoTemplates from "@/components/admin/AdminGeoTemplates";
 import AdminPremiumPerks from "@/components/admin/AdminPremiumPerks";
 import AdminApiPartners from "@/components/admin/AdminApiPartners";
+import AdminPartnersModule from "@/components/admin/AdminPartnersModule";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
 import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
@@ -63,6 +64,7 @@ const sidebarSections = [
       { id: "marketing", label: "📢 Marketing", icon: Megaphone },
       { id: "geo_templates", label: "📍 Geo shablonlar", icon: Megaphone },
       { id: "premium_perks", label: "💎 Premium & Promo", icon: Megaphone },
+      { id: "partners", label: "🤝 Hamkorlar (HAMBI)", icon: Handshake },
       { id: "api_partners", label: "🔌 API Hamkorlar", icon: Plug },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
       { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
@@ -1344,6 +1346,7 @@ const AdminDashboard = () => {
           {tab === "geo_templates" && <AdminGeoTemplates />}
           {tab === "premium_perks" && <AdminPremiumPerks />}
           {tab === "api_partners" && <AdminApiPartners />}
+          {tab === "partners" && <AdminPartnersModule />}
           {tab === "dental_hms" && <AdminDentalModule />}
           {tab === "knowledge" && <AdminKnowledgeModule />}
           {tab === "referral_admin" && <ReferralAdmin />}
