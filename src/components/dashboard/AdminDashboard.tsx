@@ -64,6 +64,7 @@ const sidebarSections = [
       { id: "marketing", label: "📢 Marketing", icon: Megaphone },
       { id: "geo_templates", label: "📍 Geo shablonlar", icon: Megaphone },
       { id: "premium_perks", label: "💎 Premium & Promo", icon: Megaphone },
+      { id: "partners", label: "🤝 Hamkorlar (HAMBI)", icon: Handshake },
       { id: "api_partners", label: "🔌 API Hamkorlar", icon: Plug },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
       { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
