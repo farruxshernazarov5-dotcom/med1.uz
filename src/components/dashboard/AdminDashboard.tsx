@@ -1346,6 +1346,7 @@ const AdminDashboard = () => {
           {tab === "geo_templates" && <AdminGeoTemplates />}
           {tab === "premium_perks" && <AdminPremiumPerks />}
           {tab === "api_partners" && <AdminApiPartners />}
+          {tab === "partners" && <AdminPartnersModule />}
           {tab === "dental_hms" && <AdminDentalModule />}
           {tab === "knowledge" && <AdminKnowledgeModule />}
           {tab === "referral_admin" && <ReferralAdmin />}
