@@ -16,6 +16,7 @@ import AdminKnowledgeModule from "@/components/admin/AdminKnowledgeModule";
 import AdminGeoTemplates from "@/components/admin/AdminGeoTemplates";
 import AdminPremiumPerks from "@/components/admin/AdminPremiumPerks";
 import AdminApiPartners from "@/components/admin/AdminApiPartners";
+import AdminPartnersModule from "@/components/admin/AdminPartnersModule";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
 import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
