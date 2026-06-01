@@ -7,19 +7,21 @@
  * - quick subscription / credit purchase shortcuts
  * - trilingual labels (UZ/RU/EN)
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { GlowCard, LiveStatusPill } from "@/components/futuristic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
 import { useAiAccess } from "@/hooks/useAiAccess";
+import { useAuth } from "@/hooks/useAuth";
 import { useCredits } from "@/hooks/useCredits";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
+import AiLiveTestDialog from "./AiLiveTestDialog";
 import {
   Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
   UtensilsCrossed, Heart, Pill, Dumbbell, Activity, Brain,
-  Crown, Lock, ArrowRight, Sparkles, Zap, Wallet, ExternalLink,
+  Crown, Lock, ArrowRight, Sparkles, Zap, Wallet, ExternalLink, Play,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
