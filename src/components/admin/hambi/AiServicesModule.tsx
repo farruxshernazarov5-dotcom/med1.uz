@@ -276,10 +276,31 @@ const AiServicesModule = ({ slug, lang }: Props) => {
               {locked && (
                 <p className="mt-1.5 text-[9px] text-amber-300/80 relative">{lockedNote(cost)}</p>
               )}
+
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTestSvc({ id, title: meta.title[lang] }); }}
+                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 hover:from-emerald-500/30 hover:to-cyan-500/30 ring-1 ring-emerald-400/40 text-emerald-200 text-[10px] font-semibold py-1.5 transition relative"
+                  title={I("Super-admin: kreditsiz real test", "Супер-админ: реальный тест без кредитов", "Super-admin: real test, no credits", lang)}
+                >
+                  <Play className="w-3 h-3" /> {I("Live test (0 kredit)", "Live-тест (0 кр.)", "Live test (0 cr)", lang)}
+                </button>
+              )}
             </Link>
           );
         })}
       </div>
+
+      {testSvc && (
+        <AiLiveTestDialog
+          open={!!testSvc}
+          onOpenChange={(v) => !v && setTestSvc(null)}
+          serviceId={testSvc.id}
+          serviceTitle={testSvc.title}
+          lang={lang}
+        />
+      )}
 
       {/* Footer: status widget + quick links */}
       <div className="grid lg:grid-cols-3 gap-4">
