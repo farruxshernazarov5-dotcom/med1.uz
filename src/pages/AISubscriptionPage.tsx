@@ -192,9 +192,11 @@ const AISubscriptionPage = () => {
             {AI_SERVICE_TARIFFS.map((s) => {
               const Icon = s.icon;
               const costColor = s.creditCost === 1 ? "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20" :
-                s.creditCost === 5 ? "text-blue-600 bg-blue-50 dark:bg-blue-950/20" :
+                s.creditCost <= 2 ? "text-blue-600 bg-blue-50 dark:bg-blue-950/20" :
                 "text-purple-600 bg-purple-50 dark:bg-purple-950/20";
               const hasEnough = balance >= s.creditCost;
+              const discount = s.originalCost && s.originalCost > s.creditCost
+                ? Math.round(((s.originalCost - s.creditCost) / s.originalCost) * 100) : 0;
               return (
                 <div key={s.id} className="bg-card/80 backdrop-blur-[15px] border border-border/60 rounded-xl p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-3 mb-3">
@@ -203,11 +205,24 @@ const AISubscriptionPage = () => {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold text-foreground text-sm">{s.name}</h3>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${costColor}`}>
-                        🪙 {s.creditCost} kredit / so'rov
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${costColor}`}>
+                          🪙 {s.creditCost} tanga / so'rov
+                        </span>
+                        {discount > 0 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 line-through decoration-rose-400">
+                            {s.originalCost}
+                          </span>
+                        )}
+                        {discount > 0 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">
+                            -{discount}%
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+
                   <p className="text-[11px] text-muted-foreground mb-3">
                     {COST_TIER_LABEL[s.costTier]}
                   </p>
