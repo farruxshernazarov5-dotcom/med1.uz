@@ -75,6 +75,8 @@ const PatientAIHistory = () => {
 
       <MedicalDisclaimer compact className="mb-6" />
 
+      <PatientAIDocuments />
+
       {loading ? (
         <div className="text-center py-10 text-muted-foreground text-sm">Yuklanmoqda...</div>
       ) : rows.length === 0 ? (
