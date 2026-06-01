@@ -7,6 +7,7 @@ import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import PatientAIDocuments from "./PatientAIDocuments";
 
 const typeMeta: Record<string, { icon: any; color: string; href: string; label: string }> = {
   "symptom-checker":     { icon: Stethoscope, color: "bg-primary/10 text-primary",              href: "/symptom-checker",     label: "Simptom" },
