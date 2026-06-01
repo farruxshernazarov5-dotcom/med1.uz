@@ -136,7 +136,7 @@ const AdminDashboard = () => {
     const [
       clinicRes, doctorRes, apptRes, userRes, srvRes,
       msgRes, auditRes, aiPayRes, aiSubRes,
-      diagRes, matRes, cosRes, pharmRes, bbRes, vendorRes, aiUsageRes, adminRes
+      diagRes, matRes, cosRes, pharmRes, bbRes, vendorRes, aiUsageRes, adminRes, creditsRes
     ] = await Promise.all([
       supabase.from("registered_clinics").select("*").order("created_at", { ascending: false }),
       supabase.from("doctors").select("*").order("created_at", { ascending: false }),
@@ -155,6 +155,7 @@ const AdminDashboard = () => {
       supabase.from("medtech_vendors").select("*").order("created_at", { ascending: false }),
       supabase.from("ai_usage").select("*").order("used_at", { ascending: false }).limit(500),
       supabase.from("user_roles").select("*, profiles(full_name, phone)").eq("role", "admin"),
+      supabase.from("user_credits").select("balance, expires_at, created_at").gt("expires_at", new Date().toISOString()).limit(1000),
     ]);
 
     const appts = apptRes.data || [];
@@ -203,6 +204,8 @@ const AdminDashboard = () => {
     setBloodBanks(bbRes.data || []);
     setVendors(vendorRes.data || []);
     setAdminUsers(adminRes.data || []);
+    setAiUsageRows(aiUsage);
+    setAiCreditsRows(creditsRes.data || []);
   }, []);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
