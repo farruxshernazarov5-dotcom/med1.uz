@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 
 export interface AiAccess {
   plan_id: string;
@@ -37,13 +38,28 @@ const DEFAULT_ACCESS: AiAccess = {
 };
 
 export function useAiAccess(): AiAccessState {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [access, setAccess] = useState<AiAccess | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchAccess = useCallback(async () => {
     if (!user) {
       setAccess(DEFAULT_ACCESS);
+      setLoading(false);
+      return;
+    }
+    if (userRole === "admin") {
+      setAccess({
+        plan_id: "super-admin-test",
+        tier: "pro",
+        daily_limit: 999999,
+        monthly_limit: 999999,
+        allowed_services: AI_SERVICE_TARIFFS.map((s) => s.id),
+        status: "admin_test",
+        expires_at: null,
+        used_today: 0,
+        used_month: 0,
+      });
       setLoading(false);
       return;
     }
@@ -67,7 +83,7 @@ export function useAiAccess(): AiAccessState {
       } : DEFAULT_ACCESS);
     }
     setLoading(false);
-  }, [user]);
+  }, [user, userRole]);
 
   useEffect(() => { fetchAccess(); }, [fetchAccess]);
 
