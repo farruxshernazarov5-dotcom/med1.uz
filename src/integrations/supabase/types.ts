@@ -15344,6 +15344,14 @@ export type Database = {
         Args: { _referral_id: string }
         Returns: undefined
       }
+      deduct_ai_credits: {
+        Args: { _cost: number; _service_id: string; _user_id: string }
+        Returns: {
+          balance_after: number
+          error: string
+          success: boolean
+        }[]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -15431,6 +15439,15 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      refund_ai_credits: {
+        Args: {
+          _cost: number
+          _reason?: string
+          _service_id: string
+          _user_id: string
+        }
+        Returns: number
       }
       release_held_referral_rewards: { Args: never; Returns: number }
       revoke_referral_reward: {
