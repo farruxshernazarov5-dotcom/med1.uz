@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -68,9 +68,29 @@ serve(async (req) => {
       });
     }
 
-    const __body = await req.json(); const { messages } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json();
+    const { messages, documents } = __body;
+    const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // Enforce input size limit
+    const inputTokens = estimateTokensFromMessages(messages);
+    if (inputTokens > MAX_INPUT_TOKENS) {
+      if (!access.bypass && access.creditsDeducted > 0) {
+        await refundAiCredits(access.userId, "ai-doctor-chat", access.creditsDeducted, "input too large");
+      }
+      return new Response(JSON.stringify({
+        error: `So'rov juda uzun (~${inputTokens} token, ruxsat ${MAX_INPUT_TOKENS}). Iltimos savolingizni qisqartiring.`,
+        refunded: true,
+      }), { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // Auto-attach saved user documents (from dashboard)
+    const docContext = Array.isArray(documents) && documents.length > 0
+      ? `\n\nBEMOR YUKLAGAN HUJJATLAR (avtomatik biriktirilgan):\n${documents.slice(0, 5).map((d: any, i: number) =>
+          `${i + 1}. ${d.name || "Hujjat"} (${d.mime_type || "fayl"}) — ${d.url || d.storage_path || ""}`).join("\n")}\nUshbu hujjatlarda ko'rsatilgan ma'lumotlarni javobingda hisobga ol.`
+      : "";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -81,9 +101,10 @@ serve(async (req) => {
       body: JSON.stringify({
         model: access.model,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
+          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE + docContext },
           ...messages,
         ],
+        max_completion_tokens: access.maxTokens,
         stream: true,
       }),
     });

@@ -22,20 +22,31 @@ const SERVICE_CREDITS: Record<string, number> = {
 };
 
 /**
- * Token caps are intentionally low to keep per-request cost under ~2100 tokens.
- * Each tier maps to (model, maxOutputTokens). Prompts should also be concise.
+ * STRICT TOKEN CAPS — every AI response must stay within 400–500 output tokens.
+ * Callers MUST pass `max_completion_tokens: access.maxTokens` to the gateway.
  */
+export const MAX_OUTPUT_TOKENS_HARD_CAP = 500;
+export const MAX_INPUT_TOKENS = 4000;
+
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash", maxTokens: 500 },
-  2:  { model: "google/gemini-2.5-flash", maxTokens: 600 },
-  10: { model: "google/gemini-2.5-pro",   maxTokens: 700 },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 450 },
+  2:  { model: "google/gemini-2.5-flash", maxTokens: 480 },
+  10: { model: "google/gemini-2.5-pro",   maxTokens: 500 },
 };
 
+/** Universal directive appended to every system prompt to keep replies short. */
+export const CONCISE_DIRECTIVE = `
+
+QISQA JAVOB QOIDASI (MAJBURIY):
+- Javobing 400–500 token (≈250–350 so'z, 1500–2200 belgi) oralig'ida bo'lsin.
+- Faqat eng muhim ma'lumotni ber — suv quyma, takrorlama, ortiqcha misol kiritma.
+- Ro'yxatlarni 3–5 punkt bilan cheklab ber; har sarlavha ostida 1–2 jumla.
+- Mavzu uzun bo'lsa: 1–2 xulosa + "Batafsil shifokorga murojaat qiling" deb tugat.`;
 
 export function estimateTokensFromMessages(messages: unknown): number {
   try {
     const text = JSON.stringify(messages ?? "");
-    return Math.max(250, Math.ceil(text.length / 3.8) + 700);
+    return Math.max(200, Math.ceil(text.length / 3.8));
   } catch (_) {
     return 1000;
   }
