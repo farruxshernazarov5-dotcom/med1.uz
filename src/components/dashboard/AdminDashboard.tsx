@@ -1000,6 +1000,44 @@ const AdminDashboard = () => {
                 ))}
               </div>
 
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <div className="bg-card rounded-2xl border border-border p-5 lg:col-span-2">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <h4 className="text-sm font-semibold text-foreground">HAMBI AI xarajat prognozi</h4>
+                    <Badge variant="secondary" className="text-[10px]">1000 user × 10 so'rov × 30 kun</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">Oylik so'rov</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">{aiCostForecast.monthlyRequests.toLocaleString()}</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">Taxminiy token</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">{(aiCostForecast.monthlyTokens / 1_000_000).toFixed(0)}M</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">API xarajat</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">${aiCostForecast.apiCostUsd.toFixed(0)}</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">So'mda</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">{aiCostForecast.apiCostUzs.toLocaleString()} so'm</p>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Taxmin: o'rtacha {aiCostForecast.avgTokensPerRequest.toLocaleString()} token/so'rov. Bunday yuklama uchun taxminiy {aiCostForecast.expectedCredits.toLocaleString()} kredit aylanadi; tariflar kredit paketlari va B2B narxlash bilan qoplanishi kerak.
+                  </p>
+                </div>
+                <div className="bg-card rounded-2xl border border-border p-5">
+                  <h4 className="text-sm font-semibold text-foreground mb-4">Jonli balans</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">30 kunlik AI so'rov</span><b>{aiCostForecast.liveRequests30d.toLocaleString()}</b></div>
+                    <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Faol kreditlar</span><b>{aiCostForecast.activeCredits.toLocaleString()}</b></div>
+                    <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">AI daromad</span><b>{aiCostForecast.paidRevenue.toLocaleString()} so'm</b></div>
+                  </div>
+                </div>
+              </div>
+
               {/* AI Revenue Chart */}
               <div className="bg-card rounded-2xl border border-border p-5">
                 <div className="flex items-center justify-between mb-3">
