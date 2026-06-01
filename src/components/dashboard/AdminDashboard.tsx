@@ -265,6 +265,25 @@ const AdminDashboard = () => {
   const apptChartData = buildTimeChart(appointments, "appointment_date");
   const revenueChartData = buildTimeChart(aiPayments.filter(p => p.status === "paid"), "created_at", "amount");
 
+  const aiCostForecast = useMemo(() => {
+    const avgTokensPerRequest = 1200;
+    const apiUsdPer1MTokens = 0.30;
+    const usdUzs = 12600;
+    const users = 1000;
+    const requestsPerUserPerDay = 10;
+    const days = 30;
+    const monthlyRequests = users * requestsPerUserPerDay * days;
+    const monthlyTokens = monthlyRequests * avgTokensPerRequest;
+    const apiCostUsd = (monthlyTokens / 1_000_000) * apiUsdPer1MTokens;
+    const apiCostUzs = Math.round(apiCostUsd * usdUzs);
+    const avgCreditCost = AI_SERVICE_TARIFFS.reduce((s, x) => s + x.creditCost, 0) / AI_SERVICE_TARIFFS.length;
+    const expectedCredits = Math.round(monthlyRequests * avgCreditCost);
+    const paidRevenue = aiPayments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount || 0), 0);
+    const activeCredits = aiCreditsRows.reduce((s, c) => s + Number(c.balance || 0), 0);
+    const liveRequests30d = aiUsageRows.filter((r) => Date.now() - new Date(r.used_at || r.usage_date).getTime() <= 30 * 864e5).length;
+    return { avgTokensPerRequest, monthlyRequests, monthlyTokens, apiCostUsd, apiCostUzs, expectedCredits, paidRevenue, activeCredits, liveRequests30d };
+  }, [aiPayments, aiCreditsRows, aiUsageRows]);
+
   const institutionPie = [
     { name: "Klinikalar", value: stats.clinics || 0 },
     { name: "Diagnostika", value: stats.diagnostics || 0 },
