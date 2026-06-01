@@ -4,6 +4,12 @@ export type AiAccessResult =
   | { allowed: true; userId: string; model: string; maxTokens: number; creditsDeducted: number; balanceAfter: number; bypass?: boolean }
   | { allowed: false; status: number; error: string };
 
+export const AI_PRICING = {
+  promptPer1MTokens: 0.15,
+  completionPer1MTokens: 0.60,
+  blendedPer1MTokens: 0.30,
+};
+
 /* ─── Credit costs per service ─── */
 const SERVICE_CREDITS: Record<string, number> = {
   "ai-dietolog": 1, "ai-fitness": 1, "ai-health-assistant": 1,
@@ -19,6 +25,27 @@ const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
   5:  { model: "google/gemini-2.5-flash",       maxTokens: 4096 },
   25: { model: "google/gemini-2.5-pro",         maxTokens: 4096 },
 };
+
+export function estimateTokensFromMessages(messages: unknown): number {
+  try {
+    const text = JSON.stringify(messages ?? "");
+    return Math.max(250, Math.ceil(text.length / 3.8) + 700);
+  } catch (_) {
+    return 1000;
+  }
+}
+
+export function aiUsageHeaders(serviceId: string, access: Extract<AiAccessResult, { allowed: true }>, estimatedTokens: number) {
+  const estimatedCostUsd = (estimatedTokens / 1_000_000) * AI_PRICING.blendedPer1MTokens;
+  return {
+    "X-Med1-AI-Service": serviceId,
+    "X-Med1-AI-Model": access.model,
+    "X-Med1-AI-Credits": String(access.creditsDeducted),
+    "X-Med1-AI-Test-Mode": access.bypass ? "super-admin" : "false",
+    "X-Med1-AI-Estimated-Tokens": String(estimatedTokens),
+    "X-Med1-AI-Estimated-Cost-Usd": estimatedCostUsd.toFixed(6),
+  };
+}
 
 function getModelForCost(cost: number) {
   return TIER_MODELS[cost] || TIER_MODELS[5];

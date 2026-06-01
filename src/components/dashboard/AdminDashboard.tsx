@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -21,6 +21,7 @@ import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
 import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import MasterContractsArchive from "@/components/admin/legal/MasterContractsArchive";
+import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -113,6 +114,8 @@ const AdminDashboard = () => {
   const [vendors, setVendors] = useState<any[]>([]);
   const [adminUsers, setAdminUsers] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [aiUsageRows, setAiUsageRows] = useState<any[]>([]);
+  const [aiCreditsRows, setAiCreditsRows] = useState<any[]>([]);
   const [searchQ, setSearchQ] = useState("");
   const [chartPeriod, setChartPeriod] = useState<"daily" | "weekly" | "monthly">("monthly");
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; table: string; id: string; name: string }>({ open: false, table: "", id: "", name: "" });
@@ -133,7 +136,7 @@ const AdminDashboard = () => {
     const [
       clinicRes, doctorRes, apptRes, userRes, srvRes,
       msgRes, auditRes, aiPayRes, aiSubRes,
-      diagRes, matRes, cosRes, pharmRes, bbRes, vendorRes, aiUsageRes, adminRes
+      diagRes, matRes, cosRes, pharmRes, bbRes, vendorRes, aiUsageRes, adminRes, creditsRes
     ] = await Promise.all([
       supabase.from("registered_clinics").select("*").order("created_at", { ascending: false }),
       supabase.from("doctors").select("*").order("created_at", { ascending: false }),
@@ -152,6 +155,7 @@ const AdminDashboard = () => {
       supabase.from("medtech_vendors").select("*").order("created_at", { ascending: false }),
       supabase.from("ai_usage").select("*").order("used_at", { ascending: false }).limit(500),
       supabase.from("user_roles").select("*, profiles(full_name, phone)").eq("role", "admin"),
+      supabase.from("user_credits").select("balance, expires_at, created_at").gt("expires_at", new Date().toISOString()).limit(1000),
     ]);
 
     const appts = apptRes.data || [];
@@ -200,6 +204,8 @@ const AdminDashboard = () => {
     setBloodBanks(bbRes.data || []);
     setVendors(vendorRes.data || []);
     setAdminUsers(adminRes.data || []);
+    setAiUsageRows(aiUsage);
+    setAiCreditsRows(creditsRes.data || []);
   }, []);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
@@ -258,6 +264,25 @@ const AdminDashboard = () => {
 
   const apptChartData = buildTimeChart(appointments, "appointment_date");
   const revenueChartData = buildTimeChart(aiPayments.filter(p => p.status === "paid"), "created_at", "amount");
+
+  const aiCostForecast = useMemo(() => {
+    const avgTokensPerRequest = 1200;
+    const apiUsdPer1MTokens = 0.30;
+    const usdUzs = 12600;
+    const users = 1000;
+    const requestsPerUserPerDay = 10;
+    const days = 30;
+    const monthlyRequests = users * requestsPerUserPerDay * days;
+    const monthlyTokens = monthlyRequests * avgTokensPerRequest;
+    const apiCostUsd = (monthlyTokens / 1_000_000) * apiUsdPer1MTokens;
+    const apiCostUzs = Math.round(apiCostUsd * usdUzs);
+    const avgCreditCost = AI_SERVICE_TARIFFS.reduce((s, x) => s + x.creditCost, 0) / AI_SERVICE_TARIFFS.length;
+    const expectedCredits = Math.round(monthlyRequests * avgCreditCost);
+    const paidRevenue = aiPayments.filter(p => p.status === "paid").reduce((s, p) => s + Number(p.amount || 0), 0);
+    const activeCredits = aiCreditsRows.reduce((s, c) => s + Number(c.balance || 0), 0);
+    const liveRequests30d = aiUsageRows.filter((r) => Date.now() - new Date(r.used_at || r.usage_date).getTime() <= 30 * 864e5).length;
+    return { avgTokensPerRequest, monthlyRequests, monthlyTokens, apiCostUsd, apiCostUzs, expectedCredits, paidRevenue, activeCredits, liveRequests30d };
+  }, [aiPayments, aiCreditsRows, aiUsageRows]);
 
   const institutionPie = [
     { name: "Klinikalar", value: stats.clinics || 0 },
@@ -973,6 +998,44 @@ const AdminDashboard = () => {
                     <p className="text-xs text-muted-foreground">{s.label}</p>
                   </div>
                 ))}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                <div className="bg-card rounded-2xl border border-border p-5 lg:col-span-2">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <h4 className="text-sm font-semibold text-foreground">HAMBI AI xarajat prognozi</h4>
+                    <Badge variant="secondary" className="text-[10px]">1000 user × 10 so'rov × 30 kun</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">Oylik so'rov</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">{aiCostForecast.monthlyRequests.toLocaleString()}</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">Taxminiy token</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">{(aiCostForecast.monthlyTokens / 1_000_000).toFixed(0)}M</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">API xarajat</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">${aiCostForecast.apiCostUsd.toFixed(0)}</p>
+                    </div>
+                    <div className="rounded-xl bg-muted/40 p-3">
+                      <p className="text-[10px] text-muted-foreground">So'mda</p>
+                      <p className="text-lg font-bold text-foreground tabular-nums">{aiCostForecast.apiCostUzs.toLocaleString()} so'm</p>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Taxmin: o'rtacha {aiCostForecast.avgTokensPerRequest.toLocaleString()} token/so'rov. Bunday yuklama uchun taxminiy {aiCostForecast.expectedCredits.toLocaleString()} kredit aylanadi; tariflar kredit paketlari va B2B narxlash bilan qoplanishi kerak.
+                  </p>
+                </div>
+                <div className="bg-card rounded-2xl border border-border p-5">
+                  <h4 className="text-sm font-semibold text-foreground mb-4">Jonli balans</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">30 kunlik AI so'rov</span><b>{aiCostForecast.liveRequests30d.toLocaleString()}</b></div>
+                    <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Faol kreditlar</span><b>{aiCostForecast.activeCredits.toLocaleString()}</b></div>
+                    <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">AI daromad</span><b>{aiCostForecast.paidRevenue.toLocaleString()} so'm</b></div>
+                  </div>
+                </div>
               </div>
 
               {/* AI Revenue Chart */}
