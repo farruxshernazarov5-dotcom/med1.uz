@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export type AiAccessResult =
-  | { allowed: true; userId: string; model: string; maxTokens: number; creditsDeducted: number; balanceAfter: number }
+  | { allowed: true; userId: string; model: string; maxTokens: number; creditsDeducted: number; balanceAfter: number; bypass?: boolean }
   | { allowed: false; status: number; error: string };
 
 /* ─── Credit costs per service ─── */
@@ -14,15 +14,35 @@ const SERVICE_CREDITS: Record<string, number> = {
   "ai-cosmetology": 25, "ai-vital-signs": 25,
 };
 
-/* ─── Model per cost tier ─── */
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-3-flash-preview",       maxTokens: 2048 },
-  5:  { model: "google/gemini-3.1-pro-preview",       maxTokens: 4096 },
-  25: { model: "google/gemini-3-pro-image-preview",   maxTokens: 4096 },
+  1:  { model: "google/gemini-2.5-flash",       maxTokens: 2048 },
+  5:  { model: "google/gemini-2.5-flash",       maxTokens: 4096 },
+  25: { model: "google/gemini-2.5-pro",         maxTokens: 4096 },
 };
 
 function getModelForCost(cost: number) {
   return TIER_MODELS[cost] || TIER_MODELS[5];
+}
+
+export function getServiceCost(serviceId: string): number {
+  return SERVICE_CREDITS[serviceId] ?? 5;
+}
+
+/**
+ * Refund credits for a failed AI call. Safe to call after enforceAiAccess succeeded.
+ */
+export async function refundAiCredits(userId: string, serviceId: string, cost: number, reason = "AI failure") {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) return;
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+    await admin.rpc("refund_ai_credits", {
+      _user_id: userId, _service_id: serviceId, _cost: cost, _reason: reason,
+    });
+  } catch (e) {
+    console.error("refundAiCredits failed", e);
+  }
 }
 
 export async function enforceAiAccess(req: Request, serviceId: string): Promise<AiAccessResult> {
@@ -49,97 +69,53 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
     }
 
     const userId = authData.user.id;
-    const now = new Date();
-    const nowIso = now.toISOString();
     const creditCost = SERVICE_CREDITS[serviceId] ?? 5;
+    const { model, maxTokens } = getModelForCost(creditCost);
 
-    /* ─── 1) Plan-based access: check tier, allowed_services, daily/monthly limits ─── */
+    /* ─── ADMIN BYPASS: super admins test AI without credits ─── */
+    try {
+      const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
+      if (isAdmin === true) {
+        return { allowed: true, userId, model, maxTokens, creditsDeducted: 0, balanceAfter: -1, bypass: true };
+      }
+    } catch (_) { /* ignore */ }
+
+    /* ─── Plan-based limits ─── */
     try {
       const { data: accessRows } = await admin.rpc("get_user_ai_access", { _user_id: userId });
       const access = Array.isArray(accessRows) ? accessRows[0] : accessRows;
       if (access) {
         const allowed = (access.allowed_services as string[]) || [];
         if (allowed.length > 0 && !allowed.includes(serviceId)) {
-          return {
-            allowed: false,
-            status: 403,
-            error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.`,
-          };
+          return { allowed: false, status: 403, error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.` };
         }
         if (typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) {
-          return {
-            allowed: false,
-            status: 429,
-            error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}). Ertaga qaytadan urinib ko'ring yoki tarifni yangilang.`,
-          };
+          return { allowed: false, status: 429, error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}).` };
         }
         if (typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit) {
-          return {
-            allowed: false,
-            status: 429,
-            error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}). Tarifni yangilang.`,
-          };
+          return { allowed: false, status: 429, error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}).` };
         }
       }
     } catch (planErr) {
       console.warn("Plan access check skipped:", planErr);
     }
 
-    /* ─── 2) Get active (non-expired) credit balance ─── */
-    const { data: credits } = await admin
-      .from("user_credits")
-      .select("id, balance, expires_at")
-      .eq("user_id", userId)
-      .gt("expires_at", nowIso)
-      .gt("balance", 0)
-      .order("expires_at", { ascending: true })
-      .limit(10);
-
-    const totalBalance = (credits || []).reduce((sum, c) => sum + (c.balance || 0), 0);
-
-    if (totalBalance < creditCost) {
-      return {
-        allowed: false,
-        status: 402,
-        error: `Kredit yetarli emas. Kerak: ${creditCost} kredit, Balans: ${totalBalance}. Kredit sotib oling.`,
-      };
-    }
-
-    /* ─── Deduct credits (FIFO by expiry) ─── */
-    let remaining = creditCost;
-    for (const credit of (credits || [])) {
-      if (remaining <= 0) break;
-      const deduct = Math.min(remaining, credit.balance);
-      await admin
-        .from("user_credits")
-        .update({ balance: credit.balance - deduct, updated_at: nowIso })
-        .eq("id", credit.id);
-      remaining -= deduct;
-    }
-
-    const balanceAfter = totalBalance - creditCost;
-
-    /* ─── Record in credit_history ─── */
-    await admin.from("credit_history").insert({
-      user_id: userId,
-      amount: -creditCost,
-      type: "deduct",
-      service_id: serviceId,
-      description: `${serviceId} xizmatidan foydalanish`,
-      balance_after: balanceAfter,
+    /* ─── Atomic deduction via RPC (race-condition safe) ─── */
+    const { data: deductData, error: deductErr } = await admin.rpc("deduct_ai_credits", {
+      _user_id: userId, _service_id: serviceId, _cost: creditCost,
     });
 
-    /* ─── Record in ai_usage ─── */
-    const today = nowIso.slice(0, 10);
-    await admin.from("ai_usage").insert({
-      user_id: userId,
-      service_id: serviceId,
-      usage_date: today,
-    });
+    if (deductErr) {
+      console.error("deduct_ai_credits error", deductErr);
+      return { allowed: false, status: 500, error: "Kredit yechishda xatolik" };
+    }
 
-    const { model, maxTokens } = getModelForCost(creditCost);
+    const row = Array.isArray(deductData) ? deductData[0] : deductData;
+    if (!row?.success) {
+      return { allowed: false, status: 402, error: row?.error || "Kredit yetarli emas" };
+    }
 
-    return { allowed: true, userId, model, maxTokens, creditsDeducted: creditCost, balanceAfter };
+    return { allowed: true, userId, model, maxTokens, creditsDeducted: creditCost, balanceAfter: row.balance_after };
   } catch (error) {
     console.error("enforceAiAccess error", error);
     return { allowed: false, status: 500, error: "AI kirishni tekshirishda xatolik" };
