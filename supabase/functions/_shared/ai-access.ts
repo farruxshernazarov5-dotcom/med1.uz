@@ -59,7 +59,7 @@ function getModelForCost(cost: number) {
 
 
 export function getServiceCost(serviceId: string): number {
-  return SERVICE_CREDITS[serviceId] ?? 5;
+  return SERVICE_CREDITS[serviceId] ?? 2;
 }
 
 /**
@@ -103,7 +103,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
     }
 
     const userId = authData.user.id;
-    const creditCost = SERVICE_CREDITS[serviceId] ?? 5;
+    const creditCost = SERVICE_CREDITS[serviceId] ?? 2;
     const { model, maxTokens } = getModelForCost(creditCost);
 
     /* ─── ADMIN BYPASS: super admins test AI without credits ─── */
