@@ -86,6 +86,9 @@ const PatientAIAssistant = () => {
           } catch {}
         }
       }
+      if (acc) {
+        logAiChat({ serviceId: "ai-doctor-chat", role: "assistant", content: acc, tokensUsed: Math.ceil(acc.length / 4) });
+      }
     } catch (e: any) {
       toast({ title: t("patientAi.errorTitle"), description: e.message || t("patientAi.errorDesc"), variant: "destructive" });
       setMessages([...newMsgs, { role: "assistant", content: t("patientAi.errorReply") }]);
