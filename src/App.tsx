@@ -93,6 +93,7 @@ const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
 const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
+const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -137,6 +138,8 @@ const App = () => (
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/api-docs" element={<ApiDocsPage />} />
+                <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />
                 <Route path="/medicine/term/:termId" element={<TermDetailPage />} />
                 <Route path="/health" element={<HealthPage />} />

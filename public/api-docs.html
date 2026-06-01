@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>MED1.UZ — AI Services API (Swagger UI)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="OpenAPI 3.0 documentation and interactive Swagger UI for the MED1.UZ AI Services API — 14 medical AI endpoints for B2B partners." />
+  <link rel="canonical" href="https://med1.uz/api-docs" />
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
+  <style>
+    body { margin: 0; background: #0b1220; }
+    .topbar { display:none; }
+    #header {
+      padding: 16px 24px; color: #fff;
+      background: linear-gradient(90deg,#0A2540,#2F80ED);
+      font-family: -apple-system, system-ui, sans-serif;
+    }
+    #header h1 { margin: 0 0 4px; font-size: 18px; }
+    #header p  { margin: 0; font-size: 13px; opacity: .85; }
+    #header a  { color: #fff; text-decoration: underline; }
+    #swagger-ui { background: #fff; }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1>🤖 MED1.UZ — AI Services API · OpenAPI 3.0</h1>
+    <p>
+      14 medical AI endpoints for B2B partners ·
+      <a href="/openapi.json">openapi.json</a> ·
+      <a href="https://med1.uz/partnership">Get API key</a>
+    </p>
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    window.addEventListener('load', function () {
+      window.ui = SwaggerUIBundle({
+        url: '/openapi.json',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset.slice(1)],
+        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+        layout: 'BaseLayout',
+        persistAuthorization: true,
+        tryItOutEnabled: true,
+        defaultModelsExpandDepth: 0
+      });
+    });
+  </script>
+</body>
+</html>
