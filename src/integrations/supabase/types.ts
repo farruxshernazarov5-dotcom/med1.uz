@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_chat_history: {
+        Row: {
+          attachments: Json | null
+          content: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          model: string | null
+          role: string
+          service_id: string
+          session_id: string | null
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          model?: string | null
+          role: string
+          service_id: string
+          session_id?: string | null
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          model?: string | null
+          role?: string
+          service_id?: string
+          session_id?: string | null
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_payments: {
         Row: {
           amount: number

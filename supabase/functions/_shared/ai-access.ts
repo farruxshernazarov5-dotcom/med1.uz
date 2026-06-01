@@ -26,9 +26,9 @@ const SERVICE_CREDITS: Record<string, number> = {
  * Each tier maps to (model, maxOutputTokens). Prompts should also be concise.
  */
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash", maxTokens: 700  },
-  2:  { model: "google/gemini-2.5-flash", maxTokens: 900  },
-  10: { model: "google/gemini-2.5-pro",   maxTokens: 1400 },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 500 },
+  2:  { model: "google/gemini-2.5-flash", maxTokens: 600 },
+  10: { model: "google/gemini-2.5-pro",   maxTokens: 700 },
 };
 
 
