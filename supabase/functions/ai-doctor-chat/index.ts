@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -79,7 +79,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: access.model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
           ...messages,
@@ -89,19 +89,23 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      // Refund on AI failure so user isn't charged for nothing
+      if (!access.bypass && access.creditsDeducted > 0) {
+        await refundAiCredits(access.userId, "ai-doctor-chat", access.creditsDeducted, `AI gateway ${response.status}`);
+      }
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Iltimos, biroz kutib qaytadan urinib ko'ring." }), {
+        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Iltimos, biroz kutib qaytadan urinib ko'ring.", refunded: true }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Xizmat vaqtincha mavjud emas." }), {
+        return new Response(JSON.stringify({ error: "AI xizmati vaqtincha mavjud emas.", refunded: true }), {
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI xizmati xatosi" }), {
+      return new Response(JSON.stringify({ error: "AI xizmati xatosi. Krediti qaytarildi, qaytadan urinib ko'ring.", refunded: true }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
