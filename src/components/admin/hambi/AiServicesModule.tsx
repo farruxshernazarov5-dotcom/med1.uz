@@ -122,7 +122,11 @@ interface Props { slug: string; lang: Lang }
 
 const AiServicesModule = ({ slug, lang }: Props) => {
   const { access, isServiceAllowed, loading: accessLoading, remainingToday } = useAiAccess();
+  const { userRole } = useAuth();
   const { balance } = useCredits();
+  const isAdmin = userRole === "admin";
+  const [testSvc, setTestSvc] = useState<{ id: SvcId; title: string } | null>(null);
+
 
   const costMap = useMemo(() => {
     const m: Record<string, number> = {};
