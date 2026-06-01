@@ -54,8 +54,9 @@ export function aiUsageHeaders(serviceId: string, access: Extract<AiAccessResult
 }
 
 function getModelForCost(cost: number) {
-  return TIER_MODELS[cost] || TIER_MODELS[5];
+  return TIER_MODELS[cost] || TIER_MODELS[2] || TIER_MODELS[1];
 }
+
 
 export function getServiceCost(serviceId: string): number {
   return SERVICE_CREDITS[serviceId] ?? 5;
