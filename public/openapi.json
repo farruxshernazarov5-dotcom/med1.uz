@@ -1,0 +1,183 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MED1.UZ — AI Services API",
+    "version": "1.0.0",
+    "description": "B2B API for partners to access MED-ALL AI's 14 medical AI services (diagnostics, chat, radiology, etc.).\n\n**Authentication:** All requests require an `x-api-key` header (or `Authorization: Bearer <key>`). Issue keys from the Partner Dashboard.\n\n**Rate limits:** 30 req/min, 1000 req/day (per key by default).\n\n**Pricing tiers:** Starter 99,000 UZS/mo · Professional 299,000 · Enterprise 599,000.\n\n**Disclaimer:** AI responses are informational only and not a substitute for professional medical advice.",
+    "contact": {
+      "name": "MED1.UZ Partners",
+      "url": "https://med1.uz/partnership",
+      "email": "partners@med1.uz"
+    },
+    "license": { "name": "Proprietary", "url": "https://med1.uz/terms" }
+  },
+  "servers": [
+    { "url": "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1", "description": "Production gateway" }
+  ],
+  "security": [
+    { "ApiKeyAuth": [] },
+    { "BearerAuth": [] }
+  ],
+  "tags": [
+    { "name": "Discovery", "description": "List services & tariffs" },
+    { "name": "Diagnostics", "description": "Symptom checker, health risk, radiology" },
+    { "name": "Consultation", "description": "AI doctor chat, health assistant, psychology" },
+    { "name": "Specialty", "description": "Pregnancy, baby care, cosmetology, dietology, pharmacy, fitness, vitals" },
+    { "name": "Reports", "description": "Lab/imaging report analysis" }
+  ],
+  "paths": {
+    "/ai-external-api": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "List available AI services and tariffs",
+        "operationId": "listServices",
+        "responses": {
+          "200": {
+            "description": "Service catalog",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceCatalog" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "post": {
+        "tags": ["Discovery"],
+        "summary": "Unified chat endpoint (any service via `service` field)",
+        "operationId": "unifiedChat",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UnifiedChatRequest" } } }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/ChatResponse" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "402": { "$ref": "#/components/responses/CreditsExhausted" },
+          "429": { "$ref": "#/components/responses/RateLimit" }
+        }
+      }
+    },
+    "/symptom-checker":     { "post": { "tags": ["Diagnostics"],   "summary": "AI Early Diagnostics (ICD-10)",            "operationId": "symptomChecker",     "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-doctor-chat":      { "post": { "tags": ["Consultation"],  "summary": "AI Doctor Chat",                           "operationId": "aiDoctorChat",       "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-report-analysis":  { "post": { "tags": ["Reports"],       "summary": "Lab / Medical Report Analysis",            "operationId": "aiReportAnalysis",   "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-health-risk":      { "post": { "tags": ["Diagnostics"],   "summary": "Health Risk Forecast",                     "operationId": "aiHealthRisk",       "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-radiology":        { "post": { "tags": ["Diagnostics"],   "summary": "AI Radiology Pro (image + text)",          "operationId": "aiRadiology",        "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-health-assistant": { "post": { "tags": ["Consultation"],  "summary": "General AI Health Assistant",              "operationId": "aiHealthAssistant",  "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-pregnancy":        { "post": { "tags": ["Specialty"],     "summary": "AI Pregnancy Companion",                   "operationId": "aiPregnancy",        "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-baby-care":        { "post": { "tags": ["Specialty"],     "summary": "AI Baby Care (Pediatrics)",                "operationId": "aiBabyCare",         "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-cosmetology":      { "post": { "tags": ["Specialty"],     "summary": "AI Cosmetology / Dermatology",             "operationId": "aiCosmetology",      "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-dietolog":         { "post": { "tags": ["Specialty"],     "summary": "AI Dietitian",                             "operationId": "aiDietolog",         "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-psixolog":         { "post": { "tags": ["Consultation"],  "summary": "AI Psychologist",                          "operationId": "aiPsixolog",         "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-farmatsevt":       { "post": { "tags": ["Specialty"],     "summary": "AI Pharmacist (drug interactions)",        "operationId": "aiFarmatsevt",       "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
+    "/ai-fitness":          { "post": { "tags": ["Specialty"],     "summary": "AI Fitness Coach",                         "operationId": "aiFitness",          "requestBody": { "$ref": "#/components/requestBodies/ChatBody" }, "responses": { "200": { "$ref": "#/components/responses/StreamResponse" }, "401": { "$ref": "#/components/responses/Unauthorized" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "x-api-key", "description": "Partner API key issued from Partner Dashboard." },
+      "BearerAuth": { "type": "http", "scheme": "bearer", "description": "Alternative — pass API key as `Authorization: Bearer <key>`." }
+    },
+    "schemas": {
+      "Message": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role":    { "type": "string", "enum": ["system", "user", "assistant"], "example": "user" },
+          "content": { "type": "string", "example": "Bosh og'rig'i va qizdirma 2 kundan beri davom etmoqda" }
+        }
+      },
+      "ChatRequest": {
+        "type": "object",
+        "required": ["messages"],
+        "properties": {
+          "messages": { "type": "array", "items": { "$ref": "#/components/schemas/Message" }, "minItems": 1 },
+          "lang":     { "type": "string", "enum": ["uz", "ru", "en"], "default": "uz" },
+          "stream":   { "type": "boolean", "default": true, "description": "If true, response is SSE `text/event-stream`. If false, JSON." },
+          "model":    { "type": "string", "description": "Optional model override (e.g. `google/gemini-3-flash-preview`)." }
+        }
+      },
+      "UnifiedChatRequest": {
+        "allOf": [
+          { "$ref": "#/components/schemas/ChatRequest" },
+          {
+            "type": "object",
+            "required": ["action", "service"],
+            "properties": {
+              "action":  { "type": "string", "enum": ["chat"] },
+              "service": { "type": "string", "enum": [
+                "symptom-checker","ai-doctor-chat","ai-report-analysis","ai-health-risk",
+                "ai-radiology","ai-health-assistant","ai-pregnancy","ai-baby-care",
+                "ai-cosmetology","ai-dietolog","ai-psixolog","ai-farmatsevt",
+                "ai-fitness","ai-vital-signs"
+              ] }
+            }
+          }
+        ]
+      },
+      "ChatResponse": {
+        "type": "object",
+        "properties": {
+          "success":  { "type": "boolean" },
+          "service":  { "type": "string" },
+          "model":    { "type": "string" },
+          "response": { "type": "string" },
+          "usage": {
+            "type": "object",
+            "properties": {
+              "prompt_tokens":     { "type": "integer" },
+              "completion_tokens": { "type": "integer" },
+              "total_tokens":      { "type": "integer" }
+            }
+          }
+        }
+      },
+      "ServiceCatalog": {
+        "type": "object",
+        "properties": {
+          "success":  { "type": "boolean" },
+          "services": { "type": "array", "items": { "type": "object" } },
+          "tariffs": {
+            "type": "object",
+            "properties": {
+              "monthly":  { "type": "object", "properties": {
+                "starter":      { "type": "integer", "example": 99000 },
+                "professional": { "type": "integer", "example": 299000 },
+                "enterprise":   { "type": "integer", "example": 599000 }
+              }},
+              "currency": { "type": "string", "example": "UZS" }
+            }
+          },
+          "rate_limits": {
+            "type": "object",
+            "properties": {
+              "requests_per_minute": { "type": "integer", "example": 30 },
+              "requests_per_day":    { "type": "integer", "example": 1000 }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error":            { "type": "string" },
+          "reason":           { "type": "string" },
+          "upgrade_required": { "type": "boolean" }
+        }
+      }
+    },
+    "requestBodies": {
+      "ChatBody": {
+        "required": true,
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChatRequest" }, "examples": {
+          "basic": { "value": { "messages": [{ "role": "user", "content": "Bosh og'rig'i bor" }], "lang": "uz", "stream": false } }
+        } } }
+      }
+    },
+    "responses": {
+      "ChatResponse":   { "description": "JSON chat response (when `stream:false`)", "content": { "application/json":      { "schema": { "$ref": "#/components/schemas/ChatResponse" } } } },
+      "StreamResponse": { "description": "Server-Sent Events stream (OpenAI-compatible). Each event is `data: { ...chunk }`. End with `data: [DONE]`.", "content": { "text/event-stream": { "schema": { "type": "string" } } } },
+      "BadRequest":        { "description": "Invalid input",        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "Unauthorized":      { "description": "Missing/invalid API key", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "CreditsExhausted":  { "description": "Daily/monthly limit reached or credits exhausted (HTTP 402)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "RateLimit":         { "description": "Rate limit exceeded (HTTP 429)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+    }
+  }
+}
