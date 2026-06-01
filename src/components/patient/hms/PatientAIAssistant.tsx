@@ -7,6 +7,8 @@ import { toast } from "@/hooks/use-toast";
 import { Bot, Send, Sparkles, AlertTriangle, User as UserIcon, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/hooks/useLanguage";
+import { fetchActiveAiDocuments } from "@/components/dashboard/PatientAIDocuments";
+import { logAiChat } from "@/lib/aiChatHistory";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
