@@ -41,6 +41,7 @@ const PatientAIAssistant = () => {
     setLoading(true);
 
     try {
+      const documents = await fetchActiveAiDocuments();
       const { data: { session } } = await supabase.auth.getSession();
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       const res = await fetch(`${SUPABASE_URL}/functions/v1/ai-doctor-chat`, {
@@ -50,9 +51,15 @@ const PatientAIAssistant = () => {
           Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ messages: newMsgs, lang }),
+        body: JSON.stringify({ messages: newMsgs, lang, documents }),
       });
       if (!res.ok) throw new Error((await res.json()).error || t("patientAi.errorTitle"));
+
+      // Persist user message with attached docs
+      logAiChat({
+        serviceId: "ai-doctor-chat", role: "user", content,
+        attachments: documents.map((d: any) => ({ name: d.name, url: d.url, type: d.mime_type })),
+      });
 
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
