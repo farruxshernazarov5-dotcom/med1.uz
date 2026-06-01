@@ -11,20 +11,26 @@ export const AI_PRICING = {
 };
 
 /* ─── Credit costs per service ─── */
+/* ─── Coin (Sog'liq Tangasi) costs per service — synced with src/data/aiTariffs.ts ─── */
 const SERVICE_CREDITS: Record<string, number> = {
   "ai-dietolog": 1, "ai-fitness": 1, "ai-health-assistant": 1,
   "ai-baby-care": 1, "ai-farmatsevt": 1,
-  "ai-doctor-chat": 5, "symptom-checker": 5, "ai-psixolog": 5,
-  "ai-pregnancy": 5, "ai-health-risk": 5,
-  "ai-radiology": 25, "ai-report-analysis": 25,
-  "ai-cosmetology": 25, "ai-vital-signs": 25,
+  "ai-doctor-chat": 1,
+  "symptom-checker": 2, "ai-psixolog": 2, "ai-pregnancy": 2, "ai-health-risk": 2,
+  "ai-radiology": 10, "ai-report-analysis": 10,
+  "ai-cosmetology": 10, "ai-vital-signs": 10,
 };
 
+/**
+ * Token caps are intentionally low to keep per-request cost under ~2100 tokens.
+ * Each tier maps to (model, maxOutputTokens). Prompts should also be concise.
+ */
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash",       maxTokens: 2048 },
-  5:  { model: "google/gemini-2.5-flash",       maxTokens: 4096 },
-  25: { model: "google/gemini-2.5-pro",         maxTokens: 4096 },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 700  },
+  2:  { model: "google/gemini-2.5-flash", maxTokens: 900  },
+  10: { model: "google/gemini-2.5-pro",   maxTokens: 1400 },
 };
+
 
 export function estimateTokensFromMessages(messages: unknown): number {
   try {
