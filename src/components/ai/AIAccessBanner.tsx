@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { AlertCircle, Crown, Lock, Zap } from "lucide-react";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useCredits } from "@/hooks/useCredits";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AIAccessBannerProps {
   serviceId: string;
@@ -16,8 +17,16 @@ interface AIAccessBannerProps {
 const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   const { access, loading, isServiceAllowed, isLimitReached, remainingToday } = useAiAccess();
   const { balance, loading: cLoading } = useCredits();
+  const { userRole } = useAuth();
 
   if (loading || cLoading || !access) return null;
+  if (userRole === "admin") {
+    return (
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 mb-6 text-sm text-emerald-700 dark:text-emerald-300">
+        <b>Super Admin test rejimi:</b> {serviceName || "AI xizmat"} kredit va tarif cheklovisiz ochiq.
+      </div>
+    );
+  }
 
   const allowed = isServiceAllowed(serviceId);
   const limit = isLimitReached();
