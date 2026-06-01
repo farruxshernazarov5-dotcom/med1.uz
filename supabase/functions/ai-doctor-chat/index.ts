@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
