@@ -7,19 +7,21 @@
  * - quick subscription / credit purchase shortcuts
  * - trilingual labels (UZ/RU/EN)
  */
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { GlowCard, LiveStatusPill } from "@/components/futuristic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
 import { useAiAccess } from "@/hooks/useAiAccess";
+import { useAuth } from "@/hooks/useAuth";
 import { useCredits } from "@/hooks/useCredits";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
+import AiLiveTestDialog from "./AiLiveTestDialog";
 import {
   Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
   UtensilsCrossed, Heart, Pill, Dumbbell, Activity, Brain,
-  Crown, Lock, ArrowRight, Sparkles, Zap, Wallet, ExternalLink,
+  Crown, Lock, ArrowRight, Sparkles, Zap, Wallet, ExternalLink, Play,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -120,7 +122,11 @@ interface Props { slug: string; lang: Lang }
 
 const AiServicesModule = ({ slug, lang }: Props) => {
   const { access, isServiceAllowed, loading: accessLoading, remainingToday } = useAiAccess();
+  const { userRole } = useAuth();
   const { balance } = useCredits();
+  const isAdmin = userRole === "admin";
+  const [testSvc, setTestSvc] = useState<{ id: SvcId; title: string } | null>(null);
+
 
   const costMap = useMemo(() => {
     const m: Record<string, number> = {};
@@ -270,10 +276,31 @@ const AiServicesModule = ({ slug, lang }: Props) => {
               {locked && (
                 <p className="mt-1.5 text-[9px] text-amber-300/80 relative">{lockedNote(cost)}</p>
               )}
+
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTestSvc({ id, title: meta.title[lang] }); }}
+                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 hover:from-emerald-500/30 hover:to-cyan-500/30 ring-1 ring-emerald-400/40 text-emerald-200 text-[10px] font-semibold py-1.5 transition relative"
+                  title={I("Super-admin: kreditsiz real test", "Супер-админ: реальный тест без кредитов", "Super-admin: real test, no credits", lang)}
+                >
+                  <Play className="w-3 h-3" /> {I("Live test (0 kredit)", "Live-тест (0 кр.)", "Live test (0 cr)", lang)}
+                </button>
+              )}
             </Link>
           );
         })}
       </div>
+
+      {testSvc && (
+        <AiLiveTestDialog
+          open={!!testSvc}
+          onOpenChange={(v) => !v && setTestSvc(null)}
+          serviceId={testSvc.id}
+          serviceTitle={testSvc.title}
+          lang={lang}
+        />
+      )}
 
       {/* Footer: status widget + quick links */}
       <div className="grid lg:grid-cols-3 gap-4">
