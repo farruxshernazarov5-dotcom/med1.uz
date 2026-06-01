@@ -15013,6 +15013,45 @@ export type Database = {
           },
         ]
       }
+      user_ai_documents: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          mime_type: string | null
+          name: string
+          size_bytes: number | null
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          mime_type?: string | null
+          name: string
+          size_bytes?: number | null
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          mime_type?: string | null
+          name?: string
+          size_bytes?: number | null
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_ai_subscriptions: {
         Row: {
           auto_renew: boolean
