@@ -34,7 +34,7 @@ export async function downloadHambiReport(d: HambiReportData): Promise<void> {
   const M = 16;
   let y = 0;
 
-  const verifyUrl = `https://med1.uz/verify/hambi/${encodeURIComponent(d.refNumber)}`;
+  const verifyUrl = `https://med1.uz/verify/${encodeURIComponent(d.refNumber)}`;
   const qr = await QRCode.toDataURL(verifyUrl, { width: 220, margin: 1 });
 
   // Header
