@@ -149,10 +149,17 @@ const ReportVerificationPage = () => {
   const docTypeLabels: Record<string, string> = {
     lab_result: "Laboratoriya natijasi",
     prescription: "Retsept",
-    invoice: "To'lov cheki",
+    invoice: "Hisob-faktura",
     appointment: "Qabul hujjati",
     emr: "Tibbiy karta",
     discharge: "Chiqish hujjati",
+    hambi_report: "HAMBI × MED-ALL AI hisoboti",
+    subscription_report: "Obunalar hisoboti",
+    payment_report: "To'lovlar hisoboti",
+    revenue_report: "Daromad hisoboti",
+    documents_report: "Hujjatlar hisoboti",
+    ai_report: "AI tahlil hisoboti",
+    lab_report: "Laboratoriya hisoboti",
   };
 
   const statusInfo = payment ? (STATUS_LABELS[payment.status] || { label: payment.status, tone: "warn" as const }) : null;
