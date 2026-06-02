@@ -9,8 +9,9 @@ import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/hooks/useLanguage";
 import { fetchActiveAiDocuments } from "@/components/dashboard/PatientAIDocuments";
 import { logAiChat } from "@/lib/aiChatHistory";
+import TokenLimitError from "@/components/ai/TokenLimitError";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; tokenLimit?: boolean };
 
 const PatientAIAssistant = () => {
   const { user } = useAuth();
