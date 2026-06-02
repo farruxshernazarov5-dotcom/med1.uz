@@ -90,14 +90,14 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   /* ─── Hard block: no credits ─── */
   if (noCredits) {
     return (
-      <div className="rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 p-5 mb-6">
+      <div className="rounded-xl border-2 border-dashed border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50 p-5 mb-6">
         <div className="flex items-start gap-3">
-          <Zap className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
+          <span className="text-3xl">🪙</span>
           <div className="flex-1">
-            <h3 className="font-bold text-blue-900 mb-1">Kreditingiz tugadi</h3>
-            <p className="text-sm text-blue-800 mb-3">AI xizmatdan foydalanish uchun kredit sotib oling.</p>
-            <Link to="/ai-payment" className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
-              <Zap className="w-4 h-4" /> Kredit sotib olish
+            <h3 className="font-bold text-amber-900 mb-1">Med Coin balansingiz tugadi</h3>
+            <p className="text-sm text-amber-800 mb-3">AI xizmatdan foydalanish uchun Med Coin sotib oling.</p>
+            <Link to="/ai-payment" className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition shadow-md">
+              <span>🪙</span> Med Coin sotib olish
             </Link>
           </div>
         </div>
@@ -111,7 +111,7 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
       <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm text-amber-800">
           <AlertCircle className="w-4 h-4" />
-          <span>Bugun atigi <b>{remainingToday}</b> ta so'rov qoldi · Balans: <b>{balance}</b> kredit</span>
+          <span>Bugun atigi <b>{remainingToday}</b> ta so'rov qoldi · 🪙 <b>{balance}</b> Med Coin</span>
         </div>
         <Link to="/ai-subscription" className="text-xs font-medium text-amber-700 hover:text-amber-900 underline">Tarifni yangilash</Link>
       </div>

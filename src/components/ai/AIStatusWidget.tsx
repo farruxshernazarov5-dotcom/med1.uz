@@ -46,9 +46,9 @@ const AIStatusWidget = () => {
 
       <div className="flex items-center justify-between pt-2 border-t border-border">
         <span className="flex items-center gap-1.5 text-sm">
-          <Zap className="w-4 h-4 text-amber-500" />
+          <span className="text-base">🪙</span>
           <span className="font-bold text-foreground">{balance}</span>
-          <span className="text-xs text-muted-foreground">🪙 tanga</span>
+          <span className="text-xs text-muted-foreground">Med Coin</span>
         </span>
         <Link to="/ai-payment" className="text-xs font-medium text-primary hover:underline">+ Sotib olish</Link>
 

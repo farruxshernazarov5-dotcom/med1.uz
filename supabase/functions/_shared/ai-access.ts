@@ -16,9 +16,9 @@ const SERVICE_CREDITS: Record<string, number> = {
   "ai-dietolog": 1, "ai-fitness": 1, "ai-health-assistant": 1,
   "ai-baby-care": 1, "ai-farmatsevt": 1,
   "ai-doctor-chat": 1,
-  "symptom-checker": 2, "ai-psixolog": 2, "ai-pregnancy": 2, "ai-health-risk": 2,
-  "ai-radiology": 10, "ai-report-analysis": 10,
-  "ai-cosmetology": 10, "ai-vital-signs": 10,
+  "symptom-checker": 5, "ai-psixolog": 5, "ai-pregnancy": 5, "ai-health-risk": 5,
+  "ai-radiology": 25, "ai-report-analysis": 25,
+  "ai-cosmetology": 25, "ai-vital-signs": 25,
 };
 
 /**
@@ -30,18 +30,20 @@ export const MAX_INPUT_TOKENS = 4000;
 
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
   1:  { model: "google/gemini-2.5-flash", maxTokens: 450 },
-  2:  { model: "google/gemini-2.5-flash", maxTokens: 480 },
-  10: { model: "google/gemini-2.5-pro",   maxTokens: 500 },
+  5:  { model: "google/gemini-2.5-flash", maxTokens: 480 },
+  25: { model: "google/gemini-2.5-pro",   maxTokens: 500 },
 };
 
-/** Universal directive appended to every system prompt to keep replies short. */
+/** Universal directive appended to every system prompt — STRICT 3–5 bullet format. */
 export const CONCISE_DIRECTIVE = `
 
-QISQA JAVOB QOIDASI (MAJBURIY):
-- Javobing 400–500 token (≈250–350 so'z, 1500–2200 belgi) oralig'ida bo'lsin.
-- Faqat eng muhim ma'lumotni ber — suv quyma, takrorlama, ortiqcha misol kiritma.
-- Ro'yxatlarni 3–5 punkt bilan cheklab ber; har sarlavha ostida 1–2 jumla.
-- Mavzu uzun bo'lsa: 1–2 xulosa + "Batafsil shifokorga murojaat qiling" deb tugat.`;
+🔒 QISQA JAVOB QOIDASI (MAJBURIY — chetga chiqma):
+- Javobing FAQAT 3–5 ta qisqa bullet point (•) dan iborat bo'lsin.
+- Har bir bullet — 1 ta jumla, maksimum 20 so'z.
+- Umumiy uzunlik: 400–500 token (≈250–350 so'z) dan oshmasin.
+- Hech qachon kirish so'zi, "Salom", "Albatta", takrorlash yoki suv quymalik yozma.
+- Format: "• ..." dan boshla, har band yangi qatorda.
+- So'nggi band har doim: "• ⚠️ Aniq tashxis uchun shifokorga murojaat qiling."`;
 
 export function estimateTokensFromMessages(messages: unknown): number {
   try {
@@ -65,7 +67,7 @@ export function aiUsageHeaders(serviceId: string, access: Extract<AiAccessResult
 }
 
 function getModelForCost(cost: number) {
-  return TIER_MODELS[cost] || TIER_MODELS[2] || TIER_MODELS[1];
+  return TIER_MODELS[cost] || TIER_MODELS[5] || TIER_MODELS[1];
 }
 
 

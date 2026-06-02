@@ -19,25 +19,25 @@ import {
  * Costs lowered with anchor (originalCost) to create discount perception,
  * while server-side maxTokens are capped low to keep token spend in plus.
  */
-export const COIN_LABEL = "tanga";
-export const COIN_LABEL_PLURAL = "tanga";
-export const COIN_LABEL_FULL = "Sog'liq Tangasi";
+export const COIN_LABEL = "Med Coin";
+export const COIN_LABEL_PLURAL = "Med Coin";
+export const COIN_LABEL_FULL = "Med Coin";
 
 export const AI_SERVICE_TARIFFS = [
-  { id: "symptom-checker",    name: "AI Erta Diagnostika",      icon: Stethoscope,       creditCost: 2,  originalCost: 5,  costTier: "mid" as const },
-  { id: "ai-doctor-chat",     name: "AI Shifokor Chat",         icon: Bot,               creditCost: 1,  originalCost: 5,  costTier: "low" as const },
-  { id: "ai-report-analysis", name: "Analiz Tahlili",           icon: FileText,          creditCost: 10, originalCost: 25, costTier: "high" as const },
-  { id: "ai-health-risk",     name: "Sog'liq Xavfi Prognozi",   icon: HeartPulse,        creditCost: 2,  originalCost: 5,  costTier: "mid" as const },
-  { id: "ai-radiology",       name: "AI Radiologiya Pro",       icon: Eye,               creditCost: 10, originalCost: 25, costTier: "high" as const },
-  { id: "ai-health-assistant",name: "AI Sog'liq Assistent",     icon: UserCheck,         creditCost: 1,  originalCost: 1,  costTier: "low" as const },
-  { id: "ai-pregnancy",       name: "AI Homiladorlik",          icon: Baby,              creditCost: 2,  originalCost: 5,  costTier: "mid" as const },
-  { id: "ai-baby-care",       name: "AI Bola Parvarishi",       icon: Baby,              creditCost: 1,  originalCost: 1,  costTier: "low" as const },
-  { id: "ai-cosmetology",     name: "AI Kosmetologiya",         icon: Palette,           creditCost: 10, originalCost: 25, costTier: "high" as const },
-  { id: "ai-dietolog",        name: "AI Dietolog",              icon: UtensilsCrossed,   creditCost: 1,  originalCost: 1,  costTier: "low" as const },
-  { id: "ai-psixolog",        name: "AI Psixolog",              icon: Heart,             creditCost: 2,  originalCost: 5,  costTier: "mid" as const },
-  { id: "ai-farmatsevt",      name: "AI Farmatsevt",            icon: Pill,              creditCost: 1,  originalCost: 1,  costTier: "low" as const },
-  { id: "ai-fitness",         name: "AI Fitness Trener",        icon: Dumbbell,          creditCost: 1,  originalCost: 1,  costTier: "low" as const },
-  { id: "ai-vital-signs",     name: "AI Vital Signs",           icon: Activity,          creditCost: 10, originalCost: 25, costTier: "high" as const },
+  { id: "symptom-checker",    name: "AI Simptom Analizatori",   icon: Stethoscope,       creditCost: 5,  originalCost: 10, costTier: "mid" as const },
+  { id: "ai-doctor-chat",     name: "AI Doktor",                icon: Bot,               creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  { id: "ai-report-analysis", name: "Laboratoriya tahlili",     icon: FileText,          creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-health-risk",     name: "Sog'liq Xavfi Prognozi",   icon: HeartPulse,        creditCost: 5,  originalCost: 10, costTier: "mid" as const },
+  { id: "ai-radiology",       name: "AI Rentgen/MRT/KT Tahlili",icon: Eye,               creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-health-assistant",name: "AI Sog'liq Assistent",     icon: UserCheck,         creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  { id: "ai-pregnancy",       name: "AI Homiladorlik Assistenti",icon: Baby,             creditCost: 5,  originalCost: 10, costTier: "mid" as const },
+  { id: "ai-baby-care",       name: "AI Bola Parvarishi",       icon: Baby,              creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  { id: "ai-cosmetology",     name: "AI Kosmetologiya",         icon: Palette,           creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-dietolog",        name: "AI Dietolog",              icon: UtensilsCrossed,   creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  { id: "ai-psixolog",        name: "AI Psixolog",              icon: Heart,             creditCost: 5,  originalCost: 10, costTier: "mid" as const },
+  { id: "ai-farmatsevt",      name: "AI Farmatsevt",            icon: Pill,              creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  { id: "ai-fitness",         name: "AI Fitness Murabbiyi",     icon: Dumbbell,          creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  { id: "ai-vital-signs",     name: "AI Vital Signs",           icon: Activity,          creditCost: 25, originalCost: 40, costTier: "high" as const },
 ] as const;
 
 /* ─── Credit Packages (Health Coins) ─── */
@@ -52,9 +52,9 @@ export interface CreditPackage {
 }
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
-  { id: "lite",     name: "Lite",     credits: 40,  bonus: 0,   price: 15000,  tagline: "40 ta AI maslahati — eng hamyonbop profilaktika" },
-  { id: "standard", name: "Standard", credits: 150, bonus: 50,  price: 60000,  popular: true, tagline: "150 + 50 BONUS Tanga — oila uchun smart-shifokor" },
-  { id: "premium",  name: "Premium",  credits: 350, bonus: 150, price: 120000, tagline: "350 + 150 Bepul Tanga — 360° toʻliq tibbiy nazorat" },
+  { id: "lite",     name: "Lite",     credits: 40,  bonus: 0,   price: 15000,  tagline: "40 🪙 Med Coin — eng hamyonbop profilaktika" },
+  { id: "standard", name: "Standard", credits: 150, bonus: 50,  price: 60000,  popular: true, tagline: "150 + 50 BONUS 🪙 Med Coin — oila uchun smart-shifokor" },
+  { id: "premium",  name: "Premium",  credits: 350, bonus: 150, price: 120000, tagline: "350 + 150 Bepul 🪙 Med Coin — 360° toʻliq tibbiy nazorat" },
 ];
 
 /* ─── Cost tier → model mapping ─── */

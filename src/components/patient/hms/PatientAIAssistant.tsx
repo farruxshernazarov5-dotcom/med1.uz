@@ -9,8 +9,9 @@ import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/hooks/useLanguage";
 import { fetchActiveAiDocuments } from "@/components/dashboard/PatientAIDocuments";
 import { logAiChat } from "@/lib/aiChatHistory";
+import TokenLimitError from "@/components/ai/TokenLimitError";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; tokenLimit?: boolean };
 
 const PatientAIAssistant = () => {
   const { user } = useAuth();
@@ -53,7 +54,14 @@ const PatientAIAssistant = () => {
         },
         body: JSON.stringify({ messages: newMsgs, lang, documents }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || t("patientAi.errorTitle"));
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        if (res.status === 413) {
+          setMessages([...newMsgs, { role: "assistant", content: err.error || "So'rov juda uzun.", tokenLimit: true }]);
+          return;
+        }
+        throw new Error(err.error || t("patientAi.errorTitle"));
+      }
 
       // Persist user message with attached docs
       logAiChat({
@@ -123,7 +131,13 @@ const PatientAIAssistant = () => {
               </div>
             )}
             <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
-              {m.role === "assistant" ? (
+              {m.tokenLimit ? (
+                <TokenLimitError
+                  message={m.content}
+                  onShorten={() => setInput((input || "").slice(0, 200))}
+                  onRetry={() => send(messages[messages.length - 1]?.content)}
+                />
+              ) : m.role === "assistant" ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-headings:my-2">
                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
