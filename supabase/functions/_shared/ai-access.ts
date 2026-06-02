@@ -67,7 +67,7 @@ export function aiUsageHeaders(serviceId: string, access: Extract<AiAccessResult
 }
 
 function getModelForCost(cost: number) {
-  return TIER_MODELS[cost] || TIER_MODELS[2] || TIER_MODELS[1];
+  return TIER_MODELS[cost] || TIER_MODELS[5] || TIER_MODELS[1];
 }
 
 
