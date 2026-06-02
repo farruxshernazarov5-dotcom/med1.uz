@@ -191,6 +191,8 @@ const App = () => (
                 <Route path="/report/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/verify" element={<ReportVerificationPage />} />
                 <Route path="/verify/:reportId" element={<ReportVerificationPage />} />
+                <Route path="/verify/hambi/:reportId" element={<ReportVerificationPage />} />
+                <Route path="/verify/report/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/verify/contract/:hashId" element={<ContractVerifyPage />} />
                 <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
                 <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
