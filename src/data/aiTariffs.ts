@@ -52,9 +52,9 @@ export interface CreditPackage {
 }
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
-  { id: "lite",     name: "Lite",     credits: 40,  bonus: 0,   price: 15000,  tagline: "40 ta AI maslahati — eng hamyonbop profilaktika" },
-  { id: "standard", name: "Standard", credits: 150, bonus: 50,  price: 60000,  popular: true, tagline: "150 + 50 BONUS Tanga — oila uchun smart-shifokor" },
-  { id: "premium",  name: "Premium",  credits: 350, bonus: 150, price: 120000, tagline: "350 + 150 Bepul Tanga — 360° toʻliq tibbiy nazorat" },
+  { id: "lite",     name: "Lite",     credits: 40,  bonus: 0,   price: 15000,  tagline: "40 🪙 Med Coin — eng hamyonbop profilaktika" },
+  { id: "standard", name: "Standard", credits: 150, bonus: 50,  price: 60000,  popular: true, tagline: "150 + 50 BONUS 🪙 Med Coin — oila uchun smart-shifokor" },
+  { id: "premium",  name: "Premium",  credits: 350, bonus: 150, price: 120000, tagline: "350 + 150 Bepul 🪙 Med Coin — 360° toʻliq tibbiy nazorat" },
 ];
 
 /* ─── Cost tier → model mapping ─── */
