@@ -54,7 +54,14 @@ const PatientAIAssistant = () => {
         },
         body: JSON.stringify({ messages: newMsgs, lang, documents }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || t("patientAi.errorTitle"));
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        if (res.status === 413) {
+          setMessages([...newMsgs, { role: "assistant", content: err.error || "So'rov juda uzun.", tokenLimit: true }]);
+          return;
+        }
+        throw new Error(err.error || t("patientAi.errorTitle"));
+      }
 
       // Persist user message with attached docs
       logAiChat({
