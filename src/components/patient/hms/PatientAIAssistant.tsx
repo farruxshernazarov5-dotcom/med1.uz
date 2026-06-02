@@ -131,7 +131,13 @@ const PatientAIAssistant = () => {
               </div>
             )}
             <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
-              {m.role === "assistant" ? (
+              {m.tokenLimit ? (
+                <TokenLimitError
+                  message={m.content}
+                  onShorten={() => setInput((input || "").slice(0, 200))}
+                  onRetry={() => send(messages[messages.length - 1]?.content)}
+                />
+              ) : m.role === "assistant" ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-headings:my-2">
                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
