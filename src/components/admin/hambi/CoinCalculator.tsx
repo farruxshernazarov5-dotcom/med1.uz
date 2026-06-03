@@ -40,6 +40,62 @@ const i = (uz: string, ru: string, en: string, l: Props["lang"]) =>
 const CoinCalculator = ({ lang }: Props) => {
   const [coins, setCoins] = useState<number>(200); // default Standard pack
 
+  /* ─── LIVE platform-wide Med Coin balance (super-admin only, auto-refresh 5s) ─── */
+  const [platform, setPlatform] = useState<{
+    totalCoins: number; activeUsers: number; expiringSoon: number; loading: boolean; lastSync: Date | null;
+  }>({ totalCoins: 0, activeUsers: 0, expiringSoon: 0, loading: true, lastSync: null });
+  const pulseRef = useRef<HTMLSpanElement>(null);
+
+  const fetchPlatform = async () => {
+    const nowIso = new Date().toISOString();
+    const soonIso = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+    const { data, error } = await supabase
+      .from("user_credits")
+      .select("balance, user_id, expires_at")
+      .gt("expires_at", nowIso)
+      .gt("balance", 0);
+    if (error || !data) {
+      setPlatform((p) => ({ ...p, loading: false }));
+      return;
+    }
+    const totalCoins = data.reduce((s, r: any) => s + (r.balance || 0), 0);
+    const activeUsers = new Set(data.map((r: any) => r.user_id)).size;
+    const expiringSoon = data
+      .filter((r: any) => r.expires_at < soonIso)
+      .reduce((s, r: any) => s + (r.balance || 0), 0);
+    setPlatform({ totalCoins, activeUsers, expiringSoon, loading: false, lastSync: new Date() });
+    if (pulseRef.current) {
+      pulseRef.current.classList.remove("animate-ping-once");
+      void pulseRef.current.offsetWidth;
+      pulseRef.current.classList.add("animate-ping-once");
+    }
+  };
+
+  useEffect(() => {
+    fetchPlatform();
+    const id = setInterval(fetchPlatform, 5000);
+    const ch = supabase
+      .channel("admin-platform-credits")
+      .on("postgres_changes", { event: "*", schema: "public", table: "user_credits" }, fetchPlatform)
+      .subscribe();
+    return () => { clearInterval(id); supabase.removeChannel(ch); };
+  }, []);
+
+  /* Mixed-usage forecast for platform total */
+  const platformMixedTokens =
+    Math.floor((platform.totalCoins * 0.60) / 1) * AVG_TOKENS_PER_REQ[1] +
+    Math.floor((platform.totalCoins * 0.30) / 5) * AVG_TOKENS_PER_REQ[5] +
+    Math.floor((platform.totalCoins * 0.10) / 25) * AVG_TOKENS_PER_REQ[25];
+  const platformMixedReqs =
+    Math.floor((platform.totalCoins * 0.60) / 1) +
+    Math.floor((platform.totalCoins * 0.30) / 5) +
+    Math.floor((platform.totalCoins * 0.10) / 25);
+  const platformCostUsd =
+    ((Math.floor((platform.totalCoins * 0.60) / 1) + Math.floor((platform.totalCoins * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-flash"] +
+    (Math.floor((platform.totalCoins * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-pro"];
+
+
+
   const tiers = useMemo(() => {
     return ([1, 5, 25] as const).map((cost) => {
       const reqs = Math.floor(coins / cost);
