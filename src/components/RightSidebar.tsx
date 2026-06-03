@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 import { Info, Briefcase, Phone, BookOpen } from "lucide-react";
-import AdBanner from "@/components/AdBanner";
-import YandexRTB from "@/components/ads/YandexRTB";
 
 const rightMenuItems = [
   { icon: Info, label: "Biz haqimizda", href: "/about" },
@@ -13,7 +11,6 @@ const rightMenuItems = [
 const RightSidebar = () => {
   return (
     <div className="space-y-4">
-      {/* Menu 2 */}
       <nav className="bg-card rounded-2xl border border-border shadow-card p-4">
         <h3 className="font-heading font-bold text-foreground mb-3 px-2 text-sm uppercase tracking-wider">
           Ma'lumot
@@ -32,15 +29,6 @@ const RightSidebar = () => {
           ))}
         </ul>
       </nav>
-
-      {/* Ad Banner */}
-      <AdBanner variant={0} />
-
-      {/* Yandex RTB — sidebar (300x250) */}
-      <YandexRTB label="Reklama" minHeight={250} />
-
-      {/* Second Ad */}
-      <AdBanner variant={1} />
     </div>
   );
 };
