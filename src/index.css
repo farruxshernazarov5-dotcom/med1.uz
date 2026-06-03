@@ -463,7 +463,8 @@
 .cinematic-page {
   background: transparent;
   color: hsl(0 0% 98%);
-  text-shadow: 0 1px 12px hsl(213 73% 5% / 0.35);
+  text-shadow: 0 1px 2px hsl(213 73% 5% / 0.55);
+  font-weight: 450;
 }
 
 /* Section / wrapper backgrounds → transparent so animated layer shows through */
