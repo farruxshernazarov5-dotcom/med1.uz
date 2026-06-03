@@ -544,7 +544,7 @@
   }
 
   .cinematic-page {
-    text-shadow: 0 1px 8px hsl(213 73% 5% / 0.45);
+    text-shadow: 0 1px 2px hsl(213 73% 5% / 0.6);
   }
 }
 
