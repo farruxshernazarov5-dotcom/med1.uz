@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Building2, Wrench, Activity, Pill, Droplets, Baby, Megaphone, Brain, Bot, FileText, HeartPulse, ArrowRight, Sparkles } from "lucide-react";
 import AppointmentBooking from "@/components/AppointmentBooking";
 import ServiceRegistration from "@/components/ServiceRegistration";
-import YandexRTB from "@/components/ads/YandexRTB";
+
 import QRPayButton from "@/components/payments/QRPayButton";
 
 const quickLinks = [
@@ -84,9 +84,6 @@ const CenterContent = () => {
           ))}
         </div>
       </div>
-
-      {/* Yandex RTB — maqolalar orasi (728x90 / responsive) */}
-      <YandexRTB label="Reklama" minHeight={120} />
 
       {/* QR To'lov — tezkor amallar */}
       <div className="bg-gradient-to-br from-primary/5 via-card to-secondary/5 rounded-2xl border border-primary/20 shadow-card p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
