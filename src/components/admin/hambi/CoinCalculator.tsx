@@ -140,7 +140,66 @@ const CoinCalculator = ({ lang }: Props) => {
 
   return (
     <div className="space-y-4">
+      {/* ─── LIVE PLATFORM BALANCE (super-admin) ─── */}
+      <GlowCard tone="cyan" glow className="!p-5 relative overflow-hidden">
+        <div className="absolute top-2 right-3 flex items-center gap-2 text-[10px] text-white/50">
+          <span ref={pulseRef} className="inline-flex w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+          <LiveStatusPill label={i("LIVE — 5s yangilanish", "LIVE — обнов. 5s", "LIVE — 5s refresh", lang)} />
+          <button onClick={fetchPlatform} title="Refresh" className="hover:text-white/90">
+            <RefreshCw className={`w-3 h-3 ${platform.loading ? "animate-spin" : ""}`} />
+          </button>
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400/30 to-cyan-500/30 ring-1 ring-emerald-300/30 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-emerald-300" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-white">
+              {i("⚡ Platforma balansi (real vaqt)", "⚡ Баланс платформы (real-time)", "⚡ Platform Balance (Real-Time)", lang)}
+            </h3>
+            <p className="text-[11px] text-white/50">
+              {i("Barcha foydalanuvchilar Med Coin yig'indisi → token va so'rov prognozi.",
+                 "Сумма Med Coin всех пользователей → прогноз токенов и запросов.",
+                 "Sum of all users' Med Coins → token & request forecast.", lang)}
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-xl p-3 bg-emerald-500/10 ring-1 ring-emerald-400/30">
+            <p className="text-[10px] uppercase text-emerald-200/80">{i("Jami Med Coin", "Всего Med Coin", "Total Med Coin", lang)}</p>
+            <p className="text-2xl font-bold text-emerald-200 tabular-nums">
+              {platform.loading ? "…" : platform.totalCoins.toLocaleString()} 🪙
+            </p>
+            <p className="text-[10px] text-emerald-200/60">
+              {platform.activeUsers} {i("foydalanuvchi", "польз.", "users", lang)}
+            </p>
+          </div>
+          <div className="rounded-xl p-3 bg-amber-500/10 ring-1 ring-amber-400/30">
+            <p className="text-[10px] uppercase text-amber-200/80">{i("Token prognozi", "Прогноз токенов", "Token forecast", lang)}</p>
+            <p className="text-2xl font-bold text-amber-200 tabular-nums">{platformMixedTokens.toLocaleString()}</p>
+            <p className="text-[10px] text-amber-200/60">{i("aralash foydalanish", "при микс-исп.", "mixed usage", lang)}</p>
+          </div>
+          <div className="rounded-xl p-3 bg-violet-500/10 ring-1 ring-violet-400/30">
+            <p className="text-[10px] uppercase text-violet-200/80">{i("So'rov prognozi", "Прогноз запросов", "Request forecast", lang)}</p>
+            <p className="text-2xl font-bold text-violet-200 tabular-nums">{platformMixedReqs.toLocaleString()}</p>
+            <p className="text-[10px] text-violet-200/60">{i("AI so'rov", "AI запрос", "AI calls", lang)}</p>
+          </div>
+          <div className="rounded-xl p-3 bg-rose-500/10 ring-1 ring-rose-400/30">
+            <p className="text-[10px] uppercase text-rose-200/80">{i("Platforma tannarxi", "Себест. платформы", "Platform cost", lang)}</p>
+            <p className="text-2xl font-bold text-rose-200 tabular-nums">${platformCostUsd.toFixed(2)}</p>
+            <p className="text-[10px] text-rose-200/60">≈ {(platformCostUsd * USD_TO_UZS).toLocaleString(undefined, { maximumFractionDigits: 0 })} {i("so'm", "сум", "UZS", lang)}</p>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-white/45">
+          <span>⏱ {i("So'nggi sinx", "Послед. синх.", "Last sync", lang)}: <b className="text-white/75">{platform.lastSync ? platform.lastSync.toLocaleTimeString() : "—"}</b></span>
+          <span>🔥 {i("7 kunda tugaydi", "истекает за 7 дней", "expires in 7d", lang)}: <b className="text-amber-200">{platform.expiringSoon.toLocaleString()} 🪙</b></span>
+          <span className="ml-auto opacity-70">{i("har bir o'zgarish darhol aks etadi (realtime)", "каждое изменение мгновенно (realtime)", "every change reflects instantly (realtime)", lang)}</span>
+        </div>
+      </GlowCard>
+
+      {/* Personal balance simulator */}
       <GlowCard tone="cyan" glow className="!p-5">
+
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400/30 to-yellow-500/30 ring-1 ring-amber-300/30 flex items-center justify-center">
             <Coins className="w-5 h-5 text-amber-300" />
