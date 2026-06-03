@@ -463,7 +463,8 @@
 .cinematic-page {
   background: transparent;
   color: hsl(0 0% 98%);
-  text-shadow: 0 1px 12px hsl(213 73% 5% / 0.35);
+  text-shadow: 0 1px 2px hsl(213 73% 5% / 0.55);
+  font-weight: 450;
 }
 
 /* Section / wrapper backgrounds → transparent so animated layer shows through */
@@ -543,7 +544,7 @@
   }
 
   .cinematic-page {
-    text-shadow: 0 1px 8px hsl(213 73% 5% / 0.45);
+    text-shadow: 0 1px 2px hsl(213 73% 5% / 0.6);
   }
 }
 
@@ -564,12 +565,13 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Skip cinematic restyle for elements that opt out */
+/* Skip cinematic restyle for elements that opt out — keep dark-theme inheritance */
 .cinematic-page .no-cinematic,
 .cinematic-page .no-cinematic * {
-  background-color: revert;
-  color: revert;
-  border-color: revert;
+  text-shadow: none;
+}
+.cinematic-page .no-cinematic {
+  color: hsl(180 25% 96%);
 }
 
 
@@ -598,3 +600,10 @@
   .svc-net .svc-line-dash,
   .svc-net .svc-pulse-ping { animation: none; }
 }
+
+@keyframes ping-once {
+  0% { transform: scale(1); opacity: 1; }
+  80% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.animate-ping-once { animation: ping-once 0.9s ease-out 1; }
