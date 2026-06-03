@@ -600,3 +600,10 @@
   .svc-net .svc-line-dash,
   .svc-net .svc-pulse-ping { animation: none; }
 }
+
+@keyframes ping-once {
+  0% { transform: scale(1); opacity: 1; }
+  80% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.animate-ping-once { animation: ping-once 0.9s ease-out 1; }
