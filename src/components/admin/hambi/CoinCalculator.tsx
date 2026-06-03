@@ -8,11 +8,12 @@
  *  - 25-coin (high) services: ~700 output tokens, gemini-pro
  * Cost model is server-enforced via MAX_OUTPUT_TOKENS_HARD_CAP=500 in _shared/ai-access.ts.
  */
-import { useMemo, useState } from "react";
-import { GlowCard } from "@/components/futuristic";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { GlowCard, LiveStatusPill } from "@/components/futuristic";
 import { Input } from "@/components/ui/input";
-import { Coins, Zap, Brain, Eye, TrendingUp, Users } from "lucide-react";
+import { Coins, Zap, Brain, Eye, TrendingUp, Users, Activity, RefreshCw } from "lucide-react";
 import { AI_SERVICE_TARIFFS, CREDIT_PACKAGES } from "@/data/aiTariffs";
+import { supabase } from "@/integrations/supabase/client";
 
 const AVG_TOKENS_PER_REQ = {
   1: 500,   // low — flash
