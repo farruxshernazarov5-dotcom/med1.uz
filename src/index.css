@@ -84,45 +84,49 @@
   }
 
   .dark {
-    --background: 213 73% 8%;
-    --foreground: 0 0% 95%;
+    /* Vision-Core inspired deep teal/cyan dark palette */
+    --background: 200 50% 6%;
+    --foreground: 180 25% 96%;
 
-    --card: 213 73% 12%;
-    --card-foreground: 0 0% 95%;
+    --card: 200 45% 10%;
+    --card-foreground: 180 20% 95%;
 
-    --popover: 213 73% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 200 45% 10%;
+    --popover-foreground: 180 20% 95%;
 
-    --primary: 214 84% 56%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary: Bright Teal #5EEAD4 */
+    --primary: 172 76% 64%;
+    --primary-foreground: 200 60% 8%;
 
-    --secondary: 250 100% 69%;
+    /* Secondary: Electric Cyan #06B6D4 */
+    --secondary: 189 94% 43%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 213 50% 18%;
-    --muted-foreground: 213 20% 65%;
+    --muted: 200 35% 14%;
+    --muted-foreground: 180 15% 72%;
 
-    --accent: 250 100% 69%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent: Mint Teal */
+    --accent: 174 72% 56%;
+    --accent-foreground: 200 60% 8%;
 
-    --destructive: 0 62% 45%;
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 213 50% 20%;
-    --input: 213 50% 20%;
-    --ring: 214 84% 56%;
+    --border: 195 40% 18%;
+    --input: 195 40% 18%;
+    --ring: 172 76% 64%;
 
-    --sidebar-background: 213 73% 10%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 214 84% 56%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 250 100% 69%;
+    --sidebar-background: 200 50% 8%;
+    --sidebar-foreground: 180 20% 92%;
+    --sidebar-primary: 172 76% 64%;
+    --sidebar-primary-foreground: 200 60% 8%;
+    --sidebar-accent: 189 94% 43%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 213 50% 20%;
-    --sidebar-ring: 214 84% 56%;
+    --sidebar-border: 195 40% 18%;
+    --sidebar-ring: 172 76% 64%;
 
-    --glass-bg: rgba(10, 37, 64, 0.6);
-    --glass-border: rgba(47, 128, 237, 0.2);
+    --glass-bg: rgba(8, 30, 38, 0.55);
+    --glass-border: rgba(94, 234, 212, 0.18);
   }
 }
 

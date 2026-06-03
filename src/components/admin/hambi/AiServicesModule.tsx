@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCredits } from "@/hooks/useCredits";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import AiLiveTestDialog from "./AiLiveTestDialog";
+import CoinCalculator from "./CoinCalculator";
 import {
   Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
   UtensilsCrossed, Heart, Pill, Dumbbell, Activity, Brain,
@@ -206,6 +207,9 @@ const AiServicesModule = ({ slug, lang }: Props) => {
           </p>
         </GlowCard>
       </div>
+
+      {/* LIVE Med Coin Calculator + HAMBI capacity analysis */}
+      <CoinCalculator lang={lang} />
 
       {/* 14 service cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">

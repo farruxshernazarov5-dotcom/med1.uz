@@ -24,7 +24,7 @@ import { FuturisticBackground } from "@/components/futuristic";
 
 const Index = () => {
   return (
-    <div className="cinematic-page relative min-h-screen bg-[hsl(213,73%,8%)] isolate overflow-hidden">
+    <div className="dark cinematic-page relative min-h-screen bg-[hsl(200,50%,6%)] text-[hsl(180,25%,96%)] isolate overflow-hidden">
       {/* Single global animated infrastructure layer (fixed, behind everything) */}
       <FuturisticBackground variant="dark" particles={6} aurora className="fixed" />
 
