@@ -30,6 +30,7 @@ import HambiRevenue from "@/components/admin/hambi/RevenueModule";
 import HambiWebView from "@/components/admin/hambi/WebViewModule";
 import HambiLegal from "@/components/admin/hambi/LegalModule";
 import HambiDocs from "@/components/admin/hambi/DocumentsModule";
+import HambiAudit from "@/components/admin/hambi/IntegrationAuditModule";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from "recharts";
