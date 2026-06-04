@@ -113,6 +113,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "To'lovlar",
     icon: Receipt,
     items: [
+      { id: "wallet", label: "🪙 Med Coin Wallet", icon: Coins },
       { id: "payments", label: "To'lovlar va cheklar", icon: CreditCard },
       { id: "promo", label: "Aksiyalar", icon: Tag },
       { id: "partner-referral", label: "Referral & Bonus", icon: Gift },
