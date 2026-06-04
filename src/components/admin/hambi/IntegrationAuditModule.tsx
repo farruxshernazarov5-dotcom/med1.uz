@@ -42,7 +42,7 @@ const scoreDomain = (d: Domain) => {
   return Math.round((gotW / totalW) * 100);
 };
 
-const IntegrationAuditModule = () => {
+const IntegrationAuditModule = (_props: { slug?: string; lang?: string } = {}) => {
   const [loading, setLoading] = useState(true);
   const [refreshedAt, setRefreshedAt] = useState<Date | null>(null);
   const [domains, setDomains] = useState<Domain[]>([]);
