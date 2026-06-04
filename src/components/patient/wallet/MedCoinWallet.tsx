@@ -41,6 +41,28 @@ const MedCoinWallet = () => {
   const [usage, setUsage] = useState<{ service_id: string; used_at: string }[]>([]);
   const [allCreditsSum, setAllCreditsSum] = useState({ lifetime: 0, spent: 0 });
   const [loading, setLoading] = useState(true);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const lastTriggeredRef = useRef<number | null>(null);
+
+  const fetchAlerts = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("notifications")
+      .select("id, type, title, message, is_read, created_at, link")
+      .eq("user_id", user.id)
+      .like("type", "medcoin_alert_%")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setAlerts(data || []);
+  };
+
+  const markAllRead = async () => {
+    if (!user) return;
+    const unreadIds = alerts.filter(a => !a.is_read).map(a => a.id);
+    if (!unreadIds.length) return;
+    await supabase.from("notifications").update({ is_read: true }).in("id", unreadIds);
+    setAlerts(prev => prev.map(a => ({ ...a, is_read: true })));
+  };
 
   const fetchAll = async () => {
     if (!user) return;
