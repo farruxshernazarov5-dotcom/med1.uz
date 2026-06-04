@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCredits } from "@/hooks/useCredits";
 import { useAiAccess } from "@/hooks/useAiAccess";
-import { AI_TARIFFS } from "@/data/aiTariffs";
+import { AI_SERVICE_TARIFFS as AI_TARIFFS } from "@/data/aiTariffs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
