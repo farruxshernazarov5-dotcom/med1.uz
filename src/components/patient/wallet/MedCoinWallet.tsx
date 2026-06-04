@@ -245,6 +245,49 @@ const MedCoinWallet = () => {
         )}
       </div>
 
+      {/* Balance alerts panel */}
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold text-foreground flex items-center gap-2">
+            <Bell className="w-4 h-4 text-amber-500" /> Balans eslatmalari
+            {alerts.some(a => !a.is_read) && (
+              <span className="text-[10px] font-bold bg-rose-500 text-white px-2 py-0.5 rounded-full">
+                {alerts.filter(a => !a.is_read).length} yangi
+              </span>
+            )}
+          </h2>
+          {alerts.some(a => !a.is_read) && (
+            <Button variant="ghost" size="sm" onClick={markAllRead}>
+              <CheckCheck className="w-4 h-4 mr-1" /> Hammasini o'qildi
+            </Button>
+          )}
+        </div>
+        {alerts.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Hozircha eslatmalar yo'q. Balans 50% / 25% / 10% / 0% chegaralariga yetganda avtomatik bildirishnoma kelinadi.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {alerts.map(a => (
+              <div
+                key={a.id}
+                className={`flex items-start gap-3 p-3 rounded-lg border transition ${
+                  a.is_read ? "bg-muted/20 border-border" : "bg-amber-500/10 border-amber-500/30"
+                }`}
+              >
+                <AlertTriangle className={`w-4 h-4 mt-0.5 shrink-0 ${a.is_read ? "text-muted-foreground" : "text-amber-600"}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{a.title}</p>
+                  <p className="text-xs text-muted-foreground">{a.message}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{fmtDate(a.created_at)}</p>
+                </div>
+                {!a.is_read && <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0 mt-2" />}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Today / Month */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <PeriodCard title="Bugun" stats={todayStats} icon={Activity} />
