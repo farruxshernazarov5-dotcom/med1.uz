@@ -5,7 +5,7 @@ import {
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
   ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
-  Sun, Moon, Gift,
+  Sun, Moon, Gift, Coins,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
