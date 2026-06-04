@@ -200,6 +200,7 @@ const PatientDashboard = () => {
       case "files": return <PatientFiles />;
       case "documents": return <PatientDocuments />;
       case "history": return <PatientMedicalHistory />;
+      case "wallet": return <MedCoinWallet />;
       case "payments": return <PatientPayments />;
       case "promo": return <PatientPromo />;
       case "premium": return <PremiumPerksPanel moduleId="clinic" />;
