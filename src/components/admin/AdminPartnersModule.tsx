@@ -30,6 +30,7 @@ import HambiRevenue from "@/components/admin/hambi/RevenueModule";
 import HambiWebView from "@/components/admin/hambi/WebViewModule";
 import HambiLegal from "@/components/admin/hambi/LegalModule";
 import HambiDocs from "@/components/admin/hambi/DocumentsModule";
+import HambiAudit from "@/components/admin/hambi/IntegrationAuditModule";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from "recharts";
@@ -56,6 +57,7 @@ const TABS: { id: TabId; label: string; icon: any }[] = [
 ];
 
 const HAMBI_TABS = [
+  { id: "audit",    label: "🛡️ Readiness Audit",   C: HambiAudit },
   { id: "users",    label: "👥 Foydalanuvchilar", C: HambiUsers },
   { id: "ai",       label: "🤖 AI Xizmatlar",      C: HambiAi },
   { id: "subs",     label: "💳 Obunalar",          C: HambiSubs },
@@ -120,7 +122,7 @@ const PartnerRow = ({ p, onApprove, onReject }: any) => (
 
 const AdminPartnersModule = () => {
   const [tab, setTab] = useState<TabId>("overview");
-  const [hambiTab, setHambiTab] = useState<typeof HAMBI_TABS[number]["id"]>("users");
+  const [hambiTab, setHambiTab] = useState<typeof HAMBI_TABS[number]["id"]>("audit");
   const [partners, setPartners] = useState<any[]>([]);
   const [counts, setCounts] = useState({
     clinics: 0, diagnostics: 0, pharmacies: 0, medtech: 0,
