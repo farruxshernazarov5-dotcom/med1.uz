@@ -97,6 +97,7 @@ const MedCoinWallet = () => {
 
   useEffect(() => {
     fetchAll();
+    fetchAlerts();
     if (!user) return;
     const ch = supabase
       .channel("wallet-live-" + user.id)
@@ -106,9 +107,26 @@ const MedCoinWallet = () => {
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "credit_history", filter: `user_id=eq.${user.id}` }, () => fetchAll())
       .on("postgres_changes", { event: "*", schema: "public", table: "ai_usage", filter: `user_id=eq.${user.id}` }, () => fetchAll())
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, (payload: any) => {
+        const n = payload.new;
+        if (n?.type?.startsWith("medcoin_alert_")) {
+          toast.warning(n.title, { description: n.message });
+          fetchAlerts();
+        }
+      })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user]);
+
+  // Threshold detection: trigger alert only when threshold changes (avoid spam)
+  useEffect(() => {
+    if (!user || cLoading) return;
+    const threshold = computeThreshold(balance, allCreditsSum.lifetime);
+    if (threshold === null) { lastTriggeredRef.current = null; return; }
+    if (lastTriggeredRef.current === threshold) return;
+    lastTriggeredRef.current = threshold;
+    maybeNotifyBalanceThreshold(user.id, threshold);
+  }, [balance, allCreditsSum.lifetime, cLoading, user]);
 
   const todayStart = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d.getTime(); }, []);
   const monthStart = useMemo(() => { const d = new Date(); d.setDate(1); d.setHours(0,0,0,0); return d.getTime(); }, []);
