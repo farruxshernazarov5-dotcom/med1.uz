@@ -38,6 +38,7 @@ import PatientHealthTracking from "@/components/patient/hms/PatientHealthTrackin
 import PatientFamily from "@/components/patient/hms/PatientFamily";
 import PatientAIAssistant from "@/components/patient/hms/PatientAIAssistant";
 import PatientPayments from "@/components/patient/hms/PatientPayments";
+import MedCoinWallet from "@/components/patient/wallet/MedCoinWallet";
 import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
