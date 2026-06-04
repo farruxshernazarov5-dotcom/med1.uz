@@ -57,6 +57,7 @@ const TABS: { id: TabId; label: string; icon: any }[] = [
 ];
 
 const HAMBI_TABS = [
+  { id: "audit",    label: "🛡️ Readiness Audit",   C: HambiAudit },
   { id: "users",    label: "👥 Foydalanuvchilar", C: HambiUsers },
   { id: "ai",       label: "🤖 AI Xizmatlar",      C: HambiAi },
   { id: "subs",     label: "💳 Obunalar",          C: HambiSubs },
