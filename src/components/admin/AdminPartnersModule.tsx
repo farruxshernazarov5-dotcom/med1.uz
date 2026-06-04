@@ -122,7 +122,7 @@ const PartnerRow = ({ p, onApprove, onReject }: any) => (
 
 const AdminPartnersModule = () => {
   const [tab, setTab] = useState<TabId>("overview");
-  const [hambiTab, setHambiTab] = useState<typeof HAMBI_TABS[number]["id"]>("users");
+  const [hambiTab, setHambiTab] = useState<typeof HAMBI_TABS[number]["id"]>("audit");
   const [partners, setPartners] = useState<any[]>([]);
   const [counts, setCounts] = useState({
     clinics: 0, diagnostics: 0, pharmacies: 0, medtech: 0,
