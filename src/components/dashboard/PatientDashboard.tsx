@@ -5,7 +5,7 @@ import {
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
   ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
-  Sun, Moon, Gift,
+  Sun, Moon, Gift, Coins,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ import PatientHealthTracking from "@/components/patient/hms/PatientHealthTrackin
 import PatientFamily from "@/components/patient/hms/PatientFamily";
 import PatientAIAssistant from "@/components/patient/hms/PatientAIAssistant";
 import PatientPayments from "@/components/patient/hms/PatientPayments";
+import MedCoinWallet from "@/components/patient/wallet/MedCoinWallet";
 import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
@@ -46,7 +47,7 @@ type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
   | "appointments" | "nearby" | "workflow"
   | "lab" | "prescriptions" | "files" | "documents" | "history"
-  | "payments" | "promo" | "premium" | "partner-referral"
+  | "wallet" | "payments" | "promo" | "premium" | "partner-referral"
   | "family" | "favorites" | "reviews"
   | "profile" | "notifications" | "security" | "settings";
 
@@ -113,6 +114,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: "To'lovlar",
     icon: Receipt,
     items: [
+      { id: "wallet", label: "🪙 Med Coin Wallet", icon: Coins },
       { id: "payments", label: "To'lovlar va cheklar", icon: CreditCard },
       { id: "promo", label: "Aksiyalar", icon: Tag },
       { id: "partner-referral", label: "Referral & Bonus", icon: Gift },
@@ -198,6 +200,7 @@ const PatientDashboard = () => {
       case "files": return <PatientFiles />;
       case "documents": return <PatientDocuments />;
       case "history": return <PatientMedicalHistory />;
+      case "wallet": return <MedCoinWallet />;
       case "payments": return <PatientPayments />;
       case "promo": return <PatientPromo />;
       case "premium": return <PremiumPerksPanel moduleId="clinic" />;
