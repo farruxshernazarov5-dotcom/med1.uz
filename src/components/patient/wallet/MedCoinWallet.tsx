@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Coins, TrendingDown, TrendingUp, Activity, Calendar, AlertTriangle, Sparkles, RefreshCw } from "lucide-react";
+import { Coins, TrendingDown, TrendingUp, Activity, Calendar, AlertTriangle, Sparkles, RefreshCw, Bell, CheckCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCredits } from "@/hooks/useCredits";
@@ -8,6 +8,8 @@ import { useAiAccess } from "@/hooks/useAiAccess";
 import { AI_SERVICE_TARIFFS as AI_TARIFFS } from "@/data/aiTariffs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { computeThreshold, maybeNotifyBalanceThreshold } from "@/lib/medCoinAlerts";
+import { toast } from "sonner";
 
 interface Tx {
   id: string;
