@@ -46,7 +46,7 @@ type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
   | "appointments" | "nearby" | "workflow"
   | "lab" | "prescriptions" | "files" | "documents" | "history"
-  | "payments" | "promo" | "premium" | "partner-referral"
+  | "wallet" | "payments" | "promo" | "premium" | "partner-referral"
   | "family" | "favorites" | "reviews"
   | "profile" | "notifications" | "security" | "settings";
 
