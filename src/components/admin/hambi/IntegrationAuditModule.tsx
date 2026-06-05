@@ -183,7 +183,7 @@ const IntegrationAuditModule = (_props: { slug?: string; lang?: string } = {}) =
       const failed = allPays.filter((p: any) => p.status === "failed");
       const totalRev = paid.reduce((s, p: any) => s + Number(p.amount || 0), 0);
       const providerMap = new Map<string, number>();
-      paid.forEach((p: any) => providerMap.set(p.provider || "?", (providerMap.get(p.provider || "?") ?? 0) + 1));
+      paid.forEach((p: any) => providerMap.set(p.payment_method || "?", (providerMap.get(p.payment_method || "?") ?? 0) + 1));
       const providers = providerMap.size;
       const credits7d = creditPurchaseRes.data?.length ?? 0;
       const failRate = allPays.length > 0 ? failed.length / allPays.length : 0;
