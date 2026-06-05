@@ -21,6 +21,7 @@ import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
 import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import MasterContractsArchive from "@/components/admin/legal/MasterContractsArchive";
+import SecurityCenterModule from "@/components/admin/SecurityCenterModule";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,7 @@ const sidebarSections = [
       { id: "promotions", label: "Aksiyalar", icon: Heart },
       { id: "admin_users", label: "Adminlar", icon: UserCog },
       { id: "monitoring", label: "Monitoring", icon: Monitor },
+      { id: "security_center", label: "🛡️ Security Center", icon: ShieldAlert },
       { id: "audit", label: "Audit log", icon: Shield },
     ]
   },
@@ -1416,6 +1418,8 @@ const AdminDashboard = () => {
           {tab === "referral_fraud" && <ReferralFraudAdmin />}
           {tab === "legal" && <LegalAdminDashboard />}
           {tab === "master_contracts" && <MasterContractsArchive />}
+
+          {tab === "security_center" && <SecurityCenterModule />}
 
           {tab === "audit" && (
             <div className="space-y-3">

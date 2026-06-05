@@ -1,0 +1,502 @@
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Shield, ShieldAlert, ShieldCheck, KeyRound, Activity, AlertTriangle,
+  RefreshCw, Clock, Ban, Eye, TrendingUp, Globe, Lock,
+} from "lucide-react";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, Cell,
+} from "recharts";
+import { cn } from "@/lib/utils";
+
+interface ApiKeyRow {
+  id: string;
+  partner_id: string;
+  name: string;
+  key_prefix: string;
+  environment: string;
+  expires_at: string | null;
+  last_used_at: string | null;
+  is_active: boolean;
+  revoked_at: string | null;
+  rate_limit_per_day: number;
+  created_at: string;
+  api_partners?: { name: string } | null;
+}
+
+interface LogRow {
+  id: string;
+  api_key_id: string | null;
+  partner_id: string | null;
+  endpoint: string;
+  status_code: number;
+  ip_address: string | null;
+  error_message: string | null;
+  created_at: string;
+}
+
+interface Alert {
+  id: string;
+  level: "critical" | "high" | "medium" | "low";
+  title: string;
+  detail: string;
+  time: string;
+}
+
+const COLORS = {
+  ok: "#27AE60",
+  warn: "#F2994A",
+  bad: "#EB5757",
+  info: "#2F80ED",
+  purple: "#7B61FF",
+};
+
+const SecurityCenterModule = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [keys, setKeys] = useState<ApiKeyRow[]>([]);
+  const [logs, setLogs] = useState<LogRow[]>([]);
+  const [auditCount, setAuditCount] = useState(0);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const [keysRes, logsRes, auditRes] = await Promise.all([
+        supabase
+          .from("api_keys")
+          .select("*, api_partners(name)")
+          .order("created_at", { ascending: false })
+          .limit(200),
+        supabase
+          .from("api_request_logs")
+          .select("id, api_key_id, partner_id, endpoint, status_code, ip_address, error_message, created_at")
+          .gte("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(2000),
+        supabase
+          .from("audit_logs")
+          .select("id", { count: "exact", head: true })
+          .gte("created_at", since),
+      ]);
+      if (keysRes.error) throw keysRes.error;
+      if (logsRes.error) throw logsRes.error;
+      setKeys((keysRes.data as any) || []);
+      setLogs((logsRes.data as any) || []);
+      setAuditCount(auditRes.count || 0);
+      setLastRefresh(new Date());
+    } catch (e: any) {
+      toast({ title: "Yuklash xatosi", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    load();
+    const t = setInterval(load, 60000);
+    return () => clearInterval(t);
+  }, [load]);
+
+  // ---- Derived metrics ----
+  const now = Date.now();
+  const stats = useMemo(() => {
+    const active = keys.filter((k) => k.is_active && !k.revoked_at);
+    const revoked = keys.filter((k) => k.revoked_at);
+    const expired = keys.filter(
+      (k) => k.expires_at && new Date(k.expires_at).getTime() < now,
+    );
+    const expiringSoon = keys.filter(
+      (k) =>
+        k.expires_at &&
+        new Date(k.expires_at).getTime() > now &&
+        new Date(k.expires_at).getTime() - now < 7 * 86400000,
+    );
+    const stale = active.filter(
+      (k) =>
+        !k.last_used_at ||
+        now - new Date(k.last_used_at).getTime() > 30 * 86400000,
+    );
+
+    const totalCalls = logs.length;
+    const failedCalls = logs.filter((l) => l.status_code >= 400).length;
+    const unauthorized = logs.filter((l) => l.status_code === 401 || l.status_code === 403).length;
+    const errors5xx = logs.filter((l) => l.status_code >= 500).length;
+    const errorRate = totalCalls ? (failedCalls / totalCalls) * 100 : 0;
+
+    // IP frequency
+    const ipMap = new Map<string, { total: number; failed: number }>();
+    logs.forEach((l) => {
+      const ip = l.ip_address || "unknown";
+      const cur = ipMap.get(ip) || { total: 0, failed: 0 };
+      cur.total++;
+      if (l.status_code >= 400) cur.failed++;
+      ipMap.set(ip, cur);
+    });
+    const suspiciousIps = Array.from(ipMap.entries())
+      .filter(([, v]) => v.failed >= 5 && v.failed / v.total > 0.4)
+      .sort((a, b) => b[1].failed - a[1].failed)
+      .slice(0, 10);
+
+    // Key usage map
+    const keyCalls = new Map<string, { total: number; failed: number }>();
+    logs.forEach((l) => {
+      if (!l.api_key_id) return;
+      const cur = keyCalls.get(l.api_key_id) || { total: 0, failed: 0 };
+      cur.total++;
+      if (l.status_code >= 400) cur.failed++;
+      keyCalls.set(l.api_key_id, cur);
+    });
+
+    // Hourly series (24h)
+    const hourBuckets = Array.from({ length: 24 }, (_, i) => {
+      const ts = new Date(now - (23 - i) * 3600000);
+      return {
+        hour: ts.getHours().toString().padStart(2, "0") + ":00",
+        ok: 0,
+        fail: 0,
+      };
+    });
+    logs.forEach((l) => {
+      const age = now - new Date(l.created_at).getTime();
+      const idx = 23 - Math.floor(age / 3600000);
+      if (idx >= 0 && idx < 24) {
+        if (l.status_code >= 400) hourBuckets[idx].fail++;
+        else hourBuckets[idx].ok++;
+      }
+    });
+
+    // Security score (0-100)
+    let score = 100;
+    if (expired.length) score -= Math.min(20, expired.length * 4);
+    if (stale.length) score -= Math.min(10, stale.length * 2);
+    if (errorRate > 20) score -= 15;
+    else if (errorRate > 10) score -= 8;
+    if (suspiciousIps.length) score -= Math.min(20, suspiciousIps.length * 4);
+    if (expiringSoon.length) score -= Math.min(8, expiringSoon.length * 2);
+    score = Math.max(0, Math.round(score));
+
+    // Alerts
+    const alerts: Alert[] = [];
+    expired.forEach((k) =>
+      alerts.push({
+        id: "exp-" + k.id,
+        level: "high",
+        title: `Token muddati o'tgan: ${k.name}`,
+        detail: `${k.api_partners?.name || k.partner_id} — ${k.key_prefix}***`,
+        time: k.expires_at!,
+      }),
+    );
+    expiringSoon.forEach((k) =>
+      alerts.push({
+        id: "soon-" + k.id,
+        level: "medium",
+        title: `Token tez orada tugaydi: ${k.name}`,
+        detail: `${k.key_prefix}*** — ${new Date(k.expires_at!).toLocaleDateString("uz-UZ")}`,
+        time: k.expires_at!,
+      }),
+    );
+    suspiciousIps.slice(0, 5).forEach(([ip, v]) =>
+      alerts.push({
+        id: "ip-" + ip,
+        level: "critical",
+        title: `Shubhali IP: ${ip}`,
+        detail: `${v.failed}/${v.total} muvaffaqiyatsiz urinish (24s)`,
+        time: new Date().toISOString(),
+      }),
+    );
+    if (errorRate > 20)
+      alerts.push({
+        id: "err-rate",
+        level: "high",
+        title: `Yuqori xato darajasi: ${errorRate.toFixed(1)}%`,
+        detail: `${failedCalls}/${totalCalls} so'rov muvaffaqiyatsiz`,
+        time: new Date().toISOString(),
+      });
+
+    return {
+      active,
+      revoked,
+      expired,
+      expiringSoon,
+      stale,
+      totalCalls,
+      failedCalls,
+      unauthorized,
+      errors5xx,
+      errorRate,
+      suspiciousIps,
+      keyCalls,
+      hourBuckets,
+      score,
+      alerts,
+    };
+  }, [keys, logs, now]);
+
+  const scoreColor =
+    stats.score >= 80 ? COLORS.ok : stats.score >= 60 ? COLORS.warn : COLORS.bad;
+  const scoreLabel =
+    stats.score >= 80 ? "Yaxshi" : stats.score >= 60 ? "O'rtacha" : "Xavfli";
+
+  const revokeKey = async (id: string) => {
+    if (!confirm("Ushbu API kalitni bekor qilasizmi?")) return;
+    const { error } = await supabase
+      .from("api_keys")
+      .update({ is_active: false, revoked_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Xato", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Token bekor qilindi" });
+      load();
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Shield className="w-7 h-7 text-[#2F80ED]" />
+            Security Center
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            JWT, API kalit va so'rov xavfsizligi monitoringi · Oxirgi yangilanish:{" "}
+            {lastRefresh.toLocaleTimeString("uz-UZ")}
+          </p>
+        </div>
+        <Button onClick={load} disabled={loading} variant="outline" size="sm">
+          <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
+          Yangilash
+        </Button>
+      </div>
+
+      {/* Security Score + KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="md:col-span-1 border-2" style={{ borderColor: scoreColor + "40" }}>
+          <CardContent className="p-6 text-center">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
+              Xavfsizlik Reytingi
+            </p>
+            <div className="my-3 relative inline-flex items-center justify-center">
+              <svg className="w-28 h-28 -rotate-90">
+                <circle cx="56" cy="56" r="48" stroke="hsl(var(--muted))" strokeWidth="8" fill="none" />
+                <circle
+                  cx="56" cy="56" r="48" stroke={scoreColor} strokeWidth="8" fill="none"
+                  strokeDasharray={`${(stats.score / 100) * 301.6} 301.6`}
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-bold" style={{ color: scoreColor }}>
+                  {stats.score}
+                </span>
+                <span className="text-[10px] uppercase text-muted-foreground">/ 100</span>
+              </div>
+            </div>
+            <Badge style={{ background: scoreColor, color: "#fff" }}>{scoreLabel}</Badge>
+          </CardContent>
+        </Card>
+
+        <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Kpi icon={KeyRound} label="Faol kalitlar" value={stats.active.length} color={COLORS.info} />
+          <Kpi icon={Clock} label="Muddati o'tgan" value={stats.expired.length} color={COLORS.bad} />
+          <Kpi icon={Ban} label="Bekor qilingan" value={stats.revoked.length} color="#94a3b8" />
+          <Kpi icon={AlertTriangle} label="Tez orada tugaydi" value={stats.expiringSoon.length} color={COLORS.warn} />
+          <Kpi icon={Activity} label="24s so'rovlar" value={stats.totalCalls} color={COLORS.purple} />
+          <Kpi icon={ShieldAlert} label="Muvaffaqiyatsiz" value={stats.failedCalls} color={COLORS.bad} />
+          <Kpi icon={Lock} label="401/403" value={stats.unauthorized} color={COLORS.warn} />
+          <Kpi icon={Eye} label="Audit yozuvlar" value={auditCount} color={COLORS.ok} />
+        </div>
+      </div>
+
+      {/* Alerts */}
+      {stats.alerts.length > 0 && (
+        <Card className="border-l-4 border-l-[#EB5757]">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-[#EB5757]" />
+              Real-time Alertlar ({stats.alerts.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 max-h-72 overflow-auto">
+            {stats.alerts.map((a) => (
+              <div
+                key={a.id}
+                className="flex items-start justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/70 transition"
+              >
+                <div className="flex items-start gap-3">
+                  <Badge
+                    className={cn(
+                      "uppercase text-[10px]",
+                      a.level === "critical" && "bg-red-600",
+                      a.level === "high" && "bg-orange-600",
+                      a.level === "medium" && "bg-yellow-600",
+                      a.level === "low" && "bg-blue-600",
+                    )}
+                  >
+                    {a.level}
+                  </Badge>
+                  <div>
+                    <p className="text-sm font-medium">{a.title}</p>
+                    <p className="text-xs text-muted-foreground">{a.detail}</p>
+                  </div>
+                </div>
+                <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+                  {new Date(a.time).toLocaleString("uz-UZ")}
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" /> 24 soatlik so'rov oqimi
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats.hourBuckets}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                <XAxis dataKey="hour" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Area type="monotone" dataKey="ok" stackId="1" stroke={COLORS.ok} fill={COLORS.ok} fillOpacity={0.4} name="Muvaffaqiyatli" />
+                <Area type="monotone" dataKey="fail" stackId="1" stroke={COLORS.bad} fill={COLORS.bad} fillOpacity={0.5} name="Muvaffaqiyatsiz" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Globe className="w-4 h-4" /> Shubhali IP-lar
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 max-h-64 overflow-auto">
+            {stats.suspiciousIps.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#27AE60]" />
+                Shubhali faollik yo'q
+              </p>
+            ) : (
+              stats.suspiciousIps.map(([ip, v]) => (
+                <div key={ip} className="flex items-center justify-between p-2 rounded bg-muted/40">
+                  <code className="text-xs">{ip}</code>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="destructive" className="text-[10px]">{v.failed} fail</Badge>
+                    <span className="text-xs text-muted-foreground">/{v.total}</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* API Keys monitoring table */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <KeyRound className="w-4 h-4" /> API Kalitlar Monitoringi
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                <th className="p-2">Kalit</th>
+                <th className="p-2">Hamkor</th>
+                <th className="p-2">Muhit</th>
+                <th className="p-2">Holat</th>
+                <th className="p-2">Muddati</th>
+                <th className="p-2 text-right">24s so'rov</th>
+                <th className="p-2 text-right">Xato</th>
+                <th className="p-2">Oxirgi</th>
+                <th className="p-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {keys.map((k) => {
+                const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0 };
+                const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
+                const isSoon = k.expires_at && !isExpired && new Date(k.expires_at).getTime() - now < 7 * 86400000;
+                const status = k.revoked_at
+                  ? { label: "Bekor", color: "bg-gray-500" }
+                  : isExpired
+                  ? { label: "Muddati o'tgan", color: "bg-red-600" }
+                  : isSoon
+                  ? { label: "Tugaydi", color: "bg-orange-500" }
+                  : k.is_active
+                  ? { label: "Faol", color: "bg-green-600" }
+                  : { label: "O'chirilgan", color: "bg-gray-400" };
+                return (
+                  <tr key={k.id} className="border-b hover:bg-muted/30">
+                    <td className="p-2 font-mono text-xs">
+                      <div className="font-semibold">{k.name}</div>
+                      <div className="text-muted-foreground">{k.key_prefix}***</div>
+                    </td>
+                    <td className="p-2">{k.api_partners?.name || "—"}</td>
+                    <td className="p-2"><Badge variant="outline" className="text-[10px]">{k.environment}</Badge></td>
+                    <td className="p-2"><Badge className={cn("text-[10px] text-white", status.color)}>{status.label}</Badge></td>
+                    <td className="p-2 text-xs">
+                      {k.expires_at ? new Date(k.expires_at).toLocaleDateString("uz-UZ") : "—"}
+                    </td>
+                    <td className="p-2 text-right font-mono">{usage.total}</td>
+                    <td className="p-2 text-right">
+                      {usage.failed > 0 ? (
+                        <span className="text-red-600 font-mono">{usage.failed}</span>
+                      ) : (
+                        <span className="text-muted-foreground">0</span>
+                      )}
+                    </td>
+                    <td className="p-2 text-xs text-muted-foreground">
+                      {k.last_used_at ? new Date(k.last_used_at).toLocaleString("uz-UZ") : "—"}
+                    </td>
+                    <td className="p-2">
+                      {k.is_active && !k.revoked_at && (
+                        <Button size="sm" variant="ghost" onClick={() => revokeKey(k.id)}>
+                          <Ban className="w-3 h-3 mr-1" /> Bekor qilish
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {keys.length === 0 && (
+                <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">API kalitlari topilmadi</td></tr>
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const Kpi = ({ icon: Icon, label, value, color }: any) => (
+  <Card>
+    <CardContent className="p-3">
+      <div className="flex items-center justify-between">
+        <Icon className="w-5 h-5" style={{ color }} />
+        <span className="text-2xl font-bold" style={{ color }}>{value}</span>
+      </div>
+      <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
+    </CardContent>
+  </Card>
+);
+
+export default SecurityCenterModule;
