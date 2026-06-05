@@ -1419,6 +1419,8 @@ const AdminDashboard = () => {
           {tab === "legal" && <LegalAdminDashboard />}
           {tab === "master_contracts" && <MasterContractsArchive />}
 
+          {tab === "security_center" && <SecurityCenterModule />}
+
           {tab === "audit" && (
             <div className="space-y-3">
               <SectionHeader icon={Shield} title="Audit loglar" count={auditLogs.length} />
