@@ -69,7 +69,7 @@ const IntegrationAuditModule = (_props: { slug?: string; lang?: string } = {}) =
         supabase.from("ai_subscription_plans").select("id,tier,daily_limit,monthly_limit,allowed_services"),
         supabase.from("ai_subscriptions").select("id,status,tier"),
         supabase.from("user_ai_subscriptions").select("id,status,plan_id"),
-        supabase.from("ai_payments").select("amount,status,created_at,provider").gte("created_at", since30d),
+        supabase.from("ai_payments").select("amount,status,created_at,payment_method").gte("created_at", since30d),
         supabase.from("credit_history").select("id,type,amount,created_at").gte("created_at", since7d),
         supabase.from("api_webhooks").select("id,is_active,partner_id,events"),
         supabase.from("api_webhook_deliveries").select("id,status,created_at,event").gte("created_at", since7d),
