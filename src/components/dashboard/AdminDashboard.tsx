@@ -89,6 +89,7 @@ const sidebarSections = [
       { id: "promotions", label: "Aksiyalar", icon: Heart },
       { id: "admin_users", label: "Adminlar", icon: UserCog },
       { id: "monitoring", label: "Monitoring", icon: Monitor },
+      { id: "security_center", label: "🛡️ Security Center", icon: ShieldAlert },
       { id: "audit", label: "Audit log", icon: Shield },
     ]
   },
