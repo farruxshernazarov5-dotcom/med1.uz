@@ -7,12 +7,52 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, ShieldAlert, ShieldCheck, KeyRound, Activity, AlertTriangle,
   RefreshCw, Clock, Ban, Eye, TrendingUp, Globe, Lock, FileDown, FileText, Repeat,
+  Settings, Calendar, Archive, Save,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell,
 } from "recharts";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+
+const RULES_KEY = "med1.security.jwtRules";
+const HISTORY_KEY = "med1.security.dailyHistory";
+
+interface JwtRules {
+  reuseThreshold: number;       // distinct IPs that triggers reuse flag
+  requireMultiIp: boolean;       // if false, single-IP heavy use also flags
+  dailyCallLimit: number;        // per-key 24h call ceiling
+  suspiciousIpFailures: number;  // min failed requests from an IP
+  suspiciousFailRate: number;    // 0..1 ratio
+}
+
+const DEFAULT_RULES: JwtRules = {
+  reuseThreshold: 2,
+  requireMultiIp: true,
+  dailyCallLimit: 5000,
+  suspiciousIpFailures: 5,
+  suspiciousFailRate: 0.4,
+};
+
+interface DailySnapshot {
+  date: string; // YYYY-MM-DD
+  savedAt: string;
+  score: number;
+  totalCalls: number;
+  failedCalls: number;
+  unauthorized: number;
+  reusedKeys: number;
+  expired: number;
+  overLimitKeys: number;
+  rules: JwtRules;
+  rows: Array<{
+    name: string; prefix: string; partner: string; status: string;
+    expires: string; calls: number; failed: number; distinctIps: number;
+    reused: boolean; overLimit: boolean;
+  }>;
+}
 
 interface ApiKeyRow {
   id: string;
@@ -63,6 +103,26 @@ const SecurityCenterModule = () => {
   const [logs, setLogs] = useState<LogRow[]>([]);
   const [auditCount, setAuditCount] = useState(0);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [rules, setRules] = useState<JwtRules>(() => {
+    try {
+      const raw = localStorage.getItem(RULES_KEY);
+      return raw ? { ...DEFAULT_RULES, ...JSON.parse(raw) } : DEFAULT_RULES;
+    } catch { return DEFAULT_RULES; }
+  });
+  const [history, setHistory] = useState<DailySnapshot[]>(() => {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
+  const [filterFrom, setFilterFrom] = useState("");
+  const [filterTo, setFilterTo] = useState("");
+
+  const saveRules = (next: JwtRules) => {
+    setRules(next);
+    localStorage.setItem(RULES_KEY, JSON.stringify(next));
+    toast({ title: "Qoidalar saqlandi" });
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -140,7 +200,7 @@ const SecurityCenterModule = () => {
       ipMap.set(ip, cur);
     });
     const suspiciousIps = Array.from(ipMap.entries())
-      .filter(([, v]) => v.failed >= 5 && v.failed / v.total > 0.4)
+      .filter(([, v]) => v.failed >= rules.suspiciousIpFailures && v.failed / v.total > rules.suspiciousFailRate)
       .sort((a, b) => b[1].failed - a[1].failed)
       .slice(0, 10);
 
@@ -154,7 +214,13 @@ const SecurityCenterModule = () => {
       if (l.ip_address) cur.ips.add(l.ip_address);
       keyCalls.set(l.api_key_id, cur);
     });
-    const reusedKeys = keys.filter((k) => (keyCalls.get(k.id)?.ips.size || 0) > 1);
+    const reusedKeys = keys.filter((k) => {
+      const c = keyCalls.get(k.id);
+      if (!c) return false;
+      if (rules.requireMultiIp) return c.ips.size >= rules.reuseThreshold;
+      return c.ips.size >= rules.reuseThreshold || c.total >= rules.dailyCallLimit;
+    });
+    const overLimitKeys = keys.filter((k) => (keyCalls.get(k.id)?.total || 0) > rules.dailyCallLimit);
 
     // Hourly series (24h)
     const hourBuckets = Array.from({ length: 24 }, (_, i) => {
@@ -232,26 +298,25 @@ const SecurityCenterModule = () => {
         time: new Date().toISOString(),
       });
     });
+    overLimitKeys.forEach((k) => {
+      const c = keyCalls.get(k.id);
+      alerts.push({
+        id: "limit-" + k.id,
+        level: "medium",
+        title: `Kunlik limit oshib ketdi: ${k.name}`,
+        detail: `${c?.total || 0} so'rov / limit ${rules.dailyCallLimit} — ${k.key_prefix}***`,
+        time: new Date().toISOString(),
+      });
+    });
+    if (overLimitKeys.length) score -= Math.min(10, overLimitKeys.length * 3);
+    score = Math.max(0, score);
 
     return {
-      active,
-      revoked,
-      expired,
-      expiringSoon,
-      stale,
-      totalCalls,
-      failedCalls,
-      unauthorized,
-      errors5xx,
-      errorRate,
-      suspiciousIps,
-      keyCalls,
-      hourBuckets,
-      score,
-      alerts,
-      reusedKeys,
+      active, revoked, expired, expiringSoon, stale,
+      totalCalls, failedCalls, unauthorized, errors5xx, errorRate,
+      suspiciousIps, keyCalls, hourBuckets, score, alerts, reusedKeys, overLimitKeys,
     };
-  }, [keys, logs, now]);
+  }, [keys, logs, now, rules]);
 
   const scoreColor =
     stats.score >= 80 ? COLORS.ok : stats.score >= 60 ? COLORS.warn : COLORS.bad;
@@ -282,6 +347,9 @@ const SecurityCenterModule = () => {
         : isExpired ? "Muddati o'tgan"
         : isSoon ? "Tez orada tugaydi"
         : k.is_active ? "Faol" : "O'chirilgan";
+      const reused = rules.requireMultiIp
+        ? usage.ips.size >= rules.reuseThreshold
+        : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
       return {
         name: k.name,
         prefix: k.key_prefix,
@@ -293,11 +361,69 @@ const SecurityCenterModule = () => {
         calls: usage.total,
         failed: usage.failed,
         distinctIps: usage.ips.size,
-        reused: usage.ips.size > 1,
+        reused,
+        overLimit: usage.total > rules.dailyCallLimit,
       };
     });
     return rows;
   };
+
+  // ---- Snapshot save & filter ----
+  const saveDailySnapshot = useCallback((silent = false) => {
+    const rows = keys.map((k) => {
+      const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0, ips: new Set<string>() };
+      const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
+      const status = k.revoked_at ? "Bekor qilingan"
+        : isExpired ? "Muddati o'tgan"
+        : k.is_active ? "Faol" : "O'chirilgan";
+      const reused = rules.requireMultiIp
+        ? usage.ips.size >= rules.reuseThreshold
+        : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
+      return {
+        name: k.name, prefix: k.key_prefix,
+        partner: k.api_partners?.name || "—", status,
+        expires: k.expires_at ? new Date(k.expires_at).toLocaleDateString("uz-UZ") : "—",
+        calls: usage.total, failed: usage.failed,
+        distinctIps: usage.ips.size, reused,
+        overLimit: usage.total > rules.dailyCallLimit,
+      };
+    });
+    const today = new Date().toISOString().slice(0, 10);
+    const snap: DailySnapshot = {
+      date: today,
+      savedAt: new Date().toISOString(),
+      score: stats.score,
+      totalCalls: stats.totalCalls,
+      failedCalls: stats.failedCalls,
+      unauthorized: stats.unauthorized,
+      reusedKeys: stats.reusedKeys.length,
+      expired: stats.expired.length,
+      overLimitKeys: stats.overLimitKeys.length,
+      rules,
+      rows,
+    };
+    const next = [snap, ...history.filter((h) => h.date !== today)].slice(0, 90);
+    setHistory(next);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    if (!silent) toast({ title: `Hisobot saqlandi: ${today}` });
+  }, [keys, stats, rules, history, now, toast]);
+
+  // Auto-save snapshot once per day after first successful load
+  useEffect(() => {
+    if (loading || keys.length === 0) return;
+    const today = new Date().toISOString().slice(0, 10);
+    if (!history.find((h) => h.date === today)) saveDailySnapshot(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, keys.length]);
+
+  const filteredHistory = useMemo(() => {
+    return history.filter((h) => {
+      if (filterFrom && h.date < filterFrom) return false;
+      if (filterTo && h.date > filterTo) return false;
+      return true;
+    });
+  }, [history, filterFrom, filterTo]);
+
 
   const exportMarkdown = () => {
     const rows = buildJwtReport();
@@ -400,6 +526,9 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           </Button>
           <Button onClick={exportMarkdown} variant="outline" size="sm">
             <FileDown className="w-4 h-4 mr-2" /> Markdown
+          </Button>
+          <Button onClick={() => saveDailySnapshot(false)} variant="outline" size="sm">
+            <Save className="w-4 h-4 mr-2" /> Snapshot
           </Button>
           <Button onClick={load} disabled={loading} variant="outline" size="sm">
             <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
@@ -567,7 +696,10 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                 const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0, ips: new Set<string>() };
                 const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
                 const isSoon = k.expires_at && !isExpired && new Date(k.expires_at).getTime() - now < 7 * 86400000;
-                const reused = usage.ips.size > 1;
+                const reused = rules.requireMultiIp
+                  ? usage.ips.size >= rules.reuseThreshold
+                  : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
+                const overLimit = usage.total > rules.dailyCallLimit;
                 const status = k.revoked_at
                   ? { label: "Bekor", color: "bg-gray-500" }
                   : isExpired
@@ -627,6 +759,149 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           </table>
         </CardContent>
       </Card>
+
+      {/* JWT Detection Rules */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Settings className="w-4 h-4" /> JWT qayta ishlatish — Aniqlash qoidalari
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RulesEditor rules={rules} onSave={saveRules} onReset={() => saveRules(DEFAULT_RULES)} />
+        </CardContent>
+      </Card>
+
+      {/* Daily Reports Archive */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Archive className="w-4 h-4" /> Kunlik JWT monitoring arxivi ({history.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3 items-end mb-4">
+            <div>
+              <Label className="text-xs">Dan</Label>
+              <Input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)} className="h-9" />
+            </div>
+            <div>
+              <Label className="text-xs">Gacha</Label>
+              <Input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)} className="h-9" />
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => { setFilterFrom(""); setFilterTo(""); }}>
+              Tozalash
+            </Button>
+            <div className="ml-auto text-xs text-muted-foreground flex items-center gap-1">
+              <Calendar className="w-3 h-3" /> {filteredHistory.length} ta yozuv
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                  <th className="p-2">Sana</th>
+                  <th className="p-2 text-right">Reyting</th>
+                  <th className="p-2 text-right">So'rovlar</th>
+                  <th className="p-2 text-right">Xato</th>
+                  <th className="p-2 text-right">401/403</th>
+                  <th className="p-2 text-right">Qayta</th>
+                  <th className="p-2 text-right">Limit oshgan</th>
+                  <th className="p-2 text-right">Muddati o'tgan</th>
+                  <th className="p-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredHistory.length === 0 && (
+                  <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">Tanlangan oraliqda yozuv yo'q</td></tr>
+                )}
+                {filteredHistory.map((h) => (
+                  <tr key={h.date} className="border-b hover:bg-muted/30">
+                    <td className="p-2 font-mono text-xs">{h.date}</td>
+                    <td className="p-2 text-right font-bold" style={{
+                      color: h.score >= 80 ? COLORS.ok : h.score >= 60 ? COLORS.warn : COLORS.bad,
+                    }}>{h.score}</td>
+                    <td className="p-2 text-right font-mono">{h.totalCalls}</td>
+                    <td className="p-2 text-right font-mono text-red-600">{h.failedCalls}</td>
+                    <td className="p-2 text-right font-mono">{h.unauthorized}</td>
+                    <td className="p-2 text-right">
+                      {h.reusedKeys > 0
+                        ? <Badge className="bg-purple-600 text-white text-[10px]">{h.reusedKeys}</Badge>
+                        : <span className="text-muted-foreground">0</span>}
+                    </td>
+                    <td className="p-2 text-right">
+                      {h.overLimitKeys > 0
+                        ? <Badge className="bg-orange-500 text-white text-[10px]">{h.overLimitKeys}</Badge>
+                        : <span className="text-muted-foreground">0</span>}
+                    </td>
+                    <td className="p-2 text-right font-mono">{h.expired}</td>
+                    <td className="p-2 text-right">
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        const blob = new Blob([JSON.stringify(h, null, 2)], { type: "application/json" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `jwt-snapshot-${h.date}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }}>
+                        <FileDown className="w-3 h-3" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const RulesEditor = ({
+  rules, onSave, onReset,
+}: { rules: JwtRules; onSave: (r: JwtRules) => void; onReset: () => void }) => {
+  const [draft, setDraft] = useState<JwtRules>(rules);
+  useEffect(() => setDraft(rules), [rules]);
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>
+        <Label className="text-xs">Qayta ishlatish chegarasi (IP soni)</Label>
+        <Input type="number" min={2} value={draft.reuseThreshold}
+          onChange={(e) => setDraft({ ...draft, reuseThreshold: Math.max(2, +e.target.value || 2) })} />
+        <p className="text-[11px] text-muted-foreground mt-1">≥ shu sondagi turli IP-dan kelsa — Repeat flag</p>
+      </div>
+      <div>
+        <Label className="text-xs">Kunlik so'rov limiti (per kalit)</Label>
+        <Input type="number" min={1} value={draft.dailyCallLimit}
+          onChange={(e) => setDraft({ ...draft, dailyCallLimit: Math.max(1, +e.target.value || 1) })} />
+        <p className="text-[11px] text-muted-foreground mt-1">Limitdan oshsa — alert + score jarima</p>
+      </div>
+      <div className="flex items-center justify-between p-3 rounded-lg border">
+        <div>
+          <Label className="text-xs">Faqat ko'p IP talab qilinsin</Label>
+          <p className="text-[11px] text-muted-foreground">O'chirilsa — limit oshishi ham flag bo'ladi</p>
+        </div>
+        <Switch checked={draft.requireMultiIp}
+          onCheckedChange={(v) => setDraft({ ...draft, requireMultiIp: v })} />
+      </div>
+      <div>
+        <Label className="text-xs">Shubhali IP — min muvaffaqiyatsiz</Label>
+        <Input type="number" min={1} value={draft.suspiciousIpFailures}
+          onChange={(e) => setDraft({ ...draft, suspiciousIpFailures: Math.max(1, +e.target.value || 1) })} />
+      </div>
+      <div>
+        <Label className="text-xs">Shubhali IP — xato darajasi (0–1)</Label>
+        <Input type="number" step="0.05" min={0} max={1} value={draft.suspiciousFailRate}
+          onChange={(e) => setDraft({ ...draft, suspiciousFailRate: Math.min(1, Math.max(0, +e.target.value || 0)) })} />
+      </div>
+      <div className="flex items-end gap-2">
+        <Button onClick={() => onSave(draft)} className="flex-1">
+          <Save className="w-4 h-4 mr-2" /> Saqlash
+        </Button>
+        <Button variant="outline" onClick={onReset}>Reset</Button>
+      </div>
     </div>
   );
 };
