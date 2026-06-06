@@ -556,15 +556,18 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                 <th className="p-2">Muddati</th>
                 <th className="p-2 text-right">24s so'rov</th>
                 <th className="p-2 text-right">Xato</th>
+                <th className="p-2 text-right">IP-lar</th>
+                <th className="p-2">Qayta</th>
                 <th className="p-2">Oxirgi</th>
                 <th className="p-2"></th>
               </tr>
             </thead>
             <tbody>
               {keys.map((k) => {
-                const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0 };
+                const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0, ips: new Set<string>() };
                 const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
                 const isSoon = k.expires_at && !isExpired && new Date(k.expires_at).getTime() - now < 7 * 86400000;
+                const reused = usage.ips.size > 1;
                 const status = k.revoked_at
                   ? { label: "Bekor", color: "bg-gray-500" }
                   : isExpired
@@ -575,7 +578,7 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                   ? { label: "Faol", color: "bg-green-600" }
                   : { label: "O'chirilgan", color: "bg-gray-400" };
                 return (
-                  <tr key={k.id} className="border-b hover:bg-muted/30">
+                  <tr key={k.id} className={cn("border-b hover:bg-muted/30", reused && "bg-purple-50/40")}>
                     <td className="p-2 font-mono text-xs">
                       <div className="font-semibold">{k.name}</div>
                       <div className="text-muted-foreground">{k.key_prefix}***</div>
@@ -594,6 +597,16 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                         <span className="text-muted-foreground">0</span>
                       )}
                     </td>
+                    <td className="p-2 text-right font-mono text-xs">{usage.ips.size}</td>
+                    <td className="p-2">
+                      {reused ? (
+                        <Badge className="bg-purple-600 text-white text-[10px]">
+                          <Repeat className="w-3 h-3 mr-1" /> HA
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      )}
+                    </td>
                     <td className="p-2 text-xs text-muted-foreground">
                       {k.last_used_at ? new Date(k.last_used_at).toLocaleString("uz-UZ") : "—"}
                     </td>
@@ -608,7 +621,7 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                 );
               })}
               {keys.length === 0 && (
-                <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">API kalitlari topilmadi</td></tr>
+                <tr><td colSpan={11} className="p-8 text-center text-muted-foreground">API kalitlari topilmadi</td></tr>
               )}
             </tbody>
           </table>
