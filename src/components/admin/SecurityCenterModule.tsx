@@ -693,7 +693,10 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                 const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0, ips: new Set<string>() };
                 const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
                 const isSoon = k.expires_at && !isExpired && new Date(k.expires_at).getTime() - now < 7 * 86400000;
-                const reused = usage.ips.size > 1;
+                const reused = rules.requireMultiIp
+                  ? usage.ips.size >= rules.reuseThreshold
+                  : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
+                const overLimit = usage.total > rules.dailyCallLimit;
                 const status = k.revoked_at
                   ? { label: "Bekor", color: "bg-gray-500" }
                   : isExpired
