@@ -214,7 +214,13 @@ const SecurityCenterModule = () => {
       if (l.ip_address) cur.ips.add(l.ip_address);
       keyCalls.set(l.api_key_id, cur);
     });
-    const reusedKeys = keys.filter((k) => (keyCalls.get(k.id)?.ips.size || 0) > 1);
+    const reusedKeys = keys.filter((k) => {
+      const c = keyCalls.get(k.id);
+      if (!c) return false;
+      if (rules.requireMultiIp) return c.ips.size >= rules.reuseThreshold;
+      return c.ips.size >= rules.reuseThreshold || c.total >= rules.dailyCallLimit;
+    });
+    const overLimitKeys = keys.filter((k) => (keyCalls.get(k.id)?.total || 0) > rules.dailyCallLimit);
 
     // Hourly series (24h)
     const hourBuckets = Array.from({ length: 24 }, (_, i) => {
