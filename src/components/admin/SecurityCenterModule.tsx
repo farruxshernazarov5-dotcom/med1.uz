@@ -347,6 +347,9 @@ const SecurityCenterModule = () => {
         : isExpired ? "Muddati o'tgan"
         : isSoon ? "Tez orada tugaydi"
         : k.is_active ? "Faol" : "O'chirilgan";
+      const reused = rules.requireMultiIp
+        ? usage.ips.size >= rules.reuseThreshold
+        : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
       return {
         name: k.name,
         prefix: k.key_prefix,
@@ -358,11 +361,69 @@ const SecurityCenterModule = () => {
         calls: usage.total,
         failed: usage.failed,
         distinctIps: usage.ips.size,
-        reused: usage.ips.size > 1,
+        reused,
+        overLimit: usage.total > rules.dailyCallLimit,
       };
     });
     return rows;
   };
+
+  // ---- Snapshot save & filter ----
+  const saveDailySnapshot = useCallback((silent = false) => {
+    const rows = keys.map((k) => {
+      const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0, ips: new Set<string>() };
+      const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
+      const status = k.revoked_at ? "Bekor qilingan"
+        : isExpired ? "Muddati o'tgan"
+        : k.is_active ? "Faol" : "O'chirilgan";
+      const reused = rules.requireMultiIp
+        ? usage.ips.size >= rules.reuseThreshold
+        : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
+      return {
+        name: k.name, prefix: k.key_prefix,
+        partner: k.api_partners?.name || "—", status,
+        expires: k.expires_at ? new Date(k.expires_at).toLocaleDateString("uz-UZ") : "—",
+        calls: usage.total, failed: usage.failed,
+        distinctIps: usage.ips.size, reused,
+        overLimit: usage.total > rules.dailyCallLimit,
+      };
+    });
+    const today = new Date().toISOString().slice(0, 10);
+    const snap: DailySnapshot = {
+      date: today,
+      savedAt: new Date().toISOString(),
+      score: stats.score,
+      totalCalls: stats.totalCalls,
+      failedCalls: stats.failedCalls,
+      unauthorized: stats.unauthorized,
+      reusedKeys: stats.reusedKeys.length,
+      expired: stats.expired.length,
+      overLimitKeys: stats.overLimitKeys.length,
+      rules,
+      rows,
+    };
+    const next = [snap, ...history.filter((h) => h.date !== today)].slice(0, 90);
+    setHistory(next);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    if (!silent) toast({ title: `Hisobot saqlandi: ${today}` });
+  }, [keys, stats, rules, history, now, toast]);
+
+  // Auto-save snapshot once per day after first successful load
+  useEffect(() => {
+    if (loading || keys.length === 0) return;
+    const today = new Date().toISOString().slice(0, 10);
+    if (!history.find((h) => h.date === today)) saveDailySnapshot(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, keys.length]);
+
+  const filteredHistory = useMemo(() => {
+    return history.filter((h) => {
+      if (filterFrom && h.date < filterFrom) return false;
+      if (filterTo && h.date > filterTo) return false;
+      return true;
+    });
+  }, [history, filterFrom, filterTo]);
+
 
   const exportMarkdown = () => {
     const rows = buildJwtReport();
