@@ -527,6 +527,9 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           <Button onClick={exportMarkdown} variant="outline" size="sm">
             <FileDown className="w-4 h-4 mr-2" /> Markdown
           </Button>
+          <Button onClick={() => saveDailySnapshot(false)} variant="outline" size="sm">
+            <Save className="w-4 h-4 mr-2" /> Snapshot
+          </Button>
           <Button onClick={load} disabled={loading} variant="outline" size="sm">
             <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
             Yangilash
