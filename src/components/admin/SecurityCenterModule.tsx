@@ -200,7 +200,7 @@ const SecurityCenterModule = () => {
       ipMap.set(ip, cur);
     });
     const suspiciousIps = Array.from(ipMap.entries())
-      .filter(([, v]) => v.failed >= 5 && v.failed / v.total > 0.4)
+      .filter(([, v]) => v.failed >= rules.suspiciousIpFailures && v.failed / v.total > rules.suspiciousFailRate)
       .sort((a, b) => b[1].failed - a[1].failed)
       .slice(0, 10);
 
