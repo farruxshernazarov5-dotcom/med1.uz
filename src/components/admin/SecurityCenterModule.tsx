@@ -272,6 +272,114 @@ const SecurityCenterModule = () => {
     }
   };
 
+  // ---- Daily Report Export ----
+  const buildJwtReport = () => {
+    const rows = keys.map((k) => {
+      const usage = stats.keyCalls.get(k.id) || { total: 0, failed: 0, ips: new Set<string>() };
+      const isExpired = k.expires_at && new Date(k.expires_at).getTime() < now;
+      const isSoon = k.expires_at && !isExpired && new Date(k.expires_at).getTime() - now < 7 * 86400000;
+      const status = k.revoked_at ? "Bekor qilingan"
+        : isExpired ? "Muddati o'tgan"
+        : isSoon ? "Tez orada tugaydi"
+        : k.is_active ? "Faol" : "O'chirilgan";
+      return {
+        name: k.name,
+        prefix: k.key_prefix,
+        partner: k.api_partners?.name || "—",
+        env: k.environment,
+        status,
+        expires: k.expires_at ? new Date(k.expires_at).toLocaleString("uz-UZ") : "—",
+        lastUsed: k.last_used_at ? new Date(k.last_used_at).toLocaleString("uz-UZ") : "—",
+        calls: usage.total,
+        failed: usage.failed,
+        distinctIps: usage.ips.size,
+        reused: usage.ips.size > 1,
+      };
+    });
+    return rows;
+  };
+
+  const exportMarkdown = () => {
+    const rows = buildJwtReport();
+    const d = new Date().toLocaleString("uz-UZ");
+    let md = `# Security Center — Kunlik Hisobot\n\n**Sana:** ${d}\n\n`;
+    md += `## Xavfsizlik Reytingi: ${stats.score}/100 (${scoreLabel})\n\n`;
+    md += `| Ko'rsatkich | Qiymat |\n|---|---|\n`;
+    md += `| Faol kalitlar | ${stats.active.length} |\n`;
+    md += `| Muddati o'tgan | ${stats.expired.length} |\n`;
+    md += `| Bekor qilingan | ${stats.revoked.length} |\n`;
+    md += `| Tez orada tugaydi | ${stats.expiringSoon.length} |\n`;
+    md += `| Qayta ishlatilayotgan | ${stats.reusedKeys.length} |\n`;
+    md += `| 24s so'rovlar | ${stats.totalCalls} |\n`;
+    md += `| Muvaffaqiyatsiz | ${stats.failedCalls} |\n`;
+    md += `| 401/403 urinishlar | ${stats.unauthorized} |\n`;
+    md += `| Xato darajasi | ${stats.errorRate.toFixed(1)}% |\n\n`;
+    md += `## JWT / API Kalit Monitoringi\n\n`;
+    md += `| Kalit | Hamkor | Muhit | Holat | Muddati | 24s | Xato | IP-lar | Qayta |\n|---|---|---|---|---|---|---|---|---|\n`;
+    rows.forEach((r) => {
+      md += `| ${r.name} (${r.prefix}***) | ${r.partner} | ${r.env} | ${r.status} | ${r.expires} | ${r.calls} | ${r.failed} | ${r.distinctIps} | ${r.reused ? "⚠️ HA" : "—"} |\n`;
+    });
+    if (stats.alerts.length) {
+      md += `\n## Faol Alertlar (${stats.alerts.length})\n\n`;
+      stats.alerts.forEach((a) => {
+        md += `- **[${a.level.toUpperCase()}]** ${a.title} — ${a.detail}\n`;
+      });
+    }
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-report-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Markdown hisobot yuklab olindi" });
+  };
+
+  const exportPDF = () => {
+    const rows = buildJwtReport();
+    const d = new Date().toLocaleString("uz-UZ");
+    const win = window.open("", "_blank");
+    if (!win) return;
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Security Report</title>
+<style>
+body{font-family:-apple-system,Segoe UI,sans-serif;padding:32px;color:#0A2540;}
+h1{border-bottom:3px solid #2F80ED;padding-bottom:8px;}
+.score{display:inline-block;padding:12px 24px;border-radius:12px;background:${scoreColor};color:#fff;font-size:32px;font-weight:bold;}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:11px;}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;}
+th{background:#F4F8FB;}
+.kpi{display:inline-block;margin:4px 8px 4px 0;padding:6px 12px;background:#F4F8FB;border-radius:6px;}
+.alert{padding:8px;margin:4px 0;border-left:4px solid #EB5757;background:#FFF5F5;}
+@media print{button{display:none}}
+</style></head><body>
+<h1>🛡️ Security Center — Kunlik Hisobot</h1>
+<p><b>Sana:</b> ${d}</p>
+<div class="score">${stats.score} / 100 — ${scoreLabel}</div>
+<h2>Asosiy Ko'rsatkichlar</h2>
+<div>
+<span class="kpi">Faol: <b>${stats.active.length}</b></span>
+<span class="kpi">Muddati o'tgan: <b>${stats.expired.length}</b></span>
+<span class="kpi">Bekor qilingan: <b>${stats.revoked.length}</b></span>
+<span class="kpi">Tez tugaydi: <b>${stats.expiringSoon.length}</b></span>
+<span class="kpi">Qayta ishlatilayotgan: <b>${stats.reusedKeys.length}</b></span>
+<span class="kpi">24s so'rovlar: <b>${stats.totalCalls}</b></span>
+<span class="kpi">Muvaffaqiyatsiz: <b>${stats.failedCalls}</b></span>
+<span class="kpi">401/403: <b>${stats.unauthorized}</b></span>
+<span class="kpi">Xato: <b>${stats.errorRate.toFixed(1)}%</b></span>
+</div>
+<h2>JWT / API Kalit Monitoringi</h2>
+<table><thead><tr><th>Kalit</th><th>Hamkor</th><th>Muhit</th><th>Holat</th><th>Muddati</th><th>Oxirgi</th><th>24s</th><th>Xato</th><th>IP-lar</th><th>Qayta</th></tr></thead><tbody>
+${rows.map((r) => `<tr><td><b>${r.name}</b><br><code>${r.prefix}***</code></td><td>${r.partner}</td><td>${r.env}</td><td>${r.status}</td><td>${r.expires}</td><td>${r.lastUsed}</td><td>${r.calls}</td><td>${r.failed}</td><td>${r.distinctIps}</td><td>${r.reused ? "⚠️ HA" : "—"}</td></tr>`).join("")}
+</tbody></table>
+${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div class="alert"><b>[${a.level.toUpperCase()}]</b> ${a.title}<br><small>${a.detail}</small></div>`).join("")}` : ""}
+<button onclick="window.print()" style="margin-top:24px;padding:10px 20px;background:#2F80ED;color:#fff;border:none;border-radius:6px;cursor:pointer;">🖨️ Chop etish / PDF saqlash</button>
+</body></html>`;
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 500);
+    toast({ title: "PDF hisobot tayyor" });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -286,10 +394,18 @@ const SecurityCenterModule = () => {
             {lastRefresh.toLocaleTimeString("uz-UZ")}
           </p>
         </div>
-        <Button onClick={load} disabled={loading} variant="outline" size="sm">
-          <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
-          Yangilash
-        </Button>
+        <div className="flex gap-2 flex-wrap">
+          <Button onClick={exportPDF} variant="outline" size="sm">
+            <FileText className="w-4 h-4 mr-2" /> PDF
+          </Button>
+          <Button onClick={exportMarkdown} variant="outline" size="sm">
+            <FileDown className="w-4 h-4 mr-2" /> Markdown
+          </Button>
+          <Button onClick={load} disabled={loading} variant="outline" size="sm">
+            <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
+            Yangilash
+          </Button>
+        </div>
       </div>
 
       {/* Security Score + KPIs */}
