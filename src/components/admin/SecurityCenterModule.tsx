@@ -759,6 +759,149 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           </table>
         </CardContent>
       </Card>
+
+      {/* JWT Detection Rules */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Settings className="w-4 h-4" /> JWT qayta ishlatish — Aniqlash qoidalari
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RulesEditor rules={rules} onSave={saveRules} onReset={() => saveRules(DEFAULT_RULES)} />
+        </CardContent>
+      </Card>
+
+      {/* Daily Reports Archive */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Archive className="w-4 h-4" /> Kunlik JWT monitoring arxivi ({history.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3 items-end mb-4">
+            <div>
+              <Label className="text-xs">Dan</Label>
+              <Input type="date" value={filterFrom} onChange={(e) => setFilterFrom(e.target.value)} className="h-9" />
+            </div>
+            <div>
+              <Label className="text-xs">Gacha</Label>
+              <Input type="date" value={filterTo} onChange={(e) => setFilterTo(e.target.value)} className="h-9" />
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => { setFilterFrom(""); setFilterTo(""); }}>
+              Tozalash
+            </Button>
+            <div className="ml-auto text-xs text-muted-foreground flex items-center gap-1">
+              <Calendar className="w-3 h-3" /> {filteredHistory.length} ta yozuv
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                  <th className="p-2">Sana</th>
+                  <th className="p-2 text-right">Reyting</th>
+                  <th className="p-2 text-right">So'rovlar</th>
+                  <th className="p-2 text-right">Xato</th>
+                  <th className="p-2 text-right">401/403</th>
+                  <th className="p-2 text-right">Qayta</th>
+                  <th className="p-2 text-right">Limit oshgan</th>
+                  <th className="p-2 text-right">Muddati o'tgan</th>
+                  <th className="p-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredHistory.length === 0 && (
+                  <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">Tanlangan oraliqda yozuv yo'q</td></tr>
+                )}
+                {filteredHistory.map((h) => (
+                  <tr key={h.date} className="border-b hover:bg-muted/30">
+                    <td className="p-2 font-mono text-xs">{h.date}</td>
+                    <td className="p-2 text-right font-bold" style={{
+                      color: h.score >= 80 ? COLORS.ok : h.score >= 60 ? COLORS.warn : COLORS.bad,
+                    }}>{h.score}</td>
+                    <td className="p-2 text-right font-mono">{h.totalCalls}</td>
+                    <td className="p-2 text-right font-mono text-red-600">{h.failedCalls}</td>
+                    <td className="p-2 text-right font-mono">{h.unauthorized}</td>
+                    <td className="p-2 text-right">
+                      {h.reusedKeys > 0
+                        ? <Badge className="bg-purple-600 text-white text-[10px]">{h.reusedKeys}</Badge>
+                        : <span className="text-muted-foreground">0</span>}
+                    </td>
+                    <td className="p-2 text-right">
+                      {h.overLimitKeys > 0
+                        ? <Badge className="bg-orange-500 text-white text-[10px]">{h.overLimitKeys}</Badge>
+                        : <span className="text-muted-foreground">0</span>}
+                    </td>
+                    <td className="p-2 text-right font-mono">{h.expired}</td>
+                    <td className="p-2 text-right">
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        const blob = new Blob([JSON.stringify(h, null, 2)], { type: "application/json" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `jwt-snapshot-${h.date}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }}>
+                        <FileDown className="w-3 h-3" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const RulesEditor = ({
+  rules, onSave, onReset,
+}: { rules: JwtRules; onSave: (r: JwtRules) => void; onReset: () => void }) => {
+  const [draft, setDraft] = useState<JwtRules>(rules);
+  useEffect(() => setDraft(rules), [rules]);
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div>
+        <Label className="text-xs">Qayta ishlatish chegarasi (IP soni)</Label>
+        <Input type="number" min={2} value={draft.reuseThreshold}
+          onChange={(e) => setDraft({ ...draft, reuseThreshold: Math.max(2, +e.target.value || 2) })} />
+        <p className="text-[11px] text-muted-foreground mt-1">≥ shu sondagi turli IP-dan kelsa — Repeat flag</p>
+      </div>
+      <div>
+        <Label className="text-xs">Kunlik so'rov limiti (per kalit)</Label>
+        <Input type="number" min={1} value={draft.dailyCallLimit}
+          onChange={(e) => setDraft({ ...draft, dailyCallLimit: Math.max(1, +e.target.value || 1) })} />
+        <p className="text-[11px] text-muted-foreground mt-1">Limitdan oshsa — alert + score jarima</p>
+      </div>
+      <div className="flex items-center justify-between p-3 rounded-lg border">
+        <div>
+          <Label className="text-xs">Faqat ko'p IP talab qilinsin</Label>
+          <p className="text-[11px] text-muted-foreground">O'chirilsa — limit oshishi ham flag bo'ladi</p>
+        </div>
+        <Switch checked={draft.requireMultiIp}
+          onCheckedChange={(v) => setDraft({ ...draft, requireMultiIp: v })} />
+      </div>
+      <div>
+        <Label className="text-xs">Shubhali IP — min muvaffaqiyatsiz</Label>
+        <Input type="number" min={1} value={draft.suspiciousIpFailures}
+          onChange={(e) => setDraft({ ...draft, suspiciousIpFailures: Math.max(1, +e.target.value || 1) })} />
+      </div>
+      <div>
+        <Label className="text-xs">Shubhali IP — xato darajasi (0–1)</Label>
+        <Input type="number" step="0.05" min={0} max={1} value={draft.suspiciousFailRate}
+          onChange={(e) => setDraft({ ...draft, suspiciousFailRate: Math.min(1, Math.max(0, +e.target.value || 0)) })} />
+      </div>
+      <div className="flex items-end gap-2">
+        <Button onClick={() => onSave(draft)} className="flex-1">
+          <Save className="w-4 h-4 mr-2" /> Saqlash
+        </Button>
+        <Button variant="outline" onClick={onReset}>Reset</Button>
+      </div>
     </div>
   );
 };
