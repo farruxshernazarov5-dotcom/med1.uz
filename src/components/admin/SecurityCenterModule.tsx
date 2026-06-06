@@ -298,26 +298,25 @@ const SecurityCenterModule = () => {
         time: new Date().toISOString(),
       });
     });
+    overLimitKeys.forEach((k) => {
+      const c = keyCalls.get(k.id);
+      alerts.push({
+        id: "limit-" + k.id,
+        level: "medium",
+        title: `Kunlik limit oshib ketdi: ${k.name}`,
+        detail: `${c?.total || 0} so'rov / limit ${rules.dailyCallLimit} — ${k.key_prefix}***`,
+        time: new Date().toISOString(),
+      });
+    });
+    if (overLimitKeys.length) score -= Math.min(10, overLimitKeys.length * 3);
+    score = Math.max(0, score);
 
     return {
-      active,
-      revoked,
-      expired,
-      expiringSoon,
-      stale,
-      totalCalls,
-      failedCalls,
-      unauthorized,
-      errors5xx,
-      errorRate,
-      suspiciousIps,
-      keyCalls,
-      hourBuckets,
-      score,
-      alerts,
-      reusedKeys,
+      active, revoked, expired, expiringSoon, stale,
+      totalCalls, failedCalls, unauthorized, errors5xx, errorRate,
+      suspiciousIps, keyCalls, hourBuckets, score, alerts, reusedKeys, overLimitKeys,
     };
-  }, [keys, logs, now]);
+  }, [keys, logs, now, rules]);
 
   const scoreColor =
     stats.score >= 80 ? COLORS.ok : stats.score >= 60 ? COLORS.warn : COLORS.bad;
