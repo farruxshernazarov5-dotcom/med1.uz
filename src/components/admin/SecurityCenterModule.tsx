@@ -144,15 +144,17 @@ const SecurityCenterModule = () => {
       .sort((a, b) => b[1].failed - a[1].failed)
       .slice(0, 10);
 
-    // Key usage map
-    const keyCalls = new Map<string, { total: number; failed: number }>();
+    // Key usage map (+ distinct IPs for reuse detection)
+    const keyCalls = new Map<string, { total: number; failed: number; ips: Set<string> }>();
     logs.forEach((l) => {
       if (!l.api_key_id) return;
-      const cur = keyCalls.get(l.api_key_id) || { total: 0, failed: 0 };
+      const cur = keyCalls.get(l.api_key_id) || { total: 0, failed: 0, ips: new Set<string>() };
       cur.total++;
       if (l.status_code >= 400) cur.failed++;
+      if (l.ip_address) cur.ips.add(l.ip_address);
       keyCalls.set(l.api_key_id, cur);
     });
+    const reusedKeys = keys.filter((k) => (keyCalls.get(k.id)?.ips.size || 0) > 1);
 
     // Hourly series (24h)
     const hourBuckets = Array.from({ length: 24 }, (_, i) => {
