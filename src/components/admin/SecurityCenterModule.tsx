@@ -249,6 +249,7 @@ const SecurityCenterModule = () => {
       hourBuckets,
       score,
       alerts,
+      reusedKeys,
     };
   }, [keys, logs, now]);
 
