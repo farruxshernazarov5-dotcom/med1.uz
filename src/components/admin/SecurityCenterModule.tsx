@@ -103,6 +103,26 @@ const SecurityCenterModule = () => {
   const [logs, setLogs] = useState<LogRow[]>([]);
   const [auditCount, setAuditCount] = useState(0);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [rules, setRules] = useState<JwtRules>(() => {
+    try {
+      const raw = localStorage.getItem(RULES_KEY);
+      return raw ? { ...DEFAULT_RULES, ...JSON.parse(raw) } : DEFAULT_RULES;
+    } catch { return DEFAULT_RULES; }
+  });
+  const [history, setHistory] = useState<DailySnapshot[]>(() => {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
+  const [filterFrom, setFilterFrom] = useState("");
+  const [filterTo, setFilterTo] = useState("");
+
+  const saveRules = (next: JwtRules) => {
+    setRules(next);
+    localStorage.setItem(RULES_KEY, JSON.stringify(next));
+    toast({ title: "Qoidalar saqlandi" });
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
