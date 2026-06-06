@@ -182,6 +182,7 @@ const SecurityCenterModule = () => {
     else if (errorRate > 10) score -= 8;
     if (suspiciousIps.length) score -= Math.min(20, suspiciousIps.length * 4);
     if (expiringSoon.length) score -= Math.min(8, expiringSoon.length * 2);
+    if (reusedKeys.length) score -= Math.min(15, reusedKeys.length * 3);
     score = Math.max(0, Math.round(score));
 
     // Alerts
