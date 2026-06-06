@@ -7,12 +7,52 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, ShieldAlert, ShieldCheck, KeyRound, Activity, AlertTriangle,
   RefreshCw, Clock, Ban, Eye, TrendingUp, Globe, Lock, FileDown, FileText, Repeat,
+  Settings, Calendar, Archive, Save,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell,
 } from "recharts";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+
+const RULES_KEY = "med1.security.jwtRules";
+const HISTORY_KEY = "med1.security.dailyHistory";
+
+interface JwtRules {
+  reuseThreshold: number;       // distinct IPs that triggers reuse flag
+  requireMultiIp: boolean;       // if false, single-IP heavy use also flags
+  dailyCallLimit: number;        // per-key 24h call ceiling
+  suspiciousIpFailures: number;  // min failed requests from an IP
+  suspiciousFailRate: number;    // 0..1 ratio
+}
+
+const DEFAULT_RULES: JwtRules = {
+  reuseThreshold: 2,
+  requireMultiIp: true,
+  dailyCallLimit: 5000,
+  suspiciousIpFailures: 5,
+  suspiciousFailRate: 0.4,
+};
+
+interface DailySnapshot {
+  date: string; // YYYY-MM-DD
+  savedAt: string;
+  score: number;
+  totalCalls: number;
+  failedCalls: number;
+  unauthorized: number;
+  reusedKeys: number;
+  expired: number;
+  overLimitKeys: number;
+  rules: JwtRules;
+  rows: Array<{
+    name: string; prefix: string; partner: string; status: string;
+    expires: string; calls: number; failed: number; distinctIps: number;
+    reused: boolean; overLimit: boolean;
+  }>;
+}
 
 interface ApiKeyRow {
   id: string;
