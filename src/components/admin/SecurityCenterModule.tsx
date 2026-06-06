@@ -443,6 +443,7 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           <Kpi icon={Activity} label="24s so'rovlar" value={stats.totalCalls} color={COLORS.purple} />
           <Kpi icon={ShieldAlert} label="Muvaffaqiyatsiz" value={stats.failedCalls} color={COLORS.bad} />
           <Kpi icon={Lock} label="401/403" value={stats.unauthorized} color={COLORS.warn} />
+          <Kpi icon={Repeat} label="Qayta ishlatilayotgan" value={stats.reusedKeys.length} color={COLORS.purple} />
           <Kpi icon={Eye} label="Audit yozuvlar" value={auditCount} color={COLORS.ok} />
         </div>
       </div>
