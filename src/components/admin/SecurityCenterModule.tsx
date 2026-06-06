@@ -222,6 +222,16 @@ const SecurityCenterModule = () => {
         detail: `${failedCalls}/${totalCalls} so'rov muvaffaqiyatsiz`,
         time: new Date().toISOString(),
       });
+    reusedKeys.forEach((k) => {
+      const ips = keyCalls.get(k.id)?.ips;
+      alerts.push({
+        id: "reuse-" + k.id,
+        level: "high",
+        title: `Token qayta ishlatilmoqda: ${k.name}`,
+        detail: `${ips?.size || 0} ta turli IP-dan (24s) — ${k.key_prefix}***`,
+        time: new Date().toISOString(),
+      });
+    });
 
     return {
       active,
