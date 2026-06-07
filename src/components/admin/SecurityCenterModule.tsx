@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, ShieldAlert, ShieldCheck, KeyRound, Activity, AlertTriangle,
   RefreshCw, Clock, Ban, Eye, TrendingUp, Globe, Lock, FileDown, FileText, Repeat,
-  Settings, Calendar, Archive, Save,
+  Settings, Calendar, Archive, Save, History, ArrowUpDown, ChevronLeft, ChevronRight, FileSpreadsheet,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -19,6 +19,16 @@ import { cn } from "@/lib/utils";
 
 const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
+const RULES_AUDIT_KEY = "med1.security.jwtRulesAudit";
+const RULES_VERSION_KEY = "med1.security.jwtRulesVersion";
+
+interface RulesAuditEntry {
+  version: number;
+  at: string;
+  actor: string;
+  changes: Array<{ field: string; from: any; to: any }>;
+  snapshot: JwtRules;
+}
 
 interface JwtRules {
   reuseThreshold: number;       // distinct IPs that triggers reuse flag
@@ -117,11 +127,51 @@ const SecurityCenterModule = () => {
   });
   const [filterFrom, setFilterFrom] = useState("");
   const [filterTo, setFilterTo] = useState("");
+  const [sortBy, setSortBy] = useState<"date" | "score" | "totalCalls" | "failedCalls" | "reusedKeys">("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+  const [rulesAudit, setRulesAudit] = useState<RulesAuditEntry[]>(() => {
+    try {
+      const raw = localStorage.getItem(RULES_AUDIT_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
 
-  const saveRules = (next: JwtRules) => {
+  const saveRules = async (next: JwtRules) => {
+    const changes: Array<{ field: string; from: any; to: any }> = [];
+    (Object.keys(next) as Array<keyof JwtRules>).forEach((k) => {
+      if (rules[k] !== next[k]) changes.push({ field: String(k), from: rules[k], to: next[k] });
+    });
     setRules(next);
     localStorage.setItem(RULES_KEY, JSON.stringify(next));
-    toast({ title: "Qoidalar saqlandi" });
+
+    if (changes.length > 0) {
+      let actor = "noma'lum";
+      try {
+        const { data } = await supabase.auth.getUser();
+        actor = data.user?.email || data.user?.id || "noma'lum";
+      } catch {}
+      const version = (Number(localStorage.getItem(RULES_VERSION_KEY)) || 0) + 1;
+      localStorage.setItem(RULES_VERSION_KEY, String(version));
+      const entry: RulesAuditEntry = {
+        version, at: new Date().toISOString(), actor, changes, snapshot: next,
+      };
+      const nextAudit = [entry, ...rulesAudit].slice(0, 200);
+      setRulesAudit(nextAudit);
+      localStorage.setItem(RULES_AUDIT_KEY, JSON.stringify(nextAudit));
+      try {
+        await supabase.from("audit_logs").insert({
+          action: "update",
+          entity_type: "security_rules",
+          module: "security_center",
+          details: { version, changes } as any,
+          old_data: rules as any,
+          new_data: next as any,
+        } as any);
+      } catch {}
+    }
+    toast({ title: "Qoidalar saqlandi", description: changes.length ? `v${(Number(localStorage.getItem(RULES_VERSION_KEY)) || 1)} — ${changes.length} o'zgarish` : "O'zgarish yo'q" });
   };
 
   const load = useCallback(async () => {
@@ -417,12 +467,79 @@ const SecurityCenterModule = () => {
   }, [loading, keys.length]);
 
   const filteredHistory = useMemo(() => {
-    return history.filter((h) => {
+    const filtered = history.filter((h) => {
       if (filterFrom && h.date < filterFrom) return false;
       if (filterTo && h.date > filterTo) return false;
       return true;
     });
-  }, [history, filterFrom, filterTo]);
+    const sorted = [...filtered].sort((a, b) => {
+      let av: any = a[sortBy as keyof DailySnapshot];
+      let bv: any = b[sortBy as keyof DailySnapshot];
+      if (sortBy === "date") { av = a.date; bv = b.date; }
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [history, filterFrom, filterTo, sortBy, sortDir]);
+
+  const pagedHistory = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredHistory.slice(start, start + PAGE_SIZE);
+  }, [filteredHistory, page]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredHistory.length / PAGE_SIZE));
+
+  useEffect(() => { setPage(1); }, [filterFrom, filterTo, sortBy, sortDir]);
+
+  const toggleSort = (col: typeof sortBy) => {
+    if (sortBy === col) setSortDir(sortDir === "asc" ? "desc" : "asc");
+    else { setSortBy(col); setSortDir("desc"); }
+  };
+
+  const snapshotToCsv = (h: DailySnapshot) => {
+    const header = ["name", "prefix", "partner", "status", "expires", "calls", "failed", "distinctIps", "reused", "overLimit"];
+    const lines = [
+      `# Security Snapshot ${h.date}`,
+      `# Score: ${h.score}/100  Calls: ${h.totalCalls}  Failed: ${h.failedCalls}  Unauthorized: ${h.unauthorized}  Reused: ${h.reusedKeys}  Expired: ${h.expired}  OverLimit: ${h.overLimitKeys}`,
+      header.join(","),
+      ...h.rows.map((r) => header.map((k) => {
+        const v = (r as any)[k];
+        const s = typeof v === "string" ? v.replace(/"/g, '""') : String(v);
+        return /[",\n]/.test(s) ? `"${s}"` : s;
+      }).join(",")),
+    ];
+    return lines.join("\n");
+  };
+
+  const downloadSnapshotCsv = (h: DailySnapshot) => {
+    const blob = new Blob([snapshotToCsv(h)], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `jwt-snapshot-${h.date}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportFilteredCsv = () => {
+    if (filteredHistory.length === 0) { toast({ title: "Eksport uchun yozuv yo'q" }); return; }
+    const header = ["date", "score", "totalCalls", "failedCalls", "unauthorized", "reusedKeys", "overLimitKeys", "expired"];
+    const csv = [
+      header.join(","),
+      ...filteredHistory.map((h) => header.map((k) => (h as any)[k]).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `jwt-monitoring-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "CSV yuklab olindi" });
+  };
+
+
 
 
   const exportMarkdown = () => {
@@ -792,30 +909,33 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
             <Button variant="ghost" size="sm" onClick={() => { setFilterFrom(""); setFilterTo(""); }}>
               Tozalash
             </Button>
+            <Button variant="outline" size="sm" onClick={exportFilteredCsv}>
+              <FileSpreadsheet className="w-4 h-4 mr-2" /> CSV (filtrlangan)
+            </Button>
             <div className="ml-auto text-xs text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> {filteredHistory.length} ta yozuv
+              <Calendar className="w-3 h-3" /> {filteredHistory.length} ta yozuv · sahifa {page}/{totalPages}
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                  <th className="p-2">Sana</th>
-                  <th className="p-2 text-right">Reyting</th>
-                  <th className="p-2 text-right">So'rovlar</th>
-                  <th className="p-2 text-right">Xato</th>
+                  <SortableTh col="date" label="Sana" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} />
+                  <SortableTh col="score" label="Reyting" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
+                  <SortableTh col="totalCalls" label="So'rovlar" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
+                  <SortableTh col="failedCalls" label="Xato" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
                   <th className="p-2 text-right">401/403</th>
-                  <th className="p-2 text-right">Qayta</th>
+                  <SortableTh col="reusedKeys" label="Qayta" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
                   <th className="p-2 text-right">Limit oshgan</th>
                   <th className="p-2 text-right">Muddati o'tgan</th>
-                  <th className="p-2"></th>
+                  <th className="p-2 text-right">Eksport</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredHistory.length === 0 && (
+                {pagedHistory.length === 0 && (
                   <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">Tanlangan oraliqda yozuv yo'q</td></tr>
                 )}
-                {filteredHistory.map((h) => (
+                {pagedHistory.map((h) => (
                   <tr key={h.date} className="border-b hover:bg-muted/30">
                     <td className="p-2 font-mono text-xs">{h.date}</td>
                     <td className="p-2 text-right font-bold" style={{
@@ -836,26 +956,92 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                     </td>
                     <td className="p-2 text-right font-mono">{h.expired}</td>
                     <td className="p-2 text-right">
-                      <Button variant="ghost" size="sm" onClick={() => {
-                        const blob = new Blob([JSON.stringify(h, null, 2)], { type: "application/json" });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = `jwt-snapshot-${h.date}.json`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                      }}>
-                        <FileDown className="w-3 h-3" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="sm" title="JSON" onClick={() => {
+                          const blob = new Blob([JSON.stringify(h, null, 2)], { type: "application/json" });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `jwt-snapshot-${h.date}.json`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}>
+                          <FileDown className="w-3 h-3" />
+                        </Button>
+                        <Button variant="ghost" size="sm" title="CSV" onClick={() => downloadSnapshotCsv(h)}>
+                          <FileSpreadsheet className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-end gap-2 mt-3">
+              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                <ChevronLeft className="w-3 h-3" />
+              </Button>
+              <span className="text-xs text-muted-foreground">{page} / {totalPages}</span>
+              <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+                <ChevronRight className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Rules Change Audit Log */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <History className="w-4 h-4" /> JWT qoidalari — o'zgarishlar tarixi ({rulesAudit.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {rulesAudit.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">Hozircha o'zgarishlar yo'q</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                    <th className="p-2">Versiya</th>
+                    <th className="p-2">Sana / vaqt</th>
+                    <th className="p-2">Kim</th>
+                    <th className="p-2">O'zgarishlar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rulesAudit.slice(0, 50).map((e) => (
+                    <tr key={`${e.version}-${e.at}`} className="border-b hover:bg-muted/30 align-top">
+                      <td className="p-2 font-mono text-xs">
+                        <Badge variant="outline">v{e.version}</Badge>
+                      </td>
+                      <td className="p-2 text-xs">{new Date(e.at).toLocaleString("uz-UZ")}</td>
+                      <td className="p-2 text-xs font-mono">{e.actor}</td>
+                      <td className="p-2 text-xs">
+                        <ul className="space-y-0.5">
+                          {e.changes.map((c, i) => (
+                            <li key={i}>
+                              <span className="font-semibold">{c.field}:</span>{" "}
+                              <span className="text-red-600 line-through">{String(c.from)}</span>{" → "}
+                              <span className="text-green-600 font-semibold">{String(c.to)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
+
   );
 };
 
@@ -916,6 +1102,17 @@ const Kpi = ({ icon: Icon, label, value, color }: any) => (
       <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
     </CardContent>
   </Card>
+);
+
+const SortableTh = ({ col, label, sortBy, sortDir, onClick, align = "left" }: any) => (
+  <th className={cn("p-2 cursor-pointer select-none hover:text-foreground", align === "right" && "text-right")}
+      onClick={() => onClick(col)}>
+    <span className="inline-flex items-center gap-1">
+      {label}
+      <ArrowUpDown className={cn("w-3 h-3", sortBy === col ? "opacity-100" : "opacity-30")} />
+      {sortBy === col && <span className="text-[9px]">{sortDir === "asc" ? "▲" : "▼"}</span>}
+    </span>
+  </th>
 );
 
 export default SecurityCenterModule;
