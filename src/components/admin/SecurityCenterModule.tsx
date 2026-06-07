@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Shield, ShieldAlert, ShieldCheck, KeyRound, Activity, AlertTriangle,
   RefreshCw, Clock, Ban, Eye, TrendingUp, Globe, Lock, FileDown, FileText, Repeat,
-  Settings, Calendar, Archive, Save,
+  Settings, Calendar, Archive, Save, History, ArrowUpDown, ChevronLeft, ChevronRight, FileSpreadsheet,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
