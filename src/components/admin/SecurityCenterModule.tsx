@@ -19,6 +19,16 @@ import { cn } from "@/lib/utils";
 
 const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
+const RULES_AUDIT_KEY = "med1.security.jwtRulesAudit";
+const RULES_VERSION_KEY = "med1.security.jwtRulesVersion";
+
+interface RulesAuditEntry {
+  version: number;
+  at: string;
+  actor: string;
+  changes: Array<{ field: string; from: any; to: any }>;
+  snapshot: JwtRules;
+}
 
 interface JwtRules {
   reuseThreshold: number;       // distinct IPs that triggers reuse flag
