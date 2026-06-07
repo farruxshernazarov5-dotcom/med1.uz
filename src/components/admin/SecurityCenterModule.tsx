@@ -76,7 +76,7 @@ interface ApiKeyRow {
   revoked_at: string | null;
   rate_limit_per_day: number;
   created_at: string;
-  api_partners?: { name: string } | null;
+  api_partners?: { org_name: string } | null;
 }
 
 interface LogRow {
@@ -181,7 +181,7 @@ const SecurityCenterModule = () => {
       const [keysRes, logsRes, auditRes] = await Promise.all([
         supabase
           .from("api_keys")
-          .select("*, api_partners(name)")
+          .select("*, api_partners(org_name)")
           .order("created_at", { ascending: false })
           .limit(200),
         supabase
@@ -308,7 +308,7 @@ const SecurityCenterModule = () => {
         id: "exp-" + k.id,
         level: "high",
         title: `Token muddati o'tgan: ${k.name}`,
-        detail: `${k.api_partners?.name || k.partner_id} — ${k.key_prefix}***`,
+        detail: `${k.api_partners?.org_name || k.partner_id} — ${k.key_prefix}***`,
         time: k.expires_at!,
       }),
     );
@@ -403,7 +403,7 @@ const SecurityCenterModule = () => {
       return {
         name: k.name,
         prefix: k.key_prefix,
-        partner: k.api_partners?.name || "—",
+        partner: k.api_partners?.org_name || "—",
         env: k.environment,
         status,
         expires: k.expires_at ? new Date(k.expires_at).toLocaleString("uz-UZ") : "—",
@@ -431,7 +431,7 @@ const SecurityCenterModule = () => {
         : usage.ips.size >= rules.reuseThreshold || usage.total >= rules.dailyCallLimit;
       return {
         name: k.name, prefix: k.key_prefix,
-        partner: k.api_partners?.name || "—", status,
+        partner: k.api_partners?.org_name || "—", status,
         expires: k.expires_at ? new Date(k.expires_at).toLocaleDateString("uz-UZ") : "—",
         calls: usage.total, failed: usage.failed,
         distinctIps: usage.ips.size, reused,
@@ -832,7 +832,7 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                       <div className="font-semibold">{k.name}</div>
                       <div className="text-muted-foreground">{k.key_prefix}***</div>
                     </td>
-                    <td className="p-2">{k.api_partners?.name || "—"}</td>
+                    <td className="p-2">{k.api_partners?.org_name || "—"}</td>
                     <td className="p-2"><Badge variant="outline" className="text-[10px]">{k.environment}</Badge></td>
                     <td className="p-2"><Badge className={cn("text-[10px] text-white", status.color)}>{status.label}</Badge></td>
                     <td className="p-2 text-xs">
