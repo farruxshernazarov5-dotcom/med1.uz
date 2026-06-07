@@ -127,11 +127,51 @@ const SecurityCenterModule = () => {
   });
   const [filterFrom, setFilterFrom] = useState("");
   const [filterTo, setFilterTo] = useState("");
+  const [sortBy, setSortBy] = useState<"date" | "score" | "totalCalls" | "failedCalls" | "reusedKeys">("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+  const [rulesAudit, setRulesAudit] = useState<RulesAuditEntry[]>(() => {
+    try {
+      const raw = localStorage.getItem(RULES_AUDIT_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
 
-  const saveRules = (next: JwtRules) => {
+  const saveRules = async (next: JwtRules) => {
+    const changes: Array<{ field: string; from: any; to: any }> = [];
+    (Object.keys(next) as Array<keyof JwtRules>).forEach((k) => {
+      if (rules[k] !== next[k]) changes.push({ field: String(k), from: rules[k], to: next[k] });
+    });
     setRules(next);
     localStorage.setItem(RULES_KEY, JSON.stringify(next));
-    toast({ title: "Qoidalar saqlandi" });
+
+    if (changes.length > 0) {
+      let actor = "noma'lum";
+      try {
+        const { data } = await supabase.auth.getUser();
+        actor = data.user?.email || data.user?.id || "noma'lum";
+      } catch {}
+      const version = (Number(localStorage.getItem(RULES_VERSION_KEY)) || 0) + 1;
+      localStorage.setItem(RULES_VERSION_KEY, String(version));
+      const entry: RulesAuditEntry = {
+        version, at: new Date().toISOString(), actor, changes, snapshot: next,
+      };
+      const nextAudit = [entry, ...rulesAudit].slice(0, 200);
+      setRulesAudit(nextAudit);
+      localStorage.setItem(RULES_AUDIT_KEY, JSON.stringify(nextAudit));
+      try {
+        await supabase.from("audit_logs").insert({
+          action: "update",
+          entity_type: "security_rules",
+          module: "security_center",
+          details: { version, changes } as any,
+          old_data: rules as any,
+          new_data: next as any,
+        } as any);
+      } catch {}
+    }
+    toast({ title: "Qoidalar saqlandi", description: changes.length ? `v${(Number(localStorage.getItem(RULES_VERSION_KEY)) || 1)} — ${changes.length} o'zgarish` : "O'zgarish yo'q" });
   };
 
   const load = useCallback(async () => {
