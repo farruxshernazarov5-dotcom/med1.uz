@@ -1104,4 +1104,15 @@ const Kpi = ({ icon: Icon, label, value, color }: any) => (
   </Card>
 );
 
+const SortableTh = ({ col, label, sortBy, sortDir, onClick, align = "left" }: any) => (
+  <th className={cn("p-2 cursor-pointer select-none hover:text-foreground", align === "right" && "text-right")}
+      onClick={() => onClick(col)}>
+    <span className="inline-flex items-center gap-1">
+      {label}
+      <ArrowUpDown className={cn("w-3 h-3", sortBy === col ? "opacity-100" : "opacity-30")} />
+      {sortBy === col && <span className="text-[9px]">{sortDir === "asc" ? "▲" : "▼"}</span>}
+    </span>
+  </th>
+);
+
 export default SecurityCenterModule;
