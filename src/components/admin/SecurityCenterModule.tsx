@@ -909,30 +909,33 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
             <Button variant="ghost" size="sm" onClick={() => { setFilterFrom(""); setFilterTo(""); }}>
               Tozalash
             </Button>
+            <Button variant="outline" size="sm" onClick={exportFilteredCsv}>
+              <FileSpreadsheet className="w-4 h-4 mr-2" /> CSV (filtrlangan)
+            </Button>
             <div className="ml-auto text-xs text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> {filteredHistory.length} ta yozuv
+              <Calendar className="w-3 h-3" /> {filteredHistory.length} ta yozuv · sahifa {page}/{totalPages}
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                  <th className="p-2">Sana</th>
-                  <th className="p-2 text-right">Reyting</th>
-                  <th className="p-2 text-right">So'rovlar</th>
-                  <th className="p-2 text-right">Xato</th>
+                  <SortableTh col="date" label="Sana" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} />
+                  <SortableTh col="score" label="Reyting" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
+                  <SortableTh col="totalCalls" label="So'rovlar" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
+                  <SortableTh col="failedCalls" label="Xato" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
                   <th className="p-2 text-right">401/403</th>
-                  <th className="p-2 text-right">Qayta</th>
+                  <SortableTh col="reusedKeys" label="Qayta" sortBy={sortBy} sortDir={sortDir} onClick={toggleSort} align="right" />
                   <th className="p-2 text-right">Limit oshgan</th>
                   <th className="p-2 text-right">Muddati o'tgan</th>
-                  <th className="p-2"></th>
+                  <th className="p-2 text-right">Eksport</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredHistory.length === 0 && (
+                {pagedHistory.length === 0 && (
                   <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">Tanlangan oraliqda yozuv yo'q</td></tr>
                 )}
-                {filteredHistory.map((h) => (
+                {pagedHistory.map((h) => (
                   <tr key={h.date} className="border-b hover:bg-muted/30">
                     <td className="p-2 font-mono text-xs">{h.date}</td>
                     <td className="p-2 text-right font-bold" style={{
@@ -953,26 +956,92 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                     </td>
                     <td className="p-2 text-right font-mono">{h.expired}</td>
                     <td className="p-2 text-right">
-                      <Button variant="ghost" size="sm" onClick={() => {
-                        const blob = new Blob([JSON.stringify(h, null, 2)], { type: "application/json" });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = `jwt-snapshot-${h.date}.json`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                      }}>
-                        <FileDown className="w-3 h-3" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="sm" title="JSON" onClick={() => {
+                          const blob = new Blob([JSON.stringify(h, null, 2)], { type: "application/json" });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `jwt-snapshot-${h.date}.json`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}>
+                          <FileDown className="w-3 h-3" />
+                        </Button>
+                        <Button variant="ghost" size="sm" title="CSV" onClick={() => downloadSnapshotCsv(h)}>
+                          <FileSpreadsheet className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-end gap-2 mt-3">
+              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                <ChevronLeft className="w-3 h-3" />
+              </Button>
+              <span className="text-xs text-muted-foreground">{page} / {totalPages}</span>
+              <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+                <ChevronRight className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Rules Change Audit Log */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <History className="w-4 h-4" /> JWT qoidalari — o'zgarishlar tarixi ({rulesAudit.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {rulesAudit.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">Hozircha o'zgarishlar yo'q</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                    <th className="p-2">Versiya</th>
+                    <th className="p-2">Sana / vaqt</th>
+                    <th className="p-2">Kim</th>
+                    <th className="p-2">O'zgarishlar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rulesAudit.slice(0, 50).map((e) => (
+                    <tr key={`${e.version}-${e.at}`} className="border-b hover:bg-muted/30 align-top">
+                      <td className="p-2 font-mono text-xs">
+                        <Badge variant="outline">v{e.version}</Badge>
+                      </td>
+                      <td className="p-2 text-xs">{new Date(e.at).toLocaleString("uz-UZ")}</td>
+                      <td className="p-2 text-xs font-mono">{e.actor}</td>
+                      <td className="p-2 text-xs">
+                        <ul className="space-y-0.5">
+                          {e.changes.map((c, i) => (
+                            <li key={i}>
+                              <span className="font-semibold">{c.field}:</span>{" "}
+                              <span className="text-red-600 line-through">{String(c.from)}</span>{" → "}
+                              <span className="text-green-600 font-semibold">{String(c.to)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
+
   );
 };
 
