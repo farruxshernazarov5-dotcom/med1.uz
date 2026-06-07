@@ -467,12 +467,79 @@ const SecurityCenterModule = () => {
   }, [loading, keys.length]);
 
   const filteredHistory = useMemo(() => {
-    return history.filter((h) => {
+    const filtered = history.filter((h) => {
       if (filterFrom && h.date < filterFrom) return false;
       if (filterTo && h.date > filterTo) return false;
       return true;
     });
-  }, [history, filterFrom, filterTo]);
+    const sorted = [...filtered].sort((a, b) => {
+      let av: any = a[sortBy as keyof DailySnapshot];
+      let bv: any = b[sortBy as keyof DailySnapshot];
+      if (sortBy === "date") { av = a.date; bv = b.date; }
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [history, filterFrom, filterTo, sortBy, sortDir]);
+
+  const pagedHistory = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredHistory.slice(start, start + PAGE_SIZE);
+  }, [filteredHistory, page]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredHistory.length / PAGE_SIZE));
+
+  useEffect(() => { setPage(1); }, [filterFrom, filterTo, sortBy, sortDir]);
+
+  const toggleSort = (col: typeof sortBy) => {
+    if (sortBy === col) setSortDir(sortDir === "asc" ? "desc" : "asc");
+    else { setSortBy(col); setSortDir("desc"); }
+  };
+
+  const snapshotToCsv = (h: DailySnapshot) => {
+    const header = ["name", "prefix", "partner", "status", "expires", "calls", "failed", "distinctIps", "reused", "overLimit"];
+    const lines = [
+      `# Security Snapshot ${h.date}`,
+      `# Score: ${h.score}/100  Calls: ${h.totalCalls}  Failed: ${h.failedCalls}  Unauthorized: ${h.unauthorized}  Reused: ${h.reusedKeys}  Expired: ${h.expired}  OverLimit: ${h.overLimitKeys}`,
+      header.join(","),
+      ...h.rows.map((r) => header.map((k) => {
+        const v = (r as any)[k];
+        const s = typeof v === "string" ? v.replace(/"/g, '""') : String(v);
+        return /[",\n]/.test(s) ? `"${s}"` : s;
+      }).join(",")),
+    ];
+    return lines.join("\n");
+  };
+
+  const downloadSnapshotCsv = (h: DailySnapshot) => {
+    const blob = new Blob([snapshotToCsv(h)], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `jwt-snapshot-${h.date}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportFilteredCsv = () => {
+    if (filteredHistory.length === 0) { toast({ title: "Eksport uchun yozuv yo'q" }); return; }
+    const header = ["date", "score", "totalCalls", "failedCalls", "unauthorized", "reusedKeys", "overLimitKeys", "expired"];
+    const csv = [
+      header.join(","),
+      ...filteredHistory.map((h) => header.map((k) => (h as any)[k]).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `jwt-monitoring-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "CSV yuklab olindi" });
+  };
+
+
 
 
   const exportMarkdown = () => {
