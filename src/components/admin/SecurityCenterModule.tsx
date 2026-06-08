@@ -633,9 +633,20 @@ const SecurityCenterModule = () => {
     };
     const next = [snap, ...history.filter((h) => h.date !== today)].slice(0, 90);
     setHistory(next);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    } catch (e: any) {
+      pushDebug({
+        scope: "saveDailySnapshot",
+        level: "error",
+        message: `localStorage saqlash xatosi: ${e?.message || e}`,
+        hint: "Brauzer xotirasi to'lgan bo'lishi mumkin. Eski snapshotlarni eksport qilib o'chiring.",
+        raw: e,
+      });
+    }
     if (!silent) toast({ title: `Hisobot saqlandi: ${today}` });
-  }, [keys, stats, rules, history, now, toast]);
+  }, [keys, stats, rules, history, now, toast, pushDebug]);
+
 
   // Auto-save snapshot once per day after first successful load
   useEffect(() => {
