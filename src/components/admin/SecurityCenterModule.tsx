@@ -21,6 +21,46 @@ const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
 const RULES_AUDIT_KEY = "med1.security.jwtRulesAudit";
 const RULES_VERSION_KEY = "med1.security.jwtRulesVersion";
+const DEBUG_LOG_KEY = "med1.security.debugLog";
+
+export interface SecurityDebugEntry {
+  id: string;
+  at: string;
+  scope: string;
+  level: "warn" | "error";
+  message: string;
+  column?: string;
+  query?: string;
+  hint?: string;
+  raw?: any;
+}
+
+// Expected shape of api_keys join. Used by schema validator.
+export const EXPECTED_API_KEY_COLUMNS = [
+  "id","partner_id","name","key_prefix","environment","expires_at",
+  "last_used_at","is_active","revoked_at","rate_limit_per_day","created_at",
+] as const;
+export const EXPECTED_PARTNER_COLUMN = "org_name" as const;
+
+export function validateApiKeyRows(rows: any[]): { ok: boolean; issues: Array<{ column: string; hint: string }> } {
+  const issues: Array<{ column: string; hint: string }> = [];
+  if (!Array.isArray(rows) || rows.length === 0) return { ok: true, issues };
+  const sample = rows[0] || {};
+  for (const c of EXPECTED_API_KEY_COLUMNS) {
+    if (!(c in sample)) issues.push({ column: c, hint: `api_keys.${c} ustuni javobda yo'q` });
+  }
+  const partner = sample.api_partners;
+  if (partner && typeof partner === "object") {
+    if (!(EXPECTED_PARTNER_COLUMN in partner)) {
+      const legacy = "name" in partner ? " (eski 'name' ustuni qaytdi)" : "";
+      issues.push({
+        column: `api_partners.${EXPECTED_PARTNER_COLUMN}`,
+        hint: `api_partners.org_name kutilmoqda${legacy}. Migratsiyani tekshiring.`,
+      });
+    }
+  }
+  return { ok: issues.length === 0, issues };
+}
 
 interface RulesAuditEntry {
   version: number;
