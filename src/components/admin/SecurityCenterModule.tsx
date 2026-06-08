@@ -8,6 +8,7 @@ import {
   Shield, ShieldAlert, ShieldCheck, KeyRound, Activity, AlertTriangle,
   RefreshCw, Clock, Ban, Eye, TrendingUp, Globe, Lock, FileDown, FileText, Repeat,
   Settings, Calendar, Archive, Save, History, ArrowUpDown, ChevronLeft, ChevronRight, FileSpreadsheet,
+  Bug, Trash2, AlertCircle,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -21,6 +22,46 @@ const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
 const RULES_AUDIT_KEY = "med1.security.jwtRulesAudit";
 const RULES_VERSION_KEY = "med1.security.jwtRulesVersion";
+const DEBUG_LOG_KEY = "med1.security.debugLog";
+
+export interface SecurityDebugEntry {
+  id: string;
+  at: string;
+  scope: string;
+  level: "warn" | "error";
+  message: string;
+  column?: string;
+  query?: string;
+  hint?: string;
+  raw?: any;
+}
+
+// Expected shape of api_keys join. Used by schema validator.
+export const EXPECTED_API_KEY_COLUMNS = [
+  "id","partner_id","name","key_prefix","environment","expires_at",
+  "last_used_at","is_active","revoked_at","rate_limit_per_day","created_at",
+] as const;
+export const EXPECTED_PARTNER_COLUMN = "org_name" as const;
+
+export function validateApiKeyRows(rows: any[]): { ok: boolean; issues: Array<{ column: string; hint: string }> } {
+  const issues: Array<{ column: string; hint: string }> = [];
+  if (!Array.isArray(rows) || rows.length === 0) return { ok: true, issues };
+  const sample = rows[0] || {};
+  for (const c of EXPECTED_API_KEY_COLUMNS) {
+    if (!(c in sample)) issues.push({ column: c, hint: `api_keys.${c} ustuni javobda yo'q` });
+  }
+  const partner = sample.api_partners;
+  if (partner && typeof partner === "object") {
+    if (!(EXPECTED_PARTNER_COLUMN in partner)) {
+      const legacy = "name" in partner ? " (eski 'name' ustuni qaytdi)" : "";
+      issues.push({
+        column: `api_partners.${EXPECTED_PARTNER_COLUMN}`,
+        hint: `api_partners.org_name kutilmoqda${legacy}. Migratsiyani tekshiring.`,
+      });
+    }
+  }
+  return { ok: issues.length === 0, issues };
+}
 
 interface RulesAuditEntry {
   version: number;
@@ -137,8 +178,62 @@ const SecurityCenterModule = () => {
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   });
+  const [debugLog, setDebugLog] = useState<SecurityDebugEntry[]>(() => {
+    try {
+      const raw = localStorage.getItem(DEBUG_LOG_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
+  const [schemaIssues, setSchemaIssues] = useState<Array<{ column: string; hint: string }>>([]);
+
+  const pushDebug = useCallback((entry: Omit<SecurityDebugEntry, "id" | "at">) => {
+    setDebugLog((prev) => {
+      const e: SecurityDebugEntry = {
+        ...entry,
+        id: crypto.randomUUID(),
+        at: new Date().toISOString(),
+      };
+      const next = [e, ...prev].slice(0, 300);
+      try { localStorage.setItem(DEBUG_LOG_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  const clearDebug = () => {
+    setDebugLog([]);
+    try { localStorage.removeItem(DEBUG_LOG_KEY); } catch {}
+    toast({ title: "Debug log tozalandi" });
+  };
+
+  const downloadDebug = (fmt: "json" | "csv") => {
+    if (debugLog.length === 0) { toast({ title: "Log bo'sh" }); return; }
+    let content = "", mime = "", ext = fmt;
+    if (fmt === "json") {
+      content = JSON.stringify(debugLog, null, 2);
+      mime = "application/json";
+    } else {
+      const header = ["at","level","scope","column","query","message","hint"];
+      content = [
+        header.join(","),
+        ...debugLog.map((e) => header.map((k) => {
+          const v = (e as any)[k] ?? "";
+          const s = String(v).replace(/"/g, '""');
+          return /[",\n]/.test(s) ? `"${s}"` : s;
+        }).join(","))
+      ].join("\n");
+      mime = "text/csv;charset=utf-8";
+    }
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-debug-${new Date().toISOString().slice(0,10)}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const saveRules = async (next: JwtRules) => {
+
     const changes: Array<{ field: string; from: any; to: any }> = [];
     (Object.keys(next) as Array<keyof JwtRules>).forEach((k) => {
       if (rules[k] !== next[k]) changes.push({ field: String(k), from: rules[k], to: next[k] });
@@ -161,7 +256,7 @@ const SecurityCenterModule = () => {
       setRulesAudit(nextAudit);
       localStorage.setItem(RULES_AUDIT_KEY, JSON.stringify(nextAudit));
       try {
-        await supabase.from("audit_logs").insert({
+        const { error: aErr } = await supabase.from("audit_logs").insert({
           action: "update",
           entity_type: "security_rules",
           module: "security_center",
@@ -169,7 +264,18 @@ const SecurityCenterModule = () => {
           old_data: rules as any,
           new_data: next as any,
         } as any);
-      } catch {}
+        if (aErr) throw aErr;
+      } catch (e: any) {
+        pushDebug({
+          scope: "saveRules.audit_logs",
+          level: "warn",
+          message: `audit_logs insert xatosi: ${e?.message || e}`,
+          query: "supabase.from('audit_logs').insert(...)",
+          hint: "audit_logs jadvalida INSERT huquqi yo'q bo'lishi mumkin. RLS siyosatini tekshiring.",
+          raw: e,
+        });
+      }
+
     }
     toast({ title: "Qoidalar saqlandi", description: changes.length ? `v${(Number(localStorage.getItem(RULES_VERSION_KEY)) || 1)} — ${changes.length} o'zgarish` : "O'zgarish yo'q" });
   };
@@ -178,12 +284,49 @@ const SecurityCenterModule = () => {
     setLoading(true);
     try {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const [keysRes, logsRes, auditRes] = await Promise.all([
-        supabase
-          .from("api_keys")
-          .select("*, api_partners(org_name)")
-          .order("created_at", { ascending: false })
-          .limit(200),
+      const KEYS_QUERY = "*, api_partners(org_name)";
+      const KEYS_QUERY_FALLBACK = "*, api_partners(name)";
+
+      let keysRes: any = await supabase
+        .from("api_keys")
+        .select(KEYS_QUERY)
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      // Schema fallback: detect missing org_name column and retry with legacy `name`
+      if (keysRes.error) {
+        const msg = String(keysRes.error.message || "");
+        const colHint = /column .*org_name|api_partners.*org_name|does not exist/i.test(msg);
+        pushDebug({
+          scope: "load.api_keys",
+          level: "error",
+          message: keysRes.error.message,
+          column: colHint ? "api_partners.org_name" : undefined,
+          query: `supabase.from('api_keys').select('${KEYS_QUERY}')`,
+          hint: colHint
+            ? "api_partners.org_name ustuni mavjud emas. Migratsiya yoki view nomini tekshiring. Vaqtinchalik fallback ('name') ishlatilmoqda."
+            : "API kalitlar so'rovida xato. RLS yoki ulanishni tekshiring.",
+          raw: keysRes.error,
+        });
+        if (colHint) {
+          keysRes = await supabase
+            .from("api_keys")
+            .select(KEYS_QUERY_FALLBACK)
+            .order("created_at", { ascending: false })
+            .limit(200);
+          // Normalize legacy `name` -> `org_name` so downstream code keeps working
+          if (!keysRes.error && Array.isArray(keysRes.data)) {
+            keysRes.data = keysRes.data.map((r: any) => ({
+              ...r,
+              api_partners: r.api_partners
+                ? { org_name: r.api_partners.org_name ?? r.api_partners.name ?? null }
+                : null,
+            }));
+          }
+        }
+      }
+
+      const [logsRes, auditRes] = await Promise.all([
         supabase
           .from("api_request_logs")
           .select("id, api_key_id, partner_id, endpoint, status_code, ip_address, error_message, created_at")
@@ -195,18 +338,54 @@ const SecurityCenterModule = () => {
           .select("id", { count: "exact", head: true })
           .gte("created_at", since),
       ]);
+
       if (keysRes.error) throw keysRes.error;
-      if (logsRes.error) throw logsRes.error;
-      setKeys((keysRes.data as any) || []);
+      if (logsRes.error) {
+        pushDebug({
+          scope: "load.api_request_logs",
+          level: "error",
+          message: logsRes.error.message,
+          query: "supabase.from('api_request_logs').select(...)",
+          hint: "api_request_logs jadvalida RLS yoki ustun nomi bilan muammo bo'lishi mumkin.",
+          raw: logsRes.error,
+        });
+        throw logsRes.error;
+      }
+
+      const rows = (keysRes.data as any) || [];
+      const validation = validateApiKeyRows(rows);
+      setSchemaIssues(validation.issues);
+      if (!validation.ok) {
+        validation.issues.forEach((iss) =>
+          pushDebug({
+            scope: "schema.api_keys",
+            level: "warn",
+            message: `Sxema mos kelmadi: ${iss.column}`,
+            column: iss.column,
+            query: `supabase.from('api_keys').select('*, api_partners(org_name)')`,
+            hint: iss.hint,
+          })
+        );
+      }
+
+      setKeys(rows);
       setLogs((logsRes.data as any) || []);
       setAuditCount(auditRes.count || 0);
       setLastRefresh(new Date());
     } catch (e: any) {
+      pushDebug({
+        scope: "load",
+        level: "error",
+        message: e?.message || String(e),
+        hint: "Security Center yuklashda xato. Quyidagi log yozuvini admin'ga yuboring.",
+        raw: { message: e?.message, code: e?.code, details: e?.details },
+      });
       toast({ title: "Yuklash xatosi", description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, pushDebug]);
+
 
   useEffect(() => {
     load();
@@ -454,9 +633,20 @@ const SecurityCenterModule = () => {
     };
     const next = [snap, ...history.filter((h) => h.date !== today)].slice(0, 90);
     setHistory(next);
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    } catch (e: any) {
+      pushDebug({
+        scope: "saveDailySnapshot",
+        level: "error",
+        message: `localStorage saqlash xatosi: ${e?.message || e}`,
+        hint: "Brauzer xotirasi to'lgan bo'lishi mumkin. Eski snapshotlarni eksport qilib o'chiring.",
+        raw: e,
+      });
+    }
     if (!silent) toast({ title: `Hisobot saqlandi: ${today}` });
-  }, [keys, stats, rules, history, now, toast]);
+  }, [keys, stats, rules, history, now, toast, pushDebug]);
+
 
   // Auto-save snapshot once per day after first successful load
   useEffect(() => {
@@ -735,7 +925,99 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
         </Card>
       )}
 
+      {/* Schema mismatch banner */}
+      {schemaIssues.length > 0 && (
+        <Card className="border-l-4 border-l-orange-500 bg-orange-50/50 dark:bg-orange-950/10">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+            <div className="text-sm flex-1">
+              <p className="font-semibold text-orange-700 dark:text-orange-400">
+                Ma'lumotlar sxemasi mos kelmadi ({schemaIssues.length})
+              </p>
+              <ul className="mt-1 space-y-1 text-xs">
+                {schemaIssues.map((i, idx) => (
+                  <li key={idx}>
+                    <code className="font-mono bg-orange-100 dark:bg-orange-900/40 px-1 rounded">{i.column}</code>
+                    {" — "}{i.hint}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-muted-foreground mt-2">
+                Yo'l-yo'riq: <b>Backend → Database</b> bo'limidan ustun nomini tasdiqlang
+                (kutilgan: <code>org_name</code>). Migratsiya ishlatilgan bo'lsa, frontend tipni qayta yarating.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Debug / xato log */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Bug className="w-4 h-4" /> Xato va debug log ({debugLog.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("json")} disabled={debugLog.length === 0}>
+              <FileDown className="w-3 h-3 mr-1" /> JSON
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("csv")} disabled={debugLog.length === 0}>
+              <FileSpreadsheet className="w-3 h-3 mr-1" /> CSV
+            </Button>
+            <Button variant="ghost" size="sm" onClick={clearDebug} disabled={debugLog.length === 0}>
+              <Trash2 className="w-3 h-3 mr-1" /> Tozalash
+            </Button>
+            <span className="text-[11px] text-muted-foreground ml-auto">
+              Eng so'nggi 300 yozuv saqlanadi (localStorage)
+            </span>
+          </div>
+          {debugLog.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">
+              <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#27AE60]" />
+              Xatolar yo'q
+            </p>
+          ) : (
+            <div className="overflow-x-auto max-h-80 overflow-y-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 bg-background">
+                  <tr className="border-b text-left uppercase text-muted-foreground">
+                    <th className="p-2">Vaqt</th>
+                    <th className="p-2">Daraja</th>
+                    <th className="p-2">Soha</th>
+                    <th className="p-2">Ustun / so'rov</th>
+                    <th className="p-2">Xabar</th>
+                    <th className="p-2">Yo'l-yo'riq</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debugLog.slice(0, 50).map((e) => (
+                    <tr key={e.id} className="border-b align-top hover:bg-muted/30">
+                      <td className="p-2 font-mono whitespace-nowrap">{new Date(e.at).toLocaleString("uz-UZ")}</td>
+                      <td className="p-2">
+                        <Badge className={cn("text-[10px]", e.level === "error" ? "bg-red-600" : "bg-orange-500")}>
+                          {e.level}
+                        </Badge>
+                      </td>
+                      <td className="p-2 font-mono">{e.scope}</td>
+                      <td className="p-2 font-mono">
+                        {e.column && <div className="text-orange-700">{e.column}</div>}
+                        {e.query && <div className="text-muted-foreground text-[10px] truncate max-w-[260px]">{e.query}</div>}
+                      </td>
+                      <td className="p-2 max-w-[280px] break-words">{e.message}</td>
+                      <td className="p-2 text-muted-foreground max-w-[260px]">{e.hint || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Charts */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
