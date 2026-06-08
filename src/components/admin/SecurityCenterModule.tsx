@@ -914,7 +914,99 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
         </Card>
       )}
 
+      {/* Schema mismatch banner */}
+      {schemaIssues.length > 0 && (
+        <Card className="border-l-4 border-l-orange-500 bg-orange-50/50 dark:bg-orange-950/10">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+            <div className="text-sm flex-1">
+              <p className="font-semibold text-orange-700 dark:text-orange-400">
+                Ma'lumotlar sxemasi mos kelmadi ({schemaIssues.length})
+              </p>
+              <ul className="mt-1 space-y-1 text-xs">
+                {schemaIssues.map((i, idx) => (
+                  <li key={idx}>
+                    <code className="font-mono bg-orange-100 dark:bg-orange-900/40 px-1 rounded">{i.column}</code>
+                    {" — "}{i.hint}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-muted-foreground mt-2">
+                Yo'l-yo'riq: <b>Backend → Database</b> bo'limidan ustun nomini tasdiqlang
+                (kutilgan: <code>org_name</code>). Migratsiya ishlatilgan bo'lsa, frontend tipni qayta yarating.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Debug / xato log */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Bug className="w-4 h-4" /> Xato va debug log ({debugLog.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("json")} disabled={debugLog.length === 0}>
+              <FileDown className="w-3 h-3 mr-1" /> JSON
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("csv")} disabled={debugLog.length === 0}>
+              <FileSpreadsheet className="w-3 h-3 mr-1" /> CSV
+            </Button>
+            <Button variant="ghost" size="sm" onClick={clearDebug} disabled={debugLog.length === 0}>
+              <Trash2 className="w-3 h-3 mr-1" /> Tozalash
+            </Button>
+            <span className="text-[11px] text-muted-foreground ml-auto">
+              Eng so'nggi 300 yozuv saqlanadi (localStorage)
+            </span>
+          </div>
+          {debugLog.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">
+              <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#27AE60]" />
+              Xatolar yo'q
+            </p>
+          ) : (
+            <div className="overflow-x-auto max-h-80 overflow-y-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 bg-background">
+                  <tr className="border-b text-left uppercase text-muted-foreground">
+                    <th className="p-2">Vaqt</th>
+                    <th className="p-2">Daraja</th>
+                    <th className="p-2">Soha</th>
+                    <th className="p-2">Ustun / so'rov</th>
+                    <th className="p-2">Xabar</th>
+                    <th className="p-2">Yo'l-yo'riq</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debugLog.slice(0, 50).map((e) => (
+                    <tr key={e.id} className="border-b align-top hover:bg-muted/30">
+                      <td className="p-2 font-mono whitespace-nowrap">{new Date(e.at).toLocaleString("uz-UZ")}</td>
+                      <td className="p-2">
+                        <Badge className={cn("text-[10px]", e.level === "error" ? "bg-red-600" : "bg-orange-500")}>
+                          {e.level}
+                        </Badge>
+                      </td>
+                      <td className="p-2 font-mono">{e.scope}</td>
+                      <td className="p-2 font-mono">
+                        {e.column && <div className="text-orange-700">{e.column}</div>}
+                        {e.query && <div className="text-muted-foreground text-[10px] truncate max-w-[260px]">{e.query}</div>}
+                      </td>
+                      <td className="p-2 max-w-[280px] break-words">{e.message}</td>
+                      <td className="p-2 text-muted-foreground max-w-[260px]">{e.hint || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Charts */}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
