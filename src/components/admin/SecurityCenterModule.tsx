@@ -177,8 +177,62 @@ const SecurityCenterModule = () => {
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   });
+  const [debugLog, setDebugLog] = useState<SecurityDebugEntry[]>(() => {
+    try {
+      const raw = localStorage.getItem(DEBUG_LOG_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch { return []; }
+  });
+  const [schemaIssues, setSchemaIssues] = useState<Array<{ column: string; hint: string }>>([]);
+
+  const pushDebug = useCallback((entry: Omit<SecurityDebugEntry, "id" | "at">) => {
+    setDebugLog((prev) => {
+      const e: SecurityDebugEntry = {
+        ...entry,
+        id: crypto.randomUUID(),
+        at: new Date().toISOString(),
+      };
+      const next = [e, ...prev].slice(0, 300);
+      try { localStorage.setItem(DEBUG_LOG_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  const clearDebug = () => {
+    setDebugLog([]);
+    try { localStorage.removeItem(DEBUG_LOG_KEY); } catch {}
+    toast({ title: "Debug log tozalandi" });
+  };
+
+  const downloadDebug = (fmt: "json" | "csv") => {
+    if (debugLog.length === 0) { toast({ title: "Log bo'sh" }); return; }
+    let content = "", mime = "", ext = fmt;
+    if (fmt === "json") {
+      content = JSON.stringify(debugLog, null, 2);
+      mime = "application/json";
+    } else {
+      const header = ["at","level","scope","column","query","message","hint"];
+      content = [
+        header.join(","),
+        ...debugLog.map((e) => header.map((k) => {
+          const v = (e as any)[k] ?? "";
+          const s = String(v).replace(/"/g, '""');
+          return /[",\n]/.test(s) ? `"${s}"` : s;
+        }).join(","))
+      ].join("\n");
+      mime = "text/csv;charset=utf-8";
+    }
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-debug-${new Date().toISOString().slice(0,10)}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const saveRules = async (next: JwtRules) => {
+
     const changes: Array<{ field: string; from: any; to: any }> = [];
     (Object.keys(next) as Array<keyof JwtRules>).forEach((k) => {
       if (rules[k] !== next[k]) changes.push({ field: String(k), from: rules[k], to: next[k] });
