@@ -283,12 +283,49 @@ const SecurityCenterModule = () => {
     setLoading(true);
     try {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const [keysRes, logsRes, auditRes] = await Promise.all([
-        supabase
-          .from("api_keys")
-          .select("*, api_partners(org_name)")
-          .order("created_at", { ascending: false })
-          .limit(200),
+      const KEYS_QUERY = "*, api_partners(org_name)";
+      const KEYS_QUERY_FALLBACK = "*, api_partners(name)";
+
+      let keysRes: any = await supabase
+        .from("api_keys")
+        .select(KEYS_QUERY)
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      // Schema fallback: detect missing org_name column and retry with legacy `name`
+      if (keysRes.error) {
+        const msg = String(keysRes.error.message || "");
+        const colHint = /column .*org_name|api_partners.*org_name|does not exist/i.test(msg);
+        pushDebug({
+          scope: "load.api_keys",
+          level: "error",
+          message: keysRes.error.message,
+          column: colHint ? "api_partners.org_name" : undefined,
+          query: `supabase.from('api_keys').select('${KEYS_QUERY}')`,
+          hint: colHint
+            ? "api_partners.org_name ustuni mavjud emas. Migratsiya yoki view nomini tekshiring. Vaqtinchalik fallback ('name') ishlatilmoqda."
+            : "API kalitlar so'rovida xato. RLS yoki ulanishni tekshiring.",
+          raw: keysRes.error,
+        });
+        if (colHint) {
+          keysRes = await supabase
+            .from("api_keys")
+            .select(KEYS_QUERY_FALLBACK)
+            .order("created_at", { ascending: false })
+            .limit(200);
+          // Normalize legacy `name` -> `org_name` so downstream code keeps working
+          if (!keysRes.error && Array.isArray(keysRes.data)) {
+            keysRes.data = keysRes.data.map((r: any) => ({
+              ...r,
+              api_partners: r.api_partners
+                ? { org_name: r.api_partners.org_name ?? r.api_partners.name ?? null }
+                : null,
+            }));
+          }
+        }
+      }
+
+      const [logsRes, auditRes] = await Promise.all([
         supabase
           .from("api_request_logs")
           .select("id, api_key_id, partner_id, endpoint, status_code, ip_address, error_message, created_at")
@@ -300,18 +337,54 @@ const SecurityCenterModule = () => {
           .select("id", { count: "exact", head: true })
           .gte("created_at", since),
       ]);
+
       if (keysRes.error) throw keysRes.error;
-      if (logsRes.error) throw logsRes.error;
-      setKeys((keysRes.data as any) || []);
+      if (logsRes.error) {
+        pushDebug({
+          scope: "load.api_request_logs",
+          level: "error",
+          message: logsRes.error.message,
+          query: "supabase.from('api_request_logs').select(...)",
+          hint: "api_request_logs jadvalida RLS yoki ustun nomi bilan muammo bo'lishi mumkin.",
+          raw: logsRes.error,
+        });
+        throw logsRes.error;
+      }
+
+      const rows = (keysRes.data as any) || [];
+      const validation = validateApiKeyRows(rows);
+      setSchemaIssues(validation.issues);
+      if (!validation.ok) {
+        validation.issues.forEach((iss) =>
+          pushDebug({
+            scope: "schema.api_keys",
+            level: "warn",
+            message: `Sxema mos kelmadi: ${iss.column}`,
+            column: iss.column,
+            query: `supabase.from('api_keys').select('*, api_partners(org_name)')`,
+            hint: iss.hint,
+          })
+        );
+      }
+
+      setKeys(rows);
       setLogs((logsRes.data as any) || []);
       setAuditCount(auditRes.count || 0);
       setLastRefresh(new Date());
     } catch (e: any) {
+      pushDebug({
+        scope: "load",
+        level: "error",
+        message: e?.message || String(e),
+        hint: "Security Center yuklashda xato. Quyidagi log yozuvini admin'ga yuboring.",
+        raw: { message: e?.message, code: e?.code, details: e?.details },
+      });
       toast({ title: "Yuklash xatosi", description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, pushDebug]);
+
 
   useEffect(() => {
     load();
