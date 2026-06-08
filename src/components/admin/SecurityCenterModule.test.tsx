@@ -49,8 +49,9 @@ describe("SecurityCenterModule — api_partners column regression", () => {
 
   it("source query uses api_partners(org_name) and NOT api_partners(name)", async () => {
     const fs = await import("node:fs/promises");
+    const path = await import("node:path");
     const src = await fs.readFile(
-      new URL("./SecurityCenterModule.tsx", import.meta.url),
+      path.resolve(process.cwd(), "src/components/admin/SecurityCenterModule.tsx"),
       "utf-8"
     );
     expect(src).toMatch(/api_partners\(org_name\)/);
