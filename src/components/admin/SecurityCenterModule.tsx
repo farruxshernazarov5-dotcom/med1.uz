@@ -255,7 +255,7 @@ const SecurityCenterModule = () => {
       setRulesAudit(nextAudit);
       localStorage.setItem(RULES_AUDIT_KEY, JSON.stringify(nextAudit));
       try {
-        await supabase.from("audit_logs").insert({
+        const { error: aErr } = await supabase.from("audit_logs").insert({
           action: "update",
           entity_type: "security_rules",
           module: "security_center",
@@ -263,7 +263,18 @@ const SecurityCenterModule = () => {
           old_data: rules as any,
           new_data: next as any,
         } as any);
-      } catch {}
+        if (aErr) throw aErr;
+      } catch (e: any) {
+        pushDebug({
+          scope: "saveRules.audit_logs",
+          level: "warn",
+          message: `audit_logs insert xatosi: ${e?.message || e}`,
+          query: "supabase.from('audit_logs').insert(...)",
+          hint: "audit_logs jadvalida INSERT huquqi yo'q bo'lishi mumkin. RLS siyosatini tekshiring.",
+          raw: e,
+        });
+      }
+
     }
     toast({ title: "Qoidalar saqlandi", description: changes.length ? `v${(Number(localStorage.getItem(RULES_VERSION_KEY)) || 1)} — ${changes.length} o'zgarish` : "O'zgarish yo'q" });
   };
