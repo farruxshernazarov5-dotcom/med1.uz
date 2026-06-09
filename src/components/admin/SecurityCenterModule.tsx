@@ -221,17 +221,46 @@ const SecurityCenterModule = () => {
     toast({ title: "Debug log tozalandi" });
   };
 
-  const downloadDebug = (fmt: "json" | "csv") => {
-    if (debugLog.length === 0) { toast({ title: "Log bo'sh" }); return; }
-    let content = "", mime = "", ext = fmt;
+  const filteredDebugLog = useMemo(() => {
+    const fromTs = dbgFrom ? new Date(dbgFrom).getTime() : -Infinity;
+    const toTs = dbgTo ? new Date(dbgTo).getTime() + 24 * 60 * 60 * 1000 : Infinity;
+    const scopeQ = dbgScope.trim().toLowerCase();
+    const colQ = dbgColumn.trim().toLowerCase();
+    return debugLog.filter((e) => {
+      const t = new Date(e.at).getTime();
+      if (t < fromTs || t > toTs) return false;
+      if (dbgLevel !== "all" && e.level !== dbgLevel) return false;
+      if (scopeQ && !(`${e.scope} ${e.query || ""}`.toLowerCase().includes(scopeQ))) return false;
+      if (colQ && !((e.column || "").toLowerCase().includes(colQ))) return false;
+      return true;
+    });
+  }, [debugLog, dbgFrom, dbgTo, dbgLevel, dbgScope, dbgColumn]);
+
+  const downloadDebug = (fmt: "json" | "csv" | "xlsx") => {
+    const data = filteredDebugLog;
+    if (data.length === 0) { toast({ title: "Log bo'sh (filtrlangan)" }); return; }
+    const stamp = new Date().toISOString().slice(0, 10);
+    if (fmt === "xlsx") {
+      const rows = data.map((e) => ({
+        at: e.at, level: e.level, scope: e.scope,
+        column: e.column || "", query: e.query || "",
+        message: e.message, hint: e.hint || "",
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "debug_log");
+      XLSX.writeFile(wb, `security-debug-${stamp}.xlsx`);
+      return;
+    }
+    let content = "", mime = "";
     if (fmt === "json") {
-      content = JSON.stringify(debugLog, null, 2);
+      content = JSON.stringify(data, null, 2);
       mime = "application/json";
     } else {
       const header = ["at","level","scope","column","query","message","hint"];
       content = [
         header.join(","),
-        ...debugLog.map((e) => header.map((k) => {
+        ...data.map((e) => header.map((k) => {
           const v = (e as any)[k] ?? "";
           const s = String(v).replace(/"/g, '""');
           return /[",\n]/.test(s) ? `"${s}"` : s;
@@ -243,7 +272,50 @@ const SecurityCenterModule = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `security-debug-${new Date().toISOString().slice(0,10)}.${ext}`;
+    a.download = `security-debug-${stamp}.${fmt}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadRulesAudit = (fmt: "json" | "csv" | "xlsx") => {
+    if (rulesAudit.length === 0) { toast({ title: "Audit log bo'sh" }); return; }
+    const stamp = new Date().toISOString().slice(0, 10);
+    const flat = rulesAudit.flatMap((a) =>
+      a.changes.length
+        ? a.changes.map((c) => ({
+            version: a.version, at: a.at, actor: a.actor,
+            field: c.field, from: JSON.stringify(c.from), to: JSON.stringify(c.to),
+          }))
+        : [{ version: a.version, at: a.at, actor: a.actor, field: "", from: "", to: "" }]
+    );
+    if (fmt === "xlsx") {
+      const ws = XLSX.utils.json_to_sheet(flat);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "rules_audit");
+      XLSX.writeFile(wb, `security-rules-audit-${stamp}.xlsx`);
+      return;
+    }
+    let content = "", mime = "";
+    if (fmt === "json") {
+      content = JSON.stringify(rulesAudit, null, 2);
+      mime = "application/json";
+    } else {
+      const header = ["version","at","actor","field","from","to"];
+      content = [
+        header.join(","),
+        ...flat.map((r) => header.map((k) => {
+          const v = (r as any)[k] ?? "";
+          const s = String(v).replace(/"/g, '""');
+          return /[",\n]/.test(s) ? `"${s}"` : s;
+        }).join(","))
+      ].join("\n");
+      mime = "text/csv;charset=utf-8";
+    }
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-rules-audit-${stamp}.${fmt}`;
     a.click();
     URL.revokeObjectURL(url);
   };
