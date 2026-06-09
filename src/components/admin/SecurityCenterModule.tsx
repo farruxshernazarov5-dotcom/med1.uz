@@ -428,6 +428,9 @@ const SecurityCenterModule = () => {
       } else {
         // Primary query succeeded — clear any stale fallback banner
         setFallbackInfo(null);
+      }
+
+
 
       const [logsRes, auditRes] = await Promise.all([
         supabase
