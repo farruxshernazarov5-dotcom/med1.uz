@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  vitest:
+    name: Vitest (Security Center + schema validator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run SecurityCenterModule regression tests
+        run: npx vitest run src/components/admin/SecurityCenterModule.test.tsx --reporter=verbose
+
+      - name: Run full test suite
+        run: npm test -- --reporter=verbose
