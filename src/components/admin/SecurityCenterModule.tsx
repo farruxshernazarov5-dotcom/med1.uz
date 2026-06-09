@@ -410,9 +410,24 @@ const SecurityCenterModule = () => {
                 ? { org_name: r.api_partners.org_name ?? r.api_partners.name ?? null }
                 : null,
             }));
+            setFallbackInfo({
+              active: true,
+              missingColumn: "api_partners.org_name",
+              attemptedQuery: `api_keys.select("${KEYS_QUERY}")`,
+              fallbackQuery: `api_keys.select("${KEYS_QUERY_FALLBACK}")`,
+              reason: msg,
+              at: new Date().toISOString(),
+            });
+            toast({
+              title: "Sxema fallback faollashdi",
+              description: "api_partners.org_name topilmadi — eski 'name' ustuni ishlatildi.",
+              variant: "destructive",
+            });
           }
         }
-      }
+      } else {
+        // Primary query succeeded — clear any stale fallback banner
+        setFallbackInfo(null);
 
       const [logsRes, auditRes] = await Promise.all([
         supabase
