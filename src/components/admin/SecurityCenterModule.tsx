@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import * as XLSX from "xlsx";
 
 const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
@@ -185,6 +186,21 @@ const SecurityCenterModule = () => {
     } catch { return []; }
   });
   const [schemaIssues, setSchemaIssues] = useState<Array<{ column: string; hint: string }>>([]);
+  const [fallbackInfo, setFallbackInfo] = useState<{
+    active: boolean;
+    missingColumn: string;
+    attemptedQuery: string;
+    fallbackQuery: string;
+    reason: string;
+    at: string;
+  } | null>(null);
+
+  // Debug log filter state
+  const [dbgFrom, setDbgFrom] = useState("");
+  const [dbgTo, setDbgTo] = useState("");
+  const [dbgLevel, setDbgLevel] = useState<"all" | "warn" | "error">("all");
+  const [dbgScope, setDbgScope] = useState("");
+  const [dbgColumn, setDbgColumn] = useState("");
 
   const pushDebug = useCallback((entry: Omit<SecurityDebugEntry, "id" | "at">) => {
     setDebugLog((prev) => {
@@ -205,17 +221,46 @@ const SecurityCenterModule = () => {
     toast({ title: "Debug log tozalandi" });
   };
 
-  const downloadDebug = (fmt: "json" | "csv") => {
-    if (debugLog.length === 0) { toast({ title: "Log bo'sh" }); return; }
-    let content = "", mime = "", ext = fmt;
+  const filteredDebugLog = useMemo(() => {
+    const fromTs = dbgFrom ? new Date(dbgFrom).getTime() : -Infinity;
+    const toTs = dbgTo ? new Date(dbgTo).getTime() + 24 * 60 * 60 * 1000 : Infinity;
+    const scopeQ = dbgScope.trim().toLowerCase();
+    const colQ = dbgColumn.trim().toLowerCase();
+    return debugLog.filter((e) => {
+      const t = new Date(e.at).getTime();
+      if (t < fromTs || t > toTs) return false;
+      if (dbgLevel !== "all" && e.level !== dbgLevel) return false;
+      if (scopeQ && !(`${e.scope} ${e.query || ""}`.toLowerCase().includes(scopeQ))) return false;
+      if (colQ && !((e.column || "").toLowerCase().includes(colQ))) return false;
+      return true;
+    });
+  }, [debugLog, dbgFrom, dbgTo, dbgLevel, dbgScope, dbgColumn]);
+
+  const downloadDebug = (fmt: "json" | "csv" | "xlsx") => {
+    const data = filteredDebugLog;
+    if (data.length === 0) { toast({ title: "Log bo'sh (filtrlangan)" }); return; }
+    const stamp = new Date().toISOString().slice(0, 10);
+    if (fmt === "xlsx") {
+      const rows = data.map((e) => ({
+        at: e.at, level: e.level, scope: e.scope,
+        column: e.column || "", query: e.query || "",
+        message: e.message, hint: e.hint || "",
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "debug_log");
+      XLSX.writeFile(wb, `security-debug-${stamp}.xlsx`);
+      return;
+    }
+    let content = "", mime = "";
     if (fmt === "json") {
-      content = JSON.stringify(debugLog, null, 2);
+      content = JSON.stringify(data, null, 2);
       mime = "application/json";
     } else {
       const header = ["at","level","scope","column","query","message","hint"];
       content = [
         header.join(","),
-        ...debugLog.map((e) => header.map((k) => {
+        ...data.map((e) => header.map((k) => {
           const v = (e as any)[k] ?? "";
           const s = String(v).replace(/"/g, '""');
           return /[",\n]/.test(s) ? `"${s}"` : s;
@@ -227,7 +272,50 @@ const SecurityCenterModule = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `security-debug-${new Date().toISOString().slice(0,10)}.${ext}`;
+    a.download = `security-debug-${stamp}.${fmt}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadRulesAudit = (fmt: "json" | "csv" | "xlsx") => {
+    if (rulesAudit.length === 0) { toast({ title: "Audit log bo'sh" }); return; }
+    const stamp = new Date().toISOString().slice(0, 10);
+    const flat = rulesAudit.flatMap((a) =>
+      a.changes.length
+        ? a.changes.map((c) => ({
+            version: a.version, at: a.at, actor: a.actor,
+            field: c.field, from: JSON.stringify(c.from), to: JSON.stringify(c.to),
+          }))
+        : [{ version: a.version, at: a.at, actor: a.actor, field: "", from: "", to: "" }]
+    );
+    if (fmt === "xlsx") {
+      const ws = XLSX.utils.json_to_sheet(flat);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "rules_audit");
+      XLSX.writeFile(wb, `security-rules-audit-${stamp}.xlsx`);
+      return;
+    }
+    let content = "", mime = "";
+    if (fmt === "json") {
+      content = JSON.stringify(rulesAudit, null, 2);
+      mime = "application/json";
+    } else {
+      const header = ["version","at","actor","field","from","to"];
+      content = [
+        header.join(","),
+        ...flat.map((r) => header.map((k) => {
+          const v = (r as any)[k] ?? "";
+          const s = String(v).replace(/"/g, '""');
+          return /[",\n]/.test(s) ? `"${s}"` : s;
+        }).join(","))
+      ].join("\n");
+      mime = "text/csv;charset=utf-8";
+    }
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-rules-audit-${stamp}.${fmt}`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -322,9 +410,27 @@ const SecurityCenterModule = () => {
                 ? { org_name: r.api_partners.org_name ?? r.api_partners.name ?? null }
                 : null,
             }));
+            setFallbackInfo({
+              active: true,
+              missingColumn: "api_partners.org_name",
+              attemptedQuery: `api_keys.select("${KEYS_QUERY}")`,
+              fallbackQuery: `api_keys.select("${KEYS_QUERY_FALLBACK}")`,
+              reason: msg,
+              at: new Date().toISOString(),
+            });
+            toast({
+              title: "Sxema fallback faollashdi",
+              description: "api_partners.org_name topilmadi — eski 'name' ustuni ishlatildi.",
+              variant: "destructive",
+            });
           }
         }
+      } else {
+        // Primary query succeeded — clear any stale fallback banner
+        setFallbackInfo(null);
       }
+
+
 
       const [logsRes, auditRes] = await Promise.all([
         supabase
@@ -925,6 +1031,39 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
         </Card>
       )}
 
+      {/* Fallback alert — primary column missing, legacy column used */}
+      {fallbackInfo?.active && (
+        <Card className="border-l-4 border-l-red-500 bg-red-50/60 dark:bg-red-950/20">
+          <CardContent className="p-4 flex items-start gap-3">
+            <ShieldAlert className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div className="text-sm flex-1 space-y-1">
+              <p className="font-semibold text-red-700 dark:text-red-400">
+                Sxema fallback faollashdi — eski ustun ishlatildi
+              </p>
+              <p className="text-xs">
+                Topilmagan ustun:{" "}
+                <code className="font-mono bg-red-100 dark:bg-red-900/40 px-1 rounded">
+                  {fallbackInfo.missingColumn}
+                </code>
+              </p>
+              <p className="text-xs">
+                Asl so'rov: <code className="font-mono">{fallbackInfo.attemptedQuery}</code>
+              </p>
+              <p className="text-xs">
+                Fallback so'rov: <code className="font-mono">{fallbackInfo.fallbackQuery}</code>
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Sabab: {fallbackInfo.reason} · {new Date(fallbackInfo.at).toLocaleString("uz-UZ")}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Yo'l-yo'riq: <code>api_partners</code> jadvalida <code>org_name</code> ustunini
+                qayta yarating yoki Lovable Cloud → Database migratsiyasini ishga tushiring.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Schema mismatch banner */}
       {schemaIssues.length > 0 && (
         <Card className="border-l-4 border-l-orange-500 bg-orange-50/50 dark:bg-orange-950/10">
@@ -955,16 +1094,71 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
-            <Bug className="w-4 h-4" /> Xato va debug log ({debugLog.length})
+            <Bug className="w-4 h-4" /> Xato va debug log ({filteredDebugLog.length}/{debugLog.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Filters */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Dan</Label>
+              <Input type="date" value={dbgFrom} onChange={(e) => setDbgFrom(e.target.value)} className="h-8 text-xs" />
+            </div>
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Gacha</Label>
+              <Input type="date" value={dbgTo} onChange={(e) => setDbgTo(e.target.value)} className="h-8 text-xs" />
+            </div>
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Daraja</Label>
+              <select
+                value={dbgLevel}
+                onChange={(e) => setDbgLevel(e.target.value as any)}
+                className="h-8 text-xs w-full rounded-md border border-input bg-background px-2"
+              >
+                <option value="all">Hammasi</option>
+                <option value="error">error</option>
+                <option value="warn">warn</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Soha / endpoint</Label>
+              <Input
+                placeholder="masalan: load.api_keys"
+                value={dbgScope}
+                onChange={(e) => setDbgScope(e.target.value)}
+                className="h-8 text-xs"
+              />
+            </div>
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Ustun nomi</Label>
+              <Input
+                placeholder="org_name"
+                value={dbgColumn}
+                onChange={(e) => setDbgColumn(e.target.value)}
+                className="h-8 text-xs"
+              />
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <Button variant="outline" size="sm" onClick={() => downloadDebug("json")} disabled={debugLog.length === 0}>
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("json")} disabled={filteredDebugLog.length === 0}>
               <FileDown className="w-3 h-3 mr-1" /> JSON
             </Button>
-            <Button variant="outline" size="sm" onClick={() => downloadDebug("csv")} disabled={debugLog.length === 0}>
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("csv")} disabled={filteredDebugLog.length === 0}>
               <FileSpreadsheet className="w-3 h-3 mr-1" /> CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => downloadDebug("xlsx")} disabled={filteredDebugLog.length === 0}>
+              <FileSpreadsheet className="w-3 h-3 mr-1" /> XLSX
+            </Button>
+            <div className="w-px h-5 bg-border mx-1" />
+            <Button variant="outline" size="sm" onClick={() => downloadRulesAudit("json")} disabled={rulesAudit.length === 0}>
+              <History className="w-3 h-3 mr-1" /> Audit JSON
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => downloadRulesAudit("csv")} disabled={rulesAudit.length === 0}>
+              <History className="w-3 h-3 mr-1" /> Audit CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => downloadRulesAudit("xlsx")} disabled={rulesAudit.length === 0}>
+              <History className="w-3 h-3 mr-1" /> Audit XLSX
             </Button>
             <Button variant="ghost" size="sm" onClick={clearDebug} disabled={debugLog.length === 0}>
               <Trash2 className="w-3 h-3 mr-1" /> Tozalash
@@ -973,10 +1167,10 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
               Eng so'nggi 300 yozuv saqlanadi (localStorage)
             </span>
           </div>
-          {debugLog.length === 0 ? (
+          {filteredDebugLog.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6">
               <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#27AE60]" />
-              Xatolar yo'q
+              {debugLog.length === 0 ? "Xatolar yo'q" : "Filtrga mos yozuv yo'q"}
             </p>
           ) : (
             <div className="overflow-x-auto max-h-80 overflow-y-auto">
@@ -992,7 +1186,7 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                   </tr>
                 </thead>
                 <tbody>
-                  {debugLog.slice(0, 50).map((e) => (
+                  {filteredDebugLog.slice(0, 50).map((e) => (
                     <tr key={e.id} className="border-b align-top hover:bg-muted/30">
                       <td className="p-2 font-mono whitespace-nowrap">{new Date(e.at).toLocaleString("uz-UZ")}</td>
                       <td className="p-2">
@@ -1015,6 +1209,7 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           )}
         </CardContent>
       </Card>
+
 
       {/* Charts */}
 
