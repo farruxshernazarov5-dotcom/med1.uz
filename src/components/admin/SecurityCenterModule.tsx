@@ -186,6 +186,21 @@ const SecurityCenterModule = () => {
     } catch { return []; }
   });
   const [schemaIssues, setSchemaIssues] = useState<Array<{ column: string; hint: string }>>([]);
+  const [fallbackInfo, setFallbackInfo] = useState<{
+    active: boolean;
+    missingColumn: string;
+    attemptedQuery: string;
+    fallbackQuery: string;
+    reason: string;
+    at: string;
+  } | null>(null);
+
+  // Debug log filter state
+  const [dbgFrom, setDbgFrom] = useState("");
+  const [dbgTo, setDbgTo] = useState("");
+  const [dbgLevel, setDbgLevel] = useState<"all" | "warn" | "error">("all");
+  const [dbgScope, setDbgScope] = useState("");
+  const [dbgColumn, setDbgColumn] = useState("");
 
   const pushDebug = useCallback((entry: Omit<SecurityDebugEntry, "id" | "at">) => {
     setDebugLog((prev) => {
