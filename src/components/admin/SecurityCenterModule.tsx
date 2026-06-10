@@ -1216,6 +1216,8 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
         </CardContent>
       </Card>
 
+      {/* Server-side log + retention + notification settings */}
+      <ServerLogPanel />
 
       {/* Charts */}
 
