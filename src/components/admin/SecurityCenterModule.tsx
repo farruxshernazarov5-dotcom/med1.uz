@@ -1525,6 +1525,13 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           )}
         </CardContent>
       </Card>
+
+      <FallbackDetailDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        fallback={fallbackInfo}
+        related={debugLog.filter((e) => e.column === "api_partners.org_name" || e.scope.startsWith("load.api_keys") || e.scope === "schema.api_keys").slice(0, 50)}
+      />
     </div>
 
   );
