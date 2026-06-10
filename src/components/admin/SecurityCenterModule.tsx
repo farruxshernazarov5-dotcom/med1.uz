@@ -203,6 +203,7 @@ const SecurityCenterModule = () => {
   const [dbgLevel, setDbgLevel] = useState<"all" | "warn" | "error">("all");
   const [dbgScope, setDbgScope] = useState("");
   const [dbgColumn, setDbgColumn] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const pushDebug = useCallback((entry: Omit<SecurityDebugEntry, "id" | "at">) => {
     setDebugLog((prev) => {
