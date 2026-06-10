@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
+import { FallbackDetailDrawer } from "./security/FallbackDetailDrawer";
+import { ServerLogPanel } from "./security/ServerLogPanel";
 
 const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
@@ -201,6 +203,7 @@ const SecurityCenterModule = () => {
   const [dbgLevel, setDbgLevel] = useState<"all" | "warn" | "error">("all");
   const [dbgScope, setDbgScope] = useState("");
   const [dbgColumn, setDbgColumn] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const pushDebug = useCallback((entry: Omit<SecurityDebugEntry, "id" | "at">) => {
     setDebugLog((prev) => {
@@ -1059,6 +1062,9 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                 Yo'l-yo'riq: <code>api_partners</code> jadvalida <code>org_name</code> ustunini
                 qayta yarating yoki Lovable Cloud → Database migratsiyasini ishga tushiring.
               </p>
+              <Button size="sm" variant="outline" className="mt-2" onClick={() => setDrawerOpen(true)}>
+                Batafsil ko'rish
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -1210,6 +1216,8 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
         </CardContent>
       </Card>
 
+      {/* Server-side log + retention + notification settings */}
+      <ServerLogPanel />
 
       {/* Charts */}
 
@@ -1517,6 +1525,13 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
           )}
         </CardContent>
       </Card>
+
+      <FallbackDetailDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        fallback={fallbackInfo}
+        related={debugLog.filter((e) => e.column === "api_partners.org_name" || e.scope.startsWith("load.api_keys") || e.scope === "schema.api_keys").slice(0, 50)}
+      />
     </div>
 
   );
