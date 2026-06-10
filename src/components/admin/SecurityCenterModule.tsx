@@ -1062,6 +1062,9 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
                 Yo'l-yo'riq: <code>api_partners</code> jadvalida <code>org_name</code> ustunini
                 qayta yarating yoki Lovable Cloud → Database migratsiyasini ishga tushiring.
               </p>
+              <Button size="sm" variant="outline" className="mt-2" onClick={() => setDrawerOpen(true)}>
+                Batafsil ko'rish
+              </Button>
             </div>
           </CardContent>
         </Card>
