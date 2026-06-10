@@ -14881,6 +14881,99 @@ export type Database = {
         }
         Relationships: []
       }
+      security_debug_log: {
+        Row: {
+          column_name: string | null
+          created_at: string
+          endpoint: string | null
+          id: string
+          level: string
+          message: string
+          metadata: Json | null
+          notified: boolean | null
+          query_text: string | null
+          scope: string
+          user_id: string | null
+        }
+        Insert: {
+          column_name?: string | null
+          created_at?: string
+          endpoint?: string | null
+          id?: string
+          level: string
+          message: string
+          metadata?: Json | null
+          notified?: boolean | null
+          query_text?: string | null
+          scope: string
+          user_id?: string | null
+        }
+        Update: {
+          column_name?: string | null
+          created_at?: string
+          endpoint?: string | null
+          id?: string
+          level?: string
+          message?: string
+          metadata?: Json | null
+          notified?: boolean | null
+          query_text?: string | null
+          scope?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_log_retention: {
+        Row: {
+          id: number
+          retention_days: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: number
+          retention_days?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: number
+          retention_days?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      security_notification_settings: {
+        Row: {
+          email_address: string | null
+          email_enabled: boolean
+          error_only: boolean
+          telegram_chat_id: string | null
+          telegram_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          email_address?: string | null
+          email_enabled?: boolean
+          error_only?: boolean
+          telegram_chat_id?: string | null
+          telegram_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          email_address?: string | null
+          email_enabled?: boolean
+          error_only?: boolean
+          telegram_chat_id?: string | null
+          telegram_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -15504,6 +15597,19 @@ export type Database = {
         Args: { _article_id: string }
         Returns: undefined
       }
+      insert_security_log: {
+        Args: {
+          _column?: string
+          _endpoint?: string
+          _level: string
+          _message: string
+          _metadata?: Json
+          _query?: string
+          _scope: string
+          _user?: string
+        }
+        Returns: string
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -15513,6 +15619,7 @@ export type Database = {
         }
         Returns: number
       }
+      purge_security_logs: { Args: { _days?: number }; Returns: number }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
