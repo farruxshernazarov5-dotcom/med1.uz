@@ -1217,6 +1217,9 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
         </CardContent>
       </Card>
 
+      {/* AI 150-token cap overage banner (24h window) */}
+      <AdminTokenOverageBanner />
+
       {/* Server-side log + retention + notification settings */}
       <ServerLogPanel />
 
