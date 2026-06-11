@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 import { FallbackDetailDrawer } from "./security/FallbackDetailDrawer";
 import { ServerLogPanel } from "./security/ServerLogPanel";
+import { AdminTokenOverageBanner } from "./AdminTokenOverageBanner";
 
 const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
