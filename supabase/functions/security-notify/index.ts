@@ -42,12 +42,13 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ skipped: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Only error-level by default
+    // Notify on errors OR any AI token-cap overage (always escalated)
     const level = String(entry.level);
+    const isTokenOverage = String(entry.scope || "") === "ai-token-cap";
 
     // Fetch admin subscribers
     const { data: subs } = await admin.from("security_notification_settings").select("*");
-    const recipients = (subs || []).filter((s: any) => !s.error_only || level === "error");
+    const recipients = (subs || []).filter((s: any) => !s.error_only || level === "error" || isTokenOverage);
 
     const subject = `🛡️ Security Center: ${level.toUpperCase()} — ${entry.scope || "unknown"}`;
     const htmlBody = `
