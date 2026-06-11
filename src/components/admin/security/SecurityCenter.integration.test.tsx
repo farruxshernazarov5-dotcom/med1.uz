@@ -5,7 +5,6 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
-import { screen } from "@testing-library/dom";
 
 vi.mock("@/integrations/supabase/client", () => {
   const builder: any = {
