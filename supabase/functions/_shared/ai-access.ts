@@ -22,28 +22,65 @@ const SERVICE_CREDITS: Record<string, number> = {
 };
 
 /**
- * STRICT TOKEN CAPS — every AI response must stay within 400–500 output tokens.
+ * STRICT TOKEN CAPS — every AI response must stay within 150 output tokens.
  * Callers MUST pass `max_completion_tokens: access.maxTokens` to the gateway.
+ * If a response exceeds 150 tokens, a `warn`-level entry is written to
+ * `security_debug_log` and admin banner is triggered.
  */
-export const MAX_OUTPUT_TOKENS_HARD_CAP = 500;
+export const MAX_OUTPUT_TOKENS_HARD_CAP = 150;
 export const MAX_INPUT_TOKENS = 4000;
 
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash", maxTokens: 450 },
-  5:  { model: "google/gemini-2.5-flash", maxTokens: 480 },
-  25: { model: "google/gemini-2.5-pro",   maxTokens: 500 },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 150 },
+  5:  { model: "google/gemini-2.5-flash", maxTokens: 150 },
+  25: { model: "google/gemini-2.5-pro",   maxTokens: 150 },
 };
 
-/** Universal directive appended to every system prompt — STRICT 3–5 bullet format. */
+/** Universal directive appended to every system prompt — STRICT 3 bullet, 150-token format. */
 export const CONCISE_DIRECTIVE = `
 
-🔒 QISQA JAVOB QOIDASI (MAJBURIY — chetga chiqma):
-- Javobing FAQAT 3–5 ta qisqa bullet point (•) dan iborat bo'lsin.
-- Har bir bullet — 1 ta jumla, maksimum 20 so'z.
-- Umumiy uzunlik: 400–500 token (≈250–350 so'z) dan oshmasin.
+🔒 QAT'IY QISQA JAVOB QOIDASI (MAJBURIY — chetga chiqma):
+- Javobing FAQAT 3 ta qisqa bullet point (•) dan iborat bo'lsin.
+- Har bir bullet — 1 ta jumla, maksimum 12 so'z.
+- Umumiy uzunlik: 100–150 token (≈70–100 so'z) dan OSHMASIN.
 - Hech qachon kirish so'zi, "Salom", "Albatta", takrorlash yoki suv quymalik yozma.
 - Format: "• ..." dan boshla, har band yangi qatorda.
-- So'nggi band har doim: "• ⚠️ Aniq tashxis uchun shifokorga murojaat qiling."`;
+- So'nggi band har doim: "• ⚠️ Shifokorga murojaat qiling."`;
+
+/**
+ * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.
+ * Safe to call from any edge function (uses service role).
+ */
+export async function logTokenOverage(params: {
+  serviceId: string;
+  userId: string;
+  outputTokens: number;
+  model: string;
+}) {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) return;
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+    await admin.rpc("insert_security_log", {
+      _scope: "ai-token-cap",
+      _level: "warn",
+      _message: `Token limit 150 oshib ketdi: ${params.outputTokens} token (${params.serviceId})`,
+      _endpoint: `/functions/v1/${params.serviceId}`,
+      _query_text: null,
+      _column_name: "max_completion_tokens",
+      _user_id: params.userId,
+      _metadata: {
+        service: params.serviceId,
+        output_tokens: params.outputTokens,
+        cap: MAX_OUTPUT_TOKENS_HARD_CAP,
+        model: params.model,
+      },
+    });
+  } catch (e) {
+    console.warn("logTokenOverage failed", e);
+  }
+}
 
 export function estimateTokensFromMessages(messages: unknown): number {
   try {
