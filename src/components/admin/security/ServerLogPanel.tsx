@@ -62,6 +62,10 @@ export const ServerLogPanel = () => {
     error_only: true,
     email_address: "",
     telegram_chat_id: "",
+    min_priority: "warn",
+    subject_prefix: "",
+    token_overage_enabled: true,
+    rate_limit_per_min: 10,
   });
   const [savingNotif, setSavingNotif] = useState(false);
 
