@@ -1224,6 +1224,10 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
       {/* Server-side log + retention + notification settings */}
       <ServerLogPanel />
 
+      {/* Token overage delivery status (email/telegram) */}
+      <TokenOverageDeliveryPanel />
+
+
       {/* Charts */}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
