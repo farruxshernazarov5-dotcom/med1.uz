@@ -169,6 +169,10 @@ export const ServerLogPanel = () => {
         error_only: notif.error_only,
         email_address: notif.email_address || null,
         telegram_chat_id: notif.telegram_chat_id || null,
+        min_priority: notif.min_priority,
+        subject_prefix: notif.subject_prefix || null,
+        token_overage_enabled: notif.token_overage_enabled,
+        rate_limit_per_min: Math.max(1, Math.min(120, notif.rate_limit_per_min || 10)),
         updated_at: new Date().toISOString(),
       } as any);
       if (error) throw error;
