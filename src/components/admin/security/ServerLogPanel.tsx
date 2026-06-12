@@ -104,13 +104,18 @@ export const ServerLogPanel = () => {
         const { data: u } = await supabase.auth.getUser();
         if (u.user?.id) {
           const { data: n } = await supabase.from("security_notification_settings").select("*").eq("user_id", u.user.id).maybeSingle();
-          if (n) setNotif({
+          if (n) setNotif((p) => ({
+            ...p,
             email_enabled: !!n.email_enabled,
             telegram_enabled: !!n.telegram_enabled,
             error_only: n.error_only !== false,
-            email_address: n.email_address || u.user.email || "",
+            email_address: n.email_address || u.user!.email || "",
             telegram_chat_id: n.telegram_chat_id || "",
-          });
+            min_priority: ((n as any).min_priority as any) || "warn",
+            subject_prefix: (n as any).subject_prefix || "",
+            token_overage_enabled: (n as any).token_overage_enabled !== false,
+            rate_limit_per_min: (n as any).rate_limit_per_min || 10,
+          }));
           else if (u.user.email) setNotif((p) => ({ ...p, email_address: u.user!.email! }));
         }
       } catch {}
