@@ -14944,13 +14944,67 @@ export type Database = {
         }
         Relationships: []
       }
+      security_notification_deliveries: {
+        Row: {
+          attempt: number
+          channel: string
+          created_at: string
+          entry_id: string | null
+          error: string | null
+          id: string
+          level: string | null
+          recipient: string | null
+          scope: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          attempt?: number
+          channel: string
+          created_at?: string
+          entry_id?: string | null
+          error?: string | null
+          id?: string
+          level?: string | null
+          recipient?: string | null
+          scope?: string | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          attempt?: number
+          channel?: string
+          created_at?: string
+          entry_id?: string | null
+          error?: string | null
+          id?: string
+          level?: string | null
+          recipient?: string | null
+          scope?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_notification_deliveries_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "security_debug_log"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_notification_settings: {
         Row: {
           email_address: string | null
           email_enabled: boolean
           error_only: boolean
+          min_priority: string
+          rate_limit_per_min: number
+          subject_prefix: string | null
           telegram_chat_id: string | null
           telegram_enabled: boolean
+          token_overage_enabled: boolean
           updated_at: string
           user_id: string
         }
@@ -14958,8 +15012,12 @@ export type Database = {
           email_address?: string | null
           email_enabled?: boolean
           error_only?: boolean
+          min_priority?: string
+          rate_limit_per_min?: number
+          subject_prefix?: string | null
           telegram_chat_id?: string | null
           telegram_enabled?: boolean
+          token_overage_enabled?: boolean
           updated_at?: string
           user_id: string
         }
@@ -14967,8 +15025,12 @@ export type Database = {
           email_address?: string | null
           email_enabled?: boolean
           error_only?: boolean
+          min_priority?: string
+          rate_limit_per_min?: number
+          subject_prefix?: string | null
           telegram_chat_id?: string | null
           telegram_enabled?: boolean
+          token_overage_enabled?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -15641,6 +15703,10 @@ export type Database = {
       revoke_referral_reward: {
         Args: { _reason?: string; _referral_id: string }
         Returns: undefined
+      }
+      security_notif_check_rate: {
+        Args: { _cap: number; _channel: string; _user: string }
+        Returns: boolean
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
