@@ -32,6 +32,10 @@ interface NotifSettings {
   error_only: boolean;
   email_address: string | null;
   telegram_chat_id: string | null;
+  min_priority: "info" | "warn" | "error";
+  subject_prefix: string | null;
+  token_overage_enabled: boolean;
+  rate_limit_per_min: number;
 }
 
 export const ServerLogPanel = () => {
