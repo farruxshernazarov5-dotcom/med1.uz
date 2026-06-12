@@ -220,6 +220,35 @@ export const ServerLogPanel = () => {
               <Switch checked={notif.error_only} onCheckedChange={(v) => setNotif({ ...notif, error_only: v })} />
             </div>
 
+            <div className="flex items-center justify-between p-2 rounded border">
+              <Label className="text-xs">AI token-cap overage xabarnomalari</Label>
+              <Switch checked={notif.token_overage_enabled} onCheckedChange={(v) => setNotif({ ...notif, token_overage_enabled: v })} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[11px] text-muted-foreground">Min. ustuvorlik</Label>
+                <select value={notif.min_priority}
+                  onChange={(e) => setNotif({ ...notif, min_priority: e.target.value as any })}
+                  className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
+                  <option value="info">info</option>
+                  <option value="warn">warn</option>
+                  <option value="error">error</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-[11px] text-muted-foreground">Rate-limit /daq</Label>
+                <Input type="number" min={1} max={120} value={notif.rate_limit_per_min}
+                  onChange={(e) => setNotif({ ...notif, rate_limit_per_min: +e.target.value || 10 })} className="h-9 text-xs" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Mavzu (subject) prefiksi</Label>
+              <Input placeholder="[PROD]" value={notif.subject_prefix || ""}
+                onChange={(e) => setNotif({ ...notif, subject_prefix: e.target.value })} className="h-9" />
+            </div>
+
             <Button onClick={saveNotif} disabled={savingNotif} size="sm" className="w-full">
               <Save className="w-3 h-3 mr-1" /> Saqlash
             </Button>
