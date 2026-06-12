@@ -21,6 +21,7 @@ import * as XLSX from "xlsx";
 import { FallbackDetailDrawer } from "./security/FallbackDetailDrawer";
 import { ServerLogPanel } from "./security/ServerLogPanel";
 import { AdminTokenOverageBanner } from "./AdminTokenOverageBanner";
+import { TokenOverageDeliveryPanel } from "./security/TokenOverageDeliveryPanel";
 
 const RULES_KEY = "med1.security.jwtRules";
 const HISTORY_KEY = "med1.security.dailyHistory";
@@ -1222,6 +1223,10 @@ ${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div c
 
       {/* Server-side log + retention + notification settings */}
       <ServerLogPanel />
+
+      {/* Token overage delivery status (email/telegram) */}
+      <TokenOverageDeliveryPanel />
+
 
       {/* Charts */}
 

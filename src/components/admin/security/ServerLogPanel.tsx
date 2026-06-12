@@ -32,6 +32,10 @@ interface NotifSettings {
   error_only: boolean;
   email_address: string | null;
   telegram_chat_id: string | null;
+  min_priority: "info" | "warn" | "error";
+  subject_prefix: string | null;
+  token_overage_enabled: boolean;
+  rate_limit_per_min: number;
 }
 
 export const ServerLogPanel = () => {
@@ -58,6 +62,10 @@ export const ServerLogPanel = () => {
     error_only: true,
     email_address: "",
     telegram_chat_id: "",
+    min_priority: "warn",
+    subject_prefix: "",
+    token_overage_enabled: true,
+    rate_limit_per_min: 10,
   });
   const [savingNotif, setSavingNotif] = useState(false);
 
@@ -96,13 +104,18 @@ export const ServerLogPanel = () => {
         const { data: u } = await supabase.auth.getUser();
         if (u.user?.id) {
           const { data: n } = await supabase.from("security_notification_settings").select("*").eq("user_id", u.user.id).maybeSingle();
-          if (n) setNotif({
+          if (n) setNotif((p) => ({
+            ...p,
             email_enabled: !!n.email_enabled,
             telegram_enabled: !!n.telegram_enabled,
             error_only: n.error_only !== false,
-            email_address: n.email_address || u.user.email || "",
+            email_address: n.email_address || u.user!.email || "",
             telegram_chat_id: n.telegram_chat_id || "",
-          });
+            min_priority: ((n as any).min_priority as any) || "warn",
+            subject_prefix: (n as any).subject_prefix || "",
+            token_overage_enabled: (n as any).token_overage_enabled !== false,
+            rate_limit_per_min: (n as any).rate_limit_per_min || 10,
+          }));
           else if (u.user.email) setNotif((p) => ({ ...p, email_address: u.user!.email! }));
         }
       } catch {}
@@ -156,6 +169,10 @@ export const ServerLogPanel = () => {
         error_only: notif.error_only,
         email_address: notif.email_address || null,
         telegram_chat_id: notif.telegram_chat_id || null,
+        min_priority: notif.min_priority,
+        subject_prefix: notif.subject_prefix || null,
+        token_overage_enabled: notif.token_overage_enabled,
+        rate_limit_per_min: Math.max(1, Math.min(120, notif.rate_limit_per_min || 10)),
         updated_at: new Date().toISOString(),
       } as any);
       if (error) throw error;
@@ -201,6 +218,35 @@ export const ServerLogPanel = () => {
             <div className="flex items-center justify-between p-2 rounded border">
               <Label className="text-xs">Faqat error darajada xabar yubor</Label>
               <Switch checked={notif.error_only} onCheckedChange={(v) => setNotif({ ...notif, error_only: v })} />
+            </div>
+
+            <div className="flex items-center justify-between p-2 rounded border">
+              <Label className="text-xs">AI token-cap overage xabarnomalari</Label>
+              <Switch checked={notif.token_overage_enabled} onCheckedChange={(v) => setNotif({ ...notif, token_overage_enabled: v })} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[11px] text-muted-foreground">Min. ustuvorlik</Label>
+                <select value={notif.min_priority}
+                  onChange={(e) => setNotif({ ...notif, min_priority: e.target.value as any })}
+                  className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs">
+                  <option value="info">info</option>
+                  <option value="warn">warn</option>
+                  <option value="error">error</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-[11px] text-muted-foreground">Rate-limit /daq</Label>
+                <Input type="number" min={1} max={120} value={notif.rate_limit_per_min}
+                  onChange={(e) => setNotif({ ...notif, rate_limit_per_min: +e.target.value || 10 })} className="h-9 text-xs" />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-[11px] text-muted-foreground">Mavzu (subject) prefiksi</Label>
+              <Input placeholder="[PROD]" value={notif.subject_prefix || ""}
+                onChange={(e) => setNotif({ ...notif, subject_prefix: e.target.value })} className="h-9" />
             </div>
 
             <Button onClick={saveNotif} disabled={savingNotif} size="sm" className="w-full">
