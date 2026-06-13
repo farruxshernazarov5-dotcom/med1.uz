@@ -48,6 +48,10 @@ export const CONCISE_DIRECTIVE = `
 - Faqat foydalanuvchi savoliga eng zarur javobni ber.
 - Oxirgi bullet qisqa ogohlantirish bo'lsin: "⚠️ Shifokorga murojaat qiling."`;
 
+export function compactAiSystemPrompt(serviceName: string): string {
+  return `Med1.uz ${serviceName}: xavfsiz tibbiy AI yordamchi. Tashxis qo'yma, retsept yozma, shoshilinch holatda 103/shifokorga yo'naltir. Javob aniq, qisqa va foydalanuvchi tilida bo'lsin.`;
+}
+
 /**
  * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.
  * Safe to call from any edge function (uses service role).
