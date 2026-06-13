@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { CONCISE_DIRECTIVE, enforceAiAccess } from "../_shared/ai-access.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -116,9 +116,10 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
+          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE },
           { role: "user", content: userMessage },
         ],
+        max_completion_tokens: access.maxTokens,
       }),
     });
 
