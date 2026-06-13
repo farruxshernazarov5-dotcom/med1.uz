@@ -47,11 +47,13 @@ export function emitTokenUsage(e: Omit<TokenUsageEvent, "cap" | "exceeded" | "at
 /** Parse usage info from a fetch Response's `X-Med1-AI-*` headers. */
 export function emitFromResponseHeaders(serviceId: string, res: Response) {
   try {
-    const tokens = Number(res.headers.get("X-Med1-AI-Output-Tokens") ?? res.headers.get("X-Med1-AI-Estimated-Tokens") ?? "0");
+    const output = Number(res.headers.get("X-Med1-AI-Output-Tokens") ?? res.headers.get("X-Med1-AI-Output-Token-Cap") ?? "0");
+    const total = Number(res.headers.get("X-Med1-AI-Estimated-Tokens") ?? "0");
+    const input = total && output ? Math.max(0, total - output) : undefined;
     const model = res.headers.get("X-Med1-AI-Model") ?? undefined;
     const cost = Number(res.headers.get("X-Med1-AI-Estimated-Cost-Usd") ?? "0");
-    if (!tokens) return;
-    emitTokenUsage({ serviceId, model, outputTokens: tokens, estimatedCostUsd: cost });
+    if (!output && !total) return;
+    emitTokenUsage({ serviceId, model, inputTokens: input, outputTokens: output || total, totalTokens: total || undefined, estimatedCostUsd: cost });
   } catch {/* noop */}
 }
 
