@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages, compactAiSystemPrompt } from "../_shared/ai-access.ts";
 import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -102,7 +102,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: access.model,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE + docContext },
+          { role: "system", content: compactAiSystemPrompt("AI Doktor") + languageInstruction(__lang) + CONCISE_DIRECTIVE + docContext },
           ...messages,
         ],
         max_completion_tokens: access.maxTokens,
