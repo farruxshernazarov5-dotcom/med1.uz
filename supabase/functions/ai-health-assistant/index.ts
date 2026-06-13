@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, aiUsageHeaders, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, aiUsageHeaders, compactAiSystemPrompt, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -90,12 +90,12 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const systemContent = mode === "symptom"
-      ? (SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE) + "\n\nHozir SIMPTOM TAHLIL rejimida ishla. Faqat eng zarur keyingi savol yoki tavsiyani ber."
+      ? (compactAiSystemPrompt("Sog'liq Assistent") + languageInstruction(__lang) + CONCISE_DIRECTIVE) + "\n\nRejim: simptom. Faqat eng zarur keyingi savol yoki tavsiyani ber."
       : mode === "lab"
-      ? (SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE) + "\n\nHozir ANALIZ TAHLIL rejimida ishla. Faqat asosiy og'ish va keyingi qadamni yoz."
+      ? (compactAiSystemPrompt("Sog'liq Assistent") + languageInstruction(__lang) + CONCISE_DIRECTIVE) + "\n\nRejim: analiz. Faqat asosiy og'ish va keyingi qadamni yoz."
       : mode === "advice"
-      ? (SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE) + "\n\nHozir SOG'LIQ TAVSIYA rejimida ishla. Faqat 2-3 qisqa tavsiya ber."
-      : (SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE);
+      ? (compactAiSystemPrompt("Sog'liq Assistent") + languageInstruction(__lang) + CONCISE_DIRECTIVE) + "\n\nRejim: sog'liq tavsiyasi. Faqat 2-3 qisqa tavsiya ber."
+      : (compactAiSystemPrompt("Sog'liq Assistent") + languageInstruction(__lang) + CONCISE_DIRECTIVE);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
