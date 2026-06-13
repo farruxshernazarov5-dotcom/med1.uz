@@ -36,7 +36,7 @@ export const CreditProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(false);
   }, [user]);
 
-  useEffect(() => { fetchCredits(); }, [user]);
+  useEffect(() => { fetchCredits(); }, [fetchCredits]);
 
   return (
     <CreditContext.Provider value={{ balance, expiresAt, loading, refetch: fetchCredits }}>
