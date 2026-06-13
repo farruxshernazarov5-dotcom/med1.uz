@@ -13,6 +13,9 @@ import { supabase } from "@/integrations/supabase/client";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { TokenUsageBadge } from "@/components/ai/TokenUsageBadge";
+import { currentLang } from "@/lib/aiLang";
+import { emitFromResponseHeaders } from "@/lib/tokenUsageStore";
 
 interface Message {
   role: "user" | "assistant";
@@ -93,7 +96,8 @@ const AIDietologPage = () => {
           },
           body: JSON.stringify({
             messages: [...messages, userMessage],
-            context: contextMessage
+            context: contextMessage,
+            lang: currentLang()
           }),
         }
       );
@@ -105,6 +109,7 @@ const AIDietologPage = () => {
         }
         throw new Error("AI xizmati xatosi");
       }
+      emitFromResponseHeaders("ai-dietolog", response);
 
       const reader = response.body?.getReader();
       if (!reader) throw new Error("Stream not available");
@@ -280,6 +285,7 @@ const AIDietologPage = () => {
                   <Utensils className="w-5 h-5" />
                   {t("aiForms.dietolog.chatTitle")}
                 </CardTitle>
+                <TokenUsageBadge serviceId="ai-dietolog" />
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[500px] pr-4 mb-4">
