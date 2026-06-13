@@ -13,9 +13,6 @@ import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import aiDoctorImg from "@/assets/ai-doctor-chat.webp";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
-import { TokenUsageBadge } from "@/components/ai/TokenUsageBadge";
-import { currentLang } from "@/lib/aiLang";
-import { emitFromResponseHeaders } from "@/lib/tokenUsageStore";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -69,14 +66,13 @@ const AIDoctorChatPage = () => {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ messages: allMessages, lang: currentLang() }),
+        body: JSON.stringify({ messages: allMessages, lang: (await import("@/lib/aiLang")).currentLang() }),
       });
 
       if (!resp.ok || !resp.body) {
         const errData = await resp.json().catch(() => ({}));
         throw new Error(errData.error || "Xatolik yuz berdi");
       }
-      emitFromResponseHeaders("ai-doctor-chat", resp);
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -139,7 +135,6 @@ const AIDoctorChatPage = () => {
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
 
         <AIAccessBanner serviceId="ai-doctor-chat" serviceName={t("ai.services.ai-doctor-chat.title")} />
-        <div className="mb-4"><TokenUsageBadge serviceId="ai-doctor-chat" /></div>
 
         {/* Usage Guide */}
         <div className="mb-4">

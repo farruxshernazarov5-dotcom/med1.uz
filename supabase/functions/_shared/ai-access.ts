@@ -28,29 +28,24 @@ const SERVICE_CREDITS: Record<string, number> = {
  * `security_debug_log` and admin banner is triggered.
  */
 export const MAX_OUTPUT_TOKENS_HARD_CAP = 150;
-export const TARGET_REQUEST_TOKENS_MIN = 100;
-export const TARGET_REQUEST_TOKENS_MAX = 150;
-export const MAX_OUTPUT_TOKENS_PER_RESPONSE = 110;
-export const MAX_INPUT_TOKENS = 40;
+export const MAX_INPUT_TOKENS = 4000;
 
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash-lite", maxTokens: MAX_OUTPUT_TOKENS_PER_RESPONSE },
-  5:  { model: "google/gemini-2.5-flash-lite", maxTokens: MAX_OUTPUT_TOKENS_PER_RESPONSE },
-  25: { model: "google/gemini-2.5-flash",      maxTokens: MAX_OUTPUT_TOKENS_PER_RESPONSE },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 150 },
+  5:  { model: "google/gemini-2.5-flash", maxTokens: 150 },
+  25: { model: "google/gemini-2.5-pro",   maxTokens: 150 },
 };
 
 /** Universal directive appended to every system prompt — STRICT 3 bullet, 150-token format. */
 export const CONCISE_DIRECTIVE = `
 
-🔒 TOKEN TEJASH QOIDASI (MAJBURIY):
-- Javob 2–3 ta juda qisqa bullet bo'lsin, jami 60–90 so'zdan oshmasin.
-- Kirish so'zi, takror, uzun sarlavha, jadval va batafsil ro'yxat yozma.
-- Faqat foydalanuvchi savoliga eng zarur javobni ber.
-- Oxirgi bullet qisqa ogohlantirish bo'lsin: "⚠️ Shifokorga murojaat qiling."`;
-
-export function compactAiSystemPrompt(serviceName: string): string {
-  return `Med1.uz ${serviceName}: xavfsiz tibbiy AI yordamchi. Tashxis qo'yma, retsept yozma, shoshilinch holatda 103/shifokorga yo'naltir. Javob aniq, qisqa va foydalanuvchi tilida bo'lsin.`;
-}
+🔒 QAT'IY QISQA JAVOB QOIDASI (MAJBURIY — chetga chiqma):
+- Javobing FAQAT 3 ta qisqa bullet point (•) dan iborat bo'lsin.
+- Har bir bullet — 1 ta jumla, maksimum 12 so'z.
+- Umumiy uzunlik: 100–150 token (≈70–100 so'z) dan OSHMASIN.
+- Hech qachon kirish so'zi, "Salom", "Albatta", takrorlash yoki suv quymalik yozma.
+- Format: "• ..." dan boshla, har band yangi qatorda.
+- So'nggi band har doim: "• ⚠️ Shifokorga murojaat qiling."`;
 
 /**
  * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.
@@ -90,14 +85,10 @@ export async function logTokenOverage(params: {
 export function estimateTokensFromMessages(messages: unknown): number {
   try {
     const text = JSON.stringify(messages ?? "");
-    return Math.ceil(text.length / 4);
+    return Math.max(200, Math.ceil(text.length / 3.8));
   } catch (_) {
-    return 100;
+    return 1000;
   }
-}
-
-export function estimateTokensFromText(text: unknown): number {
-  return Math.ceil(String(text ?? "").length / 4);
 }
 
 export function aiUsageHeaders(serviceId: string, access: Extract<AiAccessResult, { allowed: true }>, estimatedTokens: number) {
@@ -108,8 +99,6 @@ export function aiUsageHeaders(serviceId: string, access: Extract<AiAccessResult
     "X-Med1-AI-Credits": String(access.creditsDeducted),
     "X-Med1-AI-Test-Mode": access.bypass ? "super-admin" : "false",
     "X-Med1-AI-Estimated-Tokens": String(estimatedTokens),
-    "X-Med1-AI-Output-Token-Cap": String(access.maxTokens),
-    "X-Med1-AI-Target-Total-Tokens": `${TARGET_REQUEST_TOKENS_MIN}-${TARGET_REQUEST_TOKENS_MAX}`,
     "X-Med1-AI-Estimated-Cost-Usd": estimatedCostUsd.toFixed(6),
   };
 }

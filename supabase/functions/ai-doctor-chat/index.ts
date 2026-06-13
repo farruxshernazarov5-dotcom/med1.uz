@@ -1,11 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages, compactAiSystemPrompt } from "../_shared/ai-access.ts";
-import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
+import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-  "Access-Control-Expose-Headers": "X-Med1-AI-Output-Token-Cap, X-Med1-AI-Target-Total-Tokens, X-Med1-AI-Estimated-Tokens",
 };
 
 const SYSTEM_PROMPT = `Sen Med1.uz platformasining yuqori malakali AI tibbiy maslahatchi yordamchisisan. Sening noming "Med1 AI Shifokor". Foydalanuvchilar sog'liq bilan bog'liq savollar beradi va sen ularga professional tibbiy ma'lumot berasan.
@@ -71,7 +70,7 @@ serve(async (req) => {
 
     const __body = await req.json();
     const { messages, documents } = __body;
-    const __lang = resolveResponseLang(__body?.lang, messages);
+    const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -82,7 +81,7 @@ serve(async (req) => {
         await refundAiCredits(access.userId, "ai-doctor-chat", access.creditsDeducted, "input too large");
       }
       return new Response(JSON.stringify({
-        error: `So'rov juda uzun (~${inputTokens} token). 1 ta so'rov uchun savolni ${MAX_INPUT_TOKENS} tokengacha qisqartiring.`,
+        error: `So'rov juda uzun (~${inputTokens} token, ruxsat ${MAX_INPUT_TOKENS}). Iltimos savolingizni qisqartiring.`,
         refunded: true,
       }), { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -102,7 +101,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: access.model,
         messages: [
-          { role: "system", content: compactAiSystemPrompt("AI Doktor") + languageInstruction(__lang) + CONCISE_DIRECTIVE + docContext },
+          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE + docContext },
           ...messages,
         ],
         max_completion_tokens: access.maxTokens,
@@ -133,7 +132,7 @@ serve(async (req) => {
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, "X-Med1-AI-Output-Token-Cap": String(access.maxTokens), "X-Med1-AI-Target-Total-Tokens": "100-150", "X-Med1-AI-Estimated-Tokens": String(inputTokens + access.maxTokens), "Content-Type": "text/event-stream" },
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("ai-doctor-chat error:", e);

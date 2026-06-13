@@ -6,7 +6,6 @@ import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Acti
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
-import { TokenUsageBadge } from "@/components/ai/TokenUsageBadge";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -72,7 +71,7 @@ const AIServicesPage = () => {
       </section>
 
       <section className="container mx-auto px-4 mb-6">
-        <div className="max-w-md mx-auto space-y-3"><AIStatusWidget /><TokenUsageBadge /></div>
+        <div className="max-w-md mx-auto"><AIStatusWidget /></div>
       </section>
 
       <section className="container mx-auto px-4 pb-16">
