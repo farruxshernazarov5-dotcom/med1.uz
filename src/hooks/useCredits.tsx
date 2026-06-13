@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect, createContext, useContext, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -17,7 +17,7 @@ export const CreditProvider = ({ children }: { children: React.ReactNode }) => {
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchCredits = async () => {
+  const fetchCredits = useCallback(async () => {
     if (!user) { setBalance(0); setExpiresAt(null); setLoading(false); return; }
     setLoading(true);
     const now = new Date().toISOString();
@@ -34,7 +34,7 @@ export const CreditProvider = ({ children }: { children: React.ReactNode }) => {
     setBalance(total);
     setExpiresAt(nearest);
     setLoading(false);
-  };
+  }, [user]);
 
   useEffect(() => { fetchCredits(); }, [user]);
 
