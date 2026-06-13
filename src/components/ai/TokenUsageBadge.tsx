@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLatestTokenUsage, TOKEN_CAP } from "@/lib/tokenUsageStore";
 import { useCredits } from "@/hooks/useCredits";
 import { getServiceCreditCost } from "@/data/aiTariffs";
@@ -11,7 +12,8 @@ import { cn } from "@/lib/utils";
  */
 export function TokenUsageBadge({ className, serviceId }: { className?: string; serviceId?: string }) {
   const evt = useLatestTokenUsage();
-  const { balance } = useCredits();
+  const { balance, refetch } = useCredits();
+  useEffect(() => { if (evt) refetch(); }, [evt, refetch]);
   const activeService = evt?.serviceId ?? serviceId ?? "ai-doctor-chat";
   const cost = getServiceCreditCost(activeService);
   const approxRequests = cost > 0 ? Math.floor(balance / cost) : 0;
