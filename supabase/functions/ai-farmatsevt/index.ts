@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { CONCISE_DIRECTIVE, compactAiSystemPrompt, MAX_INPUT_TOKENS, aiUsageHeaders, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,7 +43,9 @@ serve(async (req) => {
       });
     }
 
-    const __body = await req.json(); const { messages, medications } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); const { messages, medications } = __body; const __lang = resolveResponseLang(__body?.lang, messages);
+    const inputTokens = estimateTokensFromMessages(messages);
+    if (inputTokens > MAX_INPUT_TOKENS) return new Response(JSON.stringify({ error: `So'rov juda uzun (~${inputTokens} token). Savolni ${MAX_INPUT_TOKENS} tokengacha qisqartiring.` }), { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -54,7 +56,8 @@ serve(async (req) => {
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
-        messages: [{ role: "system", content: (SYSTEM_PROMPT + languageInstruction(__lang)) + medsContext }, ...messages],
+        messages: [{ role: "system", content: (compactAiSystemPrompt("AI Farmatsevt") + languageInstruction(__lang) + CONCISE_DIRECTIVE) + medsContext }, ...messages],
+        max_completion_tokens: access.maxTokens,
         stream: true,
       }),
     });
@@ -67,7 +70,7 @@ serve(async (req) => {
       throw new Error(`AI gateway error: ${status}`);
     }
 
-    return new Response(response.body, { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
+    return new Response(response.body, { headers: { ...corsHeaders, ...aiUsageHeaders("ai-farmatsevt", access, inputTokens + access.maxTokens), "Content-Type": "text/event-stream" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }

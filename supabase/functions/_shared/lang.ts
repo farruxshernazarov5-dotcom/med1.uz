@@ -11,20 +11,38 @@ export function normalizeLang(input: unknown): SupportedLang {
   return "uz";
 }
 
+function textFromMessages(messages: unknown): string {
+  try {
+    if (Array.isArray(messages)) {
+      const lastUser = [...messages].reverse().find((m: any) => m?.role === "user") as any;
+      const c = lastUser?.content;
+      if (typeof c === "string") return c;
+      if (Array.isArray(c)) return c.map((p: any) => p?.text || "").join(" ");
+    }
+  } catch { /* noop */ }
+  return typeof messages === "string" ? messages : "";
+}
+
+/** Prefer explicit UI lang, but auto-correct when the actual question is clearly RU/EN. */
+export function resolveResponseLang(explicitLang: unknown, messagesOrText: unknown): SupportedLang {
+  const text = textFromMessages(messagesOrText);
+  if (/[а-яё]/i.test(text)) return "ru";
+  const latin = text.toLowerCase();
+  if (/\b(the|what|why|how|please|doctor|health|pain|symptom)\b/.test(latin)) return "en";
+  return normalizeLang(explicitLang);
+}
+
 export function languageInstruction(lang: SupportedLang): string {
   switch (lang) {
     case "ru":
       return `\n\n=== ВАЖНО — ЯЗЫК ОТВЕТА ===
-Отвечай ИСКЛЮЧИТЕЛЬНО на русском языке. Все заголовки, объяснения и рекомендации — на русском. Сохраняй медицинские термины (ICD-10, латинские названия) в стандартной форме. Эмодзи и markdown-формат сохраняются.
-Дисклеймер в конце каждого ответа: "⚠️ Рекомендации AI не заменяют профессиональную медицинскую консультацию."`;
+Отвечай ИСКЛЮЧИТЕЛЬНО на русском языке, даже если базовая инструкция написана на другом языке. Дисклеймер: "⚠️ Обратитесь к врачу."`;
     case "en":
       return `\n\n=== IMPORTANT — RESPONSE LANGUAGE ===
-Respond EXCLUSIVELY in English. All headings, explanations and recommendations must be in English. Keep medical terminology (ICD-10, Latin names) in standard form. Preserve emoji and markdown formatting.
-Always end with: "⚠️ AI recommendations do not replace professional medical consultation."`;
+Respond EXCLUSIVELY in English, even if the base prompt is written in another language. Disclaimer: "⚠️ Consult a doctor."`;
     case "uz":
     default:
       return `\n\n=== MUHIM — JAVOB TILI ===
-Faqat o'zbek tilida javob ber. Barcha sarlavhalar, izohlar va tavsiyalar o'zbekcha bo'lsin. Tibbiy terminlarni (ICD-10, lotincha nomlar) standart shaklda qoldir. Emoji va markdown formatini saqla.
-Har bir javob oxirida: "⚠️ AI tavsiyalari professional tibbiy maslahat o'rnini bosmaydi."`;
+Faqat o'zbek tilida javob ber, bazaviy prompt boshqa tilda bo'lsa ham. Ogohlantirish: "⚠️ Shifokorga murojaat qiling."`;
   }
 }

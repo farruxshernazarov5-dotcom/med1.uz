@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { CONCISE_DIRECTIVE, compactAiSystemPrompt, enforceAiAccess } from "../_shared/ai-access.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -59,7 +59,7 @@ serve(async (req) => {
       });
     }
 
-    const __body = await req.json(); const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType } = __body;
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -67,10 +67,11 @@ serve(async (req) => {
     userMessage += `Analiz turi: ${reportType || "Umumiy"}\n`;
     if (patientAge) userMessage += `Bemor yoshi: ${patientAge}\n`;
     if (patientGender) userMessage += `Bemor jinsi: ${patientGender}\n`;
+    const __lang = resolveResponseLang(__body?.lang, reportText || userMessage);
 
     // Build messages array
     const messages: any[] = [
-      { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
+      { role: "system", content: compactAiSystemPrompt("Laboratoriya tahlili") + languageInstruction(__lang) + CONCISE_DIRECTIVE + `\nJSON: {"indicators":[{"name":"","status":"normal|high|low|critical","interpretation":""}],"summary":"","recommendations":[""]}` },
     ];
 
     if (imageBase64 && imageMimeType) {
@@ -110,6 +111,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages,
+        max_completion_tokens: access.maxTokens,
       }),
     });
 

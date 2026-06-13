@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { CONCISE_DIRECTIVE, compactAiSystemPrompt, enforceAiAccess } from "../_shared/ai-access.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -80,7 +80,7 @@ serve(async (req) => {
       });
     }
 
-    const body = await req.json(); const __lang = normalizeLang((body as any)?.lang);
+    const body = await req.json();
     const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
       existingConditions, familyHistory, diet, sleepHours, stressLevel,
       medications, labResults, symptoms } = body;
@@ -106,6 +106,7 @@ serve(async (req) => {
     userMessage += `- Oxirgi analiz natijalari: ${labResults || "noma'lum"}\n`;
     userMessage += `- Hozirgi simptomlar: ${symptoms || "yo'q"}\n`;
     userMessage += `\nIltimos, yuqoridagi barcha ma'lumotlar asosida batafsil kasallik xavfi prognozini JSON formatda ber. Kamida 4-6 ta kasallik xavfini baholash kerak.`;
+    const __lang = resolveResponseLang((body as any)?.lang, userMessage);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -116,9 +117,10 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
+          { role: "system", content: compactAiSystemPrompt("Sog'liq Xavfi") + languageInstruction(__lang) + CONCISE_DIRECTIVE + `\nJSON: {"risks":[{"disease":"","riskPercent":0,"riskLevel":"low|medium|high"}],"overallHealth":"good|moderate|concerning","recommendations":[""]}` },
           { role: "user", content: userMessage },
         ],
+        max_completion_tokens: access.maxTokens,
       }),
     });
 
