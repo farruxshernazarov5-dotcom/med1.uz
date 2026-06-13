@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, aiUsageHeaders, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { CONCISE_DIRECTIVE, compactAiSystemPrompt, MAX_INPUT_TOKENS, aiUsageHeaders, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -45,7 +45,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemContent = context ? `${(SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE)}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : (SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE);
+    const systemContent = context ? `${(compactAiSystemPrompt("AI Dietolog") + languageInstruction(__lang) + CONCISE_DIRECTIVE)}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : (compactAiSystemPrompt("AI Dietolog") + languageInstruction(__lang) + CONCISE_DIRECTIVE);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

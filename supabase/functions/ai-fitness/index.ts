@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, aiUsageHeaders, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { CONCISE_DIRECTIVE, compactAiSystemPrompt, MAX_INPUT_TOKENS, aiUsageHeaders, enforceAiAccess, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -63,7 +63,7 @@ serve(async (req) => {
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
-        messages: [{ role: "system", content: (SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE) + profileContext }, ...messages],
+        messages: [{ role: "system", content: (compactAiSystemPrompt("AI Fitness") + languageInstruction(__lang) + CONCISE_DIRECTIVE) + profileContext }, ...messages],
         max_completion_tokens: access.maxTokens,
         stream: true,
       }),
