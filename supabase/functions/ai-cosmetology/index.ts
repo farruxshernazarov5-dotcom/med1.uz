@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { CONCISE_DIRECTIVE, enforceAiAccess } from "../_shared/ai-access.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -175,9 +175,10 @@ Kundalik tartib tavsiyalari`;
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: systemPrompt + CONCISE_DIRECTIVE },
           ...formattedMessages,
         ],
+        max_completion_tokens: access.maxTokens,
         stream: true,
       }),
     });
