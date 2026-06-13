@@ -5,6 +5,7 @@ import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Expose-Headers": "X-Med1-AI-Service, X-Med1-AI-Model, X-Med1-AI-Credits, X-Med1-AI-Estimated-Tokens, X-Med1-AI-Output-Token-Cap, X-Med1-AI-Target-Total-Tokens, X-Med1-AI-Estimated-Cost-Usd",
 };
 
 const SYSTEM_PROMPT = `Sen tajribali dietolog va ovqatlanish mutaxassisisisan. O'zbekiston sharoitida ishlaysan.
