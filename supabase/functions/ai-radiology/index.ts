@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { CONCISE_DIRECTIVE, enforceAiAccess } from "../_shared/ai-access.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
@@ -87,7 +87,7 @@ serve(async (req) => {
     userText += `\nTasvirni diqqat bilan o'rganib, BARCHA anatomik strukturalar va patologik o'zgarishlarni aniqla. Har bir topilmani lokalizatsiya, o'lcham va xarakteri bilan tavsifla. JSON formatda javob ber.`;
 
     const messages = [
-      { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
+      { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE },
       {
         role: "user",
         content: [
@@ -103,7 +103,7 @@ serve(async (req) => {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ model: "google/gemini-2.5-pro", messages }),
+      body: JSON.stringify({ model: "google/gemini-2.5-pro", messages, max_completion_tokens: access.maxTokens }),
     });
 
     if (!response.ok) {
