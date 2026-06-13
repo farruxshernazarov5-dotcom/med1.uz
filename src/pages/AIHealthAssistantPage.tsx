@@ -16,6 +16,9 @@ import AIServiceHero from "@/components/AIServiceHero";
 import aiAssistantImg from "@/assets/ai-health-assistant.webp";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
+import { TokenUsageBadge } from "@/components/ai/TokenUsageBadge";
+import { currentLang } from "@/lib/aiLang";
+import { emitFromResponseHeaders } from "@/lib/tokenUsageStore";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Mode = "general" | "symptom" | "lab" | "advice";
@@ -104,13 +107,14 @@ const AIHealthAssistantPage = () => {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ messages: allMessages, mode }),
+        body: JSON.stringify({ messages: allMessages, mode, lang: currentLang() }),
       });
 
       if (!resp.ok || !resp.body) {
         const errData = await resp.json().catch(() => ({}));
         throw new Error(errData.error || "Xatolik yuz berdi");
       }
+      emitFromResponseHeaders("ai-health-assistant", resp);
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -194,6 +198,7 @@ const AIHealthAssistantPage = () => {
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-5xl">
+        <div className="mb-4"><TokenUsageBadge serviceId="ai-health-assistant" /></div>
 
         {/* Mode selector */}
         <div className="flex flex-wrap justify-center gap-2 mb-4">
