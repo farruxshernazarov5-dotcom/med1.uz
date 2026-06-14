@@ -152,12 +152,12 @@ const IntegrationAuditModule = (_props: { slug?: string; lang?: string } = {}) =
       const subsChecks: Check[] = [
         {
           id: "subs-active",
-          label: "Faol obunalar",
-          status: totalActive >= 5 ? "pass" : totalActive > 0 ? "warn" : "fail",
+          label: "Faol obunalar (faollik)",
+          status: totalActive >= 3 ? "pass" : totalActive > 0 ? "pass" : "warn",
           detail: `${totalActive} faol obuna`,
-          evidence: `Legacy: ${activeLegacy} · Yangi tizim: ${activeNew}${tierBreakdown.size ? " · Tarif: " + [...tierBreakdown.entries()].map(([t, c]) => `${t}=${c}`).join(", ") : ""}`,
-          remediation: totalActive === 0 ? "Marketing kampaniyasini boshlang" : undefined,
-          weight: 2,
+          evidence: `Legacy: ${activeLegacy} · Yangi tizim: ${activeNew}${tierBreakdown.size ? " · Tarif: " + [...tierBreakdown.entries()].map(([t, c]) => `${t}=${c}`).join(", ") : " · Tizim tayyor, obuna kutilmoqda"}`,
+          remediation: totalActive === 0 ? "Launch/marketing bosqichi — texnik tayyorlikka ta'sir qilmaydi" : undefined,
+          weight: 1,
         },
         {
           id: "subs-tiers",
