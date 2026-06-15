@@ -75,7 +75,10 @@ const AIServicesPage = () => {
       </section>
 
       <section className="container mx-auto px-4 mb-6">
-        <div className="max-w-md mx-auto"><AIStatusWidget /></div>
+        <div className="max-w-md mx-auto grid gap-4">
+          <MedCoinPanel />
+          <AIStatusWidget />
+        </div>
       </section>
 
       <section className="container mx-auto px-4 pb-16">
