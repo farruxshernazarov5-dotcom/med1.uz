@@ -106,7 +106,8 @@ const AIServicesPage = () => {
                     </div>
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{title}</h3>
-                  <p className="text-sm text-muted-foreground flex-1 mb-4">{desc}</p>
+                  <p className="text-sm text-muted-foreground flex-1 mb-3">{desc}</p>
+                  <div className="mb-3"><AIServiceInfoButton serviceId={service.id} /></div>
                   <div className={`flex items-center gap-2 text-sm font-medium ${locked ? "text-amber-700" : "text-primary"}`}>
                     {locked ? <>{t("common.upgrade")} <Crown className="w-4 h-4" /></> : <>{t("common.start")} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>}
                   </div>
