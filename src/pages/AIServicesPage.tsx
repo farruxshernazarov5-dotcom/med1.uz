@@ -6,6 +6,10 @@ import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Acti
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
+import MedCoinPanel from "@/components/medcoin/MedCoinPanel";
+import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
+import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
+import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useLanguage } from "@/hooks/useLanguage";
 
