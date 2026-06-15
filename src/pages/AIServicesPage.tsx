@@ -6,6 +6,10 @@ import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Acti
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
+import MedCoinPanel from "@/components/medcoin/MedCoinPanel";
+import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
+import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
+import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useLanguage } from "@/hooks/useLanguage";
 
@@ -46,6 +50,9 @@ const AIServicesPage = () => {
         { label: t("ai.breadcrumb") },
       ]} />
 
+      <MedCoinOnboarding />
+      <MedCoinExpiryReminder />
+
       <section className="relative py-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-secondary/5 to-transparent" />
         <div className="container mx-auto px-4 relative text-center max-w-3xl">
@@ -71,7 +78,10 @@ const AIServicesPage = () => {
       </section>
 
       <section className="container mx-auto px-4 mb-6">
-        <div className="max-w-md mx-auto"><AIStatusWidget /></div>
+        <div className="max-w-md mx-auto grid gap-4">
+          <MedCoinPanel />
+          <AIStatusWidget />
+        </div>
       </section>
 
       <section className="container mx-auto px-4 pb-16">
@@ -99,7 +109,8 @@ const AIServicesPage = () => {
                     </div>
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{title}</h3>
-                  <p className="text-sm text-muted-foreground flex-1 mb-4">{desc}</p>
+                  <p className="text-sm text-muted-foreground flex-1 mb-3">{desc}</p>
+                  <div className="mb-3"><AIServiceInfoButton serviceId={service.id} /></div>
                   <div className={`flex items-center gap-2 text-sm font-medium ${locked ? "text-amber-700" : "text-primary"}`}>
                     {locked ? <>{t("common.upgrade")} <Crown className="w-4 h-4" /></> : <>{t("common.start")} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>}
                   </div>
