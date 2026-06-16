@@ -92,6 +92,7 @@ const ArticlesPage = () => {
         )}
       </div>
     </SectionLayout>
+    </>
   );
 };
 
