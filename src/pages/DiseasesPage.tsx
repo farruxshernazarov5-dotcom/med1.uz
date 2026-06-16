@@ -143,6 +143,7 @@ const DiseasesPage = () => {
         </div>
       )}
     </SectionLayout>
+    </>
   );
 };
 
