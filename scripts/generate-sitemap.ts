@@ -40,6 +40,7 @@ const staticEntries: Entry[] = [
   { path: "/disclaimer",          changefreq: "yearly",  priority: "0.3" },
   { path: "/saas-terms",          changefreq: "yearly",  priority: "0.3" },
   { path: "/referral-terms",      changefreq: "yearly",  priority: "0.3" },
+  { path: "/api-docs",            changefreq: "monthly", priority: "0.4" },
 ];
 
 // ---- Dynamic routes (mirror page data loaders) ----
