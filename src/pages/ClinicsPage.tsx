@@ -460,7 +460,7 @@ const ClinicsPage = () => {
         }}
       />
     <SectionLayout
-      title="Klinikalar bo'limi"
+      title="O'zbekiston klinikalari katalogi"
       subtitle="O'zbekistondagi barcha klinikalar — davlat, xususiy, poliklinikalar"
       icon={<Building2 className="w-7 h-7 text-primary-foreground" />}
     >
