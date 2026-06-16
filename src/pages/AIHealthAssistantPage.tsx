@@ -178,6 +178,7 @@ const AIHealthAssistantPage = () => {
         { label: t("ai.breadcrumb"), href: "/ai-services" },
         { label: t("aiPages.ai-health-assistant.breadcrumb") },
       ]} />
+      <div className="container mx-auto px-4 pt-3"><MedCoinCostBadge serviceId="ai-health-assistant" /></div>
 
       <AIServiceHero
         image={aiAssistantImg}

@@ -117,6 +117,7 @@ const AIDoctorChatPage = () => {
         { label: t("ai.breadcrumb"), href: "/ai-services" },
         { label: t("aiPages.ai-doctor-chat.breadcrumb") },
       ]} />
+      <div className="container mx-auto px-4 pt-3"><MedCoinCostBadge serviceId="ai-doctor-chat" /></div>
 
       <AIServiceHero
         image={aiDoctorImg}
