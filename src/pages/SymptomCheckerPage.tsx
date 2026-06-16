@@ -1,3 +1,4 @@
+import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";

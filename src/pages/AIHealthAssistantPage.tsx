@@ -1,3 +1,4 @@
+import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
