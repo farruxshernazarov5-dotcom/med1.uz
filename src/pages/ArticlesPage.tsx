@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import SectionLayout from "@/components/SectionLayout";
 import { FileText, ArrowRight, Search, X } from "lucide-react";
 import { articleCategories, totalArticleCategories, getCategoryArticleCount } from "@/data/articles";
@@ -16,8 +17,21 @@ const ArticlesPage = () => {
     : articleCategories;
 
   return (
+    <>
+      <SEO
+        title="Tibbiy maqolalar — ilmiy va amaliy yo'riqnomalar | Med1.uz"
+        description={`${totalArticleCategories} ta yo'nalish bo'yicha ilmiy tibbiy maqolalar: profilaktika, davolash, sog'liqni saqlash va zamonaviy tibbiyot tendensiyalari.`}
+        path="/articles"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Tibbiy maqolalar",
+          url: "https://med1.uz/articles",
+          numberOfItems: totalArticleCategories,
+        }}
+      />
     <SectionLayout
-      title="Maqolalar bo'limi"
+      title="Tibbiy maqolalar katalogi"
       subtitle={`${totalArticleCategories} ta yo'nalish bo'yicha ilmiy maqolalar`}
       icon={<FileText className="w-7 h-7 text-primary-foreground" />}
     >
