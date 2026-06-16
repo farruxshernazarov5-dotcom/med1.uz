@@ -5,7 +5,7 @@ import { Coins, Sparkles, Package, CreditCard, Rocket, X } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { mc } from "@/lib/medCoinI18n";
 
-const LS_KEY = "medcoin-onboarding-seen-v1";
+const DEFAULT_KEY = "medcoin-onboarding-seen-v1";
 
 const ICONS = [Sparkles, Coins, Package, CreditCard, Rocket];
 
@@ -14,12 +14,19 @@ interface Props {
   onClose?: () => void;
   /** If true, will auto-open on first mount unless previously dismissed. */
   autoOpen?: boolean;
+  /** "local" = shown once forever (default); "session" = shown once per browser session (each new visit). */
+  storage?: "local" | "session";
+  /** Override the dedup key (e.g. per surface). */
+  storageKey?: string;
 }
 
-const MedCoinOnboarding = ({ open: controlled, onClose, autoOpen = true }: Props) => {
+const MedCoinOnboarding = ({ open: controlled, onClose, autoOpen = true, storage = "local", storageKey }: Props) => {
   const { lang } = useLanguage();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
+
+  const key = storageKey || (storage === "session" ? "medcoin-onboarding-seen-session" : DEFAULT_KEY);
+  const store = () => (storage === "session" ? window.sessionStorage : window.localStorage);
 
   useEffect(() => {
     if (controlled !== undefined) {
@@ -28,10 +35,10 @@ const MedCoinOnboarding = ({ open: controlled, onClose, autoOpen = true }: Props
     }
     if (autoOpen && typeof window !== "undefined") {
       try {
-        if (!localStorage.getItem(LS_KEY)) setOpen(true);
+        if (!store().getItem(key)) setOpen(true);
       } catch {}
     }
-  }, [controlled, autoOpen]);
+  }, [controlled, autoOpen, key, storage]);
 
   const steps = [1, 2, 3, 4, 5].map((n) => ({
     title: mc(lang, `step${n}Title`),
@@ -40,7 +47,7 @@ const MedCoinOnboarding = ({ open: controlled, onClose, autoOpen = true }: Props
   }));
 
   const close = () => {
-    try { localStorage.setItem(LS_KEY, "1"); } catch {}
+    try { store().setItem(key, "1"); } catch {}
     setOpen(false);
     onClose?.();
   };
