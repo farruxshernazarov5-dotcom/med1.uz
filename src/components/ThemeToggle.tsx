@@ -43,6 +43,8 @@ const ThemeToggle = () => {
           key={opt.value}
           onClick={() => setTheme(opt.value)}
           title={opt.label}
+          aria-label={`${opt.label} rejim`}
+          aria-pressed={theme === opt.value}
           className={cn(
             "p-1.5 rounded-md transition-all",
             theme === opt.value
@@ -50,7 +52,7 @@ const ThemeToggle = () => {
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <opt.icon className="w-3.5 h-3.5" />
+          <opt.icon className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       ))}
     </div>
