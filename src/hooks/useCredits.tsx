@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef, createContext, useContext } from "react";
-import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -14,7 +13,6 @@ const CreditContext = createContext<CreditInfo>({ balance: 0, expiresAt: null, l
 
 export const CreditProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const location = useLocation();
   const [balance, setBalance] = useState(0);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +20,6 @@ export const CreditProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchCredits = useCallback(async (force = false) => {
     if (!user) { setBalance(0); setExpiresAt(null); setLoading(false); return; }
-    // throttle: skip if last fetch < 1.5s ago and not forced
     if (!force && Date.now() - lastFetchRef.current < 1500) return;
     lastFetchRef.current = Date.now();
     setLoading(true);
@@ -42,8 +39,33 @@ export const CreditProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(false);
   }, [user]);
 
-  // Initial fetch + refetch on route change (every page entry)
-  useEffect(() => { fetchCredits(true); }, [user, location.pathname, fetchCredits]);
+  // Initial fetch on user change
+  useEffect(() => { fetchCredits(true); }, [user, fetchCredits]);
+
+  // Refetch on client-side route changes (history API patch + popstate)
+  useEffect(() => {
+    const trigger = () => fetchCredits();
+    const origPush = window.history.pushState;
+    const origReplace = window.history.replaceState;
+    window.history.pushState = function (...args: Parameters<typeof origPush>) {
+      const r = origPush.apply(this, args);
+      window.dispatchEvent(new Event("med1:locationchange"));
+      return r;
+    };
+    window.history.replaceState = function (...args: Parameters<typeof origReplace>) {
+      const r = origReplace.apply(this, args);
+      window.dispatchEvent(new Event("med1:locationchange"));
+      return r;
+    };
+    window.addEventListener("popstate", trigger);
+    window.addEventListener("med1:locationchange", trigger);
+    return () => {
+      window.history.pushState = origPush;
+      window.history.replaceState = origReplace;
+      window.removeEventListener("popstate", trigger);
+      window.removeEventListener("med1:locationchange", trigger);
+    };
+  }, [fetchCredits]);
 
   // Realtime sync: any change to this user's credit rows
   useEffect(() => {
