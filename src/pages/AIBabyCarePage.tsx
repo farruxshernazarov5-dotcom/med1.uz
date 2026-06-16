@@ -142,7 +142,7 @@ async function streamChat({ messages, babyAgeMonths, mode, onDelta, onDone }: {
   });
   if (!resp.ok || !resp.body) {
     if (resp.status === 429) { toast({ title: "So'rovlar limiti", description: "Keyinroq urinib ko'ring", variant: "destructive" }); onDone(); return; }
-    if (resp.status === 402) { toast({ title: "Kredit yetarli emas", variant: "destructive" }); onDone(); return; }
+    if (resp.status === 402) { toast({ title: "Med Coin yetarli emas", variant: "destructive" }); onDone(); return; }
     throw new Error("Stream xatosi");
   }
   const reader = resp.body.getReader();

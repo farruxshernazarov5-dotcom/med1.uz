@@ -33,7 +33,7 @@ const PURPOSE_LABEL: Record<string, string> = {
   saas_clinic: "Klinika SaaS tarif",
   saas_cosmetology: "Kosmetologiya SaaS tarif",
   hms_invoice: "Klinika xizmati to'lovi",
-  ai_credits: "AI kredit to'ldirish",
+  ai_credits: "Med Coin to'ldirish",
 };
 
 const PaymentSuccessPage = () => {
@@ -100,7 +100,7 @@ const PaymentSuccessPage = () => {
         saas_clinic: "Klinika SaaS tarif",
         saas_cosmetology: "Kosmetologiya SaaS tarif",
         hms_invoice: "Klinika xizmati to'lovi",
-        ai_credits: "AI kredit to'ldirish",
+        ai_credits: "Med Coin to'ldirish",
       };
       const meta: any = (payment as any).metadata || {};
       const paidAt = payment.paid_at ? new Date(payment.paid_at) : new Date(payment.created_at);

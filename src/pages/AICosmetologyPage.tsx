@@ -66,7 +66,7 @@ async function streamChat(params: {
 
   if (!resp.ok || !resp.body) {
     if (resp.status === 429) { toast({ title: "So'rovlar limiti", description: "Keyinroq urinib ko'ring", variant: "destructive" }); return; }
-    if (resp.status === 402) { toast({ title: "Kredit tugagan", variant: "destructive" }); return; }
+    if (resp.status === 402) { toast({ title: "Med Coin tugagan", variant: "destructive" }); return; }
     throw new Error("Stream xatolik");
   }
 
