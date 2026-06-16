@@ -1,3 +1,4 @@
+import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -93,6 +94,7 @@ const SymptomCheckerPage = () => {
         { label: "Xizmatlar", href: "/services" },
         { label: t("aiPages.symptom-checker.breadcrumb") },
       ]} />
+      <div className="container mx-auto px-4 pt-3"><MedCoinCostBadge serviceId="symptom-checker" /></div>
 
       <AIServiceHero
         image={aiSymptomImg}

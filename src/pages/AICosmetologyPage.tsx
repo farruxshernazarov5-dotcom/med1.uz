@@ -1,3 +1,4 @@
+import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -66,7 +67,7 @@ async function streamChat(params: {
 
   if (!resp.ok || !resp.body) {
     if (resp.status === 429) { toast({ title: "So'rovlar limiti", description: "Keyinroq urinib ko'ring", variant: "destructive" }); return; }
-    if (resp.status === 402) { toast({ title: "Kredit tugagan", variant: "destructive" }); return; }
+    if (resp.status === 402) { toast({ title: "Med Coin tugagan", variant: "destructive" }); return; }
     throw new Error("Stream xatolik");
   }
 
@@ -210,6 +211,7 @@ const AICosmetologyPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <Breadcrumb items={[{ label: t("common.home"), href: "/" }, { label: t("ai.breadcrumb"), href: "/ai-services" }, { label: t("aiPages.ai-cosmetology.breadcrumb") }]} />
+      <div className="container mx-auto px-4 pt-3"><MedCoinCostBadge serviceId="ai-cosmetology" /></div>
 
       <AIServiceHero
         image={aiCosmetologyImg}

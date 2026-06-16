@@ -42,6 +42,8 @@ import MedCoinWallet from "@/components/patient/wallet/MedCoinWallet";
 import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
+import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
+import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
 
 type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
@@ -248,7 +250,7 @@ const PatientDashboard = () => {
           </div>
           <div className="flex items-center justify-between text-[10px] opacity-90">
             <span>AI bugungi: {access?.used_today ?? 0}/{access?.daily_limit ?? 0}</span>
-            <span>💰 {balance} kredit</span>
+            <span>🪙 {balance} Med Coin</span>
           </div>
           <div className="h-1 bg-white/20 rounded-full overflow-hidden mt-1.5">
             <div className="h-full bg-white/90 transition-all" style={{ width: `${dailyPct}%` }} />
@@ -423,6 +425,10 @@ const PatientDashboard = () => {
         feature={lockedFeature}
         currentTier={tier}
       />
+
+      {/* Med Coin onboarding — shown once per browser session on dashboard entry */}
+      <MedCoinOnboarding autoOpen storage="session" storageKey="medcoin-onboarding-dashboard-session" />
+      <MedCoinExpiryReminder />
     </div>
   );
 };
