@@ -42,6 +42,8 @@ import MedCoinWallet from "@/components/patient/wallet/MedCoinWallet";
 import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
+import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
+import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
 
 type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
@@ -423,6 +425,10 @@ const PatientDashboard = () => {
         feature={lockedFeature}
         currentTier={tier}
       />
+
+      {/* Med Coin onboarding — shown once per browser session on dashboard entry */}
+      <MedCoinOnboarding autoOpen storage="session" storageKey="medcoin-onboarding-dashboard-session" />
+      <MedCoinExpiryReminder />
     </div>
   );
 };
