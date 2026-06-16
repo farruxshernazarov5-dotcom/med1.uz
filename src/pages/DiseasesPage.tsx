@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Stethoscope, ArrowRight, ArrowLeft, Search, X } from "lucide-react";
@@ -20,8 +21,21 @@ const DiseasesPage = () => {
     : diseaseCategories;
 
   return (
+    <>
+      <SEO
+        title="Kasalliklar katalogi — sabablari, alomatlari va davolash | Med1.uz"
+        description={`${totalDiseaseCategories} ta yo'nalish va ${totalDiseases}+ kasallik bo'yicha tibbiy ma'lumot: sabablari, alomatlari, davolash usullari va tavsiyalar.`}
+        path="/diseases"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Kasalliklar katalogi",
+          url: "https://med1.uz/diseases",
+          numberOfItems: totalDiseases,
+        }}
+      />
     <SectionLayout
-      title="Kasalliklar bo'limi"
+      title="O'zbekiston tilidagi kasalliklar katalogi"
       subtitle={`${totalDiseaseCategories} ta yo'nalish, ${totalDiseases}+ kasallik haqida batafsil ma'lumot`}
       icon={<Stethoscope className="w-7 h-7 text-primary-foreground" />}
     >
