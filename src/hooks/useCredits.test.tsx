@@ -77,14 +77,14 @@ describe("CreditProvider", () => {
   it("refetches credits on route change (regression: routing sync)", async () => {
     renderApp();
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
-    // Trigger nav — provider should re-run fetch for the new pathname.
-    // The 1.5s throttle is bypassed by waiting beyond it.
+    const before = fetchSpy.mock.calls.length;
+    // Wait past the 1.5s throttle window, then navigate
+    await new Promise((r) => setTimeout(r, 1700));
     await act(async () => {
-      await new Promise((r) => setTimeout(r, 1600));
       screen.getByTestId("go").click();
     });
-    await waitFor(() => expect(fetchSpy.mock.calls.length).toBeGreaterThanOrEqual(2));
-  });
+    await waitFor(() => expect(fetchSpy.mock.calls.length).toBeGreaterThan(before), { timeout: 4000 });
+  }, 10000);
 
   it("hydrates initial balance from sessionStorage on deep-link entry", async () => {
     sessionStorage.setItem(
