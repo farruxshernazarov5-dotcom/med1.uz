@@ -67,6 +67,8 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 
+afterEach(() => { cleanup(); });
+
 describe("CreditProvider", () => {
   it("mounts inside Router without throwing and renders balance", async () => {
     renderApp();
