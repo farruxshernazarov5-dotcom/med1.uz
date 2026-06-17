@@ -1,6 +1,7 @@
 import { Component, type ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { errorTracker } from "@/lib/errorTracker";
 
 interface Props { children: ReactNode; fallback?: ReactNode; }
 interface State { hasError: boolean; error?: Error; }
@@ -14,6 +15,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error("ErrorBoundary caught:", error, info.componentStack);
+    errorTracker.capture(error, { componentStack: info.componentStack?.slice(0, 1500) });
   }
 
   handleReset = () => this.setState({ hasError: false, error: undefined });
