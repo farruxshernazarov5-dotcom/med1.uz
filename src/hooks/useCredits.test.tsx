@@ -13,8 +13,9 @@ import { MemoryRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 const fetchSpy = vi.fn();
 
+const STABLE_USER = { id: "user-1" };
 vi.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({ user: { id: "user-1" } }),
+  useAuth: () => ({ user: STABLE_USER }),
 }));
 
 vi.mock("@/integrations/supabase/client", () => {
