@@ -120,11 +120,11 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme">
     <AuthProvider>
-      <CreditProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <CreditProvider>
           <ReferralCapture />
           <YandexAdsManager />
           <FloatingAISearch />
@@ -233,9 +233,9 @@ const App = () => (
               </Routes>
             </Suspense>
           </ErrorBoundary>
+          </CreditProvider>
         </BrowserRouter>
       </TooltipProvider>
-      </CreditProvider>
     </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
