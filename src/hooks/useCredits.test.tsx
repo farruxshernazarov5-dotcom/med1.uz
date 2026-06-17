@@ -5,8 +5,8 @@
  *  - Hydrates initial balance from sessionStorage so deep-link / refresh paints
  *    the correct value without a loading flash
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, act } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, waitFor, act, cleanup } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 // ---- Mocks -----------------------------------------------------------------
