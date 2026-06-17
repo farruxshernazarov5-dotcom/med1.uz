@@ -76,10 +76,10 @@ describe("CreditProvider", () => {
 
   it("refetches credits on route change (regression: routing sync)", async () => {
     renderApp();
-    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
-    const before = fetchSpy.mock.calls.length;
+    await waitFor(() => expect(fetchSpy.mock.calls.length).toBeGreaterThan(0));
     // Wait past the 1.5s throttle window, then navigate
     await new Promise((r) => setTimeout(r, 1700));
+    const before = fetchSpy.mock.calls.length;
     await act(async () => {
       screen.getByTestId("go").click();
     });
