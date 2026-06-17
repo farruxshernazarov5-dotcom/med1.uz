@@ -74,16 +74,18 @@ describe("CreditProvider", () => {
     expect(fetchSpy).toHaveBeenCalled();
   });
 
-  it("refetches credits on route change (regression: routing sync)", async () => {
+  it("refetches credits on client-side route change (regression: routing sync)", async () => {
     renderApp();
-    await waitFor(() => expect(fetchSpy.mock.calls.length).toBeGreaterThan(0));
-    // Wait past the 1.5s throttle window, then navigate
-    await new Promise((r) => setTimeout(r, 1700));
+    await waitFor(() => expect(screen.getByTestId("balance").textContent).toBe("42"));
     const before = fetchSpy.mock.calls.length;
-    await act(async () => {
-      screen.getByTestId("go").click();
-    });
-    await waitFor(() => expect(fetchSpy.mock.calls.length).toBeGreaterThan(before), { timeout: 4000 });
+    expect(before).toBeGreaterThan(0);
+    // Wait past the 1.5s throttle window, then navigate
+    await act(async () => { await new Promise((r) => setTimeout(r, 1700)); });
+    await act(async () => { screen.getByTestId("go").click(); });
+    await waitFor(
+      () => expect(fetchSpy.mock.calls.length).toBeGreaterThan(before),
+      { timeout: 3000 },
+    );
   }, 10000);
 
   it("hydrates initial balance from sessionStorage on deep-link entry", async () => {
