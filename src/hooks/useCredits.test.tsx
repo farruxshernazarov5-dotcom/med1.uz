@@ -78,10 +78,16 @@ describe("CreditProvider", () => {
   });
 
   it("refetches credits on client-side route change (regression: routing sync)", async () => {
-    const { debug, container } = renderApp();
-    await new Promise((r) => setTimeout(r, 200));
-    console.log("DEBUG fetchSpy after mount:", fetchSpy.mock.calls.length, "html:", container.innerHTML.slice(0, 300));
-    await waitFor(() => expect(fetchSpy.mock.calls.length).toBeGreaterThan(0), { timeout: 2000 });
+    renderApp();
+    await waitFor(() => expect(screen.getByTestId("balance").textContent).toBe("42"));
+    const before = fetchSpy.mock.calls.length;
+    expect(before).toBeGreaterThan(0);
+    await act(async () => { await new Promise((r) => setTimeout(r, 1700)); });
+    await act(async () => { screen.getByTestId("go").click(); });
+    await waitFor(
+      () => expect(fetchSpy.mock.calls.length).toBeGreaterThan(before),
+      { timeout: 3000 },
+    );
   }, 10000);
 
   it("hydrates initial balance from sessionStorage on deep-link entry", async () => {
