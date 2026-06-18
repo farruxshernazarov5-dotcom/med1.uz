@@ -2,17 +2,20 @@ import { useState, useEffect, useCallback, useRef, createContext, useContext } f
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { recordMetric } from "@/lib/perfMonitor";
 
 interface CreditInfo {
   balance: number;
   expiresAt: string | null;
-  loading: boolean;       // true only on the very first fetch (use for skeletons)
-  refreshing: boolean;    // true on background refetches
-  initialized: boolean;   // true after first fetch completes (regardless of success)
+  loading: boolean;
+  refreshing: boolean;
+  initialized: boolean;
   refetch: () => void;
 }
 
 const CACHE_KEY = "med1:credits:v1";
+const CACHE_FRESH_MS = 30_000;   // route-change refetch only if cache older than this
+const THROTTLE_MS = 1_500;
 
 interface Cached {
   userId: string;
@@ -43,37 +46,46 @@ const CreditContext = createContext<CreditInfo>({
   refetch: () => {},
 });
 
-/**
- * Inner provider — uses useLocation safely (must be rendered inside <BrowserRouter>).
- * Initial state is hydrated from sessionStorage so balance appears on first paint
- * (no skeleton flash) on browser refresh / deep-link entry.
- */
 const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  // Hydrate from cache (only if it belongs to the current user)
   const cached = readCache();
-  const initialCacheMatch = cached && user && cached.userId === user.id;
+  const initialCacheMatch = !!(cached && user && cached.userId === user.id);
   const [balance, setBalance] = useState<number>(initialCacheMatch ? cached!.balance : 0);
   const [expiresAt, setExpiresAt] = useState<string | null>(initialCacheMatch ? cached!.expiresAt : null);
   const [loading, setLoading] = useState<boolean>(!initialCacheMatch);
   const [refreshing, setRefreshing] = useState(false);
-  const [initialized, setInitialized] = useState<boolean>(!!initialCacheMatch);
+  const [initialized, setInitialized] = useState<boolean>(initialCacheMatch);
+
   const lastFetchRef = useRef(0);
   const inflightRef = useRef<Promise<void> | null>(null);
+  const initializedRef = useRef(initialCacheMatch);
+  const firstPaintReportedRef = useRef(false);
+  const mountTimeRef = useRef(performance.now());
 
-  const fetchCredits = useCallback(async (force = false) => {
+  // Report first-paint metric once (cache hit = instant)
+  useEffect(() => {
+    if (firstPaintReportedRef.current) return;
+    if (initialCacheMatch) {
+      firstPaintReportedRef.current = true;
+      recordMetric("credits.cache_hit", performance.now() - mountTimeRef.current);
+    }
+  }, [initialCacheMatch]);
+
+  const fetchCredits = useCallback(async (force = false): Promise<void> => {
     if (!user) {
-      setBalance(0); setExpiresAt(null); setLoading(false); setRefreshing(false); setInitialized(true);
+      setBalance(0); setExpiresAt(null); setLoading(false); setRefreshing(false);
+      setInitialized(true); initializedRef.current = true;
       try { sessionStorage.removeItem(CACHE_KEY); } catch { /* ignore */ }
       return;
     }
-    if (!force && Date.now() - lastFetchRef.current < 1500) return;
+    if (!force && Date.now() - lastFetchRef.current < THROTTLE_MS) return;
     if (inflightRef.current) return inflightRef.current;
     lastFetchRef.current = Date.now();
 
-    if (!initialized) setLoading(true); else setRefreshing(true);
+    if (!initializedRef.current) setLoading(true); else setRefreshing(true);
+    const t0 = performance.now();
 
     const run = (async () => {
       try {
@@ -93,26 +105,39 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
         setExpiresAt(nearest);
         writeCache({ userId: user.id, balance: total, expiresAt: nearest, cachedAt: Date.now() });
       } catch (e) {
-        // Silent fail — keep last known balance
         console.warn("[useCredits] fetch failed", e);
       } finally {
+        const dt = performance.now() - t0;
+        recordMetric("credits.fetch_ms", dt);
+        if (!firstPaintReportedRef.current) {
+          firstPaintReportedRef.current = true;
+          recordMetric("credits.first_paint_ms", performance.now() - mountTimeRef.current, { cache: false });
+        }
         setLoading(false);
         setRefreshing(false);
         setInitialized(true);
+        initializedRef.current = true;
         inflightRef.current = null;
       }
     })();
     inflightRef.current = run;
     return run;
-  }, [user, initialized]);
+  }, [user]); // stable: no `initialized` dep
 
   // Initial fetch on user change
-  useEffect(() => { fetchCredits(true); }, [user, fetchCredits]);
+  useEffect(() => { void fetchCredits(true); }, [user, fetchCredits]);
 
-  // Refetch on every client-side route change
-  useEffect(() => { if (user) fetchCredits(); }, [location.pathname, user, fetchCredits]);
+  // Route-change refetch — ONLY if cache is stale. Prevents per-navigation Supabase
+  // round-trip that was making the app feel frozen on rapid in-app navigation.
+  useEffect(() => {
+    if (!user) return;
+    const c = readCache();
+    if (!c || Date.now() - c.cachedAt > CACHE_FRESH_MS) {
+      void fetchCredits();
+    }
+  }, [location.pathname, user, fetchCredits]);
 
-  // Realtime subscription on this user's credit rows
+  // Realtime subscription
   useEffect(() => {
     if (!user) return;
     const channel = supabase
@@ -120,16 +145,16 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "user_credits", filter: `user_id=eq.${user.id}` },
-        () => { fetchCredits(true); },
+        () => { void fetchCredits(true); },
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user, fetchCredits]);
 
-  // Refresh on tab focus / visibility
+  // Refresh on tab focus / visibility (throttled by fetchCredits itself)
   useEffect(() => {
-    const onVis = () => { if (document.visibilityState === "visible") fetchCredits(); };
-    const onFocus = () => fetchCredits();
+    const onVis = () => { if (document.visibilityState === "visible") void fetchCredits(); };
+    const onFocus = () => void fetchCredits();
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("focus", onFocus);
     return () => {
@@ -140,18 +165,13 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <CreditContext.Provider
-      value={{ balance, expiresAt, loading, refreshing, initialized, refetch: () => fetchCredits(true) }}
+      value={{ balance, expiresAt, loading, refreshing, initialized, refetch: () => { void fetchCredits(true); } }}
     >
       {children}
     </CreditContext.Provider>
   );
 };
 
-/**
- * Public provider — must be rendered INSIDE <BrowserRouter>. It's a thin wrapper
- * around CreditProviderInner so we can keep the public API stable while using
- * useLocation safely.
- */
 export const CreditProvider = ({ children }: { children: React.ReactNode }) => (
   <CreditProviderInner>{children}</CreditProviderInner>
 );
