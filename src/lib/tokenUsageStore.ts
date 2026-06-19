@@ -17,7 +17,7 @@ export interface TokenUsageEvent {
   at: number;
 }
 
-export const TOKEN_CAP = 150;
+export const TOKEN_CAP = 6000;
 const EVENT = "med1:ai-token-usage";
 
 export function emitTokenUsage(e: Omit<TokenUsageEvent, "cap" | "exceeded" | "at"> & { cap?: number }) {
