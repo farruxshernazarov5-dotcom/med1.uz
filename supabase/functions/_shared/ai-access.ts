@@ -36,23 +36,31 @@ const SERVICE_CREDITS: Record<string, number> = {
  * - Tokenlar foydalanuvchidan emas, Lovable AI Gateway tomonidan provayderga
  *   (Google Gemini) to'lanadi. AI_PRICING ichida USD narx admin analitika uchun.
  */
-export const MAX_OUTPUT_TOKENS_HARD_CAP = 6000;
+/**
+ * Har bir AI so'rovi uchun 300–350 token oralig'ida javob.
+ * Hard cap = 350; tier modellari ham shu oraliqda ishlaydi.
+ * Javob kesilmasligi uchun system prompt qisqa, yakunlangan javob talab qiladi.
+ */
+export const MAX_OUTPUT_TOKENS_HARD_CAP = 350;
 export const MAX_INPUT_TOKENS = 8000;
 
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash", maxTokens: 1500 },
-  5:  { model: "google/gemini-2.5-flash", maxTokens: 3000 },
-  25: { model: "google/gemini-2.5-pro",   maxTokens: 6000 },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 350 },
+  5:  { model: "google/gemini-2.5-flash", maxTokens: 350 },
+  25: { model: "google/gemini-2.5-pro",   maxTokens: 350 },
 };
 
-/** Sifatli, to'liq javob direktivasi — javob tugamasdan kesilmasin. */
+/**
+ * QISQA, YAKUNLANGAN javob direktivasi (300–350 token byudjeti).
+ * Model uzun tushuntirish bermasdan, eng muhim ma'lumotni ixcham yetkazadi.
+ */
 export const CONCISE_DIRECTIVE = `
 
-📋 JAVOB SIFATI QOIDASI:
-- Javobing TO'LIQ, yakunlangan va aniq bo'lsin — fikrlarni o'rtada kesma.
-- Strukturani saqla: bo'limlarni markdown sarlavhalari va bullet pointlar bilan ajrat.
-- Suv quymalik, takror va keraksiz kirish so'zlaridan saqlan; mazmunga o'tib gapir.
-- Javob oxirida qisqa "⚠️ Aniq tashxis uchun shifokorga murojaat qiling" eslatmasini qoldir.`;
+📋 JAVOB QOIDASI (qattiq):
+- Javob MAKSIMUM 300–350 token (~200 so'z) ichida YAKUNLANGAN bo'lsin.
+- 3–5 ta qisqa bullet point yoki 2–3 qisqa paragraf ishlat. Kirish so'zlarisiz darrov mazmunga o't.
+- Har bir gapni to'liq tugat — fikrni o'rtada kesma. Agar joy yetmasa, kamroq punkt yoz, lekin oxirgi gap to'liq bo'lsin.
+- Oxirida bitta qisqa qator: "⚠️ Aniq tashxis uchun shifokorga murojaat qiling."`;
 
 /**
  * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.
