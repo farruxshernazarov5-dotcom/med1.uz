@@ -41,26 +41,27 @@ const SERVICE_CREDITS: Record<string, number> = {
  * Hard cap = 350; tier modellari ham shu oraliqda ishlaydi.
  * Javob kesilmasligi uchun system prompt qisqa, yakunlangan javob talab qiladi.
  */
-export const MAX_OUTPUT_TOKENS_HARD_CAP = 350;
-export const MAX_INPUT_TOKENS = 8000;
+export const MAX_OUTPUT_TOKENS_HARD_CAP = 500;
+ export const MAX_INPUT_TOKENS = 8000;
+ 
+ const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
+   1:  { model: "google/gemini-2.5-flash", maxTokens: 500 },
+   5:  { model: "google/gemini-2.5-flash", maxTokens: 500 },
+   25: { model: "google/gemini-2.5-pro",   maxTokens: 500 },
+ };
+ 
+ /**
+  * QISQA, LO'NDA va YAKUNLANGAN javob direktivasi.
+  * Maqsad: 120–180 so'z ichida to'liq tugagan javob (kesilmaslik kafolati).
+  */
+ export const CONCISE_DIRECTIVE = `
 
-const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash", maxTokens: 350 },
-  5:  { model: "google/gemini-2.5-flash", maxTokens: 350 },
-  25: { model: "google/gemini-2.5-pro",   maxTokens: 350 },
-};
-
-/**
- * QISQA, YAKUNLANGAN javob direktivasi (300–350 token byudjeti).
- * Model uzun tushuntirish bermasdan, eng muhim ma'lumotni ixcham yetkazadi.
- */
-export const CONCISE_DIRECTIVE = `
-
-📋 JAVOB QOIDASI (qattiq):
-- Javob MAKSIMUM 300–350 token (~200 so'z) ichida YAKUNLANGAN bo'lsin.
-- 3–5 ta qisqa bullet point yoki 2–3 qisqa paragraf ishlat. Kirish so'zlarisiz darrov mazmunga o't.
-- Har bir gapni to'liq tugat — fikrni o'rtada kesma. Agar joy yetmasa, kamroq punkt yoz, lekin oxirgi gap to'liq bo'lsin.
-- Oxirida bitta qisqa qator: "⚠️ Aniq tashxis uchun shifokorga murojaat qiling."`;
+📋 JAVOB QOIDASI (QAT'IY):
+- Javob 120–180 so'z (≈250–400 token) ichida TO'LIQ YAKUNLANGAN bo'lsin.
+- Salomlashish, kirish, "savolingizga javob beraman" kabi preambulalarni YOZMA — to'g'ridan-to'g'ri mazmunga o't.
+- Maksimum 3–4 ta qisqa bullet. Har biri 1 jumla. ICD/lotincha nomlarni faqat zarur bo'lsa qisqa qavsda ber.
+- Har bir gap to'liq tugashi shart. Agar joy kam bo'lsa — punktlarni kamaytir, lekin oxirgi gapni hech qachon yarim qoldirma.
+- Oxirida albatta bitta qator: "⚠️ Aniq tashxis uchun shifokorga murojaat qiling."`;
 
 /**
  * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.
