@@ -22,30 +22,37 @@ const SERVICE_CREDITS: Record<string, number> = {
 };
 
 /**
- * STRICT TOKEN CAPS — every AI response must stay within 150 output tokens.
- * Callers MUST pass `max_completion_tokens: access.maxTokens` to the gateway.
- * If a response exceeds 150 tokens, a `warn`-level entry is written to
- * `security_debug_log` and admin banner is triggered.
+ * TOKEN CAPS per credit tier — javob to'liq yakunlanishi uchun yetarli token.
+ * Eski 150-token chegarasi javoblarni kesib qo'yardi; endi har bir Med Coin tarifi
+ * o'ziga mos to'liq javob hajmiga ega.
+ *
+ *   1 Med Coin  → gemini-2.5-flash, 1500 output tokens (~1000 so'z)
+ *   5 Med Coin  → gemini-2.5-flash, 3000 output tokens (~2000 so'z)
+ *  25 Med Coin  → gemini-2.5-pro,   6000 output tokens (~4000 so'z)
+ *
+ * MED COIN HISOBI:
+ * - Foydalanuvchi har bir AI so'rovi uchun aniq, oldindan e'lon qilingan miqdorda
+ *   Med Coin to'laydi (SERVICE_CREDITS jadvali). Tokenga bog'liq emas.
+ * - Tokenlar foydalanuvchidan emas, Lovable AI Gateway tomonidan provayderga
+ *   (Google Gemini) to'lanadi. AI_PRICING ichida USD narx admin analitika uchun.
  */
-export const MAX_OUTPUT_TOKENS_HARD_CAP = 150;
-export const MAX_INPUT_TOKENS = 4000;
+export const MAX_OUTPUT_TOKENS_HARD_CAP = 6000;
+export const MAX_INPUT_TOKENS = 8000;
 
 const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-  1:  { model: "google/gemini-2.5-flash", maxTokens: 150 },
-  5:  { model: "google/gemini-2.5-flash", maxTokens: 150 },
-  25: { model: "google/gemini-2.5-pro",   maxTokens: 150 },
+  1:  { model: "google/gemini-2.5-flash", maxTokens: 1500 },
+  5:  { model: "google/gemini-2.5-flash", maxTokens: 3000 },
+  25: { model: "google/gemini-2.5-pro",   maxTokens: 6000 },
 };
 
-/** Universal directive appended to every system prompt — STRICT 3 bullet, 150-token format. */
+/** Sifatli, to'liq javob direktivasi — javob tugamasdan kesilmasin. */
 export const CONCISE_DIRECTIVE = `
 
-🔒 QAT'IY QISQA JAVOB QOIDASI (MAJBURIY — chetga chiqma):
-- Javobing FAQAT 3 ta qisqa bullet point (•) dan iborat bo'lsin.
-- Har bir bullet — 1 ta jumla, maksimum 12 so'z.
-- Umumiy uzunlik: 100–150 token (≈70–100 so'z) dan OSHMASIN.
-- Hech qachon kirish so'zi, "Salom", "Albatta", takrorlash yoki suv quymalik yozma.
-- Format: "• ..." dan boshla, har band yangi qatorda.
-- So'nggi band har doim: "• ⚠️ Shifokorga murojaat qiling."`;
+📋 JAVOB SIFATI QOIDASI:
+- Javobing TO'LIQ, yakunlangan va aniq bo'lsin — fikrlarni o'rtada kesma.
+- Strukturani saqla: bo'limlarni markdown sarlavhalari va bullet pointlar bilan ajrat.
+- Suv quymalik, takror va keraksiz kirish so'zlaridan saqlan; mazmunga o'tib gapir.
+- Javob oxirida qisqa "⚠️ Aniq tashxis uchun shifokorga murojaat qiling" eslatmasini qoldir.`;
 
 /**
  * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.
