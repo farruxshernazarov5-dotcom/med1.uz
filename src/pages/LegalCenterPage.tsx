@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Search, Shield, Sparkles, Download, Languages, Scale, Lock, ArrowLeft, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
+import { MarkdownView } from "@/lib/markdownRender";
 
 type Lang = "uz" | "ru" | "en";
 
@@ -275,12 +276,12 @@ export default function LegalCenterPage() {
           {aiSummary && (
             <Card className="bg-[#7B61FF]/10 border-[#7B61FF]/30 p-3 text-sm">
               <div className="flex items-center gap-2 text-[#a78bfa] font-semibold mb-1"><Sparkles className="w-4 h-4" /> AI Tushuntirish</div>
-              <div className="whitespace-pre-wrap text-white/90">{aiSummary}</div>
+              <MarkdownView source={aiSummary} className="text-white/90 text-sm" />
             </Card>
           )}
 
           <ScrollArea className="h-[50vh] border border-white/10 rounded-md p-4 bg-black/30">
-            <pre className="text-sm whitespace-pre-wrap font-sans text-white/85">{preview && tt(preview, "body")}</pre>
+            <MarkdownView source={(preview && tt(preview, "body")) || ""} className="text-sm text-white/85" />
           </ScrollArea>
         </DialogContent>
       </Dialog>
