@@ -15619,14 +15619,30 @@ export type Database = {
         Args: { _referral_id: string }
         Returns: undefined
       }
-      deduct_ai_credits: {
-        Args: { _cost: number; _service_id: string; _user_id: string }
-        Returns: {
-          balance_after: number
-          error: string
-          success: boolean
-        }[]
-      }
+      deduct_ai_credits:
+        | {
+            Args: { _cost: number; _service_id: string; _user_id: string }
+            Returns: {
+              balance_after: number
+              error: string
+              success: boolean
+            }[]
+          }
+        | {
+            Args: {
+              _channel?: string
+              _cost: number
+              _model?: string
+              _service_id: string
+              _user_id: string
+            }
+            Returns: {
+              balance_after: number
+              error: string
+              success: boolean
+              usage_id: string
+            }[]
+          }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -15749,6 +15765,21 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      update_ai_usage_result: {
+        Args: {
+          _completion_tokens?: number
+          _cost_usd?: number
+          _error_code?: string
+          _error_message?: string
+          _latency_ms?: number
+          _prompt_tokens?: number
+          _region?: string
+          _status?: string
+          _tokens_used?: number
+          _usage_id: string
+        }
+        Returns: undefined
+      }
       verify_contract_by_hash: {
         Args: { _hash_id: string }
         Returns: {
