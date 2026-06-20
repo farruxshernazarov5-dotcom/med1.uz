@@ -55,14 +55,47 @@ export default function ContractVerifyPage() {
 
   const verify = async (h: string) => {
     if (!h?.trim()) return;
+    const code = h.trim();
     setLoading(true);
     setSearched(true);
     setContract(null);
     setSignatures([]);
-    const { data: c } = await (supabase.rpc as any)("verify_contract_by_hash", { _hash_id: h.trim() });
+
+    // Template documents: hashId = "TEMPLATE-<slug>"
+    if (/^TEMPLATE-/i.test(code)) {
+      const slug = code.replace(/^TEMPLATE-/i, "").toLowerCase();
+      const { data: tpl } = await (supabase as any)
+        .from("contract_templates")
+        .select("slug,title_uz,title_ru,jurisdiction,is_active,created_at")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (tpl) {
+        setContract({
+          hash_id: code,
+          contract_number: `TPL-${slug.toUpperCase()}`,
+          title_uz: tpl.title_uz,
+          title_ru: tpl.title_ru,
+          status: tpl.is_active ? "active" : "terminated",
+          approval_status: "template",
+          language: "uz",
+          signed_at: null,
+          effective_from: tpl.created_at,
+          effective_until: null,
+          required_signatures: 0,
+          collected_signatures: 0,
+          category_slug: null,
+          counterparty_name: "MED-ALL AI SYSTEM MChJ (Template)",
+          created_at: tpl.created_at,
+        });
+      }
+      setLoading(false);
+      return;
+    }
+
+    const { data: c } = await (supabase.rpc as any)("verify_contract_by_hash", { _hash_id: code });
     if (c && (c as any[]).length > 0) {
       setContract((c as any[])[0]);
-      const { data: s } = await (supabase.rpc as any)("verify_contract_signatures", { _hash_id: h.trim() });
+      const { data: s } = await (supabase.rpc as any)("verify_contract_signatures", { _hash_id: code });
       setSignatures((s as Signature[]) || []);
     }
     setLoading(false);
