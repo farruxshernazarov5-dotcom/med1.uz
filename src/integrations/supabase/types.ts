@@ -15710,6 +15710,26 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      verify_contract_by_hash: {
+        Args: { _hash_id: string }
+        Returns: {
+          approval_status: string
+          category_slug: string
+          collected_signatures: number
+          contract_number: string
+          counterparty_name: string
+          created_at: string
+          effective_from: string
+          effective_until: string
+          hash_id: string
+          language: string
+          required_signatures: number
+          signed_at: string
+          status: string
+          title_ru: string
+          title_uz: string
+        }[]
+      }
       verify_contract_signatures: {
         Args: { _hash_id: string }
         Returns: {
