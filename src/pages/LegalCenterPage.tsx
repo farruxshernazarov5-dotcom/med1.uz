@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Search, Shield, Sparkles, Download, Languages, Scale, Lock, ArrowLeft, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
+import { MarkdownView } from "@/lib/markdownRender";
 
 type Lang = "uz" | "ru" | "en";
 
