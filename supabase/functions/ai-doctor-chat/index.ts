@@ -59,6 +59,9 @@ KONTEKST ESLAB QOLISH:
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const __start = Date.now();
+  let __usageId: string | null = null;
+
   try {
     const access = await enforceAiAccess(req, "ai-doctor-chat");
     if (!access.allowed) {
@@ -67,6 +70,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    __usageId = access.usageId ?? null;
 
     const __body = await req.json();
     const { messages, documents } = __body;
@@ -80,6 +84,10 @@ serve(async (req) => {
       if (!access.bypass && access.creditsDeducted > 0) {
         await refundAiCredits(access.userId, "ai-doctor-chat", access.creditsDeducted, "input too large");
       }
+      await recordAiUsageResult(__usageId, {
+        status: "blocked", latencyMs: Date.now() - __start, promptTokens: inputTokens,
+        errorCode: "input_too_large", errorMessage: `${inputTokens} > ${MAX_INPUT_TOKENS}`,
+      });
       return new Response(JSON.stringify({
         error: `So'rov juda uzun (~${inputTokens} token, ruxsat ${MAX_INPUT_TOKENS}). Iltimos savolingizni qisqartiring.`,
         refunded: true,
@@ -110,10 +118,14 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      // Refund on AI failure so user isn't charged for nothing
+      const errStatus = response.status === 429 ? "rate_limited" : "error";
       if (!access.bypass && access.creditsDeducted > 0) {
         await refundAiCredits(access.userId, "ai-doctor-chat", access.creditsDeducted, `AI gateway ${response.status}`);
       }
+      await recordAiUsageResult(__usageId, {
+        status: errStatus, latencyMs: Date.now() - __start, promptTokens: inputTokens,
+        errorCode: String(response.status), errorMessage: `AI gateway ${response.status}`,
+      });
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Iltimos, biroz kutib qaytadan urinib ko'ring.", refunded: true }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -131,11 +143,61 @@ serve(async (req) => {
       });
     }
 
-    return new Response(response.body, {
+    // Tee the stream so we can count completion tokens while still forwarding to the client.
+    const [clientStream, monitorStream] = response.body!.tee();
+    (async () => {
+      try {
+        const reader = monitorStream.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        let completionChars = 0;
+        let promptT: number | null = null;
+        let completionT: number | null = null;
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let nl: number;
+          while ((nl = buf.indexOf("\n")) !== -1) {
+            const line = buf.slice(0, nl).trim();
+            buf = buf.slice(nl + 1);
+            if (!line.startsWith("data:")) continue;
+            const payload = line.slice(5).trim();
+            if (!payload || payload === "[DONE]") continue;
+            try {
+              const json = JSON.parse(payload);
+              const delta = json?.choices?.[0]?.delta?.content;
+              if (typeof delta === "string") completionChars += delta.length;
+              if (json?.usage) {
+                promptT = json.usage.prompt_tokens ?? promptT;
+                completionT = json.usage.completion_tokens ?? completionT;
+              }
+            } catch (_) { /* skip */ }
+          }
+        }
+        const estCompletion = completionT ?? Math.max(1, Math.ceil(completionChars / 4));
+        const estPrompt = promptT ?? inputTokens;
+        await recordAiUsageResult(__usageId, {
+          status: "success",
+          latencyMs: Date.now() - __start,
+          promptTokens: estPrompt,
+          completionTokens: estCompletion,
+          costUsd: computeCostUsd(estPrompt, estCompletion),
+        });
+      } catch (e) {
+        console.warn("usage monitor failed", e);
+      }
+    })();
+
+    return new Response(clientStream, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("ai-doctor-chat error:", e);
+    await recordAiUsageResult(__usageId, {
+      status: "error", latencyMs: Date.now() - __start,
+      errorCode: "exception", errorMessage: e instanceof Error ? e.message.slice(0, 500) : "unknown",
+    });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Noma'lum xato" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
