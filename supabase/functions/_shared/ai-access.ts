@@ -229,12 +229,23 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
     const userId = authData.user.id;
     const creditCost = SERVICE_CREDITS[serviceId] ?? 2;
     const { model, maxTokens } = getModelForCost(creditCost);
+    const channel = getChannelFromRequest(req);
 
     /* ─── ADMIN BYPASS: super admins test AI without credits ─── */
     try {
       const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
       if (isAdmin === true) {
-        return { allowed: true, userId, model, maxTokens, creditsDeducted: 0, balanceAfter: -1, bypass: true };
+        // Still log a row so analytics include admin/test traffic
+        let usageId: string | null = null;
+        try {
+          const { data: ins } = await admin
+            .from("ai_usage")
+            .insert({ user_id: userId, service_id: serviceId, channel, model, cost_credits: 0, status: "success" })
+            .select("id")
+            .single();
+          usageId = ins?.id ?? null;
+        } catch (_) { /* best-effort */ }
+        return { allowed: true, userId, model, maxTokens, creditsDeducted: 0, balanceAfter: -1, bypass: true, usageId, channel };
       }
     } catch (_) { /* ignore */ }
 
@@ -260,7 +271,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
 
     /* ─── Atomic deduction via RPC (race-condition safe) ─── */
     const { data: deductData, error: deductErr } = await admin.rpc("deduct_ai_credits", {
-      _user_id: userId, _service_id: serviceId, _cost: creditCost,
+      _user_id: userId, _service_id: serviceId, _cost: creditCost, _channel: channel, _model: model,
     });
 
     if (deductErr) {
@@ -273,7 +284,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       return { allowed: false, status: 402, error: row?.error || "Kredit yetarli emas" };
     }
 
-    return { allowed: true, userId, model, maxTokens, creditsDeducted: creditCost, balanceAfter: row.balance_after };
+    return { allowed: true, userId, model, maxTokens, creditsDeducted: creditCost, balanceAfter: row.balance_after, usageId: row.usage_id ?? null, channel };
   } catch (error) {
     console.error("enforceAiAccess error", error);
     return { allowed: false, status: 500, error: "AI kirishni tekshirishda xatolik" };
