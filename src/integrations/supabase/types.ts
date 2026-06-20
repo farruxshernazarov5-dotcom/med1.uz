@@ -268,22 +268,61 @@ export type Database = {
       }
       ai_usage: {
         Row: {
+          channel: string | null
+          completion_tokens: number | null
+          cost_credits: number | null
+          cost_usd: number | null
+          error_code: string | null
+          error_message: string | null
           id: string
+          latency_ms: number | null
+          model: string | null
+          prompt_tokens: number | null
+          region: string | null
+          request_id: string | null
           service_id: string
+          status: string | null
+          tokens_used: number | null
           usage_date: string | null
           used_at: string | null
           user_id: string
         }
         Insert: {
+          channel?: string | null
+          completion_tokens?: number | null
+          cost_credits?: number | null
+          cost_usd?: number | null
+          error_code?: string | null
+          error_message?: string | null
           id?: string
+          latency_ms?: number | null
+          model?: string | null
+          prompt_tokens?: number | null
+          region?: string | null
+          request_id?: string | null
           service_id: string
+          status?: string | null
+          tokens_used?: number | null
           usage_date?: string | null
           used_at?: string | null
           user_id: string
         }
         Update: {
+          channel?: string | null
+          completion_tokens?: number | null
+          cost_credits?: number | null
+          cost_usd?: number | null
+          error_code?: string | null
+          error_message?: string | null
           id?: string
+          latency_ms?: number | null
+          model?: string | null
+          prompt_tokens?: number | null
+          region?: string | null
+          request_id?: string | null
           service_id?: string
+          status?: string | null
+          tokens_used?: number | null
           usage_date?: string | null
           used_at?: string | null
           user_id?: string
@@ -15580,14 +15619,30 @@ export type Database = {
         Args: { _referral_id: string }
         Returns: undefined
       }
-      deduct_ai_credits: {
-        Args: { _cost: number; _service_id: string; _user_id: string }
-        Returns: {
-          balance_after: number
-          error: string
-          success: boolean
-        }[]
-      }
+      deduct_ai_credits:
+        | {
+            Args: { _cost: number; _service_id: string; _user_id: string }
+            Returns: {
+              balance_after: number
+              error: string
+              success: boolean
+            }[]
+          }
+        | {
+            Args: {
+              _channel?: string
+              _cost: number
+              _model?: string
+              _service_id: string
+              _user_id: string
+            }
+            Returns: {
+              balance_after: number
+              error: string
+              success: boolean
+              usage_id: string
+            }[]
+          }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -15710,6 +15765,21 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      update_ai_usage_result: {
+        Args: {
+          _completion_tokens?: number
+          _cost_usd?: number
+          _error_code?: string
+          _error_message?: string
+          _latency_ms?: number
+          _prompt_tokens?: number
+          _region?: string
+          _status?: string
+          _tokens_used?: number
+          _usage_id: string
+        }
+        Returns: undefined
+      }
       verify_contract_by_hash: {
         Args: { _hash_id: string }
         Returns: {

@@ -1,8 +1,66 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 export type AiAccessResult =
-  | { allowed: true; userId: string; model: string; maxTokens: number; creditsDeducted: number; balanceAfter: number; bypass?: boolean }
+  | { allowed: true; userId: string; model: string; maxTokens: number; creditsDeducted: number; balanceAfter: number; bypass?: boolean; usageId?: string | null; channel: string }
   | { allowed: false; status: number; error: string };
+
+/** Detect request channel from headers. Defaults to 'web'. */
+export function getChannelFromRequest(req: Request): string {
+  const explicit = (req.headers.get("x-med1-channel") || req.headers.get("X-Med1-Channel") || "").toLowerCase().trim();
+  if (explicit) {
+    const allowed = ["web", "hambi", "telegram", "api", "mobile_android", "mobile_ios"];
+    if (allowed.includes(explicit)) return explicit;
+  }
+  const platform = (req.headers.get("x-supabase-client-platform") || "").toLowerCase();
+  if (platform === "android") return "mobile_android";
+  if (platform === "ios") return "mobile_ios";
+  const ua = (req.headers.get("user-agent") || "").toLowerCase();
+  if (ua.includes("hambi")) return "hambi";
+  if (ua.includes("telegrambot") || ua.includes("tgwebapp")) return "telegram";
+  return "web";
+}
+
+/** Compute approximate USD cost from token counts (uses AI_PRICING). */
+export function computeCostUsd(promptTokens: number, completionTokens: number): number {
+  const p = (promptTokens / 1_000_000) * AI_PRICING.promptPer1MTokens;
+  const c = (completionTokens / 1_000_000) * AI_PRICING.completionPer1MTokens;
+  return Number((p + c).toFixed(6));
+}
+
+/** Best-effort: update the ai_usage row created by deduct_ai_credits with final result fields. */
+export async function recordAiUsageResult(usageId: string | null | undefined, params: {
+  status?: "success" | "error" | "timeout" | "rate_limited" | "blocked";
+  latencyMs?: number;
+  promptTokens?: number;
+  completionTokens?: number;
+  tokensUsed?: number;
+  costUsd?: number;
+  errorCode?: string;
+  errorMessage?: string;
+  region?: string;
+}): Promise<void> {
+  if (!usageId) return;
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) return;
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+    await admin.rpc("update_ai_usage_result", {
+      _usage_id: usageId,
+      _status: params.status ?? null,
+      _latency_ms: params.latencyMs ?? null,
+      _prompt_tokens: params.promptTokens ?? null,
+      _completion_tokens: params.completionTokens ?? null,
+      _tokens_used: params.tokensUsed ?? ((params.promptTokens != null && params.completionTokens != null) ? (params.promptTokens + params.completionTokens) : null),
+      _cost_usd: params.costUsd ?? null,
+      _error_code: params.errorCode ?? null,
+      _error_message: params.errorMessage ?? null,
+      _region: params.region ?? null,
+    });
+  } catch (e) {
+    console.warn("recordAiUsageResult failed", e);
+  }
+}
 
 export const AI_PRICING = {
   promptPer1MTokens: 0.15,
@@ -171,12 +229,23 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
     const userId = authData.user.id;
     const creditCost = SERVICE_CREDITS[serviceId] ?? 2;
     const { model, maxTokens } = getModelForCost(creditCost);
+    const channel = getChannelFromRequest(req);
 
     /* ─── ADMIN BYPASS: super admins test AI without credits ─── */
     try {
       const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
       if (isAdmin === true) {
-        return { allowed: true, userId, model, maxTokens, creditsDeducted: 0, balanceAfter: -1, bypass: true };
+        // Still log a row so analytics include admin/test traffic
+        let usageId: string | null = null;
+        try {
+          const { data: ins } = await admin
+            .from("ai_usage")
+            .insert({ user_id: userId, service_id: serviceId, channel, model, cost_credits: 0, status: "success" })
+            .select("id")
+            .single();
+          usageId = ins?.id ?? null;
+        } catch (_) { /* best-effort */ }
+        return { allowed: true, userId, model, maxTokens, creditsDeducted: 0, balanceAfter: -1, bypass: true, usageId, channel };
       }
     } catch (_) { /* ignore */ }
 
@@ -202,7 +271,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
 
     /* ─── Atomic deduction via RPC (race-condition safe) ─── */
     const { data: deductData, error: deductErr } = await admin.rpc("deduct_ai_credits", {
-      _user_id: userId, _service_id: serviceId, _cost: creditCost,
+      _user_id: userId, _service_id: serviceId, _cost: creditCost, _channel: channel, _model: model,
     });
 
     if (deductErr) {
@@ -215,7 +284,7 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       return { allowed: false, status: 402, error: row?.error || "Kredit yetarli emas" };
     }
 
-    return { allowed: true, userId, model, maxTokens, creditsDeducted: creditCost, balanceAfter: row.balance_after };
+    return { allowed: true, userId, model, maxTokens, creditsDeducted: creditCost, balanceAfter: row.balance_after, usageId: row.usage_id ?? null, channel };
   } catch (error) {
     console.error("enforceAiAccess error", error);
     return { allowed: false, status: 500, error: "AI kirishni tekshirishda xatolik" };
