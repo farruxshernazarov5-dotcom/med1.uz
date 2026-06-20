@@ -268,22 +268,61 @@ export type Database = {
       }
       ai_usage: {
         Row: {
+          channel: string | null
+          completion_tokens: number | null
+          cost_credits: number | null
+          cost_usd: number | null
+          error_code: string | null
+          error_message: string | null
           id: string
+          latency_ms: number | null
+          model: string | null
+          prompt_tokens: number | null
+          region: string | null
+          request_id: string | null
           service_id: string
+          status: string | null
+          tokens_used: number | null
           usage_date: string | null
           used_at: string | null
           user_id: string
         }
         Insert: {
+          channel?: string | null
+          completion_tokens?: number | null
+          cost_credits?: number | null
+          cost_usd?: number | null
+          error_code?: string | null
+          error_message?: string | null
           id?: string
+          latency_ms?: number | null
+          model?: string | null
+          prompt_tokens?: number | null
+          region?: string | null
+          request_id?: string | null
           service_id: string
+          status?: string | null
+          tokens_used?: number | null
           usage_date?: string | null
           used_at?: string | null
           user_id: string
         }
         Update: {
+          channel?: string | null
+          completion_tokens?: number | null
+          cost_credits?: number | null
+          cost_usd?: number | null
+          error_code?: string | null
+          error_message?: string | null
           id?: string
+          latency_ms?: number | null
+          model?: string | null
+          prompt_tokens?: number | null
+          region?: string | null
+          request_id?: string | null
           service_id?: string
+          status?: string | null
+          tokens_used?: number | null
           usage_date?: string | null
           used_at?: string | null
           user_id?: string
