@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess, refundAiCredits, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits, recordAiUsageResult, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages, computeCostUsd } from "../_shared/ai-access.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const SYSTEM_PROMPT = `Sen Med1.uz platformasining yuqori malakali AI tibbiy maslahatchi yordamchisisan. Sening noming "Med1 AI Shifokor". Foydalanuvchilar sog'liq bilan bog'liq savollar beradi va sen ularga professional tibbiy ma'lumot berasan.
