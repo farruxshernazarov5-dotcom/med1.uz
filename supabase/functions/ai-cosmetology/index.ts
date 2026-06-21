@@ -10,6 +10,9 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const __start = Date.now();
+  let __usageId: string | null = null;
+
   try {
     const access = await enforceAiAccess(req, "ai-cosmetology");
     if (!access.allowed) {
@@ -18,6 +21,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    __usageId = access.usageId ?? null;
+
 
     const { messages, skinType, age, concerns, mode, photoBase64 } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
