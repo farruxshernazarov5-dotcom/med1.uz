@@ -72,6 +72,9 @@ JAVOBNI FAQAT quyidagi JSON formatda ber:
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const __start = Date.now();
+  let __usageId: string | null = null;
+
   try {
     const access = await enforceAiAccess(req, "ai-health-risk");
     if (!access.allowed) {
@@ -80,6 +83,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    __usageId = access.usageId ?? null;
+
 
     const body = await req.json(); const __lang = normalizeLang((body as any)?.lang);
     const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
