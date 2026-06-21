@@ -189,28 +189,21 @@ Kundalik tartib tavsiyalari`;
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi, keyinroq urinib ko'ring." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Kredit tugagan, iltimos hisobni to'ldiring." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      const status = response.status;
+      await instrumentError(__usageId, __start, { status: statusFromHttp(status), errorCode: String(status), errorMessage: `AI gateway ${status}` });
+      if (status === 429) return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi, keyinroq urinib ko'ring." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (status === 402) return new Response(JSON.stringify({ error: "Kredit tugagan, iltimos hisobni to'ldiring." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI xatolik yuz berdi" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      console.error("AI gateway error:", status, t);
+      return new Response(JSON.stringify({ error: "AI xatolik yuz berdi" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    return new Response(response.body, {
+    return new Response(instrumentStream(response.body!, __usageId, __start, 0), {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("ai-cosmetology error:", e);
+    await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : "Unknown error" });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
