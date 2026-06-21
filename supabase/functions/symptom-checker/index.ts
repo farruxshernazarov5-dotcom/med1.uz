@@ -79,6 +79,9 @@ JSON FORMAT:
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const __start = Date.now();
+  let __usageId: string | null = null;
+
   try {
     const access = await enforceAiAccess(req, "symptom-checker");
     if (!access.allowed) {
@@ -87,6 +90,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    __usageId = access.usageId ?? null;
+
 
     const __body = await req.json(); const { symptoms, age, gender, duration, painLevel, existingConditions, allergies, followUpAnswers } = __body; const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
