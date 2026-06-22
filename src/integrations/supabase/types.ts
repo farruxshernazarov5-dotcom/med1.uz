@@ -15615,6 +15615,102 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      analytics_by_channel: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          avg_latency_ms: number
+          channel: string
+          requests: number
+          success_rate: number
+          total_cost_usd: number
+          unique_users: number
+        }[]
+      }
+      analytics_by_region: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          region: string
+          requests: number
+          unique_users: number
+        }[]
+      }
+      analytics_by_service: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          avg_latency_ms: number
+          last_used_at: string
+          requests: number
+          service_id: string
+          success_rate: number
+          total_cost_usd: number
+          total_credits: number
+          total_tokens: number
+          unique_users: number
+        }[]
+      }
+      analytics_error_breakdown: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          error_code: string
+          last_seen_at: string
+          occurrences: number
+          sample_msg: string
+          service_id: string
+        }[]
+      }
+      analytics_overview: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          avg_latency_ms: number
+          error_count: number
+          p95_latency_ms: number
+          rate_limited_count: number
+          requests_30d: number
+          requests_7d: number
+          requests_today: number
+          success_rate: number
+          total_cost_credits: number
+          total_cost_usd: number
+          total_requests: number
+          total_tokens: number
+          unique_users: number
+        }[]
+      }
+      analytics_revenue: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          ai_payments_count: number
+          ai_payments_total: number
+          credits_purchased: number
+          credits_spent: number
+          platform_payments_count: number
+          platform_payments_total: number
+        }[]
+      }
+      analytics_timeseries: {
+        Args: { _from?: string; _granularity?: string; _to?: string }
+        Returns: {
+          avg_latency_ms: number
+          bucket: string
+          requests: number
+          success_rate: number
+          total_cost_usd: number
+          unique_users: number
+        }[]
+      }
+      analytics_top_users: {
+        Args: { _from?: string; _limit?: number; _to?: string }
+        Returns: {
+          credits_spent: number
+          full_name: string
+          last_used_at: string
+          phone: string
+          requests: number
+          total_cost_usd: number
+          total_tokens: number
+          user_id: string
+        }[]
+      }
       apply_referral_reward: {
         Args: { _referral_id: string }
         Returns: undefined
