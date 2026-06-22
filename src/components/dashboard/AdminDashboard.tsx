@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -85,6 +86,7 @@ const sidebarSections = [
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
       { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
+      { id: "ai_analytics", label: "📊 AI Analytics Center", icon: BarChart3, href: "/admin/ai-analytics" },
       { id: "announcements", label: "E'lonlar", icon: Bell },
       { id: "promotions", label: "Aksiyalar", icon: Heart },
       { id: "admin_users", label: "Adminlar", icon: UserCog },
@@ -98,6 +100,7 @@ const sidebarSections = [
 const AdminDashboard = () => {
   const { signOut, user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [stats, setStats] = useState<any>({});
@@ -441,7 +444,7 @@ const AdminDashboard = () => {
                   const badge = item.id === "notifications" && notifCount > 0 ? notifCount :
                                 item.id === "messages" && msgCount > 0 ? msgCount : null;
                   return (
-                    <button key={item.id} onClick={() => setTab(item.id)}
+                    <button key={item.id} onClick={() => (item as any).href ? navigate((item as any).href) : setTab(item.id)}
                       className={cn(
                         "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all relative",
                         isActive
