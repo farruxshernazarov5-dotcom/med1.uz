@@ -11,6 +11,7 @@ import {
   AnalyticsHeader, KpiCards, ServicesTable, ChannelBreakdown,
   UsageTimeline, RevenuePanel, TopUsersList, ErrorsTable,
 } from "@/components/admin/analytics/AnalyticsComponents";
+import { RecentUsageFeed } from "@/components/admin/analytics/RecentUsageFeed";
 
 const initialRange = (): DateRange => {
   const to = new Date();
