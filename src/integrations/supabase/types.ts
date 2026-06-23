@@ -15676,6 +15676,23 @@ export type Database = {
           unique_users: number
         }[]
       }
+      analytics_recent_usage: {
+        Args: { _limit?: number }
+        Returns: {
+          channel: string
+          cost_credits: number
+          cost_usd: number
+          error_code: string
+          id: string
+          latency_ms: number
+          model: string
+          service_id: string
+          status: string
+          tokens_used: number
+          used_at: string
+          user_id: string
+        }[]
+      }
       analytics_revenue: {
         Args: { _from?: string; _to?: string }
         Returns: {
@@ -15715,30 +15732,21 @@ export type Database = {
         Args: { _referral_id: string }
         Returns: undefined
       }
-      deduct_ai_credits:
-        | {
-            Args: { _cost: number; _service_id: string; _user_id: string }
-            Returns: {
-              balance_after: number
-              error: string
-              success: boolean
-            }[]
-          }
-        | {
-            Args: {
-              _channel?: string
-              _cost: number
-              _model?: string
-              _service_id: string
-              _user_id: string
-            }
-            Returns: {
-              balance_after: number
-              error: string
-              success: boolean
-              usage_id: string
-            }[]
-          }
+      deduct_ai_credits: {
+        Args: {
+          _channel?: string
+          _cost: number
+          _model?: string
+          _service_id: string
+          _user_id: string
+        }
+        Returns: {
+          balance_after: number
+          error: string
+          success: boolean
+          usage_id: string
+        }[]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
