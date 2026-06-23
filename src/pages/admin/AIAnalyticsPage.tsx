@@ -70,6 +70,8 @@ const AIAnalyticsPage = () => {
 
         <ServicesTable data={byService.data} loading={byService.isLoading} />
 
+        <RecentUsageFeed />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <RevenuePanel data={revenue.data} loading={revenue.isLoading} />
           <TopUsersList data={topUsers.data} loading={topUsers.isLoading} />
