@@ -11,6 +11,7 @@ import {
   AnalyticsHeader, KpiCards, ServicesTable, ChannelBreakdown,
   UsageTimeline, RevenuePanel, TopUsersList, ErrorsTable,
 } from "@/components/admin/analytics/AnalyticsComponents";
+import { RecentUsageFeed } from "@/components/admin/analytics/RecentUsageFeed";
 
 const initialRange = (): DateRange => {
   const to = new Date();
@@ -68,6 +69,8 @@ const AIAnalyticsPage = () => {
         </div>
 
         <ServicesTable data={byService.data} loading={byService.isLoading} />
+
+        <RecentUsageFeed />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <RevenuePanel data={revenue.data} loading={revenue.isLoading} />
