@@ -44,6 +44,35 @@ export function useAnalyticsErrors(range: DateRange) {
   return useRpc("analytics_error_breakdown", { _from: iso(range.from), _to: iso(range.to) }, range);
 }
 
+export type RecentUsageRow = {
+  id: string;
+  used_at: string;
+  service_id: string;
+  channel: string | null;
+  status: string | null;
+  model: string | null;
+  latency_ms: number | null;
+  tokens_used: number | null;
+  cost_credits: number | null;
+  cost_usd: number | null;
+  error_code: string | null;
+  user_id: string;
+};
+
+/** Last 50 AI requests (admin only) — refreshes every 15s. */
+export function useAnalyticsRecentUsage(limit = 50) {
+  return useQuery({
+    queryKey: ["analytics_recent_usage", limit],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("analytics_recent_usage" as any, { _limit: limit } as any);
+      if (error) throw error;
+      return (data ?? []) as RecentUsageRow[];
+    },
+    refetchInterval: 15_000,
+    staleTime: 5_000,
+  });
+}
+
 /** Realtime live counter — subscribes to ai_usage INSERT events. */
 export function useLiveAiUsage(onInsert: (row: any) => void) {
   useEffect(() => {
