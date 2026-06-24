@@ -24,6 +24,7 @@ interface PaymentMethodPickerProps {
   };
   /** Faqat ko'rsatilishi kerak bo'lgan usullar */
   allowed?: PaymentMethod[];
+  onBeforeConfirm?: (continuePayment: () => void) => void;
   className?: string;
 }
 
@@ -44,6 +45,7 @@ const PaymentMethodPicker = ({
   onBankSelected,
   bankDetails,
   allowed = ["click", "cash", "bank"],
+  onBeforeConfirm,
   className = "",
 }: PaymentMethodPickerProps) => {
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
@@ -87,7 +89,7 @@ const PaymentMethodPicker = ({
     }
   };
 
-  const handleConfirm = () => {
+  const runConfirm = () => {
     if (method === "click") return handleClickPay();
     if (method === "cash") {
       onCashSelected?.();
@@ -103,6 +105,14 @@ const PaymentMethodPicker = ({
         description: "Rekvizitlar bo'yicha to'lov amalga oshiring",
       });
     }
+  };
+
+  const handleConfirm = () => {
+    if (onBeforeConfirm) {
+      onBeforeConfirm(runConfirm);
+      return;
+    }
+    runConfirm();
   };
 
   const allMethods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string }[] = [
