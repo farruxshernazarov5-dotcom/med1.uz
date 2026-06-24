@@ -62,6 +62,61 @@ export async function recordAiUsageResult(usageId: string | null | undefined, pa
   }
 }
 
+/** Create an ai_usage audit row for AI calls that do not use Med Coin deduction. */
+export async function createAiUsageEvent(params: {
+  userId: string;
+  serviceId: string;
+  req?: Request;
+  channel?: string;
+  model?: string;
+  costCredits?: number;
+  status?: "success" | "error" | "timeout" | "rate_limited" | "blocked";
+}): Promise<string | null> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey || !params.userId) return null;
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+    const { data, error } = await admin
+      .from("ai_usage")
+      .insert({
+        user_id: params.userId,
+        service_id: params.serviceId,
+        channel: params.channel ?? (params.req ? getChannelFromRequest(params.req) : "web"),
+        model: params.model ?? null,
+        cost_credits: params.costCredits ?? 0,
+        status: params.status ?? "success",
+      })
+      .select("id")
+      .single();
+    if (error) {
+      console.warn("createAiUsageEvent failed", error);
+      return null;
+    }
+    return data?.id ?? null;
+  } catch (e) {
+    console.warn("createAiUsageEvent failed", e);
+    return null;
+  }
+}
+
+/** Validate a bearer token and return the authenticated user id. */
+export async function getAuthenticatedUserId(req: Request): Promise<string | null> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    if (!supabaseUrl || !serviceRoleKey || !token) return null;
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+    const { data, error } = await admin.auth.getUser(token);
+    if (error || !data?.user) return null;
+    return data.user.id;
+  } catch {
+    return null;
+  }
+}
+
 export const AI_PRICING = {
   promptPer1MTokens: 0.15,
   completionPer1MTokens: 0.60,

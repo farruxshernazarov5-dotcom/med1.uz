@@ -1,12 +1,16 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const __start = Date.now();
+  let __usageId: string | null = null;
 
   try {
     // Require authentication — burns LOVABLE AI credits
@@ -45,6 +49,7 @@ Javoblar:
 
 Shifokor konteksti:
 ${context ? JSON.stringify(context, null, 2) : "Ma'lumot yo'q"}`;
+    __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "doctor-ai-assistant", req, model: "google/gemini-3-flash-preview" });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -63,6 +68,7 @@ ${context ? JSON.stringify(context, null, 2) : "Ma'lumot yo'q"}`;
     });
 
     if (!response.ok) {
+      await instrumentError(__usageId, __start, { status: statusFromHttp(response.status), errorCode: String(response.status), errorMessage: `AI gateway ${response.status}` });
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Juda ko'p so'rov. Iltimos, biroz kuting." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -80,11 +86,12 @@ ${context ? JSON.stringify(context, null, 2) : "Ma'lumot yo'q"}`;
       });
     }
 
-    return new Response(response.body, {
+    return new Response(instrumentStream(response.body!, __usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...(messages || [])])), {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("doctor-ai-assistant error:", e);
+    await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : String(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -1,9 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { instrumentStream, instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const AVAILABLE_SERVICES = [
@@ -15,6 +17,7 @@ const AVAILABLE_SERVICES = [
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const __start = Date.now();
 
   try {
     const url = new URL(req.url);
@@ -62,6 +65,11 @@ serve(async (req) => {
     }
     // Update last_used_at (best-effort)
     await supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id);
+    const { data: partnerRow } = await supabase
+      .from("api_partners")
+      .select("owner_user_id")
+      .eq("id", keyRow.partner_id)
+      .maybeSingle();
 
     const body = req.method === "POST" ? await req.json() : {};
     const action = pathParts[pathParts.length - 1] || body.action;
@@ -120,6 +128,10 @@ serve(async (req) => {
       };
 
       const selectedModel = model || "google/gemini-3-flash-preview";
+      const systemPrompt = systemPrompts[service] + "\n\nO'zbek tilida javob ber. Har bir javob oxirida: '⚠️ AI tahlili faqat ma'lumot berish maqsadida. Aniq tashxis uchun shifokor bilan maslahatlashing.'";
+      const usageId = partnerRow?.owner_user_id
+        ? await createAiUsageEvent({ userId: partnerRow.owner_user_id, serviceId: service || "ai-external-api", req, channel: "api", model: selectedModel })
+        : null;
 
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -130,7 +142,7 @@ serve(async (req) => {
         body: JSON.stringify({
           model: selectedModel,
           messages: [
-            { role: "system", content: systemPrompts[service] + "\n\nO'zbek tilida javob ber. Har bir javob oxirida: '⚠️ AI tahlili faqat ma'lumot berish maqsadida. Aniq tashxis uchun shifokor bilan maslahatlashing.'" },
+            { role: "system", content: systemPrompt },
             ...messages,
           ],
           stream: stream !== false,
@@ -139,16 +151,18 @@ serve(async (req) => {
 
       if (!aiResponse.ok) {
         const status = aiResponse.status;
+        await instrumentError(usageId, __start, { status: statusFromHttp(status), errorCode: String(status), errorMessage: `AI gateway ${status}` });
         if (status === 429) return new Response(JSON.stringify({ error: "Rate limit oshdi, keyinroq urinib ko'ring" }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         if (status === 402) return new Response(JSON.stringify({ error: "Kredit tugagan" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         throw new Error(`AI gateway xatolik: ${status}`);
       }
 
       if (stream !== false) {
-        return new Response(aiResponse.body, { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
+        return new Response(instrumentStream(aiResponse.body!, usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...messages])), { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
       }
 
       const result = await aiResponse.json();
+      await instrumentJson(result, usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...messages]), result.choices?.[0]?.message?.content || "");
       return new Response(JSON.stringify({
         success: true,
         service,
