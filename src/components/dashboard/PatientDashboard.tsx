@@ -5,7 +5,7 @@ import {
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
   ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
-  Sun, Moon, Gift, Coins,
+  Sun, Moon, Gift, Coins, Scale,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ import PatientPayments from "@/components/patient/hms/PatientPayments";
 import MedCoinWallet from "@/components/patient/wallet/MedCoinWallet";
 import PatientPromo from "@/components/patient/hms/PatientPromo";
 import PatientSettings from "@/components/patient/hms/PatientSettings";
+import PatientLegalCenter from "@/components/patient/hms/PatientLegalCenter";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
 import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
@@ -51,7 +52,7 @@ type TabId =
   | "lab" | "prescriptions" | "files" | "documents" | "history"
   | "wallet" | "payments" | "promo" | "premium" | "partner-referral"
   | "family" | "favorites" | "reviews"
-  | "profile" | "notifications" | "security" | "settings";
+  | "profile" | "notifications" | "security" | "settings" | "legal";
 
 interface NavItem {
   id: TabId;
@@ -141,6 +142,7 @@ const NAV_GROUPS: NavGroup[] = [
       { id: "profile", label: "Profil", icon: User },
       { id: "notifications", label: "Bildirishnomalar", icon: Bell },
       { id: "security", label: "Xavfsizlik", icon: Shield },
+      { id: "legal", label: "Yuridik hujjatlar", icon: Scale },
       { id: "settings", label: "Umumiy sozlamalar", icon: Settings },
     ],
   },
@@ -213,6 +215,7 @@ const PatientDashboard = () => {
       case "profile": return <PatientProfileEditor />;
       case "notifications": return <PatientNotifications />;
       case "security": return <PatientSecurity />;
+      case "legal": return <PatientLegalCenter />;
       case "settings": return <PatientSettings />;
       default: return null;
     }
