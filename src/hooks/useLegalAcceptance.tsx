@@ -50,12 +50,15 @@ export const useLegalAcceptance = (docTypes: LegalDocType[]) => {
   const accept = async (docType: LegalDocType, context: string = "manual") => {
     if (!user) return false;
     const version = CURRENT_VERSIONS[docType];
-    const { error } = await (supabase as any).from("legal_acceptances").insert({
+    const { error } = await (supabase as any).from("legal_acceptances").upsert({
       user_id: user.id,
       doc_type: docType,
       doc_version: version,
       context,
       user_agent: navigator.userAgent,
+    }, {
+      onConflict: "user_id,doc_type,doc_version",
+      ignoreDuplicates: false,
     });
     if (!error) {
       setAccepted((prev) => ({ ...prev, [docType]: true }));
