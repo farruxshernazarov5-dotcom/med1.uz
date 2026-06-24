@@ -5,6 +5,7 @@ import { CreditCard, CheckCircle2, Clock, XCircle, FileText, Receipt } from "luc
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
+import LegalAcceptanceModal from "@/components/legal/LegalAcceptanceModal";
 
 const PatientPayments = () => {
   const { user } = useAuth();
@@ -12,6 +13,8 @@ const PatientPayments = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "paid" | "pending">("all");
   const [payDialog, setPayDialog] = useState<{ open: boolean; item: any | null }>({ open: false, item: null });
+  const [legalOpen, setLegalOpen] = useState(false);
+  const [pendingPayment, setPendingPayment] = useState<null | (() => void)>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -38,6 +41,11 @@ const PatientPayments = () => {
 
   const totalPaid = payments.filter(p => p._status === "paid" || p._status === "completed").reduce((s, p) => s + Number(p._amount || 0), 0);
   const totalDebt = payments.filter(p => p._status === "unpaid" || p._status === "pending" || p._status === "partial").reduce((s, p) => s + Number(p._amount || 0), 0);
+
+  const guardPaymentTerms = (continuePayment: () => void) => {
+    setPendingPayment(() => continuePayment);
+    setLegalOpen(true);
+  };
 
   const statusInfo = (s: string) => {
     if (s === "paid" || s === "completed") return { icon: CheckCircle2, color: "text-green-600 bg-green-500/10", label: "To'langan" };
@@ -138,11 +146,23 @@ const PatientPayments = () => {
                 returnUrl={`${window.location.origin}/dashboard?paid=1`}
                 allowed={["click", "cash", "bank"]}
                 bankDetails={{ recipient: payDialog.item._name }}
+                onBeforeConfirm={guardPaymentTerms}
               />
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      <LegalAcceptanceModal
+        open={legalOpen}
+        onOpenChange={setLegalOpen}
+        variant="saas"
+        context="patient_invoice_payment"
+        onAccepted={() => {
+          pendingPayment?.();
+          setPendingPayment(null);
+        }}
+      />
     </div>
   );
 };
