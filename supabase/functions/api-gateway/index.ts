@@ -4,12 +4,14 @@
 // to internal handlers (clinic, doctor, lab, pharmacy, emr, ai, payment).
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-api-key",
+    "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel",
 };
 
 const json = (status: number, body: unknown, requestId: string) =>
@@ -43,6 +45,7 @@ interface PartnerRow {
   tier: string;
   ip_whitelist: string[];
   allowed_domains: string[];
+  owner_user_id: string;
 }
 
 // Endpoint -> required scope mapping. Add more as Phase 5 lands.
@@ -75,6 +78,7 @@ serve(async (req) => {
   const origin = req.headers.get("origin") || "";
 
   let partnerId: string | null = null;
+  let partnerOwnerId: string | null = null;
   let apiKeyId: string | null = null;
   let statusCode = 200;
   let errorMsg: string | null = null;
@@ -117,9 +121,10 @@ serve(async (req) => {
         // 3. Lookup partner
         const { data: partner } = await supabase
           .from("api_partners")
-          .select("id, status, tier, ip_whitelist, allowed_domains")
+          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id")
           .eq("id", keyRow.partner_id)
           .maybeSingle<PartnerRow>();
+        partnerOwnerId = partner?.owner_user_id ?? null;
 
         if (!partner || partner.status !== "approved") {
           statusCode = 403;
@@ -157,7 +162,7 @@ serve(async (req) => {
             supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
 
             // 6. Dispatch
-            responseBody = await dispatch(supabase, path, req, requestId);
+            responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
             statusCode = responseBody.status;
           }
         }
@@ -191,7 +196,7 @@ serve(async (req) => {
 });
 
 // ---- Dispatcher: maps validated routes to handlers ----
-async function dispatch(supabase: any, path: string, req: Request, requestId: string): Promise<Response> {
+async function dispatch(supabase: any, path: string, req: Request, requestId: string, partnerOwnerId: string | null, startTime: number): Promise<Response> {
   const url = new URL(req.url);
   const limit = Math.min(parseInt(url.searchParams.get("limit") || "50", 10) || 50, 100);
   const offset = Math.max(parseInt(url.searchParams.get("offset") || "0", 10) || 0, 0);
@@ -303,6 +308,9 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     const model = typeof body?.model === "string" && allowedModels.has(body.model)
       ? body.model
       : "google/gemini-3-flash-preview";
+    const usageId = partnerOwnerId
+      ? await createAiUsageEvent({ userId: partnerOwnerId, serviceId: "api-gateway:ai-chat", req, channel: "api", model })
+      : null;
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -318,16 +326,20 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     });
 
     if (aiRes.status === 429) {
+      await instrumentError(usageId, startTime, { status: "rate_limited", errorCode: "429", errorMessage: "AI rate limit reached" });
       return json(429, { code: "ai_rate_limited", message: "AI rate limit reached, retry later" }, requestId);
     }
     if (aiRes.status === 402) {
+      await instrumentError(usageId, startTime, { status: "error", errorCode: "402", errorMessage: "AI credits exhausted" });
       return json(402, { code: "ai_credits_exhausted", message: "AI credits exhausted" }, requestId);
     }
     if (!aiRes.ok) {
       const txt = await aiRes.text();
+      await instrumentError(usageId, startTime, { status: statusFromHttp(aiRes.status), errorCode: String(aiRes.status), errorMessage: txt.slice(0, 500) });
       return json(502, { code: "ai_upstream_error", message: txt.slice(0, 300) }, requestId);
     }
     const ai = await aiRes.json();
+    await instrumentJson(ai, usageId, startTime, estimateTokensFromMessages(messages), ai?.choices?.[0]?.message?.content || "");
     return json(
       200,
       {
