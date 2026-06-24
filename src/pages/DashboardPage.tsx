@@ -11,7 +11,7 @@ import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
 import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
 import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
 import DentalDashboard from "@/components/dashboard/DentalDashboard";
-import { getDashboardPath } from "@/lib/dashboard";
+import { getDashboardPath, normalizeDashboardRole } from "@/lib/dashboard";
 import PaymentSuccessBanner from "@/components/payments/PaymentSuccessBanner";
 
 const DASHBOARD_MAP: Record<string, React.ComponentType> = {
@@ -53,6 +53,7 @@ const DashboardPage = () => {
 
   const dashboardType = type.toLowerCase();
   const DashboardComponent = DASHBOARD_MAP[dashboardType];
+  const effectiveUserRole = normalizeDashboardRole(userRole);
 
   // Agar dashboard turi mavjud emas bo'lsa — o'z dashboardiga
   if (!DashboardComponent) {
@@ -61,7 +62,7 @@ const DashboardPage = () => {
 
   // QAT'IY ROLE GUARD: Agar URL roli foydalanuvchi roliga mos kelmasa
   // (admin'dan tashqari — admin barcha dashboardlarni ko'ra oladi)
-  if (userRole && userRole !== "admin" && dashboardType !== userRole) {
+  if (effectiveUserRole !== "admin" && dashboardType !== effectiveUserRole) {
     return <Navigate to={userDashboardPath} replace />;
   }
 
