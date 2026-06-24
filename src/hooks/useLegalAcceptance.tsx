@@ -54,6 +54,7 @@ export const useLegalAcceptance = (docTypes: LegalDocType[]) => {
       user_id: user.id,
       doc_type: docType,
       doc_version: version,
+      accepted_at: new Date().toISOString(),
       context,
       user_agent: navigator.userAgent,
     }, {
