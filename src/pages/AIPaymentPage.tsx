@@ -49,7 +49,7 @@ const AIPaymentPage = () => {
     setInvoiceId(`MED1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
   }, []);
 
-  const { allAccepted: saasAccepted, refresh: refreshLegal } = useLegalAcceptance(["saas_terms", "privacy", "disclaimer"]);
+  const { refresh: refreshLegal } = useLegalAcceptance(["saas_terms", "privacy", "disclaimer"]);
   const [legalOpen, setLegalOpen] = useState(false);
   const [pendingPayMethod, setPendingPayMethod] = useState<null | (() => void)>(null);
 
