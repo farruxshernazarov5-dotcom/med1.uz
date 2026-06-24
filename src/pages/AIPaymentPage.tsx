@@ -49,17 +49,13 @@ const AIPaymentPage = () => {
     setInvoiceId(`MED1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
   }, []);
 
-  const { allAccepted: saasAccepted, refresh: refreshLegal } = useLegalAcceptance(["saas_terms", "privacy", "disclaimer"]);
+  const { refresh: refreshLegal } = useLegalAcceptance(["saas_terms", "privacy", "disclaimer"]);
   const [legalOpen, setLegalOpen] = useState(false);
   const [pendingPayMethod, setPendingPayMethod] = useState<null | (() => void)>(null);
 
   const guardWithLegal = (action: () => void) => {
-    if (!saasAccepted) {
-      setPendingPayMethod(() => action);
-      setLegalOpen(true);
-      return;
-    }
-    action();
+    setPendingPayMethod(() => action);
+    setLegalOpen(true);
   };
 
   // Online (Payme/Click) — to'lov darhol tasdiqlanadi va obuna aktivatsiya qilinadi
@@ -318,8 +314,9 @@ ${plan === "professional" || plan === "family" ? "✓ Barcha 13 ta AI xizmat\n�
                   purpose={`ai_subscription:${plan}:${billing}`}
                   referenceId={invoiceId}
                   returnUrl={`${window.location.origin}/ai-subscription?paid=1`}
-                  onCashSelected={() => guardWithLegal(() => handleManualPayment("cash"))}
-                  onBankSelected={() => guardWithLegal(() => handleManualPayment("bank"))}
+                  onBeforeConfirm={guardWithLegal}
+                  onCashSelected={() => handleManualPayment("cash")}
+                  onBankSelected={() => handleManualPayment("bank")}
                   allowed={["click", "cash", "bank"]}
                 />
               </div>

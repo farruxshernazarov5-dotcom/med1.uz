@@ -1,9 +1,10 @@
 // AI Legal Assistant — shartnomalarni tushuntiradi, xulosa qiladi, xavflarni belgilaydi
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createAiUsageEvent, getAuthenticatedUserId, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -34,24 +35,21 @@ const PROMPTS = {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const __start = Date.now();
+  let __usageId: string | null = null;
   try {
     // Require authentication — burns LOVABLE AI credits
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    const _admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const { data: _u } = await _admin.auth.getUser(authHeader.replace("Bearer ", ""));
-    if (!_u?.user) {
+    const userId = await getAuthenticatedUserId(req);
+    if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const { action, language = "uz", title = "", body = "", clause = "" } = (await req.json()) as Body;
+    __usageId = await createAiUsageEvent({ userId, serviceId: "legal-assistant", req, model: "google/gemini-2.5-flash" });
     if (!body && !clause) {
+      await instrumentError(__usageId, __start, { status: "blocked", errorCode: "bad_request", errorMessage: "body or clause required" });
       return new Response(JSON.stringify({ error: "body or clause required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const lang = (["uz", "ru", "en"].includes(language) ? language : "uz") as "uz" | "ru" | "en";
@@ -71,13 +69,16 @@ Deno.serve(async (req) => {
 
     if (!r.ok) {
       const txt = await r.text();
+      await instrumentError(__usageId, __start, { status: statusFromHttp(r.status), errorCode: String(r.status), errorMessage: txt.slice(0, 500) });
       return new Response(JSON.stringify({ error: "AI gateway error", detail: txt.slice(0, 300) }), { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const j = await r.json();
     const summary = j?.choices?.[0]?.message?.content || "—";
+    await instrumentJson(j, __usageId, __start, estimateTokensFromMessages([{ role: "system", content: SYSTEM[lang] }, { role: "user", content: userMsg }]), summary);
     return new Response(JSON.stringify({ summary }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("legal-assistant error:", e);
+    await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : String(e) });
     return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });

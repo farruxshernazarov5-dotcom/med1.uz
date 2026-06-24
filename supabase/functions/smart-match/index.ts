@@ -1,9 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const SYSTEM_PROMPT = `Sen Med1.uz Smart Match AI tahlilchisisan. Foydalanuvchi matnini tahlil qilib JSON qaytaring.
@@ -28,6 +30,8 @@ Intent ko'rsatkichlari (yuqori intent):
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const __start = Date.now();
+  let __usageId: string | null = null;
 
   try {
     const { input_text, source_channel = "web_search", session_id, latitude, longitude, radius_km, city } = await req.json();
@@ -59,6 +63,7 @@ serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    __usageId = await createAiUsageEvent({ userId, serviceId: "smart-match", req, model: "google/gemini-3-flash-preview" });
 
     // 1. AI analysis
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -73,6 +78,7 @@ serve(async (req) => {
       }),
     });
     if (!aiRes.ok) {
+      await instrumentError(__usageId, __start, { status: statusFromHttp(aiRes.status), errorCode: String(aiRes.status), errorMessage: `AI gateway ${aiRes.status}` });
       if (aiRes.status === 429) return new Response(JSON.stringify({ error: "AI limiti oshdi" }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       if (aiRes.status === 402) return new Response(JSON.stringify({ error: "AI krediti tugadi" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       throw new Error("AI gateway error " + aiRes.status);
@@ -209,6 +215,7 @@ serve(async (req) => {
       }
     }
 
+    await instrumentJson(aiData, __usageId, __start, estimateTokensFromMessages([{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: input_text.trim().slice(0, 1500) }]), content);
     return new Response(JSON.stringify({
       recommendation_id: recRow?.id,
       analysis,
@@ -218,6 +225,7 @@ serve(async (req) => {
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("smart-match error:", e);
+    await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : String(e) });
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

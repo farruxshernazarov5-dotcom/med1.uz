@@ -15,7 +15,7 @@ import { RecentUsageFeed } from "@/components/admin/analytics/RecentUsageFeed";
 
 const initialRange = (): DateRange => {
   const to = new Date();
-  const from = new Date(to.getTime() - 7 * 86400_000);
+  const from = new Date(to.getTime() - 365 * 86400_000);
   return { from, to };
 };
 

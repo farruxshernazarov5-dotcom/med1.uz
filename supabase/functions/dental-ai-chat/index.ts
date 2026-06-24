@@ -1,13 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const __start = Date.now();
+  let __usageId: string | null = null;
 
   try {
     // Require authentication — burns LOVABLE AI credits
@@ -35,6 +39,7 @@ serve(async (req) => {
       : mode === "diagnosis"
       ? `Sen dental rentgen tahlilchi AI san. Tish rentgen tasviri tavsifi asosida mumkin bo'lgan muammolarni aniqla: kariyes, periodontit, suyak yo'qolishi, kista, impaksiya va h.k. Natijalarni tish raqami bilan ko'rsat (FDI tizimi). Har doim ogohlantirishlarni qo'sh.`
       : `Sen stomatologiya bo'yicha AI yordamchisan. Tish davolash, dori tavsiyalari, bemor savollari va klinik qarorlar bo'yicha professional maslahat berasan. Javoblaringni o'zbek tilida ber. Har doim: "Bu AI tavsiyasi" degan ogohlantirishni qo'sh.`;
+    __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "dental-ai-chat", req, model: "google/gemini-3-flash-preview" });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -53,14 +58,19 @@ serve(async (req) => {
     });
 
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || "AI xatolik");
+    if (!response.ok) {
+      await instrumentError(__usageId, __start, { status: statusFromHttp(response.status), errorCode: String(response.status), errorMessage: data?.error?.message || "AI xatolik" });
+      throw new Error(data.error?.message || "AI xatolik");
+    }
 
     const reply = data.choices?.[0]?.message?.content || "Javob olinmadi";
+    await instrumentJson(data, __usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...(messages || [])]), reply);
 
     return new Response(JSON.stringify({ reply }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: error instanceof Error ? error.message : String(error) });
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Xatolik" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -19,7 +19,7 @@ const fmtTime = (iso: string) => {
 };
 
 export const RecentUsageFeed = () => {
-  const { data, isLoading, isError, error, refetch } = useAnalyticsRecentUsage(50);
+  const { data, isLoading, isError, error, refetch } = useAnalyticsRecentUsage(200);
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur p-5">
@@ -27,7 +27,7 @@ export const RecentUsageFeed = () => {
         <div className="flex items-center gap-2 text-white">
           <Activity className="w-5 h-5 text-[#2F80ED]" />
           <h3 className="font-semibold">So'nggi AI so'rovlari</h3>
-          <span className="text-xs text-white/40">(real-time, har 15s)</span>
+          <span className="text-xs text-white/40">(oxirgi 200, har 15s)</span>
         </div>
         <button onClick={() => refetch()} className="text-xs text-white/60 hover:text-white px-2 py-1 rounded border border-white/10">
           Yangilash
