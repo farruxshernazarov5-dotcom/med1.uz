@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { recordMetric } from "@/lib/perfMonitor";
+import { toast } from "sonner";
 
 interface CreditInfo {
   balance: number;
@@ -101,7 +102,15 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
         const total = (data || []).reduce((sum, c) => sum + (c.balance || 0), 0);
         const nearest = data?.[0]?.expires_at || null;
-        setBalance(total);
+        // Surface any balance change so users see every deduction (no silent drains).
+        setBalance((prev) => {
+          if (initializedRef.current && prev !== total) {
+            const diff = total - prev;
+            if (diff < 0) toast.warning(`−${Math.abs(diff)} Med Coin sarflandi · Balans: ${total}`);
+            else if (diff > 0) toast.success(`+${diff} Med Coin · Balans: ${total}`);
+          }
+          return total;
+        });
         setExpiresAt(nearest);
         writeCache({ userId: user.id, balance: total, expiresAt: nearest, cachedAt: Date.now() });
       } catch (e) {
