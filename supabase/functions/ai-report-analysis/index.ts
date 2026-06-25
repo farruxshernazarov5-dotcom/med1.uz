@@ -115,6 +115,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
+        max_completion_tokens: access.maxTokens ?? 1200,
         messages,
       }),
     });
