@@ -184,6 +184,7 @@ Kundalik tartib tavsiyalari`;
           { role: "system", content: systemPrompt },
           ...formattedMessages,
         ],
+        max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),
     });

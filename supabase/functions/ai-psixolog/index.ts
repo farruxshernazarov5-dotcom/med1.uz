@@ -60,6 +60,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: access.model,
         messages: [{ role: "system", content: (SYSTEM_PROMPT + languageInstruction(__lang)) + moodContext }, ...messages],
+        max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),
     });
