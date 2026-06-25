@@ -109,7 +109,7 @@ serve(async (req) => {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ model: "google/gemini-2.5-pro", messages }),
+      body: JSON.stringify({ model: "google/gemini-2.5-pro", max_completion_tokens: access.maxTokens ?? 1200, messages }),
     });
 
     if (!response.ok) {

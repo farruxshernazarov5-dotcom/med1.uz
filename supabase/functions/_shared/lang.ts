@@ -1,6 +1,10 @@
-// Shared language helper for AI edge functions.
-// Reads a language code from a request body (uz/ru/en) and returns
-// a system-prompt suffix instructing the model to respond in that language.
+// Shared language + style helper for AI edge functions.
+// - Mirrors the user's input language (not just UI lang) so that whatever
+//   language the user writes in, the assistant replies in the same language.
+// - Strips greetings / preambles ("Assalomu alaykum, men Med1.uz...") so
+//   tokens are spent on the answer itself.
+// - Forces a complete but bounded answer (~150–280 tokens) so responses are
+//   never cut mid-sentence even when streaming hits the token cap.
 
 export type SupportedLang = "uz" | "ru" | "en";
 
@@ -11,20 +15,21 @@ export function normalizeLang(input: unknown): SupportedLang {
   return "uz";
 }
 
+const COMMON_RULES = `
+=== RESPONSE STYLE (HARD RULES) ===
+1) LANGUAGE MIRROR: Detect the language of the user's LAST message and reply ONLY in that language. Ignore the UI default if the user wrote in another language. Supported: o'zbek, русский, English, qoraqalpoq, тоҷикӣ, türkçe, qozoq.
+2) NO PREAMBLE: Never start with greetings, self-introductions or filler like "Assalomu alaykum", "Men Med1.uz yordamchisiman", "Здравствуйте, я ассистент", "Hello, I am an assistant", "Savolingizga javob beraman". Start DIRECTLY with the answer.
+3) COMPLETE BUT BOUNDED: Keep the full answer within ~150–280 tokens. Prefer 2–4 short bullets + 1 closing line. If space is tight, drop bullets — NEVER leave a sentence unfinished. The last sentence MUST end with proper punctuation.
+4) NO REPETITION: Do not repeat the user's question. Do not restate the same point twice.
+5) Keep ICD-10 / Latin / drug names in their standard form regardless of reply language.
+`;
+
+const DISCLAIMER: Record<SupportedLang, string> = {
+  uz: `⚠️ AI tavsiyasi — aniq tashxis uchun shifokorga murojaat qiling.`,
+  ru: `⚠️ Рекомендация ИИ — для точного диагноза обратитесь к врачу.`,
+  en: `⚠️ AI guidance — consult a doctor for a definitive diagnosis.`,
+};
+
 export function languageInstruction(lang: SupportedLang): string {
-  switch (lang) {
-    case "ru":
-      return `\n\n=== ВАЖНО — ЯЗЫК ОТВЕТА ===
-Отвечай ИСКЛЮЧИТЕЛЬНО на русском языке. Все заголовки, объяснения и рекомендации — на русском. Сохраняй медицинские термины (ICD-10, латинские названия) в стандартной форме. Эмодзи и markdown-формат сохраняются.
-Дисклеймер в конце каждого ответа: "⚠️ Рекомендации AI не заменяют профессиональную медицинскую консультацию."`;
-    case "en":
-      return `\n\n=== IMPORTANT — RESPONSE LANGUAGE ===
-Respond EXCLUSIVELY in English. All headings, explanations and recommendations must be in English. Keep medical terminology (ICD-10, Latin names) in standard form. Preserve emoji and markdown formatting.
-Always end with: "⚠️ AI recommendations do not replace professional medical consultation."`;
-    case "uz":
-    default:
-      return `\n\n=== MUHIM — JAVOB TILI ===
-Faqat o'zbek tilida javob ber. Barcha sarlavhalar, izohlar va tavsiyalar o'zbekcha bo'lsin. Tibbiy terminlarni (ICD-10, lotincha nomlar) standart shaklda qoldir. Emoji va markdown formatini saqla.
-Har bir javob oxirida: "⚠️ AI tavsiyalari professional tibbiy maslahat o'rnini bosmaydi."`;
-  }
+  return `\n\n${COMMON_RULES}\nEnd with one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
 }

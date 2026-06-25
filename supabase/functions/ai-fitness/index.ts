@@ -67,6 +67,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: access.model,
         messages: [{ role: "system", content: (SYSTEM_PROMPT + languageInstruction(__lang)) + profileContext }, ...messages],
+        max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),
     });
