@@ -68,7 +68,7 @@ function normalizeReportResult(parsed: Record<string, unknown> | null, content: 
       possibleCauses: Array.isArray(raw?.possibleCauses) ? raw.possibleCauses.map(String) : [],
       relatedICD10: raw?.relatedICD10 ? String(raw.relatedICD10) : "",
     })),
-    summary: String(obj.summary ?? cleanAiText(content)),
+    summary: cleanAiText(obj.summary ?? content),
     concerns: concerns.map(String),
     recommendations: recommendations.map(String),
     urgentAttention: Boolean(obj.urgentAttention),
