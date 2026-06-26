@@ -99,7 +99,7 @@ serve(async (req) => {
     __userId = access.userId;
 
     const __body = await req.json(); 
-    const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; 
+    const { imageBase64, imageMimeType, pdfPageImages, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; 
     const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -119,13 +119,15 @@ serve(async (req) => {
     if (clinicalInfo) userText += `Klinik ma'lumot: ${clinicalInfo}\n`;
     userText += `\nTasvirni diqqat bilan o'rganib, BARCHA anatomik strukturalar va patologik o'zgarishlarni aniqla. Har bir topilmani lokalizatsiya, o'lcham va xarakteri bilan tavsifla. JSON formatda javob ber.`;
 
+    const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
+
     const messages = [
       { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
       {
         role: "user",
         content: [
           { type: "text", text: userText },
-          { type: "image_url", image_url: { url: `data:${imageMimeType};base64,${imageBase64}` } },
+          ...pageImages.map((img: string) => ({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${img}` } })),
         ],
       },
     ];
@@ -138,7 +140,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({ 
         model: access.model || "google/gemini-1.5-pro", 
-        max_completion_tokens: access.maxTokens || 2048, 
+        max_completion_tokens: Math.max(access.maxTokens || 0, 4096), 
         messages,
         response_format: { type: "json_object" }
       }),
