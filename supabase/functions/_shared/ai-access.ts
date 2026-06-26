@@ -139,8 +139,8 @@ const SERVICE_CREDITS: Record<string, number> = {
  * Eski 150-token chegarasi javoblarni kesib qo'yardi; endi har bir Med Coin tarifi
  * o'ziga mos to'liq javob hajmiga ega.
  *
- *   1 Med Coin  → gemini-3-flash-preview, 1500 output tokens (~1000 so'z)
- *   5 Med Coin  → gemini-3-flash-preview, 3000 output tokens (~2000 so'z)
+ *   1 Med Coin  → gemini-2.5-flash, 1500 output tokens (~1000 so'z)
+ *   5 Med Coin  → gemini-2.5-flash, 3000 output tokens (~2000 so'z)
  *  25 Med Coin  → gemini-2.5-pro,   6000 output tokens (~4000 so'z)
  *
  * MED COIN HISOBI:

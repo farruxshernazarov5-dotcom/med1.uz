@@ -91,7 +91,7 @@
           "messages": { "type": "array", "items": { "$ref": "#/components/schemas/Message" }, "minItems": 1 },
           "lang":     { "type": "string", "enum": ["uz", "ru", "en"], "default": "uz" },
           "stream":   { "type": "boolean", "default": true, "description": "If true, response is SSE `text/event-stream`. If false, JSON." },
-          "model":    { "type": "string", "description": "Optional model override (e.g. `google/gemini-1.5-flash`)." }
+          "model":    { "type": "string", "description": "Optional model override (e.g. `google/gemini-2.5-flash`)." }
         }
       },
       "UnifiedChatRequest": {
