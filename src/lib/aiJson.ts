@@ -179,3 +179,96 @@ export function normalizeRadiologyAnalysis(raw: unknown, scanType = "xray") {
     disclaimer: String(src.disclaimer ?? "Bu AI tahlili yakuniy tashxis emas."),
   };
 }
+
+function numberInRange(value: unknown, fallback = 50): number {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+export function normalizeHealthRiskAnalysis(raw: unknown) {
+  const obj = parseAiJsonObject(raw) ?? {};
+  const healthIndex = obj.healthIndex && typeof obj.healthIndex === "object" ? obj.healthIndex as any : {};
+  const lifestyleBreakdown = obj.lifestyleBreakdown && typeof obj.lifestyleBreakdown === "object" ? obj.lifestyleBreakdown as any : {};
+  const bmi = obj.bmi && typeof obj.bmi === "object" ? obj.bmi as any : {};
+
+  return {
+    risks: Array.isArray(obj.risks) ? obj.risks.map((raw: any) => ({
+      disease: String(raw?.disease ?? "Aniqlashtirish kerak"),
+      category: String(raw?.category ?? "metabolic"),
+      riskPercent: numberInRange(raw?.riskPercent ?? raw?.riskScore),
+      riskLevel: ["high", "medium", "low"].includes(String(raw?.riskLevel)) ? raw.riskLevel : "medium",
+      riskScore: numberInRange(raw?.riskScore ?? raw?.riskPercent),
+      factors: asStringArray(raw?.factors),
+      prevention: asStringArray(raw?.prevention),
+      icd10Code: raw?.icd10Code ? String(raw.icd10Code) : "",
+      clinicalBasis: raw?.clinicalBasis ? String(raw.clinicalBasis) : "",
+      suggestedSpecialist: raw?.suggestedSpecialist ? String(raw.suggestedSpecialist) : "Terapevt",
+      timeframe: raw?.timeframe ? String(raw.timeframe) : "",
+      modifiable: Boolean(raw?.modifiable),
+    })) : [],
+    overallHealth: ["good", "moderate", "concerning"].includes(String(obj.overallHealth)) ? obj.overallHealth : "moderate",
+    overallRiskScore: numberInRange(obj.overallRiskScore),
+    bmi: {
+      value: Number.isFinite(Number(bmi.value)) ? Number(bmi.value) : 0,
+      category: String(bmi.category ?? "Noma'lum"),
+      interpretation: String(bmi.interpretation ?? ""),
+    },
+    healthIndex: {
+      cardiovascular: numberInRange(healthIndex.cardiovascular),
+      metabolic: numberInRange(healthIndex.metabolic),
+      neurologic: numberInRange(healthIndex.neurologic),
+      physical: numberInRange(healthIndex.physical),
+      overall: numberInRange(healthIndex.overall),
+    },
+    recommendations: asStringArray(obj.recommendations).length ? asStringArray(obj.recommendations) : ["Shifokor bilan profilaktik ko'rikdan o'ting."],
+    lifestyleScore: numberInRange(obj.lifestyleScore),
+    lifestyleBreakdown: {
+      nutrition: numberInRange(lifestyleBreakdown.nutrition),
+      exercise: numberInRange(lifestyleBreakdown.exercise),
+      sleep: numberInRange(lifestyleBreakdown.sleep),
+      stress: numberInRange(lifestyleBreakdown.stress),
+      habits: numberInRange(lifestyleBreakdown.habits),
+    },
+    suggestedCheckups: asStringArray(obj.suggestedCheckups),
+    riskFactorAnalysis: cleanSummary(obj.riskFactorAnalysis, "Xavf omillari baholandi. Natijani shifokor bilan muhokama qiling."),
+    preventiveScreening: Array.isArray(obj.preventiveScreening) ? obj.preventiveScreening.map((raw: any) => ({
+      test: String(raw?.test ?? "Profilaktik tekshiruv"),
+      frequency: String(raw?.frequency ?? "Shifokor tavsiyasiga ko'ra"),
+      reason: String(raw?.reason ?? "Xavfni aniqlashtirish uchun"),
+      priority: raw?.priority ? String(raw.priority) : "medium",
+    })) : [],
+    dietaryAdvice: asStringArray(obj.dietaryAdvice),
+    exerciseAdvice: asStringArray(obj.exerciseAdvice),
+    warningSignsToWatch: asStringArray(obj.warningSignsToWatch),
+  };
+}
+
+export function normalizeSymptomAnalysis(raw: unknown) {
+  const obj = parseAiJsonObject(raw) ?? {};
+  return {
+    diseases: Array.isArray(obj.diseases) ? obj.diseases.map((raw: any) => ({
+      name: String(raw?.name ?? "Aniqlashtirish kerak"),
+      probability: numberInRange(raw?.probability, 0),
+      description: cleanSummary(raw?.description, "Simptom shifokor tomonidan baholanishi kerak."),
+      matchingSymptoms: asStringArray(raw?.matchingSymptoms),
+      nonMatchingSymptoms: asStringArray(raw?.nonMatchingSymptoms),
+      riskLevel: ["high", "medium", "low"].includes(String(raw?.riskLevel)) ? raw.riskLevel : "low",
+      specialist: String(raw?.specialist ?? "Terapevt"),
+      icd10Code: raw?.icd10Code ? String(raw.icd10Code) : "",
+      icd11Code: raw?.icd11Code ? String(raw.icd11Code) : "",
+      snomedCode: raw?.snomedCode ? String(raw.snomedCode) : "",
+      differentialNotes: raw?.differentialNotes ? String(raw.differentialNotes) : "",
+      suggestedTests: asStringArray(raw?.suggestedTests),
+      clinicalEvidence: raw?.clinicalEvidence ? String(raw.clinicalEvidence) : "",
+    })) : [],
+    riskLevel: ["high", "medium", "low"].includes(String(obj.riskLevel)) ? obj.riskLevel : "low",
+    recommendations: asStringArray(obj.recommendations).length ? asStringArray(obj.recommendations) : ["Shifokorga murojaat qiling."],
+    urgentAction: Boolean(obj.urgentAction),
+    followUpQuestions: asStringArray(obj.followUpQuestions),
+    differentialDiagnosis: obj.differentialDiagnosis,
+    suggestedLabTests: Array.isArray(obj.suggestedLabTests) ? obj.suggestedLabTests : [],
+    suggestedImaging: Array.isArray(obj.suggestedImaging) ? obj.suggestedImaging : [],
+    medicalReferences: Array.isArray(obj.medicalReferences) ? obj.medicalReferences : [],
+  };
+}
