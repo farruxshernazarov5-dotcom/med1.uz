@@ -139,8 +139,8 @@ const SERVICE_CREDITS: Record<string, number> = {
  * Eski 150-token chegarasi javoblarni kesib qo'yardi; endi har bir Med Coin tarifi
  * o'ziga mos to'liq javob hajmiga ega.
  *
- *   1 Med Coin  → gemini-2.5-flash, 1500 output tokens (~1000 so'z)
- *   5 Med Coin  → gemini-2.5-flash, 3000 output tokens (~2000 so'z)
+ *   1 Med Coin  → gemini-3-flash-preview, 1500 output tokens (~1000 so'z)
+ *   5 Med Coin  → gemini-3-flash-preview, 3000 output tokens (~2000 so'z)
  *  25 Med Coin  → gemini-2.5-pro,   6000 output tokens (~4000 so'z)
  *
  * MED COIN HISOBI:
@@ -158,9 +158,9 @@ export const MAX_OUTPUT_TOKENS_HARD_CAP = 4096;
  export const MAX_INPUT_TOKENS = 8000;
  
  const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-   1:  { model: "google/gemini-1.5-flash", maxTokens: 2048 },
-   5:  { model: "google/gemini-1.5-flash", maxTokens: 2048 },
-   25: { model: "google/gemini-1.5-pro",   maxTokens: 2048 },
+   1:  { model: "google/gemini-3-flash-preview", maxTokens: 2048 },
+   5:  { model: "google/gemini-3-flash-preview", maxTokens: 4096 },
+   25: { model: "google/gemini-2.5-pro",           maxTokens: 4096 },
  };
  
  /**

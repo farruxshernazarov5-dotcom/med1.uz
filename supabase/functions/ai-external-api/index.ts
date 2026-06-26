@@ -127,7 +127,7 @@ serve(async (req) => {
         "ai-vital-signs": "Sen vital belgilar tahlili bo'yicha AI mutaxassisisisan.",
       };
 
-      const selectedModel = model || "google/gemini-1.5-flash";
+      const selectedModel = model || "google/gemini-3-flash-preview";
       const systemPrompt = systemPrompts[service] + "\n\nO'zbek tilida javob ber. Har bir javob oxirida: '⚠️ AI tahlili faqat ma'lumot berish maqsadida. Aniq tashxis uchun shifokor bilan maslahatlashing.'";
       const usageId = partnerRow?.owner_user_id
         ? await createAiUsageEvent({ userId: partnerRow.owner_user_id, serviceId: service || "ai-external-api", req, channel: "api", model: selectedModel })

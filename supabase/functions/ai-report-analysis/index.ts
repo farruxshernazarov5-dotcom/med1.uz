@@ -139,7 +139,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: access.model || "google/gemini-1.5-pro",
+        model: access.model || "google/gemini-2.5-pro",
         max_completion_tokens: Math.max(access.maxTokens || 0, 4096),
         messages,
         response_format: { type: "json_object" }
