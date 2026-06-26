@@ -174,7 +174,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-1.5-flash",
+        model: access.model || "google/gemini-2.5-flash",
         max_completion_tokens: access.maxTokens ?? 1200,
         messages: [
           { role: "system", content: SYSTEM_PROMPT + languageInstructionDetailed(__lang) },

@@ -127,7 +127,20 @@ serve(async (req) => {
         "ai-vital-signs": "Sen vital belgilar tahlili bo'yicha AI mutaxassisisisan.",
       };
 
-      const selectedModel = model || "google/gemini-1.5-flash";
+      const legacyModelMap: Record<string, string> = {
+        "google/gemini-1.5-flash": "google/gemini-2.5-flash",
+        "google/gemini-1.5-flash-lite": "google/gemini-2.5-flash-lite",
+        "google/gemini-1.5-pro": "google/gemini-2.5-pro",
+      };
+      const allowedModels = new Set([
+        "google/gemini-2.5-flash",
+        "google/gemini-2.5-flash-lite",
+        "google/gemini-2.5-pro",
+        "openai/gpt-5-mini",
+        "openai/gpt-5-nano",
+      ]);
+      const requestedModel = typeof model === "string" ? (legacyModelMap[model] ?? model) : "google/gemini-2.5-flash";
+      const selectedModel = allowedModels.has(requestedModel) ? requestedModel : "google/gemini-2.5-flash";
       const systemPrompt = systemPrompts[service] + "\n\nO'zbek tilida javob ber. Har bir javob oxirida: '⚠️ AI tahlili faqat ma'lumot berish maqsadida. Aniq tashxis uchun shifokor bilan maslahatlashing.'";
       const usageId = partnerRow?.owner_user_id
         ? await createAiUsageEvent({ userId: partnerRow.owner_user_id, serviceId: service || "ai-external-api", req, channel: "api", model: selectedModel })

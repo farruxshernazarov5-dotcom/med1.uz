@@ -63,14 +63,14 @@ serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    __usageId = await createAiUsageEvent({ userId, serviceId: "smart-match", req, model: "google/gemini-1.5-flash" });
+    __usageId = await createAiUsageEvent({ userId, serviceId: "smart-match", req, model: "google/gemini-2.5-flash" });
 
     // 1. AI analysis
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-1.5-flash",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: input_text.trim().slice(0, 1500) },
