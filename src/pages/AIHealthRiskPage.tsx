@@ -21,6 +21,7 @@ import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
+import { normalizeHealthRiskAnalysis } from "@/lib/aiJson";
 
 interface RiskItem {
   disease: string;
@@ -139,7 +140,7 @@ const AIHealthRiskPage = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setResult(data);
+      setResult(normalizeHealthRiskAnalysis(data) as HealthRiskResult);
       setStep("results");
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });

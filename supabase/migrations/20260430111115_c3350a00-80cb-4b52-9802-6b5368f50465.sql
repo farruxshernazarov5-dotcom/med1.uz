@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.diagnostics_settings (
   payment_settings JSONB DEFAULT '{"click_enabled":false,"payme_enabled":false,"cash_enabled":true,"card_enabled":true,"click_merchant_id":"","payme_merchant_id":""}'::jsonb,
   notification_settings JSONB DEFAULT '{"sms":false,"telegram":true,"email":true,"on_result_ready":true,"on_appointment":true}'::jsonb,
   security_settings JSONB DEFAULT '{"require_2fa":false,"password_min_length":8,"max_login_attempts":5,"lockout_minutes":10}'::jsonb,
-  ai_settings JSONB DEFAULT '{"enabled":true,"daily_limit":100,"model":"google/gemini-3-flash-preview"}'::jsonb,
+  ai_settings JSONB DEFAULT '{"enabled":true,"daily_limit":100,"model":"google/gemini-1.5-flash"}'::jsonb,
   file_settings JSONB DEFAULT '{"max_image_mb":10,"max_pdf_mb":20,"allowed_types":["jpg","png","pdf","dcm"]}'::jsonb,
   service_settings JSONB DEFAULT '{"default_duration_min":30,"auto_invoice":true}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),

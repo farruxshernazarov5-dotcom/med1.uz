@@ -23,6 +23,8 @@ import AIServiceHero from "@/components/AIServiceHero";
 import aiBabyCareImg from "@/assets/ai-baby-care.webp";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { consumeAiStream } from "@/lib/aiStream";
+import { currentLang } from "@/lib/aiLang";
 
 /* ——— Types ——— */
 interface BabyProfile {
@@ -138,31 +140,14 @@ async function streamChat({ messages, babyAgeMonths, mode, onDelta, onDone }: {
       Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
-    body: JSON.stringify({ messages, babyAgeMonths, mode }),
+    body: JSON.stringify({ messages, babyAgeMonths, mode, lang: currentLang() }),
   });
   if (!resp.ok || !resp.body) {
     if (resp.status === 429) { toast({ title: "So'rovlar limiti", description: "Keyinroq urinib ko'ring", variant: "destructive" }); onDone(); return; }
     if (resp.status === 402) { toast({ title: "Med Coin yetarli emas", variant: "destructive" }); onDone(); return; }
     throw new Error("Stream xatosi");
   }
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let buf = "";
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    let idx: number;
-    while ((idx = buf.indexOf("\n")) !== -1) {
-      let line = buf.slice(0, idx); buf = buf.slice(idx + 1);
-      if (line.endsWith("\r")) line = line.slice(0, -1);
-      if (!line.startsWith("data: ")) continue;
-      const json = line.slice(6).trim();
-      if (json === "[DONE]") { onDone(); return; }
-      try { const p = JSON.parse(json); const c = p.choices?.[0]?.delta?.content; if (c) onDelta(c); }
-      catch { buf = line + "\n" + buf; break; }
-    }
-  }
+  await consumeAiStream(resp, onDelta);
   onDone();
 }
 

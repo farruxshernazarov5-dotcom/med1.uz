@@ -17,6 +17,8 @@ import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
+import { normalizeReportAnalysis } from "@/lib/aiJson";
+import { extractPdfText, pdfToImageBase64Pages } from "@/lib/pdf";
 
 interface Indicator {
   name: string;
@@ -123,11 +125,29 @@ const AIReportAnalysisPage = () => {
     setIsLoading(true);
 
     try {
-      let body: any = { reportType, patientAge, patientGender };
+      let body: any = withLang({ reportType, patientAge, patientGender });
 
       if (inputMode === "file" && uploadedFile) {
-        body.imageBase64 = await fileToBase64(uploadedFile);
-        body.imageMimeType = uploadedFile.type;
+        if (uploadedFile.type === "application/pdf") {
+          const extractedText = await extractPdfText(uploadedFile).catch(() => "");
+          if (extractedText) body.reportText = extractedText;
+
+          // Scanned PDFs do not contain selectable text. Render pages to images so the vision model can still read them.
+          if (!extractedText || extractedText.length < 80) {
+            const pages = await pdfToImageBase64Pages(uploadedFile, 3).catch(() => []);
+            if (pages.length > 0) {
+              body.pdfPageImages = pages;
+              body.imageBase64 = pages[0];
+              body.imageMimeType = "image/jpeg";
+            }
+          }
+          if (!body.reportText && !body.imageBase64) {
+            throw new Error("PDF matni yoki sahifalarini o'qib bo'lmadi. Iltimos, aniqroq PDF/JPG/PNG yuklang.");
+          }
+        } else {
+          body.imageBase64 = await fileToBase64(uploadedFile);
+          body.imageMimeType = uploadedFile.type;
+        }
       } else {
         body.reportText = reportText;
       }
@@ -135,7 +155,8 @@ const AIReportAnalysisPage = () => {
       const { data, error } = await supabase.functions.invoke("ai-report-analysis", { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAnalysis(data);
+      const normalized = normalizeReportAnalysis(data) as ReportAnalysis;
+      setAnalysis(normalized);
       setStep("results");
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });

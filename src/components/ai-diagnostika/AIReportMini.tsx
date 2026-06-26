@@ -10,6 +10,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { normalizeReportAnalysis } from "@/lib/aiJson";
+import { withLang } from "@/lib/aiLang";
+import { extractPdfText, pdfToImageBase64Pages } from "@/lib/pdf";
 
 interface Indicator {
   name: string;
@@ -97,17 +100,33 @@ const AIReportMini = () => {
     if (inputMode === "text" && !reportText.trim()) return;
     setIsLoading(true);
     try {
-      let body: any = { reportType, patientAge, patientGender };
+      let body: any = withLang({ reportType, patientAge, patientGender });
       if (inputMode === "file" && uploadedFile) {
-        body.imageBase64 = await fileToBase64(uploadedFile);
-        body.imageMimeType = uploadedFile.type;
+        if (uploadedFile.type === "application/pdf") {
+          const extractedText = await extractPdfText(uploadedFile).catch(() => "");
+          if (extractedText) body.reportText = extractedText;
+          if (!extractedText || extractedText.length < 80) {
+            const pages = await pdfToImageBase64Pages(uploadedFile, 3).catch(() => []);
+            if (pages.length > 0) {
+              body.pdfPageImages = pages;
+              body.imageBase64 = pages[0];
+              body.imageMimeType = "image/jpeg";
+            }
+          }
+          if (!body.reportText && !body.imageBase64) {
+            throw new Error("PDF matni yoki sahifalarini o'qib bo'lmadi. Iltimos, aniqroq PDF/JPG/PNG yuklang.");
+          }
+        } else {
+          body.imageBase64 = await fileToBase64(uploadedFile);
+          body.imageMimeType = uploadedFile.type;
+        }
       } else {
         body.reportText = reportText;
       }
       const { data, error } = await supabase.functions.invoke("ai-report-analysis", { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAnalysis(data);
+      setAnalysis(normalizeReportAnalysis(data) as ReportAnalysis);
       setStep("results");
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });

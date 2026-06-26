@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,7 +23,7 @@ MUHIM QOIDALAR:
 9. Foydalanuvchining yoshi, jinsi, BMI, oilaviy tarix, hayot tarzi — barchasini hisobga ol
 10. Sog'liq indeksini hisoblashda 5 ta parametrni baholash: yurak, metabolik, nevrologik, jismoniy, umumiy
 
-JAVOBNI FAQAT quyidagi JSON formatda ber:
+JAVOBNI FAQAT valid JSON object sifatida ber (markdown, \`\`\`json, izoh, salomlashish YO'Q). JSON qisqa bo'lsin, barcha qavslar yopilsin:
 {
   "risks": [
     {
@@ -68,6 +69,59 @@ JAVOBNI FAQAT quyidagi JSON formatda ber:
   "exerciseAdvice": ["Jismoniy mashq tavsiyasi 1"],
   "warningSignsToWatch": ["Shoshilinch holat belgisi 1"]
 }`;
+
+function normalizeHealthRiskResult(parsed: Record<string, unknown> | null, content: string) {
+  const obj = parsed ?? {};
+  const bmi = (obj.bmi && typeof obj.bmi === "object") ? obj.bmi as any : {};
+  const healthIndex = (obj.healthIndex && typeof obj.healthIndex === "object") ? obj.healthIndex as any : {};
+  const lifestyleBreakdown = (obj.lifestyleBreakdown && typeof obj.lifestyleBreakdown === "object") ? obj.lifestyleBreakdown as any : {};
+
+  return {
+    risks: Array.isArray(obj.risks) ? obj.risks.map((raw: any) => ({
+      disease: String(raw?.disease ?? "Aniqlashtirish kerak"),
+      category: String(raw?.category ?? "metabolic"),
+      riskPercent: Number(raw?.riskPercent ?? raw?.riskScore ?? 50),
+      riskLevel: ["high", "medium", "low"].includes(raw?.riskLevel) ? raw.riskLevel : "medium",
+      riskScore: Number(raw?.riskScore ?? raw?.riskPercent ?? 50),
+      factors: Array.isArray(raw?.factors) ? raw.factors.map(String) : [],
+      prevention: Array.isArray(raw?.prevention) ? raw.prevention.map(String) : [],
+      icd10Code: raw?.icd10Code ? String(raw.icd10Code) : "",
+      clinicalBasis: raw?.clinicalBasis ? String(raw.clinicalBasis) : "",
+      suggestedSpecialist: raw?.suggestedSpecialist ? String(raw.suggestedSpecialist) : "Terapevt",
+      timeframe: raw?.timeframe ? String(raw.timeframe) : "",
+      modifiable: Boolean(raw?.modifiable),
+    })) : [],
+    overallHealth: ["good", "moderate", "concerning"].includes(String(obj.overallHealth)) ? obj.overallHealth : "moderate",
+    overallRiskScore: Number(obj.overallRiskScore ?? 50),
+    bmi: {
+      value: Number(bmi.value ?? 0),
+      category: String(bmi.category ?? "Noma'lum"),
+      interpretation: String(bmi.interpretation ?? ""),
+    },
+    healthIndex: {
+      cardiovascular: Number(healthIndex.cardiovascular ?? 50),
+      metabolic: Number(healthIndex.metabolic ?? 50),
+      neurologic: Number(healthIndex.neurologic ?? 50),
+      physical: Number(healthIndex.physical ?? 50),
+      overall: Number(healthIndex.overall ?? 50),
+    },
+    recommendations: Array.isArray(obj.recommendations) && obj.recommendations.length > 0 ? obj.recommendations.map(String) : [cleanAiText(content), "Shifokorga murojaat qiling."],
+    lifestyleScore: Number(obj.lifestyleScore ?? 50),
+    lifestyleBreakdown: {
+      nutrition: Number(lifestyleBreakdown.nutrition ?? 50),
+      exercise: Number(lifestyleBreakdown.exercise ?? 50),
+      sleep: Number(lifestyleBreakdown.sleep ?? 50),
+      stress: Number(lifestyleBreakdown.stress ?? 50),
+      habits: Number(lifestyleBreakdown.habits ?? 50),
+    },
+    suggestedCheckups: Array.isArray(obj.suggestedCheckups) ? obj.suggestedCheckups.map(String) : [],
+    riskFactorAnalysis: String(obj.riskFactorAnalysis ?? cleanAiText(content)),
+    preventiveScreening: Array.isArray(obj.preventiveScreening) ? obj.preventiveScreening : [],
+    dietaryAdvice: Array.isArray(obj.dietaryAdvice) ? obj.dietaryAdvice.map(String) : [],
+    exerciseAdvice: Array.isArray(obj.exerciseAdvice) ? obj.exerciseAdvice.map(String) : [],
+    warningSignsToWatch: Array.isArray(obj.warningSignsToWatch) ? obj.warningSignsToWatch.map(String) : [],
+  };
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -120,7 +174,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-1.5-flash",
         max_completion_tokens: access.maxTokens ?? 1200,
         messages: [
           { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
@@ -142,29 +196,7 @@ serve(async (req) => {
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
 
-    let result;
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) result = JSON.parse(jsonMatch[0]);
-      else throw new Error("No JSON");
-    } catch {
-      result = {
-        risks: [],
-        overallHealth: "moderate",
-        overallRiskScore: 50,
-        bmi: { value: 0, category: "Noma'lum", interpretation: "" },
-        healthIndex: { cardiovascular: 50, metabolic: 50, neurologic: 50, physical: 50, overall: 50 },
-        recommendations: ["Shifokorga murojaat qiling"],
-        lifestyleScore: 50,
-        lifestyleBreakdown: { nutrition: 50, exercise: 50, sleep: 50, stress: 50, habits: 50 },
-        suggestedCheckups: [],
-        riskFactorAnalysis: "",
-        preventiveScreening: [],
-        dietaryAdvice: [],
-        exerciseAdvice: [],
-        warningSignsToWatch: [],
-      };
-    }
+    const result = normalizeHealthRiskResult(parseAiJsonObject(content), content);
 
     await instrumentJson(data, __usageId, __start, 0, content);
 

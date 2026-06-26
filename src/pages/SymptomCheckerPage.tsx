@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
+import { normalizeSymptomAnalysis } from "@/lib/aiJson";
 
 const SymptomCheckerPage = () => {
   const { t } = useTranslation();
@@ -44,8 +45,9 @@ const SymptomCheckerPage = () => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      setAnalysis(data);
-      if (data.followUpQuestions?.length > 0) {
+      const normalized = normalizeSymptomAnalysis(data) as SymptomAnalysis;
+      setAnalysis(normalized);
+      if (normalized.followUpQuestions?.length > 0) {
         setStep("followup");
       } else {
         setStep("results");
@@ -70,7 +72,7 @@ const SymptomCheckerPage = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAnalysis(data);
+      setAnalysis(normalizeSymptomAnalysis(data) as SymptomAnalysis);
       setStep("results");
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });

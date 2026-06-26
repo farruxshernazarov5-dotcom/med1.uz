@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,21 +28,7 @@ SISTEMATIK TAHLIL YONDASHVUI:
 4. Topilmalar orasidagi bog'liqlikni tahlil qil
 5. Klinik ma'lumot bilan solishtir
 
-RENTGEN TAHLIL MEZONLARI:
-Ko'krak qafasi: O'pka maydonlari (infiltratsiya, atelektaz, pnevmotoraks, plevra suyuqligi, tugunlar), Yurak (kardiomegaliya, konturlar, CTR), Mediastinum (kengayish, limfa tugunlari), Qovurg'alar va suyaklar (sinish, deformatsiya), Diafragma (holati, tekisligi), Yumshoq to'qimalar
-Suyak: Sinish chiziqlari (to'liq/noto'liq, siljish bor/yo'q), Suyak strukturasi (osteoporoz, osteoskleroz, litik/blastik), Bo'g'im oralig'i, Periosteal reaksiya, Yumshoq to'qima
-
-MRT TAHLIL MEZONLARI:
-Miya: Signal intensivligi (T1, T2, FLAIR, DWI), O'smalar (lokalizatsiya, o'lcham, kontrast qabul qilish), Insult (ishemik zona, DWI cheklangan diffuziya), Qon quyilish, Gidrotsefaliya, Demielinizatsiya
-Umurtqa: Disklar (protruziya, ekstruziya, sekvesstratsiya, Pfirrmann grading), Orqa miya signal, Nerv ildizlari siqilishi, Foraminal stenoz, Spondilolistez
-Bo'g'im: Menisk (yirtilish turi va lokalizatsiya), Boylamlar (ACL/PCL/MCL/LCL), Tog'ay defektlar, Suyak iligi (shish, nekroz, fraktur)
-
-KT TAHLIL MEZONLARI:
-Ko'krak: O'pka tugunlari (Lung-RADS klassifikatsiya), Ground-glass opacity, Konsolidatsiya, Emfizema, Plevral patologiya, Aorta (anevrizma, disseksiya), Limfadenopatiya
-Qorin: Jigar (o'smalar, steatoz, tsirroz), Buyrak (toshlar HU qiymati bilan, kistalar Bosniak), Oshqozon-ichak obstruksiya, Appenditsit belgilari, Pankreatit
-Bosh: Qon quyilish turlari (epidural, subdural, SAH, parenkimal), Ishemik insult (ASPECTS ball), Suyak sinishi, Massa-effekt, O'rta chiziq siljishi
-
-JAVOBNI FAQAT quyidagi JSON formatda ber:
+JAVOBNI FAQAT valid JSON object sifatida ber (markdown, \`\`\`json, izoh, salomlashish YO'Q). JSON qisqa bo'lsin, barcha qavslar yopilsin:
 {
   "imageType": "chest_xray|bone_xray|spine_xray|brain_mri|spine_mri|joint_mri|chest_ct|abdomen_ct|brain_ct|other",
   "scanModality": "xray|mri|ct",
@@ -56,14 +43,52 @@ JAVOBNI FAQAT quyidagi JSON formatda ber:
   "disclaimer": "Bu AI tahlili yakuniy tashxis emas. Radiolog yoki shifokor ko'rigidan o'tish zarur."
 }`;
 
+function normalizeRadiologyResult(parsed: Record<string, unknown> | null, content: string, scanType?: string) {
+  const obj = parsed ?? {};
+  const assessment = (obj.overallAssessment && typeof obj.overallAssessment === "object") ? obj.overallAssessment as any : {};
+  return {
+    imageType: String(obj.imageType ?? "other"),
+    scanModality: String(obj.scanModality ?? scanType ?? "xray"),
+    imageQuality: ["good", "moderate", "poor"].includes(String(obj.imageQuality)) ? String(obj.imageQuality) : "moderate",
+    anatomicalStructures: Array.isArray(obj.anatomicalStructures) ? obj.anatomicalStructures.map((raw: any) => ({
+      name: String(raw?.name ?? "Anatomik struktura"),
+      status: raw?.status === "abnormal" ? "abnormal" : "normal",
+      description: String(raw?.description ?? "Ko'rib chiqildi."),
+    })) : [],
+    findings: Array.isArray(obj.findings) ? obj.findings.map((raw: any) => ({
+      location: String(raw?.location ?? "Ko'rsatilmagan"),
+      description: String(raw?.description ?? "Topilma tavsifi mavjud emas."),
+      severity: ["normal", "mild", "moderate", "severe"].includes(raw?.severity) ? raw.severity : "normal",
+      possibleDiagnoses: Array.isArray(raw?.possibleDiagnoses) ? raw.possibleDiagnoses.map((d: any) => ({
+        name: String(d?.name ?? "Aniqlashtirish kerak"),
+        probability: String(d?.probability ?? "past"),
+        icd10: String(d?.icd10 ?? ""),
+      })) : [],
+    })) : [],
+    overallAssessment: {
+      riskLevel: ["normal", "attention", "critical"].includes(assessment.riskLevel) ? assessment.riskLevel : "attention",
+      summary: String(assessment.summary ?? obj.summary ?? cleanAiText(content)),
+      keyFindings: Array.isArray(assessment.keyFindings) ? assessment.keyFindings.map(String) : [],
+    },
+    recommendations: Array.isArray(obj.recommendations) && obj.recommendations.length > 0 ? obj.recommendations.map(String) : ["Radiolog yoki shifokorga murojaat qiling."],
+    suggestedSpecialist: String(obj.suggestedSpecialist ?? "Radiolog"),
+    followUpStudies: Array.isArray(obj.followUpStudies) ? obj.followUpStudies.map(String) : [],
+    urgentAttention: Boolean(obj.urgentAttention),
+    disclaimer: String(obj.disclaimer ?? "Bu AI tahlili yakuniy tashxis emas."),
+  };
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const __start = Date.now();
   let __usageId: string | null = null;
+  let __userId: string | null = null;
+  const serviceId = "ai-radiology";
+  const cost = 25;
 
   try {
-    const access = await enforceAiAccess(req, "ai-radiology");
+    const access = await enforceAiAccess(req, serviceId);
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
         status: access.status,
@@ -71,9 +96,11 @@ serve(async (req) => {
       });
     }
     __usageId = access.usageId ?? null;
+    __userId = access.userId;
 
-
-    const __body = await req.json(); const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); 
+    const { imageBase64, imageMimeType, pdfPageImages, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; 
+    const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -92,13 +119,15 @@ serve(async (req) => {
     if (clinicalInfo) userText += `Klinik ma'lumot: ${clinicalInfo}\n`;
     userText += `\nTasvirni diqqat bilan o'rganib, BARCHA anatomik strukturalar va patologik o'zgarishlarni aniqla. Har bir topilmani lokalizatsiya, o'lcham va xarakteri bilan tavsifla. JSON formatda javob ber.`;
 
+    const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
+
     const messages = [
       { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
       {
         role: "user",
         content: [
           { type: "text", text: userText },
-          { type: "image_url", image_url: { url: `data:${imageMimeType};base64,${imageBase64}` } },
+          ...pageImages.map((img: string) => ({ type: "image_url", image_url: { url: `data:${pageImages.length > 1 ? "image/jpeg" : imageMimeType};base64,${img}` } })),
         ],
       },
     ];
@@ -109,12 +138,20 @@ serve(async (req) => {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ model: "google/gemini-2.5-pro", max_completion_tokens: access.maxTokens ?? 1200, messages }),
+      body: JSON.stringify({ 
+        model: access.model || "google/gemini-1.5-pro", 
+        max_completion_tokens: Math.max(access.maxTokens || 0, 4096), 
+        messages,
+        response_format: { type: "json_object" }
+      }),
     });
 
     if (!response.ok) {
       const status = response.status;
       await instrumentError(__usageId, __start, { status: statusFromHttp(status), errorCode: String(status), errorMessage: `AI gateway ${status}` });
+      
+      if (__userId) await refundAiCredits(__userId, serviceId, cost, `AI Gateway error ${status}`);
+
       if (status === 429) return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Biroz kutib qayta urinib ko'ring." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       if (status === 402) return new Response(JSON.stringify({ error: "Xizmat vaqtincha mavjud emas." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
@@ -125,29 +162,7 @@ serve(async (req) => {
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
 
-    let result;
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("No JSON found");
-      }
-    } catch {
-      result = {
-        imageType: "other",
-        scanModality: scanType || "xray",
-        imageQuality: "moderate",
-        anatomicalStructures: [],
-        findings: [],
-        overallAssessment: { riskLevel: "attention", summary: content, keyFindings: [] },
-        recommendations: ["Radiologga murojaat qiling"],
-        suggestedSpecialist: "Radiolog",
-        followUpStudies: [],
-        urgentAttention: false,
-        disclaimer: "Bu AI tahlili yakuniy tashxis emas.",
-      };
-    }
+    const result = normalizeRadiologyResult(parseAiJsonObject(content), content, scanType);
 
     await instrumentJson(data, __usageId, __start, 0, content);
 
@@ -157,6 +172,9 @@ serve(async (req) => {
   } catch (e) {
     console.error("ai-radiology error:", e);
     await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : "unknown" });
+    
+    if (__userId) await refundAiCredits(__userId, serviceId, cost, e instanceof Error ? e.message : "Internal error");
+
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Noma'lum xato" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

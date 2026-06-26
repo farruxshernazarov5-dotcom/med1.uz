@@ -22,6 +22,8 @@ import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
+import { normalizeRadiologyAnalysis } from "@/lib/aiJson";
+import { pdfToImageBase64Pages } from "@/lib/pdf";
 
 interface AnatomicalStructure {
   name: string;
@@ -138,19 +140,26 @@ const AIRadiologyPage = () => {
     if (!uploadedFile) return;
     setIsLoading(true);
     try {
-      const body = {
-        imageBase64: await fileToBase64(uploadedFile),
-        imageMimeType: uploadedFile.type,
+      const pdfPages = uploadedFile.type === "application/pdf"
+        ? await pdfToImageBase64Pages(uploadedFile, 3).catch(() => [])
+        : [];
+      if (uploadedFile.type === "application/pdf" && pdfPages.length === 0) {
+        throw new Error("PDF sahifalarini rasmga aylantirib bo'lmadi. Iltimos, JPG/PNG formatda yuklang.");
+      }
+      const body = withLang({
+        imageBase64: pdfPages[0] ?? await fileToBase64(uploadedFile),
+        imageMimeType: pdfPages.length > 0 ? "image/jpeg" : uploadedFile.type,
+        pdfPageImages: pdfPages,
         scanType,
         bodyPart,
         patientAge,
         patientGender,
         clinicalInfo,
-      };
+      });
       const { data, error } = await supabase.functions.invoke("ai-radiology", { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAnalysis(data);
+      setAnalysis(normalizeRadiologyAnalysis(data, scanType) as RadiologyAnalysis);
       setStep("results");
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });

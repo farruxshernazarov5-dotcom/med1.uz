@@ -154,13 +154,13 @@ const SERVICE_CREDITS: Record<string, number> = {
  * Hard cap = 350; tier modellari ham shu oraliqda ishlaydi.
  * Javob kesilmasligi uchun system prompt qisqa, yakunlangan javob talab qiladi.
  */
-export const MAX_OUTPUT_TOKENS_HARD_CAP = 500;
+export const MAX_OUTPUT_TOKENS_HARD_CAP = 4096;
  export const MAX_INPUT_TOKENS = 8000;
  
  const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-   1:  { model: "google/gemini-2.5-flash", maxTokens: 500 },
-   5:  { model: "google/gemini-2.5-flash", maxTokens: 500 },
-   25: { model: "google/gemini-2.5-pro",   maxTokens: 500 },
+   1:  { model: "google/gemini-1.5-flash", maxTokens: 2048 },
+   5:  { model: "google/gemini-1.5-flash", maxTokens: 2048 },
+   25: { model: "google/gemini-1.5-pro",   maxTokens: 2048 },
  };
  
  /**
