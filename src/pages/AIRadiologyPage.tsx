@@ -143,6 +143,9 @@ const AIRadiologyPage = () => {
       const pdfPages = uploadedFile.type === "application/pdf"
         ? await pdfToImageBase64Pages(uploadedFile, 3).catch(() => [])
         : [];
+      if (uploadedFile.type === "application/pdf" && pdfPages.length === 0) {
+        throw new Error("PDF sahifalarini rasmga aylantirib bo'lmadi. Iltimos, JPG/PNG formatda yuklang.");
+      }
       const body = withLang({
         imageBase64: pdfPages[0] ?? await fileToBase64(uploadedFile),
         imageMimeType: pdfPages.length > 0 ? "image/jpeg" : uploadedFile.type,
