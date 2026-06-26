@@ -23,8 +23,8 @@ const AVG_TOKENS_PER_REQ = {
 
 // Lovable AI Gateway pricing (USD per 1M tokens, blended ~30/70 in:out)
 const COST_PER_M_TOKENS = {
-  "google/gemini-2.5-flash": 0.30,
-  "google/gemini-2.5-pro":   3.50,
+  "google/gemini-1.5-flash": 0.30,
+  "google/gemini-1.5-pro":   3.50,
 } as const;
 
 // 1 USD ≈ 12,600 UZS (approx Dec 2026)
@@ -91,8 +91,8 @@ const CoinCalculator = ({ lang }: Props) => {
     Math.floor((platform.totalCoins * 0.30) / 5) +
     Math.floor((platform.totalCoins * 0.10) / 25);
   const platformCostUsd =
-    ((Math.floor((platform.totalCoins * 0.60) / 1) + Math.floor((platform.totalCoins * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-flash"] +
-    (Math.floor((platform.totalCoins * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-pro"];
+    ((Math.floor((platform.totalCoins * 0.60) / 1) + Math.floor((platform.totalCoins * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-1.5-flash"] +
+    (Math.floor((platform.totalCoins * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-1.5-pro"];
 
 
 
@@ -100,7 +100,7 @@ const CoinCalculator = ({ lang }: Props) => {
     return ([1, 5, 25] as const).map((cost) => {
       const reqs = Math.floor(coins / cost);
       const tokens = reqs * AVG_TOKENS_PER_REQ[cost];
-      const model = cost === 25 ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash";
+      const model = cost === 25 ? "google/gemini-1.5-pro" : "google/gemini-1.5-flash";
       const costUsd = (tokens / 1_000_000) * COST_PER_M_TOKENS[model];
       const services = AI_SERVICE_TARIFFS.filter((t) => t.creditCost === cost);
       return { cost, reqs, tokens, costUsd, services, model };
@@ -119,8 +119,8 @@ const CoinCalculator = ({ lang }: Props) => {
     Math.floor((coins * 0.30) / 5) * AVG_TOKENS_PER_REQ[5] +
     Math.floor((coins * 0.10) / 25) * AVG_TOKENS_PER_REQ[25];
   const mixedCostUsd =
-    ((Math.floor((coins * 0.60) / 1) + Math.floor((coins * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-flash"] +
-    (Math.floor((coins * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-pro"];
+    ((Math.floor((coins * 0.60) / 1) + Math.floor((coins * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-1.5-flash"] +
+    (Math.floor((coins * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-1.5-pro"];
 
   // Hambi contract capacity: how many active users we can serve at this avg balance
   // Assume Hambi sponsors X Med Coins/month per active user. Default: 200 coin/user.
@@ -128,8 +128,8 @@ const CoinCalculator = ({ lang }: Props) => {
   const [hambiBudgetUzs, setHambiBudgetUzs] = useState(50_000_000); // 50 mln so'm/oy
   // Cost to platform per user/month (mixed usage)
   const costPerUserUsd =
-    ((Math.floor((hambiCoinsPerUser * 0.60) / 1) + Math.floor((hambiCoinsPerUser * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-flash"] +
-    (Math.floor((hambiCoinsPerUser * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-2.5-pro"];
+    ((Math.floor((hambiCoinsPerUser * 0.60) / 1) + Math.floor((hambiCoinsPerUser * 0.30) / 5)) * 500 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-1.5-flash"] +
+    (Math.floor((hambiCoinsPerUser * 0.10) / 25) * 700 / 1_000_000) * COST_PER_M_TOKENS["google/gemini-1.5-pro"];
   const costPerUserUzs = costPerUserUsd * USD_TO_UZS;
   const usersCapacity = costPerUserUzs > 0 ? Math.floor(hambiBudgetUzs / costPerUserUzs) : 0;
   // Standard pack price = 60 000 so'm for 200 coin → revenue model anchor

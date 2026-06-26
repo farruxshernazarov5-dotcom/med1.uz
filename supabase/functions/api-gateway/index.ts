@@ -299,9 +299,9 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     }
     const allowedModels = new Set([
       "google/gemini-3-flash-preview",
-      "google/gemini-2.5-flash",
-      "google/gemini-2.5-flash-lite",
-      "google/gemini-2.5-pro",
+      "google/gemini-1.5-flash",
+      "google/gemini-1.5-flash-lite",
+      "google/gemini-1.5-pro",
       "openai/gpt-5-mini",
       "openai/gpt-5-nano",
     ]);

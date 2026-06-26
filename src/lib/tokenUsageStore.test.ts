@@ -39,7 +39,7 @@ describe("tokenUsageStore", () => {
   it("parses X-Med1-AI-* headers from a Response", () => {
     const headers = new Headers({
       "X-Med1-AI-Output-Tokens": "175",
-      "X-Med1-AI-Model": "google/gemini-2.5-flash",
+      "X-Med1-AI-Model": "google/gemini-1.5-flash",
       "X-Med1-AI-Estimated-Cost-Usd": "0.00021",
     });
     const res = new Response(null, { headers });
@@ -49,6 +49,6 @@ describe("tokenUsageStore", () => {
     const detail = (spy.mock.calls[0][0] as CustomEvent).detail;
     expect(detail.outputTokens).toBe(175);
     expect(detail.exceeded).toBe(true);
-    expect(detail.model).toBe("google/gemini-2.5-flash");
+    expect(detail.model).toBe("google/gemini-1.5-flash");
   });
 });

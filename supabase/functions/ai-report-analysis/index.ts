@@ -114,7 +114,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
+        model: "google/gemini-1.5-pro",
         max_completion_tokens: access.maxTokens ?? 1200,
         messages,
       }),

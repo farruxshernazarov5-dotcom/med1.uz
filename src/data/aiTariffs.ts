@@ -59,9 +59,9 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
 
 /* ─── Cost tier → model mapping ─── */
 export const COST_TIER_MODEL: Record<string, string> = {
-  low: "google/gemini-2.5-flash",
-  mid: "google/gemini-2.5-flash",
-  high: "google/gemini-2.5-pro",
+  low: "google/gemini-1.5-flash",
+  mid: "google/gemini-1.5-flash",
+  high: "google/gemini-1.5-pro",
 };
 
 export const COST_TIER_LABEL: Record<string, string> = {
