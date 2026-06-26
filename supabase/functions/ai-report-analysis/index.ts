@@ -99,7 +99,7 @@ serve(async (req) => {
     __userId = access.userId;
 
     const __body = await req.json(); 
-    const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType } = __body; 
+    const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType, pdfPageImages } = __body; 
     const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -114,16 +114,17 @@ serve(async (req) => {
     ];
 
     if (imageBase64 && imageMimeType) {
-      const isPdf = imageMimeType === "application/pdf";
-      const instructionText = isPdf
-        ? `\nUshbu PDF hujjatda laboratoriya analiz natijalari bor. Hujjatdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`
+      const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
+      const instructionText = pageImages.length > 1
+        ? `\nUshbu PDF sahifalarida laboratoriya analiz natijalari bor. Barcha ko'rsatkichlarni sahifalardan o'qi va JSON formatda tahlil qil.`
         : `\nUshbu rasmda laboratoriya analiz natijalari bor. Rasmdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`;
-      
+      const extracted = reportText ? `\n\nPDF/matndan ajratilgan ko'rsatkichlar:\n${String(reportText).slice(0, 12000)}\n` : "";
+
       messages.push({
         role: "user",
         content: [
-          { type: "text", text: userMessage + instructionText },
-          { type: "image_url", image_url: { url: `data:${imageMimeType};base64,${imageBase64}` } },
+          { type: "text", text: userMessage + instructionText + extracted },
+          ...pageImages.map((img: string) => ({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${img}` } })),
         ],
       });
     } else {
@@ -139,7 +140,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: access.model || "google/gemini-1.5-pro",
-        max_completion_tokens: access.maxTokens || 2048,
+        max_completion_tokens: Math.max(access.maxTokens || 0, 4096),
         messages,
         response_format: { type: "json_object" }
       }),
