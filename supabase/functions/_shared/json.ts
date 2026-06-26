@@ -106,6 +106,7 @@ function repairTruncatedObject(input: string): string | null {
 }
 
 export function parseAiJsonObject<T extends Record<string, unknown> = Record<string, unknown>>(content: unknown): T | null {
+  if (content && typeof content === "object" && !Array.isArray(content)) return content as T;
   const text = String(content ?? "");
   const candidates = [
     firstBalancedObject(text),
@@ -127,8 +128,12 @@ export function parseAiJsonObject<T extends Record<string, unknown> = Record<str
 export function cleanAiText(content: unknown): string {
   const text = stripJsonFences(content);
   if (!text) return "AI javobi yakunlanmadi. Iltimos, qayta tahlil qiling yoki fayl sifatini tekshiring.";
+  const nested = parseAiJsonObject(text);
+  if (nested?.summary) return String(nested.summary);
+  const assessment = nested?.overallAssessment as Record<string, unknown> | undefined;
+  if (assessment?.summary) return String(assessment.summary);
   if (/^\s*\{[\s\S]*"(?:indicators|diseases|risks|findings)"/i.test(text)) {
-    return "AI strukturali javobni to'liq yopmagan. Kredit qayta yechilmasdan qayta tahlil qiling yoki faylni aniqroq rasm/PDF sifatida yuklang.";
+    return "AI tahlilni yakunladi, lekin javob strukturasi to'liq ko'rsatilmadi. Natijani shifokor bilan muhokama qiling yoki faylni aniqroq rasm/PDF sifatida qayta yuklang.";
   }
   return text;
 }
