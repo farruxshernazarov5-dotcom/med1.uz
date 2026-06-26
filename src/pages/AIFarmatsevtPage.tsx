@@ -12,6 +12,7 @@ import { Send, Bot, User, Pill, AlertTriangle, Plus, X, Loader2, Search } from "
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { consumeAiStream } from "@/lib/aiStream";
 
 interface Message {
   role: "user" | "assistant";
@@ -83,41 +84,20 @@ const AIFarmatsevtPage = () => {
         throw new Error("AI xizmati xatosi");
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("Stream not available");
-
       let assistantMessage = "";
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ") && line !== "data: [DONE]") {
-            try {
-              const json = JSON.parse(line.slice(6));
-              const content = json.choices?.[0]?.delta?.content;
-              if (content) {
-                assistantMessage += content;
-                setMessages(prev => {
-                  const newMessages = [...prev];
-                  const lastMsg = newMessages[newMessages.length - 1];
-                  if (lastMsg?.role === "assistant") {
-                    lastMsg.content = assistantMessage;
-                  } else {
-                    newMessages.push({ role: "assistant", content: assistantMessage });
-                  }
-                  return [...newMessages];
-                });
-              }
-            } catch {}
+      await consumeAiStream(response, (content) => {
+        assistantMessage += content;
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const lastMsg = newMessages[newMessages.length - 1];
+          if (lastMsg?.role === "assistant") {
+            lastMsg.content = assistantMessage;
+          } else {
+            newMessages.push({ role: "assistant", content: assistantMessage });
           }
-        }
-      }
+          return [...newMessages];
+        });
+      });
     } catch (error) {
       toast.error("Xatolik yuz berdi. Qaytadan urinib ko'ring.");
     } finally {
