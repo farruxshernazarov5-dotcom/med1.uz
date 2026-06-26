@@ -53,9 +53,12 @@ serve(async (req) => {
 
   const __start = Date.now();
   let __usageId: string | null = null;
+  let __userId: string | null = null;
+  const serviceId = "ai-report-analysis";
+  const cost = 25;
 
   try {
-    const access = await enforceAiAccess(req, "ai-report-analysis");
+    const access = await enforceAiAccess(req, serviceId);
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
         status: access.status,
@@ -63,9 +66,11 @@ serve(async (req) => {
       });
     }
     __usageId = access.usageId ?? null;
+    __userId = access.userId;
 
-
-    const __body = await req.json(); const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); 
+    const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType } = __body; 
+    const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -74,13 +79,11 @@ serve(async (req) => {
     if (patientAge) userMessage += `Bemor yoshi: ${patientAge}\n`;
     if (patientGender) userMessage += `Bemor jinsi: ${patientGender}\n`;
 
-    // Build messages array
     const messages: any[] = [
       { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
     ];
 
     if (imageBase64 && imageMimeType) {
-      // Vision/document request - send file for OCR
       const isPdf = imageMimeType === "application/pdf";
       const instructionText = isPdf
         ? `\nUshbu PDF hujjatda laboratoriya analiz natijalari bor. Hujjatdan barcha ko'rsatkichlarni o'qi va JSON formatda tahlil qil.`
@@ -89,20 +92,11 @@ serve(async (req) => {
       messages.push({
         role: "user",
         content: [
-          {
-            type: "text",
-            text: userMessage + instructionText,
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:${imageMimeType};base64,${imageBase64}`,
-            },
-          },
+          { type: "text", text: userMessage + instructionText },
+          { type: "image_url", image_url: { url: `data:${imageMimeType};base64,${imageBase64}` } },
         ],
       });
     } else {
-      // Text-only request
       userMessage += `\nAnaliz natijalari:\n${reportText}\n\nIltimos, yuqoridagi ko'rsatkichlarni tahlil qilib JSON formatda javob ber.`;
       messages.push({ role: "user", content: userMessage });
     }
@@ -114,15 +108,19 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-1.5-pro",
-        max_completion_tokens: access.maxTokens ?? 1200,
+        model: access.model || "google/gemini-1.5-pro",
+        max_completion_tokens: access.maxTokens || 2048,
         messages,
+        response_format: { type: "json_object" }
       }),
     });
 
     if (!response.ok) {
       const status = response.status;
       await instrumentError(__usageId, __start, { status: statusFromHttp(status), errorCode: String(status), errorMessage: `AI gateway ${status}` });
+      
+      if (__userId) await refundAiCredits(__userId, serviceId, cost, `AI Gateway error ${status}`);
+
       if (status === 429) return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Biroz kutib qayta urinib ko'ring." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       if (status === 402) return new Response(JSON.stringify({ error: "Xizmat vaqtincha mavjud emas." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
@@ -160,6 +158,9 @@ serve(async (req) => {
   } catch (e) {
     console.error("ai-report-analysis error:", e);
     await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : "unknown" });
+    
+    if (__userId) await refundAiCredits(__userId, serviceId, cost, e instanceof Error ? e.message : "Internal error");
+
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Noma'lum xato" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
