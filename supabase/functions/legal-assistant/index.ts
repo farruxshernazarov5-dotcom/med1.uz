@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     }
 
     const { action, language = "uz", title = "", body = "", clause = "" } = (await req.json()) as Body;
-    __usageId = await createAiUsageEvent({ userId, serviceId: "legal-assistant", req, model: "google/gemini-3-flash-preview" });
+    __usageId = await createAiUsageEvent({ userId, serviceId: "legal-assistant", req, model: "google/gemini-2.5-flash" });
     if (!body && !clause) {
       await instrumentError(__usageId, __start, { status: "blocked", errorCode: "bad_request", errorMessage: "body or clause required" });
       return new Response(JSON.stringify({ error: "body or clause required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [{ role: "system", content: SYSTEM[lang] }, { role: "user", content: userMsg }],
       }),
     });

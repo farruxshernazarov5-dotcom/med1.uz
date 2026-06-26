@@ -75,7 +75,7 @@ serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "ai-smart-search", req, model: "google/gemini-3-flash-preview" });
+    __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "ai-smart-search", req, model: "google/gemini-2.5-flash" });
 
     const { query, latitude, longitude, filters } = await req.json();
 
@@ -100,7 +100,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: `Qidiruv so'rovi: "${query.trim()}"` },

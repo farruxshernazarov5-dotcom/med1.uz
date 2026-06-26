@@ -158,8 +158,8 @@ export const MAX_OUTPUT_TOKENS_HARD_CAP = 4096;
  export const MAX_INPUT_TOKENS = 8000;
  
  const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-   1:  { model: "google/gemini-3-flash-preview", maxTokens: 2048 },
-   5:  { model: "google/gemini-3-flash-preview", maxTokens: 4096 },
+   1:  { model: "google/gemini-2.5-flash", maxTokens: 2048 },
+   5:  { model: "google/gemini-2.5-flash", maxTokens: 4096 },
    25: { model: "google/gemini-2.5-pro",           maxTokens: 4096 },
  };
  

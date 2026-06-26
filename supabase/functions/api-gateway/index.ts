@@ -298,7 +298,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
       return json(400, { code: "too_many_messages", message: "Max 30 messages per request" }, requestId);
     }
     const allowedModels = new Set([
-      "google/gemini-3-flash-preview",
+      "google/gemini-2.5-flash",
       "google/gemini-3.5-flash",
       "google/gemini-2.5-flash-lite",
       "google/gemini-2.5-pro",
@@ -307,7 +307,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     ]);
     const model = typeof body?.model === "string" && allowedModels.has(body.model)
       ? body.model
-      : "google/gemini-3-flash-preview";
+      : "google/gemini-2.5-flash";
     const usageId = partnerOwnerId
       ? await createAiUsageEvent({ userId: partnerOwnerId, serviceId: "api-gateway:ai-chat", req, channel: "api", model })
       : null;

@@ -179,7 +179,7 @@ Kundalik tartib tavsiyalari`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: access.model || "google/gemini-3-flash-preview",
+        model: access.model || "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           ...formattedMessages,

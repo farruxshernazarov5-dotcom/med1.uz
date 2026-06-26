@@ -39,7 +39,7 @@ serve(async (req) => {
       : mode === "diagnosis"
       ? `Sen dental rentgen tahlilchi AI san. Tish rentgen tasviri tavsifi asosida mumkin bo'lgan muammolarni aniqla: kariyes, periodontit, suyak yo'qolishi, kista, impaksiya va h.k. Natijalarni tish raqami bilan ko'rsat (FDI tizimi). Har doim ogohlantirishlarni qo'sh.`
       : `Sen stomatologiya bo'yicha AI yordamchisan. Tish davolash, dori tavsiyalari, bemor savollari va klinik qarorlar bo'yicha professional maslahat berasan. Javoblaringni o'zbek tilida ber. Har doim: "Bu AI tavsiyasi" degan ogohlantirishni qo'sh.`;
-    __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "dental-ai-chat", req, model: "google/gemini-3-flash-preview" });
+    __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "dental-ai-chat", req, model: "google/gemini-2.5-flash" });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -48,7 +48,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages,
