@@ -39,7 +39,7 @@ export async function pdfToImageBase64Pages(file: File, maxPages = 3): Promise<s
 
     canvas.width = Math.floor(viewport.width);
     canvas.height = Math.floor(viewport.height);
-    await page.render({ canvasContext: context, viewport }).promise;
+    await page.render({ canvas, canvasContext: context, viewport }).promise;
     pages.push(canvas.toDataURL("image/jpeg", 0.82).split(",")[1]);
   }
 
