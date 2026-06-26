@@ -24,7 +24,7 @@ const DEFAULT_SETTINGS = {
   payment_settings: { click_enabled: false, payme_enabled: false, cash_enabled: true, card_enabled: true, click_merchant_id: "", payme_merchant_id: "" },
   notification_settings: { sms: false, telegram: true, email: true, on_result_ready: true, on_appointment: true },
   security_settings: { require_2fa: false, password_min_length: 8, max_login_attempts: 5, lockout_minutes: 10 },
-  ai_settings: { enabled: true, daily_limit: 100, model: "google/gemini-3-flash-preview" },
+  ai_settings: { enabled: true, daily_limit: 100, model: "google/gemini-1.5-flash" },
   file_settings: { max_image_mb: 10, max_pdf_mb: 20, allowed_types: ["jpg", "png", "pdf", "dcm"] },
   service_settings: { default_duration_min: 30, auto_invoice: true },
 };

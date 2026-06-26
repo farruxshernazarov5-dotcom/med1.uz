@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
 
 
     if (action === "auto_assign") {
-      __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "diag-ai-workflow:auto_assign", req, model: "google/gemini-3-flash-preview" });
+      __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "diag-ai-workflow:auto_assign", req, model: "google/gemini-1.5-flash" });
       const systemPrompt = `Siz diagnostika markazi ish jarayonini optimallashtiruvchi AI yordamchisiz.
 Buyurtmalarni xodimlarga taqsimlang quyidagi qoidalar bo'yicha:
 - Radiologiya buyurtmalari -> radiolog roliga
@@ -66,7 +66,7 @@ Faqat tool call orqali javob bering.`;
         method: "POST",
         headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "google/gemini-1.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userMsg },
@@ -171,7 +171,7 @@ O'zbek tilida yozing.`;
     }
 
     if (action === "explain_results") {
-      __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "diag-ai-workflow:explain_results", req, model: "google/gemini-3-flash-preview" });
+      __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "diag-ai-workflow:explain_results", req, model: "google/gemini-1.5-flash" });
       const { patient_name, patient_gender, patient_dob, test_name, results_summary } = body;
       const systemPrompt = `Siz tajribali shifokor-laborantsiz. Bemor uchun analiz natijalarini sodda, tushunarli o'zbek tilida tushuntiring.
 - Har bir abnormal qiymat nimani anglatishi mumkinligini ayting (umumiy ma'noda)
@@ -193,7 +193,7 @@ Iltimos, bu natijalarni tushuntiring.`;
         method: "POST",
         headers: { "Authorization": `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "google/gemini-1.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userMsg },
