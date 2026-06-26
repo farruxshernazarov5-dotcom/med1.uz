@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,7 +14,7 @@ const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI tibbiy yordamchisisan. Sen
 MUHIM QOIDALAR:
 1. Sen TASHXIS QOYMAYSAN - faqat ehtimoliy kasalliklar ro'yxatini va differensial diagnostikani berasan
 2. Har doim "Shifokorga murojaat qiling" deb ogohlantir
-3. Javobni FAQAT quyidagi JSON formatda ber, boshqa hech narsa yozma
+3. Javobni FAQAT valid JSON object sifatida ber, boshqa hech narsa yozma. Markdown/\`\`\`json ishlatma, barcha qavslarni yop
 4. O'zbek tilida javob ber
 5. Har bir kasallik uchun ICD-10 kodini ko'rsat
 
@@ -34,6 +35,25 @@ JSON FORMAT:
   "urgentAction": true|false,
   "followUpQuestions": ["Savol 1"]
 }`;
+
+function normalizeSymptomResult(parsed: Record<string, unknown> | null, content: string) {
+  const obj = parsed ?? {};
+  return {
+    diseases: Array.isArray(obj.diseases) ? obj.diseases.map((raw: any) => ({
+      name: String(raw?.name ?? "Aniqlashtirish kerak"),
+      probability: Number(raw?.probability ?? 0),
+      description: String(raw?.description ?? cleanAiText(content)),
+      matchingSymptoms: Array.isArray(raw?.matchingSymptoms) ? raw.matchingSymptoms.map(String) : [],
+      riskLevel: ["high", "medium", "low"].includes(raw?.riskLevel) ? raw.riskLevel : "low",
+      specialist: String(raw?.specialist ?? "Terapevt"),
+      icd10Code: raw?.icd10Code ? String(raw.icd10Code) : "",
+    })) : [],
+    riskLevel: ["high", "medium", "low"].includes(String(obj.riskLevel)) ? obj.riskLevel : "low",
+    recommendations: Array.isArray(obj.recommendations) && obj.recommendations.length > 0 ? obj.recommendations.map(String) : [cleanAiText(content), "Shifokorga murojaat qiling."],
+    urgentAction: Boolean(obj.urgentAction),
+    followUpQuestions: Array.isArray(obj.followUpQuestions) ? obj.followUpQuestions.map(String) : [],
+  };
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -102,13 +122,7 @@ serve(async (req) => {
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
-    let result;
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      result = jsonMatch ? JSON.parse(jsonMatch[0]) : { diseases: [], summary: content };
-    } catch {
-      result = { diseases: [], summary: content };
-    }
+    const result = normalizeSymptomResult(parseAiJsonObject(content), content);
 
     await instrumentJson(data, __usageId, __start, 0, content);
     return new Response(JSON.stringify(result), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
