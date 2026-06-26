@@ -13,6 +13,7 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
+import { currentLang } from "@/lib/aiLang";
 
 interface Message {
   role: "user" | "assistant";
