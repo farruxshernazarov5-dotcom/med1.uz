@@ -141,6 +141,9 @@ const AIReportAnalysisPage = () => {
               body.imageMimeType = "image/jpeg";
             }
           }
+          if (!body.reportText && !body.imageBase64) {
+            throw new Error("PDF matni yoki sahifalarini o'qib bo'lmadi. Iltimos, aniqroq PDF/JPG/PNG yuklang.");
+          }
         } else {
           body.imageBase64 = await fileToBase64(uploadedFile);
           body.imageMimeType = uploadedFile.type;
