@@ -124,7 +124,7 @@ serve(async (req) => {
         role: "user",
         content: [
           { type: "text", text: userMessage + instructionText + extracted },
-          ...pageImages.map((img: string) => ({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${img}` } })),
+          ...pageImages.map((img: string) => ({ type: "image_url", image_url: { url: `data:${pageImages.length > 1 ? "image/jpeg" : imageMimeType};base64,${img}` } })),
         ],
       });
     } else {
