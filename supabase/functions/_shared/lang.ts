@@ -33,3 +33,21 @@ const DISCLAIMER: Record<SupportedLang, string> = {
 export function languageInstruction(lang: SupportedLang): string {
   return `\n\n${COMMON_RULES}\nEnd with one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
 }
+
+// Detailed variant for structured JSON analyses (radiology, lab reports,
+// health-risk, symptom checker, etc.). KEEPS language mirroring and "no
+// greeting preamble" rules, but REMOVES the 150–280 token cap and the
+// "2–4 short bullets" guidance — those would force the model to emit an
+// almost empty JSON for rich clinical analyses.
+const DETAILED_RULES = `
+=== RESPONSE STYLE (STRUCTURED ANALYSIS) ===
+1) LANGUAGE MIRROR: Detect the language of the user's LAST message / clinical context and write ALL string fields of the JSON in that language. Supported: o'zbek, русский, English, qoraqalpoq, тоҷикӣ, türkçe, qozoq.
+2) NO PREAMBLE: Do NOT add greetings, self-introductions or filler text. Return ONLY the JSON object requested by the system prompt — no markdown fences, no commentary before or after.
+3) BE THOROUGH: Fill every relevant field with concrete, clinically useful detail. Do NOT collapse the analysis into a single generic "consult a doctor" line. Include all findings, indicators, anatomical structures, possible diagnoses and recommendations you can reasonably derive.
+4) COMPLETE JSON: Make sure the JSON object is syntactically complete — every bracket and quote closed. Prefer slightly shorter sentences inside fields rather than truncating the structure.
+5) Keep ICD-10 codes, Latin anatomical / drug names in their standard form regardless of reply language.
+`;
+
+export function languageInstructionDetailed(lang: SupportedLang): string {
+  return `\n\n${DETAILED_RULES}\nInclude a brief disclaimer string in the appropriate field (e.g. "disclaimer") in the SAME language as the rest of the JSON. Example — ${DISCLAIMER[lang]}`;
+}

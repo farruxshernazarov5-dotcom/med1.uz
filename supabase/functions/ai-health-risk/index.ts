@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { languageInstructionDetailed, normalizeLang } from "../_shared/lang.ts";
 import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
@@ -177,7 +177,7 @@ serve(async (req) => {
         model: "google/gemini-1.5-flash",
         max_completion_tokens: access.maxTokens ?? 1200,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) },
+          { role: "system", content: SYSTEM_PROMPT + languageInstructionDetailed(__lang) },
           { role: "user", content: userMessage },
         ],
       }),
