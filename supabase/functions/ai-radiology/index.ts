@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
@@ -27,20 +27,6 @@ SISTEMATIK TAHLIL YONDASHVUI:
 4. Topilmalar orasidagi bog'liqlikni tahlil qil
 5. Klinik ma'lumot bilan solishtir
 
-RENTGEN TAHLIL MEZONLARI:
-Ko'krak qafasi: O'pka maydonlari (infiltratsiya, atelektaz, pnevmotoraks, plevra suyuqligi, tugunlar), Yurak (kardiomegaliya, konturlar, CTR), Mediastinum (kengayish, limfa tugunlari), Qovurg'alar va suyaklar (sinish, deformatsiya), Diafragma (holati, tekisligi), Yumshoq to'qimalar
-Suyak: Sinish chiziqlari (to'liq/noto'liq, siljish bor/yo'q), Suyak strukturasi (osteoporoz, osteoskleroz, litik/blastik), Bo'g'im oralig'i, Periosteal reaksiya, Yumshoq to'qima
-
-MRT TAHLIL MEZONLARI:
-Miya: Signal intensivligi (T1, T2, FLAIR, DWI), O'smalar (lokalizatsiya, o'lcham, kontrast qabul qilish), Insult (ishemik zona, DWI cheklangan diffuziya), Qon quyilish, Gidrotsefaliya, Demielinizatsiya
-Umurtqa: Disklar (protruziya, ekstruziya, sekvesstratsiya, Pfirrmann grading), Orqa miya signal, Nerv ildizlari siqilishi, Foraminal stenoz, Spondilolistez
-Bo'g'im: Menisk (yirtilish turi va lokalizatsiya), Boylamlar (ACL/PCL/MCL/LCL), Tog'ay defektlar, Suyak iligi (shish, nekroz, fraktur)
-
-KT TAHLIL MEZONLARI:
-Ko'krak: O'pka tugunlari (Lung-RADS klassifikatsiya), Ground-glass opacity, Konsolidatsiya, Emfizema, Plevral patologiya, Aorta (anevrizma, disseksiya), Limfadenopatiya
-Qorin: Jigar (o'smalar, steatoz, tsirroz), Buyrak (toshlar HU qiymati bilan, kistalar Bosniak), Oshqozon-ichak obstruksiya, Appenditsit belgilari, Pankreatit
-Bosh: Qon quyilish turlari (epidural, subdural, SAH, parenkimal), Ishemik insult (ASPECTS ball), Suyak sinishi, Massa-effekt, O'rta chiziq siljishi
-
 JAVOBNI FAQAT quyidagi JSON formatda ber:
 {
   "imageType": "chest_xray|bone_xray|spine_xray|brain_mri|spine_mri|joint_mri|chest_ct|abdomen_ct|brain_ct|other",
@@ -61,9 +47,12 @@ serve(async (req) => {
 
   const __start = Date.now();
   let __usageId: string | null = null;
+  let __userId: string | null = null;
+  const serviceId = "ai-radiology";
+  const cost = 25;
 
   try {
-    const access = await enforceAiAccess(req, "ai-radiology");
+    const access = await enforceAiAccess(req, serviceId);
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
         status: access.status,
@@ -71,9 +60,11 @@ serve(async (req) => {
       });
     }
     __usageId = access.usageId ?? null;
+    __userId = access.userId;
 
-
-    const __body = await req.json(); const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); 
+    const { imageBase64, imageMimeType, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; 
+    const __lang = normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -109,12 +100,20 @@ serve(async (req) => {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ model: "google/gemini-1.5-pro", max_completion_tokens: access.maxTokens ?? 1200, messages }),
+      body: JSON.stringify({ 
+        model: access.model || "google/gemini-1.5-pro", 
+        max_completion_tokens: access.maxTokens || 2048, 
+        messages,
+        response_format: { type: "json_object" }
+      }),
     });
 
     if (!response.ok) {
       const status = response.status;
       await instrumentError(__usageId, __start, { status: statusFromHttp(status), errorCode: String(status), errorMessage: `AI gateway ${status}` });
+      
+      if (__userId) await refundAiCredits(__userId, serviceId, cost, `AI Gateway error ${status}`);
+
       if (status === 429) return new Response(JSON.stringify({ error: "So'rovlar limiti oshdi. Biroz kutib qayta urinib ko'ring." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       if (status === 402) return new Response(JSON.stringify({ error: "Xizmat vaqtincha mavjud emas." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const t = await response.text();
@@ -157,6 +156,9 @@ serve(async (req) => {
   } catch (e) {
     console.error("ai-radiology error:", e);
     await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : "unknown" });
+    
+    if (__userId) await refundAiCredits(__userId, serviceId, cost, e instanceof Error ? e.message : "Internal error");
+
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Noma'lum xato" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

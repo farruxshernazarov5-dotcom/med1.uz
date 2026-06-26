@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { enforceAiAccess } from "../_shared/ai-access.ts";
+import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
 
@@ -84,6 +84,8 @@ serve(async (req) => {
 
   try {
     const access = await enforceAiAccess(req, "symptom-checker");
+    const __userId = access.allowed ? access.userId : null;
+    const __cost = access.allowed ? access.creditsDeducted : 0;
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
         status: access.status,
