@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,7 +28,7 @@ SISTEMATIK TAHLIL YONDASHVUI:
 4. Topilmalar orasidagi bog'liqlikni tahlil qil
 5. Klinik ma'lumot bilan solishtir
 
-JAVOBNI FAQAT quyidagi JSON formatda ber:
+JAVOBNI FAQAT valid JSON object sifatida ber (markdown, \`\`\`json, izoh, salomlashish YO'Q). JSON qisqa bo'lsin, barcha qavslar yopilsin:
 {
   "imageType": "chest_xray|bone_xray|spine_xray|brain_mri|spine_mri|joint_mri|chest_ct|abdomen_ct|brain_ct|other",
   "scanModality": "xray|mri|ct",
@@ -41,6 +42,41 @@ JAVOBNI FAQAT quyidagi JSON formatda ber:
   "urgentAttention": true|false,
   "disclaimer": "Bu AI tahlili yakuniy tashxis emas. Radiolog yoki shifokor ko'rigidan o'tish zarur."
 }`;
+
+function normalizeRadiologyResult(parsed: Record<string, unknown> | null, content: string, scanType?: string) {
+  const obj = parsed ?? {};
+  const assessment = (obj.overallAssessment && typeof obj.overallAssessment === "object") ? obj.overallAssessment as any : {};
+  return {
+    imageType: String(obj.imageType ?? "other"),
+    scanModality: String(obj.scanModality ?? scanType ?? "xray"),
+    imageQuality: ["good", "moderate", "poor"].includes(String(obj.imageQuality)) ? String(obj.imageQuality) : "moderate",
+    anatomicalStructures: Array.isArray(obj.anatomicalStructures) ? obj.anatomicalStructures.map((raw: any) => ({
+      name: String(raw?.name ?? "Anatomik struktura"),
+      status: raw?.status === "abnormal" ? "abnormal" : "normal",
+      description: String(raw?.description ?? "Ko'rib chiqildi."),
+    })) : [],
+    findings: Array.isArray(obj.findings) ? obj.findings.map((raw: any) => ({
+      location: String(raw?.location ?? "Ko'rsatilmagan"),
+      description: String(raw?.description ?? "Topilma tavsifi mavjud emas."),
+      severity: ["normal", "mild", "moderate", "severe"].includes(raw?.severity) ? raw.severity : "normal",
+      possibleDiagnoses: Array.isArray(raw?.possibleDiagnoses) ? raw.possibleDiagnoses.map((d: any) => ({
+        name: String(d?.name ?? "Aniqlashtirish kerak"),
+        probability: String(d?.probability ?? "past"),
+        icd10: String(d?.icd10 ?? ""),
+      })) : [],
+    })) : [],
+    overallAssessment: {
+      riskLevel: ["normal", "attention", "critical"].includes(assessment.riskLevel) ? assessment.riskLevel : "attention",
+      summary: String(assessment.summary ?? obj.summary ?? cleanAiText(content)),
+      keyFindings: Array.isArray(assessment.keyFindings) ? assessment.keyFindings.map(String) : [],
+    },
+    recommendations: Array.isArray(obj.recommendations) && obj.recommendations.length > 0 ? obj.recommendations.map(String) : ["Radiolog yoki shifokorga murojaat qiling."],
+    suggestedSpecialist: String(obj.suggestedSpecialist ?? "Radiolog"),
+    followUpStudies: Array.isArray(obj.followUpStudies) ? obj.followUpStudies.map(String) : [],
+    urgentAttention: Boolean(obj.urgentAttention),
+    disclaimer: String(obj.disclaimer ?? "Bu AI tahlili yakuniy tashxis emas."),
+  };
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -124,29 +160,7 @@ serve(async (req) => {
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
 
-    let result;
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("No JSON found");
-      }
-    } catch {
-      result = {
-        imageType: "other",
-        scanModality: scanType || "xray",
-        imageQuality: "moderate",
-        anatomicalStructures: [],
-        findings: [],
-        overallAssessment: { riskLevel: "attention", summary: content, keyFindings: [] },
-        recommendations: ["Radiologga murojaat qiling"],
-        suggestedSpecialist: "Radiolog",
-        followUpStudies: [],
-        urgentAttention: false,
-        disclaimer: "Bu AI tahlili yakuniy tashxis emas.",
-      };
-    }
+    const result = normalizeRadiologyResult(parseAiJsonObject(content), content, scanType);
 
     await instrumentJson(data, __usageId, __start, 0, content);
 
