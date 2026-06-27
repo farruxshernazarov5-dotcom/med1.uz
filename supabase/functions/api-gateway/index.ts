@@ -6,6 +6,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
+import { mapModel } from "../_shared/model-map.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -297,22 +298,8 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     if (messages.length > 30) {
       return json(400, { code: "too_many_messages", message: "Max 30 messages per request" }, requestId);
     }
-    const allowedModels = new Set([
-      "google/gemini-2.5-flash",
-      "google/gemini-2.5-flash-lite",
-      "google/gemini-2.5-pro",
-      "openai/gpt-5-mini",
-      "openai/gpt-5-nano",
-    ]);
-    const legacyModelMap: Record<string, string> = {
-      "google/gemini-1.5-flash": "google/gemini-2.5-flash",
-      "google/gemini-1.5-flash-lite": "google/gemini-2.5-flash-lite",
-      "google/gemini-1.5-pro": "google/gemini-2.5-pro",
-    };
-    const requestedModel = typeof body?.model === "string" ? (legacyModelMap[body.model] ?? body.model) : null;
-    const model = requestedModel && allowedModels.has(requestedModel)
-      ? requestedModel
-      : "google/gemini-2.5-flash";
+    const mapped = mapModel(typeof body?.model === "string" ? body.model : null, { service: "api-gateway:ai-chat" });
+    const model = mapped.model;
     const usageId = partnerOwnerId
       ? await createAiUsageEvent({ userId: partnerOwnerId, serviceId: "api-gateway:ai-chat", req, channel: "api", model })
       : null;

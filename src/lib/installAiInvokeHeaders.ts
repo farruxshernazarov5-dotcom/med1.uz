@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { aiChannelHeaders } from "@/lib/aiChannel";
+import { recordAiDiagnostic } from "@/lib/aiDiagnostics";
 
 const AI_FUNCTIONS = new Set([
   "symptom-checker",
@@ -22,9 +23,40 @@ const AI_FUNCTIONS = new Set([
   "dental-ai-chat",
   "diag-ai-workflow",
   "doctor-ai-assistant",
+  "ai-health-check",
 ]);
 
 let installed = false;
+
+function extractStatus(err: any): number | null {
+  if (!err) return null;
+  if (typeof err.status === "number") return err.status;
+  if (typeof err.context?.status === "number") return err.context.status;
+  return null;
+}
+
+async function extractBody(err: any): Promise<string | null> {
+  try {
+    const res = err?.context?.response ?? err?.context;
+    if (res && typeof res.clone === "function") {
+      const cloned = res.clone();
+      return await cloned.text();
+    }
+    if (typeof res?.body === "string") return res.body;
+    if (err?.message) return err.message;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function extractRequestId(err: any): string | null {
+  const res = err?.context?.response;
+  if (res && typeof res.headers?.get === "function") {
+    return res.headers.get("x-request-id") || res.headers.get("x-lovable-aig-run-id");
+  }
+  return null;
+}
 
 export function installAiInvokeHeaders() {
   if (installed) return;
@@ -34,14 +66,43 @@ export function installAiInvokeHeaders() {
   const originalInvoke = functionsClient.invoke?.bind(functionsClient);
   if (!originalInvoke) return;
 
-  functionsClient.invoke = (functionName: string, options: any = {}) => {
+  functionsClient.invoke = async (functionName: string, options: any = {}) => {
     if (!AI_FUNCTIONS.has(functionName)) return originalInvoke(functionName, options);
-    return originalInvoke(functionName, {
+    const t0 = performance.now();
+    const result = await originalInvoke(functionName, {
       ...options,
       headers: {
         ...aiChannelHeaders(),
         ...(options?.headers || {}),
       },
     });
+    const durationMs = Math.round(performance.now() - t0);
+
+    const err = (result as any)?.error;
+    if (err) {
+      const body = await extractBody(err);
+      recordAiDiagnostic({
+        functionName,
+        status: extractStatus(err),
+        ok: false,
+        requestId: extractRequestId(err),
+        errorCode: err?.code ?? err?.name ?? null,
+        message: err?.message ?? "AI request failed",
+        body,
+        durationMs,
+      });
+    } else {
+      recordAiDiagnostic({
+        functionName,
+        status: 200,
+        ok: true,
+        requestId: null,
+        errorCode: null,
+        message: "ok",
+        body: null,
+        durationMs,
+      });
+    }
+    return result;
   };
 }

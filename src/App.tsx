@@ -105,6 +105,7 @@ import HambiReturnButton from "./components/partner/HambiReturnButton";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 import YandexAdsManager from "./components/ads/YandexAdsManager";
+import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
 
 const queryClient = new QueryClient();
 
@@ -135,6 +136,7 @@ const App = () => (
           <GeoPromoProvider />
           <CookieConsent />
           <HambiReturnButton />
+          <AIDiagnosticsPanel />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
