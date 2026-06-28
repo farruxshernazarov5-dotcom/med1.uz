@@ -3,6 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
+import { reportEdgeError } from "../_shared/error-sink.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -182,8 +184,16 @@ serve(async (req) => {
 
   } catch (e) {
     console.error("ai-external-api error:", e);
+    reportEdgeError({
+      scope: "ai-external-api",
+      level: "error",
+      message: e instanceof Error ? e.message : String(e),
+      status: 500,
+      metadata: { stack: e instanceof Error ? e.stack?.slice(0, 1500) : undefined },
+    });
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+

@@ -2,6 +2,8 @@
 // All AI edge functions should resolve user/legacy model ids through `mapModel()`
 // so we get a single audit point for which model was actually used and warnings
 // when an unknown / unsupported id is requested.
+import { reportEdgeError } from "./error-sink.ts";
+
 
 export const ALLOWED_MODELS = new Set<string>([
   "google/gemini-2.5-flash",
@@ -59,10 +61,23 @@ export function mapModel(
   if (remap && ALLOWED_MODELS.has(remap)) {
     const warning = `Legacy model "${requested}" remapped to "${remap}". Update callers.`;
     console.warn(`[model-map][WARN] service=${service} requested=${requested} mapped=${remap} reason=legacy_remap`);
+    reportEdgeError({
+      scope: "model-map",
+      level: "warn",
+      message: warning,
+      metadata: { service, requested, mapped: remap, reason: "legacy_remap" },
+    });
     return { model: remap, requested, reason: "legacy_remap", warning };
   }
 
   const warning = `Unknown model "${requested}" — falling back to "${fallback}". Check caller config.`;
   console.warn(`[model-map][WARN] service=${service} requested=${requested} mapped=${fallback} reason=fallback_unknown`);
+  reportEdgeError({
+    scope: "model-map",
+    level: "warn",
+    message: warning,
+    metadata: { service, requested, mapped: fallback, reason: "fallback_unknown" },
+  });
   return { model: fallback, requested, reason: "fallback_unknown", warning };
 }
+

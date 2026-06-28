@@ -7,6 +7,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
+import { reportEdgeError } from "../_shared/error-sink.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -174,7 +176,17 @@ serve(async (req) => {
     statusCode = 500;
     errorMsg = String(e);
     responseBody = json(500, { code: "internal_error", message: "Internal server error" }, requestId);
+    reportEdgeError({
+      scope: "api-gateway",
+      level: "error",
+      message: e instanceof Error ? e.message : String(e),
+      endpoint: path,
+      requestId,
+      status: 500,
+      metadata: { stack: e instanceof Error ? e.stack?.slice(0, 1500) : undefined, ip, userAgent, origin },
+    });
   }
+
 
   // 7. Log request (fire and forget)
   supabase
