@@ -138,7 +138,7 @@ export default function AIDiagnosticsPanel() {
 
   function toCsv(rows: Record<string, any>[]): string {
     if (rows.length === 0) return "";
-    const cols = Array.from(rows.reduce((s, r) => { Object.keys(r).forEach((k) => s.add(k)); return s; }, new Set<string>()));
+    const cols = Array.from(rows.reduce<Set<string>>((s, r) => { Object.keys(r).forEach((k) => s.add(k)); return s; }, new Set<string>()));
     const esc = (v: any) => {
       if (v === null || v === undefined) return "";
       const s = typeof v === "object" ? JSON.stringify(v) : String(v);
