@@ -8,7 +8,9 @@
 // configured_model (best-effort), and error string if anything failed.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { ALLOWED_MODELS, DEFAULT_MODEL } from "../_shared/model-map.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
