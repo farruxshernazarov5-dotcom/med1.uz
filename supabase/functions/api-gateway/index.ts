@@ -7,6 +7,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
+import { reportEdgeError } from "../_shared/error-sink.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
