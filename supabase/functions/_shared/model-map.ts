@@ -2,6 +2,8 @@
 // All AI edge functions should resolve user/legacy model ids through `mapModel()`
 // so we get a single audit point for which model was actually used and warnings
 // when an unknown / unsupported id is requested.
+import { reportEdgeError } from "./error-sink.ts";
+
 
 export const ALLOWED_MODELS = new Set<string>([
   "google/gemini-2.5-flash",
