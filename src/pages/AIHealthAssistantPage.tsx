@@ -18,7 +18,7 @@ import aiAssistantImg from "@/assets/ai-health-assistant.webp";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
-import { currentLang } from "@/lib/aiLang";
+import { responseLangForText } from "@/lib/aiLang";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Mode = "general" | "symptom" | "lab" | "advice";
@@ -107,7 +107,7 @@ const AIHealthAssistantPage = () => {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ messages: allMessages, mode, lang: currentLang() }),
+        body: JSON.stringify({ messages: allMessages, mode, lang: responseLangForText(userMsg.content) }),
       });
 
       if (!resp.ok || !resp.body) {

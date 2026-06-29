@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,17 +45,18 @@ serve(async (req) => {
     }
     __usageId = access.usageId ?? null;
 
-    const __body = await req.json(); const { messages, mode } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); const { messages, mode } = __body; const __lang = resolveResponseLang(messages, __body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemContent = mode === "symptom"
-      ? (SYSTEM_PROMPT + languageInstruction(__lang)) + "\n\nHozir SIMPTOM TAHLIL rejimida ishla."
+    const modeInstruction = mode === "symptom"
+      ? "\n\nHozir SIMPTOM TAHLIL rejimida ishla."
       : mode === "lab"
-      ? (SYSTEM_PROMPT + languageInstruction(__lang)) + "\n\nHozir ANALIZ TAHLIL rejimida ishla."
+      ? "\n\nHozir ANALIZ TAHLIL rejimida ishla."
       : mode === "advice"
-      ? (SYSTEM_PROMPT + languageInstruction(__lang)) + "\n\nHozir SOG'LIQ TAVSIYA rejimida ishla."
-      : (SYSTEM_PROMPT + languageInstruction(__lang));
+      ? "\n\nHozir SOG'LIQ TAVSIYA rejimida ishla."
+      : "";
+    const systemContent = SYSTEM_PROMPT + modeInstruction + languageInstruction(__lang);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

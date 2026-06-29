@@ -1,14 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `Sen tajribali fitness trener va sport tibbiyoti mutaxassisisisan. O'zbek tilida ishlaysan.
+const SYSTEM_PROMPT = `Sen tajribali fitness trener va sport tibbiyoti mutaxassisisisan. foydalanuvchining so'nggi xabari tilida ishlaysan.
 
 ASOSIY VAZIFALAR:
 1. Shaxsiy mashq dasturlari tuzish
@@ -52,7 +52,7 @@ serve(async (req) => {
     }
     __usageId = access.usageId ?? null;
 
-    const __body = await req.json(); const { messages, profile } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); const { messages, profile } = __body; const __lang = resolveResponseLang(messages, __body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -66,7 +66,7 @@ serve(async (req) => {
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: access.model,
-        messages: [{ role: "system", content: (SYSTEM_PROMPT + languageInstruction(__lang)) + profileContext }, ...messages],
+        messages: [{ role: "system", content: SYSTEM_PROMPT + profileContext + languageInstruction(__lang) }, ...messages],
         max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),

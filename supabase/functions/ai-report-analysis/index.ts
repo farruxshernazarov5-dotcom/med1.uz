@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstructionDetailed, normalizeLang } from "../_shared/lang.ts";
+import { languageInstructionDetailed, detectLangFromText, normalizeLang } from "../_shared/lang.ts";
 import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
@@ -17,7 +17,7 @@ MUHIM QOIDALAR:
 3. Har bir ko'rsatkichni normal qiymatlar bilan solishtir (jins va yoshga qarab)
 4. Ehtimoliy muammolarni aniqla va ICD-10 kodlari bilan ifodalab ber
 5. TASHXIS QOYMA - faqat tahlil va tavsiya ber
-6. O'zbek tilida javob ber
+6. Foydalanuvchining so'nggi xabari tilida javob ber
 7. HECH QACHON "o'qiy olmayman" yoki "tahlil qila olmayman" dema
 8. Ko'rsatkichlarni xalqaro laboratoriya standartlari (SI Units) asosida tahlil qil
 
@@ -100,7 +100,7 @@ serve(async (req) => {
 
     const __body = await req.json(); 
     const { reportText, reportType, patientAge, patientGender, imageBase64, imageMimeType, pdfPageImages } = __body; 
-    const __lang = normalizeLang(__body?.lang);
+    const __lang = detectLangFromText(reportText) ?? normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 

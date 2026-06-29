@@ -4,6 +4,7 @@ import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-ac
 import { instrumentStream, instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
 import { reportEdgeError } from "../_shared/error-sink.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 
 const corsHeaders = {
@@ -132,7 +133,8 @@ serve(async (req) => {
 
       const mapped = mapModel(typeof model === "string" ? model : null, { service: `ai-external-api:${service}` });
       const selectedModel = mapped.model;
-      const systemPrompt = systemPrompts[service] + "\n\nO'zbek tilida javob ber. Har bir javob oxirida: '⚠️ AI tahlili faqat ma'lumot berish maqsadida. Aniq tashxis uchun shifokor bilan maslahatlashing.'";
+      const replyLang = resolveResponseLang(messages, body?.lang);
+      const systemPrompt = systemPrompts[service] + languageInstruction(replyLang);
       const usageId = partnerRow?.owner_user_id
         ? await createAiUsageEvent({ userId: partnerRow.owner_user_id, serviceId: service || "ai-external-api", req, channel: "api", model: selectedModel })
         : null;

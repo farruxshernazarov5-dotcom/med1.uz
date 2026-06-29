@@ -15,14 +15,48 @@ export function normalizeLang(input: unknown): SupportedLang {
   return "uz";
 }
 
+export function detectLangFromText(input: unknown): SupportedLang | null {
+  const text = typeof input === "string" ? input.trim() : "";
+  if (!text) return null;
+  if (/[а-яё]/i.test(text)) return "ru";
+  const lower = text.toLowerCase();
+  const enHits = (lower.match(/\b(the|and|with|what|why|how|doctor|pain|please|can|should|health)\b/g) || []).length;
+  const uzHits = (lower.match(/\b(men|menga|nima|qanday|nega|og['‘’`]?riq|bosh|dori|shifokor|iltimos|bor|yo['‘’`]?q)\b/g) || []).length;
+  if (enHits > uzHits && enHits >= 2) return "en";
+  if (uzHits > 0) return "uz";
+  return null;
+}
+
+export function resolveResponseLang(messages: unknown, fallback?: unknown): SupportedLang {
+  if (Array.isArray(messages)) {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i] as any;
+      if (msg?.role === "user") {
+        const detected = detectLangFromText(msg.content);
+        if (detected) return detected;
+      }
+    }
+  }
+  return normalizeLang(fallback);
+}
+
 const COMMON_RULES = `
 === RESPONSE STYLE (HARD RULES) ===
 1) LANGUAGE MIRROR: Detect the language of the user's LAST message and reply ONLY in that language. Ignore the UI default if the user wrote in another language. Supported: o'zbek, русский, English, qoraqalpoq, тоҷикӣ, türkçe, qozoq.
+   CRITICAL: If TARGET_REPLY_LANGUAGE is Russian / русский, EVERY heading, bullet, disclaimer and sentence MUST be Russian. Do not output Uzbek words like "bosh", "og'riq", "aniq", "shifokor", "murojaat", "tavsiya" unless quoted from the user. If any template below is Uzbek, translate it before answering.
+   CRITICAL: If TARGET_REPLY_LANGUAGE is English, EVERY heading, bullet, disclaimer and sentence MUST be English. If any template below is Uzbek/Russian, translate it before answering.
+   CRITICAL: Uzbek is allowed ONLY when TARGET_REPLY_LANGUAGE is Uzbek / o'zbek or the user's last message is Uzbek.
 2) NO PREAMBLE: Never start with greetings, self-introductions or filler like "Assalomu alaykum", "Men Med1.uz yordamchisiman", "Здравствуйте, я ассистент", "Hello, I am an assistant", "Savolingizga javob beraman". Start DIRECTLY with the answer.
 3) COMPLETE BUT BOUNDED: Keep the full answer within ~150–280 tokens. Prefer 2–4 short bullets + 1 closing line. If space is tight, drop bullets — NEVER leave a sentence unfinished. The last sentence MUST end with proper punctuation.
 4) NO REPETITION: Do not repeat the user's question. Do not restate the same point twice.
 5) Keep ICD-10 / Latin / drug names in their standard form regardless of reply language.
 `;
+
+const TARGET_LANGUAGE_GUARD: Record<SupportedLang, string> = {
+  uz: `YAKUNIY TIL NAZORATI: Javob faqat o'zbek tilida bo'lsin. Ruscha yoki inglizcha sarlavha/shablonlarni o'zbekchaga tarjima qil.`,
+  ru: `ФИНАЛЬНЫЙ КОНТРОЛЬ ЯЗЫКА: отвечай строго на русском языке. Все узбекские шаблоны, заголовки, предупреждения и пункты переведи на русский до отправки. Не отвечай на узбекском, если последний вопрос пользователя написан на русском.`,
+  en: `FINAL LANGUAGE CHECK: answer strictly in English. Translate all Uzbek/Russian templates, headings, disclaimers and bullets into English before sending. Do not answer in Uzbek unless the user's last message is Uzbek.`,
+};
 
 const DISCLAIMER: Record<SupportedLang, string> = {
   uz: `⚠️ AI tavsiyasi — aniq tashxis uchun shifokorga murojaat qiling.`,
@@ -31,7 +65,8 @@ const DISCLAIMER: Record<SupportedLang, string> = {
 };
 
 export function languageInstruction(lang: SupportedLang): string {
-  return `\n\n${COMMON_RULES}\nEnd with one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
+  const langName = lang === "ru" ? "Russian / русский" : lang === "en" ? "English" : "Uzbek / o'zbek";
+  return `\n\n${COMMON_RULES}\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. If any previous instruction, template, disclaimer, section title or context is in another language, translate it and answer only in ${langName}.\n${TARGET_LANGUAGE_GUARD[lang]}\nEnd with one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
 }
 
 // Detailed variant for structured JSON analyses (radiology, lab reports,
@@ -49,5 +84,6 @@ const DETAILED_RULES = `
 `;
 
 export function languageInstructionDetailed(lang: SupportedLang): string {
-  return `\n\n${DETAILED_RULES}\nInclude a brief disclaimer string in the appropriate field (e.g. "disclaimer") in the SAME language as the rest of the JSON. Example — ${DISCLAIMER[lang]}`;
+  const langName = lang === "ru" ? "Russian / русский" : lang === "en" ? "English" : "Uzbek / o'zbek";
+  return `\n\n${DETAILED_RULES}\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. Translate all templates, labels and disclaimers to ${langName}; do not output Uzbek unless the user's last message is Uzbek.\n${TARGET_LANGUAGE_GUARD[lang]}\nInclude a brief disclaimer string in the appropriate field (e.g. "disclaimer") in the SAME language as the rest of the JSON. Example — ${DISCLAIMER[lang]}`;
 }

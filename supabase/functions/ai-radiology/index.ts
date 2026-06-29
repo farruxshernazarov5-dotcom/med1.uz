@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstructionDetailed, normalizeLang } from "../_shared/lang.ts";
+import { languageInstructionDetailed, detectLangFromText, normalizeLang } from "../_shared/lang.ts";
 import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
@@ -16,7 +16,7 @@ MUHIM QOIDALAR:
 2. Anatomik strukturalarni sistematik ravishda tekshir (yuqoridan pastga, tashqaridan ichkariga)
 3. Patologik o'zgarishlarni ICD-10 kodi bilan ifodalab ber
 4. YAKUNIY TASHXIS QOYMA - faqat tahlil va tavsiya ber
-5. O'zbek tilida javob ber
+5. Foydalanuvchining so'nggi xabari tilida javob ber
 6. HECH QACHON "o'qiy olmayman" yoki "tahlil qila olmayman" dema — har doim tahlil qil
 7. Professional radiologiya terminologiyasidan foydalan
 8. Artefaktlar va tasvir sifatini alohida baholab ber
@@ -100,7 +100,7 @@ serve(async (req) => {
 
     const __body = await req.json(); 
     const { imageBase64, imageMimeType, pdfPageImages, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; 
-    const __lang = normalizeLang(__body?.lang);
+    const __lang = detectLangFromText(clinicalInfo) ?? normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 

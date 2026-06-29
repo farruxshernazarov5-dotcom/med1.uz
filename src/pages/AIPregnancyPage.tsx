@@ -22,6 +22,7 @@ import SEO from "@/components/SEO";
 import aiPregnancyImg from "@/assets/ai-pregnancy.webp";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { responseLangForText } from "@/lib/aiLang";
 
 /* ——— Helpers ——— */
 const addDays = (d: Date, n: number) => {
@@ -172,6 +173,7 @@ const AIPregnancyPage = () => {
           pregnancyWeek: currentWeek,
           trimester: `${trimester}`,
           mode: mode || "general",
+          lang: responseLangForText(userMsg.content),
         }),
       });
 
