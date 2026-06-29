@@ -237,6 +237,78 @@ const HambiDashboardPage = () => {
   const t = today.data;
   const s = subs.data;
 
+  const exportRevShareExcel = () => {
+    const trendRows = (trend.data ?? []).map(d => ({
+      Sana: d.date,
+      "So'rovlar": d.requests,
+      "Foydalanuvchilar": d.users,
+      "Med Coin": d.credits,
+      "RevShare (so'm)": Math.round(d.credits * MED_COIN_TO_UZS * HAMBI_REVSHARE),
+    }));
+    const serviceRows = (byService.data ?? []).map(s => ({
+      Xizmat: s.service,
+      "So'rovlar": s.count,
+      "Muvaffaqiyatli": s.success,
+      "Xatolik": s.errors,
+      "Med Coin": s.credits,
+      "RevShare (so'm)": Math.round(s.credits * MED_COIN_TO_UZS * HAMBI_REVSHARE),
+    }));
+    const summary = [{
+      "Bugungi so'rovlar": t?.requests ?? 0,
+      "Bugungi foydalanuvchilar": t?.users ?? 0,
+      "Bugungi Med Coin": t?.credits ?? 0,
+      "Bugungi RevShare (so'm)": t?.revshare_uzs ?? 0,
+      "Ulush (%)": HAMBI_REVSHARE * 100,
+      "1 Coin = so'm": MED_COIN_TO_UZS,
+      "Yaratildi": new Date().toLocaleString(),
+    }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summary), "Xulosa");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(trendRows), "7 kunlik trend");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(serviceRows), "Xizmatlar (30k)");
+    XLSX.writeFile(wb, `hambi-revshare-${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  const exportRevSharePDF = () => {
+    const doc = new jsPDF();
+    const date = new Date().toLocaleString();
+    doc.setFontSize(16); doc.text("HAMBI RevShare hisoboti", 14, 18);
+    doc.setFontSize(9); doc.setTextColor(120); doc.text(`Yaratildi: ${date}`, 14, 24);
+    doc.setTextColor(0); doc.setFontSize(11);
+    let y = 34;
+    doc.text(`Ulush: ${HAMBI_REVSHARE * 100}%   |   1 Med Coin = ${MED_COIN_TO_UZS} so'm`, 14, y); y += 8;
+    doc.text("Bugungi koʻrsatkichlar:", 14, y); y += 6;
+    doc.setFontSize(10);
+    [
+      `So'rovlar: ${t?.requests ?? 0}   (muvaffaqiyatli: ${t?.success ?? 0}, xato: ${t?.errors ?? 0})`,
+      `Foydalanuvchilar: ${t?.users ?? 0}`,
+      `Med Coin sarflandi: ${t?.credits ?? 0}   (${(t?.tokens ?? 0).toLocaleString()} token)`,
+      `RevShare (bugun): ${(t?.revshare_uzs ?? 0).toLocaleString()} so'm`,
+    ].forEach(line => { doc.text(line, 18, y); y += 6; });
+
+    y += 6; doc.setFontSize(11); doc.text("7 kunlik trend:", 14, y); y += 6;
+    doc.setFontSize(9);
+    doc.text("Sana        So'rov  User  Med Coin  RevShare (so'm)", 18, y); y += 5;
+    (trend.data ?? []).forEach(d => {
+      if (y > 280) { doc.addPage(); y = 20; }
+      const rev = Math.round(d.credits * MED_COIN_TO_UZS * HAMBI_REVSHARE);
+      doc.text(`${d.date}   ${String(d.requests).padStart(5)}  ${String(d.users).padStart(4)}  ${String(d.credits).padStart(7)}  ${rev.toLocaleString().padStart(12)}`, 18, y);
+      y += 5;
+    });
+
+    y += 6; if (y > 260) { doc.addPage(); y = 20; }
+    doc.setFontSize(11); doc.text("AI xizmatlar (30 kun):", 14, y); y += 6;
+    doc.setFontSize(9);
+    (byService.data ?? []).forEach(s => {
+      if (y > 280) { doc.addPage(); y = 20; }
+      const rev = Math.round(s.credits * MED_COIN_TO_UZS * HAMBI_REVSHARE);
+      doc.text(`${s.service.padEnd(22).slice(0,22)}  ${String(s.count).padStart(5)} req   ${s.success}/${s.errors}   ${s.credits} MC   ${rev.toLocaleString()} so'm`, 18, y);
+      y += 5;
+    });
+
+    doc.save(`hambi-revshare-${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
+
   return (
     <div className="min-h-screen bg-[#0A2540] bg-grid-tech">
       <div className="max-w-[1600px] mx-auto px-4 md:px-6 py-6 space-y-5">
@@ -249,8 +321,22 @@ const HambiDashboardPage = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-white">HAMBI — Mini boshqaruv paneli</h1>
             <p className="text-sm text-white/60 mt-1">Real vaqt: HAMBI WebView orqali keladigan foydalanuvchilar va AI faolligi</p>
           </div>
-          <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30">channel = hambi</Badge>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/30">channel = hambi</Badge>
+            <Button size="sm" variant="outline" className="h-8 border-white/20 text-white/90 hover:bg-white/10" onClick={exportRevShareExcel}>
+              <FileSpreadsheet className="w-3.5 h-3.5 mr-1" /> RevShare · Excel
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 border-white/20 text-white/90 hover:bg-white/10" onClick={exportRevSharePDF}>
+              <FileDown className="w-3.5 h-3.5 mr-1" /> RevShare · PDF
+            </Button>
+            <Link to="/admin/hambi-partner">
+              <Button size="sm" className="h-8 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white">
+                <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Integration Audit
+              </Button>
+            </Link>
+          </div>
         </div>
+
 
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
