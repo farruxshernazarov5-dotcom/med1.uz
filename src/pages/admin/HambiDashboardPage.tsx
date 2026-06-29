@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Users, Activity, CreditCard, Wallet, TrendingUp, AlertCircle } from "lucide-react";
+import { ArrowLeft, Users, Activity, CreditCard, Wallet, TrendingUp, AlertCircle, FileDown, FileSpreadsheet, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
 
 // HAMBI RevShare percent (estimate for the panel — adjust if contract differs)
 const HAMBI_REVSHARE = 0.3;
