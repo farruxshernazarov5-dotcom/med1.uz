@@ -329,7 +329,7 @@ const HambiDashboardPage = () => {
             <Button size="sm" variant="outline" className="h-8 border-white/20 text-white/90 hover:bg-white/10" onClick={exportRevSharePDF}>
               <FileDown className="w-3.5 h-3.5 mr-1" /> RevShare · PDF
             </Button>
-            <Link to="/admin/hambi-partner">
+            <Link to="/admin/partners/hambi">
               <Button size="sm" className="h-8 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white">
                 <ShieldCheck className="w-3.5 h-3.5 mr-1" /> Integration Audit
               </Button>
