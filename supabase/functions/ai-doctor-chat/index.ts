@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits, recordAiUsageResult, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages, computeCostUsd } from "../_shared/ai-access.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +12,7 @@ const SYSTEM_PROMPT = `Sen Med1.uz platformasining yuqori malakali AI tibbiy mas
 SHAXSIYATING:
 - Sen mehribon, sabr-toqatli va professional shifokor kabi gaplashasan
 - Bemorni tinglaysan, tushunasan va unga qulay tilda tushuntirasan
-- Murakkab tibbiy atamalarni oddiy o'zbek tilida izohlaysan
+- Murakkab tibbiy atamalarni javob tili bilan mos oddiy tilda izohlaysan
 - Javoblaringda emoji va vizual belgilar ishlatasan
 
 JAVOB FORMATI (har doim quyidagi strukturada):
@@ -27,7 +27,7 @@ JAVOB FORMATI (har doim quyidagi strukturada):
 MUHIM QOIDALAR:
 1. Sen TASHXIS QOYMAYSAN - faqat ma'lumot va tavsiya berasan
 2. Har doim "Aniq tashxis uchun shifokorga murojaat qiling" deb ogohlantir
-3. O'zbek tilida javob ber
+3. Foydalanuvchining so'nggi xabari tilida javob ber
 4. Javoblarni tushunarli va oddiy tilda yoz
 5. Agar shoshilinch tibbiy yordam kerak bo'lsa — "🚨 SHOSHILINCH: 103 ga qo'ng'iroq qiling!" deb yoz
 6. Tibbiy terminlarni oddiy tushuntir
@@ -74,7 +74,7 @@ serve(async (req) => {
 
     const __body = await req.json();
     const { messages, documents } = __body;
-    const __lang = normalizeLang(__body?.lang);
+    const __lang = resolveResponseLang(messages, __body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -109,7 +109,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: access.model,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + languageInstruction(__lang) + CONCISE_DIRECTIVE + docContext },
+          { role: "system", content: SYSTEM_PROMPT + CONCISE_DIRECTIVE + docContext + languageInstruction(__lang) },
           ...messages,
         ],
         max_completion_tokens: access.maxTokens,

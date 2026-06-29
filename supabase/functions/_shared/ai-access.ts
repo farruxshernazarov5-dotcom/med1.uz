@@ -174,7 +174,7 @@ export const MAX_OUTPUT_TOKENS_HARD_CAP = 4096;
 - Salomlashish, kirish, "savolingizga javob beraman" kabi preambulalarni YOZMA — to'g'ridan-to'g'ri mazmunga o't.
 - Maksimum 3–4 ta qisqa bullet. Har biri 1 jumla. ICD/lotincha nomlarni faqat zarur bo'lsa qisqa qavsda ber.
 - Har bir gap to'liq tugashi shart. Agar joy kam bo'lsa — punktlarni kamaytir, lekin oxirgi gapni hech qachon yarim qoldirma.
-- Oxirida albatta bitta qator: "⚠️ Aniq tashxis uchun shifokorga murojaat qiling."`;
+- Oxirida albatta bitta qisqa ogohlantirish qatori bo'lsin, lekin uni TARGET_REPLY_LANGUAGE tiliga tarjima qil. Masalan ruscha javobda: "⚠️ Для точного диагноза обратитесь к врачу." Inglizcha javobda: "⚠️ Consult a doctor for an accurate diagnosis."`;
 
 /**
  * Log a token-overage warning to `security_debug_log` so the admin banner can pick it up.

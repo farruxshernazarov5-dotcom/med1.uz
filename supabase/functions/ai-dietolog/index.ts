@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstruction, normalizeLang } from "../_shared/lang.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,11 +41,11 @@ serve(async (req) => {
     }
     __usageId = access.usageId ?? null;
 
-    const __body = await req.json(); const { messages, context } = __body; const __lang = normalizeLang(__body?.lang);
+    const __body = await req.json(); const { messages, context } = __body; const __lang = resolveResponseLang(messages, __body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemContent = context ? `${(SYSTEM_PROMPT + languageInstruction(__lang))}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : (SYSTEM_PROMPT + languageInstruction(__lang));
+    const systemContent = (context ? `${SYSTEM_PROMPT}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : SYSTEM_PROMPT) + languageInstruction(__lang);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

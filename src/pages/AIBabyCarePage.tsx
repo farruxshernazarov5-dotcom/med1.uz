@@ -24,7 +24,7 @@ import aiBabyCareImg from "@/assets/ai-baby-care.webp";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
-import { currentLang } from "@/lib/aiLang";
+import { responseLangForText } from "@/lib/aiLang";
 
 /* ——— Types ——— */
 interface BabyProfile {
@@ -140,7 +140,7 @@ async function streamChat({ messages, babyAgeMonths, mode, onDelta, onDone }: {
       Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
-    body: JSON.stringify({ messages, babyAgeMonths, mode, lang: currentLang() }),
+    body: JSON.stringify({ messages, babyAgeMonths, mode, lang: responseLangForText(messages[messages.length - 1]?.content) }),
   });
   if (!resp.ok || !resp.body) {
     if (resp.status === 429) { toast({ title: "So'rovlar limiti", description: "Keyinroq urinib ko'ring", variant: "destructive" }); onDone(); return; }

@@ -24,6 +24,7 @@ import {
 import AIServiceHero from "@/components/AIServiceHero";
 import aiCosmetologyImg from "@/assets/ai-cosmetology.webp";
 import { useTranslation } from "react-i18next";
+import { responseLangForText } from "@/lib/aiLang";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -62,6 +63,7 @@ async function streamChat(params: {
       age: params.age,
       concerns: params.concerns,
       photoBase64: params.photoBase64,
+      lang: responseLangForText(params.messages[params.messages.length - 1]?.content),
     }),
   });
 

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
+import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,12 +25,13 @@ serve(async (req) => {
     __usageId = access.usageId ?? null;
 
 
-    const { messages, skinType, age, concerns, mode, photoBase64 } = await req.json();
+    const { messages, skinType, age, concerns, mode, photoBase64, lang } = await req.json();
+    const __lang = resolveResponseLang(messages, lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     let systemPrompt = `Sen Med1.uz platformasining ilg'or AI kosmetologiya va dermatologiya assistentisan. Sening noming "Med1 Skin AI".
-Sen o'zbek tilida javob berasan. Professional dermatologiya va kosmetologiya bo'yicha ilmiy asoslangan maslahatlar berasan.
+Sen foydalanuvchining so'nggi xabari tilida javob berasan. Professional dermatologiya va kosmetologiya bo'yicha ilmiy asoslangan maslahatlar berasan.
 
 SHAXSIYATING:
 - Sen do'stona, professional va zamonaviy kosmetolog kabi gaplashasan
@@ -181,7 +183,7 @@ Kundalik tartib tavsiyalari`;
       body: JSON.stringify({
         model: access.model || "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: systemPrompt + languageInstruction(__lang) },
           ...formattedMessages,
         ],
         max_completion_tokens: access.maxTokens ?? 600,

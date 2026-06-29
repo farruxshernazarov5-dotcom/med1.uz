@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstructionDetailed, normalizeLang } from "../_shared/lang.ts";
+import { languageInstructionDetailed, detectLangFromText, normalizeLang } from "../_shared/lang.ts";
 import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
@@ -13,7 +13,7 @@ const SYSTEM_PROMPT = `Sen Med1.uz platformasining AI Predictive Diagnostics tiz
 
 MUHIM QOIDALAR:
 1. TASHXIS QOYMA — faqat xavf baholash va profilaktika tavsiya qil
-2. O'zbek tilida javob ber
+2. Foydalanuvchining so'nggi xabari tilida javob ber
 3. Ilmiy dalillarga asoslan (WHO, AHA, NICE guidelines)
 4. Har bir kasallik xavfiga ICD-10 kodi qo'sh
 5. Risk score 0-100 oralig'ida bo'lsin
@@ -140,10 +140,11 @@ serve(async (req) => {
     __usageId = access.usageId ?? null;
 
 
-    const body = await req.json(); const __lang = normalizeLang((body as any)?.lang);
+    const body = await req.json();
     const { age, gender, weight, height, bloodPressure, smoking, alcohol, exercise,
       existingConditions, familyHistory, diet, sleepHours, stressLevel,
       medications, labResults, symptoms } = body;
+    const __lang = detectLangFromText([existingConditions, familyHistory, diet, medications, labResults, symptoms].filter(Boolean).join(" ")) ?? normalizeLang((body as any)?.lang);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");

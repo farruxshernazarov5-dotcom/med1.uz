@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
-import { languageInstructionDetailed, normalizeLang } from "../_shared/lang.ts";
+import { languageInstructionDetailed, detectLangFromText, normalizeLang } from "../_shared/lang.ts";
 import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
 
 const corsHeaders = {
@@ -15,7 +15,7 @@ MUHIM QOIDALAR:
 1. Sen TASHXIS QOYMAYSAN - faqat ehtimoliy kasalliklar ro'yxatini va differensial diagnostikani berasan
 2. Har doim "Shifokorga murojaat qiling" deb ogohlantir
 3. Javobni FAQAT valid JSON object sifatida ber, boshqa hech narsa yozma. Markdown/\`\`\`json ishlatma, barcha qavslarni yop
-4. O'zbek tilida javob ber
+4. Foydalanuvchining so'nggi xabari tilida javob ber
 5. Har bir kasallik uchun ICD-10 kodini ko'rsat
 
 JSON FORMAT:
@@ -77,7 +77,7 @@ serve(async (req) => {
 
     const __body = await req.json(); 
     const { symptoms, age, gender, duration, painLevel, existingConditions, allergies, followUpAnswers } = __body; 
-    const __lang = normalizeLang(__body?.lang);
+    const __lang = detectLangFromText(Array.isArray(symptoms) ? symptoms.join(" ") : symptoms) ?? normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 

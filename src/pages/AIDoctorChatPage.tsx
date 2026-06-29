@@ -15,7 +15,7 @@ import aiDoctorImg from "@/assets/ai-doctor-chat.webp";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
-import { currentLang } from "@/lib/aiLang";
+import { responseLangForText } from "@/lib/aiLang";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -69,7 +69,7 @@ const AIDoctorChatPage = () => {
           Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ messages: allMessages, lang: currentLang() }),
+        body: JSON.stringify({ messages: allMessages, lang: responseLangForText(userMsg.content) }),
       });
 
       if (!resp.ok || !resp.body) {
