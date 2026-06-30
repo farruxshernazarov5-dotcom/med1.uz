@@ -95,6 +95,7 @@ const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
 const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
 const AIAnalyticsPage = lazy(() => import("./pages/admin/AIAnalyticsPage"));
 const HambiDashboardPage = lazy(() => import("./pages/admin/HambiDashboardPage"));
+const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage"));
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
