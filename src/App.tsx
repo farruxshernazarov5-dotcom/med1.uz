@@ -96,6 +96,7 @@ const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdmin
 const AIAnalyticsPage = lazy(() => import("./pages/admin/AIAnalyticsPage"));
 const HambiDashboardPage = lazy(() => import("./pages/admin/HambiDashboardPage"));
 const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage"));
+const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
@@ -218,6 +219,7 @@ const App = () => (
                 <Route path="/admin/ai-analytics" element={<AIAnalyticsPage />} />
                 <Route path="/admin/hambi" element={<HambiDashboardPage />} />
                 <Route path="/admin/hambi-readiness" element={<HambiReadinessPage />} />
+                <Route path="/admin/payment-sandbox" element={<PaymentSandboxPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
                 <Route path="/legal" element={<LegalCenterPage />} />
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
