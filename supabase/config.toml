@@ -57,3 +57,10 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.referral-leaderboard]
     verify_jwt = false
+  [functions.payme-webhook]
+    verify_jwt = false
+  [functions.uzum-webhook]
+    verify_jwt = false
+  [functions.hambi-sso]
+    verify_jwt = false
+
