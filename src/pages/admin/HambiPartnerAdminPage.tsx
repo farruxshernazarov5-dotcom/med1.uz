@@ -69,6 +69,8 @@ const I18N: Record<string, Record<Lang, string>> = {
   security:       { uz: "Xavfsizlik", ru: "Безопасность", en: "Security" },
   partners:       { uz: "Hamkorlar", ru: "Партнёры", en: "Partners" },
   docs:           { uz: "Hujjatlar", ru: "Документы", en: "Documents" },
+  webhooks:       { uz: "Webhook oqimi", ru: "Webhook-и", en: "Webhooks" },
+  audit:          { uz: "Audit jurnali", ru: "Аудит", en: "Audit log" },
   kVisits:        { uz: "Ziyoratlar", ru: "Визиты", en: "Visits" },
   kSignups:       { uz: "Ro'yxat", ru: "Регистрации", en: "Signups" },
   kSubs:          { uz: "Faol obunalar", ru: "Активные подписки", en: "Active subs" },
