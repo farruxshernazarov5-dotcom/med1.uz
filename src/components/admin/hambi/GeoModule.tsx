@@ -28,10 +28,11 @@ export default function GeoModule({ slug: _slug, lang }: Props) {
 
   useEffect(() => {
     (async () => {
-      const z = await supabase.from("geofence_zones").select("*").limit(30);
-      const c = await supabase.from("user_location_consent").select("id", { count: "exact", head: true }).eq("consented", true);
-      const n = await supabase.from("geo_notifications").select("id", { count: "exact", head: true });
-      const r = await supabase.from("registered_clinics").select("region");
+      const sb: any = supabase;
+      const z = await sb.from("geofence_zones").select("*").limit(30);
+      const c = await sb.from("user_location_consent").select("id", { count: "exact", head: true }).eq("consented", true);
+      const n = await sb.from("geo_notifications").select("id", { count: "exact", head: true });
+      const r = await sb.from("registered_clinics").select("region");
       setZones((z.data ?? []) as any[]);
       setK({ consent: c.count ?? 0, notifs: n.count ?? 0 });
       const map: Record<string, number> = {};
