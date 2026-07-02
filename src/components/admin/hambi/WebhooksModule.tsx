@@ -29,8 +29,8 @@ const T: Record<string, Record<Lang, string>> = {
 const t = (k: string, l: Lang) => T[k]?.[l] ?? k;
 
 interface Delivery {
-  id: string; webhook_id: string; event_type: string; status: string;
-  attempts: number; response_status: number | null; created_at: string; payload?: any;
+  id: string; webhook_id: string; event: string; status: string;
+  retry_count: number; status_code: number | null; created_at: string;
 }
 
 export default function WebhooksModule({ slug, lang }: Props) {
@@ -41,7 +41,7 @@ export default function WebhooksModule({ slug, lang }: Props) {
     setLoading(true);
     const { data } = await supabase
       .from("api_webhook_deliveries")
-      .select("id,webhook_id,event_type,status,attempts,response_status,created_at,payload")
+      .select("id,webhook_id,event,status,retry_count,status_code,created_at")
       .order("created_at", { ascending: false })
       .limit(100);
     setRows((data ?? []) as Delivery[]);
@@ -51,13 +51,13 @@ export default function WebhooksModule({ slug, lang }: Props) {
 
   const stats = useMemo(() => ({
     total: rows.length,
-    ok: rows.filter(r => r.status === "success" || (r.response_status && r.response_status < 400)).length,
-    failed: rows.filter(r => r.status === "failed" || (r.response_status && r.response_status >= 400)).length,
+    ok: rows.filter(r => r.status === "success" || (r.status_code && r.status_code < 400)).length,
+    failed: rows.filter(r => r.status === "failed" || (r.status_code && r.status_code >= 400)).length,
     pending: rows.filter(r => r.status === "pending").length,
   }), [rows]);
 
   const retry = async (id: string) => {
-    await supabase.from("api_webhook_deliveries").update({ status: "pending", attempts: 0 } as any).eq("id", id);
+    await supabase.from("api_webhook_deliveries").update({ status: "pending", retry_count: 0 }).eq("id", id);
     await load();
   };
 
