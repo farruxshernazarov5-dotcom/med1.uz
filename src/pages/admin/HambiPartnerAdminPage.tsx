@@ -33,6 +33,15 @@ import SubscriptionsModule from "@/components/admin/hambi/SubscriptionsModule";
 import RevenueModule from "@/components/admin/hambi/RevenueModule";
 import PaymentsModule from "@/components/admin/hambi/PaymentsModule";
 import DocumentsModule from "@/components/admin/hambi/DocumentsModule";
+import WebhooksModule from "@/components/admin/hambi/WebhooksModule";
+import AuditModule from "@/components/admin/hambi/AuditModule";
+import SecurityModule from "@/components/admin/hambi/SecurityModule";
+import ClinicsModule from "@/components/admin/hambi/ClinicsModule";
+import BookingsModule from "@/components/admin/hambi/BookingsModule";
+import PromosModule from "@/components/admin/hambi/PromosModule";
+import GeoModule from "@/components/admin/hambi/GeoModule";
+import NotifModule from "@/components/admin/hambi/NotifModule";
+import PartnersModule from "@/components/admin/hambi/PartnersModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
