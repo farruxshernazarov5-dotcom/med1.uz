@@ -23,7 +23,7 @@ import {
   ArrowLeft, Users, MousePointerClick, TrendingUp, Wallet, Activity, Cpu,
   Hospital, CalendarCheck, Gift, MapPin, Bell, BarChart3, Globe2, ShieldCheck,
   Handshake, BookOpen, Languages, Search, Download, Radio, Zap, Database,
-  Network, Sparkles, ChevronRight, Menu, X, CreditCard,
+  Network, Sparkles, ChevronRight, Menu, X, CreditCard, Webhook, ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
@@ -33,6 +33,15 @@ import SubscriptionsModule from "@/components/admin/hambi/SubscriptionsModule";
 import RevenueModule from "@/components/admin/hambi/RevenueModule";
 import PaymentsModule from "@/components/admin/hambi/PaymentsModule";
 import DocumentsModule from "@/components/admin/hambi/DocumentsModule";
+import WebhooksModule from "@/components/admin/hambi/WebhooksModule";
+import AuditModule from "@/components/admin/hambi/AuditModule";
+import SecurityModule from "@/components/admin/hambi/SecurityModule";
+import ClinicsModule from "@/components/admin/hambi/ClinicsModule";
+import BookingsModule from "@/components/admin/hambi/BookingsModule";
+import PromosModule from "@/components/admin/hambi/PromosModule";
+import GeoModule from "@/components/admin/hambi/GeoModule";
+import NotifModule from "@/components/admin/hambi/NotifModule";
+import PartnersModule from "@/components/admin/hambi/PartnersModule";
 
 // ─────────────────────────── i18n ───────────────────────────
 type Lang = "uz" | "ru" | "en";
@@ -60,6 +69,8 @@ const I18N: Record<string, Record<Lang, string>> = {
   security:       { uz: "Xavfsizlik", ru: "Безопасность", en: "Security" },
   partners:       { uz: "Hamkorlar", ru: "Партнёры", en: "Partners" },
   docs:           { uz: "Hujjatlar", ru: "Документы", en: "Documents" },
+  webhooks:       { uz: "Webhook oqimi", ru: "Webhook-и", en: "Webhooks" },
+  audit:          { uz: "Audit jurnali", ru: "Аудит", en: "Audit log" },
   kVisits:        { uz: "Ziyoratlar", ru: "Визиты", en: "Visits" },
   kSignups:       { uz: "Ro'yxat", ru: "Регистрации", en: "Signups" },
   kSubs:          { uz: "Faol obunalar", ru: "Активные подписки", en: "Active subs" },
@@ -154,7 +165,9 @@ const MODULES = [
   { id: "geo",      labelKey: "geo",      icon: MapPin },
   { id: "notif",    labelKey: "notif",    icon: Bell },
   { id: "webview",  labelKey: "webview",  icon: Globe2 },
+  { id: "webhooks", labelKey: "webhooks", icon: Webhook },
   { id: "security", labelKey: "security", icon: ShieldCheck },
+  { id: "audit",    labelKey: "audit",    icon: ScrollText },
   { id: "partners", labelKey: "partners", icon: Handshake },
   { id: "docs",     labelKey: "docs",     icon: BookOpen },
 ] as const;
@@ -476,14 +489,16 @@ const HambiPartnerAdminPage = () => {
     revenue:  <RevenueModule slug={slug} lang={lang} />,
     payments: <PaymentsModule slug={slug} lang={lang} />,
     ai:       <AiServicesModule slug={slug} lang={lang} />,
-    clinics:  VisualSection(t("clinics", lang),  Hospital,       "Klinikalar, doktorlar, diagnostika, dorixonalar — moderatsiya."),
-    bookings: VisualSection(t("bookings", lang), CalendarCheck,  "HAMBI bronlari: pending / confirmed / completed / cancelled."),
-    promos:   VisualSection(t("promos", lang),   Gift,           "Push, geo-aksiyalar, referral bonuslari, AI chegirmalari."),
-    geo:      VisualSection(t("geo", lang),      MapPin,         "Geofencing, heatmap, yaqin atrofdagi klinikalar."),
-    notif:    VisualSection(t("notif", lang),    Bell,           "Telegram / SMS / Push / Email — kampaniya builder."),
+    clinics:  <ClinicsModule slug={slug} lang={lang} />,
+    bookings: <BookingsModule slug={slug} lang={lang} />,
+    promos:   <PromosModule slug={slug} lang={lang} />,
+    geo:      <GeoModule slug={slug} lang={lang} />,
+    notif:    <NotifModule slug={slug} lang={lang} />,
     webview:  <WebViewModule slug={slug} lang={lang} />,
-    security: VisualSection(t("security", lang), ShieldCheck,    "Rollar, audit-loglar, sessiya kuzatuvi, firibgarlik aniqlash."),
-    partners: VisualSection(t("partners", lang), Handshake,      "UNITEL, klinika, API va SaaS hamkorlar — RevShare."),
+    webhooks: <WebhooksModule slug={slug} lang={lang} />,
+    security: <SecurityModule slug={slug} lang={lang} />,
+    audit:    <AuditModule slug={slug} lang={lang} />,
+    partners: <PartnersModule slug={slug} lang={lang} />,
     docs:     <DocumentsModule slug={slug} lang={lang} />,
   };
 
