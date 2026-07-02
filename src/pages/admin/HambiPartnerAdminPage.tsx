@@ -165,7 +165,9 @@ const MODULES = [
   { id: "geo",      labelKey: "geo",      icon: MapPin },
   { id: "notif",    labelKey: "notif",    icon: Bell },
   { id: "webview",  labelKey: "webview",  icon: Globe2 },
+  { id: "webhooks", labelKey: "webhooks", icon: Webhook },
   { id: "security", labelKey: "security", icon: ShieldCheck },
+  { id: "audit",    labelKey: "audit",    icon: ScrollText },
   { id: "partners", labelKey: "partners", icon: Handshake },
   { id: "docs",     labelKey: "docs",     icon: BookOpen },
 ] as const;
