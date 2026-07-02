@@ -23,7 +23,7 @@ import {
   ArrowLeft, Users, MousePointerClick, TrendingUp, Wallet, Activity, Cpu,
   Hospital, CalendarCheck, Gift, MapPin, Bell, BarChart3, Globe2, ShieldCheck,
   Handshake, BookOpen, Languages, Search, Download, Radio, Zap, Database,
-  Network, Sparkles, ChevronRight, Menu, X, CreditCard,
+  Network, Sparkles, ChevronRight, Menu, X, CreditCard, Webhook, ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UsersModule from "@/components/admin/hambi/UsersModule";
