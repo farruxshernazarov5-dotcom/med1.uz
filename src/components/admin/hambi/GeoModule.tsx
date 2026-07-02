@@ -28,16 +28,14 @@ export default function GeoModule({ slug: _slug, lang }: Props) {
 
   useEffect(() => {
     (async () => {
-      const [z, c, n, r] = await Promise.all([
-        supabase.from("geofence_zones").select("*").limit(30),
-        supabase.from("user_location_consent").select("id", { count: "exact", head: true }).eq("consented", true),
-        supabase.from("geo_notifications").select("id", { count: "exact", head: true }),
-        supabase.from("registered_clinics").select("region"),
-      ]);
-      setZones(z.data ?? []);
+      const z = await supabase.from("geofence_zones").select("*").limit(30);
+      const c = await supabase.from("user_location_consent").select("id", { count: "exact", head: true }).eq("consented", true);
+      const n = await supabase.from("geo_notifications").select("id", { count: "exact", head: true });
+      const r = await supabase.from("registered_clinics").select("region");
+      setZones((z.data ?? []) as any[]);
       setK({ consent: c.count ?? 0, notifs: n.count ?? 0 });
       const map: Record<string, number> = {};
-      (r.data ?? []).forEach((x: any) => { const k = x.region ?? "—"; map[k] = (map[k] ?? 0) + 1; });
+      ((r.data ?? []) as any[]).forEach((x: any) => { const k = x.region ?? "—"; map[k] = (map[k] ?? 0) + 1; });
       setRegions(Object.entries(map).map(([d, count]) => ({ d, count })).slice(0, 12));
     })();
   }, []);
