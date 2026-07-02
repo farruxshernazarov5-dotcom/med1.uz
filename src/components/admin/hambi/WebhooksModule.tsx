@@ -87,7 +87,7 @@ export default function WebhooksModule({ slug, lang }: Props) {
             </Button>
             <Button size="sm" onClick={() => downloadCSV(`webhooks-${slug}`,
               ["id", "event", "status", "attempts", "http", "time"],
-              rows.map(r => [r.id, r.event_type, r.status, r.attempts, r.response_status ?? "", r.created_at]))}
+              rows.map(r => [r.id, r.event, r.status, r.retry_count, r.status_code ?? "", r.created_at]))}
               className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
               <Download className="w-3.5 h-3.5 mr-1.5" /> CSV
             </Button>
@@ -132,10 +132,10 @@ export default function WebhooksModule({ slug, lang }: Props) {
                 <tr><td colSpan={6} className="py-8 text-center text-white/40">{t("empty", lang)}</td></tr>
               ) : rows.map(r => (
                 <tr key={r.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
-                  <td className="py-2 pr-3 font-mono text-[11px] text-white/80">{r.event_type}</td>
-                  <td className="py-2 pr-3"><Badge className={cn("text-[10px] border-0", badge(r.status, r.response_status))}>{r.status}</Badge></td>
-                  <td className="py-2 pr-3 text-right tabular-nums text-white/80">{r.attempts}</td>
-                  <td className="py-2 pr-3 text-right tabular-nums text-white/60">{r.response_status ?? "—"}</td>
+                  <td className="py-2 pr-3 font-mono text-[11px] text-white/80">{r.event}</td>
+                  <td className="py-2 pr-3"><Badge className={cn("text-[10px] border-0", badge(r.status, r.status_code))}>{r.status}</Badge></td>
+                  <td className="py-2 pr-3 text-right tabular-nums text-white/80">{r.retry_count}</td>
+                  <td className="py-2 pr-3 text-right tabular-nums text-white/60">{r.status_code ?? "—"}</td>
                   <td className="py-2 pr-3 text-white/60 whitespace-nowrap">{new Date(r.created_at).toLocaleString("uz-UZ")}</td>
                   <td className="py-2 pr-3 text-right">
                     <Button size="sm" variant="ghost" onClick={() => retry(r.id)} className="h-7 text-[11px] text-cyan-300 hover:text-white">
