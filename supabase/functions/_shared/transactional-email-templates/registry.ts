@@ -10,7 +10,9 @@ export interface TemplateEntry {
 }
 
 import { template as labResultNotification } from './lab-result-notification.tsx'
+import { template as securityAlert } from './security-alert.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'lab-result-notification': labResultNotification,
+  'security-alert': securityAlert,
 }
