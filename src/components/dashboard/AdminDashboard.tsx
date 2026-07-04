@@ -1425,6 +1425,7 @@ const AdminDashboard = () => {
           {tab === "master_contracts" && <MasterContractsArchive />}
 
           {tab === "security_center" && <SecurityCenterModule />}
+          {tab === "tax_reports" && <TaxReportsModule />}
 
           {tab === "audit" && (
             <div className="space-y-3">
