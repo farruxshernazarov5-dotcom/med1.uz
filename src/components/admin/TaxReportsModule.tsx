@@ -11,8 +11,9 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { FileText, Download, Printer, Calculator, TrendingUp, Receipt, Building2 } from "lucide-react";
+import { FileText, Download, Printer, Calculator, TrendingUp, Receipt, Building2, FileDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { downloadTaxReportPDF } from "@/utils/generateTaxReportPDF";
 
 const MONTHS_UZ = [
   "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
@@ -123,6 +124,18 @@ const TaxReportsModule = () => {
 
   const printReport = () => window.print();
 
+  const downloadOfficialPDF = () => {
+    downloadTaxReportPDF({
+      period: { year, month },
+      company,
+      rate,
+      revenue: totals.revenue,
+      otherIncome: 0,
+      rows,
+    });
+    toast({ title: "PDF tayyor", description: "my.soliq.uz shakliga muvofiq hisobot yuklab olindi." });
+  };
+
   return (
     <div className="space-y-4">
       {/* Controls */}
@@ -157,7 +170,10 @@ const TaxReportsModule = () => {
                 <Calculator className="w-4 h-4 mr-1" /> Hisoblash
               </Button>
               <Button onClick={exportCSV}><Download className="w-4 h-4 mr-1" /> Excel (CSV)</Button>
-              <Button onClick={printReport} variant="secondary"><Printer className="w-4 h-4 mr-1" /> Chop / PDF</Button>
+              <Button onClick={downloadOfficialPDF} className="bg-primary">
+                <FileDown className="w-4 h-4 mr-1" /> Rasmiy PDF (soliq.uz)
+              </Button>
+              <Button onClick={printReport} variant="secondary"><Printer className="w-4 h-4 mr-1" /> Chop</Button>
             </div>
           </div>
 
