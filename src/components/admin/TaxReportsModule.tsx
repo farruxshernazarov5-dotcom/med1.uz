@@ -11,8 +11,9 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { FileText, Download, Printer, Calculator, TrendingUp, Receipt, Building2 } from "lucide-react";
+import { FileText, Download, Printer, Calculator, TrendingUp, Receipt, Building2, FileDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { downloadTaxReportPDF } from "@/utils/generateTaxReportPDF";
 
 const MONTHS_UZ = [
   "Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun",
