@@ -85,6 +85,7 @@ const sidebarSections = [
     label: "Tizim", items: [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
+      { id: "tax_reports", label: "🧾 Soliq hisobotlari", icon: Receipt },
       { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
       { id: "ai_analytics", label: "📊 AI Analytics Center", icon: BarChart3, href: "/admin/ai-analytics" },
