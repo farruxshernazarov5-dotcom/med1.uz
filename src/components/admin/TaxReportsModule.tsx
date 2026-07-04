@@ -124,6 +124,18 @@ const TaxReportsModule = () => {
 
   const printReport = () => window.print();
 
+  const downloadOfficialPDF = () => {
+    downloadTaxReportPDF({
+      period: { year, month },
+      company,
+      rate,
+      revenue: totals.revenue,
+      otherIncome: 0,
+      rows,
+    });
+    toast({ title: "PDF tayyor", description: "my.soliq.uz shakliga muvofiq hisobot yuklab olindi." });
+  };
+
   return (
     <div className="space-y-4">
       {/* Controls */}
