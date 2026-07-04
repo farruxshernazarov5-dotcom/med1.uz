@@ -8,7 +8,7 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
@@ -23,6 +23,7 @@ import ReferralFraudAdmin from "@/components/admin/ReferralFraudAdmin";
 import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import MasterContractsArchive from "@/components/admin/legal/MasterContractsArchive";
 import SecurityCenterModule from "@/components/admin/SecurityCenterModule";
+import TaxReportsModule from "@/components/admin/TaxReportsModule";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -84,6 +85,7 @@ const sidebarSections = [
     label: "Tizim", items: [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
+      { id: "tax_reports", label: "🧾 Soliq hisobotlari", icon: Receipt },
       { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
       { id: "ai_analytics", label: "📊 AI Analytics Center", icon: BarChart3, href: "/admin/ai-analytics" },
@@ -1423,6 +1425,7 @@ const AdminDashboard = () => {
           {tab === "master_contracts" && <MasterContractsArchive />}
 
           {tab === "security_center" && <SecurityCenterModule />}
+          {tab === "tax_reports" && <TaxReportsModule />}
 
           {tab === "audit" && (
             <div className="space-y-3">
