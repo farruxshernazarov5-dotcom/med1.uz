@@ -170,7 +170,10 @@ const TaxReportsModule = () => {
                 <Calculator className="w-4 h-4 mr-1" /> Hisoblash
               </Button>
               <Button onClick={exportCSV}><Download className="w-4 h-4 mr-1" /> Excel (CSV)</Button>
-              <Button onClick={printReport} variant="secondary"><Printer className="w-4 h-4 mr-1" /> Chop / PDF</Button>
+              <Button onClick={downloadOfficialPDF} className="bg-primary">
+                <FileDown className="w-4 h-4 mr-1" /> Rasmiy PDF (soliq.uz)
+              </Button>
+              <Button onClick={printReport} variant="secondary"><Printer className="w-4 h-4 mr-1" /> Chop</Button>
             </div>
           </div>
 
