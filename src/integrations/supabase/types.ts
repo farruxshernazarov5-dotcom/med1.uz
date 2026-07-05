@@ -15099,6 +15099,63 @@ export type Database = {
         }
         Relationships: []
       }
+      tax_report_history: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_role: string | null
+          channel: string | null
+          created_at: string
+          error: string | null
+          id: string
+          metadata: Json | null
+          month: number
+          rate: number
+          recipient: string | null
+          revenue: number
+          status: string
+          tax_amount: number
+          user_id: string | null
+          year: number
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_role?: string | null
+          channel?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          metadata?: Json | null
+          month: number
+          rate?: number
+          recipient?: string | null
+          revenue?: number
+          status?: string
+          tax_amount?: number
+          user_id?: string | null
+          year: number
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_role?: string | null
+          channel?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          metadata?: Json | null
+          month?: number
+          rate?: number
+          recipient?: string | null
+          revenue?: number
+          status?: string
+          tax_amount?: number
+          user_id?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
       telegram_otp: {
         Row: {
           chat_id: number | null
