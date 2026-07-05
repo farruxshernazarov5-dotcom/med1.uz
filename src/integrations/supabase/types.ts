@@ -15930,6 +15930,7 @@ export type Database = {
         | "pharmacy"
         | "bloodbank"
         | "dental"
+        | "tax_officer"
       contract_approval_status:
         | "pending"
         | "approved"
@@ -16101,6 +16102,7 @@ export const Constants = {
         "pharmacy",
         "bloodbank",
         "dental",
+        "tax_officer",
       ],
       contract_approval_status: [
         "pending",
