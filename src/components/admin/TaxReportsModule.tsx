@@ -521,6 +521,7 @@ const TaxReportsModule = () => {
               </div>
             )}
 
+            <div>
               <h3 className="font-semibold mb-2 flex items-center gap-2"><FileText className="w-4 h-4" /> Daromadlar tarkibi</h3>
               <Table>
                 <TableHeader>
