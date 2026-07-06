@@ -66,10 +66,10 @@ const TaxReportsModule = () => {
   const [company, setCompany] = useState({
     name: "MED-ALL AI SYSTEM MCHJ",
     inn: "312972027",
-    address: "Buxoro viloyati, G'ijduvon tumani, G'ijduvon MFY, G'ijduvon ko'chasi, 173 A-uy",
+    address: "Samarqand viloyati, Urgut tumani, G'ijduvon mahalla",
     director: "Shernazarov F.F",
     accountant: "Shernazarov F.F",
-    tax_office: "G'ijduvon tuman STB",
+    tax_office: "Urgut tuman STB",
     tax_office_code: "",
     phone: "",
     bank: "TOSHKENT SH., \"ANOR BANK\" AJ — h/r: 20208000007455262001, MFO: 01183",
