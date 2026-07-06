@@ -25,6 +25,7 @@ const MONTHS_UZ = [
 ];
 
 const DEFAULT_RATE = 4;
+const TAX_THRESHOLD = 5_000_000_000; // 5 mlrd so'm — aylanma solig'i majburiyati ostonasi
 
 type Row = { source: string; method?: string | null; amount: number; count: number };
 type HistoryRow = {
@@ -64,14 +65,18 @@ const TaxReportsModule = () => {
   const [rate, setRate] = useState<number>(DEFAULT_RATE);
   const [company, setCompany] = useState({
     name: "MED-ALL AI SYSTEM MCHJ",
-    inn: "309876543",
-    address: "Toshkent shahri",
-    director: "",
-    accountant: "",
-    tax_office: "Toshkent shahar STB",
+    inn: "312972027",
+    address: "Buxoro viloyati, G'ijduvon tumani, G'ijduvon MFY, G'ijduvon ko'chasi, 173 A-uy",
+    director: "Shernazarov F.F",
+    accountant: "Shernazarov F.F",
+    tax_office: "G'ijduvon tuman STB",
+    tax_office_code: "",
+    phone: "",
+    bank: "TOSHKENT SH., \"ANOR BANK\" AJ — h/r: 20208000007455262001, MFO: 01183",
   });
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
+  const [ytdRevenue, setYtdRevenue] = useState<number>(0);
 
   // Delivery
   const [emailTo, setEmailTo] = useState<string>("");
@@ -97,9 +102,11 @@ const TaxReportsModule = () => {
       revenue += r.amount;
       bySource.set(r.source, (bySource.get(r.source) || 0) + r.amount);
     });
-    const tax = Math.round((revenue * rate) / 100);
-    return { revenue, tax, bySource };
-  }, [rows, rate]);
+    // Aylanma solig'i faqat yillik aylanma 5 mlrd so'mdan oshgandan keyin to'lanadi
+    const thresholdReached = ytdRevenue >= TAX_THRESHOLD;
+    const tax = thresholdReached ? Math.round((revenue * rate) / 100) : 0;
+    return { revenue, tax, bySource, thresholdReached };
+  }, [rows, rate, ytdRevenue]);
 
   const periodLabel = `${MONTHS_UZ[month - 1]} ${year}`;
 
@@ -154,7 +161,9 @@ const TaxReportsModule = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const [pp, inv, cp, aip] = await Promise.all([
+      const ytdFrom = new Date(Date.UTC(year, 0, 1)).toISOString();
+      const ytdTo = new Date(Date.UTC(year, month, 1)).toISOString();
+      const [pp, inv, cp, aip, ppY, invY, cpY, aipY] = await Promise.all([
         supabase.from("platform_payments").select("amount,provider,status,paid_at,created_at")
           .eq("status", "paid").gte("paid_at", period.from).lt("paid_at", period.to),
         supabase.from("invoices").select("amount,payment_method,status,paid_at")
@@ -163,6 +172,10 @@ const TaxReportsModule = () => {
           .eq("status", "paid").gte("created_at", period.from).lt("created_at", period.to),
         supabase.from("ai_payments").select("amount,payment_method,status,paid_at")
           .eq("status", "paid").gte("paid_at", period.from).lt("paid_at", period.to),
+        supabase.from("platform_payments").select("amount").eq("status", "paid").gte("paid_at", ytdFrom).lt("paid_at", ytdTo),
+        supabase.from("invoices").select("amount").eq("status", "paid").gte("paid_at", ytdFrom).lt("paid_at", ytdTo),
+        supabase.from("clinic_payments").select("amount").eq("status", "paid").gte("created_at", ytdFrom).lt("created_at", ytdTo),
+        supabase.from("ai_payments").select("amount").eq("status", "paid").gte("paid_at", ytdFrom).lt("paid_at", ytdTo),
       ]);
 
       const agg = (data: any[] | null, source: string, key: string): Row[] => {
@@ -185,8 +198,12 @@ const TaxReportsModule = () => {
       ];
       setRows(nextRows);
 
+      const sumAmt = (d: any) => (d?.data || []).reduce((s: number, r: any) => s + Number(r.amount || 0), 0);
+      const ytd = sumAmt(ppY) + sumAmt(invY) + sumAmt(cpY) + sumAmt(aipY);
+      setYtdRevenue(ytd);
+
       const revenue = nextRows.reduce((s, r) => s + r.amount, 0);
-      const tax = Math.round((revenue * rate) / 100);
+      const tax = ytd >= TAX_THRESHOLD ? Math.round((revenue * rate) / 100) : 0;
       await logAudit({ action: "generate", revenue, tax });
     } catch (e: any) {
       toast({ title: "Xato", description: e.message, variant: "destructive" });
@@ -226,12 +243,18 @@ const TaxReportsModule = () => {
   const downloadOfficialPDF = async () => {
     downloadTaxReportPDF({
       period: { year, month },
-      company, rate,
+      company,
+      rate: totals.thresholdReached ? rate : 0,
       revenue: totals.revenue,
       otherIncome: 0,
       rows,
     });
-    toast({ title: "PDF tayyor", description: "my.soliq.uz shakliga muvofiq hisobot yuklab olindi." });
+    toast({
+      title: "PDF tayyor",
+      description: totals.thresholdReached
+        ? "my.soliq.uz shakliga muvofiq hisobot yuklab olindi."
+        : "Hisobot yuklab olindi (aylanma 5 mlrd so'mdan oshmaganligi sababli soliq 0).",
+    });
     await logAudit({ action: "export_pdf" });
     loadHistory();
   };
@@ -490,9 +513,19 @@ const TaxReportsModule = () => {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><b>Soliq to'lovchi:</b> {company.name}</div>
               <div><b>STIR:</b> {company.inn}</div>
-              <div><b>Manzil:</b> {company.address}</div>
+              <div className="col-span-2"><b>Yuridik manzil:</b> {company.address}</div>
+              <div className="col-span-2"><b>Bank rekvizitlari:</b> {company.bank}</div>
               <div><b>Soliq inspeksiyasi:</b> {company.tax_office}</div>
+              <div><b>Telefon:</b> {company.phone || "—"}</div>
             </div>
+
+            {!totals.thresholdReached && (
+              <div className="border border-amber-300 bg-amber-50 text-amber-900 rounded-lg p-3 text-sm">
+                ⚠️ <b>Diqqat:</b> Yillik aylanma <b>{fmt(TAX_THRESHOLD)} so'm</b>dan oshmagan
+                (joriy YTD: <b>{fmt(ytdRevenue)} so'm</b>). Aylanma solig'i <u>to'lanmaydi</u>.
+                Hisobot faqat ma'lumot uchun shakllantirildi.
+              </div>
+            )}
 
             <div>
               <h3 className="font-semibold mb-2 flex items-center gap-2"><FileText className="w-4 h-4" /> Daromadlar tarkibi</h3>
@@ -532,11 +565,19 @@ const TaxReportsModule = () => {
             <div className="border rounded-lg p-4 bg-muted/30">
               <h3 className="font-semibold mb-3">Soliq hisob-kitobi</h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>1. Soliq bazasi (jami aylanma):</div>
+                <div>1. Soliq bazasi (joriy oy aylanmasi):</div>
                 <div className="text-right font-semibold">{fmt(totals.revenue)} so'm</div>
-                <div>2. Soliq stavkasi:</div>
+                <div>2. Yillik jami aylanma (YTD):</div>
+                <div className="text-right font-semibold">{fmt(ytdRevenue)} so'm</div>
+                <div>3. Ostona (5 mlrd so'm):</div>
+                <div className="text-right font-semibold">
+                  {totals.thresholdReached
+                    ? <span className="text-green-700">✓ oshgan — soliq to'lanadi</span>
+                    : <span className="text-amber-700">✗ oshmagan — soliq to'lanmaydi</span>}
+                </div>
+                <div>4. Soliq stavkasi:</div>
                 <div className="text-right font-semibold">{rate}%</div>
-                <div className="border-t pt-2">3. To'lanishi lozim bo'lgan soliq:</div>
+                <div className="border-t pt-2">5. To'lanishi lozim bo'lgan soliq:</div>
                 <div className="border-t pt-2 text-right font-bold text-primary text-lg">{fmt(totals.tax)} so'm</div>
               </div>
             </div>
