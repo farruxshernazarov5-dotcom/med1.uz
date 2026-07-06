@@ -507,11 +507,20 @@ const TaxReportsModule = () => {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div><b>Soliq to'lovchi:</b> {company.name}</div>
               <div><b>STIR:</b> {company.inn}</div>
-              <div><b>Manzil:</b> {company.address}</div>
+              <div className="col-span-2"><b>Yuridik manzil:</b> {company.address}</div>
+              <div className="col-span-2"><b>Bank rekvizitlari:</b> {company.bank}</div>
               <div><b>Soliq inspeksiyasi:</b> {company.tax_office}</div>
+              <div><b>Telefon:</b> {company.phone || "—"}</div>
             </div>
 
-            <div>
+            {!totals.thresholdReached && (
+              <div className="border border-amber-300 bg-amber-50 text-amber-900 rounded-lg p-3 text-sm">
+                ⚠️ <b>Diqqat:</b> Yillik aylanma <b>{fmt(TAX_THRESHOLD)} so'm</b>dan oshmagan
+                (joriy YTD: <b>{fmt(ytdRevenue)} so'm</b>). Aylanma solig'i <u>to'lanmaydi</u>.
+                Hisobot faqat ma'lumot uchun shakllantirildi.
+              </div>
+            )}
+
               <h3 className="font-semibold mb-2 flex items-center gap-2"><FileText className="w-4 h-4" /> Daromadlar tarkibi</h3>
               <Table>
                 <TableHeader>
