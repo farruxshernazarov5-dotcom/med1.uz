@@ -243,12 +243,18 @@ const TaxReportsModule = () => {
   const downloadOfficialPDF = async () => {
     downloadTaxReportPDF({
       period: { year, month },
-      company, rate,
+      company,
+      rate: totals.thresholdReached ? rate : 0,
       revenue: totals.revenue,
       otherIncome: 0,
       rows,
     });
-    toast({ title: "PDF tayyor", description: "my.soliq.uz shakliga muvofiq hisobot yuklab olindi." });
+    toast({
+      title: "PDF tayyor",
+      description: totals.thresholdReached
+        ? "my.soliq.uz shakliga muvofiq hisobot yuklab olindi."
+        : "Hisobot yuklab olindi (aylanma 5 mlrd so'mdan oshmaganligi sababli soliq 0).",
+    });
     await logAudit({ action: "export_pdf" });
     loadHistory();
   };
