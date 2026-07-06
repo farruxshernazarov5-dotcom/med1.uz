@@ -25,6 +25,7 @@ const MONTHS_UZ = [
 ];
 
 const DEFAULT_RATE = 4;
+const TAX_THRESHOLD = 5_000_000_000; // 5 mlrd so'm — aylanma solig'i majburiyati ostonasi
 
 type Row = { source: string; method?: string | null; amount: number; count: number };
 type HistoryRow = {
@@ -64,14 +65,18 @@ const TaxReportsModule = () => {
   const [rate, setRate] = useState<number>(DEFAULT_RATE);
   const [company, setCompany] = useState({
     name: "MED-ALL AI SYSTEM MCHJ",
-    inn: "309876543",
-    address: "Toshkent shahri",
-    director: "",
-    accountant: "",
-    tax_office: "Toshkent shahar STB",
+    inn: "312972027",
+    address: "Buxoro viloyati, G'ijduvon tumani, G'ijduvon MFY, G'ijduvon ko'chasi, 173 A-uy",
+    director: "Shernazarov F.F",
+    accountant: "Shernazarov F.F",
+    tax_office: "G'ijduvon tuman STB",
+    tax_office_code: "",
+    phone: "",
+    bank: "TOSHKENT SH., \"ANOR BANK\" AJ — h/r: 20208000007455262001, MFO: 01183",
   });
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
+  const [ytdRevenue, setYtdRevenue] = useState<number>(0);
 
   // Delivery
   const [emailTo, setEmailTo] = useState<string>("");
@@ -97,9 +102,11 @@ const TaxReportsModule = () => {
       revenue += r.amount;
       bySource.set(r.source, (bySource.get(r.source) || 0) + r.amount);
     });
-    const tax = Math.round((revenue * rate) / 100);
-    return { revenue, tax, bySource };
-  }, [rows, rate]);
+    // Aylanma solig'i faqat yillik aylanma 5 mlrd so'mdan oshgandan keyin to'lanadi
+    const thresholdReached = ytdRevenue >= TAX_THRESHOLD;
+    const tax = thresholdReached ? Math.round((revenue * rate) / 100) : 0;
+    return { revenue, tax, bySource, thresholdReached };
+  }, [rows, rate, ytdRevenue]);
 
   const periodLabel = `${MONTHS_UZ[month - 1]} ${year}`;
 
