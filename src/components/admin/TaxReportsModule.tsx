@@ -559,11 +559,19 @@ const TaxReportsModule = () => {
             <div className="border rounded-lg p-4 bg-muted/30">
               <h3 className="font-semibold mb-3">Soliq hisob-kitobi</h3>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>1. Soliq bazasi (jami aylanma):</div>
+                <div>1. Soliq bazasi (joriy oy aylanmasi):</div>
                 <div className="text-right font-semibold">{fmt(totals.revenue)} so'm</div>
-                <div>2. Soliq stavkasi:</div>
+                <div>2. Yillik jami aylanma (YTD):</div>
+                <div className="text-right font-semibold">{fmt(ytdRevenue)} so'm</div>
+                <div>3. Ostona (5 mlrd so'm):</div>
+                <div className="text-right font-semibold">
+                  {totals.thresholdReached
+                    ? <span className="text-green-700">✓ oshgan — soliq to'lanadi</span>
+                    : <span className="text-amber-700">✗ oshmagan — soliq to'lanmaydi</span>}
+                </div>
+                <div>4. Soliq stavkasi:</div>
                 <div className="text-right font-semibold">{rate}%</div>
-                <div className="border-t pt-2">3. To'lanishi lozim bo'lgan soliq:</div>
+                <div className="border-t pt-2">5. To'lanishi lozim bo'lgan soliq:</div>
                 <div className="border-t pt-2 text-right font-bold text-primary text-lg">{fmt(totals.tax)} so'm</div>
               </div>
             </div>
