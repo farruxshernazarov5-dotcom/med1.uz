@@ -161,7 +161,9 @@ const TaxReportsModule = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const [pp, inv, cp, aip] = await Promise.all([
+      const ytdFrom = new Date(Date.UTC(year, 0, 1)).toISOString();
+      const ytdTo = new Date(Date.UTC(year, month, 1)).toISOString();
+      const [pp, inv, cp, aip, ppY, invY, cpY, aipY] = await Promise.all([
         supabase.from("platform_payments").select("amount,provider,status,paid_at,created_at")
           .eq("status", "paid").gte("paid_at", period.from).lt("paid_at", period.to),
         supabase.from("invoices").select("amount,payment_method,status,paid_at")
@@ -170,6 +172,10 @@ const TaxReportsModule = () => {
           .eq("status", "paid").gte("created_at", period.from).lt("created_at", period.to),
         supabase.from("ai_payments").select("amount,payment_method,status,paid_at")
           .eq("status", "paid").gte("paid_at", period.from).lt("paid_at", period.to),
+        supabase.from("platform_payments").select("amount").eq("status", "paid").gte("paid_at", ytdFrom).lt("paid_at", ytdTo),
+        supabase.from("invoices").select("amount").eq("status", "paid").gte("paid_at", ytdFrom).lt("paid_at", ytdTo),
+        supabase.from("clinic_payments").select("amount").eq("status", "paid").gte("created_at", ytdFrom).lt("created_at", ytdTo),
+        supabase.from("ai_payments").select("amount").eq("status", "paid").gte("paid_at", ytdFrom).lt("paid_at", ytdTo),
       ]);
 
       const agg = (data: any[] | null, source: string, key: string): Row[] => {
@@ -192,8 +198,12 @@ const TaxReportsModule = () => {
       ];
       setRows(nextRows);
 
+      const sumAmt = (d: any) => (d?.data || []).reduce((s: number, r: any) => s + Number(r.amount || 0), 0);
+      const ytd = sumAmt(ppY) + sumAmt(invY) + sumAmt(cpY) + sumAmt(aipY);
+      setYtdRevenue(ytd);
+
       const revenue = nextRows.reduce((s, r) => s + r.amount, 0);
-      const tax = Math.round((revenue * rate) / 100);
+      const tax = ytd >= TAX_THRESHOLD ? Math.round((revenue * rate) / 100) : 0;
       await logAudit({ action: "generate", revenue, tax });
     } catch (e: any) {
       toast({ title: "Xato", description: e.message, variant: "destructive" });
