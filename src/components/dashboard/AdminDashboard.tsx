@@ -89,6 +89,7 @@ const sidebarSections = [
       { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
       { id: "ai_analytics", label: "📊 AI Analytics Center", icon: BarChart3, href: "/admin/ai-analytics" },
+      { id: "api_center", label: "🚀 API Management Center", icon: Rocket, href: "/admin/api-center" },
       { id: "announcements", label: "E'lonlar", icon: Bell },
       { id: "promotions", label: "Aksiyalar", icon: Heart },
       { id: "admin_users", label: "Adminlar", icon: UserCog },
