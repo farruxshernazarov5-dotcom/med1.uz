@@ -99,6 +99,7 @@ const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage")
 const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
 const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
+const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
