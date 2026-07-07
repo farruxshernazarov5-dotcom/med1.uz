@@ -221,13 +221,13 @@ serve(async (req) => {
           responseBody = json(403, { code: "origin_blocked", message: "Origin not whitelisted" }, requestId);
         } else {
           // 4. Route lookup & scope check
-          const route = ROUTES[routeKey];
+          const route = matchRoute(req.method, path);
           if (!route) {
             statusCode = 404;
             errorMsg = "Route not found";
             responseBody = json(
               404,
-              { code: "route_not_found", message: `Unknown endpoint ${routeKey}`, available: Object.keys(ROUTES) },
+              { code: "route_not_found", message: `Unknown endpoint ${routeKey}` },
               requestId,
             );
           } else if (route.scope !== "*" && !keyRow.scopes.includes(route.scope) && !keyRow.scopes.includes("*")) {
