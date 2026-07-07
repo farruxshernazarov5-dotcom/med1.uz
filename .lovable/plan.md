@@ -1,97 +1,140 @@
-# AI Analytics & Usage Intelligence Center — Bosqichma-bosqich reja
 
-Modul Super Admin uchun real ma'lumotlardan (mock emas) hisoblanadigan to'liq AI monitoring tizimi.
+# MED1.UZ Mobile API Platform va Super Admin API Management Center
 
-Hozir `ai_usage` jadvalida atigi 5 ustun bor (`user_id`, `service_id`, `used_at`, `tokens_used`, `cost_credits`). Kanal, latency, status, OpenAI/Gemini xarajati yo'q. Shuning uchun avval **fundament** quramiz, keyin UI.
+**Umumiy strategiya:** Loyihada allaqachon mustahkam poydevor bor — `api-gateway` edge function, `api_keys`, `api_partners`, `api_request_logs`, `api_webhooks`, `api_webhook_deliveries` jadvallari, OpenAPI JSON, Swagger UI (`/api-docs`), va 14 ta AI edge functions. Yangi kod yozish o'rniga **mavjud infratuzilmani kengaytiramiz**, dublikat qilmaymiz.
+
+Mobil ilova = **Flutter**. Autentifikatsiya = **ikki xil**: end-user'lar uchun Supabase JWT (mobile app login), tashqi hamkorlar uchun OAuth 2.0 + API Key (hozirgidek).
 
 ---
 
-## BOSQICH 1 — Ma'lumotlar fundamenti (DB + Edge logging)
+## Bosqich 1 — Baza kengaytirish (DB + Gateway)
 
-**Maqsad:** Har bir AI so'rov to'liq kontekst bilan yozilishi.
+**Migration:**
+- `api_endpoints` jadvali — barcha endpointlarni ro'yxatga olish (path, method, scope, category: mobile/web/hambi/partner/ai, description, is_deprecated, rate_limit_override)
+- `api_oauth_clients` jadvali — OAuth 2.0 clientlar (client_id, client_secret_hash, redirect_uris, scopes, partner_id)
+- `api_sdk_versions` jadvali — SDK release'lar (language, version, download_url, changelog)
+- `api_monitoring_alerts` jadvali — real-time alert konfiguratsiya (error_rate_threshold, latency_threshold, notify_channel)
+- Barchasiga GRANT + RLS (faqat admin ko'ra oladi)
 
-1. `ai_usage` jadvaliga ustunlar qo'shish:
-   - `channel` (`web` | `hambi` | `telegram` | `api` | `mobile_android` | `mobile_ios`)
-   - `status` (`success` | `error` | `timeout` | `rate_limited`)
-   - `latency_ms` (int)
-   - `model` (text — `gemini-3-flash-preview` va h.k.)
-   - `prompt_tokens`, `completion_tokens` (int)
-   - `cost_usd` (numeric — model narxidan hisoblangan haqiqiy $)
-   - `error_code`, `error_message` (text, nullable)
-   - `region` (text — IP/profil hududidan)
-   - `request_id` (uuid — debug uchun)
-2. Indekslar: `(service_id, used_at DESC)`, `(channel, used_at DESC)`, `(status, used_at DESC)`.
-3. `supabase/functions/_shared/ai-access.ts` ichida `logAiUsage(...)` helper yangilanadi — barcha yangi maydonlarni qabul qiladi, kanalni `X-Channel` header'dan o'qiydi.
-4. 14 ta AI edge function (`ai-doctor-chat`, `ai-radiology`, `symptom-checker`, `ai-report-analysis`, va h.k.) `logAiUsage` chaqirig'ini yangilaydi: latency o'lchaydi, status/error yozadi, model + cost qo'shadi.
-5. `src/lib/aiClient.ts` (yangi yoki mavjudini yangilash) — frontend har doim `X-Channel: web|hambi|mobile_*` headerini yuboradi (`Capacitor.isNativePlatform()` + Hambi WebView aniqlash).
+**Gateway kengaytirish (`supabase/functions/api-gateway/index.ts`):**
+- Yangi endpointlar (ROUTES map'ga qo'shish):
+  - `POST /v1/auth/login`, `/register`, `/otp/send`, `/otp/verify`, `/refresh`, `/logout`, `/forgot-password`
+  - `GET/PATCH /v1/user/profile`, `POST /v1/user/avatar`, `PATCH /v1/user/settings`
+  - `POST /v1/ai/{doctor|symptoms|laboratory|radiology|pregnancy|baby-care|psychologist|diet|pharmacy|cosmetology|fitness|assistant|monitoring|prediction}` — mavjud `ai-*` edge functionlarga proxy
+  - `GET /v1/clinics/:id`, `/doctors/:id`, `/diagnostics/:id`, `/maternity`, `/pharmacies/:id`
+  - `POST /v1/appointments`, `DELETE /v1/appointments/:id`, `GET /v1/appointments/history`, `POST /v1/appointments/:id/checkin`
+  - `GET /v1/emr/records`, `/analyses`, `/prescriptions`, `/diagnoses`
+  - `POST /v1/payments/click|payme|uzum`, `GET /v1/payments/history`, `/subscriptions`, `POST /v1/med-coin/purchase`
+  - `POST /v1/notifications/push|sms|email|telegram`
+  - `GET /v1/maps/nearby`, `/geofence`
+- Har bir request `api_request_logs`ga yoziladi (allaqachon bor)
+- Rate limit: minute + day tekshiruvi (per key)
+- Sandbox rejim: `environment='sandbox'` bo'lgan kalitlar `/v1/sandbox/*` prefiksga yo'naltiriladi, test ma'lumotlar qaytaradi
 
-## BOSQICH 2 — Server-side aggregation funksiyalari
+---
 
-**Maqsad:** Dashboard 100k+ qatordan tez yuklanishi.
+## Bosqich 2 — Super Admin API Management Center UI
 
-`SECURITY DEFINER` SQL funksiyalari (faqat admin chaqira oladi):
+`src/components/admin/api/` papkasida modul:
 
-- `analytics_overview(_from, _to)` → KPI kartalar (jami, bugungi, haftalik, oylik, success %, avg latency).
-- `analytics_by_service(_from, _to)` → har bir service uchun count, tokens, cost, avg latency.
-- `analytics_by_channel(_from, _to)` → kanal kesimida.
-- `analytics_revenue(_from, _to)` → `credit_history` + `ai_payments` + `platform_payments` JOIN.
-- `analytics_top_users(_from, _to, _limit)` → top Med Coin sarflagan foydalanuvchilar.
-- `analytics_timeseries(_from, _to, _granularity)` → soat/kun/oy bo'yicha trend (Recharts uchun).
-- `analytics_by_region(_from, _to)` → hudud kesimi.
+- **`APIManagementCenter.tsx`** — asosiy shell, tabbed navigation
+- **`APIDashboard.tsx`** — KPI kartlar (requests/24h, error rate, avg latency, active keys, top endpoints)
+- **`APIEndpointsManager.tsx`** — `api_endpoints` CRUD, scope tayinlash, deprecated belgilash
+- **`APIKeysManager.tsx`** — `api_keys` boshqaruvi (yaratish, revoke, rotate, scope tahrirlash)
+- **`OAuthClientsManager.tsx`** — OAuth clientlar
+- **`JWTTokensViewer.tsx`** — faol sessiyalar (auth.sessions dan)
+- **`MobileAPIPanel.tsx`, `WebAPIPanel.tsx`, `HambiAPIPanel.tsx`, `PartnerAPIPanel.tsx`, `AIAPIPanel.tsx`** — kategoriya bo'yicha filtered view
+- **`WebhookManager.tsx`** — `api_webhooks` + `api_webhook_deliveries` (mavjud)
+- **`APIMonitoring.tsx`** — real-time alerts, health status
+- **`APILogsViewer.tsx`** — `api_request_logs` filter/search
+- **`APIAnalytics.tsx`** — Recharts: requests over time, top endpoints, channel breakdown (android/ios/web/hambi/telegram/partner)
+- **`APIRateLimits.tsx`** — per-key/per-tier limitlarni tahrirlash
+- **`APISecurityCenter.tsx`** — IP whitelist, CORS, audit log
+- **`APIDocumentation.tsx`** — Developer Portal iframe/link
+- **`SDKDownloads.tsx`** — SDK versiyalari download
+- **`SandboxPanel.tsx`** — test API key generatsiyasi, test user
 
-Hammasi `has_role(auth.uid(), 'admin')` tekshiradi.
+**Yo'nalish:** `/admin/api-center` route (faqat `admin` roli). `AdminDashboard.tsx`ga link qo'shiladi.
 
-## BOSQICH 3 — UI: AI Analytics Center (Faza 1 dashboard)
+---
 
-- Yangi route: `/admin/ai-analytics` (faqat admin).
-- AdminDashboard sidebar/menyusiga "📊 AI Analytics Center" qo'shish.
-- Komponentlar (`src/components/admin/analytics/`):
-  - `AnalyticsHeader` — sana oralig'i pikkeri (Bugun / 7 kun / 30 kun / 90 kun / 1 yil / Custom).
-  - `KpiCards` — 8 ta jonli KPI karta.
-  - `ServicesTable` — 14 AI xizmat reytingi (sortable).
-  - `ChannelBreakdown` — donut chart (Web / Hambi / Telegram / API / Mobile).
-  - `UsageTimeline` — Recharts area chart.
-  - `RevenuePanel` — daromad va Med Coin grafiklari.
-  - `TopUsersList` — top 10 foydalanuvchilar.
-- Dizayn: mavjud `bg-grid-tech`, `glass-dark`, KPI uchun `GlowCard` (futuristik design system).
-- Real-time: 60s `refetchInterval` (TanStack Query) + Supabase Realtime `ai_usage` INSERT subscription "Live Counter" uchun.
+## Bosqich 3 — Developer Portal + OpenAPI
 
-## BOSQICH 4 — Kengaytmalar
+- **`public/openapi.json` kengaytirish** — barcha yangi endpointlarni qo'shish (auth, user, ai, appointments, emr, payments, notifications, maps). Har birida request/response schema, security scheme (bearerAuth + apiKeyAuth), example.
+- **`src/pages/DeveloperPortalPage.tsx`** — public sahifa `/developers`:
+  - Getting Started
+  - Authentication (JWT vs OAuth vs API Key)
+  - Endpoint reference (Swagger UI embed — mavjud `/api-docs`)
+  - SDK downloads (Flutter, JS, Kotlin, Swift, React Native, Node, Python, Laravel)
+  - Code samples har bir endpoint uchun (cURL, Dart/Flutter, JavaScript, Kotlin, Swift)
+  - Rate limits, error codes, webhooks docs, changelog
+- Code sample generator: OpenAPI spec'dan avtomatik yaratish (client-side)
 
-- **Hududlar:** Google Maps heatmap (`/admin/ai-analytics/regions`).
-- **Token / OpenAI xarajatlari:** model narx jadvali (`ai_model_pricing`) + `cost_usd` aggregation.
-- **Top Med Coin foydalanuvchilar:** `credit_history` JOIN.
-- **AI BI tavsiyalar:** Lovable AI Gateway orqali kunlik insight generatsiya (`ai-bi-insights` edge function, kunlik cron).
-- **Alertlar:** mavjud `security_debug_log` + `security-notify` infratuzilmasidan foydalanish (token spike, error spike, daromad pasayishi).
+---
 
-## BOSQICH 5 — Export va polish
+## Bosqich 4 — Flutter SDK
 
-- PDF (jsPDF, mavjud `downloadContractPDF.ts` patterni), Excel (xlsxwriter / SheetJS), CSV export.
-- Dark/Light mode tekshiruv (mavjud `next-themes` ishlatamiz).
-- Investor-ready KPI snapshot sahifasi (`/admin/ai-analytics/snapshot`) — bitta sahifada hammasi, PDF ga eksport.
+`sdk/flutter/med1_api/` papkasida standalone Dart package (repo ichida, alohida publish):
+- `Med1ApiClient` — Dio-based HTTP client, auto JWT refresh, retry logic
+- `AuthApi`, `UserApi`, `AiApi`, `ClinicsApi`, `AppointmentsApi`, `EmrApi`, `PaymentsApi`, `NotificationsApi`, `MapsApi`
+- Model class'lar (freezed)
+- `README.md` — pub.dev uchun tayyor
+- Namuna: `example/main.dart`
+
+Flutter'chilarga `SDKDownloads.tsx` orqali `.tar.gz` yoki GitHub link.
+
+---
+
+## Bosqich 5 — Sandbox + Monitoring
+
+- **Sandbox:** `api-gateway`da `environment='sandbox'` kalitlar uchun alohida test ma'lumotlar (mock clinics, mock AI response, mock Med Coin balance, mock payment success). Real DB'ga yozmaydi.
+- **Monitoring cron:** yangi edge function `api-health-monitor` — har 5 daqiqada `api_request_logs`ni tekshiradi:
+  - Error rate > threshold → admin'ga email + telegram alert
+  - Avg latency > threshold → alert
+  - Suspicious token usage (100+ 401 in 5 min) → alert
+- `pg_cron` bilan schedule
+
+---
+
+## Bosqich 6 — Xavfsizlik qatlami
+
+- **Request Signature (HMAC):** hamkorlar uchun optional — `X-Signature: HMAC-SHA256(secret, timestamp+body)` header validation
+- **Refresh Token rotation** — Supabase auth allaqachon qiladi, hujjatlashtiramiz
+- **CORS whitelist** — `api_partners.allowed_domains` (mavjud) qat'iy tekshiruv
+- **Audit log:** har bir API Center action `audit_logs`ga yoziladi (kim yaratdi/revoke qildi kalit)
+- **security scan:** yangi endpointlar uchun input validation (Zod har bir handler'da)
 
 ---
 
 ## Texnik tafsilotlar
 
-**Yangi fayllar (taxminiy):**
-- `supabase/migrations/<ts>_ai_analytics_foundation.sql` — `ai_usage` ALTER + indexlar + RPC funksiyalar.
-- `supabase/functions/_shared/ai-access.ts` — `logAiUsage` kengaytirilgan.
-- `supabase/functions/_shared/ai-cost.ts` — model narxi → USD hisoblash.
-- `supabase/functions/ai-bi-insights/index.ts` — kunlik AI tavsiyalar.
-- `src/lib/aiClient.ts` — channel header injection.
-- `src/pages/admin/AIAnalyticsPage.tsx`
-- `src/components/admin/analytics/*` (8-10 komponent)
-- `src/hooks/useAdminAnalytics.ts` — TanStack Query hooklari.
+```text
+Loyiha strukturasi:
+├── supabase/
+│   ├── migrations/            → api_endpoints, api_oauth_clients, api_sdk_versions, api_monitoring_alerts
+│   └── functions/
+│       ├── api-gateway/       → kengaytirilgan (auth+user+ai+emr+payments+notif+maps)
+│       └── api-health-monitor/ → yangi, cron bilan
+├── src/
+│   ├── pages/
+│   │   ├── admin/APICenterPage.tsx    → /admin/api-center
+│   │   └── DeveloperPortalPage.tsx    → /developers
+│   └── components/admin/api/  → 18 ta komponent
+├── sdk/flutter/med1_api/      → Dart package
+└── public/openapi.json        → to'liq spec
+```
 
-**O'zgartiriladi:** 14 ta AI edge function (logging chaqiruvi), `App.tsx` (route), `AdminDashboard` (menyu).
+**Ish tartibi (har bosqich alohida xabar):**
+1. **1-xabar:** Bosqich 1 (DB migration + gateway kengaytirish)
+2. **2-xabar:** Bosqich 2 (Super Admin UI — API Management Center)
+3. **3-xabar:** Bosqich 3 (Developer Portal + OpenAPI)
+4. **4-xabar:** Bosqich 4 (Flutter SDK)
+5. **5-xabar:** Bosqich 5+6 (Sandbox, Monitoring, Security)
 
-**RLS:** `ai_usage` SELECT faqat o'z qatorlari uchun (mavjud), admin uchun `has_role` orqali aggregation funksiyalarda.
+Har bosqich mustaqil ishlaydi va build/test bilan tekshiriladi. Umumiy hajm katta — taxminan 40-50 ta yangi/o'zgartirilgan fayl.
+
+**Muhim eslatma:** Barcha to'lov (Stripe/Click/Payme), AI (Gemini/Lovable AI), va notifications (Telegram/Email) — allaqachon ishlaydigan edge function'larga proxy qilamiz. Dublikat logic yozmaymiz.
 
 ---
 
-## Tasdiq
-
-Bu rejani tasdiqlasangiz, **Bosqich 1**dan (DB fundament + edge logging) boshlayman — bu yagona migratsiya + edge function yangilanishlari, taxminan 1 katta iteratsiya. Keyingi bosqichlar har biri alohida iteratsiyada quriladi va siz har bosqichdan keyin natijani ko'rasiz.
-
-Boshlaymizmi Bosqich 1'dan, yoki rejaga o'zgartirish kiritamizmi?
+**Tasdiqlang va men Bosqich 1'dan boshlayman.**
