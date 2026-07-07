@@ -8,7 +8,7 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt, Rocket
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
