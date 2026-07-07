@@ -329,6 +329,66 @@ export type Database = {
         }
         Relationships: []
       }
+      api_endpoints: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_deprecated: boolean
+          is_public: boolean
+          method: string
+          path: string
+          rate_limit_per_day: number | null
+          rate_limit_per_min: number | null
+          request_schema: Json | null
+          response_schema: Json | null
+          scope: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_deprecated?: boolean
+          is_public?: boolean
+          method: string
+          path: string
+          rate_limit_per_day?: number | null
+          rate_limit_per_min?: number | null
+          request_schema?: Json | null
+          response_schema?: Json | null
+          scope?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_deprecated?: boolean
+          is_public?: boolean
+          method?: string
+          path?: string
+          rate_limit_per_day?: number | null
+          rate_limit_per_min?: number | null
+          request_schema?: Json | null
+          response_schema?: Json | null
+          scope?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
@@ -384,6 +444,136 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "api_keys_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "api_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_monitoring_alerts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          last_triggered_at: string | null
+          metric: string
+          name: string
+          notify_email: string | null
+          notify_telegram_chat_id: string | null
+          operator: string
+          scope_endpoint: string | null
+          scope_partner_id: string | null
+          threshold: number
+          trigger_count: number
+          updated_at: string
+          window_minutes: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          metric: string
+          name: string
+          notify_email?: string | null
+          notify_telegram_chat_id?: string | null
+          operator?: string
+          scope_endpoint?: string | null
+          scope_partner_id?: string | null
+          threshold: number
+          trigger_count?: number
+          updated_at?: string
+          window_minutes?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_triggered_at?: string | null
+          metric?: string
+          name?: string
+          notify_email?: string | null
+          notify_telegram_chat_id?: string | null
+          operator?: string
+          scope_endpoint?: string | null
+          scope_partner_id?: string | null
+          threshold?: number
+          trigger_count?: number
+          updated_at?: string
+          window_minutes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_monitoring_alerts_scope_partner_id_fkey"
+            columns: ["scope_partner_id"]
+            isOneToOne: false
+            referencedRelation: "api_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_oauth_clients: {
+        Row: {
+          access_token_ttl_seconds: number
+          allowed_grants: string[]
+          client_id: string
+          client_name: string
+          client_secret_hash: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          is_confidential: boolean
+          last_used_at: string | null
+          partner_id: string | null
+          redirect_uris: string[]
+          refresh_token_ttl_seconds: number
+          scopes: string[]
+          updated_at: string
+        }
+        Insert: {
+          access_token_ttl_seconds?: number
+          allowed_grants?: string[]
+          client_id: string
+          client_name: string
+          client_secret_hash: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          is_confidential?: boolean
+          last_used_at?: string | null
+          partner_id?: string | null
+          redirect_uris?: string[]
+          refresh_token_ttl_seconds?: number
+          scopes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          access_token_ttl_seconds?: number
+          allowed_grants?: string[]
+          client_id?: string
+          client_name?: string
+          client_secret_hash?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          is_confidential?: boolean
+          last_used_at?: string | null
+          partner_id?: string | null
+          redirect_uris?: string[]
+          refresh_token_ttl_seconds?: number
+          scopes?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_oauth_clients_partner_id_fkey"
             columns: ["partner_id"]
             isOneToOne: false
             referencedRelation: "api_partners"
@@ -578,6 +768,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      api_sdk_versions: {
+        Row: {
+          changelog: string | null
+          created_at: string
+          download_url: string | null
+          id: string
+          is_latest: boolean
+          is_stable: boolean
+          language: string
+          min_api_version: string
+          released_at: string
+          repository_url: string | null
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          changelog?: string | null
+          created_at?: string
+          download_url?: string | null
+          id?: string
+          is_latest?: boolean
+          is_stable?: boolean
+          language: string
+          min_api_version?: string
+          released_at?: string
+          repository_url?: string | null
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          changelog?: string | null
+          created_at?: string
+          download_url?: string | null
+          id?: string
+          is_latest?: boolean
+          is_stable?: boolean
+          language?: string
+          min_api_version?: string
+          released_at?: string
+          repository_url?: string | null
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
       }
       api_webhook_deliveries: {
         Row: {

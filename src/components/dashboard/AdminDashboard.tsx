@@ -8,7 +8,7 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt, Rocket
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
@@ -89,6 +89,7 @@ const sidebarSections = [
       { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
       { id: "ai_analytics", label: "📊 AI Analytics Center", icon: BarChart3, href: "/admin/ai-analytics" },
+      { id: "api_center", label: "🚀 API Management Center", icon: Rocket, href: "/admin/api-center" },
       { id: "announcements", label: "E'lonlar", icon: Bell },
       { id: "promotions", label: "Aksiyalar", icon: Heart },
       { id: "admin_users", label: "Adminlar", icon: UserCog },
