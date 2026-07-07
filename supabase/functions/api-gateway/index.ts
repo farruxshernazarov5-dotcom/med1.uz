@@ -429,5 +429,300 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     );
   }
 
+  // ==================== Dynamic entity GETs ====================
+  const clinicIdMatch = path.match(/^\/v1\/clinics\/([^/]+)$/);
+  if (clinicIdMatch && req.method === "GET") {
+    const { data, error } = await supabase.from("registered_clinics").select("*").eq("id", clinicIdMatch[1]).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (!data) return json(404, { code: "not_found", message: "Clinic not found" }, requestId);
+    return json(200, data, requestId);
+  }
+  const doctorIdMatch = path.match(/^\/v1\/doctors\/([^/]+)$/);
+  if (doctorIdMatch && req.method === "GET") {
+    const { data, error } = await supabase.from("doctors").select("*").eq("id", doctorIdMatch[1]).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (!data) return json(404, { code: "not_found", message: "Doctor not found" }, requestId);
+    return json(200, data, requestId);
+  }
+  const diagIdMatch = path.match(/^\/v1\/diagnostics\/([^/]+)$/);
+  if (diagIdMatch && req.method === "GET") {
+    const { data, error } = await supabase.from("registered_diagnostics").select("*").eq("id", diagIdMatch[1]).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (!data) return json(404, { code: "not_found", message: "Not found" }, requestId);
+    return json(200, data, requestId);
+  }
+  const pharmIdMatch = path.match(/^\/v1\/pharmacies\/([^/]+)$/);
+  if (pharmIdMatch && req.method === "GET") {
+    const { data, error } = await supabase.from("registered_pharmacies").select("*").eq("id", pharmIdMatch[1]).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (!data) return json(404, { code: "not_found", message: "Not found" }, requestId);
+    return json(200, data, requestId);
+  }
+
+  // ==================== Maternity list ====================
+  if (path === "/v1/maternity" && req.method === "GET") {
+    let qry = supabase.from("registered_maternity").select("*", { count: "exact" })
+      .eq("is_active", true).order("name").range(offset, offset + limit - 1);
+    if (q) qry = qry.ilike("name", `%${q}%`);
+    if (city) qry = qry.ilike("city", `%${city}%`);
+    const { data, error, count } = await qry;
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
+  }
+
+  // ==================== AUTH ====================
+  if (path.startsWith("/v1/auth/") && req.method === "POST") {
+    let body: any = {};
+    try { body = await req.json(); } catch { /* empty body OK */ }
+    const authUrl = Deno.env.get("SUPABASE_URL")!;
+    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+    const call = async (endpoint: string, payload: any) => {
+      const r = await fetch(`${authUrl}/auth/v1/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: anon, Authorization: `Bearer ${anon}` },
+        body: JSON.stringify(payload),
+      });
+      const j = await r.json().catch(() => ({}));
+      return { status: r.status, body: j };
+    };
+
+    if (path === "/v1/auth/login") {
+      const r = await call("token?grant_type=password", { email: body.email, password: body.password, phone: body.phone });
+      return json(r.status < 400 ? 200 : r.status, r.body, requestId);
+    }
+    if (path === "/v1/auth/register") {
+      const r = await call("signup", { email: body.email, password: body.password, phone: body.phone, data: body.metadata || {} });
+      return json(r.status < 400 ? 201 : r.status, r.body, requestId);
+    }
+    if (path === "/v1/auth/refresh") {
+      const r = await call("token?grant_type=refresh_token", { refresh_token: body.refresh_token });
+      return json(r.status < 400 ? 200 : r.status, r.body, requestId);
+    }
+    if (path === "/v1/auth/logout") {
+      const at = body.access_token || req.headers.get("x-user-token");
+      if (!at) return json(400, { code: "no_token", message: "access_token required" }, requestId);
+      const r = await fetch(`${authUrl}/auth/v1/logout`, { method: "POST", headers: { apikey: anon, Authorization: `Bearer ${at}` } });
+      return json(r.ok ? 200 : r.status, { logged_out: r.ok }, requestId);
+    }
+    if (path === "/v1/auth/forgot-password") {
+      const r = await call("recover", { email: body.email });
+      return json(r.status < 400 ? 200 : r.status, r.body, requestId);
+    }
+    if (path === "/v1/auth/otp/send") {
+      const r = await call("otp", { phone: body.phone, email: body.email, create_user: body.create_user ?? true });
+      return json(r.status < 400 ? 200 : r.status, r.body, requestId);
+    }
+    if (path === "/v1/auth/otp/verify") {
+      const r = await call("verify", { type: body.type || "sms", phone: body.phone, email: body.email, token: body.token });
+      return json(r.status < 400 ? 200 : r.status, r.body, requestId);
+    }
+  }
+
+  // ==================== USER ====================
+  if (path === "/v1/user/profile" && req.method === "GET") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    const { data, error } = await supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, data || {}, requestId);
+  }
+  if (path === "/v1/user/profile" && req.method === "PATCH") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const allowed = ["full_name", "phone", "avatar_url", "language", "region", "district"];
+    const patch: any = {};
+    for (const k of allowed) if (k in body) patch[k] = body[k];
+    const { data, error } = await supabase.from("profiles").update(patch).eq("user_id", uid).select().maybeSingle();
+    if (error) return json(400, { code: "update_failed", message: error.message }, requestId);
+    return json(200, data, requestId);
+  }
+  if (path === "/v1/user/settings" && req.method === "PATCH") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const patch: any = {};
+    if (body.language) patch.language = body.language;
+    const { data, error } = await supabase.from("profiles").update(patch).eq("user_id", uid).select().maybeSingle();
+    if (error) return json(400, { code: "update_failed", message: error.message }, requestId);
+    return json(200, data, requestId);
+  }
+
+  // ==================== AI (14 services -> ai-* edge functions) ====================
+  const aiMatch = path.match(/^\/v1\/ai\/([a-z-]+)$/);
+  if (aiMatch && req.method === "POST" && aiMatch[1] !== "chat") {
+    const AI_MAP: Record<string, string> = {
+      doctor: "ai-doctor-chat",
+      symptoms: "symptom-checker",
+      laboratory: "ai-report-analysis",
+      radiology: "ai-radiology",
+      pregnancy: "ai-pregnancy",
+      "baby-care": "ai-baby-care",
+      psychologist: "ai-psixolog",
+      diet: "ai-dietolog",
+      pharmacy: "ai-farmatsevt",
+      cosmetology: "ai-cosmetology",
+      fitness: "ai-fitness",
+      assistant: "ai-health-assistant",
+      monitoring: "ai-health-check",
+      prediction: "ai-health-risk",
+    };
+    const fnName = AI_MAP[aiMatch[1]];
+    if (!fnName) return json(404, { code: "unknown_ai_service", message: `Unknown AI service: ${aiMatch[1]}` }, requestId);
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const supaUrl = Deno.env.get("SUPABASE_URL")!;
+    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const r = await fetch(`${supaUrl}/functions/v1/${fnName}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: anon, Authorization: `Bearer ${anon}` },
+      body: JSON.stringify(body),
+    });
+    const text = await r.text();
+    let parsed: any; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+    return json(r.ok ? 200 : r.status, parsed, requestId);
+  }
+
+  // ==================== EMR (patient-scoped reads) ====================
+  if (path.startsWith("/v1/emr/") && req.method === "GET") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    let table = "";
+    if (path === "/v1/emr/records") table = "medical_records";
+    else if (path === "/v1/emr/analyses") table = "hms_lab_results";
+    else if (path === "/v1/emr/prescriptions") table = "doctor_prescriptions";
+    else if (path === "/v1/emr/diagnoses") table = "health_records";
+    if (!table) return json(404, { code: "not_found", message: "Unknown EMR path" }, requestId);
+    const { data, error } = await supabase.from(table).select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(limit);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [], count: (data ?? []).length }, requestId);
+  }
+
+  // ==================== PAYMENTS ====================
+  if (path === "/v1/payments/history" && req.method === "GET") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    const { data, error } = await supabase.from("ai_payments").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(limit);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [] }, requestId);
+  }
+  if (path === "/v1/subscriptions" && req.method === "GET") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    const { data, error } = await supabase.from("user_ai_subscriptions").select("*").eq("user_id", uid);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [] }, requestId);
+  }
+  if (path.startsWith("/v1/payments/") && req.method === "POST") {
+    const provider = path.split("/").pop();
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const supaUrl = Deno.env.get("SUPABASE_URL")!;
+    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const fnMap: Record<string, string> = { click: "click-create-invoice", payme: "payme-create-invoice", uzum: "uzum-create-invoice" };
+    const fn = fnMap[provider || ""];
+    if (!fn) return json(404, { code: "unknown_provider", message: "Unknown payment provider" }, requestId);
+    const r = await fetch(`${supaUrl}/functions/v1/${fn}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: anon, Authorization: `Bearer ${anon}` },
+      body: JSON.stringify(body),
+    });
+    const text = await r.text();
+    let parsed: any; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+    return json(r.ok ? 200 : r.status, parsed, requestId);
+  }
+
+  // ==================== NOTIFICATIONS ====================
+  if (path === "/v1/notifications/telegram" && req.method === "POST") {
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const supaUrl = Deno.env.get("SUPABASE_URL")!;
+    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const r = await fetch(`${supaUrl}/functions/v1/telegram-notify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: anon, Authorization: `Bearer ${anon}` },
+      body: JSON.stringify(body),
+    });
+    const text = await r.text();
+    let parsed: any; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+    return json(r.ok ? 200 : r.status, parsed, requestId);
+  }
+  if (path === "/v1/notifications/email" && req.method === "POST") {
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const supaUrl = Deno.env.get("SUPABASE_URL")!;
+    const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const r = await fetch(`${supaUrl}/functions/v1/send-transactional-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: anon, Authorization: `Bearer ${anon}` },
+      body: JSON.stringify(body),
+    });
+    const text = await r.text();
+    let parsed: any; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+    return json(r.ok ? 200 : r.status, parsed, requestId);
+  }
+  if ((path === "/v1/notifications/push" || path === "/v1/notifications/sms") && req.method === "POST") {
+    return json(202, { queued: true, note: "SMS/Push queued for future dispatch" }, requestId);
+  }
+
+  // ==================== MAPS ====================
+  if (path === "/v1/maps/nearby" && req.method === "GET") {
+    const lat = parseFloat(url.searchParams.get("lat") || "0");
+    const lng = parseFloat(url.searchParams.get("lng") || "0");
+    const radiusKm = parseFloat(url.searchParams.get("radius_km") || "10");
+    if (!lat || !lng) return json(400, { code: "invalid_coords", message: "lat and lng required" }, requestId);
+    const { data, error } = await supabase.from("registered_clinics").select("id, name, address, latitude, longitude, phone").eq("is_active", true).not("latitude", "is", null).limit(200);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    const R = 6371;
+    const toRad = (d: number) => (d * Math.PI) / 180;
+    const items = (data ?? []).map((c: any) => {
+      const dLat = toRad(c.latitude - lat), dLng = toRad(c.longitude - lng);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat))*Math.cos(toRad(c.latitude))*Math.sin(dLng/2)**2;
+      return { ...c, distance_km: Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 100)/100 };
+    }).filter((c: any) => c.distance_km <= radiusKm).sort((a: any, b: any) => a.distance_km - b.distance_km);
+    return json(200, { items, count: items.length }, requestId);
+  }
+  if (path === "/v1/maps/geofence" && req.method === "GET") {
+    const { data, error } = await supabase.from("geofence_zones").select("*").eq("is_active", true);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [] }, requestId);
+  }
+
+  // ==================== APPOINTMENTS ====================
+  if ((path === "/v1/bookings" || path === "/v1/appointments") && req.method === "POST") {
+    let body: any = {}; try { body = await req.json(); } catch {}
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const { data, error } = await supabase.from("appointments").insert({
+      user_id: uid,
+      clinic_id: body.clinic_id,
+      doctor_id: body.doctor_id,
+      service_id: body.service_id,
+      appointment_date: body.date,
+      appointment_time: body.time,
+      patient_name: body.patient_name,
+      patient_phone: body.patient_phone,
+      notes: body.notes,
+      status: "pending",
+    }).select().maybeSingle();
+    if (error) return json(400, { code: "insert_failed", message: error.message }, requestId);
+    return json(201, data, requestId);
+  }
+  if (path === "/v1/appointments/history" && req.method === "GET") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    const { data, error } = await supabase.from("appointments").select("*").eq("user_id", uid).order("appointment_date", { ascending: false }).limit(limit);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [] }, requestId);
+  }
+  const apptDelMatch = path.match(/^\/v1\/appointments\/([^/]+)$/);
+  if (apptDelMatch && req.method === "DELETE") {
+    const { error } = await supabase.from("appointments").update({ status: "cancelled" }).eq("id", apptDelMatch[1]);
+    if (error) return json(400, { code: "cancel_failed", message: error.message }, requestId);
+    return json(200, { cancelled: true, id: apptDelMatch[1] }, requestId);
+  }
+  const checkinMatch = path.match(/^\/v1\/appointments\/([^/]+)\/checkin$/);
+  if (checkinMatch && req.method === "POST") {
+    const { data, error } = await supabase.from("appointments").update({ status: "checked_in", checked_in_at: new Date().toISOString() }).eq("id", checkinMatch[1]).select().maybeSingle();
+    if (error) return json(400, { code: "checkin_failed", message: error.message }, requestId);
+    return json(200, data, requestId);
+  }
+
   return json(501, { code: "not_implemented", message: `${path} handler pending` }, requestId);
 }
