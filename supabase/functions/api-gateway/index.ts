@@ -52,15 +52,89 @@ interface PartnerRow {
 }
 
 // Endpoint -> required scope mapping. Add more as Phase 5 lands.
+// Static routes (exact match). Dynamic routes (with :id) handled in matchRoute().
 const ROUTES: Record<string, { scope: string; method: string }> = {
+  "GET /v1/ping": { scope: "*", method: "GET" },
+  // Auth (public)
+  "POST /v1/auth/login": { scope: "*", method: "POST" },
+  "POST /v1/auth/register": { scope: "*", method: "POST" },
+  "POST /v1/auth/otp/send": { scope: "*", method: "POST" },
+  "POST /v1/auth/otp/verify": { scope: "*", method: "POST" },
+  "POST /v1/auth/refresh": { scope: "*", method: "POST" },
+  "POST /v1/auth/logout": { scope: "*", method: "POST" },
+  "POST /v1/auth/forgot-password": { scope: "*", method: "POST" },
+  // User
+  "GET /v1/user/profile": { scope: "user:read", method: "GET" },
+  "PATCH /v1/user/profile": { scope: "user:write", method: "PATCH" },
+  "POST /v1/user/avatar": { scope: "user:write", method: "POST" },
+  "PATCH /v1/user/settings": { scope: "user:write", method: "PATCH" },
+  // Directory
   "GET /v1/clinics": { scope: "clinic:read", method: "GET" },
   "GET /v1/doctors": { scope: "doctor:read", method: "GET" },
   "GET /v1/diagnostics": { scope: "diagnostics:read", method: "GET" },
+  "GET /v1/maternity": { scope: "clinic:read", method: "GET" },
   "GET /v1/pharmacies": { scope: "pharmacy:read", method: "GET" },
+  // Bookings
   "POST /v1/bookings": { scope: "booking:write", method: "POST" },
+  "POST /v1/appointments": { scope: "booking:write", method: "POST" },
+  "GET /v1/appointments/history": { scope: "booking:read", method: "GET" },
+  // EMR
+  "GET /v1/emr/records": { scope: "emr:read", method: "GET" },
+  "GET /v1/emr/analyses": { scope: "emr:read", method: "GET" },
+  "GET /v1/emr/prescriptions": { scope: "emr:read", method: "GET" },
+  "GET /v1/emr/diagnoses": { scope: "emr:read", method: "GET" },
+  // Payments
+  "POST /v1/payments/click": { scope: "payment:write", method: "POST" },
+  "POST /v1/payments/payme": { scope: "payment:write", method: "POST" },
+  "POST /v1/payments/uzum": { scope: "payment:write", method: "POST" },
+  "GET /v1/payments/history": { scope: "payment:read", method: "GET" },
+  "GET /v1/subscriptions": { scope: "payment:read", method: "GET" },
+  "POST /v1/med-coin/purchase": { scope: "payment:write", method: "POST" },
+  // Notifications
+  "POST /v1/notifications/push": { scope: "notify:write", method: "POST" },
+  "POST /v1/notifications/sms": { scope: "notify:write", method: "POST" },
+  "POST /v1/notifications/email": { scope: "notify:write", method: "POST" },
+  "POST /v1/notifications/telegram": { scope: "notify:write", method: "POST" },
+  // Maps
+  "GET /v1/maps/nearby": { scope: "*", method: "GET" },
+  "GET /v1/maps/geofence": { scope: "*", method: "GET" },
+  // AI (legacy generic)
   "POST /v1/ai/chat": { scope: "ai:chat", method: "POST" },
-  "GET /v1/ping": { scope: "*", method: "GET" },
+  // AI (14 services) — proxied to ai-* edge functions
+  "POST /v1/ai/doctor": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/symptoms": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/laboratory": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/pregnancy": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/baby-care": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/psychologist": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/diet": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/pharmacy": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/cosmetology": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/fitness": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/assistant": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/monitoring": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/prediction": { scope: "ai:chat", method: "POST" },
 };
+
+// Dynamic route patterns (path segments starting with ":" are wildcards)
+const DYNAMIC_ROUTES: Array<{ method: string; pattern: RegExp; scope: string }> = [
+  { method: "GET", pattern: /^\/v1\/clinics\/[^/]+$/, scope: "clinic:read" },
+  { method: "GET", pattern: /^\/v1\/doctors\/[^/]+$/, scope: "doctor:read" },
+  { method: "GET", pattern: /^\/v1\/diagnostics\/[^/]+$/, scope: "diagnostics:read" },
+  { method: "GET", pattern: /^\/v1\/pharmacies\/[^/]+$/, scope: "pharmacy:read" },
+  { method: "DELETE", pattern: /^\/v1\/appointments\/[^/]+$/, scope: "booking:write" },
+  { method: "POST", pattern: /^\/v1\/appointments\/[^/]+\/checkin$/, scope: "booking:write" },
+];
+
+function matchRoute(method: string, path: string): { scope: string } | null {
+  const key = `${method} ${path}`;
+  if (ROUTES[key]) return ROUTES[key];
+  for (const r of DYNAMIC_ROUTES) {
+    if (r.method === method && r.pattern.test(path)) return { scope: r.scope };
+  }
+  return null;
+}
 
 serve(async (req) => {
   const requestId = crypto.randomUUID();
