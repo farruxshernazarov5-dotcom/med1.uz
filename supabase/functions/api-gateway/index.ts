@@ -16,7 +16,7 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel",
+    "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel, x-signature, x-timestamp",
 };
 
 const json = (status: number, body: unknown, requestId: string) =>
