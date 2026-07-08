@@ -8,6 +8,8 @@ import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-ac
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
 import { reportEdgeError } from "../_shared/error-sink.ts";
+import { verifyHmac } from "../_shared/api-hmac.ts";
+import { sandboxDispatch } from "../_shared/api-mock.ts";
 
 
 const corsHeaders = {
