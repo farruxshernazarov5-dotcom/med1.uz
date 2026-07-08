@@ -8,15 +8,13 @@ import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-ac
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
 import { reportEdgeError } from "../_shared/error-sink.ts";
-import { verifyHmac } from "../_shared/api-hmac.ts";
-import { sandboxDispatch } from "../_shared/api-mock.ts";
 
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel, x-signature, x-timestamp",
+    "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel",
 };
 
 const json = (status: number, body: unknown, requestId: string) =>
@@ -43,8 +41,6 @@ interface KeyRow {
   expires_at: string | null;
   is_active: boolean;
   environment: string;
-  hmac_secret: string | null;
-  is_sandbox: boolean;
 }
 interface PartnerRow {
   id: string;
@@ -53,7 +49,6 @@ interface PartnerRow {
   ip_whitelist: string[];
   allowed_domains: string[];
   owner_user_id: string;
-  require_hmac: boolean;
 }
 
 // Endpoint -> required scope mapping. Add more as Phase 5 lands.
@@ -181,7 +176,7 @@ serve(async (req) => {
       const keyHash = await sha256Hex(rawKey);
       const { data: keyRow } = await supabase
         .from("api_keys")
-        .select("id, partner_id, scopes, rate_limit_per_min, rate_limit_per_day, expires_at, is_active, environment, hmac_secret, is_sandbox")
+        .select("id, partner_id, scopes, rate_limit_per_min, rate_limit_per_day, expires_at, is_active, environment")
         .eq("key_hash", keyHash)
         .eq("is_active", true)
         .maybeSingle<KeyRow>();
@@ -203,7 +198,7 @@ serve(async (req) => {
         // 3. Lookup partner
         const { data: partner } = await supabase
           .from("api_partners")
-          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id, require_hmac")
+          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id")
           .eq("id", keyRow.partner_id)
           .maybeSingle<PartnerRow>();
         partnerOwnerId = partner?.owner_user_id ?? null;
@@ -240,69 +235,12 @@ serve(async (req) => {
             errorMsg = "Missing scope";
             responseBody = json(403, { code: "missing_scope", message: `Required scope: ${route.scope}` }, requestId);
           } else {
-            // 4b. HMAC validation (buffer body so downstream dispatch can re-read it)
-            const rawBody = req.method === "GET" || req.method === "DELETE" ? "" : await req.text();
-            const hmacRequired = partner.require_hmac || !!keyRow.hmac_secret;
-            let hmacOk = true;
-            if (hmacRequired) {
-              if (!keyRow.hmac_secret) {
-                hmacOk = false;
-                statusCode = 401;
-                errorMsg = "HMAC required but no secret configured on key";
-                responseBody = json(401, { code: "hmac_not_configured", message: errorMsg }, requestId);
-              } else {
-                const result = await verifyHmac({
-                  secret: keyRow.hmac_secret,
-                  method: req.method,
-                  path,
-                  rawBody,
-                  signatureHeader: req.headers.get("x-signature"),
-                  timestampHeader: req.headers.get("x-timestamp"),
-                });
-                if (!result.ok) {
-                  hmacOk = false;
-                  statusCode = 401;
-                  errorMsg = `HMAC: ${result.code}`;
-                  responseBody = json(401, { code: result.code!, message: result.message! }, requestId);
-                }
-              }
-              // Audit-log every HMAC event (success + failure) for security review
-              supabase.from("audit_logs").insert({
-                user_id: partnerOwnerId,
-                role: "api_partner",
-                action: hmacOk ? "api.hmac.verified" : "api.hmac.rejected",
-                entity_type: "api_key",
-                entity_id: keyRow.id,
-                module: "api-gateway",
-                ip_address: ip,
-                details: { request_id: requestId, endpoint: path, method: req.method, reason: hmacOk ? null : errorMsg },
-              }).then();
-            }
+            // 5. Update last_used_at (fire and forget)
+            supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
 
-            if (hmacOk) {
-              // 5. Update last_used_at (fire and forget)
-              supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
-
-              // 6. Sandbox short-circuit
-              if (keyRow.is_sandbox) {
-                const mock = sandboxDispatch(req.method, path);
-                if (mock.ok) {
-                  responseBody = json(200, mock.body, requestId);
-                } else {
-                  responseBody = json(501, { code: "sandbox_unavailable", message: "No mock defined for this route" }, requestId);
-                }
-                statusCode = responseBody.status;
-              } else {
-                // 7. Dispatch to real handler. Re-wrap request so dispatch can read the buffered body.
-                const forwarded = new Request(req.url, {
-                  method: req.method,
-                  headers: req.headers,
-                  body: rawBody || undefined,
-                });
-                responseBody = await dispatch(supabase, path, forwarded, requestId, partnerOwnerId, startTime);
-                statusCode = responseBody.status;
-              }
-            }
+            // 6. Dispatch
+            responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
+            statusCode = responseBody.status;
           }
         }
       }
