@@ -99,25 +99,53 @@ serve(async (req) => {
         message = `📋 <b>XIZMATGA BUYURTMA</b>\n\n👤 <b>Foydalanuvchi:</b> ${esc(data.user_name || "—")}\n📞 <b>Tel:</b> ${esc(data.phone || "—")}\n🏥 <b>Muassasa:</b> ${esc(data.org_name || "—")}\n📋 <b>Xizmat:</b> ${esc(data.service_name)}\n💰 <b>Narx:</b> ${esc(data.price || "—")}\n\n📅 ${ts()}`;
         break;
 
-      case "lab_result_direct":
-        // Direct send with provided chat_id and message
-        if (data.chat_id && data.message) {
-          const directRes = await fetch(`${GATEWAY_URL}/sendMessage`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-              "X-Connection-Api-Key": TELEGRAM_API_KEY,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ chat_id: data.chat_id, text: data.message, parse_mode: "HTML" }),
-          });
-          const directResult = await directRes.json();
-          return new Response(JSON.stringify({ success: directRes.ok, result: directResult }), {
+      case "lab_result_direct": {
+        // Admin-only: caller must have admin role. Target chat_id must belong to a
+        // registered profile (no arbitrary Telegram sends). Message is server-composed.
+        const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+        const { data: isAdmin } = await serviceClient.rpc("has_role", {
+          _user_id: userData.user.id,
+          _role: "admin",
+        });
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: "Forbidden" }), {
+            status: 403,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        message = `🔔 Lab result direct send failed — no chat_id`;
-        break;
+        const targetChatId = String(data?.chat_id ?? "");
+        if (!targetChatId) {
+          return new Response(JSON.stringify({ error: "chat_id required" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { data: prof } = await serviceClient
+          .from("profiles")
+          .select("user_id")
+          .eq("telegram_chat_id", targetChatId)
+          .maybeSingle();
+        if (!prof) {
+          return new Response(JSON.stringify({ error: "chat_id not registered" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const safeText = `🔬 <b>Laboratoriya natijasi</b>\n\n${esc(String(data?.message ?? ""))}`;
+        const directRes = await fetch(`${GATEWAY_URL}/sendMessage`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+            "X-Connection-Api-Key": TELEGRAM_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ chat_id: targetChatId, text: safeText, parse_mode: "HTML" }),
+        });
+        const directResult = await directRes.json();
+        return new Response(JSON.stringify({ success: directRes.ok, result: directResult }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       default:
         message = `🔔 <b>BILDIRISHNOMA</b>\n\n📋 <b>Tur:</b> ${esc(type)}\n\n${esc(JSON.stringify(data, null, 2))}\n\n📅 ${ts()}`;
