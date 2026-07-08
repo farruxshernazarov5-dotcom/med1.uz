@@ -395,8 +395,10 @@ export type Database = {
           created_by: string | null
           environment: string
           expires_at: string | null
+          hmac_secret: string | null
           id: string
           is_active: boolean
+          is_sandbox: boolean
           key_hash: string
           key_prefix: string
           last_used_at: string | null
@@ -412,8 +414,10 @@ export type Database = {
           created_by?: string | null
           environment?: string
           expires_at?: string | null
+          hmac_secret?: string | null
           id?: string
           is_active?: boolean
+          is_sandbox?: boolean
           key_hash: string
           key_prefix: string
           last_used_at?: string | null
@@ -429,8 +433,10 @@ export type Database = {
           created_by?: string | null
           environment?: string
           expires_at?: string | null
+          hmac_secret?: string | null
           id?: string
           is_active?: boolean
+          is_sandbox?: boolean
           key_hash?: string
           key_prefix?: string
           last_used_at?: string | null
@@ -664,6 +670,7 @@ export type Database = {
           org_name: string
           org_type: string
           owner_user_id: string
+          require_hmac: boolean
           status: string
           tier: string
           updated_at: string
@@ -683,6 +690,7 @@ export type Database = {
           org_name: string
           org_type?: string
           owner_user_id: string
+          require_hmac?: boolean
           status?: string
           tier?: string
           updated_at?: string
@@ -702,6 +710,7 @@ export type Database = {
           org_name?: string
           org_type?: string
           owner_user_id?: string
+          require_hmac?: boolean
           status?: string
           tier?: string
           updated_at?: string
