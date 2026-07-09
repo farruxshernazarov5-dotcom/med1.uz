@@ -258,12 +258,49 @@ serve(async (req) => {
             errorMsg = "Missing scope";
             responseBody = json(403, { code: "missing_scope", message: `Required scope: ${route.scope}` }, requestId);
           } else {
-            // 5. Update last_used_at (fire and forget)
-            supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
+            // 4b. HMAC signature verification (if key or partner requires it).
+            // Client must send:
+            //   x-timestamp: unix seconds
+            //   x-signature: hex(hmacSha256(secret, `${ts}.${method}.${path}.${sha256(body)}`))
+            const hmacRequired = partner.require_hmac || !!keyRow.hmac_secret;
+            if (hmacRequired) {
+              const ts = req.headers.get("x-timestamp") || "";
+              const sig = (req.headers.get("x-signature") || "").toLowerCase();
+              const secret = keyRow.hmac_secret;
+              const now = Math.floor(Date.now() / 1000);
+              const tsNum = parseInt(ts, 10);
+              if (!secret || !sig || !ts) {
+                statusCode = 401;
+                errorMsg = "HMAC required";
+                responseBody = json(401, { code: "hmac_required", message: "x-timestamp and x-signature headers required" }, requestId);
+              } else if (!tsNum || Math.abs(now - tsNum) > 300) {
+                statusCode = 401;
+                errorMsg = "HMAC timestamp skew";
+                responseBody = json(401, { code: "hmac_stale", message: "Timestamp outside 5 min window" }, requestId);
+              } else {
+                const bodyText = req.method === "GET" || req.method === "DELETE" ? "" : await req.clone().text();
+                const bodyHash = await sha256Hex(bodyText);
+                const expected = await hmacHex(secret, `${ts}.${req.method}.${path}.${bodyHash}`);
+                if (!safeEqual(expected, sig)) {
+                  statusCode = 401;
+                  errorMsg = "HMAC mismatch";
+                  responseBody = json(401, { code: "hmac_invalid", message: "Signature verification failed" }, requestId);
+                }
+              }
+            }
 
-            // 6. Dispatch
-            responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
-            statusCode = responseBody.status;
+            if (statusCode === 200) {
+              // 5. Update last_used_at (fire and forget)
+              supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
+
+              // 6. Dispatch — sandbox keys short-circuit to mock data
+              if (keyRow.is_sandbox || keyRow.environment === "sandbox") {
+                responseBody = sandboxDispatch(path, req, requestId);
+              } else {
+                responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
+              }
+              statusCode = responseBody.status;
+            }
           }
         }
       }
