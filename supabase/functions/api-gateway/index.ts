@@ -221,7 +221,7 @@ serve(async (req) => {
         // 3. Lookup partner
         const { data: partner } = await supabase
           .from("api_partners")
-          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id")
+          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id, require_hmac")
           .eq("id", keyRow.partner_id)
           .maybeSingle<PartnerRow>();
         partnerOwnerId = partner?.owner_user_id ?? null;
