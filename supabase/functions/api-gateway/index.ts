@@ -32,6 +32,26 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+async function hmacHex(secret: string, message: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
+  return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Constant-time compare for hex signatures.
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let out = 0;
+  for (let i = 0; i < a.length; i++) out |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return out === 0;
+}
+
 interface KeyRow {
   id: string;
   partner_id: string;
@@ -41,6 +61,8 @@ interface KeyRow {
   expires_at: string | null;
   is_active: boolean;
   environment: string;
+  hmac_secret: string | null;
+  is_sandbox: boolean;
 }
 interface PartnerRow {
   id: string;
@@ -49,6 +71,7 @@ interface PartnerRow {
   ip_whitelist: string[];
   allowed_domains: string[];
   owner_user_id: string;
+  require_hmac: boolean;
 }
 
 // Endpoint -> required scope mapping. Add more as Phase 5 lands.
@@ -176,7 +199,7 @@ serve(async (req) => {
       const keyHash = await sha256Hex(rawKey);
       const { data: keyRow } = await supabase
         .from("api_keys")
-        .select("id, partner_id, scopes, rate_limit_per_min, rate_limit_per_day, expires_at, is_active, environment")
+        .select("id, partner_id, scopes, rate_limit_per_min, rate_limit_per_day, expires_at, is_active, environment, hmac_secret, is_sandbox")
         .eq("key_hash", keyHash)
         .eq("is_active", true)
         .maybeSingle<KeyRow>();
@@ -198,7 +221,7 @@ serve(async (req) => {
         // 3. Lookup partner
         const { data: partner } = await supabase
           .from("api_partners")
-          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id")
+          .select("id, status, tier, ip_whitelist, allowed_domains, owner_user_id, require_hmac")
           .eq("id", keyRow.partner_id)
           .maybeSingle<PartnerRow>();
         partnerOwnerId = partner?.owner_user_id ?? null;
@@ -235,12 +258,49 @@ serve(async (req) => {
             errorMsg = "Missing scope";
             responseBody = json(403, { code: "missing_scope", message: `Required scope: ${route.scope}` }, requestId);
           } else {
-            // 5. Update last_used_at (fire and forget)
-            supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
+            // 4b. HMAC signature verification (if key or partner requires it).
+            // Client must send:
+            //   x-timestamp: unix seconds
+            //   x-signature: hex(hmacSha256(secret, `${ts}.${method}.${path}.${sha256(body)}`))
+            const hmacRequired = partner.require_hmac || !!keyRow.hmac_secret;
+            if (hmacRequired) {
+              const ts = req.headers.get("x-timestamp") || "";
+              const sig = (req.headers.get("x-signature") || "").toLowerCase();
+              const secret = keyRow.hmac_secret;
+              const now = Math.floor(Date.now() / 1000);
+              const tsNum = parseInt(ts, 10);
+              if (!secret || !sig || !ts) {
+                statusCode = 401;
+                errorMsg = "HMAC required";
+                responseBody = json(401, { code: "hmac_required", message: "x-timestamp and x-signature headers required" }, requestId);
+              } else if (!tsNum || Math.abs(now - tsNum) > 300) {
+                statusCode = 401;
+                errorMsg = "HMAC timestamp skew";
+                responseBody = json(401, { code: "hmac_stale", message: "Timestamp outside 5 min window" }, requestId);
+              } else {
+                const bodyText = req.method === "GET" || req.method === "DELETE" ? "" : await req.clone().text();
+                const bodyHash = await sha256Hex(bodyText);
+                const expected = await hmacHex(secret, `${ts}.${req.method}.${path}.${bodyHash}`);
+                if (!safeEqual(expected, sig)) {
+                  statusCode = 401;
+                  errorMsg = "HMAC mismatch";
+                  responseBody = json(401, { code: "hmac_invalid", message: "Signature verification failed" }, requestId);
+                }
+              }
+            }
 
-            // 6. Dispatch
-            responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
-            statusCode = responseBody.status;
+            if (statusCode === 200) {
+              // 5. Update last_used_at (fire and forget)
+              supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
+
+              // 6. Dispatch — sandbox keys short-circuit to mock data
+              if (keyRow.is_sandbox || keyRow.environment === "sandbox") {
+                responseBody = sandboxDispatch(path, req, requestId);
+              } else {
+                responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
+              }
+              statusCode = responseBody.status;
+            }
           }
         }
       }
@@ -725,4 +785,76 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
   }
 
   return json(501, { code: "not_implemented", message: `${path} handler pending` }, requestId);
+}
+
+// ---- Sandbox dispatcher: deterministic mock data for testing partner integrations. ----
+// Sandbox keys never touch production data. All responses include `sandbox: true`.
+function sandboxDispatch(path: string, req: Request, requestId: string): Response {
+  const wrap = (data: any, status = 200) => json(status, { sandbox: true, ...data }, requestId);
+  const url = new URL(req.url);
+
+  if (path === "/v1/ping") return wrap({ pong: true, ts: new Date().toISOString() });
+
+  if (path === "/v1/clinics") {
+    return wrap({
+      items: [
+        { id: "sb-clinic-1", name: "Sandbox Clinic Toshkent", service_city: "Tashkent", phone: "+998900000001", address: "Amir Temur 1", latitude: 41.31, longitude: 69.28, specialties: ["therapy"] },
+        { id: "sb-clinic-2", name: "Sandbox Clinic Samarqand", service_city: "Samarqand", phone: "+998900000002", address: "Registon 5", latitude: 39.65, longitude: 66.96, specialties: ["cardiology"] },
+      ],
+      count: 2, limit: 50, offset: 0,
+    });
+  }
+  if (/^\/v1\/clinics\/[^/]+$/.test(path)) {
+    return wrap({ id: path.split("/").pop(), name: "Sandbox Clinic", service_city: "Tashkent", phone: "+998900000001" });
+  }
+  if (path === "/v1/doctors") {
+    return wrap({
+      items: [
+        { id: "sb-doc-1", full_name: "Dr. Sandbox Aliyev", specialty: "Cardiology", consultation_price: 200000, avg_rating: 4.8, city: "Tashkent" },
+        { id: "sb-doc-2", full_name: "Dr. Sandbox Karimova", specialty: "Pediatrics",  consultation_price: 150000, avg_rating: 4.9, city: "Samarqand" },
+      ], count: 2,
+    });
+  }
+  if (path === "/v1/diagnostics") return wrap({ items: [{ id: "sb-diag-1", name: "Sandbox Lab", city: "Tashkent" }], count: 1 });
+  if (path === "/v1/pharmacies")  return wrap({ items: [{ id: "sb-ph-1", name: "Sandbox Pharmacy 24/7", is_24h: true, city: "Tashkent" }], count: 1 });
+  if (path === "/v1/maps/nearby") {
+    return wrap({ items: [{ id: "sb-clinic-1", name: "Sandbox Clinic", distance_km: 1.2, phone: "+998900000001" }], count: 1 });
+  }
+  if (path === "/v1/user/profile") {
+    return wrap({ user_id: "sb-user-1", full_name: "Sandbox User", phone: "+998900000000", language: "uz", region: "Toshkent" });
+  }
+  if (path === "/v1/emr/records")       return wrap({ items: [{ id: "sb-rec-1",  title: "Sandbox visit note", created_at: new Date().toISOString() }], count: 1 });
+  if (path === "/v1/emr/analyses")      return wrap({ items: [{ id: "sb-lab-1",  test_name: "CBC", result: "Normal" }], count: 1 });
+  if (path === "/v1/emr/prescriptions") return wrap({ items: [{ id: "sb-rx-1",   drug: "Paracetamol 500mg", dosage: "1x3" }], count: 1 });
+  if (path === "/v1/emr/diagnoses")     return wrap({ items: [{ id: "sb-dx-1",   icd10: "J06.9", label: "Acute URI" }], count: 1 });
+
+  if (path === "/v1/appointments" && req.method === "POST") {
+    return wrap({ id: `sb-apt-${Date.now()}`, status: "pending", created_at: new Date().toISOString() }, 201);
+  }
+  if (path === "/v1/appointments/history") {
+    return wrap({ items: [{ id: "sb-apt-1", appointment_date: "2026-08-01", appointment_time: "10:00", status: "confirmed" }] });
+  }
+
+  if (path.startsWith("/v1/ai/")) {
+    const service = path.slice("/v1/ai/".length);
+    return wrap({
+      service, model: "sandbox-mock",
+      message: { role: "assistant", content: `[SANDBOX] Mock reply for ${service}. Replace sandbox key with live key for real inference.` },
+      usage: { prompt_tokens: 42, completion_tokens: 24, total_tokens: 66 },
+    });
+  }
+  if (path.startsWith("/v1/payments/")) {
+    return wrap({ invoice_id: `sb-inv-${Date.now()}`, checkout_url: "https://med1.uz/sandbox/checkout", status: "pending" });
+  }
+  if (path.startsWith("/v1/notifications/")) return wrap({ delivered: true, provider: path.split("/").pop() }, 202);
+  if (path === "/v1/subscriptions") return wrap({ items: [{ id: "sb-sub-1", plan: "professional", status: "active" }] });
+  if (path === "/v1/payments/history") return wrap({ items: [{ id: "sb-pay-1", amount: 99000, currency: "UZS", status: "paid" }] });
+  if (path.startsWith("/v1/auth/")) {
+    return wrap({
+      access_token: "sb-access-token", refresh_token: "sb-refresh-token", token_type: "bearer", expires_in: 3600,
+      user: { id: "sb-user-1", email: url.searchParams.get("email") || "sandbox@med1.uz" },
+    });
+  }
+
+  return wrap({ note: "sandbox mock not defined for this endpoint", path }, 200);
 }

@@ -1,0 +1,37 @@
+name: Publish Flutter SDK to pub.dev
+
+on:
+  push:
+    tags:
+      - "flutter-sdk-v*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: pub.dev publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC-based pub.dev automated publishing.
+    defaults:
+      run:
+        working-directory: sdk/flutter/med1_api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install deps
+        run: dart pub get
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Dry-run publish
+        run: dart pub publish --dry-run
+
+      - name: Publish to pub.dev
+        # Requires the package to be configured on pub.dev with this repo/workflow as a trusted publisher.
+        # https://dart.dev/tools/pub/automated-publishing
+        run: dart pub publish --force
