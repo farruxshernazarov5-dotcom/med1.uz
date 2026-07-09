@@ -199,7 +199,7 @@ serve(async (req) => {
       const keyHash = await sha256Hex(rawKey);
       const { data: keyRow } = await supabase
         .from("api_keys")
-        .select("id, partner_id, scopes, rate_limit_per_min, rate_limit_per_day, expires_at, is_active, environment")
+        .select("id, partner_id, scopes, rate_limit_per_min, rate_limit_per_day, expires_at, is_active, environment, hmac_secret, is_sandbox")
         .eq("key_hash", keyHash)
         .eq("is_active", true)
         .maybeSingle<KeyRow>();
