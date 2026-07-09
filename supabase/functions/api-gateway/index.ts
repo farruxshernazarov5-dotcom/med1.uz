@@ -786,3 +786,75 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
 
   return json(501, { code: "not_implemented", message: `${path} handler pending` }, requestId);
 }
+
+// ---- Sandbox dispatcher: deterministic mock data for testing partner integrations. ----
+// Sandbox keys never touch production data. All responses include `sandbox: true`.
+function sandboxDispatch(path: string, req: Request, requestId: string): Response {
+  const wrap = (data: any, status = 200) => json(status, { sandbox: true, ...data }, requestId);
+  const url = new URL(req.url);
+
+  if (path === "/v1/ping") return wrap({ pong: true, ts: new Date().toISOString() });
+
+  if (path === "/v1/clinics") {
+    return wrap({
+      items: [
+        { id: "sb-clinic-1", name: "Sandbox Clinic Toshkent", service_city: "Tashkent", phone: "+998900000001", address: "Amir Temur 1", latitude: 41.31, longitude: 69.28, specialties: ["therapy"] },
+        { id: "sb-clinic-2", name: "Sandbox Clinic Samarqand", service_city: "Samarqand", phone: "+998900000002", address: "Registon 5", latitude: 39.65, longitude: 66.96, specialties: ["cardiology"] },
+      ],
+      count: 2, limit: 50, offset: 0,
+    });
+  }
+  if (/^\/v1\/clinics\/[^/]+$/.test(path)) {
+    return wrap({ id: path.split("/").pop(), name: "Sandbox Clinic", service_city: "Tashkent", phone: "+998900000001" });
+  }
+  if (path === "/v1/doctors") {
+    return wrap({
+      items: [
+        { id: "sb-doc-1", full_name: "Dr. Sandbox Aliyev", specialty: "Cardiology", consultation_price: 200000, avg_rating: 4.8, city: "Tashkent" },
+        { id: "sb-doc-2", full_name: "Dr. Sandbox Karimova", specialty: "Pediatrics",  consultation_price: 150000, avg_rating: 4.9, city: "Samarqand" },
+      ], count: 2,
+    });
+  }
+  if (path === "/v1/diagnostics") return wrap({ items: [{ id: "sb-diag-1", name: "Sandbox Lab", city: "Tashkent" }], count: 1 });
+  if (path === "/v1/pharmacies")  return wrap({ items: [{ id: "sb-ph-1", name: "Sandbox Pharmacy 24/7", is_24h: true, city: "Tashkent" }], count: 1 });
+  if (path === "/v1/maps/nearby") {
+    return wrap({ items: [{ id: "sb-clinic-1", name: "Sandbox Clinic", distance_km: 1.2, phone: "+998900000001" }], count: 1 });
+  }
+  if (path === "/v1/user/profile") {
+    return wrap({ user_id: "sb-user-1", full_name: "Sandbox User", phone: "+998900000000", language: "uz", region: "Toshkent" });
+  }
+  if (path === "/v1/emr/records")       return wrap({ items: [{ id: "sb-rec-1",  title: "Sandbox visit note", created_at: new Date().toISOString() }], count: 1 });
+  if (path === "/v1/emr/analyses")      return wrap({ items: [{ id: "sb-lab-1",  test_name: "CBC", result: "Normal" }], count: 1 });
+  if (path === "/v1/emr/prescriptions") return wrap({ items: [{ id: "sb-rx-1",   drug: "Paracetamol 500mg", dosage: "1x3" }], count: 1 });
+  if (path === "/v1/emr/diagnoses")     return wrap({ items: [{ id: "sb-dx-1",   icd10: "J06.9", label: "Acute URI" }], count: 1 });
+
+  if (path === "/v1/appointments" && req.method === "POST") {
+    return wrap({ id: `sb-apt-${Date.now()}`, status: "pending", created_at: new Date().toISOString() }, 201);
+  }
+  if (path === "/v1/appointments/history") {
+    return wrap({ items: [{ id: "sb-apt-1", appointment_date: "2026-08-01", appointment_time: "10:00", status: "confirmed" }] });
+  }
+
+  if (path.startsWith("/v1/ai/")) {
+    const service = path.slice("/v1/ai/".length);
+    return wrap({
+      service, model: "sandbox-mock",
+      message: { role: "assistant", content: `[SANDBOX] Mock reply for ${service}. Replace sandbox key with live key for real inference.` },
+      usage: { prompt_tokens: 42, completion_tokens: 24, total_tokens: 66 },
+    });
+  }
+  if (path.startsWith("/v1/payments/")) {
+    return wrap({ invoice_id: `sb-inv-${Date.now()}`, checkout_url: "https://med1.uz/sandbox/checkout", status: "pending" });
+  }
+  if (path.startsWith("/v1/notifications/")) return wrap({ delivered: true, provider: path.split("/").pop() }, 202);
+  if (path === "/v1/subscriptions") return wrap({ items: [{ id: "sb-sub-1", plan: "professional", status: "active" }] });
+  if (path === "/v1/payments/history") return wrap({ items: [{ id: "sb-pay-1", amount: 99000, currency: "UZS", status: "paid" }] });
+  if (path.startsWith("/v1/auth/")) {
+    return wrap({
+      access_token: "sb-access-token", refresh_token: "sb-refresh-token", token_type: "bearer", expires_in: 3600,
+      user: { id: "sb-user-1", email: url.searchParams.get("email") || "sandbox@med1.uz" },
+    });
+  }
+
+  return wrap({ note: "sandbox mock not defined for this endpoint", path }, 200);
+}
