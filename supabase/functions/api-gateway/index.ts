@@ -71,6 +71,7 @@ interface PartnerRow {
   ip_whitelist: string[];
   allowed_domains: string[];
   owner_user_id: string;
+  require_hmac: boolean;
 }
 
 // Endpoint -> required scope mapping. Add more as Phase 5 lands.
