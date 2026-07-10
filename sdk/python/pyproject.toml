@@ -1,0 +1,23 @@
+[project]
+name = "med1-api"
+version = "0.1.0"
+description = "Official Python SDK for the MED1.UZ REST API v1 (Auth, User, AI, Clinics, Appointments, EMR, Payments, Notifications, Maps)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "MED-ALL AI SYSTEM MCHJ" }]
+keywords = ["med1", "med1uz", "medical", "ai", "uzbekistan", "sdk"]
+dependencies = ["requests>=2.28"]
+
+[project.urls]
+Homepage = "https://med1.uz/developers"
+Repository = "https://github.com/med1uz/python-sdk"
+Documentation = "https://med1.uz/api-docs"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["med1_api*"]
