@@ -8,6 +8,8 @@ Official client libraries for the MED1.UZ REST API v1.
 | JavaScript / TS | [`js`](./js)                      | `@med1uz/api` (npm)    | Ready — Node 18+, Deno, Bun, browser |
 | Kotlin / Android| [`kotlin/Med1Client.kt`](./kotlin/Med1Client.kt) | drop-in file          | Ready — OkHttp + kotlinx.serialization |
 | Swift / iOS     | [`swift/Med1Client.swift`](./swift/Med1Client.swift) | drop-in file          | Ready — async/await + CryptoKit |
+| Python          | [`python`](./python)              | `med1-api` (PyPI)      | Ready — Python 3.8+, requests, HMAC |
+| PHP             | [`php`](./php)                    | `med1uz/api-php` (Packagist) | Ready — PHP 7.4+, ext-curl |
 | cURL / bash     | [`curl/README.md`](./curl/README.md)   | copy-paste snippets     | Ready |
 
 All SDKs share the same feature set:
