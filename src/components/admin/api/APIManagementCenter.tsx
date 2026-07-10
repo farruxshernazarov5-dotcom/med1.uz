@@ -642,22 +642,41 @@ function SDKsPanel() {
     items.forEach(i => { (g[i.language] = g[i.language] || []).push(i); });
     return g;
   }, [items]);
+  const installFor = (lang: string, version: string) => {
+    const l = lang.toLowerCase();
+    if (l === "javascript" || l === "typescript" || l === "nodejs" || l === "react-native")
+      return `npm i @med1uz/api@${version}`;
+    if (l === "flutter" || l === "dart") return `flutter pub add med1_api:^${version}`;
+    if (l === "python") return `pip install med1-api==${version}`;
+    if (l === "php" || l === "laravel") return `composer require med1uz/api-php:^${version}`;
+    if (l === "kotlin") return `// Add Med1Client.kt to your project (single-file drop-in)`;
+    if (l === "swift") return `// Add Med1Client.swift to your Xcode project`;
+    if (l === "curl") return `curl -H "x-api-key: $MED1_KEY" https://med1.uz/api-gateway/v1/ping`;
+    return "";
+  };
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-      {Object.entries(grouped).map(([lang, versions]) => (
-        <Card key={lang} className="p-4 bg-white/5 border-white/10">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold capitalize">{lang} SDK</h3>
-            <Badge className="bg-emerald-500/20 text-emerald-300">v{versions.find(v => v.is_latest)?.version || versions[0]?.version}</Badge>
-          </div>
-          <p className="text-xs text-white/60 mb-3">{versions[0]?.changelog}</p>
-          <div className="flex gap-2">
-            {versions[0]?.download_url && <a href={versions[0].download_url} className="text-xs text-blue-300 hover:underline">Download</a>}
-            {versions[0]?.repository_url && <a href={versions[0].repository_url} className="text-xs text-blue-300 hover:underline">Repository</a>}
-            {!versions[0]?.download_url && !versions[0]?.repository_url && <span className="text-xs text-white/40">Tez orada</span>}
-          </div>
-        </Card>
-      ))}
+      {Object.entries(grouped).map(([lang, versions]) => {
+        const latest = versions.find(v => v.is_latest) || versions[0];
+        const install = installFor(lang, latest?.version || "0.1.0");
+        return (
+          <Card key={lang} className="p-4 bg-white/5 border-white/10">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold capitalize">{lang} SDK</h3>
+              <Badge className="bg-emerald-500/20 text-emerald-300">v{latest?.version}</Badge>
+            </div>
+            <p className="text-xs text-white/60 mb-3 line-clamp-3">{latest?.changelog}</p>
+            {install && (
+              <pre className="text-[11px] bg-black/40 rounded p-2 mb-3 overflow-x-auto text-emerald-300">{install}</pre>
+            )}
+            <div className="flex flex-wrap gap-3 text-xs">
+              {latest?.download_url && <a href={latest.download_url} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Download / Install</a>}
+              {latest?.repository_url && <a href={latest.repository_url} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Repository</a>}
+              {!latest?.download_url && !latest?.repository_url && <span className="text-white/40">Tez orada</span>}
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }
