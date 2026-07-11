@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-07-11T00:00:00.000Z",
+  "site_origin": "https://med1.uz",
+  "repository_base_url": "https://github.com/med1uz/med1-sdk/tree/main",
+  "sdks": [
+    {
+      "language": "curl",
+      "version": "1.0.0",
+      "download_path": "/sdk/curl-examples.md",
+      "repository_path": "curl"
+    },
+    {
+      "language": "javascript",
+      "version": "0.1.0",
+      "download_path": "/sdk/med1-js.ts",
+      "repository_path": "javascript"
+    },
+    {
+      "language": "typescript",
+      "version": "0.1.0",
+      "download_path": "/sdk/med1-js.ts",
+      "repository_path": "typescript"
+    },
+    {
+      "language": "flutter",
+      "version": "0.1.0",
+      "download_path": "/sdk/flutter/med1_api/lib/med1_api.dart",
+      "repository_path": "flutter"
+    },
+    {
+      "language": "dart",
+      "version": "0.1.0",
+      "download_path": "/sdk/flutter/med1_api/lib/med1_api.dart",
+      "repository_path": "dart"
+    },
+    {
+      "language": "kotlin",
+      "version": "0.1.0",
+      "download_path": "/sdk/Med1Client.kt",
+      "repository_path": "kotlin"
+    },
+    {
+      "language": "swift",
+      "version": "0.1.0",
+      "download_path": "/sdk/Med1Client.swift",
+      "repository_path": "swift"
+    },
+    {
+      "language": "python",
+      "version": "0.1.0",
+      "download_path": "/sdk/med1_client.py",
+      "repository_path": "python"
+    },
+    {
+      "language": "php",
+      "version": "0.1.0",
+      "download_path": "/sdk/Med1Client.php",
+      "repository_path": "php"
+    }
+  ]
+}

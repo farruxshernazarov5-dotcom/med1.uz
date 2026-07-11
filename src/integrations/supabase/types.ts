@@ -782,13 +782,22 @@ export type Database = {
         Row: {
           changelog: string | null
           created_at: string
+          download_checked_at: string | null
+          download_error: string | null
+          download_status: string
+          download_status_code: number | null
           download_url: string | null
           id: string
           is_latest: boolean
           is_stable: boolean
           language: string
           min_api_version: string
+          next_retry_at: string | null
           released_at: string
+          repository_checked_at: string | null
+          repository_error: string | null
+          repository_status: string
+          repository_status_code: number | null
           repository_url: string | null
           updated_at: string
           version: string
@@ -796,13 +805,22 @@ export type Database = {
         Insert: {
           changelog?: string | null
           created_at?: string
+          download_checked_at?: string | null
+          download_error?: string | null
+          download_status?: string
+          download_status_code?: number | null
           download_url?: string | null
           id?: string
           is_latest?: boolean
           is_stable?: boolean
           language: string
           min_api_version?: string
+          next_retry_at?: string | null
           released_at?: string
+          repository_checked_at?: string | null
+          repository_error?: string | null
+          repository_status?: string
+          repository_status_code?: number | null
           repository_url?: string | null
           updated_at?: string
           version: string
@@ -810,13 +828,22 @@ export type Database = {
         Update: {
           changelog?: string | null
           created_at?: string
+          download_checked_at?: string | null
+          download_error?: string | null
+          download_status?: string
+          download_status_code?: number | null
           download_url?: string | null
           id?: string
           is_latest?: boolean
           is_stable?: boolean
           language?: string
           min_api_version?: string
+          next_retry_at?: string | null
           released_at?: string
+          repository_checked_at?: string | null
+          repository_error?: string | null
+          repository_status?: string
+          repository_status_code?: number | null
           repository_url?: string | null
           updated_at?: string
           version?: string

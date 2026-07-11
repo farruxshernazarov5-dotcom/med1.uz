@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Activity, Key, Layers, ShieldAlert, Webhook, LineChart as LineChartIcon,
   FileCode, Download, Beaker, Rocket, Search, RefreshCw, Copy, Plus, Trash2,
-  Smartphone, Globe, Handshake, Cpu, Lock, BookOpen, Users, ScrollText,
+  Smartphone, Globe, Handshake, Cpu, Lock, BookOpen, Users, ScrollText, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
 
@@ -18,7 +18,27 @@ type Endpoint = { id: string; path: string; method: string; category: string; sc
 type ApiKey = { id: string; partner_id: string; name: string; environment: string; scopes: string[]; rate_limit_per_min: number; rate_limit_per_day: number; is_active: boolean; last_used_at: string | null; expires_at: string | null; created_at: string; key_prefix: string };
 type Partner = { id: string; name: string; status: string; tier: string; owner_email: string | null; created_at: string };
 type OAuthClient = { id: string; client_id: string; client_name: string; scopes: string[]; is_active: boolean; created_at: string; last_used_at: string | null };
-type SdkVersion = { id: string; language: string; version: string; is_latest: boolean; changelog: string | null; download_url: string | null; repository_url: string | null; released_at: string };
+type SdkLinkStatus = "unchecked" | "available" | "missing" | "error" | "not_configured";
+type RuntimeSdkCheck = { status: SdkLinkStatus; code: number | null; checkedAt: string; error?: string };
+type SdkVersion = {
+  id: string;
+  language: string;
+  version: string;
+  is_latest: boolean;
+  changelog: string | null;
+  download_url: string | null;
+  repository_url: string | null;
+  released_at: string;
+  download_status?: SdkLinkStatus | null;
+  download_status_code?: number | null;
+  download_checked_at?: string | null;
+  download_error?: string | null;
+  repository_status?: SdkLinkStatus | null;
+  repository_status_code?: number | null;
+  repository_checked_at?: string | null;
+  repository_error?: string | null;
+  next_retry_at?: string | null;
+};
 type AlertRule = { id: string; name: string; metric: string; operator: string; threshold: number; window_minutes: number; is_active: boolean; last_triggered_at: string | null; trigger_count: number; notify_email: string | null; notify_telegram_chat_id: string | null };
 type LogRow = { id: string; created_at: string; endpoint: string; method: string; status_code: number; response_time_ms: number; ip_address: string; error_message: string | null; partner_id: string | null };
 type Webhook = { id: string; partner_id: string; url: string; events: string[]; is_active: boolean; created_at: string };
@@ -633,10 +653,85 @@ function DocsPanel() {
 // ============ SDKs ============
 function SDKsPanel() {
   const [items, setItems] = useState<SdkVersion[]>([]);
-  useEffect(() => { (async () => {
-    const { data } = await supabase.from("api_sdk_versions").select("*").order("language").order("released_at", { ascending: false });
+  const [runtimeChecks, setRuntimeChecks] = useState<Record<string, RuntimeSdkCheck>>({});
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string>("");
+
+  const resolveSdkHref = useCallback((url?: string | null) => {
+    if (!url) return "";
+    try {
+      const parsed = new URL(url);
+      if (parsed.pathname.startsWith("/sdk/")) return `${window.location.origin}${parsed.pathname}`;
+      return url;
+    } catch {
+      return url.startsWith("/sdk/") ? `${window.location.origin}${url}` : url;
+    }
+  }, []);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("api_sdk_versions").select("*").order("language").order("released_at", { ascending: false });
+    if (error) {
+      toast({ title: "SDK ro'yxatini yuklab bo'lmadi", description: error.message, variant: "destructive" });
+    }
     setItems((data ?? []) as SdkVersion[]);
-  })(); }, []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (!items.length) return;
+    let cancelled = false;
+    const run = async () => {
+      const latestItems = Object.values(items.reduce<Record<string, SdkVersion>>((acc, item) => {
+        if (!acc[item.language] || item.is_latest) acc[item.language] = item;
+        return acc;
+      }, {}));
+      const checks = await Promise.all(latestItems.map(async (item) => {
+        if (!item.download_url) return [item.id, { status: "not_configured", code: null, checkedAt: new Date().toISOString() } as RuntimeSdkCheck] as const;
+        const href = resolveSdkHref(item.download_url);
+        try {
+          let response = await fetch(href, { method: "HEAD", cache: "no-store" });
+          if (response.status === 405 || response.status === 403) {
+            response = await fetch(href, { method: "GET", headers: { Range: "bytes=0-64" }, cache: "no-store" });
+          }
+          const status: SdkLinkStatus = response.ok ? "available" : response.status === 404 || response.status === 410 ? "missing" : "error";
+          return [item.id, { status, code: response.status, checkedAt: new Date().toISOString() } as RuntimeSdkCheck] as const;
+        } catch (error: any) {
+          return [item.id, { status: "error", code: null, checkedAt: new Date().toISOString(), error: error?.message || "Network error" } as RuntimeSdkCheck] as const;
+        }
+      }));
+      if (!cancelled) setRuntimeChecks(Object.fromEntries(checks));
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [items, resolveSdkHref]);
+
+  const syncSdks = async () => {
+    setSyncing(true);
+    setSyncMessage("");
+    try {
+      const { data, error } = await supabase.functions.invoke("sdk-sync", { method: "POST" } as any);
+      if (error) {
+        let details = error.message;
+        const context = (error as any).context;
+        if (context?.text) details = await context.text();
+        throw new Error(details);
+      }
+      const missing = (data?.items ?? []).filter((item: any) => item.download_status === "missing" || item.download_status === "error").length;
+      setSyncMessage(`Sinxronizatsiya tugadi: ${data?.synced ?? 0} SDK, muammoli havola: ${missing}.`);
+      toast({ title: "SDK sinxronizatsiya qilindi", description: `${data?.synced ?? 0} ta versiya qayta tekshirildi.` });
+      await load();
+    } catch (e: any) {
+      toast({ title: "SDK sync xatosi", description: e.message, variant: "destructive" });
+      setSyncMessage(e.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const grouped = useMemo(() => {
     const g: Record<string, SdkVersion[]> = {};
     items.forEach(i => { (g[i.language] = g[i.language] || []).push(i); });
@@ -654,29 +749,87 @@ function SDKsPanel() {
     if (l === "curl") return `curl -H "x-api-key: $MED1_KEY" https://med1.uz/api-gateway/v1/ping`;
     return "";
   };
+  const statusLabel = (status?: SdkLinkStatus | null, code?: number | null) => {
+    if (status === "available") return code ? `Mavjud · HTTP ${code}` : "Mavjud";
+    if (status === "missing") return code ? `Topilmadi · HTTP ${code}` : "Topilmadi";
+    if (status === "error") return "Tekshiruv xatosi";
+    if (status === "not_configured") return "Hali ulanmagan";
+    return "Tekshirilmagan";
+  };
+  const statusBadgeClass = (status?: SdkLinkStatus | null) => {
+    if (status === "available") return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+    if (status === "missing" || status === "error") return "bg-red-500/20 text-red-300 border-red-500/40";
+    return "bg-amber-500/20 text-amber-300 border-amber-500/40";
+  };
+  const formatRetry = (iso?: string | null) => {
+    if (!iso) return "24 soat ichida";
+    return new Intl.DateTimeFormat("uz-UZ", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
+  };
+  if (loading) {
+    return <Card className="p-4 bg-white/5 border-white/10 mt-4 text-white/70">SDK ro'yxati tekshirilmoqda…</Card>;
+  }
+
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-      {Object.entries(grouped).map(([lang, versions]) => {
-        const latest = versions.find(v => v.is_latest) || versions[0];
-        const install = installFor(lang, latest?.version || "0.1.0");
-        return (
-          <Card key={lang} className="p-4 bg-white/5 border-white/10">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold capitalize">{lang} SDK</h3>
-              <Badge className="bg-emerald-500/20 text-emerald-300">v{latest?.version}</Badge>
-            </div>
-            <p className="text-xs text-white/60 mb-3 line-clamp-3">{latest?.changelog}</p>
-            {install && (
-              <pre className="text-[11px] bg-black/40 rounded p-2 mb-3 overflow-x-auto text-emerald-300">{install}</pre>
-            )}
-            <div className="flex flex-wrap gap-3 text-xs">
-              {latest?.download_url && <a href={latest.download_url} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Download / Install</a>}
-              {latest?.repository_url && <a href={latest.repository_url} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Repository</a>}
-              {!latest?.download_url && !latest?.repository_url && <span className="text-white/40">Tez orada</span>}
-            </div>
-          </Card>
-        );
-      })}
+    <div className="space-y-4 mt-4">
+      <Card className="p-4 bg-white/5 border-white/10 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">SDK auto-sync</h3>
+          <p className="text-sm text-white/60">Admin panel med1.uz/sdk fayllarini va GitHub repository holatini qayta tekshiradi, DBdagi versiya/download_url qiymatlarini yangilaydi.</p>
+          {syncMessage && <p className="text-xs text-white/50 mt-2">{syncMessage}</p>}
+        </div>
+        <Button onClick={syncSdks} disabled={syncing} className="shrink-0">
+          <RefreshCw className={`w-4 h-4 mr-2 ${syncing ? "animate-spin" : ""}`} />
+          {syncing ? "Tekshirilmoqda" : "SDK sync"}
+        </Button>
+      </Card>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Object.entries(grouped).map(([lang, versions]) => {
+          const latest = versions.find(v => v.is_latest) || versions[0];
+          const install = installFor(lang, latest?.version || "0.1.0");
+          const runtime = latest ? runtimeChecks[latest.id] : undefined;
+          const effectiveStatus = runtime?.status ?? latest?.download_status;
+          const effectiveCode = runtime?.code ?? latest?.download_status_code;
+          const effectiveCheckedAt = runtime?.checkedAt ?? latest?.download_checked_at;
+          const downloadOk = effectiveStatus === "available";
+          const downloadProblem = effectiveStatus === "missing" || effectiveStatus === "error";
+          const repoOk = latest?.repository_url && latest.repository_status === "available";
+          return (
+            <Card key={lang} className="p-4 bg-white/5 border-white/10">
+              <div className="flex items-center justify-between mb-2 gap-3">
+                <h3 className="font-semibold capitalize">{lang} SDK</h3>
+                <Badge className="bg-emerald-500/20 text-emerald-300 shrink-0">v{latest?.version}</Badge>
+              </div>
+              <p className="text-xs text-white/60 mb-3 line-clamp-3">{latest?.changelog}</p>
+              {install && (
+                <pre className="text-[11px] bg-black/40 rounded p-2 mb-3 overflow-x-auto text-emerald-300">{install}</pre>
+              )}
+
+              <div className="space-y-2 mb-3">
+                <Badge className={`${statusBadgeClass(effectiveStatus)} border text-[11px]`}>
+                  {downloadOk ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
+                  Download: {statusLabel(effectiveStatus, effectiveCode)}
+                </Badge>
+                {downloadProblem && (
+                  <div className="text-xs text-red-200 bg-red-500/10 border border-red-500/20 rounded p-2">
+                    Fayl hozir topilmadi. Qayta tekshiruv: {formatRetry(latest?.next_retry_at)}. Muqobil yo'l: install buyrug'idan foydalaning yoki Developer Portal orqali kodni nusxalang.
+                  </div>
+                )}
+                {!downloadProblem && effectiveCheckedAt && (
+                  <div className="text-[11px] text-white/40">Oxirgi tekshiruv: {formatRetry(effectiveCheckedAt)}</div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-3 text-xs">
+                {latest?.download_url && downloadOk && <a href={resolveSdkHref(latest.download_url)} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Yuklab olish</a>}
+                {latest?.download_url && !downloadOk && <span className="text-white/40">Yuklab olish vaqtincha yopiq</span>}
+                {repoOk && <a href={latest.repository_url!} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Repository</a>}
+                {!repoOk && <span className="text-white/40">Repository tayyor bo'lgach avtomatik yoqiladi</span>}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
