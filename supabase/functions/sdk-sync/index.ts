@@ -184,6 +184,12 @@ serve(async (req) => {
       next_retry_at: download.status === "available" ? null : nextRetryAt,
     };
 
+    await admin
+      .from("api_sdk_versions")
+      .update({ is_latest: false })
+      .eq("language", item.language)
+      .neq("version", item.version);
+
     const { error } = await admin
       .from("api_sdk_versions")
       .upsert(payload, { onConflict: "language,version" });
