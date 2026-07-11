@@ -724,6 +724,16 @@ function SDKsPanel() {
     if (!iso) return "24 soat ichida";
     return new Intl.DateTimeFormat("uz-UZ", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
   };
+  const resolveSdkHref = (url?: string | null) => {
+    if (!url) return "";
+    try {
+      const parsed = new URL(url);
+      if (parsed.pathname.startsWith("/sdk/")) return `${window.location.origin}${parsed.pathname}`;
+      return url;
+    } catch {
+      return url.startsWith("/sdk/") ? `${window.location.origin}${url}` : url;
+    }
+  };
 
   if (loading) {
     return <Card className="p-4 bg-white/5 border-white/10 mt-4 text-white/70">SDK ro'yxati tekshirilmoqda…</Card>;
@@ -777,7 +787,7 @@ function SDKsPanel() {
               </div>
 
               <div className="flex flex-wrap gap-3 text-xs">
-                {latest?.download_url && downloadOk && <a href={latest.download_url} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Yuklab olish</a>}
+                {latest?.download_url && downloadOk && <a href={resolveSdkHref(latest.download_url)} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Yuklab olish</a>}
                 {latest?.download_url && !downloadOk && <span className="text-white/40">Yuklab olish vaqtincha yopiq</span>}
                 {repoOk && <a href={latest.repository_url!} target="_blank" rel="noreferrer" className="text-blue-300 hover:underline">Repository</a>}
                 {!repoOk && <span className="text-white/40">Repository tayyor bo'lgach avtomatik yoqiladi</span>}
