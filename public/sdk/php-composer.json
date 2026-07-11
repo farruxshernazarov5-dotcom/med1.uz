@@ -1,0 +1,18 @@
+{
+  "name": "med1uz/api-php",
+  "description": "Official PHP SDK for the MED1.UZ REST API v1 (Auth, User, AI, Clinics, Appointments, EMR, Payments, Notifications, Maps).",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://med1.uz/developers",
+  "keywords": ["med1", "med1uz", "medical", "ai", "uzbekistan", "sdk"],
+  "require": {
+    "php": ">=7.4",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-hash": "*"
+  },
+  "autoload": {
+    "psr-4": { "Med1Uz\\": "" }
+  },
+  "authors": [{ "name": "MED-ALL AI SYSTEM MCHJ", "homepage": "https://med1.uz" }]
+}

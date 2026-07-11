@@ -1,0 +1,20 @@
+name: med1_api
+description: Official Flutter/Dart SDK for the MED1.UZ REST API — Auth, User, AI (14 services), Clinics, Appointments, EMR, Payments, Notifications, Maps.
+version: 0.1.0
+homepage: https://med1.uz/developers
+repository: https://github.com/med1uz/flutter-sdk
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dio: ^5.4.0
+  shared_preferences: ^2.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
