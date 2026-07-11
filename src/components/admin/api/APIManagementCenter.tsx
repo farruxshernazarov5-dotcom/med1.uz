@@ -19,6 +19,7 @@ type ApiKey = { id: string; partner_id: string; name: string; environment: strin
 type Partner = { id: string; name: string; status: string; tier: string; owner_email: string | null; created_at: string };
 type OAuthClient = { id: string; client_id: string; client_name: string; scopes: string[]; is_active: boolean; created_at: string; last_used_at: string | null };
 type SdkLinkStatus = "unchecked" | "available" | "missing" | "error" | "not_configured";
+type RuntimeSdkCheck = { status: SdkLinkStatus; code: number | null; checkedAt: string; error?: string };
 type SdkVersion = {
   id: string;
   language: string;
@@ -652,9 +653,21 @@ function DocsPanel() {
 // ============ SDKs ============
 function SDKsPanel() {
   const [items, setItems] = useState<SdkVersion[]>([]);
+  const [runtimeChecks, setRuntimeChecks] = useState<Record<string, RuntimeSdkCheck>>({});
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string>("");
+
+  const resolveSdkHref = (url?: string | null) => {
+    if (!url) return "";
+    try {
+      const parsed = new URL(url);
+      if (parsed.pathname.startsWith("/sdk/")) return `${window.location.origin}${parsed.pathname}`;
+      return url;
+    } catch {
+      return url.startsWith("/sdk/") ? `${window.location.origin}${url}` : url;
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -667,6 +680,34 @@ function SDKsPanel() {
   };
 
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (!items.length) return;
+    let cancelled = false;
+    const run = async () => {
+      const latestItems = Object.values(items.reduce<Record<string, SdkVersion>>((acc, item) => {
+        if (!acc[item.language] || item.is_latest) acc[item.language] = item;
+        return acc;
+      }, {}));
+      const checks = await Promise.all(latestItems.map(async (item) => {
+        if (!item.download_url) return [item.id, { status: "not_configured", code: null, checkedAt: new Date().toISOString() } as RuntimeSdkCheck] as const;
+        const href = resolveSdkHref(item.download_url);
+        try {
+          let response = await fetch(href, { method: "HEAD", cache: "no-store" });
+          if (response.status === 405 || response.status === 403) {
+            response = await fetch(href, { method: "GET", headers: { Range: "bytes=0-64" }, cache: "no-store" });
+          }
+          const status: SdkLinkStatus = response.ok ? "available" : response.status === 404 || response.status === 410 ? "missing" : "error";
+          return [item.id, { status, code: response.status, checkedAt: new Date().toISOString() } as RuntimeSdkCheck] as const;
+        } catch (error: any) {
+          return [item.id, { status: "error", code: null, checkedAt: new Date().toISOString(), error: error?.message || "Network error" } as RuntimeSdkCheck] as const;
+        }
+      }));
+      if (!cancelled) setRuntimeChecks(Object.fromEntries(checks));
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [items]);
 
   const syncSdks = async () => {
     setSyncing(true);
@@ -724,17 +765,6 @@ function SDKsPanel() {
     if (!iso) return "24 soat ichida";
     return new Intl.DateTimeFormat("uz-UZ", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
   };
-  const resolveSdkHref = (url?: string | null) => {
-    if (!url) return "";
-    try {
-      const parsed = new URL(url);
-      if (parsed.pathname.startsWith("/sdk/")) return `${window.location.origin}${parsed.pathname}`;
-      return url;
-    } catch {
-      return url.startsWith("/sdk/") ? `${window.location.origin}${url}` : url;
-    }
-  };
-
   if (loading) {
     return <Card className="p-4 bg-white/5 border-white/10 mt-4 text-white/70">SDK ro'yxati tekshirilmoqda…</Card>;
   }
@@ -757,8 +787,12 @@ function SDKsPanel() {
         {Object.entries(grouped).map(([lang, versions]) => {
           const latest = versions.find(v => v.is_latest) || versions[0];
           const install = installFor(lang, latest?.version || "0.1.0");
-          const downloadOk = latest?.download_status === "available";
-          const downloadProblem = latest?.download_status === "missing" || latest?.download_status === "error";
+          const runtime = latest ? runtimeChecks[latest.id] : undefined;
+          const effectiveStatus = runtime?.status ?? latest?.download_status;
+          const effectiveCode = runtime?.code ?? latest?.download_status_code;
+          const effectiveCheckedAt = runtime?.checkedAt ?? latest?.download_checked_at;
+          const downloadOk = effectiveStatus === "available";
+          const downloadProblem = effectiveStatus === "missing" || effectiveStatus === "error";
           const repoOk = latest?.repository_url && latest.repository_status === "available";
           return (
             <Card key={lang} className="p-4 bg-white/5 border-white/10">
@@ -774,15 +808,15 @@ function SDKsPanel() {
               <div className="space-y-2 mb-3">
                 <Badge className={`${statusBadgeClass(latest?.download_status)} border text-[11px]`}>
                   {downloadOk ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
-                  Download: {statusLabel(latest?.download_status, latest?.download_status_code)}
+                  Download: {statusLabel(effectiveStatus, effectiveCode)}
                 </Badge>
                 {downloadProblem && (
                   <div className="text-xs text-red-200 bg-red-500/10 border border-red-500/20 rounded p-2">
                     Fayl hozir topilmadi. Qayta tekshiruv: {formatRetry(latest?.next_retry_at)}. Muqobil yo'l: install buyrug'idan foydalaning yoki Developer Portal orqali kodni nusxalang.
                   </div>
                 )}
-                {!downloadProblem && latest?.download_checked_at && (
-                  <div className="text-[11px] text-white/40">Oxirgi tekshiruv: {formatRetry(latest.download_checked_at)}</div>
+                {!downloadProblem && effectiveCheckedAt && (
+                  <div className="text-[11px] text-white/40">Oxirgi tekshiruv: {formatRetry(effectiveCheckedAt)}</div>
                 )}
               </div>
 
