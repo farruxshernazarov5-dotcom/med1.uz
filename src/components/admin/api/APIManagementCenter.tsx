@@ -737,7 +737,7 @@ function SDKsPanel() {
           <p className="text-sm text-white/60">Admin panel med1.uz/sdk fayllarini va GitHub repository holatini qayta tekshiradi, DBdagi versiya/download_url qiymatlarini yangilaydi.</p>
           {syncMessage && <p className="text-xs text-white/50 mt-2">{syncMessage}</p>}
         </div>
-        <Button onClick={syncSdks} disabled={syncing} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80 shrink-0">
+        <Button onClick={syncSdks} disabled={syncing} className="shrink-0">
           <RefreshCw className={`w-4 h-4 mr-2 ${syncing ? "animate-spin" : ""}`} />
           {syncing ? "Tekshirilmoqda" : "SDK sync"}
         </Button>
