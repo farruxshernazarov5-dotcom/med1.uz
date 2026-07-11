@@ -97,6 +97,13 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 
 async function verifyUrl(url: string | null): Promise<{ status: LinkStatus; code: number | null; error: string | null }> {
   if (!url) return { status: "not_configured", code: null, error: null };
+  const closeBody = async (response: Response) => {
+    try {
+      if (response.body) await response.body.cancel();
+    } catch (_) {
+      // ignore stream cleanup errors
+    }
+  };
   try {
     let res = await fetch(url, {
       method: "HEAD",
@@ -105,7 +112,7 @@ async function verifyUrl(url: string | null): Promise<{ status: LinkStatus; code
       signal: AbortSignal.timeout(8000),
     });
     if (res.status === 405 || res.status === 403) {
-      await res.body?.cancel().catch(() => {});
+      await closeBody(res);
       res = await fetch(url, {
         method: "GET",
         headers: { "Range": "bytes=0-64", "User-Agent": "MED1-SDK-Link-Verifier/1.0" },
@@ -113,7 +120,7 @@ async function verifyUrl(url: string | null): Promise<{ status: LinkStatus; code
         signal: AbortSignal.timeout(8000),
       });
     }
-    await res.body?.cancel().catch(() => {});
+    await closeBody(res);
     if (res.ok) return { status: "available", code: res.status, error: null };
     if (res.status === 404 || res.status === 410) return { status: "missing", code: res.status, error: `HTTP ${res.status}` };
     return { status: "error", code: res.status, error: `HTTP ${res.status}` };
