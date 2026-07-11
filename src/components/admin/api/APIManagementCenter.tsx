@@ -672,7 +672,7 @@ function SDKsPanel() {
     setSyncing(true);
     setSyncMessage("");
     try {
-      const { data, error } = await supabase.functions.invoke("sdk-sync", { method: "POST" });
+      const { data, error } = await supabase.functions.invoke("sdk-sync", { method: "POST" } as any);
       if (error) {
         let details = error.message;
         const context = (error as any).context;
