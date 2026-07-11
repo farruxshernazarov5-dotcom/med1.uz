@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -658,7 +658,7 @@ function SDKsPanel() {
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string>("");
 
-  const resolveSdkHref = (url?: string | null) => {
+  const resolveSdkHref = useCallback((url?: string | null) => {
     if (!url) return "";
     try {
       const parsed = new URL(url);
@@ -667,7 +667,7 @@ function SDKsPanel() {
     } catch {
       return url.startsWith("/sdk/") ? `${window.location.origin}${url}` : url;
     }
-  };
+  }, []);
 
   const load = async () => {
     setLoading(true);
@@ -707,7 +707,7 @@ function SDKsPanel() {
     };
     run();
     return () => { cancelled = true; };
-  }, [items]);
+  }, [items, resolveSdkHref]);
 
   const syncSdks = async () => {
     setSyncing(true);
@@ -806,7 +806,7 @@ function SDKsPanel() {
               )}
 
               <div className="space-y-2 mb-3">
-                <Badge className={`${statusBadgeClass(latest?.download_status)} border text-[11px]`}>
+                <Badge className={`${statusBadgeClass(effectiveStatus)} border text-[11px]`}>
                   {downloadOk ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertTriangle className="w-3 h-3 mr-1" />}
                   Download: {statusLabel(effectiveStatus, effectiveCode)}
                 </Badge>
