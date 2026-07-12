@@ -130,6 +130,11 @@ async function verifyUrl(url: string | null): Promise<{ status: LinkStatus; code
 }
 
 async function assertAdmin(req: Request) {
+  // Allow scheduled/cron invocations via shared secret header
+  const syncSecret = Deno.env.get("SDK_SYNC_SECRET");
+  const providedSecret = req.headers.get("x-sync-secret");
+  if (syncSecret && providedSecret && providedSecret === syncSecret) return;
+
   const authHeader = req.headers.get("Authorization") || "";
   if (!authHeader.startsWith("Bearer ")) throw new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
 
