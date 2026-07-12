@@ -23,7 +23,7 @@ const DiseasesPage = () => {
   return (
     <>
       <SEO
-        title="Kasalliklar katalogi — sabablari, alomatlari va davolash | Med1.uz"
+        title="Kasalliklar: sabablar, alomatlar va davolash | Med1.uz"
         description={`${totalDiseaseCategories} ta yo'nalish va ${totalDiseases}+ kasallik bo'yicha tibbiy ma'lumot: sabablari, alomatlari, davolash usullari va tavsiyalar.`}
         path="/diseases"
         jsonLd={{
