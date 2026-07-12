@@ -131,9 +131,22 @@ async function verifyUrl(url: string | null): Promise<{ status: LinkStatus; code
 
 async function assertAdmin(req: Request) {
   // Allow scheduled/cron invocations via shared secret header
-  const syncSecret = Deno.env.get("SDK_SYNC_SECRET");
+  // Secret may live in env var OR in private.app_config (used by pg_cron)
   const providedSecret = req.headers.get("x-sync-secret");
-  if (syncSecret && providedSecret && providedSecret === syncSecret) return;
+  if (providedSecret) {
+    const envSecret = Deno.env.get("SDK_SYNC_SECRET");
+    if (envSecret && providedSecret === envSecret) return;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supaUrl = Deno.env.get("SUPABASE_URL");
+    if (serviceKey && supaUrl) {
+      try {
+        const admin = createClient(supaUrl, serviceKey);
+        const { data } = await admin.schema("private").from("app_config").select("value").eq("key", "sdk_sync_secret").maybeSingle();
+        if (data?.value && data.value === providedSecret) return;
+      } catch (_) { /* fall through to JWT check */ }
+    }
+  }
+
 
   const authHeader = req.headers.get("Authorization") || "";
   if (!authHeader.startsWith("Bearer ")) throw new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
