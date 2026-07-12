@@ -95,7 +95,7 @@ const CosSettings = ({ centerId }: { centerId: string }) => {
               <div className="shrink-0">
                 <Label className="text-xs">Logo</Label>
                 <label className="mt-1 flex flex-col items-center justify-center w-28 h-28 rounded-2xl border-2 border-dashed border-border hover:border-primary cursor-pointer bg-muted/30 overflow-hidden">
-                  {profile.logo_url ? <img src={profile.logo_url} alt="logo" className="w-full h-full object-cover" /> : (uploading ? <Loader2 className="w-5 h-5 animate-spin text-primary" /> : <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-[10px] text-muted-foreground mt-1">Logo yuklash</span></>)}
+                  {profile.logo_url ? <img src={profile.logo_url} alt="Klinika logotipi" className="w-full h-full object-cover" /> : (uploading ? <Loader2 className="w-5 h-5 animate-spin text-primary" /> : <><Upload className="w-5 h-5 text-muted-foreground" /><span className="text-[10px] text-muted-foreground mt-1">Logo yuklash</span></>)}
                   <input type="file" hidden accept="image/*" onChange={(e) => e.target.files?.[0] && uploadLogo(e.target.files[0])} />
                 </label>
               </div>

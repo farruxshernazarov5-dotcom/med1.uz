@@ -236,7 +236,7 @@ const MaternityRegistrationPage = () => {
                   <div>
                     <Label>Logotip</Label>
                     <div className="flex items-center gap-4 mt-1">
-                      {logoPreview ? <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border" alt="Logo" /> : <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center"><Camera className="w-6 h-6 text-muted-foreground" /></div>}
+                      {logoPreview ? <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border" alt="Klinika logotipi" /> : <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center"><Camera className="w-6 h-6 text-muted-foreground" /></div>}
                       <label className="cursor-pointer"><Input type="file" accept="image/*" className="hidden" onChange={handleLogo} /><span className="text-sm text-primary hover:underline flex items-center gap-1"><Upload className="w-4 h-4" /> Yuklash</span></label>
                     </div>
                   </div>
@@ -353,7 +353,7 @@ const MaternityRegistrationPage = () => {
                 <div className="bg-accent/30 border border-accent rounded-xl p-5">
                   <h3 className="font-bold text-foreground mb-3">Ma'lumotlarni tasdiqlang</h3>
                   <div className="space-y-2 text-sm">
-                    {logoPreview && <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border mb-2" alt="Logo" />}
+                    {logoPreview && <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border mb-2" alt="Klinika logotipi" />}
                     <p><span className="text-muted-foreground">Nomi:</span> <strong>{form.name}</strong></p>
                     <p><span className="text-muted-foreground">INN:</span> {form.inn}</p>
                     <p><span className="text-muted-foreground">Telefon:</span> {form.phone}</p>

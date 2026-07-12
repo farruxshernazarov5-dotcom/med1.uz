@@ -206,7 +206,7 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-border bg-muted flex items-center justify-center">
             {logoUrl ? (
-              <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+              <img src={logoUrl} alt="Klinika logotipi" className="w-full h-full object-cover" />
             ) : (
               <Building2 className="w-8 h-8 text-muted-foreground" />
             )}
