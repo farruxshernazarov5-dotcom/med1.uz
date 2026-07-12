@@ -725,7 +725,8 @@ function SDKsPanel() {
       const merged = Object.fromEntries(checks);
       setRuntimeChecks(prev => ({ ...prev, ...merged }));
       try {
-        const persist: Record<string, RuntimeSdkCheck & { _ts: number }> = { ...cached };
+        const persist: Record<string, RuntimeSdkCheck & { _ts: number }> = {};
+        for (const [id, entry] of Object.entries(cached)) if (entry?._ts) persist[id] = entry as RuntimeSdkCheck & { _ts: number };
         for (const [id, entry] of Object.entries(merged)) persist[id] = { ...entry, _ts: Date.now() };
         sessionStorage.setItem(CACHE_KEY, JSON.stringify(persist));
       } catch {}
