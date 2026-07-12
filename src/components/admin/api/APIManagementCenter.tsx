@@ -684,12 +684,30 @@ function SDKsPanel() {
   useEffect(() => {
     if (!items.length) return;
     let cancelled = false;
+    const CACHE_KEY = "med1_sdk_runtime_checks_v1";
+    const CACHE_TTL_MS = 5 * 60 * 1000;
+    const now = Date.now();
+
+    // Hydrate from sessionStorage cache to avoid unnecessary fetches
+    let cached: Record<string, RuntimeSdkCheck & { _ts?: number }> = {};
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (raw) cached = JSON.parse(raw);
+    } catch {}
+    const fresh: Record<string, RuntimeSdkCheck> = {};
+    for (const [id, entry] of Object.entries(cached)) {
+      if (entry && entry._ts && now - entry._ts < CACHE_TTL_MS) fresh[id] = entry;
+    }
+    if (Object.keys(fresh).length) setRuntimeChecks(prev => ({ ...prev, ...fresh }));
+
     const run = async () => {
       const latestItems = Object.values(items.reduce<Record<string, SdkVersion>>((acc, item) => {
         if (!acc[item.language] || item.is_latest) acc[item.language] = item;
         return acc;
       }, {}));
-      const checks = await Promise.all(latestItems.map(async (item) => {
+      const toCheck = latestItems.filter(item => !fresh[item.id]);
+      if (!toCheck.length) return;
+      const checks = await Promise.all(toCheck.map(async (item) => {
         if (!item.download_url) return [item.id, { status: "not_configured", code: null, checkedAt: new Date().toISOString() } as RuntimeSdkCheck] as const;
         const href = resolveSdkHref(item.download_url);
         try {
@@ -703,7 +721,14 @@ function SDKsPanel() {
           return [item.id, { status: "error", code: null, checkedAt: new Date().toISOString(), error: error?.message || "Network error" } as RuntimeSdkCheck] as const;
         }
       }));
-      if (!cancelled) setRuntimeChecks(Object.fromEntries(checks));
+      if (cancelled) return;
+      const merged = Object.fromEntries(checks);
+      setRuntimeChecks(prev => ({ ...prev, ...merged }));
+      try {
+        const persist: Record<string, RuntimeSdkCheck & { _ts: number }> = { ...cached };
+        for (const [id, entry] of Object.entries(merged)) persist[id] = { ...entry, _ts: Date.now() };
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(persist));
+      } catch {}
     };
     run();
     return () => { cancelled = true; };
