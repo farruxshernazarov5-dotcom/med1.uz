@@ -1072,7 +1072,3 @@ function SandboxPanel() {
     </div>
   );
 }
-      </Card>
-    </div>
-  );
-}
