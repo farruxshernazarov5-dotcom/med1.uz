@@ -246,24 +246,141 @@ function EndpointsPanel({ filterCategory, title }: { filterCategory?: string[]; 
 }
 
 // ============ API Keys ============
+const ALL_SCOPES = ["*","user:read","user:write","clinic:read","doctor:read","booking:read","booking:write","emr:read","payment:read","payment:write","pharmacy:read","diagnostics:read","notify:write","ai:chat"];
+
+async function sha256Hex(s: string) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+function randomHex(bytes: number) {
+  const a = new Uint8Array(bytes); crypto.getRandomValues(a);
+  return Array.from(a).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
 function KeysPanel() {
   const [keys, setKeys] = useState<any[]>([]);
-  useEffect(() => { load(); }, []);
-  const load = async () => {
-    const { data } = await supabase.from("api_keys").select("id, name, environment, scopes, rate_limit_per_min, rate_limit_per_day, is_active, last_used_at, expires_at, created_at, key_prefix, partner_id, api_partners(name)").order("created_at", { ascending: false });
-    setKeys(data ?? []);
-  };
+  const [partners, setPartners] = useState<any[]>([]);
+  const [open, setOpen] = useState(false);
+  const [reveal, setReveal] = useState<{ key: string; hmac?: string } | null>(null);
+  const [form, setForm] = useState({
+    partner_id: "", name: "", environment: "live",
+    scopes: ["user:read","ai:chat"] as string[],
+    rate_limit_per_min: 60, rate_limit_per_day: 10000,
+    expires_days: 365, with_hmac: false,
+  });
+
+  const load = useCallback(async () => {
+    const [{ data: k }, { data: p }] = await Promise.all([
+      supabase.from("api_keys").select("id, name, environment, scopes, rate_limit_per_min, rate_limit_per_day, is_active, last_used_at, expires_at, created_at, key_prefix, partner_id, api_partners(name)").order("created_at", { ascending: false }),
+      supabase.from("api_partners").select("id, org_name, status").order("org_name"),
+    ]);
+    setKeys(k ?? []);
+    setPartners(p ?? []);
+  }, []);
+  useEffect(() => { load(); const t = setInterval(load, 30_000); return () => clearInterval(t); }, [load]);
+
   const revoke = async (id: string) => {
-    const { error } = await supabase.from("api_keys").update({ is_active: false }).eq("id", id);
+    const { error } = await supabase.from("api_keys").update({ is_active: false, revoked_at: new Date().toISOString() }).eq("id", id);
     if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
     else { toast({ title: "Kalit bekor qilindi" }); load(); }
   };
+
+  const toggleScope = (s: string) => setForm(f => ({ ...f, scopes: f.scopes.includes(s) ? f.scopes.filter(x => x !== s) : [...f.scopes, s] }));
+
+  const createKey = async () => {
+    if (!form.partner_id) return toast({ title: "Hamkor tanlang", variant: "destructive" });
+    if (!form.name.trim()) return toast({ title: "Kalit nomi kerak", variant: "destructive" });
+    if (form.scopes.length === 0) return toast({ title: "Kamida bitta scope tanlang", variant: "destructive" });
+    const envTag = form.environment === "live" ? "live" : "test";
+    const secretPart = randomHex(24); // 48 chars
+    const rawKey = `med1_${envTag}_${secretPart}`;
+    const key_hash = await sha256Hex(rawKey);
+    const key_prefix = rawKey.slice(0, 14);
+    const hmac_secret = form.with_hmac ? randomHex(32) : null;
+    const expires_at = form.expires_days > 0 ? new Date(Date.now() + form.expires_days * 86400_000).toISOString() : null;
+    const { data: userRes } = await supabase.auth.getUser();
+    const { error } = await supabase.from("api_keys").insert({
+      partner_id: form.partner_id, name: form.name.trim(), environment: form.environment,
+      scopes: form.scopes, rate_limit_per_min: form.rate_limit_per_min, rate_limit_per_day: form.rate_limit_per_day,
+      expires_at, key_hash, key_prefix, hmac_secret, is_sandbox: form.environment !== "live",
+      created_by: userRes.user?.id ?? null, is_active: true,
+    });
+    if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    setReveal({ key: rawKey, hmac: hmac_secret ?? undefined });
+    setOpen(false);
+    setForm(f => ({ ...f, name: "" }));
+    load();
+  };
+
   return (
     <div className="space-y-4 mt-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-lg font-semibold">API Keys <span className="text-white/50 text-sm">({keys.length})</span></h2>
-        <p className="text-xs text-white/60">Yangi kalitlar hamkor tomonidan Partner Dashboard orqali yaratiladi</p>
+        <Button onClick={() => setOpen(true)} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80"><Plus className="w-4 h-4 mr-1" />Yangi API kalit</Button>
       </div>
+
+      {open && (
+        <Card className="p-4 bg-white/5 border-[#2F80ED]/40 space-y-3">
+          <h3 className="font-semibold text-white">Yangi API kalit yaratish</h3>
+          <div className="grid md:grid-cols-3 gap-2">
+            <select value={form.partner_id} onChange={e => setForm({ ...form, partner_id: e.target.value })} className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white">
+              <option value="">— Hamkorni tanlang —</option>
+              {partners.map(p => <option key={p.id} value={p.id}>{p.org_name} {p.status !== "approved" ? `(${p.status})` : ""}</option>)}
+            </select>
+            <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Kalit nomi (masalan: Mobile prod)" className="bg-white/5 border-white/10" />
+            <select value={form.environment} onChange={e => setForm({ ...form, environment: e.target.value })} className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white">
+              <option value="live">Production (live)</option>
+              <option value="sandbox">Sandbox (test)</option>
+            </select>
+            <Input type="number" value={form.rate_limit_per_min} onChange={e => setForm({ ...form, rate_limit_per_min: Number(e.target.value) })} placeholder="Rate / min" className="bg-white/5 border-white/10" />
+            <Input type="number" value={form.rate_limit_per_day} onChange={e => setForm({ ...form, rate_limit_per_day: Number(e.target.value) })} placeholder="Rate / day" className="bg-white/5 border-white/10" />
+            <Input type="number" value={form.expires_days} onChange={e => setForm({ ...form, expires_days: Number(e.target.value) })} placeholder="Amal muddati (kun, 0 = cheksiz)" className="bg-white/5 border-white/10" />
+          </div>
+          <div>
+            <div className="text-xs text-white/60 mb-1">Scopes ({form.scopes.length} tanlangan)</div>
+            <div className="flex flex-wrap gap-1">
+              {ALL_SCOPES.map(s => (
+                <button key={s} onClick={() => toggleScope(s)} className={`text-xs px-2 py-1 rounded border transition ${form.scopes.includes(s) ? "bg-[#2F80ED] border-[#2F80ED] text-white" : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"}`}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <label className="flex items-center gap-2 text-xs text-white/70">
+            <input type="checkbox" checked={form.with_hmac} onChange={e => setForm({ ...form, with_hmac: e.target.checked })} />
+            HMAC signature majburiy (yuqori xavfsizlik uchun)
+          </label>
+          <div className="flex gap-2">
+            <Button onClick={createKey} className="bg-emerald-600 hover:bg-emerald-600/80"><Key className="w-4 h-4 mr-1" />Kalit yaratish</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} className="border-white/20 text-white">Bekor qilish</Button>
+          </div>
+        </Card>
+      )}
+
+      {reveal && (
+        <Card className="p-4 bg-emerald-950/40 border-emerald-500/40 space-y-3">
+          <div className="flex items-start gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-emerald-300">Kalit yaratildi — bir marta ko'rsatiladi!</h3>
+              <p className="text-xs text-white/70 mt-1">Ushbu qiymatni hoziroq nusxa oling. Sahifa yopilgach qayta ko'rish imkoni bo'lmaydi (faqat SHA-256 hash saqlanadi).</p>
+            </div>
+          </div>
+          <div className="bg-black/40 rounded p-3 font-mono text-sm text-emerald-300 break-all flex items-center gap-2">
+            <span className="flex-1">{reveal.key}</span>
+            <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(reveal.key); toast({ title: "Nusxa olindi" }); }}><Copy className="w-4 h-4" /></Button>
+          </div>
+          {reveal.hmac && (
+            <div>
+              <div className="text-xs text-white/60 mb-1">HMAC secret</div>
+              <div className="bg-black/40 rounded p-3 font-mono text-xs text-amber-300 break-all flex items-center gap-2">
+                <span className="flex-1">{reveal.hmac}</span>
+                <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(reveal.hmac!); toast({ title: "Nusxa olindi" }); }}><Copy className="w-4 h-4" /></Button>
+              </div>
+            </div>
+          )}
+          <Button size="sm" variant="outline" onClick={() => setReveal(null)} className="border-white/20 text-white">Yashirish</Button>
+        </Card>
+      )}
+
       <Card className="bg-white/5 border-white/10 overflow-x-auto">
         <Table>
           <TableHeader><TableRow className="border-white/10 hover:bg-transparent">
@@ -281,7 +398,7 @@ function KeysPanel() {
               <TableRow key={k.id} className="border-white/5 hover:bg-white/5">
                 <TableCell className="text-sm">{k.api_partners?.name || <span className="text-white/40">—</span>}</TableCell>
                 <TableCell className="text-sm text-white/90">{k.name}</TableCell>
-                <TableCell><Badge className={k.environment === "production" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}>{k.environment}</Badge></TableCell>
+                <TableCell><Badge className={k.environment === "live" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}>{k.environment}</Badge></TableCell>
                 <TableCell className="font-mono text-xs text-white/80">{k.key_prefix}…</TableCell>
                 <TableCell className="text-xs text-white/70">{(k.scopes || []).slice(0, 3).join(", ")}{(k.scopes || []).length > 3 ? ` +${k.scopes.length - 3}` : ""}</TableCell>
                 <TableCell className="text-xs">{k.rate_limit_per_min}/min · {k.rate_limit_per_day}/day</TableCell>
@@ -860,37 +977,97 @@ function SDKsPanel() {
   );
 }
 
-// ============ Sandbox ============
+// ============ Sandbox / Live API Tester ============
 function SandboxPanel() {
-  const [tested, setTested] = useState<string>("");
-  const [testing, setTesting] = useState(false);
-  const testPing = async () => {
-    setTesting(true);
+  const [endpoints, setEndpoints] = useState<any[]>([]);
+  const [apiKey, setApiKey] = useState<string>(() => sessionStorage.getItem("api_center_test_key") || "");
+  const [selected, setSelected] = useState<string>("/v1/ping|GET");
+  const [body, setBody] = useState<string>("{}");
+  const [result, setResult] = useState<{ status: number; ms: number; body: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    supabase.from("api_endpoints").select("path, method, title, category").eq("is_deprecated", false).order("category").order("path").then(({ data }) => setEndpoints(data ?? []));
+  }, []);
+  useEffect(() => { sessionStorage.setItem("api_center_test_key", apiKey); }, [apiKey]);
+
+  const [path, method] = selected.split("|");
+  const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
+  const gatewayBase = `https://${projectId}.functions.supabase.co/api-gateway`;
+  const fullUrl = `${gatewayBase}${path}`;
+
+  const runTest = async () => {
+    if (!apiKey) return toast({ title: "API kalit kiriting", variant: "destructive" });
+    setBusy(true); setResult(null);
+    const t0 = performance.now();
     try {
-      const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.functions.supabase.co/api-gateway/v1/ping`;
-      const r = await fetch(url, { headers: { "x-api-key": "sandbox_test_key" } });
+      const init: RequestInit = {
+        method,
+        headers: { "x-api-key": apiKey, "Content-Type": "application/json", "x-med1-channel": "admin-tester" },
+      };
+      if (method !== "GET" && method !== "DELETE" && body.trim()) init.body = body;
+      const r = await fetch(fullUrl, init);
       const text = await r.text();
-      setTested(`Status: ${r.status}\n\n${text}`);
+      let pretty = text;
+      try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
+      setResult({ status: r.status, ms: Math.round(performance.now() - t0), body: pretty });
     } catch (e: any) {
-      setTested(`Error: ${e.message}`);
+      setResult({ status: 0, ms: Math.round(performance.now() - t0), body: `Network error: ${e.message}` });
     }
-    setTesting(false);
+    setBusy(false);
   };
+
   return (
     <div className="space-y-4 mt-4">
       <Card className="p-4 bg-white/5 border-white/10">
-        <h3 className="font-semibold mb-2">Sandbox muhiti</h3>
-        <p className="text-sm text-white/70 mb-4">Test API kalitlar bilan real ma'lumotlarga ta'sir qilmasdan integratsiyani sinang. Sandbox kalitlar Partner Dashboard'da <code className="text-purple-300">environment: sandbox</code> bilan yaratiladi.</p>
-        <div className="grid md:grid-cols-3 gap-3 text-xs">
-          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Test Med Coin balance</div><div className="font-mono text-emerald-300">10,000 MC</div></div>
-          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Test AI limit</div><div className="font-mono text-emerald-300">Unlimited</div></div>
-          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Test payment</div><div className="font-mono text-emerald-300">Auto-success</div></div>
+        <h3 className="font-semibold mb-2 flex items-center gap-2"><Beaker className="w-5 h-5 text-[#2F80ED]" />Real-time API Tester</h3>
+        <p className="text-sm text-white/70 mb-4">Har qanday muhitdagi API kalit bilan barcha xizmatlarga real vaqtda so'rov yuboring. So'rov <code className="text-purple-300">api-gateway</code> orqali o'tadi va <code className="text-purple-300">api_request_logs</code>ga yoziladi.</p>
+
+        <div className="grid md:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-white/60 mb-1 block">API kalit (x-api-key)</label>
+            <Input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="med1_live_… yoki med1_test_…" className="bg-white/5 border-white/10 font-mono text-xs" />
+          </div>
+          <div>
+            <label className="text-xs text-white/60 mb-1 block">Endpoint ({endpoints.length} ta faol)</label>
+            <select value={selected} onChange={e => setSelected(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white w-full">
+              <option value="/v1/ping|GET">GET /v1/ping — Health check</option>
+              {endpoints.map(ep => (
+                <option key={`${ep.path}|${ep.method}`} value={`${ep.path}|${ep.method}`}>
+                  {ep.method} {ep.path} — {ep.title}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="mt-4 flex gap-2">
-          <Button onClick={testPing} disabled={testing} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80"><Beaker className="w-4 h-4 mr-1" />{testing ? "Testing..." : "Ping /v1/ping"}</Button>
+
+        {method !== "GET" && method !== "DELETE" && (
+          <div className="mt-3">
+            <label className="text-xs text-white/60 mb-1 block">Request body (JSON)</label>
+            <textarea value={body} onChange={e => setBody(e.target.value)} rows={5} className="w-full bg-black/40 border border-white/10 rounded p-2 font-mono text-xs text-emerald-300" />
+          </div>
+        )}
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Button onClick={runTest} disabled={busy} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80"><Rocket className="w-4 h-4 mr-1" />{busy ? "Yuborilmoqda..." : "Real vaqtda yuborish"}</Button>
+          <code className="text-xs text-white/50">{method} {fullUrl}</code>
         </div>
-        {tested && <pre className="mt-4 p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto">{tested}</pre>}
+
+        {result && (
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs">
+              <Badge className={STATUS_COLOR(result.status || 500)}>Status {result.status || "ERR"}</Badge>
+              <Badge className="bg-white/10 text-white/80">{result.ms} ms</Badge>
+            </div>
+            <pre className="p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto max-h-96">{result.body}</pre>
+          </div>
+        )}
+
+        <div className="mt-4 grid md:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Sandbox Med Coin</div><div className="font-mono text-emerald-300">10,000 MC</div></div>
+          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Sandbox AI limit</div><div className="font-mono text-emerald-300">Unlimited</div></div>
+          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Sandbox to'lov</div><div className="font-mono text-emerald-300">Auto-success</div></div>
+        </div>
       </Card>
     </div>
   );
