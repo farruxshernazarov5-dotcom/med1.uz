@@ -977,37 +977,101 @@ function SDKsPanel() {
   );
 }
 
-// ============ Sandbox ============
+// ============ Sandbox / Live API Tester ============
 function SandboxPanel() {
-  const [tested, setTested] = useState<string>("");
-  const [testing, setTesting] = useState(false);
-  const testPing = async () => {
-    setTesting(true);
+  const [endpoints, setEndpoints] = useState<any[]>([]);
+  const [apiKey, setApiKey] = useState<string>(() => sessionStorage.getItem("api_center_test_key") || "");
+  const [selected, setSelected] = useState<string>("/v1/ping|GET");
+  const [body, setBody] = useState<string>("{}");
+  const [result, setResult] = useState<{ status: number; ms: number; body: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    supabase.from("api_endpoints").select("path, method, title, category").eq("is_deprecated", false).order("category").order("path").then(({ data }) => setEndpoints(data ?? []));
+  }, []);
+  useEffect(() => { sessionStorage.setItem("api_center_test_key", apiKey); }, [apiKey]);
+
+  const [path, method] = selected.split("|");
+  const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
+  const gatewayBase = `https://${projectId}.functions.supabase.co/api-gateway`;
+  const fullUrl = `${gatewayBase}${path}`;
+
+  const runTest = async () => {
+    if (!apiKey) return toast({ title: "API kalit kiriting", variant: "destructive" });
+    setBusy(true); setResult(null);
+    const t0 = performance.now();
     try {
-      const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
-      const url = `https://${projectId}.functions.supabase.co/api-gateway/v1/ping`;
-      const r = await fetch(url, { headers: { "x-api-key": "sandbox_test_key" } });
+      const init: RequestInit = {
+        method,
+        headers: { "x-api-key": apiKey, "Content-Type": "application/json", "x-med1-channel": "admin-tester" },
+      };
+      if (method !== "GET" && method !== "DELETE" && body.trim()) init.body = body;
+      const r = await fetch(fullUrl, init);
       const text = await r.text();
-      setTested(`Status: ${r.status}\n\n${text}`);
+      let pretty = text;
+      try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
+      setResult({ status: r.status, ms: Math.round(performance.now() - t0), body: pretty });
     } catch (e: any) {
-      setTested(`Error: ${e.message}`);
+      setResult({ status: 0, ms: Math.round(performance.now() - t0), body: `Network error: ${e.message}` });
     }
-    setTesting(false);
+    setBusy(false);
   };
+
   return (
     <div className="space-y-4 mt-4">
       <Card className="p-4 bg-white/5 border-white/10">
-        <h3 className="font-semibold mb-2">Sandbox muhiti</h3>
-        <p className="text-sm text-white/70 mb-4">Test API kalitlar bilan real ma'lumotlarga ta'sir qilmasdan integratsiyani sinang. Sandbox kalitlar Partner Dashboard'da <code className="text-purple-300">environment: sandbox</code> bilan yaratiladi.</p>
-        <div className="grid md:grid-cols-3 gap-3 text-xs">
-          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Test Med Coin balance</div><div className="font-mono text-emerald-300">10,000 MC</div></div>
-          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Test AI limit</div><div className="font-mono text-emerald-300">Unlimited</div></div>
-          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Test payment</div><div className="font-mono text-emerald-300">Auto-success</div></div>
+        <h3 className="font-semibold mb-2 flex items-center gap-2"><Beaker className="w-5 h-5 text-[#2F80ED]" />Real-time API Tester</h3>
+        <p className="text-sm text-white/70 mb-4">Har qanday muhitdagi API kalit bilan barcha xizmatlarga real vaqtda so'rov yuboring. So'rov <code className="text-purple-300">api-gateway</code> orqali o'tadi va <code className="text-purple-300">api_request_logs</code>ga yoziladi.</p>
+
+        <div className="grid md:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-white/60 mb-1 block">API kalit (x-api-key)</label>
+            <Input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="med1_live_… yoki med1_test_…" className="bg-white/5 border-white/10 font-mono text-xs" />
+          </div>
+          <div>
+            <label className="text-xs text-white/60 mb-1 block">Endpoint ({endpoints.length} ta faol)</label>
+            <select value={selected} onChange={e => setSelected(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white w-full">
+              <option value="/v1/ping|GET">GET /v1/ping — Health check</option>
+              {endpoints.map(ep => (
+                <option key={`${ep.path}|${ep.method}`} value={`${ep.path}|${ep.method}`}>
+                  {ep.method} {ep.path} — {ep.title}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="mt-4 flex gap-2">
-          <Button onClick={testPing} disabled={testing} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80"><Beaker className="w-4 h-4 mr-1" />{testing ? "Testing..." : "Ping /v1/ping"}</Button>
+
+        {method !== "GET" && method !== "DELETE" && (
+          <div className="mt-3">
+            <label className="text-xs text-white/60 mb-1 block">Request body (JSON)</label>
+            <textarea value={body} onChange={e => setBody(e.target.value)} rows={5} className="w-full bg-black/40 border border-white/10 rounded p-2 font-mono text-xs text-emerald-300" />
+          </div>
+        )}
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Button onClick={runTest} disabled={busy} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80"><Rocket className="w-4 h-4 mr-1" />{busy ? "Yuborilmoqda..." : "Real vaqtda yuborish"}</Button>
+          <code className="text-xs text-white/50">{method} {fullUrl}</code>
         </div>
-        {tested && <pre className="mt-4 p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto">{tested}</pre>}
+
+        {result && (
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs">
+              <Badge className={STATUS_COLOR(result.status || 500)}>Status {result.status || "ERR"}</Badge>
+              <Badge className="bg-white/10 text-white/80">{result.ms} ms</Badge>
+            </div>
+            <pre className="p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto max-h-96">{result.body}</pre>
+          </div>
+        )}
+
+        <div className="mt-4 grid md:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Sandbox Med Coin</div><div className="font-mono text-emerald-300">10,000 MC</div></div>
+          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Sandbox AI limit</div><div className="font-mono text-emerald-300">Unlimited</div></div>
+          <div className="p-3 rounded bg-white/5 border border-white/10"><div className="text-white/60 mb-1">Sandbox to'lov</div><div className="font-mono text-emerald-300">Auto-success</div></div>
+        </div>
+      </Card>
+    </div>
+  );
+}
       </Card>
     </div>
   );
