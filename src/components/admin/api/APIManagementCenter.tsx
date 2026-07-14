@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { writeAuditLog } from "@/utils/auditLog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,10 +10,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "@/hooks/use-toast";
 import {
   Activity, Key, Layers, ShieldAlert, Webhook, LineChart as LineChartIcon,
-  FileCode, Download, Beaker, Rocket, Search, RefreshCw, Copy, Plus, Trash2,
+  FileCode, Download, Beaker, Rocket, Search, RefreshCw, Copy, Plus, Trash2, Pause, Play,
   Smartphone, Globe, Handshake, Cpu, Lock, BookOpen, Users, ScrollText, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
+
 
 type Endpoint = { id: string; path: string; method: string; category: string; scope: string; title: string; description: string | null; is_deprecated: boolean; is_public: boolean; version: string };
 type ApiKey = { id: string; partner_id: string; name: string; environment: string; scopes: string[]; rate_limit_per_min: number; rate_limit_per_day: number; is_active: boolean; last_used_at: string | null; expires_at: string | null; created_at: string; key_prefix: string };
@@ -279,10 +281,30 @@ function KeysPanel() {
   }, []);
   useEffect(() => { load(); const t = setInterval(load, 30_000); return () => clearInterval(t); }, [load]);
 
-  const revoke = async (id: string) => {
-    const { error } = await supabase.from("api_keys").update({ is_active: false, revoked_at: new Date().toISOString() }).eq("id", id);
-    if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
-    else { toast({ title: "Kalit bekor qilindi" }); load(); }
+  const revoke = async (k: any) => {
+    if (!confirm(`"${k.name}" kalitini butunlay bekor qilishga ishonchingiz komilmi? Bu darhol kuchga kiradi.`)) return;
+    const { error } = await supabase.from("api_keys").update({ is_active: false, revoked_at: new Date().toISOString() }).eq("id", k.id);
+    if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    await writeAuditLog({ action: "api_key.revoke", entity_type: "api_key", entity_id: k.id, module: "api_center", old_data: { is_active: true }, new_data: { is_active: false }, details: { name: k.name, prefix: k.key_prefix, partner_id: k.partner_id } });
+    toast({ title: "Kalit bekor qilindi", description: "So'rovlar shu ondayoq bloklandi." });
+    load();
+  };
+
+  const toggleActive = async (k: any) => {
+    const next = !k.is_active;
+    const patch: any = { is_active: next };
+    if (next) { patch.revoked_at = null; patch.suspended_at = null; }
+    else { patch.suspended_at = new Date().toISOString(); }
+    const { error } = await supabase.from("api_keys").update(patch).eq("id", k.id);
+    if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    await writeAuditLog({ action: next ? "api_key.reactivate" : "api_key.suspend", entity_type: "api_key", entity_id: k.id, module: "api_center", old_data: { is_active: k.is_active }, new_data: { is_active: next }, details: { name: k.name, prefix: k.key_prefix } });
+    toast({ title: next ? "Kalit qayta yoqildi" : "Kalit vaqtincha to'xtatildi", description: next ? "Endi so'rovlar qabul qilinadi" : "So'rovlar shu ondan boshlab rad etiladi" });
+    load();
+  };
+
+  const copyPrefix = (k: any) => {
+    navigator.clipboard.writeText(k.key_prefix + "…");
+    toast({ title: "Prefix nusxa olindi", description: k.key_prefix + "…" });
   };
 
   const toggleScope = (s: string) => setForm(f => ({ ...f, scopes: f.scopes.includes(s) ? f.scopes.filter(x => x !== s) : [...f.scopes, s] }));
@@ -299,18 +321,20 @@ function KeysPanel() {
     const hmac_secret = form.with_hmac ? randomHex(32) : null;
     const expires_at = form.expires_days > 0 ? new Date(Date.now() + form.expires_days * 86400_000).toISOString() : null;
     const { data: userRes } = await supabase.auth.getUser();
-    const { error } = await supabase.from("api_keys").insert({
+    const { data: inserted, error } = await supabase.from("api_keys").insert({
       partner_id: form.partner_id, name: form.name.trim(), environment: form.environment,
       scopes: form.scopes, rate_limit_per_min: form.rate_limit_per_min, rate_limit_per_day: form.rate_limit_per_day,
       expires_at, key_hash, key_prefix, hmac_secret, is_sandbox: form.environment !== "live",
       created_by: userRes.user?.id ?? null, is_active: true,
-    });
+    }).select("id").single();
     if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    await writeAuditLog({ action: "api_key.create", entity_type: "api_key", entity_id: inserted?.id, module: "api_center", new_data: { name: form.name.trim(), environment: form.environment, scopes: form.scopes, rate_limit_per_min: form.rate_limit_per_min, rate_limit_per_day: form.rate_limit_per_day, with_hmac: form.with_hmac, expires_at, prefix: key_prefix, partner_id: form.partner_id } });
     setReveal({ key: rawKey, hmac: hmac_secret ?? undefined });
     setOpen(false);
     setForm(f => ({ ...f, name: "" }));
     load();
   };
+
 
   return (
     <div className="space-y-4 mt-4">
@@ -399,13 +423,36 @@ function KeysPanel() {
                 <TableCell className="text-sm">{k.api_partners?.name || <span className="text-white/40">—</span>}</TableCell>
                 <TableCell className="text-sm text-white/90">{k.name}</TableCell>
                 <TableCell><Badge className={k.environment === "live" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}>{k.environment}</Badge></TableCell>
-                <TableCell className="font-mono text-xs text-white/80">{k.key_prefix}…</TableCell>
+                <TableCell className="font-mono text-xs text-white/80">
+                  <button onClick={() => copyPrefix(k)} className="hover:text-emerald-300 inline-flex items-center gap-1" title="Prefixni nusxa olish">
+                    {k.key_prefix}… <Copy className="w-3 h-3" />
+                  </button>
+                </TableCell>
                 <TableCell className="text-xs text-white/70">{(k.scopes || []).slice(0, 3).join(", ")}{(k.scopes || []).length > 3 ? ` +${k.scopes.length - 3}` : ""}</TableCell>
                 <TableCell className="text-xs">{k.rate_limit_per_min}/min · {k.rate_limit_per_day}/day</TableCell>
                 <TableCell className="text-xs text-white/60">{k.last_used_at ? new Date(k.last_used_at).toLocaleString() : "hech qachon"}</TableCell>
                 <TableCell>
-                  {k.is_active ? <Button size="sm" variant="destructive" onClick={() => revoke(k.id)}><Trash2 className="w-3 h-3" /></Button> : <Badge className="bg-red-500/20 text-red-300">Revoked</Badge>}
+                  <div className="flex items-center gap-1">
+                    {k.is_active ? (
+                      <>
+                        <Button size="sm" variant="outline" className="h-7 px-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/10" onClick={() => toggleActive(k)} title="Vaqtincha to'xtatish">
+                          <Pause className="w-3 h-3" />
+                        </Button>
+                        <Button size="sm" variant="destructive" className="h-7 px-2" onClick={() => revoke(k)} title="Butunlay bekor qilish">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Badge className="bg-red-500/20 text-red-300">Nofaol</Badge>
+                        <Button size="sm" variant="outline" className="h-7 px-2 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10" onClick={() => toggleActive(k)} title="Qayta yoqish">
+                          <Play className="w-3 h-3" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
@@ -749,23 +796,125 @@ function AnalyticsPanel() {
 
 // ============ Docs ============
 function DocsPanel() {
+  const [byService, setByService] = useState<Record<string, Endpoint[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from("api_endpoints").select("*").eq("is_deprecated", false).order("category").order("path").then(({ data }) => {
+      const g: Record<string, Endpoint[]> = {};
+      (data ?? []).forEach((e: any) => { (g[e.category] = g[e.category] || []).push(e as Endpoint); });
+      setByService(g);
+      setLoading(false);
+    });
+  }, []);
+
+  const buildSpecFor = (service: string, endpoints: Endpoint[]) => {
+    const paths: Record<string, any> = {};
+    endpoints.forEach(e => {
+      paths[e.path] = paths[e.path] || {};
+      paths[e.path][e.method.toLowerCase()] = {
+        tags: [service],
+        summary: e.title,
+        description: e.description || undefined,
+        security: e.is_public ? [] : [{ ApiKeyAuth: [] }, { BearerAuth: [] }],
+        "x-scope": e.scope,
+        responses: {
+          "200": { description: "Success" },
+          "401": { description: "Unauthorized" },
+          "403": { description: "Forbidden — missing scope" },
+          "429": { description: "Rate limit exceeded", headers: { "X-RateLimit-Remaining-Minute": { schema: { type: "integer" } } } },
+          "500": { description: "Internal server error" },
+        },
+      };
+    });
+    return {
+      openapi: "3.0.3",
+      info: {
+        title: `MED1.UZ ${service.toUpperCase()} API`,
+        version: "1.0.0",
+        description: `Auto-generated OpenAPI 3.0 spec for the "${service}" service (${endpoints.length} endpoints).`,
+        contact: { name: "MED1.UZ Support", email: "developers@med1.uz", url: "https://med1.uz/partnership" },
+      },
+      servers: [
+        { url: "https://med1.uz/api-gateway", description: "Production" },
+        { url: "https://med1.uz/api-gateway/sandbox", description: "Sandbox" },
+      ],
+      tags: [{ name: service, description: `${service} endpoints` }],
+      components: {
+        securitySchemes: {
+          ApiKeyAuth: { type: "apiKey", in: "header", name: "x-api-key" },
+          BearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+        },
+      },
+      paths,
+    };
+  };
+
+  const download = (service: string, endpoints: Endpoint[]) => {
+    const spec = buildSpecFor(service, endpoints);
+    const blob = new Blob([JSON.stringify(spec, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `openapi-${service}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({ title: "OpenAPI yuklandi", description: `openapi-${service}.json (${endpoints.length} endpoints)` });
+  };
+
   return (
-    <Card className="p-6 bg-white/5 border-white/10 mt-4 space-y-4">
-      <h2 className="text-xl font-semibold flex items-center gap-2"><BookOpen className="w-5 h-5" />Developer Portal</h2>
-      <p className="text-white/70 text-sm">MED1.UZ API to'liq hujjatlari va interaktiv OpenAPI 3.0 tekshirgichi:</p>
-      <div className="flex flex-wrap gap-3">
-        <a href="/developers" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#2F80ED] hover:bg-[#2F80ED]/80 text-white text-sm font-medium"><Rocket className="w-4 h-4" />Developer Portal</a>
-        <a href="/api-docs" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><FileCode className="w-4 h-4" />OpenAPI / Swagger UI</a>
-        <a href="/openapi.json" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><Download className="w-4 h-4" />openapi.json</a>
-      </div>
-      <div className="text-xs text-white/50 pt-4 border-t border-white/10">
-        Base URL (Production): <code className="text-purple-300">https://med1.uz/api-gateway</code><br />
-        Base URL (Sandbox): <code className="text-purple-300">https://med1.uz/api-gateway/sandbox</code><br />
-        Auth: <code className="text-purple-300">Authorization: Bearer &lt;JWT&gt;</code> yoki <code className="text-purple-300">X-Api-Key: &lt;key&gt;</code>
-      </div>
-    </Card>
+    <div className="space-y-4 mt-4">
+      <Card className="p-6 bg-white/5 border-white/10 space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2"><BookOpen className="w-5 h-5" />Developer Portal</h2>
+        <p className="text-white/70 text-sm">MED1.UZ API to'liq hujjatlari va interaktiv OpenAPI 3.0 tekshirgichi:</p>
+        <div className="flex flex-wrap gap-3">
+          <a href="/developers" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#2F80ED] hover:bg-[#2F80ED]/80 text-white text-sm font-medium"><Rocket className="w-4 h-4" />Developer Portal</a>
+          <a href="/api-docs" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><FileCode className="w-4 h-4" />OpenAPI / Swagger UI</a>
+          <a href="/openapi.json" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><Download className="w-4 h-4" />openapi.json (barchasi)</a>
+        </div>
+        <div className="text-xs text-white/50 pt-4 border-t border-white/10">
+          Base URL (Production): <code className="text-purple-300">https://med1.uz/api-gateway</code><br />
+          Base URL (Sandbox): <code className="text-purple-300">https://med1.uz/api-gateway/sandbox</code><br />
+          Auth: <code className="text-purple-300">Authorization: Bearer &lt;JWT&gt;</code> yoki <code className="text-purple-300">X-Api-Key: &lt;key&gt;</code>
+        </div>
+      </Card>
+
+      <Card className="p-4 bg-white/5 border-white/10 space-y-3">
+        <div className="flex items-center gap-2">
+          <FileCode className="w-5 h-5 text-[#2F80ED]" />
+          <h3 className="font-semibold">Xizmat bo'yicha OpenAPI/Swagger</h3>
+          <Badge className="bg-blue-500/20 text-blue-300">avto-generatsiya</Badge>
+        </div>
+        <p className="text-xs text-white/60">Har bir xizmat uchun alohida OpenAPI 3.0 spetsifikatsiyasini yuklab oling. Fayl `api_endpoints` jadvalidan real vaqtda quriladi.</p>
+        {loading ? (
+          <div className="text-white/50 text-sm">Yuklanmoqda…</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
+            {Object.entries(byService).map(([service, eps]) => {
+              const Icon = CATEGORY_ICONS[service] || Layers;
+              return (
+                <div key={service} className="flex items-center justify-between p-3 rounded bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-4 h-4 text-white/70" />
+                    <div>
+                      <div className="text-sm font-medium capitalize">{service}</div>
+                      <div className="text-[11px] text-white/50">{eps.length} endpoints</div>
+                    </div>
+                  </div>
+                  <Button size="sm" onClick={() => download(service, eps)} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80 h-7 px-2">
+                    <Download className="w-3 h-3 mr-1" />JSON
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }
+
+
 
 // ============ SDKs ============
 function SDKsPanel() {
@@ -981,15 +1130,17 @@ function SDKsPanel() {
 function SandboxPanel() {
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const [apiKey, setApiKey] = useState<string>(() => sessionStorage.getItem("api_center_test_key") || "");
+  const [hmacSecret, setHmacSecret] = useState<string>(() => sessionStorage.getItem("api_center_test_hmac") || "");
   const [selected, setSelected] = useState<string>("/v1/ping|GET");
   const [body, setBody] = useState<string>("{}");
-  const [result, setResult] = useState<{ status: number; ms: number; body: string } | null>(null);
+  const [result, setResult] = useState<{ status: number; statusText: string; ms: number; body: string; headers: Record<string, string>; errorText?: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     supabase.from("api_endpoints").select("path, method, title, category").eq("is_deprecated", false).order("category").order("path").then(({ data }) => setEndpoints(data ?? []));
   }, []);
   useEffect(() => { sessionStorage.setItem("api_center_test_key", apiKey); }, [apiKey]);
+  useEffect(() => { sessionStorage.setItem("api_center_test_hmac", hmacSecret); }, [hmacSecret]);
 
   const [path, method] = selected.split("|");
   const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
@@ -1001,21 +1152,49 @@ function SandboxPanel() {
     setBusy(true); setResult(null);
     const t0 = performance.now();
     try {
-      const init: RequestInit = {
-        method,
-        headers: { "x-api-key": apiKey, "Content-Type": "application/json", "x-med1-channel": "admin-tester" },
-      };
-      if (method !== "GET" && method !== "DELETE" && body.trim()) init.body = body;
+      const headers: Record<string, string> = { "x-api-key": apiKey, "Content-Type": "application/json", "x-med1-channel": "admin-tester" };
+      const bodyStr = (method !== "GET" && method !== "DELETE" && body.trim()) ? body : "";
+
+      if (hmacSecret.trim()) {
+        const ts = Math.floor(Date.now() / 1000).toString();
+        const nonce = crypto.randomUUID();
+        const payload = `${ts}\n${nonce}\n${method}\n${path}\n${bodyStr}`;
+        const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(hmacSecret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+        const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
+        const sigHex = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+        headers["x-med1-timestamp"] = ts;
+        headers["x-med1-nonce"] = nonce;
+        headers["x-med1-signature"] = sigHex;
+      }
+
+      const init: RequestInit = { method, headers };
+      if (bodyStr) init.body = bodyStr;
       const r = await fetch(fullUrl, init);
       const text = await r.text();
       let pretty = text;
-      try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
-      setResult({ status: r.status, ms: Math.round(performance.now() - t0), body: pretty });
+      let parsed: any = null;
+      try { parsed = JSON.parse(text); pretty = JSON.stringify(parsed, null, 2); } catch {}
+      const hdrs: Record<string, string> = {};
+      r.headers.forEach((v, k) => { hdrs[k.toLowerCase()] = v; });
+      const errorText = r.ok ? undefined : (parsed?.error || parsed?.message || r.statusText || `HTTP ${r.status}`);
+      setResult({ status: r.status, statusText: r.statusText, ms: Math.round(performance.now() - t0), body: pretty, headers: hdrs, errorText });
     } catch (e: any) {
-      setResult({ status: 0, ms: Math.round(performance.now() - t0), body: `Network error: ${e.message}` });
+      setResult({ status: 0, statusText: "Network error", ms: Math.round(performance.now() - t0), body: `Network error: ${e.message}`, headers: {}, errorText: e.message });
     }
     setBusy(false);
   };
+
+  const rl = result ? {
+    limitMin: result.headers["x-ratelimit-limit-minute"] || result.headers["x-ratelimit-limit"],
+    remainMin: result.headers["x-ratelimit-remaining-minute"] || result.headers["x-ratelimit-remaining"],
+    resetMin: result.headers["x-ratelimit-reset-minute"] || result.headers["x-ratelimit-reset"],
+    limitDay: result.headers["x-ratelimit-limit-day"],
+    remainDay: result.headers["x-ratelimit-remaining-day"],
+    resetDay: result.headers["x-ratelimit-reset-day"],
+    retryAfter: result.headers["retry-after"],
+  } : null;
+  const remainMinNum = rl?.remainMin ? parseInt(rl.remainMin) : NaN;
+  const rlTone = isNaN(remainMinNum) ? "bg-white/10 text-white/60" : remainMinNum === 0 ? "bg-red-500/20 text-red-300" : remainMinNum < 5 ? "bg-amber-500/20 text-amber-300" : "bg-emerald-500/20 text-emerald-300";
 
   return (
     <div className="space-y-4 mt-4">
@@ -1029,6 +1208,10 @@ function SandboxPanel() {
             <Input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="med1_live_… yoki med1_test_…" className="bg-white/5 border-white/10 font-mono text-xs" />
           </div>
           <div>
+            <label className="text-xs text-white/60 mb-1 block">HMAC secret (ixtiyoriy — imzo yuboradi)</label>
+            <Input value={hmacSecret} onChange={e => setHmacSecret(e.target.value)} placeholder="hex secret (kalit yaratilganida ko'rsatilgan)" className="bg-white/5 border-white/10 font-mono text-xs" />
+          </div>
+          <div className="md:col-span-2">
             <label className="text-xs text-white/60 mb-1 block">Endpoint ({endpoints.length} ta faol)</label>
             <select value={selected} onChange={e => setSelected(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white w-full">
               <option value="/v1/ping|GET">GET /v1/ping — Health check</option>
@@ -1054,12 +1237,48 @@ function SandboxPanel() {
         </div>
 
         {result && (
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs">
-              <Badge className={STATUS_COLOR(result.status || 500)}>Status {result.status || "ERR"}</Badge>
+          <div className="mt-4 space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <Badge className={STATUS_COLOR(result.status || 500)}>Status {result.status || "ERR"} · {result.statusText}</Badge>
               <Badge className="bg-white/10 text-white/80">{result.ms} ms</Badge>
+              {rl?.limitMin && (
+                <Badge className={rlTone}>Rate: {rl.remainMin ?? "?"}/{rl.limitMin} per min</Badge>
+              )}
+              {rl?.limitDay && (
+                <Badge className="bg-white/10 text-white/70">Kunlik: {rl.remainDay ?? "?"}/{rl.limitDay}</Badge>
+              )}
+              {rl?.resetMin && (
+                <Badge className="bg-white/5 text-white/50 border-white/10">Reset: {new Date(parseInt(rl.resetMin) * 1000).toLocaleTimeString()}</Badge>
+              )}
+              {rl?.retryAfter && (
+                <Badge className="bg-red-500/20 text-red-300">Retry-After: {rl.retryAfter}s</Badge>
+              )}
             </div>
-            <pre className="p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto max-h-96">{result.body}</pre>
+
+            {result.status === 429 && (
+              <div className="p-3 rounded border border-red-500/30 bg-red-500/10 text-red-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold">Rate limit oshirildi</div>
+                  <div className="text-red-300/80">
+                    {rl?.retryAfter ? `${rl.retryAfter} soniyadan so'ng qayta urinib ko'ring.` : "Iltimos, biroz kuting va qayta urinib ko'ring."}
+                    {rl?.resetMin && ` Daqiqa limiti ${new Date(parseInt(rl.resetMin) * 1000).toLocaleTimeString()} da qayta tiklanadi.`}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {result.errorText && result.status !== 429 && result.status !== 0 && (
+              <div className="p-3 rounded border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div><span className="font-semibold">Xato:</span> {result.errorText}</div>
+              </div>
+            )}
+
+            <div>
+              <div className="text-[11px] text-white/50 mb-1">Response body</div>
+              <pre className="p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto max-h-96">{result.body}</pre>
+            </div>
           </div>
         )}
 
@@ -1072,3 +1291,4 @@ function SandboxPanel() {
     </div>
   );
 }
+
