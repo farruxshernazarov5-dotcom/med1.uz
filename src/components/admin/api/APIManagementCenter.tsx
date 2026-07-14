@@ -796,23 +796,125 @@ function AnalyticsPanel() {
 
 // ============ Docs ============
 function DocsPanel() {
+  const [byService, setByService] = useState<Record<string, Endpoint[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.from("api_endpoints").select("*").eq("is_deprecated", false).order("category").order("path").then(({ data }) => {
+      const g: Record<string, Endpoint[]> = {};
+      (data ?? []).forEach((e: any) => { (g[e.category] = g[e.category] || []).push(e as Endpoint); });
+      setByService(g);
+      setLoading(false);
+    });
+  }, []);
+
+  const buildSpecFor = (service: string, endpoints: Endpoint[]) => {
+    const paths: Record<string, any> = {};
+    endpoints.forEach(e => {
+      paths[e.path] = paths[e.path] || {};
+      paths[e.path][e.method.toLowerCase()] = {
+        tags: [service],
+        summary: e.title,
+        description: e.description || undefined,
+        security: e.is_public ? [] : [{ ApiKeyAuth: [] }, { BearerAuth: [] }],
+        "x-scope": e.scope,
+        responses: {
+          "200": { description: "Success" },
+          "401": { description: "Unauthorized" },
+          "403": { description: "Forbidden — missing scope" },
+          "429": { description: "Rate limit exceeded", headers: { "X-RateLimit-Remaining-Minute": { schema: { type: "integer" } } } },
+          "500": { description: "Internal server error" },
+        },
+      };
+    });
+    return {
+      openapi: "3.0.3",
+      info: {
+        title: `MED1.UZ ${service.toUpperCase()} API`,
+        version: "1.0.0",
+        description: `Auto-generated OpenAPI 3.0 spec for the "${service}" service (${endpoints.length} endpoints).`,
+        contact: { name: "MED1.UZ Support", email: "developers@med1.uz", url: "https://med1.uz/partnership" },
+      },
+      servers: [
+        { url: "https://med1.uz/api-gateway", description: "Production" },
+        { url: "https://med1.uz/api-gateway/sandbox", description: "Sandbox" },
+      ],
+      tags: [{ name: service, description: `${service} endpoints` }],
+      components: {
+        securitySchemes: {
+          ApiKeyAuth: { type: "apiKey", in: "header", name: "x-api-key" },
+          BearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+        },
+      },
+      paths,
+    };
+  };
+
+  const download = (service: string, endpoints: Endpoint[]) => {
+    const spec = buildSpecFor(service, endpoints);
+    const blob = new Blob([JSON.stringify(spec, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `openapi-${service}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({ title: "OpenAPI yuklandi", description: `openapi-${service}.json (${endpoints.length} endpoints)` });
+  };
+
   return (
-    <Card className="p-6 bg-white/5 border-white/10 mt-4 space-y-4">
-      <h2 className="text-xl font-semibold flex items-center gap-2"><BookOpen className="w-5 h-5" />Developer Portal</h2>
-      <p className="text-white/70 text-sm">MED1.UZ API to'liq hujjatlari va interaktiv OpenAPI 3.0 tekshirgichi:</p>
-      <div className="flex flex-wrap gap-3">
-        <a href="/developers" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#2F80ED] hover:bg-[#2F80ED]/80 text-white text-sm font-medium"><Rocket className="w-4 h-4" />Developer Portal</a>
-        <a href="/api-docs" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><FileCode className="w-4 h-4" />OpenAPI / Swagger UI</a>
-        <a href="/openapi.json" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><Download className="w-4 h-4" />openapi.json</a>
-      </div>
-      <div className="text-xs text-white/50 pt-4 border-t border-white/10">
-        Base URL (Production): <code className="text-purple-300">https://med1.uz/api-gateway</code><br />
-        Base URL (Sandbox): <code className="text-purple-300">https://med1.uz/api-gateway/sandbox</code><br />
-        Auth: <code className="text-purple-300">Authorization: Bearer &lt;JWT&gt;</code> yoki <code className="text-purple-300">X-Api-Key: &lt;key&gt;</code>
-      </div>
-    </Card>
+    <div className="space-y-4 mt-4">
+      <Card className="p-6 bg-white/5 border-white/10 space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2"><BookOpen className="w-5 h-5" />Developer Portal</h2>
+        <p className="text-white/70 text-sm">MED1.UZ API to'liq hujjatlari va interaktiv OpenAPI 3.0 tekshirgichi:</p>
+        <div className="flex flex-wrap gap-3">
+          <a href="/developers" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[#2F80ED] hover:bg-[#2F80ED]/80 text-white text-sm font-medium"><Rocket className="w-4 h-4" />Developer Portal</a>
+          <a href="/api-docs" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><FileCode className="w-4 h-4" />OpenAPI / Swagger UI</a>
+          <a href="/openapi.json" target="_blank" rel="noopener" className="inline-flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-medium"><Download className="w-4 h-4" />openapi.json (barchasi)</a>
+        </div>
+        <div className="text-xs text-white/50 pt-4 border-t border-white/10">
+          Base URL (Production): <code className="text-purple-300">https://med1.uz/api-gateway</code><br />
+          Base URL (Sandbox): <code className="text-purple-300">https://med1.uz/api-gateway/sandbox</code><br />
+          Auth: <code className="text-purple-300">Authorization: Bearer &lt;JWT&gt;</code> yoki <code className="text-purple-300">X-Api-Key: &lt;key&gt;</code>
+        </div>
+      </Card>
+
+      <Card className="p-4 bg-white/5 border-white/10 space-y-3">
+        <div className="flex items-center gap-2">
+          <FileCode className="w-5 h-5 text-[#2F80ED]" />
+          <h3 className="font-semibold">Xizmat bo'yicha OpenAPI/Swagger</h3>
+          <Badge className="bg-blue-500/20 text-blue-300">avto-generatsiya</Badge>
+        </div>
+        <p className="text-xs text-white/60">Har bir xizmat uchun alohida OpenAPI 3.0 spetsifikatsiyasini yuklab oling. Fayl `api_endpoints` jadvalidan real vaqtda quriladi.</p>
+        {loading ? (
+          <div className="text-white/50 text-sm">Yuklanmoqda…</div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
+            {Object.entries(byService).map(([service, eps]) => {
+              const Icon = CATEGORY_ICONS[service] || Layers;
+              return (
+                <div key={service} className="flex items-center justify-between p-3 rounded bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-4 h-4 text-white/70" />
+                    <div>
+                      <div className="text-sm font-medium capitalize">{service}</div>
+                      <div className="text-[11px] text-white/50">{eps.length} endpoints</div>
+                    </div>
+                  </div>
+                  <Button size="sm" onClick={() => download(service, eps)} className="bg-[#2F80ED] hover:bg-[#2F80ED]/80 h-7 px-2">
+                    <Download className="w-3 h-3 mr-1" />JSON
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }
+
+
 
 // ============ SDKs ============
 function SDKsPanel() {
