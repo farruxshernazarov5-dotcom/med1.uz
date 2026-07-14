@@ -281,10 +281,30 @@ function KeysPanel() {
   }, []);
   useEffect(() => { load(); const t = setInterval(load, 30_000); return () => clearInterval(t); }, [load]);
 
-  const revoke = async (id: string) => {
-    const { error } = await supabase.from("api_keys").update({ is_active: false, revoked_at: new Date().toISOString() }).eq("id", id);
-    if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
-    else { toast({ title: "Kalit bekor qilindi" }); load(); }
+  const revoke = async (k: any) => {
+    if (!confirm(`"${k.name}" kalitini butunlay bekor qilishga ishonchingiz komilmi? Bu darhol kuchga kiradi.`)) return;
+    const { error } = await supabase.from("api_keys").update({ is_active: false, revoked_at: new Date().toISOString() }).eq("id", k.id);
+    if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    await writeAuditLog({ action: "api_key.revoke", entity_type: "api_key", entity_id: k.id, module: "api_center", old_data: { is_active: true }, new_data: { is_active: false }, details: { name: k.name, prefix: k.key_prefix, partner_id: k.partner_id } });
+    toast({ title: "Kalit bekor qilindi", description: "So'rovlar shu ondayoq bloklandi." });
+    load();
+  };
+
+  const toggleActive = async (k: any) => {
+    const next = !k.is_active;
+    const patch: any = { is_active: next };
+    if (next) { patch.revoked_at = null; patch.suspended_at = null; }
+    else { patch.suspended_at = new Date().toISOString(); }
+    const { error } = await supabase.from("api_keys").update(patch).eq("id", k.id);
+    if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    await writeAuditLog({ action: next ? "api_key.reactivate" : "api_key.suspend", entity_type: "api_key", entity_id: k.id, module: "api_center", old_data: { is_active: k.is_active }, new_data: { is_active: next }, details: { name: k.name, prefix: k.key_prefix } });
+    toast({ title: next ? "Kalit qayta yoqildi" : "Kalit vaqtincha to'xtatildi", description: next ? "Endi so'rovlar qabul qilinadi" : "So'rovlar shu ondan boshlab rad etiladi" });
+    load();
+  };
+
+  const copyPrefix = (k: any) => {
+    navigator.clipboard.writeText(k.key_prefix + "…");
+    toast({ title: "Prefix nusxa olindi", description: k.key_prefix + "…" });
   };
 
   const toggleScope = (s: string) => setForm(f => ({ ...f, scopes: f.scopes.includes(s) ? f.scopes.filter(x => x !== s) : [...f.scopes, s] }));
@@ -301,18 +321,20 @@ function KeysPanel() {
     const hmac_secret = form.with_hmac ? randomHex(32) : null;
     const expires_at = form.expires_days > 0 ? new Date(Date.now() + form.expires_days * 86400_000).toISOString() : null;
     const { data: userRes } = await supabase.auth.getUser();
-    const { error } = await supabase.from("api_keys").insert({
+    const { data: inserted, error } = await supabase.from("api_keys").insert({
       partner_id: form.partner_id, name: form.name.trim(), environment: form.environment,
       scopes: form.scopes, rate_limit_per_min: form.rate_limit_per_min, rate_limit_per_day: form.rate_limit_per_day,
       expires_at, key_hash, key_prefix, hmac_secret, is_sandbox: form.environment !== "live",
       created_by: userRes.user?.id ?? null, is_active: true,
-    });
+    }).select("id").single();
     if (error) return toast({ title: "Xato", description: error.message, variant: "destructive" });
+    await writeAuditLog({ action: "api_key.create", entity_type: "api_key", entity_id: inserted?.id, module: "api_center", new_data: { name: form.name.trim(), environment: form.environment, scopes: form.scopes, rate_limit_per_min: form.rate_limit_per_min, rate_limit_per_day: form.rate_limit_per_day, with_hmac: form.with_hmac, expires_at, prefix: key_prefix, partner_id: form.partner_id } });
     setReveal({ key: rawKey, hmac: hmac_secret ?? undefined });
     setOpen(false);
     setForm(f => ({ ...f, name: "" }));
     load();
   };
+
 
   return (
     <div className="space-y-4 mt-4">
