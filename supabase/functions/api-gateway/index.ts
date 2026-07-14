@@ -297,6 +297,48 @@ serve(async (req) => {
               }
             }
 
+            // 4c. Rate limit enforcement (per-key rolling minute + day windows).
+            let rateHeaders: Record<string, string> = {};
+            if (statusCode === 200) {
+              const nowMs = Date.now();
+              const minAgo = new Date(nowMs - 60_000).toISOString();
+              const dayAgo = new Date(nowMs - 86_400_000).toISOString();
+              const [{ count: minCount }, { count: dayCount }] = await Promise.all([
+                supabase.from("api_request_logs").select("id", { count: "exact", head: true })
+                  .eq("api_key_id", keyRow.id).gte("created_at", minAgo),
+                supabase.from("api_request_logs").select("id", { count: "exact", head: true })
+                  .eq("api_key_id", keyRow.id).gte("created_at", dayAgo),
+              ]);
+              const perMin = keyRow.rate_limit_per_min || 60;
+              const perDay = keyRow.rate_limit_per_day || 10000;
+              const remainMin = Math.max(0, perMin - (minCount ?? 0));
+              const remainDay = Math.max(0, perDay - (dayCount ?? 0));
+              const resetMin = Math.ceil((nowMs + 60_000) / 1000);
+              const resetDay = Math.ceil((nowMs + 86_400_000) / 1000);
+              rateHeaders = {
+                "X-RateLimit-Limit-Minute": String(perMin),
+                "X-RateLimit-Remaining-Minute": String(remainMin),
+                "X-RateLimit-Reset-Minute": String(resetMin),
+                "X-RateLimit-Limit-Day": String(perDay),
+                "X-RateLimit-Remaining-Day": String(remainDay),
+                "X-RateLimit-Reset-Day": String(resetDay),
+                "X-RateLimit-Limit": String(perMin),
+                "X-RateLimit-Remaining": String(remainMin),
+                "X-RateLimit-Reset": String(resetMin),
+              };
+              if (remainMin <= 0 || remainDay <= 0) {
+                statusCode = 429;
+                errorMsg = remainMin <= 0 ? "Per-minute rate limit exceeded" : "Daily rate limit exceeded";
+                responseBody = json(429, {
+                  code: "rate_limited",
+                  message: errorMsg,
+                  limit_per_minute: perMin,
+                  limit_per_day: perDay,
+                  retry_after_seconds: remainMin <= 0 ? 60 : 86400,
+                }, requestId, { ...rateHeaders, "Retry-After": String(remainMin <= 0 ? 60 : 86400) });
+              }
+            }
+
             if (statusCode === 200) {
               // 5. Update last_used_at (fire and forget)
               supabase.from("api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
@@ -307,6 +349,7 @@ serve(async (req) => {
               } else {
                 responseBody = await dispatch(supabase, path, req, requestId, partnerOwnerId, startTime);
               }
+              responseBody = withHeaders(responseBody, rateHeaders);
               statusCode = responseBody.status;
             }
           }
@@ -314,6 +357,7 @@ serve(async (req) => {
       }
     }
   } catch (e) {
+
     console.error("api-gateway error", requestId, e);
     statusCode = 500;
     errorMsg = String(e);
