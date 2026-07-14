@@ -423,13 +423,36 @@ function KeysPanel() {
                 <TableCell className="text-sm">{k.api_partners?.name || <span className="text-white/40">—</span>}</TableCell>
                 <TableCell className="text-sm text-white/90">{k.name}</TableCell>
                 <TableCell><Badge className={k.environment === "live" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}>{k.environment}</Badge></TableCell>
-                <TableCell className="font-mono text-xs text-white/80">{k.key_prefix}…</TableCell>
+                <TableCell className="font-mono text-xs text-white/80">
+                  <button onClick={() => copyPrefix(k)} className="hover:text-emerald-300 inline-flex items-center gap-1" title="Prefixni nusxa olish">
+                    {k.key_prefix}… <Copy className="w-3 h-3" />
+                  </button>
+                </TableCell>
                 <TableCell className="text-xs text-white/70">{(k.scopes || []).slice(0, 3).join(", ")}{(k.scopes || []).length > 3 ? ` +${k.scopes.length - 3}` : ""}</TableCell>
                 <TableCell className="text-xs">{k.rate_limit_per_min}/min · {k.rate_limit_per_day}/day</TableCell>
                 <TableCell className="text-xs text-white/60">{k.last_used_at ? new Date(k.last_used_at).toLocaleString() : "hech qachon"}</TableCell>
                 <TableCell>
-                  {k.is_active ? <Button size="sm" variant="destructive" onClick={() => revoke(k.id)}><Trash2 className="w-3 h-3" /></Button> : <Badge className="bg-red-500/20 text-red-300">Revoked</Badge>}
+                  <div className="flex items-center gap-1">
+                    {k.is_active ? (
+                      <>
+                        <Button size="sm" variant="outline" className="h-7 px-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/10" onClick={() => toggleActive(k)} title="Vaqtincha to'xtatish">
+                          <Pause className="w-3 h-3" />
+                        </Button>
+                        <Button size="sm" variant="destructive" className="h-7 px-2" onClick={() => revoke(k)} title="Butunlay bekor qilish">
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Badge className="bg-red-500/20 text-red-300">Nofaol</Badge>
+                        <Button size="sm" variant="outline" className="h-7 px-2 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10" onClick={() => toggleActive(k)} title="Qayta yoqish">
+                          <Play className="w-3 h-3" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
