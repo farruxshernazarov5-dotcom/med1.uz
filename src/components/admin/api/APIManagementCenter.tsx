@@ -1130,15 +1130,17 @@ function SDKsPanel() {
 function SandboxPanel() {
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const [apiKey, setApiKey] = useState<string>(() => sessionStorage.getItem("api_center_test_key") || "");
+  const [hmacSecret, setHmacSecret] = useState<string>(() => sessionStorage.getItem("api_center_test_hmac") || "");
   const [selected, setSelected] = useState<string>("/v1/ping|GET");
   const [body, setBody] = useState<string>("{}");
-  const [result, setResult] = useState<{ status: number; ms: number; body: string } | null>(null);
+  const [result, setResult] = useState<{ status: number; statusText: string; ms: number; body: string; headers: Record<string, string>; errorText?: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     supabase.from("api_endpoints").select("path, method, title, category").eq("is_deprecated", false).order("category").order("path").then(({ data }) => setEndpoints(data ?? []));
   }, []);
   useEffect(() => { sessionStorage.setItem("api_center_test_key", apiKey); }, [apiKey]);
+  useEffect(() => { sessionStorage.setItem("api_center_test_hmac", hmacSecret); }, [hmacSecret]);
 
   const [path, method] = selected.split("|");
   const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
@@ -1150,21 +1152,49 @@ function SandboxPanel() {
     setBusy(true); setResult(null);
     const t0 = performance.now();
     try {
-      const init: RequestInit = {
-        method,
-        headers: { "x-api-key": apiKey, "Content-Type": "application/json", "x-med1-channel": "admin-tester" },
-      };
-      if (method !== "GET" && method !== "DELETE" && body.trim()) init.body = body;
+      const headers: Record<string, string> = { "x-api-key": apiKey, "Content-Type": "application/json", "x-med1-channel": "admin-tester" };
+      const bodyStr = (method !== "GET" && method !== "DELETE" && body.trim()) ? body : "";
+
+      if (hmacSecret.trim()) {
+        const ts = Math.floor(Date.now() / 1000).toString();
+        const nonce = crypto.randomUUID();
+        const payload = `${ts}\n${nonce}\n${method}\n${path}\n${bodyStr}`;
+        const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(hmacSecret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+        const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
+        const sigHex = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+        headers["x-med1-timestamp"] = ts;
+        headers["x-med1-nonce"] = nonce;
+        headers["x-med1-signature"] = sigHex;
+      }
+
+      const init: RequestInit = { method, headers };
+      if (bodyStr) init.body = bodyStr;
       const r = await fetch(fullUrl, init);
       const text = await r.text();
       let pretty = text;
-      try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
-      setResult({ status: r.status, ms: Math.round(performance.now() - t0), body: pretty });
+      let parsed: any = null;
+      try { parsed = JSON.parse(text); pretty = JSON.stringify(parsed, null, 2); } catch {}
+      const hdrs: Record<string, string> = {};
+      r.headers.forEach((v, k) => { hdrs[k.toLowerCase()] = v; });
+      const errorText = r.ok ? undefined : (parsed?.error || parsed?.message || r.statusText || `HTTP ${r.status}`);
+      setResult({ status: r.status, statusText: r.statusText, ms: Math.round(performance.now() - t0), body: pretty, headers: hdrs, errorText });
     } catch (e: any) {
-      setResult({ status: 0, ms: Math.round(performance.now() - t0), body: `Network error: ${e.message}` });
+      setResult({ status: 0, statusText: "Network error", ms: Math.round(performance.now() - t0), body: `Network error: ${e.message}`, headers: {}, errorText: e.message });
     }
     setBusy(false);
   };
+
+  const rl = result ? {
+    limitMin: result.headers["x-ratelimit-limit-minute"] || result.headers["x-ratelimit-limit"],
+    remainMin: result.headers["x-ratelimit-remaining-minute"] || result.headers["x-ratelimit-remaining"],
+    resetMin: result.headers["x-ratelimit-reset-minute"] || result.headers["x-ratelimit-reset"],
+    limitDay: result.headers["x-ratelimit-limit-day"],
+    remainDay: result.headers["x-ratelimit-remaining-day"],
+    resetDay: result.headers["x-ratelimit-reset-day"],
+    retryAfter: result.headers["retry-after"],
+  } : null;
+  const remainMinNum = rl?.remainMin ? parseInt(rl.remainMin) : NaN;
+  const rlTone = isNaN(remainMinNum) ? "bg-white/10 text-white/60" : remainMinNum === 0 ? "bg-red-500/20 text-red-300" : remainMinNum < 5 ? "bg-amber-500/20 text-amber-300" : "bg-emerald-500/20 text-emerald-300";
 
   return (
     <div className="space-y-4 mt-4">
@@ -1178,6 +1208,10 @@ function SandboxPanel() {
             <Input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="med1_live_… yoki med1_test_…" className="bg-white/5 border-white/10 font-mono text-xs" />
           </div>
           <div>
+            <label className="text-xs text-white/60 mb-1 block">HMAC secret (ixtiyoriy — imzo yuboradi)</label>
+            <Input value={hmacSecret} onChange={e => setHmacSecret(e.target.value)} placeholder="hex secret (kalit yaratilganida ko'rsatilgan)" className="bg-white/5 border-white/10 font-mono text-xs" />
+          </div>
+          <div className="md:col-span-2">
             <label className="text-xs text-white/60 mb-1 block">Endpoint ({endpoints.length} ta faol)</label>
             <select value={selected} onChange={e => setSelected(e.target.value)} className="bg-white/5 border border-white/10 rounded px-2 py-2 text-sm text-white w-full">
               <option value="/v1/ping|GET">GET /v1/ping — Health check</option>
@@ -1203,12 +1237,48 @@ function SandboxPanel() {
         </div>
 
         {result && (
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center gap-2 text-xs">
-              <Badge className={STATUS_COLOR(result.status || 500)}>Status {result.status || "ERR"}</Badge>
+          <div className="mt-4 space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <Badge className={STATUS_COLOR(result.status || 500)}>Status {result.status || "ERR"} · {result.statusText}</Badge>
               <Badge className="bg-white/10 text-white/80">{result.ms} ms</Badge>
+              {rl?.limitMin && (
+                <Badge className={rlTone}>Rate: {rl.remainMin ?? "?"}/{rl.limitMin} per min</Badge>
+              )}
+              {rl?.limitDay && (
+                <Badge className="bg-white/10 text-white/70">Kunlik: {rl.remainDay ?? "?"}/{rl.limitDay}</Badge>
+              )}
+              {rl?.resetMin && (
+                <Badge className="bg-white/5 text-white/50 border-white/10">Reset: {new Date(parseInt(rl.resetMin) * 1000).toLocaleTimeString()}</Badge>
+              )}
+              {rl?.retryAfter && (
+                <Badge className="bg-red-500/20 text-red-300">Retry-After: {rl.retryAfter}s</Badge>
+              )}
             </div>
-            <pre className="p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto max-h-96">{result.body}</pre>
+
+            {result.status === 429 && (
+              <div className="p-3 rounded border border-red-500/30 bg-red-500/10 text-red-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  <div className="font-semibold">Rate limit oshirildi</div>
+                  <div className="text-red-300/80">
+                    {rl?.retryAfter ? `${rl.retryAfter} soniyadan so'ng qayta urinib ko'ring.` : "Iltimos, biroz kuting va qayta urinib ko'ring."}
+                    {rl?.resetMin && ` Daqiqa limiti ${new Date(parseInt(rl.resetMin) * 1000).toLocaleTimeString()} da qayta tiklanadi.`}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {result.errorText && result.status !== 429 && result.status !== 0 && (
+              <div className="p-3 rounded border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div><span className="font-semibold">Xato:</span> {result.errorText}</div>
+              </div>
+            )}
+
+            <div>
+              <div className="text-[11px] text-white/50 mb-1">Response body</div>
+              <pre className="p-3 bg-black/40 rounded text-xs text-emerald-300 overflow-x-auto max-h-96">{result.body}</pre>
+            </div>
           </div>
         )}
 
@@ -1221,3 +1291,4 @@ function SandboxPanel() {
     </div>
   );
 }
+
