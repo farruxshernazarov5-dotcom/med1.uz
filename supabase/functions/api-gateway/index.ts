@@ -17,15 +17,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-api-key, x-med1-channel",
 };
 
-const json = (status: number, body: unknown, requestId: string) =>
+const json = (status: number, body: unknown, requestId: string, extraHeaders: Record<string, string> = {}) =>
   new Response(
     JSON.stringify({
       success: status < 400,
       ...(status < 400 ? { data: body } : { error: body }),
       request_id: requestId,
     }),
-    { status, headers: { ...corsHeaders, "Content-Type": "application/json", "X-Request-Id": requestId } },
+    { status, headers: { ...corsHeaders, "Content-Type": "application/json", "X-Request-Id": requestId, ...extraHeaders } },
   );
+
+// Attach headers to an existing response (mostly for rate-limit headers on dispatched handlers).
+function withHeaders(res: Response, extra: Record<string, string>): Response {
+  const h = new Headers(res.headers);
+  for (const [k, v] of Object.entries(extra)) h.set(k, v);
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}
+
 
 async function sha256Hex(input: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
