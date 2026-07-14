@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { writeAuditLog } from "@/utils/auditLog";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,10 +10,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "@/hooks/use-toast";
 import {
   Activity, Key, Layers, ShieldAlert, Webhook, LineChart as LineChartIcon,
-  FileCode, Download, Beaker, Rocket, Search, RefreshCw, Copy, Plus, Trash2,
+  FileCode, Download, Beaker, Rocket, Search, RefreshCw, Copy, Plus, Trash2, Pause, Play,
   Smartphone, Globe, Handshake, Cpu, Lock, BookOpen, Users, ScrollText, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
+
 
 type Endpoint = { id: string; path: string; method: string; category: string; scope: string; title: string; description: string | null; is_deprecated: boolean; is_public: boolean; version: string };
 type ApiKey = { id: string; partner_id: string; name: string; environment: string; scopes: string[]; rate_limit_per_min: number; rate_limit_per_day: number; is_active: boolean; last_used_at: string | null; expires_at: string | null; created_at: string; key_prefix: string };
