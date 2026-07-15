@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   Brain, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
-  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity
+  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity, Ribbon, Droplet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground, LiveStatusPill } from "@/components/futuristic";
@@ -21,6 +21,11 @@ const aiServices = [
   { icon: Pill, title: "AI Farmatsevt", href: "/ai-farmatsevt", tone: "from-cyan-500 to-cyan-400" },
   { icon: Dumbbell, title: "AI Fitness", href: "/ai-fitness", tone: "from-orange-500 to-orange-400" },
   { icon: Activity, title: "AI Vital Signs", href: "/ai-vital-signs", tone: "from-red-500 to-blue-400" },
+];
+
+const specializedAI = [
+  { icon: Ribbon, title: "AI Onkologiya", href: "/ai-oncology", tone: "from-rose-500 to-purple-600", tag: "NCCN/ESMO" },
+  { icon: Droplet, title: "AI Qandli Diabet", href: "/ai-diabetes", tone: "from-emerald-500 to-teal-600", tag: "ADA/EASD" },
 ];
 
 const HomeAIServicesSection = () => {
@@ -76,6 +81,37 @@ const HomeAIServicesSection = () => {
             );
           })}
         </div>
+
+        {/* Specialized (Narrow) AI — Medical Decision Support */}
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-amber-300" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-200">Specialized AI</span>
+            </div>
+            <span className="text-xs text-white/50">Medical Decision Support — ixtisoslashgan tor yo'nalishlar</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {specializedAI.map((s) => {
+              const Icon = s.icon;
+              return (
+                <Link key={s.href} to={s.href} className="group">
+                  <div className="relative glass-dark p-4 h-full flex items-center gap-3 transition-all hover:-translate-y-0.5 ring-1 ring-amber-400/20 hover:ring-amber-400/50">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.tone} flex items-center justify-center shadow-glow-sm flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white leading-tight">{s.title}</p>
+                      <p className="text-[10px] text-amber-200/70 mt-0.5">{s.tag}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
 
         <div className="mt-6 glass-dark px-5 py-4 flex items-center justify-between flex-wrap gap-3 ring-neon-purple">
           <div className="flex items-center gap-2.5">

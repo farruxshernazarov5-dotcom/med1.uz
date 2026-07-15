@@ -100,6 +100,8 @@ const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage")
 const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
+const AIOncologyPage = lazy(() => import("./pages/AIOncologyPage"));
+const AIDiabetesPage = lazy(() => import("./pages/AIDiabetesPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -213,6 +215,8 @@ const App = () => (
                 <Route path="/ai-fitness" element={<AIFitnessPage />} />
                 <Route path="/ai-subscription" element={<AISubscriptionPage />} />
                 <Route path="/ai-payment" element={<AIPaymentPage />} />
+                <Route path="/ai-oncology" element={<AIOncologyPage />} />
+                <Route path="/ai-diabetes" element={<AIDiabetesPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />
