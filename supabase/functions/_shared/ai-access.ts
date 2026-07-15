@@ -132,6 +132,8 @@ const SERVICE_CREDITS: Record<string, number> = {
   "symptom-checker": 5, "ai-psixolog": 5, "ai-pregnancy": 5, "ai-health-risk": 5,
   "ai-radiology": 25, "ai-report-analysis": 25,
   "ai-cosmetology": 25, "ai-vital-signs": 25,
+  // Specialized (Narrow) AI modules — Medical Decision Support
+  "ai-oncology": 25, "ai-diabetes": 5,
 };
 
 /**
