@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {
   Brain, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
-  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity
+  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity, Ribbon, Droplet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground, LiveStatusPill } from "@/components/futuristic";
@@ -21,6 +21,11 @@ const aiServices = [
   { icon: Pill, title: "AI Farmatsevt", href: "/ai-farmatsevt", tone: "from-cyan-500 to-cyan-400" },
   { icon: Dumbbell, title: "AI Fitness", href: "/ai-fitness", tone: "from-orange-500 to-orange-400" },
   { icon: Activity, title: "AI Vital Signs", href: "/ai-vital-signs", tone: "from-red-500 to-blue-400" },
+];
+
+const specializedAI = [
+  { icon: Ribbon, title: "AI Onkologiya", href: "/ai-oncology", tone: "from-rose-500 to-purple-600", tag: "NCCN/ESMO" },
+  { icon: Droplet, title: "AI Qandli Diabet", href: "/ai-diabetes", tone: "from-emerald-500 to-teal-600", tag: "ADA/EASD" },
 ];
 
 const HomeAIServicesSection = () => {
