@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import {
   Brain, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
-  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity, Ribbon, Droplet
+  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity, Ribbon, Droplet,
+  Wind, Bone as BoneIcon, Scan, Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground, LiveStatusPill } from "@/components/futuristic";
@@ -26,6 +27,16 @@ const aiServices = [
 const specializedAI = [
   { icon: Ribbon, title: "AI Onkologiya", href: "/ai-oncology", tone: "from-rose-500 to-purple-600", tag: "NCCN/ESMO" },
   { icon: Droplet, title: "AI Qandli Diabet", href: "/ai-diabetes", tone: "from-emerald-500 to-teal-600", tag: "ADA/EASD" },
+];
+
+const radiologyModules = [
+  { icon: Wind, title: "Pulmonologiya", href: "/ai-radiology/pulmonology", tone: "from-sky-500 to-cyan-600" },
+  { icon: Brain, title: "Miya (Brain)", href: "/ai-radiology/brain", tone: "from-violet-500 to-indigo-600" },
+  { icon: BoneIcon, title: "Suyak-Skelet", href: "/ai-radiology/bone", tone: "from-stone-500 to-amber-600" },
+  { icon: Scan, title: "Ko'krak KT", href: "/ai-radiology/chest-ct", tone: "from-blue-500 to-indigo-600" },
+  { icon: Heart, title: "Mammografiya", href: "/ai-radiology/mammography", tone: "from-pink-500 to-rose-600" },
+  { icon: Layers, title: "Qorin (Abdomen)", href: "/ai-radiology/abdomen", tone: "from-emerald-500 to-teal-600" },
+  { icon: Activity, title: "Umurtqa (Spine)", href: "/ai-radiology/spine", tone: "from-fuchsia-500 to-purple-600" },
 ];
 
 const HomeAIServicesSection = () => {
