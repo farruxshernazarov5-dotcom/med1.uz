@@ -136,7 +136,7 @@ const AIServicesPage = () => {
         </div>
       </section>
 
-      </section>
+
 
       {/* Specialized (Narrow) AI */}
       <section className="container mx-auto px-4 pb-8">
