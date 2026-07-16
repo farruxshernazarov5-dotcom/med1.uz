@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown, Lock } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown, Lock, Ribbon, Droplet, Scan, Bone as BoneIcon, Wind, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
@@ -12,6 +12,21 @@ import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
 import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useLanguage } from "@/hooks/useLanguage";
+
+const specializedAI = [
+  { id: "ai-oncology", icon: Ribbon, href: "/ai-oncology", tone: "from-rose-500 to-purple-600", title: "AI Onkologiya", tag: "NCCN / ESMO" },
+  { id: "ai-diabetes", icon: Droplet, href: "/ai-diabetes", tone: "from-emerald-500 to-teal-600", title: "AI Qandli Diabet", tag: "ADA / EASD" },
+];
+
+const radiologyModules = [
+  { id: "ai-radiology-pulmonology", icon: Wind, href: "/ai-radiology/pulmonology", tone: "from-sky-500 to-cyan-600", title: "Pulmonologiya", tag: "Chest X-ray + CT" },
+  { id: "ai-radiology-brain", icon: Brain, href: "/ai-radiology/brain", tone: "from-violet-500 to-indigo-600", title: "Miya (Brain)", tag: "MRI / CT · ASPECTS" },
+  { id: "ai-radiology-bone", icon: BoneIcon, href: "/ai-radiology/bone", tone: "from-stone-500 to-amber-600", title: "Suyak-Skelet", tag: "AO/OTA · Fracture" },
+  { id: "ai-radiology-chest-ct", icon: Scan, href: "/ai-radiology/chest-ct", tone: "from-blue-500 to-indigo-600", title: "Ko'krak KT", tag: "HRCT · Lung-RADS" },
+  { id: "ai-radiology-mammography", icon: Heart, href: "/ai-radiology/mammography", tone: "from-pink-500 to-rose-600", title: "Mammografiya", tag: "BI-RADS 0–6" },
+  { id: "ai-radiology-abdomen", icon: Layers, href: "/ai-radiology/abdomen", tone: "from-emerald-500 to-teal-600", title: "Qorin bo'shlig'i", tag: "LI-RADS · Abdomen" },
+  { id: "ai-radiology-spine", icon: Activity, href: "/ai-radiology/spine", tone: "from-fuchsia-500 to-purple-600", title: "Umurtqa (Spine)", tag: "Pfirrmann · MRI" },
+];
 
 type ServiceKey =
   | "symptom-checker" | "ai-doctor-chat" | "ai-report-analysis" | "ai-health-risk"
