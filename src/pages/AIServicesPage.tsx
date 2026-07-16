@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown, Lock } from "lucide-react";
+import { Brain, Bot, FileText, HeartPulse, Stethoscope, ArrowRight, Shield, Activity, Sparkles, Eye, UserCheck, Baby, Palette, UtensilsCrossed, Heart, Pill, Dumbbell, Crown, Lock, Ribbon, Droplet, Scan, Bone as BoneIcon, Wind, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrgAiTariffSection from "@/components/OrgAiTariffSection";
 import AIStatusWidget from "@/components/ai/AIStatusWidget";
@@ -12,6 +12,21 @@ import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
 import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useLanguage } from "@/hooks/useLanguage";
+
+const specializedAI = [
+  { id: "ai-oncology", icon: Ribbon, href: "/ai-oncology", tone: "from-rose-500 to-purple-600", title: "AI Onkologiya", tag: "NCCN / ESMO" },
+  { id: "ai-diabetes", icon: Droplet, href: "/ai-diabetes", tone: "from-emerald-500 to-teal-600", title: "AI Qandli Diabet", tag: "ADA / EASD" },
+];
+
+const radiologyModules = [
+  { id: "ai-radiology-pulmonology", icon: Wind, href: "/ai-radiology/pulmonology", tone: "from-sky-500 to-cyan-600", title: "Pulmonologiya", tag: "Chest X-ray + CT" },
+  { id: "ai-radiology-brain", icon: Brain, href: "/ai-radiology/brain", tone: "from-violet-500 to-indigo-600", title: "Miya (Brain)", tag: "MRI / CT · ASPECTS" },
+  { id: "ai-radiology-bone", icon: BoneIcon, href: "/ai-radiology/bone", tone: "from-stone-500 to-amber-600", title: "Suyak-Skelet", tag: "AO/OTA · Fracture" },
+  { id: "ai-radiology-chest-ct", icon: Scan, href: "/ai-radiology/chest-ct", tone: "from-blue-500 to-indigo-600", title: "Ko'krak KT", tag: "HRCT · Lung-RADS" },
+  { id: "ai-radiology-mammography", icon: Heart, href: "/ai-radiology/mammography", tone: "from-pink-500 to-rose-600", title: "Mammografiya", tag: "BI-RADS 0–6" },
+  { id: "ai-radiology-abdomen", icon: Layers, href: "/ai-radiology/abdomen", tone: "from-emerald-500 to-teal-600", title: "Qorin bo'shlig'i", tag: "LI-RADS · Abdomen" },
+  { id: "ai-radiology-spine", icon: Activity, href: "/ai-radiology/spine", tone: "from-fuchsia-500 to-purple-600", title: "Umurtqa (Spine)", tag: "Pfirrmann · MRI" },
+];
 
 type ServiceKey =
   | "symptom-checker" | "ai-doctor-chat" | "ai-report-analysis" | "ai-health-risk"
@@ -118,6 +133,81 @@ const AIServicesPage = () => {
               </Link>
             );
           })}
+        </div>
+      </section>
+
+
+
+      {/* Specialized (Narrow) AI */}
+      <section className="container mx-auto px-4 pb-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-400/30 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-amber-600" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Specialized AI</span>
+            </div>
+            <span className="text-xs text-muted-foreground">Medical Decision Support — ixtisoslashgan tor yo'nalishlar</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {specializedAI.map((s) => {
+              const Icon = s.icon;
+              const locked = !accessLoading && !isServiceAllowed(s.id as any);
+              return (
+                <Link key={s.href} to={s.href} className="group">
+                  <div className={`relative bg-card border border-amber-200/40 rounded-2xl p-5 h-full flex items-center gap-4 hover:shadow-lg transition-all ${locked ? "opacity-80" : ""}`}>
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${s.tone} flex items-center justify-center shadow-md flex-shrink-0`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-foreground">{s.title}</p>
+                      <p className="text-[11px] text-amber-700/80 mt-0.5">{s.tag}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Radiology AI 2.0 — 7 sub-modules */}
+      <section className="container mx-auto px-4 pb-12">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="px-3 py-1 rounded-full bg-gradient-to-r from-violet-500/15 to-indigo-500/15 border border-violet-400/30 flex items-center gap-1.5">
+              <Scan className="w-3 h-3 text-violet-600" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-violet-700">Radiology AI 2.0</span>
+            </div>
+            <span className="text-xs text-muted-foreground">7 ta ixtisoslashgan sub-modul · tasvir tahlili (Gemini Pro Vision)</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {radiologyModules.map((s) => {
+              const Icon = s.icon;
+              const locked = !accessLoading && !isServiceAllowed(s.id as any);
+              return (
+                <Link key={s.href} to={s.href} className="group">
+                  <div className={`relative bg-card border border-border rounded-xl p-4 h-full flex items-center gap-3 hover:border-primary/40 hover:shadow-md transition-all ${locked ? "opacity-80" : ""}`}>
+                    <div className={`w-11 h-11 rounded-lg bg-gradient-to-br ${s.tone} flex items-center justify-center flex-shrink-0`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{s.title}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{s.tag}</p>
+                    </div>
+                    {locked ? <Lock className="w-3.5 h-3.5 text-amber-600" /> : <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="mt-4 text-center">
+            <Link to="/ai-radiology">
+              <Button variant="outline" size="sm" className="text-xs">
+                <Scan className="w-3.5 h-3.5 mr-1.5" /> Umumiy Radiology (multi-modality)
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 

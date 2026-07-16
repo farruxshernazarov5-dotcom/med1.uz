@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import {
   Brain, Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
-  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity, Ribbon, Droplet
+  UtensilsCrossed, Heart, Pill, Dumbbell, ArrowRight, Crown, Sparkles, Activity, Ribbon, Droplet,
+  Wind, Bone as BoneIcon, Scan, Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground, LiveStatusPill } from "@/components/futuristic";
@@ -26,6 +27,16 @@ const aiServices = [
 const specializedAI = [
   { icon: Ribbon, title: "AI Onkologiya", href: "/ai-oncology", tone: "from-rose-500 to-purple-600", tag: "NCCN/ESMO" },
   { icon: Droplet, title: "AI Qandli Diabet", href: "/ai-diabetes", tone: "from-emerald-500 to-teal-600", tag: "ADA/EASD" },
+];
+
+const radiologyModules = [
+  { icon: Wind, title: "Pulmonologiya", href: "/ai-radiology/pulmonology", tone: "from-sky-500 to-cyan-600" },
+  { icon: Brain, title: "Miya (Brain)", href: "/ai-radiology/brain", tone: "from-violet-500 to-indigo-600" },
+  { icon: BoneIcon, title: "Suyak-Skelet", href: "/ai-radiology/bone", tone: "from-stone-500 to-amber-600" },
+  { icon: Scan, title: "Ko'krak KT", href: "/ai-radiology/chest-ct", tone: "from-blue-500 to-indigo-600" },
+  { icon: Heart, title: "Mammografiya", href: "/ai-radiology/mammography", tone: "from-pink-500 to-rose-600" },
+  { icon: Layers, title: "Qorin (Abdomen)", href: "/ai-radiology/abdomen", tone: "from-emerald-500 to-teal-600" },
+  { icon: Activity, title: "Umurtqa (Spine)", href: "/ai-radiology/spine", tone: "from-fuchsia-500 to-purple-600" },
 ];
 
 const HomeAIServicesSection = () => {
@@ -111,6 +122,34 @@ const HomeAIServicesSection = () => {
             })}
           </div>
         </div>
+
+        {/* Radiology AI 2.0 — 7 sub-modules */}
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="px-2.5 py-1 rounded-full bg-gradient-to-r from-violet-500/20 to-indigo-500/20 border border-violet-400/30 flex items-center gap-1.5">
+              <Scan className="w-3 h-3 text-violet-300" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-violet-200">Radiology AI 2.0</span>
+            </div>
+            <span className="text-xs text-white/50">7 ta ixtisoslashgan sub-modul · tasvir tahlili</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+            {radiologyModules.map((s) => {
+              const Icon = s.icon;
+              return (
+                <Link key={s.href} to={s.href} className="group">
+                  <div className="glass-dark p-3 text-center h-full flex flex-col items-center justify-center gap-2 transition-all hover:-translate-y-0.5 ring-1 ring-violet-400/15 hover:ring-violet-400/40">
+                    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${s.tone} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-[11px] font-medium text-white/85 leading-tight">{s.title}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+
 
 
         <div className="mt-6 glass-dark px-5 py-4 flex items-center justify-between flex-wrap gap-3 ring-neon-purple">

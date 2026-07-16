@@ -134,6 +134,14 @@ const SERVICE_CREDITS: Record<string, number> = {
   "ai-cosmetology": 25, "ai-vital-signs": 25,
   // Specialized (Narrow) AI modules — Medical Decision Support
   "ai-oncology": 25, "ai-diabetes": 5,
+  // Radiology 2.0 — 7 ixtisoslashgan sub-modul (image analysis, Gemini Pro)
+  "ai-radiology-pulmonology": 25,
+  "ai-radiology-brain": 25,
+  "ai-radiology-bone": 25,
+  "ai-radiology-chest-ct": 25,
+  "ai-radiology-mammography": 25,
+  "ai-radiology-abdomen": 25,
+  "ai-radiology-spine": 25,
 };
 
 /**

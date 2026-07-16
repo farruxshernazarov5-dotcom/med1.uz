@@ -102,6 +102,13 @@ const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
 const AIOncologyPage = lazy(() => import("./pages/AIOncologyPage"));
 const AIDiabetesPage = lazy(() => import("./pages/AIDiabetesPage"));
+const AIRadiologyPulmonologyPage = lazy(() => import("./pages/AIRadiologyPulmonologyPage"));
+const AIRadiologyBrainPage = lazy(() => import("./pages/AIRadiologyBrainPage"));
+const AIRadiologyBonePage = lazy(() => import("./pages/AIRadiologyBonePage"));
+const AIRadiologyChestCTPage = lazy(() => import("./pages/AIRadiologyChestCTPage"));
+const AIRadiologyMammographyPage = lazy(() => import("./pages/AIRadiologyMammographyPage"));
+const AIRadiologyAbdomenPage = lazy(() => import("./pages/AIRadiologyAbdomenPage"));
+const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -217,6 +224,13 @@ const App = () => (
                 <Route path="/ai-payment" element={<AIPaymentPage />} />
                 <Route path="/ai-oncology" element={<AIOncologyPage />} />
                 <Route path="/ai-diabetes" element={<AIDiabetesPage />} />
+                <Route path="/ai-radiology/pulmonology" element={<AIRadiologyPulmonologyPage />} />
+                <Route path="/ai-radiology/brain" element={<AIRadiologyBrainPage />} />
+                <Route path="/ai-radiology/bone" element={<AIRadiologyBonePage />} />
+                <Route path="/ai-radiology/chest-ct" element={<AIRadiologyChestCTPage />} />
+                <Route path="/ai-radiology/mammography" element={<AIRadiologyMammographyPage />} />
+                <Route path="/ai-radiology/abdomen" element={<AIRadiologyAbdomenPage />} />
+                <Route path="/ai-radiology/spine" element={<AIRadiologySpinePage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />
