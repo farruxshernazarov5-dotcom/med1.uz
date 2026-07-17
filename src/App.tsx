@@ -232,6 +232,7 @@ const App = () => (
                 <Route path="/ai-radiology/mammography" element={<AIRadiologyMammographyPage />} />
                 <Route path="/ai-radiology/abdomen" element={<AIRadiologyAbdomenPage />} />
                 <Route path="/ai-radiology/spine" element={<AIRadiologySpinePage />} />
+                <Route path="/ai-orchestrator" element={<AIOrchestratorPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />
