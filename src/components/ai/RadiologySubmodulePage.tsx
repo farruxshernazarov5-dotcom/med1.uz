@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Loader2, AlertTriangle, CheckCircle2, Image as ImageIcon, X, Save, Camera, Upload,
-  RefreshCcw, Eye, Bone, ShieldAlert, Sparkles, Shield, Scan,
+  RefreshCcw, Eye, Bone, ShieldAlert, Sparkles, Shield, Scan, Download, Share2, Printer,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,7 @@ import { withLang } from "@/lib/aiLang";
 import { pdfToImageBase64Pages } from "@/lib/pdf";
 import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
+import { downloadAIReport } from "@/utils/downloadAIReport";
 
 type ScanType = "xray" | "mri" | "ct";
 
@@ -378,6 +379,49 @@ export default function RadiologySubmodulePage({
               <div className="flex flex-wrap gap-2">
                 <Button onClick={handleSave} disabled={isSaving} variant="outline">
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4 mr-1" /> Saqlash</>}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const findingsText = analysis.findings.map(f =>
+                      `${f.location}: ${f.description} (${severityConfig[f.severity]?.label || f.severity})`
+                    ).join("\n");
+                    downloadAIReport({
+                      title,
+                      serviceType: `AI Radiology · ${scanLabel}`,
+                      patientName: user?.email ?? undefined,
+                      riskLevel: analysis.overallAssessment.riskLevel === "critical" ? "Yuqori"
+                        : analysis.overallAssessment.riskLevel === "attention" ? "O'rtacha" : "Past",
+                      suggestedSpecialist: analysis.suggestedSpecialist,
+                      sections: [
+                        { heading: "Umumiy xulosa", content: analysis.overallAssessment.summary },
+                        { heading: "Anatomik strukturalar", content: analysis.anatomicalStructures.map(a => `${a.name}: ${a.description}`).join("\n") || "—" },
+                        { heading: "Topilmalar", content: findingsText || "Sezilarli topilma yo'q" },
+                        { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
+                        { heading: "Keyingi tekshiruvlar", content: analysis.followUpStudies.join("\n") || "—" },
+                      ],
+                    });
+                  }}
+                >
+                  <Download className="w-4 h-4 mr-1" /> PDF yuklab olish
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    const text = `${title}\n\n${analysis.overallAssessment.summary}\n\nMutaxassis: ${analysis.suggestedSpecialist}\n\nMed1.uz AI`;
+                    if (navigator.share) {
+                      try { await navigator.share({ title, text, url: window.location.href }); }
+                      catch { /* user cancelled */ }
+                    } else {
+                      await navigator.clipboard.writeText(text);
+                      toast({ title: "Nusxalandi ✅", description: "Xulosa buferga nusxalandi" });
+                    }
+                  }}
+                >
+                  <Share2 className="w-4 h-4 mr-1" /> Ulashish
+                </Button>
+                <Button variant="outline" onClick={() => window.print()}>
+                  <Printer className="w-4 h-4 mr-1" /> Chop etish
                 </Button>
                 <Button onClick={handleReset} variant="outline"><RefreshCcw className="w-4 h-4 mr-1" /> Yangi tahlil</Button>
                 <Link to="/ai-radiology" className="ml-auto"><Button variant="ghost" size="sm">Boshqa Radiology moduli →</Button></Link>

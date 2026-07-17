@@ -109,6 +109,7 @@ const AIRadiologyChestCTPage = lazy(() => import("./pages/AIRadiologyChestCTPage
 const AIRadiologyMammographyPage = lazy(() => import("./pages/AIRadiologyMammographyPage"));
 const AIRadiologyAbdomenPage = lazy(() => import("./pages/AIRadiologyAbdomenPage"));
 const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
+const AIOrchestratorPage = lazy(() => import("./pages/AIOrchestratorPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -231,6 +232,7 @@ const App = () => (
                 <Route path="/ai-radiology/mammography" element={<AIRadiologyMammographyPage />} />
                 <Route path="/ai-radiology/abdomen" element={<AIRadiologyAbdomenPage />} />
                 <Route path="/ai-radiology/spine" element={<AIRadiologySpinePage />} />
+                <Route path="/ai-orchestrator" element={<AIOrchestratorPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />

@@ -142,6 +142,8 @@ const SERVICE_CREDITS: Record<string, number> = {
   "ai-radiology-mammography": 25,
   "ai-radiology-abdomen": 25,
   "ai-radiology-spine": 25,
+  // Phase 3 — AI Orchestrator (intent classifier)
+  "ai-orchestrator": 1,
 };
 
 /**
