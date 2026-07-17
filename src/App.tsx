@@ -109,6 +109,7 @@ const AIRadiologyChestCTPage = lazy(() => import("./pages/AIRadiologyChestCTPage
 const AIRadiologyMammographyPage = lazy(() => import("./pages/AIRadiologyMammographyPage"));
 const AIRadiologyAbdomenPage = lazy(() => import("./pages/AIRadiologyAbdomenPage"));
 const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
+const AIOrchestratorPage = lazy(() => import("./pages/AIOrchestratorPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
