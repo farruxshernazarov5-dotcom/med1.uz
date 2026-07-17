@@ -138,6 +138,29 @@ const AIServicesPage = () => {
 
 
 
+      {/* AI Orchestrator — Smart Router (Phase 3) */}
+      <section className="container mx-auto px-4 pb-6">
+        <div className="max-w-5xl mx-auto">
+          <Link to="/ai-orchestrator" className="group block">
+            <div className="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 text-white shadow-lg hover:shadow-xl transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-7 h-7" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider mb-1">
+                    Phase 3 · Smart Router
+                  </div>
+                  <p className="font-bold text-lg">AI Orchestrator</p>
+                  <p className="text-xs text-white/85">Savolingizni yozing — tizim 20+ AI mutaxassisdan eng mosini tanlaydi (1 Med Coin)</p>
+                </div>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* Specialized (Narrow) AI */}
       <section className="container mx-auto px-4 pb-8">
         <div className="max-w-5xl mx-auto">
