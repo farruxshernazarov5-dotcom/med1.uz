@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Loader2, AlertTriangle, CheckCircle2, Image as ImageIcon, X, Save, Camera, Upload,
-  RefreshCcw, Eye, Bone, ShieldAlert, Sparkles, Shield, Scan,
+  RefreshCcw, Eye, Bone, ShieldAlert, Sparkles, Shield, Scan, Download, Share2, Printer,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,7 @@ import { withLang } from "@/lib/aiLang";
 import { pdfToImageBase64Pages } from "@/lib/pdf";
 import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
+import { downloadAIReport } from "@/utils/downloadAIReport";
 
 type ScanType = "xray" | "mri" | "ct";
 
