@@ -474,7 +474,12 @@ export default function RadiologySubmodulePage({
               <p className="text-xs text-muted-foreground italic">{analysis.disclaimer}</p>
             </div>
           )}
+
+          <div className="mt-6">
+            <AiUsageLog serviceIdPrefix="ai-radiology" title="Radiology tranzaksiyalari (Med Coin)" />
+          </div>
         </div>
+
       </section>
 
       <Footer />
