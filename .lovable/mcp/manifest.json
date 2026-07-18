@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://wiqcfyecdmararxqdmfk.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "med1-uz-mcp",
+      "version": "0.1.0",
+      "title": "MED1.UZ"
+    },
+    "tools": [
+      {
+        "name": "search_knowledge",
+        "title": "Search medical knowledge base",
+        "description": "Full-text search over MED1.UZ's published medical knowledge articles (Uzbek, Russian, English). Returns title, excerpt, category, language and slug.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Search query (medical term, symptom, disease name)."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "uz",
+                "ru",
+                "en"
+              ],
+              "description": "Filter by article language."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "description": "Max results (default 5)."
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_clinics",
+        "title": "List active MED1.UZ clinics",
+        "description": "List active clinics registered on MED1.UZ, optionally filtered by category or city. Returns name, category, phone, address and specialties.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "description": "Filter by clinic category (e.g. dental, diagnostics)."
+            },
+            "city": {
+              "type": "string",
+              "description": "Case-insensitive substring match on address."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max results (default 10)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_my_profile",
+        "title": "Get my MED1.UZ profile",
+        "description": "Return the signed-in user's MED1.UZ profile (name, phone, address, preferred city). Requires authentication.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_appointments",
+        "title": "List my MED1.UZ appointments",
+        "description": "List the signed-in patient's upcoming or past appointments. Requires authentication.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "confirmed",
+                "completed",
+                "cancelled"
+              ],
+              "description": "Filter by appointment status."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Max results (default 10)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
