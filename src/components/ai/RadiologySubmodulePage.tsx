@@ -19,6 +19,10 @@ import { pdfToImageBase64Pages } from "@/lib/pdf";
 import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import { downloadAIReport } from "@/utils/downloadAIReport";
+import RadiologyOnboardingModal from "@/components/ai/RadiologyOnboardingModal";
+import AiUsageLog from "@/components/ai/AiUsageLog";
+import { Info, Lightbulb, Users, Cog, HelpCircle } from "lucide-react";
+
 
 type ScanType = "xray" | "mri" | "ct";
 
