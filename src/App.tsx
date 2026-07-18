@@ -110,6 +110,7 @@ const AIRadiologyMammographyPage = lazy(() => import("./pages/AIRadiologyMammogr
 const AIRadiologyAbdomenPage = lazy(() => import("./pages/AIRadiologyAbdomenPage"));
 const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
 const AIOrchestratorPage = lazy(() => import("./pages/AIOrchestratorPage"));
+const OAuthConsentPage = lazy(() => import("./pages/OAuthConsentPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -263,6 +264,7 @@ const App = () => (
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="/partner" element={<PartnerDashboardPage />} />
+                <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

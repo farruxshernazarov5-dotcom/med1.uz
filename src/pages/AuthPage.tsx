@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,13 +73,21 @@ const AuthPage = () => {
 
   const { signIn, signUp, signInWithPhone, verifyPhoneOtp, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Sanitize ?next= to a same-origin relative path so OAuth-consent redirects survive login.
+  const rawNext = searchParams.get("next");
+  const safeNext = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
 
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleGoogleSignIn = async () => {
     setSubmitting(true);
+    const redirectUri = safeNext
+      ? `${window.location.origin}${safeNext}`
+      : window.location.origin;
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectUri,
     });
     if (result.error) {
       toast({ title: "Xatolik", description: String(result.error), variant: "destructive" });
@@ -217,7 +225,7 @@ const AuthPage = () => {
         // userRole yuklanishini kutib, aniq dashboard'ga yo'naltirish
         // /dashboard route role'ni aniqlab redirect qiladi
         setTimeout(() => {
-          navigate("/dashboard", { replace: true });
+          navigate(safeNext ?? "/dashboard", { replace: true });
         }, 300);
       }
     } else {
