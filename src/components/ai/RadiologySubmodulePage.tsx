@@ -19,6 +19,10 @@ import { pdfToImageBase64Pages } from "@/lib/pdf";
 import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import { downloadAIReport } from "@/utils/downloadAIReport";
+import RadiologyOnboardingModal from "@/components/ai/RadiologyOnboardingModal";
+import AiUsageLog from "@/components/ai/AiUsageLog";
+import { Info, Lightbulb, Users, Cog, HelpCircle } from "lucide-react";
+
 
 type ScanType = "xray" | "mri" | "ct";
 
@@ -213,6 +217,46 @@ export default function RadiologySubmodulePage({
       <section className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <AIAccessBanner serviceId={serviceId} serviceName={title} />
+
+          <RadiologyOnboardingModal
+            title={title}
+            bodyParts={bodyParts}
+            storageKey={`onboard-${serviceId}-v1`}
+          />
+
+          {/* About this AI */}
+          <div className="bg-card border border-border rounded-xl p-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold">Ushbu AI haqida</span>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => { try { localStorage.removeItem(`onboard-${serviceId}-v1`); } catch { /* ignore */ } window.location.reload(); }}
+                className="text-xs"
+              >
+                <HelpCircle className="w-3.5 h-3.5 mr-1" /> Yo'riqnoma
+              </Button>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-3 text-xs">
+              <div className="flex gap-2"><Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div><div className="font-semibold">Nima qiladi?</div>
+                  <div className="text-muted-foreground">{subtitle}</div></div>
+              </div>
+              <div className="flex gap-2"><Users className="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div><div className="font-semibold">Kim uchun?</div>
+                  <div className="text-muted-foreground">Bemorlar va shifokorlar uchun ikkinchi fikr.</div></div>
+              </div>
+              <div className="flex gap-2"><Cog className="w-3.5 h-3.5 text-violet-500 flex-shrink-0 mt-0.5" />
+                <div><div className="font-semibold">Qanday ishlaydi?</div>
+                  <div className="text-muted-foreground">Gemini Pro Vision · 25 Med Coin · ~15–30s.</div></div>
+              </div>
+            </div>
+          </div>
+
 
           <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6 flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -430,7 +474,12 @@ export default function RadiologySubmodulePage({
               <p className="text-xs text-muted-foreground italic">{analysis.disclaimer}</p>
             </div>
           )}
+
+          <div className="mt-6">
+            <AiUsageLog serviceIdPrefix="ai-radiology" title="Radiology tranzaksiyalari (Med Coin)" />
+          </div>
         </div>
+
       </section>
 
       <Footer />
