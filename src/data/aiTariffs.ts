@@ -12,6 +12,14 @@ import {
   Pill,
   Dumbbell,
   Activity,
+  Ribbon,
+  Droplet,
+  Scan,
+  Wind,
+  Brain,
+  Bone as BoneIcon,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 
 /**
