@@ -206,6 +206,56 @@ export const MC_SERVICES: Record<string, Record<SupportedLanguage, ServiceDict>>
     ru: { name: "AI Vital Signs", what: "Измеряет пульс и SpO2 через камеру.", who: "Для постоянного контроля здоровья.", how: "Приложите палец к камере — 30 секунд.", example: "Пульс 72, SpO2 98%.", warning: DEFAULT_WARNING.ru },
     en: { name: "AI Vital Signs", what: "Measures heart rate and SpO2 via the camera.", who: "For continuous health monitoring.", how: "Place finger on the camera for 30 seconds.", example: "Heart rate 72, SpO2 98%.", warning: DEFAULT_WARNING.en },
   },
+  "ai-oncology": {
+    uz: { name: "AI Onkologiya", what: "O'sma va onkologik xavflarni NCCN/ESMO protokollari bo'yicha baholaydi.", who: "Onkologik shubha yoki tekshiruv rejalashtirayotganlar uchun.", how: "Simptomlar, marker natijalari va anamnezni kiriting — AI TNM va differentsial ro'yxat beradi.", example: "Ko'krak tugun + CEA↑ → mammografiya + biopsiya tavsiyasi.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "AI Онкология", what: "Оценивает опухолевые и онкологические риски по NCCN/ESMO.", who: "Для планирующих онкологический скрининг.", how: "Введите симптомы, маркеры и анамнез — AI даст TNM и дифдиагноз.", example: "Узел в груди + CEA↑ → маммография + биопсия.", warning: DEFAULT_WARNING.ru },
+    en: { name: "AI Oncology", what: "Evaluates tumor and cancer risks per NCCN/ESMO.", who: "For those considering oncology screening.", how: "Enter symptoms, markers, and history — AI returns TNM and differential.", example: "Breast lump + CEA↑ → mammography + biopsy.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-diabetes": {
+    uz: { name: "AI Qandli Diabet", what: "HbA1c, glyukoza va xavf skoringi bo'yicha ADA/EASD standartlarida yordam.", who: "Diabet, prediabet yoki xavf guruhidagi foydalanuvchilar uchun.", how: "Ko'rsatkichlarni kiriting — AI Time-in-Range va ovqatlanish rejasini beradi.", example: "HbA1c 8.4% → dozani sozlash va parhez tavsiyasi.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "AI Сахарный Диабет", what: "Помощь по HbA1c, глюкозе и риску по стандартам ADA/EASD.", who: "Для пациентов с диабетом, преддиабетом или в группе риска.", how: "Введите показатели — AI даст Time-in-Range и план питания.", example: "HbA1c 8.4% → коррекция дозы и диеты.", warning: DEFAULT_WARNING.ru },
+    en: { name: "AI Diabetes", what: "HbA1c/glucose/risk guidance per ADA/EASD standards.", who: "For diabetes, prediabetes, or at-risk users.", how: "Enter metrics — AI returns Time-in-Range and nutrition plan.", example: "HbA1c 8.4% → dose and diet adjustment.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-orchestrator": {
+    uz: { name: "AI Orchestrator", what: "So'rovingizni tahlil qilib eng mos ixtisoslashgan AI moduliga yo'naltiradi.", who: "Qaysi AI xizmat kerakligini bilmagan foydalanuvchilar uchun.", how: "Muammoni yozing — AI eng mos modulni va muqobil variantni tavsiya qiladi.", example: "'Ko'krak KT tekshiring' → Radiology · Ko'krak KT.", warning: "Orchestrator faqat yo'naltiruvchi — tashxis emas." },
+    ru: { name: "AI Оркестратор", what: "Анализирует запрос и направляет к самому подходящему AI-модулю.", who: "Для тех, кто не знает, какой AI-сервис нужен.", how: "Опишите проблему — AI подберёт модуль и альтернативу.", example: "'Проверьте КТ грудной клетки' → Radiology · Chest CT.", warning: "Оркестратор только направляет — не ставит диагноз." },
+    en: { name: "AI Orchestrator", what: "Analyzes the query and routes to the best specialized AI module.", who: "For users unsure which AI service they need.", how: "Describe the problem — AI recommends a module and alternative.", example: "'Check my chest CT' → Radiology · Chest CT.", warning: "Orchestrator only routes — it does not diagnose." },
+  },
+  "ai-radiology-pulmonology": {
+    uz: { name: "Radiology · Pulmonologiya", what: "Ko'krak rentgen/KT tasvirlarini o'pka patologiyalari bo'yicha AI tahlil.", who: "O'pka shubhasi bo'lgan foydalanuvchilar uchun.", how: "Tasvirni yuklang — AI Fleischner/Lung-RADS bo'yicha xulosa beradi.", example: "Chest X-ray → TB izlari yoki nodul.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · Пульмонология", what: "AI-анализ снимков лёгких (рентген/КТ).", who: "При подозрении на лёгочную патологию.", how: "Загрузите снимок — AI даст Fleischner/Lung-RADS.", example: "Chest X-ray → следы ТБ или узел.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Pulmonology", what: "AI analysis of chest X-ray/CT for lung pathology.", who: "For suspected pulmonary issues.", how: "Upload image — AI returns Fleischner/Lung-RADS.", example: "Chest X-ray → TB or nodule.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-radiology-brain": {
+    uz: { name: "Radiology · Miya", what: "Miya MRT/KT tasvirlari bo'yicha AI tahlil (ASPECTS).", who: "Insult, o'sma yoki bosh og'rig'i shubhasi bilan.", how: "Tasvirni yuklang — AI kortikal va poydevorli patologiyalarni belgilaydi.", example: "MRI → ishemik o'choq yoki atrofiya.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · Мозг", what: "AI-анализ МРТ/КТ мозга (ASPECTS).", who: "При инсульте, опухоли или головной боли.", how: "Загрузите снимок — AI выявит патологии.", example: "МРТ → ишемический очаг или атрофия.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Brain", what: "AI brain MRI/CT analysis (ASPECTS).", who: "For stroke, tumor, or headache workup.", how: "Upload image — AI marks pathologies.", example: "MRI → ischemic focus or atrophy.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-radiology-bone": {
+    uz: { name: "Radiology · Suyak", what: "Suyak-skelet rentgen tahlili (AO/OTA).", who: "Sinish yoki bo'g'im shubhasi bilan.", how: "Rentgenni yuklang — AI kortikal chegara va sinishni belgilaydi.", example: "Bilak rentgen → distal radius sinish.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · Кости", what: "AI-анализ рентгена костей (AO/OTA).", who: "При переломах и болях в суставах.", how: "Загрузите снимок — AI отметит перелом.", example: "Предплечье → перелом лучевой.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Bone", what: "AI bone X-ray analysis (AO/OTA).", who: "For fractures or joint pain.", how: "Upload image — AI marks fracture.", example: "Wrist X-ray → distal radius fracture.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-radiology-chest-ct": {
+    uz: { name: "Radiology · Ko'krak KT", what: "HRCT/CT-PA tasvirlari AI tahlili (Lung-RADS + Fleischner).", who: "PE, nodul, ILD shubhasi bilan.", how: "KT tasvirni yuklang — AI mediastinum va parenximani baholaydi.", example: "HRCT → 8mm nodul, kuzatuv rejasi.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · КТ грудной клетки", what: "AI-анализ HRCT/CT-PA (Lung-RADS + Fleischner).", who: "При ТЭЛА, узле, ILD.", how: "Загрузите КТ — AI оценит средостение и паренхиму.", example: "HRCT → узел 8мм, план наблюдения.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Chest CT", what: "AI HRCT/CT-PA analysis (Lung-RADS + Fleischner).", who: "For PE, nodule, ILD workup.", how: "Upload CT — AI assesses mediastinum and parenchyma.", example: "HRCT → 8mm nodule, follow-up plan.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-radiology-mammography": {
+    uz: { name: "Radiology · Mammografiya", what: "Meme skrining AI tahlili (BI-RADS 0–6).", who: "Meme skriningini o'tayotgan ayollar uchun.", how: "CC va MLO tasvirlarini yuklang — AI kategoriya va tavsiya beradi.", example: "BI-RADS 3 → 6 oydan keyin nazorat.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · Маммография", what: "AI-скрининг молочной железы (BI-RADS 0–6).", who: "Для скрининга молочной железы.", how: "Загрузите CC и MLO — AI даст категорию.", example: "BI-RADS 3 → контроль через 6 мес.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Mammography", what: "AI breast screening (BI-RADS 0–6).", who: "For breast cancer screening.", how: "Upload CC and MLO — AI returns category.", example: "BI-RADS 3 → 6-month follow-up.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-radiology-abdomen": {
+    uz: { name: "Radiology · Qorin", what: "Abdomen CT/MRI AI tahlili (LI-RADS).", who: "Jigar, buyrak, ichak shubhasi bilan.", how: "Tasvirni yuklang — AI organlar bo'yicha xulosa beradi.", example: "CT → jigarda kista, appenditsit rad etildi.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · Живот", what: "AI-анализ КТ/МРТ живота (LI-RADS).", who: "При патологии печени, почек, кишечника.", how: "Загрузите снимок — AI даст заключение.", example: "КТ → киста печени, аппендицит исключён.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Abdomen", what: "AI abdomen CT/MRI analysis (LI-RADS).", who: "For liver, kidney, or bowel workup.", how: "Upload image — AI returns per-organ findings.", example: "CT → liver cyst, appendicitis ruled out.", warning: DEFAULT_WARNING.en },
+  },
+  "ai-radiology-spine": {
+    uz: { name: "Radiology · Umurtqa", what: "Umurtqa MRT/rentgen AI tahlili (Pfirrmann + Meyerding).", who: "Radikulopatiya, disk churrasi shubhasi bilan.", how: "Tasvirni yuklang — AI segmentlarni baholaydi.", example: "L5-S1 → churra, konservativ davolash.", warning: DEFAULT_WARNING.uz },
+    ru: { name: "Radiology · Позвоночник", what: "AI-анализ МРТ/рентгена позвоночника.", who: "При радикулопатии и грыжах.", how: "Загрузите снимок — AI оценит сегменты.", example: "L5-S1 → грыжа, консервативное лечение.", warning: DEFAULT_WARNING.ru },
+    en: { name: "Radiology · Spine", what: "AI spine MRI/X-ray analysis (Pfirrmann + Meyerding).", who: "For radiculopathy or disc herniation.", how: "Upload image — AI evaluates segments.", example: "L5-S1 → herniation, conservative care.", warning: DEFAULT_WARNING.en },
+  },
 };
 
 export function mc(lang: SupportedLanguage, key: string): string {

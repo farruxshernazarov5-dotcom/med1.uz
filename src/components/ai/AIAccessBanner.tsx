@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { AlertCircle, Crown, Lock, Zap } from "lucide-react";
-import { useAiAccess } from "@/hooks/useAiAccess";
+import { AlertCircle, Crown, Lock, Zap, Gift } from "lucide-react";
+import { useAiAccess, FREE_MONTHLY_GRANT } from "@/hooks/useAiAccess";
 import { useCredits } from "@/hooks/useCredits";
 import { useAuth } from "@/hooks/useAuth";
+import { getServiceCreditCost } from "@/data/aiTariffs";
 
 interface AIAccessBannerProps {
   serviceId: string;
@@ -31,11 +32,32 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   const allowed = isServiceAllowed(serviceId);
   const limit = isLimitReached();
   const noCredits = balance <= 0;
+  const cost = getServiceCreditCost(serviceId);
+  const isFreeGrantEligible = cost === 1 && (!access.allowed_services.includes(serviceId) || noCredits);
 
   const tierColor = access.tier === "pro" ? "bg-amber-100 text-amber-800 border-amber-200"
     : access.tier === "premium" ? "bg-purple-100 text-purple-800 border-purple-200"
     : "bg-slate-100 text-slate-700 border-slate-200";
   const tierLabel = access.tier === "pro" ? "Pro" : access.tier === "premium" ? "Premium" : "Bepul";
+
+  /* ─── Free monthly grant notice for 1-Med-Coin services ─── */
+  if (isFreeGrantEligible) {
+    return (
+      <div className="rounded-xl border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <Gift className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="flex-1 text-sm">
+            <div className="font-semibold text-emerald-900 dark:text-emerald-200 mb-0.5">
+              Har oy {FREE_MONTHLY_GRANT} ta bepul so'rov
+            </div>
+            <p className="text-emerald-800 dark:text-emerald-300 text-xs">
+              Ushbu 1 Med Coin xizmatidan har bir foydalanuvchi oyiga {FREE_MONTHLY_GRANT} marta bepul foydalana oladi. Undan keyin Med Coin sarflanadi.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   /* ─── Hard block: service not in plan ─── */
   if (!allowed) {

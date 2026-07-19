@@ -158,6 +158,7 @@ const AIServicesPage = () => {
               </div>
             </div>
           </Link>
+          <div className="mt-2 pl-2"><AIServiceInfoButton serviceId="ai-orchestrator" /></div>
         </div>
       </section>
 
@@ -184,6 +185,7 @@ const AIServicesPage = () => {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-foreground">{s.title}</p>
                       <p className="text-[11px] text-amber-700/80 mt-0.5">{s.tag}</p>
+                      <div className="mt-2"><AIServiceInfoButton serviceId={s.id} /></div>
                     </div>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
@@ -217,6 +219,7 @@ const AIServicesPage = () => {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{s.title}</p>
                       <p className="text-[10px] text-muted-foreground truncate">{s.tag}</p>
+                      <div className="mt-1.5"><AIServiceInfoButton serviceId={s.id} /></div>
                     </div>
                     {locked ? <Lock className="w-3.5 h-3.5 text-amber-600" /> : <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />}
                   </div>

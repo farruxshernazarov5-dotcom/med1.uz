@@ -316,24 +316,65 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       }
     } catch (_) { /* ignore */ }
 
+    /* ─── FREE MONTHLY GRANT: 2 free 1-Med-Coin requests per calendar month ─── */
+    // Applies only to services costing 1 Med Coin. If the plan blocks the service
+    // OR the user has no balance, we still allow up to 2 requests per month at 0 cost.
+    let usedFreeGrantThisMonth = 0;
+    if (creditCost === 1) {
+      try {
+        const monthStart = new Date();
+        monthStart.setUTCDate(1);
+        monthStart.setUTCHours(0, 0, 0, 0);
+        const { count } = await admin
+          .from("ai_usage")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("channel", "free_grant")
+          .gte("created_at", monthStart.toISOString());
+        usedFreeGrantThisMonth = count ?? 0;
+      } catch (_) { /* best-effort */ }
+    }
+
     /* ─── Plan-based limits ─── */
+    let planBlockedService = false;
     try {
       const { data: accessRows } = await admin.rpc("get_user_ai_access", { _user_id: userId });
       const access = Array.isArray(accessRows) ? accessRows[0] : accessRows;
       if (access) {
         const allowed = (access.allowed_services as string[]) || [];
         if (allowed.length > 0 && !allowed.includes(serviceId)) {
-          return { allowed: false, status: 403, error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.` };
+          planBlockedService = true;
+          if (!(creditCost === 1 && usedFreeGrantThisMonth < 2)) {
+            return { allowed: false, status: 403, error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.` };
+          }
         }
         if (typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) {
-          return { allowed: false, status: 429, error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}).` };
+          if (!(creditCost === 1 && usedFreeGrantThisMonth < 2)) {
+            return { allowed: false, status: 429, error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}).` };
+          }
         }
         if (typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit) {
-          return { allowed: false, status: 429, error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}).` };
+          if (!(creditCost === 1 && usedFreeGrantThisMonth < 2)) {
+            return { allowed: false, status: 429, error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}).` };
+          }
         }
       }
     } catch (planErr) {
       console.warn("Plan access check skipped:", planErr);
+    }
+
+    /* ─── Consume free grant (0 credits) when eligible ─── */
+    if (creditCost === 1 && usedFreeGrantThisMonth < 2) {
+      let usageId: string | null = null;
+      try {
+        const { data: ins } = await admin
+          .from("ai_usage")
+          .insert({ user_id: userId, service_id: serviceId, channel: "free_grant", model, cost_credits: 0, status: "success" })
+          .select("id")
+          .single();
+        usageId = ins?.id ?? null;
+      } catch (_) { /* best-effort */ }
+      return { allowed: true, userId, model, maxTokens, creditsDeducted: 0, balanceAfter: -1, usageId, channel: "free_grant" };
     }
 
     /* ─── Atomic deduction via RPC (race-condition safe) ─── */
@@ -348,6 +389,10 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
 
     const row = Array.isArray(deductData) ? deductData[0] : deductData;
     if (!row?.success) {
+      // If service is plan-blocked and no free grant left, prefer that error
+      if (planBlockedService) {
+        return { allowed: false, status: 403, error: "Ushbu xizmat tarifingizda mavjud emas va oylik 2 ta bepul so'rov tugagan. Tarifni yangilang yoki Med Coin sotib oling." };
+      }
       return { allowed: false, status: 402, error: row?.error || "Kredit yetarli emas" };
     }
 

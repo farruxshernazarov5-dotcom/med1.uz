@@ -12,6 +12,14 @@ import {
   Pill,
   Dumbbell,
   Activity,
+  Ribbon,
+  Droplet,
+  Scan,
+  Wind,
+  Brain,
+  Bone as BoneIcon,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 
 /**
@@ -38,6 +46,19 @@ export const AI_SERVICE_TARIFFS = [
   { id: "ai-farmatsevt",      name: "AI Farmatsevt",            icon: Pill,              creditCost: 1,  originalCost: 3,  costTier: "low" as const },
   { id: "ai-fitness",         name: "AI Fitness Murabbiyi",     icon: Dumbbell,          creditCost: 1,  originalCost: 3,  costTier: "low" as const },
   { id: "ai-vital-signs",     name: "AI Vital Signs",           icon: Activity,          creditCost: 25, originalCost: 40, costTier: "high" as const },
+  // Specialized (Narrow) AI
+  { id: "ai-oncology",        name: "AI Onkologiya",            icon: Ribbon,            creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-diabetes",        name: "AI Qandli Diabet",         icon: Droplet,           creditCost: 5,  originalCost: 10, costTier: "mid" as const },
+  // AI Orchestrator (Smart Router)
+  { id: "ai-orchestrator",    name: "AI Orchestrator",          icon: Sparkles,          creditCost: 1,  originalCost: 3,  costTier: "low" as const },
+  // Radiology 2.0 — 7 sub-modules
+  { id: "ai-radiology-pulmonology", name: "Radiology · Pulmonologiya", icon: Wind,       creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-radiology-brain",       name: "Radiology · Miya",           icon: Brain,     creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-radiology-bone",        name: "Radiology · Suyak-Skelet",   icon: BoneIcon,  creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-radiology-chest-ct",    name: "Radiology · Ko'krak KT",     icon: Scan,      creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-radiology-mammography", name: "Radiology · Mammografiya",   icon: Heart,     creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-radiology-abdomen",     name: "Radiology · Qorin",          icon: Layers,    creditCost: 25, originalCost: 40, costTier: "high" as const },
+  { id: "ai-radiology-spine",       name: "Radiology · Umurtqa",        icon: Activity,  creditCost: 25, originalCost: 40, costTier: "high" as const },
 ] as const;
 
 /* ─── Credit Packages (Health Coins) ─── */

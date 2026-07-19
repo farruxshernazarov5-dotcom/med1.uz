@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
+import { AI_SERVICE_TARIFFS, getServiceCreditCost } from "@/data/aiTariffs";
+
+/** Monthly free-grant quota for any 1-Med-Coin service (server-enforced). */
+export const FREE_MONTHLY_GRANT = 2;
 
 export interface AiAccess {
   plan_id: string;
@@ -89,7 +92,10 @@ export function useAiAccess(): AiAccessState {
 
   const isServiceAllowed = useCallback((serviceId: string) => {
     if (!access) return false;
-    return access.allowed_services.includes(serviceId);
+    if (access.allowed_services.includes(serviceId)) return true;
+    // Free monthly grant: any 1-Med-Coin service is unlockable up to 2 times / month.
+    if (getServiceCreditCost(serviceId) === 1) return true;
+    return false;
   }, [access]);
 
   const isLimitReached = useCallback(() => {
