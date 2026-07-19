@@ -184,6 +184,7 @@ const AIServicesPage = () => {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-foreground">{s.title}</p>
                       <p className="text-[11px] text-amber-700/80 mt-0.5">{s.tag}</p>
+                      <div className="mt-2"><AIServiceInfoButton serviceId={s.id} /></div>
                     </div>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
