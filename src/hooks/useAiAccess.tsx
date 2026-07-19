@@ -92,7 +92,10 @@ export function useAiAccess(): AiAccessState {
 
   const isServiceAllowed = useCallback((serviceId: string) => {
     if (!access) return false;
-    return access.allowed_services.includes(serviceId);
+    if (access.allowed_services.includes(serviceId)) return true;
+    // Free monthly grant: any 1-Med-Coin service is unlockable up to 2 times / month.
+    if (getServiceCreditCost(serviceId) === 1) return true;
+    return false;
   }, [access]);
 
   const isLimitReached = useCallback(() => {
