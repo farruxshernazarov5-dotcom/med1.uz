@@ -115,6 +115,56 @@ const SERVICE_META: Record<SvcId, {
     title: { uz: "Sun'iy intellekt hayotiy belgilar monitori", ru: "ИИ-монитор витальных показателей", en: "AI Vital Signs Monitor" },
     desc: { uz: "Yurak urishi, qon bosimi, SpO2 va BMI sun'iy intellekt tahlili", ru: "ЧСС, давление, SpO2 и BMI — анализ ИИ", en: "Heart rate, BP, SpO2 & BMI — AI analysis" },
   },
+  "ai-oncology": {
+    icon: Ribbon, href: "/ai-oncology", color: "from-rose-500 to-purple-600", badge: "new",
+    title: { uz: "AI Onkologiya", ru: "AI Онкология", en: "AI Oncology" },
+    desc: { uz: "NCCN/ESMO bo'yicha ikkinchi tibbiy xulosa, TNM va differentsial", ru: "Второе мнение по NCCN/ESMO, TNM и дифдиагноз", en: "NCCN/ESMO second opinion, TNM and differential" },
+  },
+  "ai-diabetes": {
+    icon: Droplet, href: "/ai-diabetes", color: "from-emerald-500 to-teal-600", badge: "new",
+    title: { uz: "AI Qandli Diabet", ru: "AI Сахарный Диабет", en: "AI Diabetes" },
+    desc: { uz: "ADA/EASD standartlari — HbA1c, glyukoza va xavf tahlili", ru: "Стандарты ADA/EASD — HbA1c, глюкоза, риски", en: "ADA/EASD standards — HbA1c, glucose, risk" },
+  },
+  "ai-orchestrator": {
+    icon: Sparkles, href: "/ai-orchestrator", color: "from-indigo-500 to-fuchsia-500", badge: "new",
+    title: { uz: "AI Orchestrator", ru: "AI Оркестратор", en: "AI Orchestrator" },
+    desc: { uz: "So'rovni tahlil qilib eng mos AI moduliga yo'naltiradi (1 Med Coin)", ru: "Направляет к самому подходящему AI-модулю (1 Med Coin)", en: "Routes to the best specialized AI module (1 Med Coin)" },
+  },
+  "ai-radiology-pulmonology": {
+    icon: Wind, href: "/ai-radiology/pulmonology", color: "from-sky-500 to-cyan-600", badge: "new",
+    title: { uz: "Radiology · Pulmonologiya", ru: "Radiology · Пульмонология", en: "Radiology · Pulmonology" },
+    desc: { uz: "O'pka rentgen/KT tahlili (Fleischner/Lung-RADS)", ru: "Рентген/КТ лёгких (Fleischner/Lung-RADS)", en: "Lung X-ray/CT (Fleischner/Lung-RADS)" },
+  },
+  "ai-radiology-brain": {
+    icon: Brain, href: "/ai-radiology/brain", color: "from-violet-500 to-indigo-600", badge: "new",
+    title: { uz: "Radiology · Miya", ru: "Radiology · Мозг", en: "Radiology · Brain" },
+    desc: { uz: "Miya MRT/KT tahlili (ASPECTS)", ru: "МРТ/КТ мозга (ASPECTS)", en: "Brain MRI/CT (ASPECTS)" },
+  },
+  "ai-radiology-bone": {
+    icon: BoneIcon, href: "/ai-radiology/bone", color: "from-stone-500 to-amber-600", badge: "new",
+    title: { uz: "Radiology · Suyak-Skelet", ru: "Radiology · Кости", en: "Radiology · Bone" },
+    desc: { uz: "Suyak rentgen tahlili (AO/OTA)", ru: "Рентген костей (AO/OTA)", en: "Bone X-ray (AO/OTA)" },
+  },
+  "ai-radiology-chest-ct": {
+    icon: Scan, href: "/ai-radiology/chest-ct", color: "from-blue-500 to-indigo-600", badge: "new",
+    title: { uz: "Radiology · Ko'krak KT", ru: "Radiology · КТ грудной клетки", en: "Radiology · Chest CT" },
+    desc: { uz: "HRCT/CT-PA (Lung-RADS + Fleischner)", ru: "HRCT/CT-PA (Lung-RADS + Fleischner)", en: "HRCT/CT-PA (Lung-RADS + Fleischner)" },
+  },
+  "ai-radiology-mammography": {
+    icon: Heart, href: "/ai-radiology/mammography", color: "from-pink-500 to-rose-600", badge: "new",
+    title: { uz: "Radiology · Mammografiya", ru: "Radiology · Маммография", en: "Radiology · Mammography" },
+    desc: { uz: "Meme skrining (BI-RADS 0–6)", ru: "Скрининг молочной железы (BI-RADS 0–6)", en: "Breast screening (BI-RADS 0–6)" },
+  },
+  "ai-radiology-abdomen": {
+    icon: Layers, href: "/ai-radiology/abdomen", color: "from-emerald-500 to-teal-600", badge: "new",
+    title: { uz: "Radiology · Qorin", ru: "Radiology · Живот", en: "Radiology · Abdomen" },
+    desc: { uz: "Qorin KT/MRI (LI-RADS)", ru: "КТ/МРТ живота (LI-RADS)", en: "Abdomen CT/MRI (LI-RADS)" },
+  },
+  "ai-radiology-spine": {
+    icon: Activity, href: "/ai-radiology/spine", color: "from-fuchsia-500 to-purple-600", badge: "new",
+    title: { uz: "Radiology · Umurtqa", ru: "Radiology · Позвоночник", en: "Radiology · Spine" },
+    desc: { uz: "Umurtqa MRT/rentgen (Pfirrmann + Meyerding)", ru: "МРТ/рентген позвоночника (Pfirrmann + Meyerding)", en: "Spine MRI/X-ray (Pfirrmann + Meyerding)" },
+  },
 };
 
 const SERVICE_ORDER: SvcId[] = [
@@ -122,6 +172,10 @@ const SERVICE_ORDER: SvcId[] = [
   "ai-radiology", "ai-health-assistant", "ai-pregnancy", "ai-baby-care",
   "ai-cosmetology", "ai-dietolog", "ai-psixolog", "ai-farmatsevt",
   "ai-fitness", "ai-vital-signs",
+  "ai-orchestrator", "ai-oncology", "ai-diabetes",
+  "ai-radiology-pulmonology", "ai-radiology-brain", "ai-radiology-bone",
+  "ai-radiology-chest-ct", "ai-radiology-mammography",
+  "ai-radiology-abdomen", "ai-radiology-spine",
 ];
 
 interface Props { slug: string; lang: Lang }
