@@ -23,6 +23,7 @@ import {
   Stethoscope, Bot, FileText, HeartPulse, Eye, UserCheck, Baby, Palette,
   UtensilsCrossed, Heart, Pill, Dumbbell, Activity, Brain,
   Crown, Lock, ArrowRight, Sparkles, Zap, Wallet, ExternalLink, Play,
+  Ribbon, Droplet, Wind, Scan, Bone as BoneIcon, Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
