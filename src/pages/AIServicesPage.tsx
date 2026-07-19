@@ -218,6 +218,7 @@ const AIServicesPage = () => {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{s.title}</p>
                       <p className="text-[10px] text-muted-foreground truncate">{s.tag}</p>
+                      <div className="mt-1.5"><AIServiceInfoButton serviceId={s.id} /></div>
                     </div>
                     {locked ? <Lock className="w-3.5 h-3.5 text-amber-600" /> : <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />}
                   </div>
