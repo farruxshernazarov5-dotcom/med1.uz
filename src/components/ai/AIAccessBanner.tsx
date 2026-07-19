@@ -32,6 +32,8 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   const allowed = isServiceAllowed(serviceId);
   const limit = isLimitReached();
   const noCredits = balance <= 0;
+  const cost = getServiceCreditCost(serviceId);
+  const isFreeGrantEligible = cost === 1 && (!access.allowed_services.includes(serviceId) || noCredits);
 
   const tierColor = access.tier === "pro" ? "bg-amber-100 text-amber-800 border-amber-200"
     : access.tier === "premium" ? "bg-purple-100 text-purple-800 border-purple-200"
