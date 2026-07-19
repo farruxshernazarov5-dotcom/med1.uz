@@ -35,7 +35,11 @@ type SvcId =
   | "symptom-checker" | "ai-doctor-chat" | "ai-report-analysis" | "ai-health-risk"
   | "ai-radiology" | "ai-health-assistant" | "ai-pregnancy" | "ai-baby-care"
   | "ai-cosmetology" | "ai-dietolog" | "ai-psixolog" | "ai-farmatsevt"
-  | "ai-fitness" | "ai-vital-signs";
+  | "ai-fitness" | "ai-vital-signs"
+  | "ai-oncology" | "ai-diabetes" | "ai-orchestrator"
+  | "ai-radiology-pulmonology" | "ai-radiology-brain" | "ai-radiology-bone"
+  | "ai-radiology-chest-ct" | "ai-radiology-mammography"
+  | "ai-radiology-abdomen" | "ai-radiology-spine";
 
 const SERVICE_META: Record<SvcId, {
   icon: any; href: string; color: string; badge: "popular" | "new";
