@@ -158,6 +158,7 @@ const AIServicesPage = () => {
               </div>
             </div>
           </Link>
+          <div className="mt-2 pl-2"><AIServiceInfoButton serviceId="ai-orchestrator" /></div>
         </div>
       </section>
 
