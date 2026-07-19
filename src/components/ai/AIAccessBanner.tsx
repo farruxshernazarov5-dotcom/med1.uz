@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { AlertCircle, Crown, Lock, Zap } from "lucide-react";
-import { useAiAccess } from "@/hooks/useAiAccess";
+import { AlertCircle, Crown, Lock, Zap, Gift } from "lucide-react";
+import { useAiAccess, FREE_MONTHLY_GRANT } from "@/hooks/useAiAccess";
 import { useCredits } from "@/hooks/useCredits";
 import { useAuth } from "@/hooks/useAuth";
+import { getServiceCreditCost } from "@/data/aiTariffs";
 
 interface AIAccessBannerProps {
   serviceId: string;
