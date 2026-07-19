@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
+import { AI_SERVICE_TARIFFS, getServiceCreditCost } from "@/data/aiTariffs";
+
+/** Monthly free-grant quota for any 1-Med-Coin service (server-enforced). */
+export const FREE_MONTHLY_GRANT = 2;
 
 export interface AiAccess {
   plan_id: string;
