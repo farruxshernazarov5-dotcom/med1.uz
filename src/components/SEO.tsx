@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE = "https://med1.uz";
+const SITE = "https://www.med1.uz";
 
 type JsonLd = Record<string, any> | Record<string, any>[];
 

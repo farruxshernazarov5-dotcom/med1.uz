@@ -13,6 +13,7 @@ import medicineHero from "@/assets/medicine-hero.webp";
 import anatomyImg from "@/assets/medicine-anatomy.webp";
 import researchImg from "@/assets/medicine-research.webp";
 import pillsImg from "@/assets/medicine-pills.webp";
+import { SEO } from "@/components/SEO";
 
 const categories = [
   { icon: Brain, title: "Nevrologiya", count: "2,400+", desc: "Nerv tizimi va miya kasalliklari", image: anatomyImg },
@@ -73,6 +74,12 @@ const MedicinePage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Tibbiy entsiklopediya — 20 000+ atama va kasalliklar | Med1.uz"
+        description="Med1.uz tibbiy entsiklopediyasi: kardiologiya, nevrologiya, farmakologiya va genetika bo'yicha 20 000+ atama, kasalliklar va davolash usullari."
+        path="/medicine"
+        ogType="website"
+      />
       <Header />
 
       {/* Hero Section */}
