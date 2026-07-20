@@ -21,10 +21,17 @@ import AnimatedServicesShowcase from "@/components/AnimatedServicesShowcase";
 import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
 import { NearbyMap } from "@/components/geo/NearbyMap";
 import { FuturisticBackground } from "@/components/futuristic";
+import { SEO } from "@/components/SEO";
 
 const Index = () => {
   return (
     <div className="dark cinematic-page relative min-h-screen bg-[hsl(200,50%,6%)] text-[hsl(180,25%,96%)] isolate overflow-hidden">
+      <SEO
+        title="Med1.uz — O'zbekistonning yetakchi raqamli tibbiy portali"
+        description="20 000+ tibbiy atama, kasalliklar ma'lumotlari, klinikalar, dorixonalar, diagnostika markazlari va AI tibbiy maslahat — barchasi bitta platformada."
+        path="/"
+        ogType="website"
+      />
       {/* Single global animated infrastructure layer (fixed, behind everything) */}
       <FuturisticBackground variant="dark" particles={6} aurora className="fixed" />
 

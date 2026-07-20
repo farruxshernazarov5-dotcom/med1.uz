@@ -4,7 +4,7 @@
 import { writeFileSync, readFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://med1.uz";
+const BASE_URL = "https://www.med1.uz";
 
 interface Entry {
   path: string;
@@ -45,6 +45,24 @@ const staticEntries: Entry[] = [
   { path: "/check-in",            changefreq: "monthly", priority: "0.4" },
   { path: "/dashboard",           changefreq: "weekly",  priority: "0.5" },
   { path: "/booking",             changefreq: "weekly",  priority: "0.5" },
+  // Registration flows (previously missing from sitemap)
+  { path: "/clinic-register",       changefreq: "monthly", priority: "0.4" },
+  { path: "/vendor-register",       changefreq: "monthly", priority: "0.4" },
+  { path: "/diagnostics-register",  changefreq: "monthly", priority: "0.4" },
+  { path: "/maternity-register",    changefreq: "monthly", priority: "0.4" },
+  { path: "/dental-register",       changefreq: "monthly", priority: "0.4" },
+  { path: "/pharmacy-register",     changefreq: "monthly", priority: "0.4" },
+  { path: "/doctor-register",       changefreq: "monthly", priority: "0.4" },
+  { path: "/blood-donor-register",  changefreq: "monthly", priority: "0.4" },
+  // Common dashboard role landings (covers /dashboard/:type)
+  { path: "/dashboard/patient",     changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/doctor",      changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/clinic",      changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/pharmacy",    changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/diagnostics", changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/maternity",   changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/dental",      changefreq: "weekly",  priority: "0.4" },
+  { path: "/dashboard/cosmetology", changefreq: "weekly",  priority: "0.4" },
 ];
 
 // ---- Dynamic routes (mirror page data loaders) ----

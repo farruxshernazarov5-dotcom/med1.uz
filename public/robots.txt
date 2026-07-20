@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://med1.uz/sitemap.xml
+Sitemap: https://www.med1.uz/sitemap.xml

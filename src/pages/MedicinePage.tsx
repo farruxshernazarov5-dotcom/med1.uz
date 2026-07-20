@@ -13,6 +13,7 @@ import medicineHero from "@/assets/medicine-hero.webp";
 import anatomyImg from "@/assets/medicine-anatomy.webp";
 import researchImg from "@/assets/medicine-research.webp";
 import pillsImg from "@/assets/medicine-pills.webp";
+import { SEO } from "@/components/SEO";
 
 const categories = [
   { icon: Brain, title: "Nevrologiya", count: "2,400+", desc: "Nerv tizimi va miya kasalliklari", image: anatomyImg },
