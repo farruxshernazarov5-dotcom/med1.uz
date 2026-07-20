@@ -169,11 +169,12 @@ const SERVICE_CREDITS: Record<string, number> = {
 export const MAX_OUTPUT_TOKENS_HARD_CAP = 4096;
  export const MAX_INPUT_TOKENS = 8000;
  
- const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
-   1:  { model: "google/gemini-2.5-flash", maxTokens: 2048 },
-   5:  { model: "google/gemini-2.5-flash", maxTokens: 4096 },
-   25: { model: "google/gemini-2.5-pro",           maxTokens: 4096 },
- };
+const TIER_MODELS: Record<number, { model: string; maxTokens: number }> = {
+  // Oddiy (arzon) savollar → eng tez va arzon model
+  1:  { model: "google/gemini-2.5-flash-lite", maxTokens: 2048 },
+  5:  { model: "google/gemini-2.5-flash",      maxTokens: 4096 },
+  25: { model: "google/gemini-2.5-pro",        maxTokens: 4096 },
+};
  
  /**
   * QISQA, LO'NDA va YAKUNLANGAN javob direktivasi.
