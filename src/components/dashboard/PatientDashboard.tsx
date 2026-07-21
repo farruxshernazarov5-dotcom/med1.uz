@@ -339,6 +339,7 @@ const PatientDashboard = () => {
 
       {/* Main column */}
       <div className="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
+        <HambiMobileBanner />
         {/* Top bar */}
         <header className="shrink-0 bg-card border-b border-border h-14 flex items-center px-4 gap-3">
           <button
