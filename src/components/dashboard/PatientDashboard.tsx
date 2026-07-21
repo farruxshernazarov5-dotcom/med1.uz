@@ -45,6 +45,8 @@ import PatientLegalCenter from "@/components/patient/hms/PatientLegalCenter";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
 import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
+import HambiMobileBanner from "@/components/hambi/HambiMobileBanner";
+
 
 type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
