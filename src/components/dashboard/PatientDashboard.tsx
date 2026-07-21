@@ -45,6 +45,8 @@ import PatientLegalCenter from "@/components/patient/hms/PatientLegalCenter";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
 import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
+import HambiMobileBanner from "@/components/hambi/HambiMobileBanner";
+
 
 type TabId =
   | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
@@ -337,6 +339,7 @@ const PatientDashboard = () => {
 
       {/* Main column */}
       <div className="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
+        <HambiMobileBanner />
         {/* Top bar */}
         <header className="shrink-0 bg-card border-b border-border h-14 flex items-center px-4 gap-3">
           <button
