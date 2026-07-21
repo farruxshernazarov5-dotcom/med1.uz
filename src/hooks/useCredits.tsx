@@ -88,6 +88,11 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
     if (!initializedRef.current) setLoading(true); else setRefreshing(true);
     const t0 = performance.now();
 
+    // Best-effort: claim monthly free 2 Med Coins (idempotent server-side per calendar month)
+    try { await supabase.rpc("grant_monthly_free_coins", { _user_id: user.id }); } catch { /* ignore */ }
+
+
+
     const run = (async () => {
       try {
         const now = new Date().toISOString();
