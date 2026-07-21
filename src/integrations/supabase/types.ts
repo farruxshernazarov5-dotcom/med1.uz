@@ -16136,6 +16136,15 @@ export type Database = {
           used_today: number
         }[]
       }
+      grant_monthly_free_coins: {
+        Args: { _user_id: string }
+        Returns: {
+          amount: number
+          balance_after: number
+          granted: boolean
+          next_grant_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
