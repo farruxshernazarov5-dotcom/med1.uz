@@ -11,16 +11,44 @@
     <meta name="google-site-verification" content="MhOBM-nZP5ncxgsAAktSrShmsIIZjiNykZ54TfWCSJI" />
     <link rel="canonical" href="https://www.med1.uz/" />
     <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XLKVD9C6QL"></script>
+    <!-- Google Analytics — deferred to reduce main-thread blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-XLKVD9C6QL');
+      // Load GA after page becomes interactive
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-XLKVD9C6QL';
+          document.head.appendChild(s);
+        }, 2500);
+      });
     </script>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6028654456405367" crossorigin="anonymous"></script>
+    <!-- AdSense — load on first user interaction to save ~600KiB blocking JS -->
+    <script>
+      (function(){
+        var loaded = false;
+        function loadAds(){
+          if (loaded) return; loaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6028654456405367';
+          document.head.appendChild(s);
+        }
+        ['scroll','mousemove','touchstart','keydown'].forEach(function(e){
+          window.addEventListener(e, loadAds, { once: true, passive: true });
+        });
+        setTimeout(loadAds, 6000);
+      })();
+    </script>
+
 
     <meta property="og:title" content="Med1.uz — O'zbekistonning yetakchi tibbiy portali" />
     <meta property="og:description" content="20,000+ tibbiy atamalar, kasalliklar, klinikalar, dorixonalar va AI tibbiy maslahat — barchasi bir joyda." />
@@ -53,7 +81,7 @@
           "url": "https://med1.uz",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://med1.uz/med1-logo-watermark.png"
+            "url": "https://www.med1.uz/og-image.png"
           }
         },
         "potentialAction": {
