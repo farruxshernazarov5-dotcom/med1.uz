@@ -76,15 +76,20 @@ const DoctorExternalDetailPage = () => {
   const handleReview = async () => {
     if (!user) { toast({ title: "Sharh yozish uchun tizimga kiring", variant: "destructive" }); return; }
     if (!doc || !reviewText.trim()) return;
+    if (!doc.clinic_id) {
+      toast({ title: "Sharh vaqtincha mavjud emas", description: "Bu shifokor hali klinikaga bog'lanmagan", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("reviews").insert({
-      doctor_id: doc.id, patient_id: user.id,
+      doctor_id: doc.id, patient_id: user.id, clinic_id: doc.clinic_id,
       rating: reviewRating, comment: reviewText.trim(), is_approved: false,
     });
     setSubmitting(false);
     if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
     else { toast({ title: "Sharh yuborildi", description: "Moderatsiyadan so'ng ko'rinadi" }); setReviewText(""); }
   };
+
 
   if (loading) return (
     <div className="min-h-screen bg-background"><Header />
