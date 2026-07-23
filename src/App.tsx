@@ -53,6 +53,7 @@ const MaternityRegistrationPage = lazy(() => import("./pages/MaternityRegistrati
 const CosmetologyRegistrationPage = lazy(() => import("./pages/CosmetologyRegistrationPage"));
 const DoctorsPage = lazy(() => import("./pages/DoctorsPage"));
 const DoctorProfilePage = lazy(() => import("./pages/DoctorProfilePage"));
+const DoctorExternalDetailPage = lazy(() => import("./pages/DoctorExternalDetailPage"));
 const DoctorRegistrationPage = lazy(() => import("./pages/DoctorRegistrationPage"));
 const SmartSearchPage = lazy(() => import("./pages/SmartSearchPage"));
 const AIDiagnostikaPage = lazy(() => import("./pages/AIDiagnostikaPage"));
@@ -190,6 +191,7 @@ const App = () => (
                 <Route path="/cosmetology-register" element={<CosmetologyRegistrationPage />} />
                 <Route path="/doctor-register" element={<DoctorRegistrationPage />} />
                 <Route path="/doctors" element={<DoctorsPage />} />
+                <Route path="/doctors/ext/:slug" element={<DoctorExternalDetailPage />} />
                 <Route path="/doctors/:doctorId" element={<DoctorProfilePage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
