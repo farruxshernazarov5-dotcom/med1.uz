@@ -7141,6 +7141,78 @@ export type Database = {
           },
         ]
       }
+      doctors_external: {
+        Row: {
+          bio: string | null
+          clinic_id: string | null
+          created_at: string
+          experience: number | null
+          id: string
+          languages: string[] | null
+          name: string
+          photo_url: string | null
+          primary_region: string | null
+          primary_specialty: string | null
+          rank: string | null
+          rating: number | null
+          reviews_count: number | null
+          services: string[] | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          experience?: number | null
+          id: string
+          languages?: string[] | null
+          name: string
+          photo_url?: string | null
+          primary_region?: string | null
+          primary_specialty?: string | null
+          rank?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          services?: string[] | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          experience?: number | null
+          id?: string
+          languages?: string[] | null
+          name?: string
+          photo_url?: string | null
+          primary_region?: string | null
+          primary_specialty?: string | null
+          rank?: string | null
+          rating?: number | null
+          reviews_count?: number | null
+          services?: string[] | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctors_external_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctors_external_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "registered_clinics_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_verifications: {
         Row: {
           clinic_id: string | null

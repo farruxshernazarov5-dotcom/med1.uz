@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import DoctorRecommendations from "@/components/DoctorRecommendations";
 import Breadcrumb from "@/components/Breadcrumb";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
 import { Button } from "@/components/ui/button";
@@ -347,6 +348,7 @@ const AICosmetologyPage = () => {
             </CardContent>
           </Card>
         )}
+        <DoctorRecommendations specialty={["Дерматолог","Косметолог"]} title="Kosmetolog va dermatologlar" />
       </main>
       <Footer />
     </div>

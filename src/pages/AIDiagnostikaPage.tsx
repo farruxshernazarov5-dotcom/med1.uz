@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
+import DoctorRecommendations from "@/components/DoctorRecommendations";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -294,6 +295,10 @@ const AIDiagnostikaPage = () => {
           </div>
         </div>
       </section>
+
+      <div className="container mx-auto px-4 max-w-6xl pb-8">
+        <DoctorRecommendations specialty={["Терапевт","Радиолог","УЗИ-специалист"]} title="Natija bo'yicha tegishli shifokorlar" />
+      </div>
 
       <Footer />
     </div>
