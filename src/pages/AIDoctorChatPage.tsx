@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import DoctorRecommendations from "@/components/DoctorRecommendations";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -210,6 +211,10 @@ const AIDoctorChatPage = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4 max-w-5xl pb-8">
+        <DoctorRecommendations title="AI tavsiyasidan keyin — jonli shifokor bilan bog'laning" />
       </div>
 
       <Footer />

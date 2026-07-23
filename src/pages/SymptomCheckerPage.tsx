@@ -2,6 +2,7 @@ import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import DoctorRecommendations from "@/components/DoctorRecommendations";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Brain, AlertTriangle, Shield, Activity } from "lucide-react";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
@@ -158,7 +159,15 @@ const SymptomCheckerPage = () => {
             />
           )}
           {step === "results" && analysis && (
-            <SymptomResults analysis={analysis} onReset={handleReset} />
+            <>
+              <SymptomResults analysis={analysis} onReset={handleReset} />
+              <DoctorRecommendations
+                specialty={(analysis as any)?.recommended_specialties?.length
+                  ? (analysis as any).recommended_specialties
+                  : ["Терапевт"]}
+                title="Simptomlaringizga mos shifokorlar"
+              />
+            </>
           )}
         </div>
       </section>
