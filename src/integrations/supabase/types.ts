@@ -16138,6 +16138,7 @@ export type Database = {
         Args: { _referral_id: string }
         Returns: undefined
       }
+      bulk_update_doctor_coords: { Args: { p: Json }; Returns: number }
       deduct_ai_credits: {
         Args: {
           _channel?: string
