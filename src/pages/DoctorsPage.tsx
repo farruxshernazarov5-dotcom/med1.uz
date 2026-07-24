@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -11,7 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Search, Star, Stethoscope, Filter, X, Award, MapPin } from "lucide-react";
+import { Search, Star, Stethoscope, Filter, X, Award, MapPin, Building2, Map as MapIcon } from "lucide-react";
+import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 
 const SPECIALTIES = [
   "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
