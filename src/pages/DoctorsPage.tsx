@@ -37,18 +37,36 @@ interface Doctor {
 }
 
 const DoctorsPage = () => {
+  const [params, setParams] = useSearchParams();
+  const clinicIdParam = params.get("clinic") || "";
+  const clinicNameParam = params.get("clinic_name") || "";
+
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [serviceQuery, setServiceQuery] = useState("");
   const [specialty, setSpecialty] = useState<string>("all");
   const [region, setRegion] = useState<string>("all");
   const [minRating, setMinRating] = useState<string>("0");
   const [minExp, setMinExp] = useState<string>("0");
+  const [sortBy, setSortBy] = useState<string>("rating");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [clinicName, setClinicName] = useState<string>("");
 
-  useEffect(() => { setPage(0); }, [search, specialty, region, minRating, minExp]);
+  useEffect(() => { setPage(0); }, [search, specialty, region, minRating, minExp, serviceQuery, sortBy, clinicIdParam, clinicNameParam]);
+
+  // If ?clinic=<uuid> present, fetch clinic name for header
+  useEffect(() => {
+    if (!clinicIdParam) { setClinicName(""); return; }
+    (async () => {
+      const { data } = await supabase.from("registered_clinics")
+        .select("name").eq("id", clinicIdParam).maybeSingle();
+      setClinicName(data?.name || "");
+    })();
+  }, [clinicIdParam]);
 
   useEffect(() => {
     let cancelled = false;
@@ -57,16 +75,23 @@ const DoctorsPage = () => {
       let q = supabase
         .from("doctors_external")
         .select("id,slug,name,rank,experience,photo_url,rating,reviews_count,primary_specialty,primary_region,clinic_id", { count: "exact" })
-        .order("rating", { ascending: false })
-        .order("reviews_count", { ascending: false })
         .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
+      // Sort
+      if (sortBy === "experience")   q = q.order("experience", { ascending: false, nullsFirst: false });
+      else if (sortBy === "reviews") q = q.order("reviews_count", { ascending: false, nullsFirst: false });
+      else if (sortBy === "name")    q = q.order("name", { ascending: true });
+      else q = q.order("rating", { ascending: false, nullsFirst: false }).order("reviews_count", { ascending: false, nullsFirst: false });
+
+      if (clinicIdParam) q = q.eq("clinic_id", clinicIdParam);
       if (specialty !== "all") q = q.eq("primary_specialty", specialty);
       if (region !== "all") q = q.eq("primary_region", region);
       const r = parseFloat(minRating); if (r > 0) q = q.gte("rating", r);
       const e = parseInt(minExp, 10); if (e > 0) q = q.gte("experience", e);
       const s = search.trim();
       if (s.length >= 2) q = q.ilike("name", `%${s}%`);
+      const sv = serviceQuery.trim();
+      if (sv.length >= 2) q = q.contains("services", [sv]);
 
       const { data, count } = await q;
       if (!cancelled) {
@@ -76,12 +101,13 @@ const DoctorsPage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [search, specialty, region, minRating, minExp, page]);
+  }, [search, specialty, region, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page]);
 
   const clearFilters = () => {
-    setSearch(""); setSpecialty("all"); setRegion("all"); setMinRating("0"); setMinExp("0");
+    setSearch(""); setSpecialty("all"); setRegion("all"); setMinRating("0"); setMinExp("0"); setServiceQuery("");
+    if (clinicIdParam) { params.delete("clinic"); setParams(params); }
   };
-  const filtersActive = specialty !== "all" || region !== "all" || minRating !== "0" || minExp !== "0" || search.length > 0;
+  const filtersActive = specialty !== "all" || region !== "all" || minRating !== "0" || minExp !== "0" || search.length > 0 || serviceQuery.length > 0 || !!clinicIdParam;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
