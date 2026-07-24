@@ -15,6 +15,7 @@ import clinicStateImg from "@/assets/clinic-state.webp";
 import clinicPolyclinicImg from "@/assets/clinic-polyclinic.webp";
 import clinicEmergencyImg from "@/assets/clinic-emergency.webp";
 import type { Clinic } from "@/data/clinics";
+import ClinicDoctorsSection from "@/components/doctors/ClinicDoctorsSection";
 
 const getClinicImage = (type: Clinic["type"]) => {
   if (type === "xususiy") return clinicPrivateImg;
@@ -187,6 +188,11 @@ const ClinicDetailPage = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Doctors linked/related to this clinic */}
+      <ClinicDoctorsSection clinicId={clinic.id} clinicName={clinic.name} city={clinic.city} />
+
+
 
       {/* Amenities */}
       {clinic.amenities.length > 0 && (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -11,7 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Search, Star, Stethoscope, Filter, X, Award, MapPin } from "lucide-react";
+import { Search, Star, Stethoscope, Filter, X, Award, MapPin, Building2, Map as MapIcon } from "lucide-react";
+import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 
 const SPECIALTIES = [
   "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
@@ -36,18 +37,36 @@ interface Doctor {
 }
 
 const DoctorsPage = () => {
+  const [params, setParams] = useSearchParams();
+  const clinicIdParam = params.get("clinic") || "";
+  const clinicNameParam = params.get("clinic_name") || "";
+
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [specialty, setSpecialty] = useState<string>("all");
-  const [region, setRegion] = useState<string>("all");
+  const [search, setSearch] = useState(params.get("q") || "");
+  const [serviceQuery, setServiceQuery] = useState(params.get("service") || "");
+  const [specialty, setSpecialty] = useState<string>(params.get("specialty") || "all");
+  const [region, setRegion] = useState<string>(params.get("region") || "all");
   const [minRating, setMinRating] = useState<string>("0");
   const [minExp, setMinExp] = useState<string>("0");
+  const [sortBy, setSortBy] = useState<string>("rating");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [clinicName, setClinicName] = useState<string>("");
 
-  useEffect(() => { setPage(0); }, [search, specialty, region, minRating, minExp]);
+  useEffect(() => { setPage(0); }, [search, specialty, region, minRating, minExp, serviceQuery, sortBy, clinicIdParam, clinicNameParam]);
+
+  // If ?clinic=<uuid> present, fetch clinic name for header
+  useEffect(() => {
+    if (!clinicIdParam) { setClinicName(""); return; }
+    (async () => {
+      const { data } = await supabase.from("registered_clinics")
+        .select("name").eq("id", clinicIdParam).maybeSingle();
+      setClinicName(data?.name || "");
+    })();
+  }, [clinicIdParam]);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,16 +75,23 @@ const DoctorsPage = () => {
       let q = supabase
         .from("doctors_external")
         .select("id,slug,name,rank,experience,photo_url,rating,reviews_count,primary_specialty,primary_region,clinic_id", { count: "exact" })
-        .order("rating", { ascending: false })
-        .order("reviews_count", { ascending: false })
         .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
+      // Sort
+      if (sortBy === "experience")   q = q.order("experience", { ascending: false, nullsFirst: false });
+      else if (sortBy === "reviews") q = q.order("reviews_count", { ascending: false, nullsFirst: false });
+      else if (sortBy === "name")    q = q.order("name", { ascending: true });
+      else q = q.order("rating", { ascending: false, nullsFirst: false }).order("reviews_count", { ascending: false, nullsFirst: false });
+
+      if (clinicIdParam) q = q.eq("clinic_id", clinicIdParam);
       if (specialty !== "all") q = q.eq("primary_specialty", specialty);
       if (region !== "all") q = q.eq("primary_region", region);
       const r = parseFloat(minRating); if (r > 0) q = q.gte("rating", r);
       const e = parseInt(minExp, 10); if (e > 0) q = q.gte("experience", e);
       const s = search.trim();
       if (s.length >= 2) q = q.ilike("name", `%${s}%`);
+      const sv = serviceQuery.trim();
+      if (sv.length >= 2) q = q.contains("services", [sv]);
 
       const { data, count } = await q;
       if (!cancelled) {
@@ -75,12 +101,13 @@ const DoctorsPage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [search, specialty, region, minRating, minExp, page]);
+  }, [search, specialty, region, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page]);
 
   const clearFilters = () => {
-    setSearch(""); setSpecialty("all"); setRegion("all"); setMinRating("0"); setMinExp("0");
+    setSearch(""); setSpecialty("all"); setRegion("all"); setMinRating("0"); setMinExp("0"); setServiceQuery("");
+    if (clinicIdParam) { params.delete("clinic"); setParams(params); }
   };
-  const filtersActive = specialty !== "all" || region !== "all" || minRating !== "0" || minExp !== "0" || search.length > 0;
+  const filtersActive = specialty !== "all" || region !== "all" || minRating !== "0" || minExp !== "0" || search.length > 0 || serviceQuery.length > 0 || !!clinicIdParam;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
@@ -102,6 +129,14 @@ const DoctorsPage = () => {
             <p className="text-muted-foreground mt-2 text-sm">
               Med1.uz — {total.toLocaleString()} ta mutaxassis, filtr va batafsil ma'lumot
             </p>
+            {(clinicName || clinicNameParam) && (
+              <div className="mt-3 inline-flex items-center gap-2 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+                <Building2 className="w-3.5 h-3.5" />
+                Klinika filtri: <b>{clinicName || clinicNameParam}</b>
+                <button onClick={() => { params.delete("clinic"); params.delete("clinic_name"); setParams(params); }}
+                  className="ml-1 hover:opacity-70"><X className="w-3 h-3" /></button>
+              </div>
+            )}
           </div>
 
           <div className="max-w-3xl mx-auto">
@@ -113,17 +148,18 @@ const DoctorsPage = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-12 h-12 rounded-xl bg-card"
               />
-              <Button
-                variant="ghost" size="sm"
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="w-4 h-4 mr-1" /> Filtr
-              </Button>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <Button variant={showMap ? "default" : "ghost"} size="sm" onClick={() => setShowMap(!showMap)}>
+                  <MapIcon className="w-4 h-4 mr-1" /> Xarita
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)}>
+                  <Filter className="w-4 h-4 mr-1" /> Filtr
+                </Button>
+              </div>
             </div>
 
             {showFilters && (
-              <div className="mt-3 p-4 bg-card rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="mt-3 p-4 bg-card rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <Select value={specialty} onValueChange={setSpecialty}>
                   <SelectTrigger><SelectValue placeholder="Mutaxassislik" /></SelectTrigger>
                   <SelectContent className="max-h-80">
@@ -158,6 +194,26 @@ const DoctorsPage = () => {
                     <SelectItem value="20">20+ yil</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger><SelectValue placeholder="Saralash" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rating">Reyting bo'yicha</SelectItem>
+                    <SelectItem value="experience">Tajriba bo'yicha</SelectItem>
+                    <SelectItem value="reviews">Sharhlar soni bo'yicha</SelectItem>
+                    <SelectItem value="name">Alifbo tartibida</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="Xizmat (masalan: EKG, UZI)"
+                  value={serviceQuery}
+                  onChange={(e) => setServiceQuery(e.target.value)}
+                />
+              </div>
+            )}
+
+            {showMap && (
+              <div className="mt-4">
+                <NearbyDoctorsMap specialty={specialty !== "all" ? specialty : undefined} height={360} />
               </div>
             )}
           </div>
