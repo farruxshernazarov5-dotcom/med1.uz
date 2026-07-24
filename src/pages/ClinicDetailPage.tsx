@@ -189,6 +189,11 @@ const ClinicDetailPage = () => {
         </Card>
       )}
 
+      {/* Doctors linked/related to this clinic */}
+      <ClinicDoctorsSection clinicId={clinic.id} clinicName={clinic.name} city={clinic.city} />
+
+
+
       {/* Amenities */}
       {clinic.amenities.length > 0 && (
         <Card className="mb-6">
