@@ -129,6 +129,14 @@ const DoctorsPage = () => {
             <p className="text-muted-foreground mt-2 text-sm">
               Med1.uz — {total.toLocaleString()} ta mutaxassis, filtr va batafsil ma'lumot
             </p>
+            {(clinicName || clinicNameParam) && (
+              <div className="mt-3 inline-flex items-center gap-2 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+                <Building2 className="w-3.5 h-3.5" />
+                Klinika filtri: <b>{clinicName || clinicNameParam}</b>
+                <button onClick={() => { params.delete("clinic"); params.delete("clinic_name"); setParams(params); }}
+                  className="ml-1 hover:opacity-70"><X className="w-3 h-3" /></button>
+              </div>
+            )}
           </div>
 
           <div className="max-w-3xl mx-auto">
@@ -140,17 +148,18 @@ const DoctorsPage = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-12 h-12 rounded-xl bg-card"
               />
-              <Button
-                variant="ghost" size="sm"
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="w-4 h-4 mr-1" /> Filtr
-              </Button>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <Button variant={showMap ? "default" : "ghost"} size="sm" onClick={() => setShowMap(!showMap)}>
+                  <MapIcon className="w-4 h-4 mr-1" /> Xarita
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)}>
+                  <Filter className="w-4 h-4 mr-1" /> Filtr
+                </Button>
+              </div>
             </div>
 
             {showFilters && (
-              <div className="mt-3 p-4 bg-card rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="mt-3 p-4 bg-card rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <Select value={specialty} onValueChange={setSpecialty}>
                   <SelectTrigger><SelectValue placeholder="Mutaxassislik" /></SelectTrigger>
                   <SelectContent className="max-h-80">
@@ -185,6 +194,26 @@ const DoctorsPage = () => {
                     <SelectItem value="20">20+ yil</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger><SelectValue placeholder="Saralash" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rating">Reyting bo'yicha</SelectItem>
+                    <SelectItem value="experience">Tajriba bo'yicha</SelectItem>
+                    <SelectItem value="reviews">Sharhlar soni bo'yicha</SelectItem>
+                    <SelectItem value="name">Alifbo tartibida</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="Xizmat (masalan: EKG, UZI)"
+                  value={serviceQuery}
+                  onChange={(e) => setServiceQuery(e.target.value)}
+                />
+              </div>
+            )}
+
+            {showMap && (
+              <div className="mt-4">
+                <NearbyDoctorsMap specialty={specialty !== "all" ? specialty : undefined} height={360} />
               </div>
             )}
           </div>
