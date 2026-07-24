@@ -14,6 +14,8 @@ import {
   Stethoscope, Star, MapPin, Award, Languages, ChevronLeft,
   Building2, Calendar, MessageCircle, Send, ShieldCheck,
 } from "lucide-react";
+import RecommendedAnalyses from "@/components/doctors/RecommendedAnalyses";
+import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 
 interface Doctor {
   id: string; slug: string; name: string; rank: string | null;
