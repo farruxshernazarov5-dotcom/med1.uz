@@ -44,10 +44,10 @@ const DoctorsPage = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [serviceQuery, setServiceQuery] = useState("");
-  const [specialty, setSpecialty] = useState<string>("all");
-  const [region, setRegion] = useState<string>("all");
+  const [search, setSearch] = useState(params.get("q") || "");
+  const [serviceQuery, setServiceQuery] = useState(params.get("service") || "");
+  const [specialty, setSpecialty] = useState<string>(params.get("specialty") || "all");
+  const [region, setRegion] = useState<string>(params.get("region") || "all");
   const [minRating, setMinRating] = useState<string>("0");
   const [minExp, setMinExp] = useState<string>("0");
   const [sortBy, setSortBy] = useState<string>("rating");
