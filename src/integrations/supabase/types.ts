@@ -7149,6 +7149,8 @@ export type Database = {
           experience: number | null
           id: string
           languages: string[] | null
+          latitude: number | null
+          longitude: number | null
           name: string
           photo_url: string | null
           primary_region: string | null
@@ -7167,6 +7169,8 @@ export type Database = {
           experience?: number | null
           id: string
           languages?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
           name: string
           photo_url?: string | null
           primary_region?: string | null
@@ -7185,6 +7189,8 @@ export type Database = {
           experience?: number | null
           id?: string
           languages?: string[] | null
+          latitude?: number | null
+          longitude?: number | null
           name?: string
           photo_url?: string | null
           primary_region?: string | null
