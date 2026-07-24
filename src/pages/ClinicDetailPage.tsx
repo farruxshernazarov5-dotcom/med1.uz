@@ -15,6 +15,7 @@ import clinicStateImg from "@/assets/clinic-state.webp";
 import clinicPolyclinicImg from "@/assets/clinic-polyclinic.webp";
 import clinicEmergencyImg from "@/assets/clinic-emergency.webp";
 import type { Clinic } from "@/data/clinics";
+import ClinicDoctorsSection from "@/components/doctors/ClinicDoctorsSection";
 
 const getClinicImage = (type: Clinic["type"]) => {
   if (type === "xususiy") return clinicPrivateImg;
