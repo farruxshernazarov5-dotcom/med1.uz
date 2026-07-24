@@ -11,9 +11,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  const url = Deno.env.get('SUPABASE_URL')!;
-  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const sb = createClient(url, key);
+  const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
   const body = await req.json() as Array<{ id: string; lat: number; lon: number }>;
   if (!Array.isArray(body)) {
@@ -23,22 +21,17 @@ Deno.serve(async (req) => {
   }
 
   let updated = 0;
-  const BATCH = 500;
+  const BATCH = 1000;
   for (let i = 0; i < body.length; i += BATCH) {
-    const chunk = body.slice(i, i + BATCH);
-    const values = chunk
-      .filter(r => r.id && Number.isFinite(r.lat) && Number.isFinite(r.lon))
-      .map(r => `('${r.id}'::uuid,${r.lat},${r.lon})`)
-      .join(',');
-    if (!values) continue;
-    const sql = `UPDATE public.doctors_external d SET latitude=v.lat, longitude=v.lon FROM (VALUES ${values}) AS v(id,lat,lon) WHERE d.id=v.id`;
-    const { error } = await sb.rpc('exec_admin_sql', { p_sql: sql });
+    const chunk = body.slice(i, i + BATCH).filter(r => r.id && Number.isFinite(r.lat) && Number.isFinite(r.lon));
+    if (!chunk.length) continue;
+    const { data, error } = await sb.rpc('bulk_update_doctor_coords', { p: chunk });
     if (error) {
       return new Response(JSON.stringify({ error: error.message, at: i }), {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    updated += chunk.length;
+    updated += (data as number) ?? chunk.length;
   }
 
   return new Response(JSON.stringify({ ok: true, updated }), {
