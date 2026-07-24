@@ -185,10 +185,24 @@ const DoctorExternalDetailPage = () => {
               <div className="bg-card rounded-2xl border p-6">
                 <h2 className="font-heading font-bold text-lg mb-3">Xizmatlar</h2>
                 <div className="flex flex-wrap gap-2">
-                  {doc.services.map((s, i) => <Badge key={i} variant="secondary">{s}</Badge>)}
+                  {doc.services.map((s, i) => (
+                    <Link key={i} to={`/doctors?service=${encodeURIComponent(s)}`}>
+                      <Badge variant="secondary" className="cursor-pointer hover:bg-primary/20">{s}</Badge>
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}
+
+            <RecommendedAnalyses specialty={doc.primary_specialty} />
+
+            <div className="bg-card rounded-2xl border p-6">
+              <h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary" /> Yaqin atrofdagi shifokorlar
+              </h2>
+              <NearbyDoctorsMap specialty={doc.primary_specialty || undefined} height={340} />
+            </div>
+
 
             <div className="bg-card rounded-2xl border p-6">
               <h2 className="font-heading font-bold text-lg mb-4">Sharhlar ({reviews.length})</h2>
