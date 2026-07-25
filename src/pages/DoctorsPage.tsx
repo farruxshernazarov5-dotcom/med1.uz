@@ -1,18 +1,21 @@
-import { useState, useEffect, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Search, Star, Stethoscope, Filter, X, Award, MapPin, Building2, Map as MapIcon } from "lucide-react";
+import { Search, Stethoscope, Filter, X, Map as MapIcon, Sparkles, Heart, Building2 } from "lucide-react";
 import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
+import DoctorCard, { DoctorCardData } from "@/components/doctors/DoctorCard";
+import CuratedSections from "@/components/doctors/CuratedSections";
+import CompareBar from "@/components/doctors/CompareBar";
+import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
 
 const SPECIALTIES = [
   "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
@@ -26,39 +29,45 @@ const REGIONS = [
   "Наманганская область","Хорезмская область","Джизакская область",
   "Ферганская область","Каракалпакстан","Навоийская область","Сурхандарьинская область",
 ];
-const PAGE_SIZE = 60;
-
-interface Doctor {
-  id: string; slug: string; name: string; rank: string | null;
-  experience: number | null; photo_url: string | null;
-  rating: number | null; reviews_count: number | null;
-  primary_specialty: string | null; primary_region: string | null;
-  clinic_id: string | null;
-}
+const LANGUAGES = ["Ўзбек","Русский","English","Тоҷикӣ","Türkçe","العربية"];
+const PAGE_SIZE = 24;
+const SELECT = "id,slug,name,rank,experience,photo_url,rating,reviews_count,primary_specialty,primary_region,clinic_id,languages";
 
 const DoctorsPage = () => {
   const [params, setParams] = useSearchParams();
   const clinicIdParam = params.get("clinic") || "";
   const clinicNameParam = params.get("clinic_name") || "";
+  const initialSpecialty = params.get("specialty") || "all";
+  const initialQ = params.get("q") || "";
 
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<DoctorCardData[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState(params.get("q") || "");
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState(initialQ);
   const [serviceQuery, setServiceQuery] = useState(params.get("service") || "");
-  const [specialty, setSpecialty] = useState<string>(params.get("specialty") || "all");
+  const [specialty, setSpecialty] = useState<string>(initialSpecialty);
   const [region, setRegion] = useState<string>(params.get("region") || "all");
+  const [language, setLanguage] = useState<string>("all");
   const [minRating, setMinRating] = useState<string>("0");
   const [minExp, setMinExp] = useState<string>("0");
   const [sortBy, setSortBy] = useState<string>("rating");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [onlyFavs, setOnlyFavs] = useState(false);
   const [clinicName, setClinicName] = useState<string>("");
 
-  useEffect(() => { setPage(0); }, [search, specialty, region, minRating, minExp, serviceQuery, sortBy, clinicIdParam, clinicNameParam]);
+  const fav = useDoctorFavorites();
 
-  // If ?clinic=<uuid> present, fetch clinic name for header
+  const filtersActive =
+    specialty !== "all" || region !== "all" || language !== "all" ||
+    minRating !== "0" || minExp !== "0" ||
+    search.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
+
+  const isBrowsing = filtersActive; // show list only when user searches/filters
+
+  useEffect(() => { setPage(0); }, [search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, onlyFavs]);
+
   useEffect(() => {
     if (!clinicIdParam) { setClinicName(""); return; }
     (async () => {
@@ -69,15 +78,15 @@ const DoctorsPage = () => {
   }, [clinicIdParam]);
 
   useEffect(() => {
+    if (!isBrowsing) { setDoctors([]); setTotal(0); return; }
     let cancelled = false;
     (async () => {
       setLoading(true);
       let q = supabase
         .from("doctors_external")
-        .select("id,slug,name,rank,experience,photo_url,rating,reviews_count,primary_specialty,primary_region,clinic_id", { count: "exact" })
+        .select(SELECT, { count: "exact" })
         .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
-      // Sort
       if (sortBy === "experience")   q = q.order("experience", { ascending: false, nullsFirst: false });
       else if (sortBy === "reviews") q = q.order("reviews_count", { ascending: false, nullsFirst: false });
       else if (sortBy === "name")    q = q.order("name", { ascending: true });
@@ -86,6 +95,11 @@ const DoctorsPage = () => {
       if (clinicIdParam) q = q.eq("clinic_id", clinicIdParam);
       if (specialty !== "all") q = q.eq("primary_specialty", specialty);
       if (region !== "all") q = q.eq("primary_region", region);
+      if (language !== "all") q = q.contains("languages", [language]);
+      if (onlyFavs) {
+        if (fav.ids.length === 0) { setDoctors([]); setTotal(0); setLoading(false); return; }
+        q = q.in("id", fav.ids);
+      }
       const r = parseFloat(minRating); if (r > 0) q = q.gte("rating", r);
       const e = parseInt(minExp, 10); if (e > 0) q = q.gte("experience", e);
       const s = search.trim();
@@ -95,44 +109,48 @@ const DoctorsPage = () => {
 
       const { data, count } = await q;
       if (!cancelled) {
-        setDoctors((data as Doctor[]) || []);
+        setDoctors((data as DoctorCardData[]) || []);
         setTotal(count || 0);
         setLoading(false);
       }
     })();
     return () => { cancelled = true; };
-  }, [search, specialty, region, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page]);
+  }, [isBrowsing, search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
 
   const clearFilters = () => {
-    setSearch(""); setSpecialty("all"); setRegion("all"); setMinRating("0"); setMinExp("0"); setServiceQuery("");
-    if (clinicIdParam) { params.delete("clinic"); setParams(params); }
+    setSearch(""); setSpecialty("all"); setRegion("all"); setLanguage("all");
+    setMinRating("0"); setMinExp("0"); setServiceQuery(""); setOnlyFavs(false);
+    if (clinicIdParam) { params.delete("clinic"); params.delete("clinic_name"); setParams(params); }
   };
-  const filtersActive = specialty !== "all" || region !== "all" || minRating !== "0" || minExp !== "0" || search.length > 0 || serviceQuery.length > 0 || !!clinicIdParam;
+
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Shifokorlar katalogi — 4800+ mutaxassis | Med1.uz"
-        description="O'zbekiston bo'ylab tasdiqlangan shifokorlar. Mutaxassislik, region, reyting va tajriba bo'yicha filtrlab toping."
+        title="Shifokorlar — 4800+ mutaxassisni AI yordamida toping | Med1.uz"
+        description="O'zbekistondagi eng yaxshi shifokorlar. Mutaxassislik, tajriba, reyting, hudud va til bo'yicha AI yordamida toping. Onlayn qabulga yozilish."
         path="/doctors"
       />
       <Header />
 
-      <section className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-10 md:py-14">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-hero-gradient flex items-center justify-center mx-auto mb-3">
-              <Stethoscope className="w-7 h-7 text-primary-foreground" />
+      {/* HERO */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-10 md:py-16">
+        <div className="absolute inset-0 bg-grid-tech opacity-30 pointer-events-none" />
+        <div className="container mx-auto px-4 max-w-6xl relative">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-hero-gradient flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Stethoscope className="w-8 h-8 text-primary-foreground" />
             </div>
-            <h1 className="font-heading text-3xl md:text-4xl font-bold">Shifokorlar</h1>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Med1.uz — {total.toLocaleString()} ta mutaxassis, filtr va batafsil ma'lumot
+            <h1 className="font-heading text-3xl md:text-5xl font-bold">Shifokorni toping</h1>
+            <p className="text-muted-foreground mt-3 text-base max-w-2xl mx-auto">
+              4800+ tasdiqlangan mutaxassis. AI yordamida o'zingizga eng mos shifokorni tanlang, taqqoslang va onlayn qabulga yoziling.
             </p>
+
             {(clinicName || clinicNameParam) && (
-              <div className="mt-3 inline-flex items-center gap-2 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+              <div className="mt-4 inline-flex items-center gap-2 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 <Building2 className="w-3.5 h-3.5" />
-                Klinika filtri: <b>{clinicName || clinicNameParam}</b>
+                Klinika: <b>{clinicName || clinicNameParam}</b>
                 <button onClick={() => { params.delete("clinic"); params.delete("clinic_name"); setParams(params); }}
                   className="ml-1 hover:opacity-70"><X className="w-3 h-3" /></button>
               </div>
@@ -143,23 +161,41 @@ const DoctorsPage = () => {
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                placeholder="Shifokor ismi bo'yicha qidiring..."
+                placeholder="Shifokor ismi, mutaxassislik yoki xizmat..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-12 h-12 rounded-xl bg-card"
+                className="pl-12 pr-2 h-14 rounded-2xl bg-card shadow-md text-base"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <Button variant={showMap ? "default" : "ghost"} size="sm" onClick={() => setShowMap(!showMap)}>
+                <Button variant={showMap ? "default" : "ghost"} size="sm" onClick={() => setShowMap(!showMap)} className="hidden sm:flex">
                   <MapIcon className="w-4 h-4 mr-1" /> Xarita
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)}>
+                <Button variant={showFilters ? "default" : "ghost"} size="sm" onClick={() => setShowFilters(!showFilters)}>
                   <Filter className="w-4 h-4 mr-1" /> Filtr
                 </Button>
               </div>
             </div>
 
+            {/* Quick chips */}
+            <div className="flex flex-wrap gap-2 mt-4 justify-center">
+              <button onClick={() => window.location.href = "/smart-search"}
+                className="text-xs px-3 py-1.5 rounded-full bg-hero-gradient text-primary-foreground hover:opacity-90 flex items-center gap-1.5 shadow-sm">
+                <Sparkles className="w-3 h-3" /> AI menga mos shifokorni topsin
+              </button>
+              <button onClick={() => setOnlyFavs(v => !v)}
+                className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1.5 transition-colors ${onlyFavs ? "bg-red-50 text-red-600 border-red-200" : "bg-card hover:bg-accent"}`}>
+                <Heart className={`w-3 h-3 ${onlyFavs ? "fill-current" : ""}`} /> Sevimlilar ({fav.ids.length})
+              </button>
+              {["Кардиолог","Педиатр","Стоматолог","Гинеколог","Невролог"].map(s => (
+                <button key={s} onClick={() => setSpecialty(s)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${specialty === s ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-accent"}`}>
+                  {s}
+                </button>
+              ))}
+            </div>
+
             {showFilters && (
-              <div className="mt-3 p-4 bg-card rounded-xl border shadow-sm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="mt-4 p-4 bg-card rounded-2xl border shadow-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <Select value={specialty} onValueChange={setSpecialty}>
                   <SelectTrigger><SelectValue placeholder="Mutaxassislik" /></SelectTrigger>
                   <SelectContent className="max-h-80">
@@ -168,10 +204,17 @@ const DoctorsPage = () => {
                   </SelectContent>
                 </Select>
                 <Select value={region} onValueChange={setRegion}>
-                  <SelectTrigger><SelectValue placeholder="Region" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Hudud" /></SelectTrigger>
                   <SelectContent className="max-h-80">
-                    <SelectItem value="all">Barcha regionlar</SelectItem>
+                    <SelectItem value="all">Barcha hududlar</SelectItem>
                     {REGIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={language} onValueChange={setLanguage}>
+                  <SelectTrigger><SelectValue placeholder="Til" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Har qanday til</SelectItem>
+                    {LANGUAGES.map(l => <SelectItem key={l} value={l}>{l}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={minRating} onValueChange={setMinRating}>
@@ -199,130 +242,87 @@ const DoctorsPage = () => {
                   <SelectContent>
                     <SelectItem value="rating">Reyting bo'yicha</SelectItem>
                     <SelectItem value="experience">Tajriba bo'yicha</SelectItem>
-                    <SelectItem value="reviews">Sharhlar soni bo'yicha</SelectItem>
+                    <SelectItem value="reviews">Sharhlar soni</SelectItem>
                     <SelectItem value="name">Alifbo tartibida</SelectItem>
                   </SelectContent>
                 </Select>
                 <Input
-                  placeholder="Xizmat (masalan: EKG, UZI)"
+                  placeholder="Xizmat (EKG, UZI, MRT...)"
                   value={serviceQuery}
                   onChange={(e) => setServiceQuery(e.target.value)}
+                  className="md:col-span-2"
                 />
+                {filtersActive && (
+                  <Button variant="outline" onClick={clearFilters}>
+                    <X className="w-4 h-4 mr-1" /> Tozalash
+                  </Button>
+                )}
               </div>
             )}
 
             {showMap && (
-              <div className="mt-4">
-                <NearbyDoctorsMap specialty={specialty !== "all" ? specialty : undefined} height={360} />
+              <div className="mt-4 rounded-2xl overflow-hidden border shadow-lg">
+                <NearbyDoctorsMap specialty={specialty !== "all" ? specialty : undefined} height={420} />
               </div>
             )}
           </div>
         </div>
       </section>
 
-      <section className="py-8">
+      <section className="py-10">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-sm text-muted-foreground">
-              {loading ? "Yuklanmoqda..." : `${total.toLocaleString()} ta shifokor topildi`}
-            </p>
-            {filtersActive && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                <X className="w-3 h-3 mr-1" /> Filtrni tozalash
-              </Button>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[...Array(9)].map((_, i) => <Skeleton key={i} className="h-56 rounded-2xl" />)}
-            </div>
-          ) : doctors.length === 0 ? (
-            <div className="text-center py-16">
-              <Stethoscope className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-lg font-semibold">Shifokor topilmadi</p>
-              <p className="text-muted-foreground mt-1">Filtrlarni o'zgartiring</p>
-            </div>
-          ) : (
+          {isBrowsing ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {doctors.map((d) => (
-                  <Link
-                    key={d.id}
-                    to={`/doctors/ext/${d.slug}`}
-                    className="group bg-card rounded-2xl border hover:border-primary/40 hover:shadow-lg transition-all overflow-hidden"
-                  >
-                    <div className="p-5">
-                      <div className="flex items-start gap-4">
-                        {d.photo_url ? (
-                          <img
-                            src={d.photo_url} alt={d.name} loading="lazy"
-                            className="w-16 h-16 rounded-xl object-cover border-2"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                            <Stethoscope className="w-7 h-7 text-primary" />
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-heading font-bold text-base group-hover:text-primary transition-colors line-clamp-2">
-                            {d.name}
-                          </h3>
-                          <p className="text-sm text-primary font-medium mt-0.5">{d.primary_specialty}</p>
-                          {d.rank && (
-                            <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                              <Award className="w-3 h-3" /> {d.rank}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center flex-wrap gap-3 mt-4 pt-3 border-t text-sm">
-                        {d.rating != null && d.rating > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                            <span className="font-bold">{Number(d.rating).toFixed(1)}</span>
-                            {d.reviews_count != null && d.reviews_count > 0 && (
-                              <span className="text-xs text-muted-foreground">({d.reviews_count})</span>
-                            )}
-                          </div>
-                        )}
-                        {d.experience != null && d.experience > 0 && (
-                          <span className="text-xs text-muted-foreground">{d.experience} yil tajriba</span>
-                        )}
-                      </div>
-
-                      {d.primary_region && (
-                        <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
-                          <MapPin className="w-3 h-3 shrink-0" />
-                          <span className="truncate">{d.primary_region}</span>
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                ))}
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-sm text-muted-foreground">
+                  {loading ? "Yuklanmoqda..." : `${total.toLocaleString()} ta shifokor topildi`}
+                </p>
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  <X className="w-3 h-3 mr-1" /> Filtrni tozalash
+                </Button>
               </div>
 
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
-                  <Button variant="outline" size="sm" disabled={page === 0}
-                    onClick={() => setPage(p => Math.max(0, p - 1))}>
-                    ← Oldingi
-                  </Button>
-                  <span className="text-sm text-muted-foreground px-3">
-                    {page + 1} / {totalPages}
-                  </span>
-                  <Button variant="outline" size="sm" disabled={page + 1 >= totalPages}
-                    onClick={() => setPage(p => p + 1)}>
-                    Keyingi →
-                  </Button>
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(9)].map((_, i) => <Skeleton key={i} className="h-56 rounded-2xl" />)}
                 </div>
+              ) : doctors.length === 0 ? (
+                <div className="text-center py-16">
+                  <Stethoscope className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-lg font-semibold">Shifokor topilmadi</p>
+                  <p className="text-muted-foreground mt-1">Filtrlarni o'zgartirib qayta urinib ko'ring</p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {doctors.map((d) => <DoctorCard key={d.id} doctor={d} />)}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-10">
+                      <Button variant="outline" size="sm" disabled={page === 0}
+                        onClick={() => setPage(p => Math.max(0, p - 1))}>
+                        ← Oldingi
+                      </Button>
+                      <span className="text-sm text-muted-foreground px-3">
+                        {page + 1} / {totalPages}
+                      </span>
+                      <Button variant="outline" size="sm" disabled={page + 1 >= totalPages}
+                        onClick={() => setPage(p => p + 1)}>
+                        Keyingi →
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </>
+          ) : (
+            <CuratedSections />
           )}
         </div>
       </section>
 
+      <CompareBar />
       <Footer />
     </div>
   );
