@@ -324,6 +324,7 @@ const DoctorsPage = () => {
       </section>
 
       <CompareBar />
+      <AiDoctorFinder open={aiFinderOpen} onOpenChange={setAiFinderOpen} defaultRegion={region !== "all" ? region : undefined} />
       <Footer />
     </div>
   );
