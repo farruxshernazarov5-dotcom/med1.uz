@@ -87,10 +87,9 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
           <Select value={region} onValueChange={setRegion}>
             <SelectTrigger><SelectValue placeholder="Joylashuv (viloyat)" /></SelectTrigger>
             <SelectContent>
-              {UZBEKISTAN_REGIONS.map((r: any) => {
-                const v = typeof r === "string" ? r : r.name;
-                return <SelectItem key={v} value={v}>{v}</SelectItem>;
-              })}
+              {getRegionNames().map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Button onClick={run} disabled={loading} className="w-full gap-2">
