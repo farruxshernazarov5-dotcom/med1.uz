@@ -7,15 +7,17 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import {
   Stethoscope, Star, MapPin, Award, Languages, ChevronLeft,
-  Building2, Calendar, MessageCircle, Send, ShieldCheck,
+  Building2, Calendar, ShieldCheck,
 } from "lucide-react";
 import RecommendedAnalyses from "@/components/doctors/RecommendedAnalyses";
 import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
+import DoctorServicesSection from "@/components/doctors/DoctorServicesSection";
+import DoctorConsultActions from "@/components/doctors/DoctorConsultActions";
+import DoctorVerifiedReviews from "@/components/doctors/DoctorVerifiedReviews";
+import DoctorBookingWizard from "@/components/doctors/DoctorBookingWizard";
+import { getServiceTemplates } from "@/data/doctorServiceTemplates";
 
 interface Doctor {
   id: string; slug: string; name: string; rank: string | null;
@@ -28,15 +30,11 @@ interface Doctor {
 
 const DoctorExternalDetailPage = () => {
   const { slug } = useParams();
-  const { user } = useAuth();
   const [doc, setDoc] = useState<Doctor | null>(null);
   const [clinic, setClinic] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewRating, setReviewRating] = useState(5);
-  const [submitting, setSubmitting] = useState(false);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [bookOpen, setBookOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -62,35 +60,11 @@ const DoctorExternalDetailPage = () => {
             .limit(6);
           setRelated(rel || []);
         }
-        // reviews (uses shared reviews table by doctor_id text)
-        const { data: rv } = await supabase.from("reviews")
-          .select("*, profiles:patient_id(full_name, avatar_url)")
-          .eq("doctor_id", data.id)
-          .eq("is_approved", true)
-          .order("created_at", { ascending: false })
-          .limit(20);
-        setReviews(rv || []);
       }
       setLoading(false);
     })();
   }, [slug]);
 
-  const handleReview = async () => {
-    if (!user) { toast({ title: "Sharh yozish uchun tizimga kiring", variant: "destructive" }); return; }
-    if (!doc || !reviewText.trim()) return;
-    if (!doc.clinic_id) {
-      toast({ title: "Sharh vaqtincha mavjud emas", description: "Bu shifokor hali klinikaga bog'lanmagan", variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    const { error } = await supabase.from("reviews").insert({
-      doctor_id: doc.id, patient_id: user.id, clinic_id: doc.clinic_id,
-      rating: reviewRating, comment: reviewText.trim(), is_approved: false,
-    });
-    setSubmitting(false);
-    if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
-    else { toast({ title: "Sharh yuborildi", description: "Moderatsiyadan so'ng ko'rinadi" }); setReviewText(""); }
-  };
 
 
   if (loading) return (
@@ -163,9 +137,19 @@ const DoctorExternalDetailPage = () => {
                 )}
               </div>
               <div className="flex flex-wrap gap-2 mt-5">
-                <Button className="gap-2"><Calendar className="w-4 h-4" /> Qabulga yozilish</Button>
-                <Button variant="outline" className="gap-2"><MessageCircle className="w-4 h-4" /> Yozish</Button>
+                <Button className="gap-2" onClick={() => setBookOpen(true)}>
+                  <Calendar className="w-4 h-4" /> Qabulga yozilish
+                </Button>
+                <DoctorConsultActions doctorId={doc.id} doctorName={doc.name} />
               </div>
+              <DoctorBookingWizard
+                open={bookOpen}
+                onOpenChange={setBookOpen}
+                doctorId={doc.id}
+                doctorName={doc.name}
+                doctorSlug={doc.slug}
+                services={getServiceTemplates(doc.primary_specialty).map((t) => ({ ...t, id: null }))}
+              />
             </div>
           </div>
         </div>
@@ -181,18 +165,14 @@ const DoctorExternalDetailPage = () => {
               </p>
             </div>
 
-            {doc.services && doc.services.length > 0 && (
-              <div className="bg-card rounded-2xl border p-6">
-                <h2 className="font-heading font-bold text-lg mb-3">Xizmatlar</h2>
-                <div className="flex flex-wrap gap-2">
-                  {doc.services.map((s, i) => (
-                    <Link key={i} to={`/doctors?service=${encodeURIComponent(s)}`}>
-                      <Badge variant="secondary" className="cursor-pointer hover:bg-primary/20">{s}</Badge>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+            <DoctorServicesSection
+              doctorId={doc.id}
+              doctorName={doc.name}
+              doctorSlug={doc.slug}
+              specialty={doc.primary_specialty}
+              extraServices={doc.services}
+            />
+
 
             <RecommendedAnalyses specialty={doc.primary_specialty} />
 
@@ -204,49 +184,8 @@ const DoctorExternalDetailPage = () => {
             </div>
 
 
-            <div className="bg-card rounded-2xl border p-6">
-              <h2 className="font-heading font-bold text-lg mb-4">Sharhlar ({reviews.length})</h2>
-              {user ? (
-                <div className="space-y-3 mb-6 p-4 bg-muted/40 rounded-xl">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">Reyting:</span>
-                    {[1,2,3,4,5].map(n => (
-                      <button key={n} onClick={() => setReviewRating(n)}>
-                        <Star className={`w-5 h-5 ${n <= reviewRating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />
-                      </button>
-                    ))}
-                  </div>
-                  <Textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)}
-                    placeholder="Shifokor haqida fikringizni yozing..." rows={3} />
-                  <Button onClick={handleReview} disabled={submitting} size="sm" className="gap-2">
-                    <Send className="w-4 h-4" /> {submitting ? "Yuborilmoqda..." : "Sharh yuborish"}
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground mb-4">
-                  Sharh yozish uchun <Link to="/auth" className="text-primary underline">tizimga kiring</Link>.
-                </div>
-              )}
-              {reviews.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Hozircha sharhlar yo'q. Birinchi bo'lib fikringizni bildiring.</p>
-              ) : (
-                <div className="space-y-4">
-                  {reviews.map((r) => (
-                    <div key={r.id} className="border-b pb-3 last:border-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{r.profiles?.full_name || "Foydalanuvchi"}</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{r.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <DoctorVerifiedReviews doctorId={doc.id} />
+
           </div>
 
           <div className="space-y-4">

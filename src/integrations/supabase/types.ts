@@ -6252,6 +6252,62 @@ export type Database = {
         }
         Relationships: []
       }
+      doctor_consult_requests: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          meeting_url: string | null
+          message: string
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          preferred_at: string | null
+          reply: string | null
+          request_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          meeting_url?: string | null
+          message: string
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          preferred_at?: string | null
+          reply?: string | null
+          request_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          meeting_url?: string | null
+          message?: string
+          patient_id?: string
+          patient_name?: string
+          patient_phone?: string
+          preferred_at?: string | null
+          reply?: string | null
+          request_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_consult_requests_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors_external"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_expenses: {
         Row: {
           amount: number
@@ -6287,6 +6343,191 @@ export type Database = {
           receipt_url?: string | null
         }
         Relationships: []
+      }
+      doctor_ext_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          booking_code: string
+          created_at: string
+          doctor_id: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          payment_method: string
+          payment_status: string
+          price: number
+          service_id: string | null
+          service_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          booking_code?: string
+          created_at?: string
+          doctor_id: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          payment_method?: string
+          payment_status?: string
+          price?: number
+          service_id?: string | null
+          service_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          booking_code?: string
+          created_at?: string
+          doctor_id?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          patient_name?: string
+          patient_phone?: string
+          payment_method?: string
+          payment_status?: string
+          price?: number
+          service_id?: string | null
+          service_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_ext_appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors_external"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_ext_appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_ext_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_ext_reviews: {
+        Row: {
+          appointment_id: string
+          comment: string | null
+          created_at: string
+          doctor_id: string
+          id: string
+          is_verified: boolean
+          patient_id: string
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          appointment_id: string
+          comment?: string | null
+          created_at?: string
+          doctor_id: string
+          id?: string
+          is_verified?: boolean
+          patient_id: string
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          comment?: string | null
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          is_verified?: boolean
+          patient_id?: string
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_ext_reviews_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: true
+            referencedRelation: "doctor_ext_appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "doctor_ext_reviews_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors_external"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_ext_services: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          doctor_id: string
+          duration_minutes: number
+          id: string
+          is_active: boolean
+          is_package: boolean
+          name: string
+          price: number
+          sessions_count: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          doctor_id: string
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          is_package?: boolean
+          name: string
+          price?: number
+          sessions_count?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          doctor_id?: string
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          is_package?: boolean
+          name?: string
+          price?: number
+          sessions_count?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_ext_services_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors_external"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       doctor_files: {
         Row: {

@@ -15,6 +15,7 @@ import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 import DoctorCard, { DoctorCardData } from "@/components/doctors/DoctorCard";
 import CuratedSections from "@/components/doctors/CuratedSections";
 import CompareBar from "@/components/doctors/CompareBar";
+import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
 
 const SPECIALTIES = [
@@ -56,6 +57,7 @@ const DoctorsPage = () => {
   const [showMap, setShowMap] = useState(false);
   const [onlyFavs, setOnlyFavs] = useState(false);
   const [clinicName, setClinicName] = useState<string>("");
+  const [aiFinderOpen, setAiFinderOpen] = useState(false);
 
   const fav = useDoctorFavorites();
 
@@ -178,7 +180,7 @@ const DoctorsPage = () => {
 
             {/* Quick chips */}
             <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              <button onClick={() => window.location.href = "/smart-search"}
+              <button onClick={() => setAiFinderOpen(true)}
                 className="text-xs px-3 py-1.5 rounded-full bg-hero-gradient text-primary-foreground hover:opacity-90 flex items-center gap-1.5 shadow-sm">
                 <Sparkles className="w-3 h-3" /> AI menga mos shifokorni topsin
               </button>
@@ -323,6 +325,7 @@ const DoctorsPage = () => {
       </section>
 
       <CompareBar />
+      <AiDoctorFinder open={aiFinderOpen} onOpenChange={setAiFinderOpen} defaultRegion={region !== "all" ? region : undefined} />
       <Footer />
     </div>
   );
