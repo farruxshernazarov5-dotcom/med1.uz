@@ -181,18 +181,14 @@ const DoctorExternalDetailPage = () => {
               </p>
             </div>
 
-            {doc.services && doc.services.length > 0 && (
-              <div className="bg-card rounded-2xl border p-6">
-                <h2 className="font-heading font-bold text-lg mb-3">Xizmatlar</h2>
-                <div className="flex flex-wrap gap-2">
-                  {doc.services.map((s, i) => (
-                    <Link key={i} to={`/doctors?service=${encodeURIComponent(s)}`}>
-                      <Badge variant="secondary" className="cursor-pointer hover:bg-primary/20">{s}</Badge>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+            <DoctorServicesSection
+              doctorId={doc.id}
+              doctorName={doc.name}
+              doctorSlug={doc.slug}
+              specialty={doc.primary_specialty}
+              extraServices={doc.services}
+            />
+
 
             <RecommendedAnalyses specialty={doc.primary_specialty} />
 
