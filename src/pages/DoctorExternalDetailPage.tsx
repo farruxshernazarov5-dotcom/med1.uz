@@ -204,49 +204,8 @@ const DoctorExternalDetailPage = () => {
             </div>
 
 
-            <div className="bg-card rounded-2xl border p-6">
-              <h2 className="font-heading font-bold text-lg mb-4">Sharhlar ({reviews.length})</h2>
-              {user ? (
-                <div className="space-y-3 mb-6 p-4 bg-muted/40 rounded-xl">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">Reyting:</span>
-                    {[1,2,3,4,5].map(n => (
-                      <button key={n} onClick={() => setReviewRating(n)}>
-                        <Star className={`w-5 h-5 ${n <= reviewRating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />
-                      </button>
-                    ))}
-                  </div>
-                  <Textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)}
-                    placeholder="Shifokor haqida fikringizni yozing..." rows={3} />
-                  <Button onClick={handleReview} disabled={submitting} size="sm" className="gap-2">
-                    <Send className="w-4 h-4" /> {submitting ? "Yuborilmoqda..." : "Sharh yuborish"}
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground mb-4">
-                  Sharh yozish uchun <Link to="/auth" className="text-primary underline">tizimga kiring</Link>.
-                </div>
-              )}
-              {reviews.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Hozircha sharhlar yo'q. Birinchi bo'lib fikringizni bildiring.</p>
-              ) : (
-                <div className="space-y-4">
-                  {reviews.map((r) => (
-                    <div key={r.id} className="border-b pb-3 last:border-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{r.profiles?.full_name || "Foydalanuvchi"}</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{r.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <DoctorVerifiedReviews doctorId={doc.id} />
+
           </div>
 
           <div className="space-y-4">
