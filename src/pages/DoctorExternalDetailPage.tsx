@@ -163,9 +163,19 @@ const DoctorExternalDetailPage = () => {
                 )}
               </div>
               <div className="flex flex-wrap gap-2 mt-5">
-                <Button className="gap-2"><Calendar className="w-4 h-4" /> Qabulga yozilish</Button>
-                <Button variant="outline" className="gap-2"><MessageCircle className="w-4 h-4" /> Yozish</Button>
+                <Button className="gap-2" onClick={() => setBookOpen(true)}>
+                  <Calendar className="w-4 h-4" /> Qabulga yozilish
+                </Button>
+                <DoctorConsultActions doctorId={doc.id} doctorName={doc.name} />
               </div>
+              <DoctorBookingWizard
+                open={bookOpen}
+                onOpenChange={setBookOpen}
+                doctorId={doc.id}
+                doctorName={doc.name}
+                doctorSlug={doc.slug}
+                services={getServiceTemplates(doc.primary_specialty).map((t) => ({ ...t, id: null }))}
+              />
             </div>
           </div>
         </div>
