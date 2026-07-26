@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getRegionNames } from "@/data/uzbekistanRegions";
+
 import { Stethoscope, Star, Loader2, Sparkles, AlertTriangle, RotateCcw } from "lucide-react";
 
 interface Props {
@@ -17,6 +17,13 @@ interface Props {
   onOpenChange: (v: boolean) => void;
   defaultRegion?: string;
 }
+
+const REGIONS = [
+  "г. Ташкент","Ташкентская область","Самаркандская область","Бухарская область",
+  "Кашкадарьинская область","Андижанская область","Сырдарьинская область",
+  "Наманганская область","Хорезмская область","Джизакская область",
+  "Ферганская область","Каракалпакстан","Навоийская область","Сурхандарьинская область",
+];
 
 const URGENCY: Record<string, { label: string; cls: string }> = {
   low: { label: "Shoshilinch emas", cls: "bg-medical-green/10 text-medical-green border-medical-green/20" },
@@ -87,7 +94,7 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
           <Select value={region} onValueChange={setRegion}>
             <SelectTrigger><SelectValue placeholder="Joylashuv (viloyat)" /></SelectTrigger>
             <SelectContent>
-              {getRegionNames().map((v) => (
+              {REGIONS.map((v) => (
                 <SelectItem key={v} value={v}>{v}</SelectItem>
               ))}
             </SelectContent>
