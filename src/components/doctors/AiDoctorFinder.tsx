@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UZBEKISTAN_REGIONS } from "@/data/uzbekistanRegions";
+import { getRegionNames } from "@/data/uzbekistanRegions";
 import { Stethoscope, Star, Loader2, Sparkles, AlertTriangle, RotateCcw } from "lucide-react";
 
 interface Props {
