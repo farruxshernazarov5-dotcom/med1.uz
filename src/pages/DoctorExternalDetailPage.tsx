@@ -30,15 +30,11 @@ interface Doctor {
 
 const DoctorExternalDetailPage = () => {
   const { slug } = useParams();
-  const { user } = useAuth();
   const [doc, setDoc] = useState<Doctor | null>(null);
   const [clinic, setClinic] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewRating, setReviewRating] = useState(5);
-  const [submitting, setSubmitting] = useState(false);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [bookOpen, setBookOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -64,35 +60,11 @@ const DoctorExternalDetailPage = () => {
             .limit(6);
           setRelated(rel || []);
         }
-        // reviews (uses shared reviews table by doctor_id text)
-        const { data: rv } = await supabase.from("reviews")
-          .select("*, profiles:patient_id(full_name, avatar_url)")
-          .eq("doctor_id", data.id)
-          .eq("is_approved", true)
-          .order("created_at", { ascending: false })
-          .limit(20);
-        setReviews(rv || []);
       }
       setLoading(false);
     })();
   }, [slug]);
 
-  const handleReview = async () => {
-    if (!user) { toast({ title: "Sharh yozish uchun tizimga kiring", variant: "destructive" }); return; }
-    if (!doc || !reviewText.trim()) return;
-    if (!doc.clinic_id) {
-      toast({ title: "Sharh vaqtincha mavjud emas", description: "Bu shifokor hali klinikaga bog'lanmagan", variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    const { error } = await supabase.from("reviews").insert({
-      doctor_id: doc.id, patient_id: user.id, clinic_id: doc.clinic_id,
-      rating: reviewRating, comment: reviewText.trim(), is_approved: false,
-    });
-    setSubmitting(false);
-    if (error) toast({ title: "Xato", description: error.message, variant: "destructive" });
-    else { toast({ title: "Sharh yuborildi", description: "Moderatsiyadan so'ng ko'rinadi" }); setReviewText(""); }
-  };
 
 
   if (loading) return (
