@@ -15,6 +15,7 @@ import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 import DoctorCard, { DoctorCardData } from "@/components/doctors/DoctorCard";
 import CuratedSections from "@/components/doctors/CuratedSections";
 import CompareBar from "@/components/doctors/CompareBar";
+import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
 
 const SPECIALTIES = [
