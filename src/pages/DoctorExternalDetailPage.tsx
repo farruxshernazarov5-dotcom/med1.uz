@@ -7,15 +7,17 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import {
   Stethoscope, Star, MapPin, Award, Languages, ChevronLeft,
-  Building2, Calendar, MessageCircle, Send, ShieldCheck,
+  Building2, Calendar, ShieldCheck,
 } from "lucide-react";
 import RecommendedAnalyses from "@/components/doctors/RecommendedAnalyses";
 import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
+import DoctorServicesSection from "@/components/doctors/DoctorServicesSection";
+import DoctorConsultActions from "@/components/doctors/DoctorConsultActions";
+import DoctorVerifiedReviews from "@/components/doctors/DoctorVerifiedReviews";
+import DoctorBookingWizard from "@/components/doctors/DoctorBookingWizard";
+import { getServiceTemplates } from "@/data/doctorServiceTemplates";
 
 interface Doctor {
   id: string; slug: string; name: string; rank: string | null;
