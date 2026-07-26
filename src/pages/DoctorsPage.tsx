@@ -178,7 +178,7 @@ const DoctorsPage = () => {
 
             {/* Quick chips */}
             <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              <button onClick={() => window.location.href = "/smart-search"}
+              <button onClick={() => setAiFinderOpen(true)}
                 className="text-xs px-3 py-1.5 rounded-full bg-hero-gradient text-primary-foreground hover:opacity-90 flex items-center gap-1.5 shadow-sm">
                 <Sparkles className="w-3 h-3" /> AI menga mos shifokorni topsin
               </button>
