@@ -56,6 +56,7 @@ const DoctorsPage = () => {
   const [showMap, setShowMap] = useState(false);
   const [onlyFavs, setOnlyFavs] = useState(false);
   const [clinicName, setClinicName] = useState<string>("");
+  const [aiFinderOpen, setAiFinderOpen] = useState(false);
 
   const fav = useDoctorFavorites();
 
