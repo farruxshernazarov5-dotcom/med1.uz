@@ -227,12 +227,21 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
                       <p className="text-[11px] text-muted-foreground truncate">
                         {d.primary_region}{d.experience ? ` · ${d.experience} yil` : ""}
                       </p>
+                      {d.match_reason && (
+                        <p className="text-[11px] text-muted-foreground truncate mt-0.5">Sabab: {d.match_reason}</p>
+                      )}
                     </div>
-                    {d.rating > 0 && (
-                      <span className="flex items-center gap-0.5 text-xs shrink-0">
-                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />{Number(d.rating).toFixed(1)}
-                      </span>
-                    )}
+                    <div className="shrink-0 text-right space-y-1">
+                      {typeof d.match_score === "number" && (
+                        <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">{d.match_score}% mos</Badge>
+                      )}
+                      {d.rating > 0 && (
+                        <span className="flex items-center justify-end gap-0.5 text-xs">
+                          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />{Number(d.rating).toFixed(1)}
+                        </span>
+                      )}
+                    </div>
+
                   </Link>
                 ))}
                 {(result.doctors || []).length === 0 && (
