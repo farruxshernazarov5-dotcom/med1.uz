@@ -77,6 +77,9 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   const [saving, setSaving] = useState(false);
   const [booking, setBooking] = useState<any>(null);
   const [qr, setQr] = useState<string>("");
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState<string>("");
+  const [payState, setPayState] = useState<"idle" | "awaiting" | "paid" | "failed">("idle");
 
   const days = useMemo(() => nextDays(), []);
 
