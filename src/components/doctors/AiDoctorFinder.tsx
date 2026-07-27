@@ -42,10 +42,11 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const run = async () => {
+  const run = async (withAnswers?: { question: string; answer: string }[]) => {
     if (complaint.trim().length < 3) { toast({ title: "Simptom yoki kasallikni yozing", variant: "destructive" }); return; }
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
-    setLoading(true); setError(null); setResult(null);
+    setLoading(true); setError(null);
+    if (!withAnswers) { setResult(null); setAnswers({}); }
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-doctor-match`, {
@@ -55,7 +56,13 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
           Authorization: `Bearer ${session?.access_token}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ complaint: complaint.trim(), age: age ? Number(age) : null, gender: gender || null, region: region || null }),
+        body: JSON.stringify({
+          complaint: complaint.trim(),
+          age: age ? Number(age) : null,
+          gender: gender || null,
+          region: region || null,
+          answers: withAnswers || [],
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "AI xatosi");
@@ -68,6 +75,13 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
   };
 
   const a = result?.analysis;
+  const redFlags: any[] = Array.isArray(a?.red_flags) ? a.red_flags : [];
+  const needsAnswers = !!result?.needs_answers && redFlags.length > 0;
+  const allAnswered = redFlags.every((q) => answers[q.id]);
+
+  const submitAnswers = () =>
+    run(redFlags.map((q) => ({ question: q.question, answer: answers[q.id] === "yes" ? "ha" : "yo'q" })));
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
