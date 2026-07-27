@@ -6354,9 +6354,11 @@ export type Database = {
           duration_minutes: number
           id: string
           notes: string | null
+          paid_at: string | null
           patient_id: string
           patient_name: string
           patient_phone: string
+          payment_id: string | null
           payment_method: string
           payment_status: string
           price: number
@@ -6374,9 +6376,11 @@ export type Database = {
           duration_minutes?: number
           id?: string
           notes?: string | null
+          paid_at?: string | null
           patient_id: string
           patient_name: string
           patient_phone: string
+          payment_id?: string | null
           payment_method?: string
           payment_status?: string
           price?: number
@@ -6394,9 +6398,11 @@ export type Database = {
           duration_minutes?: number
           id?: string
           notes?: string | null
+          paid_at?: string | null
           patient_id?: string
           patient_name?: string
           patient_phone?: string
+          payment_id?: string | null
           payment_method?: string
           payment_status?: string
           price?: number
@@ -6418,6 +6424,59 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "doctor_ext_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_ext_chat_messages: {
+        Row: {
+          appointment_id: string
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          content: string | null
+          created_at: string
+          doctor_id: string
+          id: string
+          patient_id: string
+          read_at: string | null
+          sender_id: string
+          sender_role: string
+        }
+        Insert: {
+          appointment_id: string
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          content?: string | null
+          created_at?: string
+          doctor_id: string
+          id?: string
+          patient_id: string
+          read_at?: string | null
+          sender_id: string
+          sender_role?: string
+        }
+        Update: {
+          appointment_id?: string
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          content?: string | null
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          patient_id?: string
+          read_at?: string | null
+          sender_id?: string
+          sender_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_ext_chat_messages_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_ext_appointments"
             referencedColumns: ["id"]
           },
         ]
@@ -7282,6 +7341,62 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "doctor_patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_video_rooms: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          doctor_id: string
+          duration_seconds: number
+          ended_at: string | null
+          id: string
+          patient_id: string
+          provider: string
+          room_code: string
+          scheduled_at: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          doctor_id: string
+          duration_seconds?: number
+          ended_at?: string | null
+          id?: string
+          patient_id: string
+          provider?: string
+          room_code?: string
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          doctor_id?: string
+          duration_seconds?: number
+          ended_at?: string | null
+          id?: string
+          patient_id?: string
+          provider?: string
+          room_code?: string
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_video_rooms_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_ext_appointments"
             referencedColumns: ["id"]
           },
         ]
@@ -16378,6 +16493,49 @@ export type Database = {
       apply_referral_reward: {
         Args: { _referral_id: string }
         Returns: undefined
+      }
+      book_doctor_ext_slot: {
+        Args: {
+          _appointment_date: string
+          _appointment_time: string
+          _doctor_id: string
+          _duration_minutes: number
+          _notes: string
+          _patient_name: string
+          _patient_phone: string
+          _payment_method: string
+          _price: number
+          _service_id: string
+          _service_name: string
+        }
+        Returns: {
+          appointment_date: string
+          appointment_time: string
+          booking_code: string
+          created_at: string
+          doctor_id: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          paid_at: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          payment_id: string | null
+          payment_method: string
+          payment_status: string
+          price: number
+          service_id: string | null
+          service_name: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "doctor_ext_appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       bulk_update_doctor_coords: { Args: { p: Json }; Returns: number }
       deduct_ai_credits: {

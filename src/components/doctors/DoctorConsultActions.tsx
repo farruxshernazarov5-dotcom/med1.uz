@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageCircle, Video, HelpCircle, Send, Loader2 } from "lucide-react";
+import DoctorChatSession from "./DoctorChatSession";
+import VideoConsultRoom from "./VideoConsultRoom";
 
 type Kind = "chat" | "video" | "question";
 
@@ -48,6 +50,10 @@ export default function DoctorConsultActions({ doctorId, doctorName }: Props) {
   const [message, setMessage] = useState("");
   const [when, setWhen] = useState("");
   const [saving, setSaving] = useState(false);
+  const [checking, setChecking] = useState<Kind | null>(null);
+  const [activeAppt, setActiveAppt] = useState<any>(null);
+  const [liveChat, setLiveChat] = useState(false);
+  const [liveVideo, setLiveVideo] = useState(false);
 
   const submit = async () => {
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
@@ -74,20 +80,64 @@ export default function DoctorConsultActions({ doctorId, doctorName }: Props) {
 
   const m = kind ? META[kind] : null;
 
+  const openLive = async (k: "chat" | "video") => {
+    if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
+    setChecking(k);
+    const { data } = await supabase
+      .from("doctor_ext_appointments")
+      .select("id, appointment_date, appointment_time, status")
+      .eq("doctor_id", doctorId)
+      .eq("patient_id", user.id)
+      .neq("status", "cancelled")
+      .order("appointment_date", { ascending: false })
+      .limit(1);
+    setChecking(null);
+    const appt = data?.[0];
+    if (!appt) {
+      toast({ title: "Avval qabulga yoziling", description: "Chat va video konsultatsiya faqat qabul bron qilingandan keyin ochiladi" });
+      setKind(k);
+      return;
+    }
+    setActiveAppt(appt);
+    if (k === "chat") setLiveChat(true); else setLiveVideo(true);
+  };
+
   return (
     <>
       <div className="flex flex-wrap gap-2">
         {(["chat", "video", "question"] as Kind[]).map((k) => {
           const Icon = META[k].icon;
           return (
-            <Button key={k} variant={k === "chat" ? "default" : "outline"} className="gap-2" onClick={() => setKind(k)}>
-              <Icon className="w-4 h-4" /> {META[k].label}
+            <Button key={k} variant={k === "chat" ? "default" : "outline"} className="gap-2" disabled={checking === k}
+              onClick={() => (k === "question" ? setKind(k) : openLive(k))}>
+              {checking === k ? <Loader2 className="w-4 h-4 animate-spin" /> : <Icon className="w-4 h-4" />} {META[k].label}
             </Button>
           );
         })}
       </div>
 
+      {activeAppt && (
+        <DoctorChatSession
+          open={liveChat}
+          onOpenChange={setLiveChat}
+          doctorId={doctorId}
+          doctorName={doctorName}
+          appointmentId={activeAppt.id}
+        />
+      )}
+      {activeAppt && (
+        <VideoConsultRoom
+          open={liveVideo}
+          onOpenChange={setLiveVideo}
+          doctorId={doctorId}
+          doctorName={doctorName}
+          appointmentId={activeAppt.id}
+          scheduledAt={activeAppt.appointment_date ? `${activeAppt.appointment_date}T${String(activeAppt.appointment_time).slice(0, 5)}` : null}
+        />
+      )}
+
       <Dialog open={!!kind} onOpenChange={(v) => !v && setKind(null)}>
+
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base">{m?.title} — {doctorName}</DialogTitle>

@@ -41,11 +41,13 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
-  const run = async () => {
+  const run = async (withAnswers?: { question: string; answer: string }[]) => {
     if (complaint.trim().length < 3) { toast({ title: "Simptom yoki kasallikni yozing", variant: "destructive" }); return; }
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
-    setLoading(true); setError(null); setResult(null);
+    setLoading(true); setError(null);
+    if (!withAnswers) { setResult(null); setAnswers({}); }
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-doctor-match`, {
@@ -55,7 +57,13 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
           Authorization: `Bearer ${session?.access_token}`,
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ complaint: complaint.trim(), age: age ? Number(age) : null, gender: gender || null, region: region || null }),
+        body: JSON.stringify({
+          complaint: complaint.trim(),
+          age: age ? Number(age) : null,
+          gender: gender || null,
+          region: region || null,
+          answers: withAnswers || [],
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "AI xatosi");
@@ -68,6 +76,13 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
   };
 
   const a = result?.analysis;
+  const redFlags: any[] = Array.isArray(a?.red_flags) ? a.red_flags : [];
+  const needsAnswers = !!result?.needs_answers && redFlags.length > 0;
+  const allAnswered = redFlags.every((q) => answers[q.id]);
+
+  const submitAnswers = () =>
+    run(redFlags.map((q) => ({ question: q.question, answer: answers[q.id] === "yes" ? "ha" : "yo'q" })));
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -99,7 +114,7 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={run} disabled={loading} className="w-full gap-2">
+          <Button onClick={() => run()} disabled={loading} className="w-full gap-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             {loading ? "AI tahlil qilmoqda..." : "Mos shifokorni topish"}
           </Button>
@@ -113,16 +128,72 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
         {error && (
           <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-sm">
             <p className="flex items-center gap-2 text-destructive font-medium"><AlertTriangle className="w-4 h-4" /> {error}</p>
-            <Button size="sm" variant="outline" className="mt-2 gap-2" onClick={run}><RotateCcw className="w-3.5 h-3.5" /> Qayta urinish</Button>
+            <Button size="sm" variant="outline" className="mt-2 gap-2" onClick={() => run()}><RotateCcw className="w-3.5 h-3.5" /> Qayta urinish</Button>
           </div>
         )}
 
-        {a && (
+        {needsAnswers && (
+          <div className="space-y-3 border-t pt-3">
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+              <p className="text-sm font-semibold flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-primary" /> Aniqlashtiruvchi savollar
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Xavfli belgilarni istisno qilish uchun quyidagilarga javob bering — tavsiya ishonchliligi oshadi.
+              </p>
+            </div>
+            {redFlags.map((q: any) => (
+              <div key={q.id} className="space-y-1.5">
+                <p className="text-sm font-medium">{q.question}</p>
+                {q.why && <p className="text-[11px] text-muted-foreground">{q.why}</p>}
+                <div className="flex gap-2">
+                  {[{ v: "yes", l: "Ha" }, { v: "no", l: "Yo'q" }].map((o) => (
+                    <button key={o.v} onClick={() => setAnswers((p) => ({ ...p, [q.id]: o.v }))}
+                      className={`px-4 py-1.5 rounded-lg border text-xs ${answers[q.id] === o.v ? "border-primary bg-primary/10 font-bold" : "hover:bg-muted/50"}`}>
+                      {o.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <Button onClick={submitAnswers} disabled={loading || !allAnswered} className="w-full gap-2">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              Yakuniy tavsiyani olish
+            </Button>
+          </div>
+        )}
+
+        {a && !needsAnswers && (
           <div className="space-y-3 border-t pt-3">
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={URGENCY[a.urgency]?.cls}>{URGENCY[a.urgency]?.label || a.urgency}</Badge>
               {(a.specialties || []).map((s: string) => <Badge key={s}>{s}</Badge>)}
             </div>
+
+            {typeof a.confidence === "number" && (
+              <div className="p-3 rounded-xl border bg-muted/30 space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <span>Tavsiya ishonchliligi</span>
+                  <span className="text-primary">{a.confidence}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${a.confidence}%` }} />
+                </div>
+                {a.confidence_reason && <p className="text-[11px] text-muted-foreground">{a.confidence_reason}</p>}
+              </div>
+            )}
+
+            {Array.isArray(a.detected_red_flags) && a.detected_red_flags.length > 0 && (
+              <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs">
+                <p className="font-semibold text-destructive flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" /> Diqqat talab qiluvchi belgilar
+                </p>
+                <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                  {a.detected_red_flags.slice(0, 4).map((r: string, i: number) => <li key={i}>{r}</li>)}
+                </ul>
+              </div>
+            )}
+
             {a.summary && <p className="text-sm text-muted-foreground">{a.summary}</p>}
             {a.age_note && <p className="text-xs text-muted-foreground">{a.age_note}</p>}
             {Array.isArray(a.possible_conditions) && a.possible_conditions.length > 0 && (
@@ -156,12 +227,21 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
                       <p className="text-[11px] text-muted-foreground truncate">
                         {d.primary_region}{d.experience ? ` · ${d.experience} yil` : ""}
                       </p>
+                      {d.match_reason && (
+                        <p className="text-[11px] text-muted-foreground truncate mt-0.5">Sabab: {d.match_reason}</p>
+                      )}
                     </div>
-                    {d.rating > 0 && (
-                      <span className="flex items-center gap-0.5 text-xs shrink-0">
-                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />{Number(d.rating).toFixed(1)}
-                      </span>
-                    )}
+                    <div className="shrink-0 text-right space-y-1">
+                      {typeof d.match_score === "number" && (
+                        <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">{d.match_score}% mos</Badge>
+                      )}
+                      {d.rating > 0 && (
+                        <span className="flex items-center justify-end gap-0.5 text-xs">
+                          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />{Number(d.rating).toFixed(1)}
+                        </span>
+                      )}
+                    </div>
+
                   </Link>
                 ))}
                 {(result.doctors || []).length === 0 && (

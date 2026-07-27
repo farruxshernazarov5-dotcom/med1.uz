@@ -11,21 +11,32 @@ const corsHeaders = {
 const MODEL = "google/gemini-2.5-flash-lite";
 
 const SYSTEM_PROMPT = `Sen Med1.uz "Menga mos shifokorni top" AI yo'naltiruvchisisan.
-Bemor simptomi/kasalligi, yoshi, jinsi va joylashuvi asosida eng mos mutaxassisliklarni aniqlaysan.
+Bemor simptomi/kasalligi, yoshi, jinsi, joylashuvi va qo'shimcha savollarga bergan javoblari asosida eng mos mutaxassisliklarni aniqlaysan.
 FAQAT JSON qaytar, boshqa matn yozma. Kirish/salomlashish yozma.
 
 {
   "specialties": ["Kardiolog"],
   "possible_conditions": ["Gipertoniya"],
   "urgency": "low|medium|high|critical",
+  "confidence": 0-100,
+  "confidence_reason": "1 jumla: nima uchun shu ishonchlilik (qaysi maʼlumot yetarli/yetishmayapti)",
+  "red_flags": [
+    { "id": "q1", "question": "Ko'krak og'rig'i qo'l yoki jag'ga tarqalyaptimi?", "why": "yurak xurujini istisno qilish" }
+  ],
+  "detected_red_flags": ["aniqlangan xavfli belgi"],
   "age_note": "yoshga mos qisqa izoh",
   "summary": "1-2 jumla nima uchun shu mutaxassis kerak",
   "questions_for_doctor": ["shifokorga beriladigan savol"]
 }
 
+Qoidalar:
+- "red_flags" — bemorga beriladigan 3-5 ta HA/YO'Q savol, faqat hayotga xavfli yoki shoshilinch holatlarni istisno qilish uchun. Agar bemar javoblari allaqachon berilgan bo'lsa, faqat hali aniqlanmagan savollarni qoldir (yoki bo'sh massiv).
+- Javoblarda "ha" bo'lgan xavfli belgilar bo'lsa urgency ni oshir va "detected_red_flags" ga yoz.
+- "confidence": maʼlumot qanchalik to'liq va simptom qanchalik aniq mutaxassislikka mos kelishiga qarab bering. Javoblar berilmagan bo'lsa 40-65 dan oshmasin.
 Mutaxassisliklar ro'yxatidan foydalan: Kardiolog, Terapevt, Stomatolog, Oftalmolog, LOR, Pediatr, Ginekolog, Dermatolog, Nevrolog, Gastroenterolog, Ortoped, Travmatolog, Psixiatr, Psixolog, Endokrinolog, Urolog, Nefrolog, Pulmonolog, Onkolog, Allergolog, Revmatolog, Infeksionist, Xirurg, Kosmetolog, Fizioterapevt.
 18 yoshdan kichik bo'lsa Pediatr birinchi o'rinda bo'lsin. Ayol reproduktiv shikoyatlarda Ginekolog qo'sh.
 Javob bemor tilida (o'zbek) bo'lsin.`;
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -53,6 +64,12 @@ serve(async (req) => {
     const age = Number.isFinite(Number(body.age)) ? Number(body.age) : null;
     const gender = ["male", "female"].includes(body.gender) ? body.gender : null;
     const region = typeof body.region === "string" ? body.region.trim().slice(0, 80) : "";
+    const answers: { question: string; answer: string }[] = Array.isArray(body.answers)
+      ? body.answers
+          .filter((a: any) => a && typeof a.question === "string")
+          .slice(0, 8)
+          .map((a: any) => ({ question: String(a.question).slice(0, 200), answer: String(a.answer ?? "").slice(0, 40) }))
+      : [];
 
     if (complaint.length < 3) {
       await instrumentError(__usageId, __start, { status: "blocked", errorCode: "bad_request", errorMessage: "short complaint" });
@@ -64,14 +81,17 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const userMsg = `Shikoyat: ${complaint}\nYosh: ${age ?? "ko'rsatilmagan"}\nJins: ${gender === "female" ? "ayol" : gender === "male" ? "erkak" : "ko'rsatilmagan"}\nJoylashuv: ${region || "ko'rsatilmagan"}`;
+    const answersBlock = answers.length
+      ? `\nQo'shimcha savollarga javoblar:\n${answers.map((a) => `- ${a.question} => ${a.answer}`).join("\n")}`
+      : "\nQo'shimcha savollarga javob berilmagan.";
+    const userMsg = `Shikoyat: ${complaint}\nYosh: ${age ?? "ko'rsatilmagan"}\nJins: ${gender === "female" ? "ayol" : gender === "male" ? "erkak" : "ko'rsatilmagan"}\nJoylashuv: ${region || "ko'rsatilmagan"}${answersBlock}`;
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 700,
+        max_tokens: 900,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMsg },
@@ -125,7 +145,44 @@ serve(async (req) => {
       doctors = fallback || [];
     }
 
-    return new Response(JSON.stringify({ analysis: { ...analysis, specialties }, doctors }), {
+    // Confidence + per-doctor match scoring with a short rationale
+    let confidence = Number(analysis.confidence);
+    if (!Number.isFinite(confidence)) confidence = answers.length ? 78 : 55;
+    confidence = Math.max(20, Math.min(answers.length ? 96 : 65, Math.round(confidence)));
+
+    const redFlags = Array.isArray(analysis.red_flags)
+      ? analysis.red_flags
+          .filter((r: any) => r && typeof r.question === "string")
+          .slice(0, 5)
+          .map((r: any, i: number) => ({ id: String(r.id || `q${i + 1}`), question: r.question, why: r.why || "" }))
+      : [];
+
+    const scored = (doctors || []).map((d: any) => {
+      const spec = String(d.primary_specialty || "").toLowerCase();
+      const primaryHit = spec.includes(String(specialties[0] || "").toLowerCase());
+      const anyHit = specialties.some((s) => spec.includes(s.toLowerCase()));
+      const rating = Number(d.rating) || 0;
+      const reviews = Number(d.reviews_count) || 0;
+      const regionHit = region ? String(d.primary_region || "").toLowerCase().includes(region.toLowerCase()) : false;
+      let score = 40;
+      if (primaryHit) score += 30; else if (anyHit) score += 18;
+      score += Math.min(15, rating * 3);
+      score += Math.min(8, reviews / 10);
+      if (regionHit) score += 7;
+      score = Math.max(35, Math.min(99, Math.round(score)));
+      const reasons: string[] = [];
+      if (primaryHit || anyHit) reasons.push(`${d.primary_specialty} — shikoyatga mos yo'nalish`);
+      if (rating >= 4) reasons.push(`reyting ${rating.toFixed(1)}`);
+      if (reviews > 0) reasons.push(`${reviews} sharh`);
+      if (regionHit) reasons.push("siz tanlagan hududda");
+      return { ...d, match_score: score, match_reason: reasons.join(" · ") || "Umumiy mos keladi" };
+    }).sort((a: any, b: any) => b.match_score - a.match_score);
+
+    return new Response(JSON.stringify({
+      analysis: { ...analysis, specialties, confidence, red_flags: answers.length ? [] : redFlags },
+      needs_answers: answers.length === 0 && redFlags.length > 0,
+      doctors: scored,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

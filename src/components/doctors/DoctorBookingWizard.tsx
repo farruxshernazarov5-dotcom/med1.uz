@@ -77,6 +77,9 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   const [saving, setSaving] = useState(false);
   const [booking, setBooking] = useState<any>(null);
   const [qr, setQr] = useState<string>("");
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState<string>("");
+  const [payState, setPayState] = useState<"idle" | "awaiting" | "paid" | "failed">("idle");
 
   const days = useMemo(() => nextDays(), []);
 
@@ -86,6 +89,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
       setService(initialService ?? null);
       setBooking(null); setQr(""); setAgreed(false);
       setDate(""); setTime("");
+      setPaymentId(null); setCheckoutUrl(""); setPayState("idle");
     }
   }, [open, initialService]);
 
@@ -113,6 +117,52 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     })();
   }, [date, doctorId]);
 
+  // Poll payment status after redirect to Click/Payme
+  useEffect(() => {
+    if (!paymentId || payState !== "awaiting") return;
+    const t = setInterval(async () => {
+      const { data } = await supabase.from("platform_payments").select("status").eq("id", paymentId).maybeSingle();
+      if (data?.status === "paid") {
+        setPayState("paid");
+        setBooking((b: any) => (b ? { ...b, payment_status: "paid", status: "confirmed" } : b));
+        toast({ title: "To'lov qabul qilindi", description: "Bron tasdiqlandi" });
+      } else if (data && ["cancelled", "failed", "expired"].includes(data.status)) {
+        setPayState("failed");
+        toast({ title: "To'lov amalga oshmadi", description: "Bron bekor qilindi", variant: "destructive" });
+      }
+    }, 5000);
+    return () => clearInterval(t);
+  }, [paymentId, payState]);
+
+  const startOnlinePayment = async (appointment: any) => {
+    const fn = pay === "payme" ? "payme-create-invoice" : "click-create-invoice";
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
+      body: JSON.stringify({
+        amount: appointment.price,
+        purpose: "doctor_appointment",
+        reference_id: appointment.id,
+        return_url: `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.checkout_url) {
+      setPayState("failed");
+      toast({ title: "To'lov havolasi yaratilmadi", description: json.error || "Qayta urinib ko'ring", variant: "destructive" });
+      return;
+    }
+    setPaymentId(json.payment?.id ?? null);
+    setCheckoutUrl(json.checkout_url);
+    setPayState("awaiting");
+    window.open(json.checkout_url, "_blank", "noopener");
+  };
+
   const submit = async () => {
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
     if (!service || !date || !time) return;
@@ -123,31 +173,45 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     if (!agreed) { toast({ title: "To'lov va foydalanish shartlarini qabul qiling", variant: "destructive" }); return; }
 
     setSaving(true);
-    const { data, error } = await supabase.from("doctor_ext_appointments").insert({
-      doctor_id: doctorId,
-      patient_id: user.id,
-      service_id: service.id ?? null,
-      service_name: service.name,
-      appointment_date: date,
-      appointment_time: time,
-      duration_minutes: service.duration_minutes,
-      patient_name: name.trim(),
-      patient_phone: phone.replace(/\s/g, ""),
-      notes: notes.trim() || null,
-      price: service.price,
-      payment_method: pay,
-      payment_status: pay === "cash" ? "pending" : "awaiting_payment",
-      status: "pending",
-    }).select("*").single();
+    // Atomic slot booking — prevents double booking at the database level
+    const { data, error } = await supabase.rpc("book_doctor_ext_slot", {
+      _doctor_id: doctorId,
+      _service_id: service.id ?? null,
+      _service_name: service.name,
+      _appointment_date: date,
+      _appointment_time: time,
+      _duration_minutes: service.duration_minutes,
+      _patient_name: name.trim(),
+      _patient_phone: phone.replace(/\s/g, ""),
+      _notes: notes.trim(),
+      _price: service.price,
+      _payment_method: pay,
+    });
     setSaving(false);
 
-    if (error) { toast({ title: "Bron qilinmadi", description: error.message, variant: "destructive" }); return; }
-    setBooking(data);
-    const url = `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${data.booking_code}`;
+    if (error) {
+      const msg = String(error.message || "");
+      if (msg.includes("slot_taken")) {
+        toast({ title: "Bu vaqt band qilindi", description: "Boshqa vaqtni tanlang", variant: "destructive" });
+        setTaken((t) => Array.from(new Set([...t, time])));
+        setTime("");
+        setStep(2);
+        return;
+      }
+      toast({ title: "Bron qilinmadi", description: msg.includes("past_date") ? "O'tgan sana tanlab bo'lmaydi" : msg, variant: "destructive" });
+      return;
+    }
+
+    const appointment: any = Array.isArray(data) ? data[0] : data;
+    setBooking(appointment);
+    const url = `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`;
     setQr(await QRCode.toDataURL(url, { width: 320, margin: 1 }));
     setStep(5);
-    toast({ title: "Qabul bron qilindi", description: `Kod: ${data.booking_code}` });
+    toast({ title: "Qabul bron qilindi", description: `Kod: ${appointment.booking_code}` });
+
+    if (pay !== "cash") await startOnlinePayment(appointment);
   };
+
 
   const canNext = step === 1 ? !!service : step === 2 ? !!date && !!time : step === 3 ? !!name.trim() && !!phone : true;
 
@@ -283,6 +347,32 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
             {qr && <img src={qr} alt={`Bron kodi ${booking.booking_code}`} className="w-44 h-44 mx-auto rounded-xl border bg-white p-2" />}
             <p className="text-sm font-mono font-bold tracking-widest">{booking.booking_code}</p>
             <div className="text-xs text-muted-foreground">{booking.service_name} · {booking.appointment_date} {String(booking.appointment_time).slice(0, 5)}</div>
+
+            {pay !== "cash" && (
+              <div className={`p-3 rounded-xl border text-sm ${
+                payState === "paid" ? "bg-medical-green/10 border-medical-green/20"
+                : payState === "failed" ? "bg-destructive/10 border-destructive/20"
+                : "bg-yellow-500/10 border-yellow-500/20"}`}>
+                {payState === "paid" ? (
+                  <p className="font-medium text-medical-green">To'lov qabul qilindi — bron tasdiqlandi ✓</p>
+                ) : payState === "failed" ? (
+                  <p className="font-medium text-destructive">To'lov amalga oshmadi. Bron bekor qilindi.</p>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="flex items-center justify-center gap-2 text-yellow-700">
+                      <Loader2 className="w-4 h-4 animate-spin" /> To'lov kutilmoqda...
+                    </p>
+                    {checkoutUrl && (
+                      <a href={checkoutUrl} target="_blank" rel="noreferrer">
+                        <Button size="sm" variant="outline" className="gap-2">
+                          <CreditCard className="w-4 h-4" /> To'lov sahifasini ochish
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             <div className="flex gap-2 justify-center">
               {qr && (
                 <a href={qr} download={`med1-bron-${booking.booking_code}.png`}>
