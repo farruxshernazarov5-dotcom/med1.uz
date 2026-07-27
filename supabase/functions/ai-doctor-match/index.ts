@@ -64,6 +64,12 @@ serve(async (req) => {
     const age = Number.isFinite(Number(body.age)) ? Number(body.age) : null;
     const gender = ["male", "female"].includes(body.gender) ? body.gender : null;
     const region = typeof body.region === "string" ? body.region.trim().slice(0, 80) : "";
+    const answers: { question: string; answer: string }[] = Array.isArray(body.answers)
+      ? body.answers
+          .filter((a: any) => a && typeof a.question === "string")
+          .slice(0, 8)
+          .map((a: any) => ({ question: String(a.question).slice(0, 200), answer: String(a.answer ?? "").slice(0, 40) }))
+      : [];
 
     if (complaint.length < 3) {
       await instrumentError(__usageId, __start, { status: "blocked", errorCode: "bad_request", errorMessage: "short complaint" });
