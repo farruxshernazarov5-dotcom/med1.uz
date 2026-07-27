@@ -89,6 +89,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
       setService(initialService ?? null);
       setBooking(null); setQr(""); setAgreed(false);
       setDate(""); setTime("");
+      setPaymentId(null); setCheckoutUrl(""); setPayState("idle");
     }
   }, [open, initialService]);
 
