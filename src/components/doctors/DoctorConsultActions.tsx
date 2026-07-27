@@ -50,6 +50,10 @@ export default function DoctorConsultActions({ doctorId, doctorName }: Props) {
   const [message, setMessage] = useState("");
   const [when, setWhen] = useState("");
   const [saving, setSaving] = useState(false);
+  const [checking, setChecking] = useState<Kind | null>(null);
+  const [activeAppt, setActiveAppt] = useState<any>(null);
+  const [liveChat, setLiveChat] = useState(false);
+  const [liveVideo, setLiveVideo] = useState(false);
 
   const submit = async () => {
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
