@@ -145,7 +145,44 @@ serve(async (req) => {
       doctors = fallback || [];
     }
 
-    return new Response(JSON.stringify({ analysis: { ...analysis, specialties }, doctors }), {
+    // Confidence + per-doctor match scoring with a short rationale
+    let confidence = Number(analysis.confidence);
+    if (!Number.isFinite(confidence)) confidence = answers.length ? 78 : 55;
+    confidence = Math.max(20, Math.min(answers.length ? 96 : 65, Math.round(confidence)));
+
+    const redFlags = Array.isArray(analysis.red_flags)
+      ? analysis.red_flags
+          .filter((r: any) => r && typeof r.question === "string")
+          .slice(0, 5)
+          .map((r: any, i: number) => ({ id: String(r.id || `q${i + 1}`), question: r.question, why: r.why || "" }))
+      : [];
+
+    const scored = (doctors || []).map((d: any) => {
+      const spec = String(d.primary_specialty || "").toLowerCase();
+      const primaryHit = spec.includes(String(specialties[0] || "").toLowerCase());
+      const anyHit = specialties.some((s) => spec.includes(s.toLowerCase()));
+      const rating = Number(d.rating) || 0;
+      const reviews = Number(d.reviews_count) || 0;
+      const regionHit = region ? String(d.primary_region || "").toLowerCase().includes(region.toLowerCase()) : false;
+      let score = 40;
+      if (primaryHit) score += 30; else if (anyHit) score += 18;
+      score += Math.min(15, rating * 3);
+      score += Math.min(8, reviews / 10);
+      if (regionHit) score += 7;
+      score = Math.max(35, Math.min(99, Math.round(score)));
+      const reasons: string[] = [];
+      if (primaryHit || anyHit) reasons.push(`${d.primary_specialty} — shikoyatga mos yo'nalish`);
+      if (rating >= 4) reasons.push(`reyting ${rating.toFixed(1)}`);
+      if (reviews > 0) reasons.push(`${reviews} sharh`);
+      if (regionHit) reasons.push("siz tanlagan hududda");
+      return { ...d, match_score: score, match_reason: reasons.join(" · ") || "Umumiy mos keladi" };
+    }).sort((a: any, b: any) => b.match_score - a.match_score);
+
+    return new Response(JSON.stringify({
+      analysis: { ...analysis, specialties, confidence, red_flags: answers.length ? [] : redFlags },
+      needs_answers: answers.length === 0 && redFlags.length > 0,
+      doctors: scored,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
