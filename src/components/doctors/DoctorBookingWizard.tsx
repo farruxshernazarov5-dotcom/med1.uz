@@ -113,6 +113,52 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     })();
   }, [date, doctorId]);
 
+  // Poll payment status after redirect to Click/Payme
+  useEffect(() => {
+    if (!paymentId || payState !== "awaiting") return;
+    const t = setInterval(async () => {
+      const { data } = await supabase.from("platform_payments").select("status").eq("id", paymentId).maybeSingle();
+      if (data?.status === "paid") {
+        setPayState("paid");
+        setBooking((b: any) => (b ? { ...b, payment_status: "paid", status: "confirmed" } : b));
+        toast({ title: "To'lov qabul qilindi", description: "Bron tasdiqlandi" });
+      } else if (data && ["cancelled", "failed", "expired"].includes(data.status)) {
+        setPayState("failed");
+        toast({ title: "To'lov amalga oshmadi", description: "Bron bekor qilindi", variant: "destructive" });
+      }
+    }, 5000);
+    return () => clearInterval(t);
+  }, [paymentId, payState]);
+
+  const startOnlinePayment = async (appointment: any) => {
+    const fn = pay === "payme" ? "payme-create-invoice" : "click-create-invoice";
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
+      body: JSON.stringify({
+        amount: appointment.price,
+        purpose: "doctor_appointment",
+        reference_id: appointment.id,
+        return_url: `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.checkout_url) {
+      setPayState("failed");
+      toast({ title: "To'lov havolasi yaratilmadi", description: json.error || "Qayta urinib ko'ring", variant: "destructive" });
+      return;
+    }
+    setPaymentId(json.payment?.id ?? null);
+    setCheckoutUrl(json.checkout_url);
+    setPayState("awaiting");
+    window.open(json.checkout_url, "_blank", "noopener");
+  };
+
   const submit = async () => {
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
     if (!service || !date || !time) return;
@@ -123,31 +169,45 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     if (!agreed) { toast({ title: "To'lov va foydalanish shartlarini qabul qiling", variant: "destructive" }); return; }
 
     setSaving(true);
-    const { data, error } = await supabase.from("doctor_ext_appointments").insert({
-      doctor_id: doctorId,
-      patient_id: user.id,
-      service_id: service.id ?? null,
-      service_name: service.name,
-      appointment_date: date,
-      appointment_time: time,
-      duration_minutes: service.duration_minutes,
-      patient_name: name.trim(),
-      patient_phone: phone.replace(/\s/g, ""),
-      notes: notes.trim() || null,
-      price: service.price,
-      payment_method: pay,
-      payment_status: pay === "cash" ? "pending" : "awaiting_payment",
-      status: "pending",
-    }).select("*").single();
+    // Atomic slot booking — prevents double booking at the database level
+    const { data, error } = await supabase.rpc("book_doctor_ext_slot", {
+      _doctor_id: doctorId,
+      _service_id: service.id ?? null,
+      _service_name: service.name,
+      _appointment_date: date,
+      _appointment_time: time,
+      _duration_minutes: service.duration_minutes,
+      _patient_name: name.trim(),
+      _patient_phone: phone.replace(/\s/g, ""),
+      _notes: notes.trim(),
+      _price: service.price,
+      _payment_method: pay,
+    });
     setSaving(false);
 
-    if (error) { toast({ title: "Bron qilinmadi", description: error.message, variant: "destructive" }); return; }
-    setBooking(data);
-    const url = `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${data.booking_code}`;
+    if (error) {
+      const msg = String(error.message || "");
+      if (msg.includes("slot_taken")) {
+        toast({ title: "Bu vaqt band qilindi", description: "Boshqa vaqtni tanlang", variant: "destructive" });
+        setTaken((t) => Array.from(new Set([...t, time])));
+        setTime("");
+        setStep(2);
+        return;
+      }
+      toast({ title: "Bron qilinmadi", description: msg.includes("past_date") ? "O'tgan sana tanlab bo'lmaydi" : msg, variant: "destructive" });
+      return;
+    }
+
+    const appointment: any = Array.isArray(data) ? data[0] : data;
+    setBooking(appointment);
+    const url = `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`;
     setQr(await QRCode.toDataURL(url, { width: 320, margin: 1 }));
     setStep(5);
-    toast({ title: "Qabul bron qilindi", description: `Kod: ${data.booking_code}` });
+    toast({ title: "Qabul bron qilindi", description: `Kod: ${appointment.booking_code}` });
+
+    if (pay !== "cash") await startOnlinePayment(appointment);
   };
+
 
   const canNext = step === 1 ? !!service : step === 2 ? !!date && !!time : step === 3 ? !!name.trim() && !!phone : true;
 
