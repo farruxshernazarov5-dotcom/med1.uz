@@ -132,12 +132,68 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
           </div>
         )}
 
-        {a && (
+        {needsAnswers && (
+          <div className="space-y-3 border-t pt-3">
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20">
+              <p className="text-sm font-semibold flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-primary" /> Aniqlashtiruvchi savollar
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Xavfli belgilarni istisno qilish uchun quyidagilarga javob bering — tavsiya ishonchliligi oshadi.
+              </p>
+            </div>
+            {redFlags.map((q: any) => (
+              <div key={q.id} className="space-y-1.5">
+                <p className="text-sm font-medium">{q.question}</p>
+                {q.why && <p className="text-[11px] text-muted-foreground">{q.why}</p>}
+                <div className="flex gap-2">
+                  {[{ v: "yes", l: "Ha" }, { v: "no", l: "Yo'q" }].map((o) => (
+                    <button key={o.v} onClick={() => setAnswers((p) => ({ ...p, [q.id]: o.v }))}
+                      className={`px-4 py-1.5 rounded-lg border text-xs ${answers[q.id] === o.v ? "border-primary bg-primary/10 font-bold" : "hover:bg-muted/50"}`}>
+                      {o.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <Button onClick={submitAnswers} disabled={loading || !allAnswered} className="w-full gap-2">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              Yakuniy tavsiyani olish
+            </Button>
+          </div>
+        )}
+
+        {a && !needsAnswers && (
           <div className="space-y-3 border-t pt-3">
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className={URGENCY[a.urgency]?.cls}>{URGENCY[a.urgency]?.label || a.urgency}</Badge>
               {(a.specialties || []).map((s: string) => <Badge key={s}>{s}</Badge>)}
             </div>
+
+            {typeof a.confidence === "number" && (
+              <div className="p-3 rounded-xl border bg-muted/30 space-y-1.5">
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <span>Tavsiya ishonchliligi</span>
+                  <span className="text-primary">{a.confidence}%</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${a.confidence}%` }} />
+                </div>
+                {a.confidence_reason && <p className="text-[11px] text-muted-foreground">{a.confidence_reason}</p>}
+              </div>
+            )}
+
+            {Array.isArray(a.detected_red_flags) && a.detected_red_flags.length > 0 && (
+              <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs">
+                <p className="font-semibold text-destructive flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" /> Diqqat talab qiluvchi belgilar
+                </p>
+                <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                  {a.detected_red_flags.slice(0, 4).map((r: string, i: number) => <li key={i}>{r}</li>)}
+                </ul>
+              </div>
+            )}
+
             {a.summary && <p className="text-sm text-muted-foreground">{a.summary}</p>}
             {a.age_note && <p className="text-xs text-muted-foreground">{a.age_note}</p>}
             {Array.isArray(a.possible_conditions) && a.possible_conditions.length > 0 && (
