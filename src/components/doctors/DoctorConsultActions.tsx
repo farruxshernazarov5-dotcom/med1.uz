@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MessageCircle, Video, HelpCircle, Send, Loader2 } from "lucide-react";
+import DoctorChatSession from "./DoctorChatSession";
+import VideoConsultRoom from "./VideoConsultRoom";
 
 type Kind = "chat" | "video" | "question";
 
