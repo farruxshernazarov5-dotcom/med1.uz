@@ -41,6 +41,7 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
 
   const run = async (withAnswers?: { question: string; answer: string }[]) => {
     if (complaint.trim().length < 3) { toast({ title: "Simptom yoki kasallikni yozing", variant: "destructive" }); return; }
@@ -113,7 +114,7 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={run} disabled={loading} className="w-full gap-2">
+          <Button onClick={() => run()} disabled={loading} className="w-full gap-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             {loading ? "AI tahlil qilmoqda..." : "Mos shifokorni topish"}
           </Button>
@@ -127,7 +128,7 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
         {error && (
           <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-sm">
             <p className="flex items-center gap-2 text-destructive font-medium"><AlertTriangle className="w-4 h-4" /> {error}</p>
-            <Button size="sm" variant="outline" className="mt-2 gap-2" onClick={run}><RotateCcw className="w-3.5 h-3.5" /> Qayta urinish</Button>
+            <Button size="sm" variant="outline" className="mt-2 gap-2" onClick={() => run()}><RotateCcw className="w-3.5 h-3.5" /> Qayta urinish</Button>
           </div>
         )}
 
