@@ -347,6 +347,32 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
             {qr && <img src={qr} alt={`Bron kodi ${booking.booking_code}`} className="w-44 h-44 mx-auto rounded-xl border bg-white p-2" />}
             <p className="text-sm font-mono font-bold tracking-widest">{booking.booking_code}</p>
             <div className="text-xs text-muted-foreground">{booking.service_name} · {booking.appointment_date} {String(booking.appointment_time).slice(0, 5)}</div>
+
+            {pay !== "cash" && (
+              <div className={`p-3 rounded-xl border text-sm ${
+                payState === "paid" ? "bg-medical-green/10 border-medical-green/20"
+                : payState === "failed" ? "bg-destructive/10 border-destructive/20"
+                : "bg-yellow-500/10 border-yellow-500/20"}`}>
+                {payState === "paid" ? (
+                  <p className="font-medium text-medical-green">To'lov qabul qilindi — bron tasdiqlandi ✓</p>
+                ) : payState === "failed" ? (
+                  <p className="font-medium text-destructive">To'lov amalga oshmadi. Bron bekor qilindi.</p>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="flex items-center justify-center gap-2 text-yellow-700">
+                      <Loader2 className="w-4 h-4 animate-spin" /> To'lov kutilmoqda...
+                    </p>
+                    {checkoutUrl && (
+                      <a href={checkoutUrl} target="_blank" rel="noreferrer">
+                        <Button size="sm" variant="outline" className="gap-2">
+                          <CreditCard className="w-4 h-4" /> To'lov sahifasini ochish
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             <div className="flex gap-2 justify-center">
               {qr && (
                 <a href={qr} download={`med1-bron-${booking.booking_code}.png`}>
