@@ -6195,6 +6195,56 @@ export type Database = {
           },
         ]
       }
+      doctor_appointment_reminders: {
+        Row: {
+          appointment_id: string
+          channel: string
+          created_at: string
+          error: string | null
+          id: string
+          kind: string
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appointment_id: string
+          channel?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appointment_id?: string
+          channel?: string
+          created_at?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_appointment_reminders_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_ext_appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_audit_logs: {
         Row: {
           action_type: string
@@ -6349,6 +6399,8 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_code: string
+          cancelled_at: string | null
+          cancelled_reason: string | null
           created_at: string
           doctor_id: string
           duration_minutes: number
@@ -6362,6 +6414,8 @@ export type Database = {
           payment_method: string
           payment_status: string
           price: number
+          reschedule_count: number
+          rescheduled_from: string | null
           service_id: string | null
           service_name: string
           status: string
@@ -6371,6 +6425,8 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_code?: string
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
           created_at?: string
           doctor_id: string
           duration_minutes?: number
@@ -6384,6 +6440,8 @@ export type Database = {
           payment_method?: string
           payment_status?: string
           price?: number
+          reschedule_count?: number
+          rescheduled_from?: string | null
           service_id?: string | null
           service_name: string
           status?: string
@@ -6393,6 +6451,8 @@ export type Database = {
           appointment_date?: string
           appointment_time?: string
           booking_code?: string
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
           created_at?: string
           doctor_id?: string
           duration_minutes?: number
@@ -6406,6 +6466,8 @@ export type Database = {
           payment_method?: string
           payment_status?: string
           price?: number
+          reschedule_count?: number
+          rescheduled_from?: string | null
           service_id?: string | null
           service_name?: string
           status?: string
@@ -6428,16 +6490,65 @@ export type Database = {
           },
         ]
       }
+      doctor_ext_availability: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          end_time: string
+          id: string
+          is_active: boolean
+          slot_minutes: number
+          start_time: string
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          slot_minutes?: number
+          start_time?: string
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          slot_minutes?: number
+          start_time?: string
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_ext_availability_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors_external"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_ext_chat_messages: {
         Row: {
           appointment_id: string
+          attachment_expires_at: string | null
           attachment_name: string | null
+          attachment_size: number | null
           attachment_type: string | null
           attachment_url: string | null
           content: string | null
           created_at: string
           doctor_id: string
+          flag_reason: string | null
           id: string
+          is_flagged: boolean
+          is_hidden: boolean
           patient_id: string
           read_at: string | null
           sender_id: string
@@ -6445,13 +6556,18 @@ export type Database = {
         }
         Insert: {
           appointment_id: string
+          attachment_expires_at?: string | null
           attachment_name?: string | null
+          attachment_size?: number | null
           attachment_type?: string | null
           attachment_url?: string | null
           content?: string | null
           created_at?: string
           doctor_id: string
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean
+          is_hidden?: boolean
           patient_id: string
           read_at?: string | null
           sender_id: string
@@ -6459,13 +6575,18 @@ export type Database = {
         }
         Update: {
           appointment_id?: string
+          attachment_expires_at?: string | null
           attachment_name?: string | null
+          attachment_size?: number | null
           attachment_type?: string | null
           attachment_url?: string | null
           content?: string | null
           created_at?: string
           doctor_id?: string
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean
+          is_hidden?: boolean
           patient_id?: string
           read_at?: string | null
           sender_id?: string
@@ -16512,6 +16633,8 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           booking_code: string
+          cancelled_at: string | null
+          cancelled_reason: string | null
           created_at: string
           doctor_id: string
           duration_minutes: number
@@ -16525,6 +16648,8 @@ export type Database = {
           payment_method: string
           payment_status: string
           price: number
+          reschedule_count: number
+          rescheduled_from: string | null
           service_id: string | null
           service_name: string
           status: string
@@ -16538,6 +16663,41 @@ export type Database = {
         }
       }
       bulk_update_doctor_coords: { Args: { p: Json }; Returns: number }
+      cancel_doctor_ext_appointment: {
+        Args: { _appointment_id: string; _reason?: string }
+        Returns: {
+          appointment_date: string
+          appointment_time: string
+          booking_code: string
+          cancelled_at: string | null
+          cancelled_reason: string | null
+          created_at: string
+          doctor_id: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          paid_at: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          payment_id: string | null
+          payment_method: string
+          payment_status: string
+          price: number
+          reschedule_count: number
+          rescheduled_from: string | null
+          service_id: string | null
+          service_name: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "doctor_ext_appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       deduct_ai_credits: {
         Args: {
           _channel?: string
@@ -16675,6 +16835,46 @@ export type Database = {
         Returns: number
       }
       release_held_referral_rewards: { Args: never; Returns: number }
+      reschedule_doctor_ext_slot: {
+        Args: {
+          _appointment_id: string
+          _new_date: string
+          _new_time: string
+          _reason?: string
+        }
+        Returns: {
+          appointment_date: string
+          appointment_time: string
+          booking_code: string
+          cancelled_at: string | null
+          cancelled_reason: string | null
+          created_at: string
+          doctor_id: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          paid_at: string | null
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          payment_id: string | null
+          payment_method: string
+          payment_status: string
+          price: number
+          reschedule_count: number
+          rescheduled_from: string | null
+          service_id: string | null
+          service_name: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "doctor_ext_appointments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       revoke_referral_reward: {
         Args: { _reason?: string; _referral_id: string }
         Returns: undefined

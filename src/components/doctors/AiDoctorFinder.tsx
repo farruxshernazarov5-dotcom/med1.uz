@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,8 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { buildSlots, dateKey } from "@/lib/doctorAvailability";
 
-import { Stethoscope, Star, Loader2, Sparkles, AlertTriangle, RotateCcw } from "lucide-react";
+import { Stethoscope, Star, Loader2, Sparkles, AlertTriangle, RotateCcw, SlidersHorizontal, CalendarCheck, Wallet, Languages } from "lucide-react";
+
 
 interface Props {
   open: boolean;
@@ -42,6 +44,105 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  // --- Qo'shimcha filtrlar ---
+  const [fLang, setFLang] = useState("all");
+  const [fRating, setFRating] = useState("all");
+  const [fPrice, setFPrice] = useState("all");
+  const [fToday, setFToday] = useState(false);
+  const [meta, setMeta] = useState<Record<string, { languages: string[]; minPrice: number | null; todayFree: number }>>({});
+  const [metaLoading, setMetaLoading] = useState(false);
+
+  const doctorIds: string[] = useMemo(
+    () => (result?.doctors || []).map((d: any) => d.id).filter(Boolean),
+    [result]
+  );
+
+  useEffect(() => {
+    if (doctorIds.length === 0) { setMeta({}); return; }
+    let alive = true;
+    setMetaLoading(true);
+    (async () => {
+      const today = new Date();
+      const key = dateKey(today);
+      const wd = today.getDay();
+      const nowMin = today.getHours() * 60 + today.getMinutes();
+
+      const [langs, services, avail, booked] = await Promise.all([
+        supabase.from("doctors_external").select("id, languages").in("id", doctorIds),
+        supabase.from("doctor_ext_services").select("doctor_id, price").in("doctor_id", doctorIds).eq("is_active", true),
+        supabase.from("doctor_ext_availability").select("doctor_id, start_time, end_time, slot_minutes")
+          .in("doctor_id", doctorIds).eq("weekday", wd).eq("is_active", true),
+        supabase.from("doctor_ext_appointments").select("doctor_id, appointment_time")
+          .in("doctor_id", doctorIds).eq("appointment_date", key).neq("status", "cancelled"),
+      ]);
+      if (!alive) return;
+
+      const availByDoc = new Map<string, any>();
+      (avail.data || []).forEach((r: any) => availByDoc.set(r.doctor_id, r));
+      const hasAvailTable = (avail.data || []).length > 0;
+      const bookedByDoc = new Map<string, Set<string>>();
+      (booked.data || []).forEach((b: any) => {
+        const s = bookedByDoc.get(b.doctor_id) || new Set<string>();
+        s.add(String(b.appointment_time).slice(0, 5));
+        bookedByDoc.set(b.doctor_id, s);
+      });
+      const priceByDoc = new Map<string, number>();
+      (services.data || []).forEach((s: any) => {
+        const p = Number(s.price) || 0;
+        if (!priceByDoc.has(s.doctor_id) || p < (priceByDoc.get(s.doctor_id) as number)) priceByDoc.set(s.doctor_id, p);
+      });
+
+      const next: typeof meta = {};
+      doctorIds.forEach((id) => {
+        const row = availByDoc.get(id);
+        const closed = hasAvailTable ? !row : wd === 0;
+        const taken = bookedByDoc.get(id) || new Set<string>();
+        const slots = closed ? [] : buildSlots(row);
+        const free = slots.filter((t) => {
+          const [h, m] = t.split(":").map(Number);
+          return !taken.has(t) && h * 60 + m > nowMin;
+        }).length;
+        next[id] = {
+          languages: ((langs.data || []).find((l: any) => l.id === id)?.languages as string[]) || [],
+          minPrice: priceByDoc.has(id) ? (priceByDoc.get(id) as number) : null,
+          todayFree: free,
+        };
+      });
+      setMeta(next);
+      setMetaLoading(false);
+    })();
+    return () => { alive = false; };
+  }, [doctorIds]);
+
+  const langOptions = useMemo(() => {
+    const s = new Set<string>();
+    Object.values(meta).forEach((m) => m.languages.forEach((l) => l && s.add(l)));
+    return Array.from(s).sort();
+  }, [meta]);
+
+  const filteredDoctors = useMemo(() => {
+    const list: any[] = result?.doctors || [];
+    return list.filter((d) => {
+      const m = meta[d.id];
+      if (fLang !== "all" && !(m?.languages || []).includes(fLang)) return false;
+      if (fRating !== "all" && Number(d.rating || 0) < Number(fRating)) return false;
+      if (fPrice !== "all") {
+        const p = m?.minPrice;
+        if (p == null) return false;
+        if (fPrice === "0-100000" && p > 100000) return false;
+        if (fPrice === "100000-300000" && (p < 100000 || p > 300000)) return false;
+        if (fPrice === "300000+" && p < 300000) return false;
+      }
+      if (fToday && !(m && m.todayFree > 0)) return false;
+      return true;
+    });
+  }, [result, meta, fLang, fRating, fPrice, fToday]);
+
+  const resetFilters = () => { setFLang("all"); setFRating("all"); setFPrice("all"); setFToday(false); };
+  const activeFilters = [fLang !== "all", fRating !== "all", fPrice !== "all", fToday].filter(Boolean).length;
+
+
 
   const run = async (withAnswers?: { question: string; answer: string }[]) => {
     if (complaint.trim().length < 3) { toast({ title: "Simptom yoki kasallikni yozing", variant: "destructive" }); return; }
@@ -209,9 +310,65 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
             )}
 
             <div>
-              <p className="text-sm font-bold mb-2">Mos shifokorlar ({result.doctors?.length || 0})</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-bold">
+                  Mos shifokorlar ({filteredDoctors.length}
+                  {filteredDoctors.length !== (result.doctors?.length || 0) ? ` / ${result.doctors?.length || 0}` : ""})
+                </p>
+                {activeFilters > 0 && (
+                  <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={resetFilters}>
+                    <RotateCcw className="w-3 h-3" /> Tozalash
+                  </Button>
+                )}
+              </div>
+
+              <div className="rounded-xl border bg-muted/30 p-2.5 space-y-2 mb-3">
+                <p className="text-[11px] font-semibold flex items-center gap-1.5 text-muted-foreground">
+                  <SlidersHorizontal className="w-3.5 h-3.5" /> Qo'shimcha mezonlar
+                  {metaLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Select value={fLang} onValueChange={setFLang}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Til" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Barcha tillar</SelectItem>
+                      {langOptions.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Select value={fRating} onValueChange={setFRating}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Reyting" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Barcha reyting</SelectItem>
+                      <SelectItem value="4.5">4.5+ ⭐</SelectItem>
+                      <SelectItem value="4">4.0+ ⭐</SelectItem>
+                      <SelectItem value="3">3.0+ ⭐</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={fPrice} onValueChange={setFPrice}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Narx" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Barcha narxlar</SelectItem>
+                      <SelectItem value="0-100000">100 000 so'mgacha</SelectItem>
+                      <SelectItem value="100000-300000">100–300 ming so'm</SelectItem>
+                      <SelectItem value="300000+">300 ming so'mdan yuqori</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={fToday ? "default" : "outline"}
+                    className="h-8 text-xs gap-1.5"
+                    onClick={() => setFToday((v) => !v)}
+                  >
+                    <CalendarCheck className="w-3.5 h-3.5" /> Bugun bo'sh
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-2">
-                {(result.doctors || []).map((d: any) => (
+                {filteredDoctors.map((d: any) => {
+                  const m = meta[d.id];
+                  return (
                   <Link key={d.id} to={`/doctors/ext/${d.slug}`} onClick={() => onOpenChange(false)}
                     className="flex items-center gap-3 p-2.5 rounded-xl border hover:border-primary/40 transition">
                     {d.photo_url ? (
@@ -227,6 +384,23 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
                       <p className="text-[11px] text-muted-foreground truncate">
                         {d.primary_region}{d.experience ? ` · ${d.experience} yil` : ""}
                       </p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {m?.minPrice != null && (
+                          <Badge variant="outline" className="text-[9px] gap-1 px-1.5 py-0">
+                            <Wallet className="w-2.5 h-2.5" />{m.minPrice.toLocaleString("uz-UZ")} so'mdan
+                          </Badge>
+                        )}
+                        {m && m.todayFree > 0 && (
+                          <Badge variant="outline" className="text-[9px] gap-1 px-1.5 py-0 border-medical-green/30 text-medical-green">
+                            <CalendarCheck className="w-2.5 h-2.5" />Bugun {m.todayFree} slot
+                          </Badge>
+                        )}
+                        {(m?.languages || []).slice(0, 2).map((l) => (
+                          <Badge key={l} variant="outline" className="text-[9px] gap-1 px-1.5 py-0">
+                            <Languages className="w-2.5 h-2.5" />{l}
+                          </Badge>
+                        ))}
+                      </div>
                       {d.match_reason && (
                         <p className="text-[11px] text-muted-foreground truncate mt-0.5">Sabab: {d.match_reason}</p>
                       )}
@@ -243,12 +417,18 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
                     </div>
 
                   </Link>
-                ))}
-                {(result.doctors || []).length === 0 && (
-                  <p className="text-xs text-muted-foreground">Bu hudud bo'yicha shifokor topilmadi — hududni o'zgartirib ko'ring.</p>
+                  );
+                })}
+                {filteredDoctors.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {activeFilters > 0
+                      ? "Tanlangan mezonlarga mos shifokor yo'q — filtrlarni yumshating."
+                      : "Bu hudud bo'yicha shifokor topilmadi — hududni o'zgartirib ko'ring."}
+                  </p>
                 )}
               </div>
             </div>
+
           </div>
         )}
       </DialogContent>
