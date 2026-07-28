@@ -99,6 +99,8 @@ const Index = () => {
           <SponsorsLeaderboard />
           <CosmetologyPromo />
           <PartnerClinics />
+          <AnimatedDoctorsStrip />
+
           <HomeSectionsPreview />
           <HomeArticlesPreview />
           <HomeNewsSection />
