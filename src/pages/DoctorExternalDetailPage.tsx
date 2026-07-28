@@ -17,6 +17,9 @@ import DoctorServicesSection from "@/components/doctors/DoctorServicesSection";
 import DoctorConsultActions from "@/components/doctors/DoctorConsultActions";
 import DoctorVerifiedReviews from "@/components/doctors/DoctorVerifiedReviews";
 import DoctorBookingWizard from "@/components/doctors/DoctorBookingWizard";
+import DoctorAvailabilityCalendar from "@/components/doctors/DoctorAvailabilityCalendar";
+import MyDoctorAppointments from "@/components/doctors/MyDoctorAppointments";
+
 import { getServiceTemplates } from "@/data/doctorServiceTemplates";
 
 interface Doctor {
@@ -173,8 +176,12 @@ const DoctorExternalDetailPage = () => {
               extraServices={doc.services}
             />
 
+            <DoctorAvailabilityCalendar doctorId={doc.id} />
+
+            <MyDoctorAppointments doctorId={doc.id} doctorName={doc.name} />
 
             <RecommendedAnalyses specialty={doc.primary_specialty} />
+
 
             <div className="bg-card rounded-2xl border p-6">
               <h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2">

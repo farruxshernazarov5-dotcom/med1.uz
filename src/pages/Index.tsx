@@ -19,6 +19,8 @@ const HomeArticlesPreview = lazy(() => import("@/components/HomeArticlesPreview"
 const CosmetologyPromo = lazy(() => import("@/components/CosmetologyPromo"));
 const HealthDashboardWidget = lazy(() => import("@/components/HealthDashboardWidget"));
 const PartnerClinics = lazy(() => import("@/components/PartnerClinics"));
+const AnimatedDoctorsStrip = lazy(() => import("@/components/AnimatedDoctorsStrip"));
+
 const HomeAIServicesSection = lazy(() => import("@/components/HomeAIServicesSection"));
 const HomeEcosystemSection = lazy(() => import("@/components/HomeEcosystemSection"));
 const AnimatedServicesShowcase = lazy(() => import("@/components/AnimatedServicesShowcase"));
@@ -99,6 +101,8 @@ const Index = () => {
           <SponsorsLeaderboard />
           <CosmetologyPromo />
           <PartnerClinics />
+          <AnimatedDoctorsStrip />
+
           <HomeSectionsPreview />
           <HomeArticlesPreview />
           <HomeNewsSection />
