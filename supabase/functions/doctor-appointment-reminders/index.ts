@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
         .from("doctor_ext_appointments")
         .select("id, patient_name, patient_phone, service_name, appointment_date, appointment_time, booking_code, status")
         .in("id", apptIds),
-      supabase.from("profiles").select("user_id, full_name, phone, email, telegram_chat_id").in("user_id", userIds),
+      supabase.from("profiles").select("user_id, full_name, phone, telegram_chat_id").in("user_id", userIds),
     ]);
 
     const apptMap = new Map((appts || []).map((a: any) => [a.id, a]));
@@ -91,7 +91,8 @@ Deno.serve(async (req) => {
 
       try {
         if (r.channel === "email") {
-          const to = prof?.email;
+          const { data: authUser } = await supabase.auth.admin.getUserById(r.user_id);
+          const to = authUser?.user?.email;
           if (!to) { errText = "email_missing"; }
           else {
             const res = await supabase.functions.invoke("send-transactional-email", {
