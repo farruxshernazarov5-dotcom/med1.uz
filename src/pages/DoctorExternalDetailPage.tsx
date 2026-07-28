@@ -173,8 +173,12 @@ const DoctorExternalDetailPage = () => {
               extraServices={doc.services}
             />
 
+            <DoctorAvailabilityCalendar doctorId={doc.id} />
+
+            <MyDoctorAppointments doctorId={doc.id} doctorName={doc.name} />
 
             <RecommendedAnalyses specialty={doc.primary_specialty} />
+
 
             <div className="bg-card rounded-2xl border p-6">
               <h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2">
