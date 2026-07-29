@@ -29,7 +29,7 @@ interface RawDentalClinic {
   address: string;
   phones: string[] | null;
   websites: string[] | null;
-  socials: Record<string, string> | null;
+  socials: any;
   emails: string[] | null;
   schedule: string | null;
   rating: number | null;
@@ -67,7 +67,7 @@ function mapClinic(r: RawDentalClinic): DentalClinic {
     address: r.address || "",
     phones: (r.phones || []).filter(Boolean),
     websites: (r.websites || []).filter((w) => w && !w.includes("med1.uz")),
-    socials: r.socials || null,
+    socials: r.socials && !Array.isArray(r.socials) ? r.socials : null,
     emails: r.emails && r.emails.length ? r.emails : null,
     schedule,
     rating: r.rating ?? 0,
