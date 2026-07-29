@@ -97,17 +97,21 @@ export const getDentalClinic = (slug: string): DentalClinic | undefined =>
 
 /** Region label used in doctors_external (Russian) for a given clinic city. */
 export const cityToDoctorRegion: Record<string, string> = {
-  Toshkent: "Ташкент",
-  Samarqand: "Самарканд",
-  Andijon: "Андижан",
-  Namangan: "Наманган",
-  "Farg'ona": "Фергана",
-  "Qo'qon": "Коканд",
-  Navoiy: "Навои",
-  Qarshi: "Карши",
-  Termiz: "Термез",
-  Urganch: "Ургенч",
-  Chirchiq: "Чирчик",
+  Toshkent: "г. Ташкент",
+  Chirchiq: "Ташкентская область",
+  Samarqand: "Самаркандская область",
+  Buxoro: "Бухарская область",
+  Andijon: "Андижанская область",
+  Namangan: "Наманганская область",
+  "Farg'ona": "Ферганская область",
+  "Qo'qon": "Ферганская область",
+  Navoiy: "Навоийская область",
+  Qarshi: "Кашкадарьинская область",
+  Termiz: "Сурхандарьинская область",
+  Urganch: "Хорезмская область",
+  Guliston: "Сырдарьинская область",
+  Jizzax: "Джизакская область",
+  Nukus: "Республика Каракалпакстан",
 };
 
 export const DENTAL_DOCTOR_SPECIALTIES = [
