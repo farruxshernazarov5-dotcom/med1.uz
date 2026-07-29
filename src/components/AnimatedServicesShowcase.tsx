@@ -38,7 +38,7 @@ const services: Service[] = [
   { icon: Microscope, title: "Diagnostika", desc: "Lab & instrumental tekshiruvlar", href: "/diagnostics", tone: "from-rose-500 to-pink-400" },
   { icon: Brain, title: "AI Tibbiy Yordam", desc: "Gemini 3 Flash asosida", href: "/ai-services", tone: "from-[#7B61FF] to-fuchsia-400" },
   { icon: Pill, title: "Dorixonalar", desc: "Onlayn dori qidiruv", href: "/medicine", tone: "from-cyan-500 to-cyan-300" },
-  { icon: Smile, title: "Stomatologiya", desc: "Tish parvarish ekotizimi", href: "/services", tone: "from-indigo-500 to-blue-400" },
+  { icon: Smile, title: "Stomatologiya", desc: "Tish parvarish ekotizimi", href: "/dental", tone: "from-indigo-500 to-blue-400" },
   { icon: Sparkles, title: "Kosmetologiya", desc: "Estetik tibbiyot xizmatlari", href: "/cosmetology", tone: "from-fuchsia-500 to-pink-400" },
   { icon: ShieldCheck, title: "Sug'urta", desc: "Sog'liqni himoya qilish", href: "/services", tone: "from-amber-500 to-orange-400" },
   { icon: FileText, title: "EMR / HMS", desc: "Elektron tibbiy kartalar", href: "/dashboard", tone: "from-violet-500 to-purple-400" },
