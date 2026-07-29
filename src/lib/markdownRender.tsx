@@ -69,7 +69,7 @@ export function parseMarkdown(src: string): MdBlock[] {
     if ((m = line.match(/^#\s+(.*)$/)))   { flushAll(); out.push({ type: "h1", runs: parseInline(m[1]) }); continue; }
     if ((m = line.match(/^\s*[-*•]\s+(.*)$/))) { flushPara(); flushOl(); ul.push(m[1]); continue; }
     if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); flushUl(); ol.push(m[1]); continue; }
-    if (/^\s*\|.*\|\s*$/.test(line)) { flushAll(); tbl.push(line); continue; }
+    if (/^\s*\|.*\|\s*$/.test(line)) { flushPara(); flushUl(); flushOl(); tbl.push(line); continue; }
     flushUl(); flushOl();
     para.push(line);
   }
