@@ -19,12 +19,12 @@ const parseInline = (s: string): MdRun[] => {
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(s))) {
-    if (m.index > last) runs.push({ text: s.slice(last, m.index) });
-    runs.push({ text: m[1] || m[2], bold: true });
+    if (m.index > last) runs.push({ text: unescapeMd(s.slice(last, m.index)) });
+    runs.push({ text: unescapeMd(m[1] || m[2]), bold: true });
     last = m.index + m[0].length;
   }
-  if (last < s.length) runs.push({ text: s.slice(last) });
-  return runs.length ? runs : [{ text: s }];
+  if (last < s.length) runs.push({ text: unescapeMd(s.slice(last)) });
+  return runs.length ? runs : [{ text: unescapeMd(s) }];
 };
 
 export function parseMarkdown(src: string): MdBlock[] {
