@@ -6,6 +6,7 @@ export type MdBlock =
   | { type: "h1" | "h2" | "h3" | "p"; runs: MdRun[] }
   | { type: "ul"; items: MdRun[][] }
   | { type: "ol"; items: MdRun[][] }
+  | { type: "table"; head: MdRun[][]; rows: MdRun[][][] }
   | { type: "hr" };
 
 export type MdRun = { text: string; bold?: boolean };
