@@ -12,6 +12,8 @@ import { FileText, Search, Shield, Sparkles, Download, Languages, Scale, Lock, A
 import { toast } from "sonner";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
 import { MarkdownView } from "@/lib/markdownRender";
+import privacyPdf from "@/assets/privacy-uz.pdf.asset.json";
+import termsPdf from "@/assets/terms-uz.pdf.asset.json";
 
 type Lang = "uz" | "ru" | "en";
 
@@ -177,6 +179,47 @@ export default function LegalCenterPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Rasmiy tasdiqlangan hujjatlar */}
+      <div className="container mx-auto px-4 pt-6">
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <Shield className="w-4 h-4 text-[#2F80ED]" />
+            <h2 className="font-semibold">Rasmiy tasdiqlangan hujjatlar</h2>
+            <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30">Tahrir 1.0</Badge>
+          </div>
+          <p className="text-xs text-white/60 mb-4">
+            Saytdagi barcha hujjatlar shu asosda yuritiladi. O'zbek tilidagi matn asosiy hisoblanadi.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { href: "/privacy", title: "Maxfiylik siyosati", desc: "Shaxsiy ma'lumotlarni qayta ishlash siyosati", pdf: privacyPdf.url, file: "MED1UZ-Maxfiylik-siyosati-UZ.pdf" },
+              { href: "/terms", title: "Foydalanuvchi shartnomasi", desc: "Ommaviy oferta (qo'shilish shartnomasi)", pdf: termsPdf.url, file: "MED1UZ-Foydalanuvchi-shartnomasi-UZ.pdf" },
+              { href: "/user-guide", title: "Foydalanuvchi qo'llanmasi", desc: "Platformadan foydalanish bo'yicha to'liq qo'llanma", pdf: null, file: "" },
+            ].map((d) => (
+              <div key={d.href} className="rounded-xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <FileText className="w-4 h-4 text-[#7B61FF]" />
+                  <p className="font-medium text-sm">{d.title}</p>
+                </div>
+                <p className="text-xs text-white/60 mb-3">{d.desc}</p>
+                <div className="flex gap-2">
+                  <Link to={d.href}>
+                    <Button size="sm" variant="secondary" className="h-8">Ochish</Button>
+                  </Link>
+                  {d.pdf && (
+                    <a href={d.pdf} download={d.file} target="_blank" rel="noopener noreferrer">
+                      <Button size="sm" variant="outline" className="h-8 border-white/20 bg-transparent hover:bg-white/10">
+                        <Download className="w-3.5 h-3.5 mr-1" /> PDF
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

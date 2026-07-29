@@ -6,9 +6,12 @@ export type MdBlock =
   | { type: "h1" | "h2" | "h3" | "p"; runs: MdRun[] }
   | { type: "ul"; items: MdRun[][] }
   | { type: "ol"; items: MdRun[][] }
+  | { type: "table"; head: MdRun[][]; rows: MdRun[][][] }
   | { type: "hr" };
 
 export type MdRun = { text: string; bold?: boolean };
+
+const unescapeMd = (t: string) => t.replace(/\\([\\.\-*_#|[\]()+>~`])/g, "$1");
 
 const parseInline = (s: string): MdRun[] => {
   const runs: MdRun[] = [];
@@ -16,12 +19,12 @@ const parseInline = (s: string): MdRun[] => {
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(s))) {
-    if (m.index > last) runs.push({ text: s.slice(last, m.index) });
-    runs.push({ text: m[1] || m[2], bold: true });
+    if (m.index > last) runs.push({ text: unescapeMd(s.slice(last, m.index)) });
+    runs.push({ text: unescapeMd(m[1] || m[2]), bold: true });
     last = m.index + m[0].length;
   }
-  if (last < s.length) runs.push({ text: s.slice(last) });
-  return runs.length ? runs : [{ text: s }];
+  if (last < s.length) runs.push({ text: unescapeMd(s.slice(last)) });
+  return runs.length ? runs : [{ text: unescapeMd(s) }];
 };
 
 export function parseMarkdown(src: string): MdBlock[] {
@@ -30,6 +33,22 @@ export function parseMarkdown(src: string): MdBlock[] {
   let para: string[] = [];
   let ul: string[] = [];
   let ol: string[] = [];
+  let tbl: string[] = [];
+
+  const splitRow = (l: string) =>
+    l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+  const flushTbl = () => {
+    if (!tbl.length) return;
+    const rows = tbl.map(splitRow).filter((r) => !r.every((c) => /^:?-{2,}:?$/.test(c) || c === ""));
+    tbl = [];
+    if (!rows.length) return;
+    const [head, ...body] = rows;
+    out.push({
+      type: "table",
+      head: head.map(parseInline),
+      rows: body.map((r) => r.map(parseInline)),
+    });
+  };
 
   const flushPara = () => {
     if (para.length) { out.push({ type: "p", runs: parseInline(para.join(" ")) }); para = []; }
@@ -40,7 +59,7 @@ export function parseMarkdown(src: string): MdBlock[] {
   const flushOl = () => {
     if (ol.length) { out.push({ type: "ol", items: ol.map(parseInline) }); ol = []; }
   };
-  const flushAll = () => { flushPara(); flushUl(); flushOl(); };
+  const flushAll = () => { flushPara(); flushUl(); flushOl(); flushTbl(); };
 
   for (const raw of lines) {
     const line = raw.trimEnd();
@@ -52,6 +71,7 @@ export function parseMarkdown(src: string): MdBlock[] {
     if ((m = line.match(/^#\s+(.*)$/)))   { flushAll(); out.push({ type: "h1", runs: parseInline(m[1]) }); continue; }
     if ((m = line.match(/^\s*[-*•]\s+(.*)$/))) { flushPara(); flushOl(); ul.push(m[1]); continue; }
     if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); flushUl(); ol.push(m[1]); continue; }
+    if (/^\s*\|.*\|\s*$/.test(line)) { flushPara(); flushUl(); flushOl(); tbl.push(line); continue; }
     flushUl(); flushOl();
     para.push(line);
   }
@@ -82,8 +102,24 @@ export function MarkdownView({ source, className }: { source: string; className?
         if (b.type === "h3") return <h4 key={i} className="text-base font-semibold mt-3 mb-1">{renderRuns(b.runs)}</h4>;
         if (b.type === "hr") return <hr key={i} className="my-3 border-current opacity-20" />;
         if (b.type === "ul") return <ul key={i} className="list-disc pl-5 space-y-1 my-2">{b.items.map((it, j) => <li key={j}>{renderRuns(it)}</li>)}</ul>;
+        if (b.type === "table") return (
+          <div key={i} className="my-3 overflow-x-auto">
+            <table className="w-full text-xs border border-border rounded-lg overflow-hidden">
+              <thead className="bg-muted/60">
+                <tr>{b.head.map((c, j) => <th key={j} className="text-left font-semibold px-3 py-2 border-b border-border">{renderRuns(c)}</th>)}</tr>
+              </thead>
+              <tbody>
+                {b.rows.map((r, j) => (
+                  <tr key={j} className="odd:bg-muted/20 align-top">
+                    {r.map((c, k) => <td key={k} className="px-3 py-2 border-b border-border">{renderRuns(c)}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
         if (b.type === "ol") return <ol key={i} className="list-decimal pl-5 space-y-1 my-2">{b.items.map((it, j) => <li key={j}>{renderRuns(it)}</li>)}</ol>;
-        return <p key={i} className="my-2 leading-relaxed">{renderRuns(b.runs)}</p>;
+        return <p key={i} className="my-2 leading-relaxed">{renderRuns((b as any).runs)}</p>;
       })}
     </div>
   );

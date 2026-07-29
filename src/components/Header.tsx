@@ -35,6 +35,7 @@ const Header = () => {
     { label: t("nav.bloodBanks"), href: "/blood-banks" },
     { label: t("nav.maternity"), href: "/maternity" },
     { label: t("nav.cosmetology"), href: "/cosmetology" },
+    { label: "Stomatologiya", href: "/dental" },
     { label: t("nav.partnership"), href: "/partnership" },
   ];
 

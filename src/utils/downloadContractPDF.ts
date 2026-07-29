@@ -165,7 +165,8 @@ export async function downloadContractPDF(d: ContractPDFData): Promise<void> {
     }
     // paragraph
     ensureSpace(6);
-    drawRuns(b.runs, M, contentW, 10, 5);
+    if ((b as any).type === "table") continue;
+    drawRuns((b as any).runs, M, contentW, 10, 5);
     y += 1;
   }
 
