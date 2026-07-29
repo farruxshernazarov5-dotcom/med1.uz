@@ -11,6 +11,8 @@ export type MdBlock =
 
 export type MdRun = { text: string; bold?: boolean };
 
+const unescapeMd = (t: string) => t.replace(/\\([\\.\-*_#|[\]()+>~`])/g, "$1");
+
 const parseInline = (s: string): MdRun[] => {
   const runs: MdRun[] = [];
   const re = /\*\*([^*]+)\*\*|__([^_]+)__/g;
