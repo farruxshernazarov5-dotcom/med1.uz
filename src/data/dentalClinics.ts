@@ -79,7 +79,7 @@ function mapClinic(r: RawDentalClinic): DentalClinic {
   };
 }
 
-export const dentalClinics: DentalClinic[] = (raw as RawDentalClinic[])
+export const dentalClinics: DentalClinic[] = (raw as unknown as RawDentalClinic[])
   .map(mapClinic)
   .filter((c) => c.name && c.slug)
   .sort((a, b) => b.rating - a.rating || b.reviewsCount - a.reviewsCount || a.name.localeCompare(b.name, "uz"));
