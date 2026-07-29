@@ -12,6 +12,8 @@ import { FileText, Search, Shield, Sparkles, Download, Languages, Scale, Lock, A
 import { toast } from "sonner";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
 import { MarkdownView } from "@/lib/markdownRender";
+import privacyPdf from "@/assets/privacy-uz.pdf.asset.json";
+import termsPdf from "@/assets/terms-uz.pdf.asset.json";
 
 type Lang = "uz" | "ru" | "en";
 
