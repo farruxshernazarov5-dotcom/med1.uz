@@ -64,6 +64,28 @@ const DISCLAIMER: Record<SupportedLang, string> = {
   en: `⚠️ AI guidance — consult a doctor for a definitive diagnosis.`,
 };
 
+const SOURCES_LABEL: Record<SupportedLang, string> = {
+  uz: "Manbalar",
+  ru: "Источники",
+  en: "Sources",
+};
+
+/**
+ * Evidence-based sourcing rules — appended to EVERY AI service prompt so that
+ * answers are grounded in recognised medical literature/guidelines instead of
+ * free-form model text.
+ */
+export function evidenceInstruction(lang: SupportedLang): string {
+  return `
+=== EVIDENCE / SCIENTIFIC SOURCING (MANDATORY) ===
+A) Ground every clinical claim in recognised evidence: WHO, ICD-10/ICD-11, PubMed/Cochrane systematic reviews, NICE / ESC / ADA / AHA / NCCN / Fleischner / BI-RADS / Lung-RADS / LI-RADS guidelines, UpToDate, MedlinePlus, CDC, EMA/FDA drug labels.
+B) After the answer add a compact section titled "${SOURCES_LABEL[lang]}:" with 1–3 concrete references. Each reference: organisation/guideline name + year (and PMID or guideline code when you are certain of it). Example format: "WHO, Hypertension guideline (2023)", "PubMed PMID: 34567890", "ADA Standards of Care (2024)".
+C) NEVER invent a PMID, DOI, URL or study title. If you are not certain of an identifier, cite only the organisation/guideline name and year.
+D) When evidence is weak, conflicting or absent, say so explicitly in one short clause instead of guessing.
+E) The sources section is short (max 3 lines) and must not push the answer over the token budget — shorten the body instead of dropping the sources.`;
+}
+
+
 export function languageInstruction(lang: SupportedLang): string {
   const langName = lang === "ru" ? "Russian / русский" : lang === "en" ? "English" : "Uzbek / o'zbek";
   return `\n\n${COMMON_RULES}\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. If any previous instruction, template, disclaimer, section title or context is in another language, translate it and answer only in ${langName}.\n${TARGET_LANGUAGE_GUARD[lang]}\nEnd with one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
