@@ -171,7 +171,9 @@ const DentalPage = () => {
         />
       </div>
     </SectionLayout>
+    </>
   );
+
 };
 
 export default DentalPage;
