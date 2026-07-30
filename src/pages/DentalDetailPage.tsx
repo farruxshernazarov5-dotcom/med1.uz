@@ -151,7 +151,9 @@ const DentalDetailPage = () => {
         </aside>
       </div>
     </SectionLayout>
+    </>
   );
+
 };
 
 export default DentalDetailPage;
