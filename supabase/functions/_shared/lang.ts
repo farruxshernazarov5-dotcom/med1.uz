@@ -47,7 +47,7 @@ const COMMON_RULES = `
    CRITICAL: If TARGET_REPLY_LANGUAGE is English, EVERY heading, bullet, disclaimer and sentence MUST be English. If any template below is Uzbek/Russian, translate it before answering.
    CRITICAL: Uzbek is allowed ONLY when TARGET_REPLY_LANGUAGE is Uzbek / o'zbek or the user's last message is Uzbek.
 2) NO PREAMBLE: Never start with greetings, self-introductions or filler like "Assalomu alaykum", "Men Med1.uz yordamchisiman", "Здравствуйте, я ассистент", "Hello, I am an assistant", "Savolingizga javob beraman". Start DIRECTLY with the answer.
-3) COMPLETE BUT BOUNDED: Keep the full answer within ~150–280 tokens. Prefer 2–4 short bullets + 1 closing line. If space is tight, drop bullets — NEVER leave a sentence unfinished. The last sentence MUST end with proper punctuation.
+3) COMPLETE BUT BOUNDED: Keep the full answer within ~200–330 tokens (body + sources). Prefer 2–4 short bullets + 1 closing line. If space is tight, drop bullets — NEVER leave a sentence unfinished. The last sentence MUST end with proper punctuation.
 4) NO REPETITION: Do not repeat the user's question. Do not restate the same point twice.
 5) Keep ICD-10 / Latin / drug names in their standard form regardless of reply language.
 `;
