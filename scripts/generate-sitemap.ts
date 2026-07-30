@@ -13,7 +13,6 @@ interface Entry {
   lastmod?: string;
 }
 
-const today = new Date().toISOString().slice(0, 10);
 
 // ---- Static routes ----
 const staticEntries: Entry[] = [
