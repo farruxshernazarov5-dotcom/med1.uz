@@ -21,8 +21,39 @@ const DentalDetailPage = () => {
 
   const mapQuery = encodeURIComponent(`${clinic.name} ${clinic.address}`);
 
+  const jsonLd: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "Dentist",
+    name: clinic.name,
+    description: clinic.description,
+    url: `https://www.med1.uz/dental/${clinic.slug}`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: clinic.city,
+      streetAddress: clinic.address,
+      addressCountry: "UZ",
+    },
+    ...(clinic.phones?.length ? { telephone: clinic.phones[0] } : {}),
+    ...(clinic.emails?.length ? { email: clinic.emails[0] } : {}),
+    ...(clinic.websites?.length ? { sameAs: clinic.websites } : {}),
+    ...(clinic.schedule ? { openingHours: clinic.schedule } : {}),
+    ...(clinic.rating > 0 && clinic.reviewsCount > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: clinic.rating, reviewCount: clinic.reviewsCount } }
+      : {}),
+    medicalSpecialty: "Dentistry",
+    availableService: clinic.tags.map((t) => ({ "@type": "MedicalProcedure", name: t })),
+  };
+
   return (
+    <>
+      <SEO
+        title={`${clinic.name} — stomatologiya klinikasi, ${clinic.city} | Med1.uz`}
+        description={`${clinic.name} (${clinic.city}): manzil, telefon, ish vaqti, xizmatlar va reyting. ${clinic.tags.slice(0, 3).join(", ")}. Med1.uz stomatologiya katalogi.`}
+        path={`/dental/${clinic.slug}`}
+        jsonLd={jsonLd}
+      />
     <SectionLayout
+
       title={clinic.name}
       subtitle={`${clinic.city} · Stomatologiya klinikasi`}
       icon={<Smile className="w-7 h-7 text-primary-foreground" />}
