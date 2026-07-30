@@ -13,7 +13,6 @@ interface Entry {
   lastmod?: string;
 }
 
-const today = new Date().toISOString().slice(0, 10);
 
 // ---- Static routes ----
 const staticEntries: Entry[] = [
@@ -24,6 +23,8 @@ const staticEntries: Entry[] = [
   { path: "/articles",            changefreq: "weekly",  priority: "0.8" },
   { path: "/news",                changefreq: "daily",   priority: "0.8" },
   { path: "/clinics",             changefreq: "daily",   priority: "0.9" },
+  { path: "/doctors",             changefreq: "daily",   priority: "0.9" },
+
   { path: "/diagnostics",         changefreq: "weekly",  priority: "0.8" },
   { path: "/pharmacies",          changefreq: "weekly",  priority: "0.8" },
   { path: "/blood-banks",         changefreq: "weekly",  priority: "0.7" },
@@ -165,6 +166,47 @@ async function loadDynamic() {
     }
   } catch (e) { console.warn("news load failed:", (e as Error).message); }
 
+  // Dental clinics: /dental/:slug (static JSON dataset)
+  try {
+    const raw = JSON.parse(readFileSync(resolve("src/data/dental-clinics.json"), "utf8"));
+    const list: any[] = Array.isArray(raw) ? raw : (raw.clinics ?? raw.items ?? []);
+    const seen = new Set<string>();
+    for (const c of list) {
+      const slug = c?.slug;
+      if (!slug || seen.has(slug)) continue;
+      seen.add(slug);
+      dynamicEntries.push({ path: `/dental/${slug}`, changefreq: "weekly", priority: "0.6" });
+    }
+  } catch (e) { console.warn("dental clinics load failed:", (e as Error).message); }
+
+  // Doctors: /doctors/ext/:slug (from Lovable Cloud database, public read)
+  try {
+    const env = readFileSync(resolve(".env"), "utf8");
+    const pick = (k: string) => env.match(new RegExp(`^${k}=(.*)$`, "m"))?.[1]?.trim().replace(/^["']|["']$/g, "");
+    const url = pick("VITE_SUPABASE_URL");
+    const key = pick("VITE_SUPABASE_PUBLISHABLE_KEY");
+    if (url && key) {
+      const seen = new Set<string>();
+      const PAGE = 1000;
+      for (let offset = 0; offset < 20000; offset += PAGE) {
+        const res = await fetch(
+          `${url}/rest/v1/doctors_external?select=slug&order=slug.asc&limit=${PAGE}&offset=${offset}`,
+          { headers: { apikey: key, Authorization: `Bearer ${key}` } },
+        );
+        if (!res.ok) { console.warn("doctors fetch failed:", res.status); break; }
+        const rows: any[] = await res.json();
+        for (const r of rows) {
+          if (!r?.slug || seen.has(r.slug)) continue;
+          seen.add(r.slug);
+          dynamicEntries.push({ path: `/doctors/ext/${r.slug}`, changefreq: "weekly", priority: "0.6" });
+        }
+        if (rows.length < PAGE) break;
+      }
+      console.log(`doctors: ${seen.size} entries`);
+    }
+  } catch (e) { console.warn("doctors load failed:", (e as Error).message); }
+
+
   // MedTech: /med-tech/:equipmentId
   try {
     const src = readFileSync(resolve("src/data/medtech.ts"), "utf8");
@@ -191,7 +233,7 @@ function build(entries: Entry[]) {
     [
       `  <url>`,
       `    <loc>${BASE_URL}${e.path}</loc>`,
-      `    <lastmod>${e.lastmod ?? today}</lastmod>`,
+      e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
       `  </url>`,
@@ -205,9 +247,53 @@ function build(entries: Entry[]) {
   ].join("\n");
 }
 
+function buildIndex(files: string[]) {
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    ...files.map((f) => `  <sitemap>\n    <loc>${BASE_URL}/${f}</loc>\n  </sitemap>`),
+    `</sitemapindex>`,
+  ].join("\n");
+}
+
+const CHUNK = 5000;
+
 (async () => {
   await loadDynamic();
-  const all = [...staticEntries, ...dynamicEntries];
-  writeFileSync(resolve("public/sitemap.xml"), build(all));
-  console.log(`sitemap.xml written (${all.length} entries: ${staticEntries.length} static + ${dynamicEntries.length} dynamic)`);
+
+  const doctors = dynamicEntries.filter((e) => e.path.startsWith("/doctors/"));
+  const dental = dynamicEntries.filter((e) => e.path.startsWith("/dental/"));
+  const content = dynamicEntries.filter(
+    (e) => !e.path.startsWith("/doctors/") && !e.path.startsWith("/dental/"),
+  );
+
+  const groups: [string, Entry[]][] = [
+    ["sitemap-pages.xml", staticEntries],
+    ["sitemap-content.xml", content],
+    ["sitemap-dental.xml", dental],
+    ["sitemap-doctors.xml", doctors],
+  ];
+
+  const files: string[] = [];
+  for (const [name, entries] of groups) {
+    if (!entries.length) continue;
+    if (entries.length <= CHUNK) {
+      writeFileSync(resolve(`public/${name}`), build(entries));
+      files.push(name);
+      continue;
+    }
+    for (let i = 0; i * CHUNK < entries.length; i++) {
+      const part = name.replace(".xml", `-${i + 1}.xml`);
+      writeFileSync(resolve(`public/${part}`), build(entries.slice(i * CHUNK, (i + 1) * CHUNK)));
+      files.push(part);
+    }
+  }
+
+  writeFileSync(resolve("public/sitemap.xml"), buildIndex(files));
+  const total = staticEntries.length + dynamicEntries.length;
+  console.log(
+    `sitemap index written (${files.length} files, ${total} urls: ${staticEntries.length} static, ` +
+      `${content.length} content, ${dental.length} dental, ${doctors.length} doctors)`,
+  );
 })();
+

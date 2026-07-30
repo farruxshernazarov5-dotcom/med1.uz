@@ -4,6 +4,7 @@ import { Smile, Search, Star, MapPin, Phone, Clock, ArrowRight, Stethoscope, Bui
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import ShareButton from "@/components/ShareButton";
+import SEO from "@/components/SEO";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,12 +41,26 @@ const DentalPage = () => {
   const reset = (fn: () => void) => { fn(); setPage(1); };
 
   return (
+    <>
+    <SEO
+      title={`Stomatologiya klinikalari — ${dentalClinics.length}+ klinika | Med1.uz`}
+      description={`O'zbekiston bo'ylab ${dentalClinics.length} ta stomatologiya klinikasi: reyting, manzil, telefon, ish vaqti va yo'nalishlar (implantologiya, ortodontiya, bolalar stomatologiyasi) bo'yicha qidiruv.`}
+      path="/dental"
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "Stomatologiya klinikalari — Med1.uz",
+        url: "https://www.med1.uz/dental",
+        about: { "@type": "MedicalSpecialty", name: "Dentistry" },
+      }}
+    />
     <SectionLayout
       title="Stomatologiya klinikalari"
       subtitle={`O'zbekiston bo'ylab ${dentalClinics.length} ta stomatologiya klinikasi — reyting, manzil va yo'nalishlar bo'yicha`}
       icon={<Smile className="w-7 h-7 text-primary-foreground" />}
       bgVariant="waves"
     >
+
       <Breadcrumb items={[{ label: "Stomatologiya" }]} />
       <ShareButton title="Stomatologiya klinikalari — Med1.uz" className="mb-6" />
 
@@ -157,7 +172,9 @@ const DentalPage = () => {
         />
       </div>
     </SectionLayout>
+    </>
   );
+
 };
 
 export default DentalPage;
