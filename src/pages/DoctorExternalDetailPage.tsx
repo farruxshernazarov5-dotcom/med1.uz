@@ -91,7 +91,27 @@ const DoctorExternalDetailPage = () => {
         title={`${doc.name} — ${doc.primary_specialty} | Med1.uz`}
         description={`${doc.name}, ${doc.primary_specialty}${doc.experience ? `, ${doc.experience} yil tajriba` : ""}. ${doc.primary_region ?? ""}. Med1.uz shifokorlar katalogi.`}
         path={`/doctors/ext/${doc.slug}`}
+        ogType="profile"
+        ogImage={doc.photo_url ?? undefined}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Physician",
+          name: doc.name,
+          url: `https://www.med1.uz/doctors/ext/${doc.slug}`,
+          ...(doc.photo_url ? { image: doc.photo_url } : {}),
+          ...(doc.bio ? { description: doc.bio } : {}),
+          ...(doc.primary_specialty ? { medicalSpecialty: doc.primary_specialty } : {}),
+          ...(doc.languages?.length ? { knowsLanguage: doc.languages } : {}),
+          ...(doc.primary_region
+            ? { address: { "@type": "PostalAddress", addressRegion: doc.primary_region, addressCountry: "UZ" } }
+            : {}),
+          ...(clinic ? { worksFor: { "@type": "MedicalClinic", name: clinic.name, address: clinic.address } } : {}),
+          ...(doc.rating && doc.reviews_count
+            ? { aggregateRating: { "@type": "AggregateRating", ratingValue: doc.rating, reviewCount: doc.reviews_count } }
+            : {}),
+        }}
       />
+
       <Header />
 
       <section className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-8">
