@@ -108,5 +108,6 @@ const DETAILED_RULES = `
 
 export function languageInstructionDetailed(lang: SupportedLang): string {
   const langName = lang === "ru" ? "Russian / русский" : lang === "en" ? "English" : "Uzbek / o'zbek";
-  return `\n\n${DETAILED_RULES}\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. Translate all templates, labels and disclaimers to ${langName}; do not output Uzbek unless the user's last message is Uzbek.\n${TARGET_LANGUAGE_GUARD[lang]}\nInclude a brief disclaimer string in the appropriate field (e.g. "disclaimer") in the SAME language as the rest of the JSON. Example — ${DISCLAIMER[lang]}`;
+  return `\n\n${DETAILED_RULES}\n${evidenceInstruction(lang)}\nFor structured JSON output put the references into a "sources" array of short strings (e.g. ["WHO ICD-11 (2024)", "PubMed PMID: 33333333"]) — add the field even if the schema above does not mention it.\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. Translate all templates, labels and disclaimers to ${langName}; do not output Uzbek unless the user's last message is Uzbek.\n${TARGET_LANGUAGE_GUARD[lang]}\nInclude a brief disclaimer string in the appropriate field (e.g. "disclaimer") in the SAME language as the rest of the JSON. Example — ${DISCLAIMER[lang]}`;
 }
+
