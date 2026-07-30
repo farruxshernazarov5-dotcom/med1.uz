@@ -165,6 +165,47 @@ async function loadDynamic() {
     }
   } catch (e) { console.warn("news load failed:", (e as Error).message); }
 
+  // Dental clinics: /dental/:slug (static JSON dataset)
+  try {
+    const raw = JSON.parse(readFileSync(resolve("src/data/dental-clinics.json"), "utf8"));
+    const list: any[] = Array.isArray(raw) ? raw : (raw.clinics ?? raw.items ?? []);
+    const seen = new Set<string>();
+    for (const c of list) {
+      const slug = c?.slug;
+      if (!slug || seen.has(slug)) continue;
+      seen.add(slug);
+      dynamicEntries.push({ path: `/dental/${slug}`, changefreq: "weekly", priority: "0.6" });
+    }
+  } catch (e) { console.warn("dental clinics load failed:", (e as Error).message); }
+
+  // Doctors: /doctors/ext/:slug (from Lovable Cloud database, public read)
+  try {
+    const env = readFileSync(resolve(".env"), "utf8");
+    const pick = (k: string) => env.match(new RegExp(`^${k}=(.*)$`, "m"))?.[1]?.trim().replace(/^["']|["']$/g, "");
+    const url = pick("VITE_SUPABASE_URL");
+    const key = pick("VITE_SUPABASE_PUBLISHABLE_KEY");
+    if (url && key) {
+      const seen = new Set<string>();
+      const PAGE = 1000;
+      for (let offset = 0; offset < 20000; offset += PAGE) {
+        const res = await fetch(
+          `${url}/rest/v1/doctors_external?select=slug&order=slug.asc&limit=${PAGE}&offset=${offset}`,
+          { headers: { apikey: key, Authorization: `Bearer ${key}` } },
+        );
+        if (!res.ok) { console.warn("doctors fetch failed:", res.status); break; }
+        const rows: any[] = await res.json();
+        for (const r of rows) {
+          if (!r?.slug || seen.has(r.slug)) continue;
+          seen.add(r.slug);
+          dynamicEntries.push({ path: `/doctors/ext/${r.slug}`, changefreq: "weekly", priority: "0.6" });
+        }
+        if (rows.length < PAGE) break;
+      }
+      console.log(`doctors: ${seen.size} entries`);
+    }
+  } catch (e) { console.warn("doctors load failed:", (e as Error).message); }
+
+
   // MedTech: /med-tech/:equipmentId
   try {
     const src = readFileSync(resolve("src/data/medtech.ts"), "utf8");
