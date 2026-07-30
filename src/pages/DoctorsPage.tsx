@@ -45,6 +45,7 @@ const DoctorsPage = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState(initialQ);
+  const [debouncedSearch, setDebouncedSearch] = useState(initialQ);
   const [serviceQuery, setServiceQuery] = useState(params.get("service") || "");
   const [specialty, setSpecialty] = useState<string>(initialSpecialty);
   const [region, setRegion] = useState<string>(params.get("region") || "all");
@@ -64,11 +65,17 @@ const DoctorsPage = () => {
   const filtersActive =
     specialty !== "all" || region !== "all" || language !== "all" ||
     minRating !== "0" || minExp !== "0" ||
-    search.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
+    debouncedSearch.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
 
   const isBrowsing = filtersActive; // show list only when user searches/filters
 
-  useEffect(() => { setPage(0); }, [search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, onlyFavs]);
+  // Debounce free-text search so each keystroke does not trigger a count query
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 350);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => { setPage(0); }, [debouncedSearch, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, onlyFavs]);
 
   useEffect(() => {
     if (!clinicIdParam) { setClinicName(""); return; }
@@ -104,7 +111,7 @@ const DoctorsPage = () => {
       }
       const r = parseFloat(minRating); if (r > 0) q = q.gte("rating", r);
       const e = parseInt(minExp, 10); if (e > 0) q = q.gte("experience", e);
-      const s = search.trim();
+      const s = debouncedSearch.trim();
       if (s.length >= 2) q = q.ilike("name", `%${s}%`);
       const sv = serviceQuery.trim();
       if (sv.length >= 2) q = q.contains("services", [sv]);
@@ -117,7 +124,7 @@ const DoctorsPage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [isBrowsing, search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
+  }, [isBrowsing, debouncedSearch, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
 
   const clearFilters = () => {
     setSearch(""); setSpecialty("all"); setRegion("all"); setLanguage("all");
