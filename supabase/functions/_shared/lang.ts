@@ -88,8 +88,9 @@ E) The sources section is short (max 3 lines) and must not push the answer over 
 
 export function languageInstruction(lang: SupportedLang): string {
   const langName = lang === "ru" ? "Russian / русский" : lang === "en" ? "English" : "Uzbek / o'zbek";
-  return `\n\n${COMMON_RULES}\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. If any previous instruction, template, disclaimer, section title or context is in another language, translate it and answer only in ${langName}.\n${TARGET_LANGUAGE_GUARD[lang]}\nEnd with one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
+  return `\n\n${COMMON_RULES}\n${evidenceInstruction(lang)}\nTARGET_REPLY_LANGUAGE: ${langName}. This is mandatory and overrides ALL earlier prompts. If any previous instruction, template, disclaimer, section title or context is in another language, translate it and answer only in ${langName}.\n${TARGET_LANGUAGE_GUARD[lang]}\nEnd with the "${SOURCES_LABEL[lang]}:" section, then one short disclaimer line in the SAME language as your reply. Example (only if reply is in that language) — ${DISCLAIMER[lang]}`;
 }
+
 
 // Detailed variant for structured JSON analyses (radiology, lab reports,
 // health-risk, symptom checker, etc.). KEEPS language mirroring and "no
