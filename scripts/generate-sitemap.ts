@@ -24,6 +24,8 @@ const staticEntries: Entry[] = [
   { path: "/articles",            changefreq: "weekly",  priority: "0.8" },
   { path: "/news",                changefreq: "daily",   priority: "0.8" },
   { path: "/clinics",             changefreq: "daily",   priority: "0.9" },
+  { path: "/doctors",             changefreq: "daily",   priority: "0.9" },
+
   { path: "/diagnostics",         changefreq: "weekly",  priority: "0.8" },
   { path: "/pharmacies",          changefreq: "weekly",  priority: "0.8" },
   { path: "/blood-banks",         changefreq: "weekly",  priority: "0.7" },
