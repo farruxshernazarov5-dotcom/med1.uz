@@ -3,6 +3,7 @@ import { Smile, Star, MapPin, Phone, Clock, Globe, Mail, ArrowLeft, Building2 } 
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import ShareButton from "@/components/ShareButton";
+import SEO from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DoctorRecommendations from "@/components/DoctorRecommendations";
