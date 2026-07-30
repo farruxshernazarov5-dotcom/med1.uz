@@ -234,7 +234,7 @@ function build(entries: Entry[]) {
     [
       `  <url>`,
       `    <loc>${BASE_URL}${e.path}</loc>`,
-      `    <lastmod>${e.lastmod ?? today}</lastmod>`,
+      e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
       `  </url>`,
@@ -248,9 +248,53 @@ function build(entries: Entry[]) {
   ].join("\n");
 }
 
+function buildIndex(files: string[]) {
+  return [
+    `<?xml version="1.0" encoding="UTF-8"?>`,
+    `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+    ...files.map((f) => `  <sitemap>\n    <loc>${BASE_URL}/${f}</loc>\n  </sitemap>`),
+    `</sitemapindex>`,
+  ].join("\n");
+}
+
+const CHUNK = 5000;
+
 (async () => {
   await loadDynamic();
-  const all = [...staticEntries, ...dynamicEntries];
-  writeFileSync(resolve("public/sitemap.xml"), build(all));
-  console.log(`sitemap.xml written (${all.length} entries: ${staticEntries.length} static + ${dynamicEntries.length} dynamic)`);
+
+  const doctors = dynamicEntries.filter((e) => e.path.startsWith("/doctors/"));
+  const dental = dynamicEntries.filter((e) => e.path.startsWith("/dental/"));
+  const content = dynamicEntries.filter(
+    (e) => !e.path.startsWith("/doctors/") && !e.path.startsWith("/dental/"),
+  );
+
+  const groups: [string, Entry[]][] = [
+    ["sitemap-pages.xml", staticEntries],
+    ["sitemap-content.xml", content],
+    ["sitemap-dental.xml", dental],
+    ["sitemap-doctors.xml", doctors],
+  ];
+
+  const files: string[] = [];
+  for (const [name, entries] of groups) {
+    if (!entries.length) continue;
+    if (entries.length <= CHUNK) {
+      writeFileSync(resolve(`public/${name}`), build(entries));
+      files.push(name);
+      continue;
+    }
+    for (let i = 0; i * CHUNK < entries.length; i++) {
+      const part = name.replace(".xml", `-${i + 1}.xml`);
+      writeFileSync(resolve(`public/${part}`), build(entries.slice(i * CHUNK, (i + 1) * CHUNK)));
+      files.push(part);
+    }
+  }
+
+  writeFileSync(resolve("public/sitemap.xml"), buildIndex(files));
+  const total = staticEntries.length + dynamicEntries.length;
+  console.log(
+    `sitemap index written (${files.length} files, ${total} urls: ${staticEntries.length} static, ` +
+      `${content.length} content, ${dental.length} dental, ${doctors.length} doctors)`,
+  );
 })();
+
