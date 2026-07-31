@@ -139,7 +139,7 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
               {photoPreview ? (
                 <div className="relative group">
                   <div className="w-36 h-36 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-lg">
-                    <img src={photoPreview} alt="Yuz" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={photoPreview} alt="Yuz" className="w-full h-full object-cover" />
                   </div>
                   <div className="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button size="icon" variant="destructive" className="w-8 h-8" onClick={removePhoto}>

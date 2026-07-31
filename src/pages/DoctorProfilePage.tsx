@@ -150,7 +150,7 @@ const DoctorProfilePage = () => {
             <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start gap-5">
                 {doctor.photo_url ? (
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={doctor.photo_url}
                     alt={doctor.full_name}
                     className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border-4 border-card shadow-lg"
@@ -363,7 +363,7 @@ const DoctorProfilePage = () => {
                     className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-sm transition-all"
                   >
                     {clinic.logo_url ? (
-                      <img src={clinic.logo_url} alt={clinic.name} className="w-12 h-12 rounded-lg object-cover" />
+                      <img loading="lazy" decoding="async" src={clinic.logo_url} alt={clinic.name} className="w-12 h-12 rounded-lg object-cover" />
                     ) : (
                       <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Building2 className="w-6 h-6 text-primary" />

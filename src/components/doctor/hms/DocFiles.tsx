@@ -82,7 +82,7 @@ const DocFiles = ({ doctorId }: Props) => {
             <div key={f.id} className="bg-card rounded-xl border border-border overflow-hidden group">
               <div className="aspect-square bg-muted flex items-center justify-center relative">
                 {f.file_type === "image" ? (
-                  <img src={f.file_url} alt={f.file_name} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={f.file_url} alt={f.file_name} className="w-full h-full object-cover" />
                 ) : (
                   <FileIcon className="w-10 h-10 text-muted-foreground" />
                 )}

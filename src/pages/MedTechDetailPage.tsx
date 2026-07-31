@@ -41,7 +41,7 @@ const MedTechDetailPage = () => {
 
       {/* Hero Image */}
       <div className="relative h-64 md:h-96 overflow-hidden">
-        <img src={equipment.image} alt={equipment.name} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={equipment.image} alt={equipment.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         <div className="absolute bottom-6 left-0 right-0">
           <div className="container mx-auto px-4">
@@ -123,7 +123,7 @@ const MedTechDetailPage = () => {
                         to={`/med-tech/${rel.id}`}
                         className="group flex items-center gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
                       >
-                        <img src={rel.image} alt={rel.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+                        <img loading="lazy" decoding="async" src={rel.image} alt={rel.name} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                             {rel.name}

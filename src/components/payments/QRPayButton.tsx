@@ -58,7 +58,7 @@ const QRPayButton = ({
           {/* QR placeholder */}
           <div className="relative w-56 h-56 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 p-4 flex items-center justify-center">
             {qrImageUrl ? (
-              <img
+              <img loading="lazy" decoding="async"
                 src={qrImageUrl}
                 alt="To'lov QR-kodi"
                 className="w-full h-full object-contain"

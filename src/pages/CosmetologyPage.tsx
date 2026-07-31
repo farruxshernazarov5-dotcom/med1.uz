@@ -26,7 +26,7 @@ const CosmetologyPage = () => {
         <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             <div className="relative h-64 md:h-auto overflow-hidden">
-              <img
+              <img loading="lazy" decoding="async"
                 src={cosmetologyInfo.heroImage}
                 alt="Kosmetologiya"
                 className="w-full h-full object-cover"

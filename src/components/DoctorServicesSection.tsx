@@ -65,7 +65,7 @@ const DoctorServicesSection = () => {
           {services.map((s, i) => (
             <div key={i} className="group bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-card-hover transition-all">
               <div className="h-48 overflow-hidden">
-                <img src={s.img} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img loading="lazy" decoding="async" src={s.img} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-6">
                 <h3 className="font-heading text-xl font-bold text-foreground mb-2">{s.title}</h3>

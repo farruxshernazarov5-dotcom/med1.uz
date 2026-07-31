@@ -372,7 +372,7 @@ const CosInventory = ({ centerId }: { centerId: string }) => {
             <div>
               <Label>Rasm</Label>
               <div className="mt-1 flex items-center gap-2">
-                {form.image_url && <img src={form.image_url} alt="" className="w-16 h-16 rounded object-cover" />}
+                {form.image_url && <img loading="lazy" decoding="async" src={form.image_url} alt="" className="w-16 h-16 rounded object-cover" />}
                 <Input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f); }} />
               </div>
             </div>

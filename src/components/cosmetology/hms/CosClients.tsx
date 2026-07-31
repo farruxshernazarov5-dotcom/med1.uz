@@ -535,8 +535,8 @@ const ClientProfileDialog = ({ client, centerId, onClose, onUpdate }: { client: 
                 {beforeAfter.map((b) => (
                   <div key={b.id} className="rounded-lg border border-border overflow-hidden">
                     <div className="grid grid-cols-2 gap-0.5 bg-muted">
-                      {b.before_photo_url ? <img src={b.before_photo_url} alt="before" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Oldin</div>}
-                      {b.after_photo_url ? <img src={b.after_photo_url} alt="after" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Keyin</div>}
+                      {b.before_photo_url ? <img loading="lazy" decoding="async" src={b.before_photo_url} alt="before" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Oldin</div>}
+                      {b.after_photo_url ? <img loading="lazy" decoding="async" src={b.after_photo_url} alt="after" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Keyin</div>}
                     </div>
                     <div className="p-2">
                       <p className="text-xs font-medium">{b.service_name || "Xizmat"}</p>

@@ -69,7 +69,7 @@ const DashboardShell = ({
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-white/20" />
+            <img loading="lazy" decoding="async" src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover border border-white/20" />
           ) : (
             <div className="w-10 h-10 rounded-xl bg-[hsl(214,84%,56%)] flex items-center justify-center">
               <TitleIcon className="w-5 h-5 text-white" />

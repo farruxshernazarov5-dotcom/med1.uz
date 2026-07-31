@@ -763,7 +763,7 @@ const HMSLaboratory = ({ clinicId }: Props) => {
                 </div>
                 <div className="shrink-0 text-center">
                   <div className="text-2xl font-bold text-primary mb-1">{verification.scanned_count || 0}</div>
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://med1-uz.lovable.app/verify/${verification.verification_code}`)}`}
                     alt="QR Verification"
                     className="w-20 h-20 rounded"

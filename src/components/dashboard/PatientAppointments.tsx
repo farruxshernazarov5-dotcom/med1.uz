@@ -115,7 +115,7 @@ const PatientAppointments = () => {
                 {/* Doctor photo */}
                 <div className="shrink-0">
                   {a.doctors?.photo_url ? (
-                    <img src={a.doctors.photo_url} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                    <img loading="lazy" decoding="async" src={a.doctors.photo_url} alt="" className="w-14 h-14 rounded-xl object-cover" />
                   ) : (
                     <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
                       <User className="w-6 h-6 text-primary" />

@@ -267,7 +267,7 @@ const AIReportMini = () => {
           <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
           {uploadedFile ? (
             <div className="space-y-3">
-              {filePreview && <img src={filePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />}
+              {filePreview && <img loading="lazy" decoding="async" src={filePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />}
               <div className="flex items-center justify-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
                 <span className="font-medium text-foreground">{uploadedFile.name}</span>

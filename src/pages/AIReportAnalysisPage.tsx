@@ -342,7 +342,7 @@ const AIReportAnalysisPage = () => {
                     <div className="border border-border rounded-xl p-4 bg-muted/20">
                       <div className="flex items-start gap-4">
                         {filePreview ? (
-                          <img src={filePreview} alt="Analiz" className="w-24 h-24 object-cover rounded-lg border border-border" />
+                          <img loading="lazy" decoding="async" src={filePreview} alt="Analiz" className="w-24 h-24 object-cover rounded-lg border border-border" />
                         ) : (
                           <div className="w-24 h-24 rounded-lg bg-primary/10 flex items-center justify-center">
                             <FileText className="w-10 h-10 text-primary" />

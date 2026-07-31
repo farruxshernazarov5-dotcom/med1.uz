@@ -200,7 +200,7 @@ const DiagRadiology = ({ centerId, orders, patients, staff, onReload }: Props) =
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
                     {Array.isArray(selected.images) && selected.images.map((img: any, i: number) => (
                       <div key={i} className="relative group">
-                        <img src={img.url} alt={img.name} className="w-full h-32 object-cover rounded border" />
+                        <img loading="lazy" decoding="async" src={img.url} alt={img.name} className="w-full h-32 object-cover rounded border" />
                         <Button size="icon" variant="destructive" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100"
                           onClick={() => removeImage(i)}>
                           <Trash2 className="w-3 h-3" />

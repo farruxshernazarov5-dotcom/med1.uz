@@ -76,7 +76,7 @@ const ClinicServicesSection = () => {
       {/* Hero */}
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={clinicTeamImg} alt="Klinikalar uchun xizmatlar" className="w-full h-full object-cover" />
+          <img loading="lazy" decoding="async" src={clinicTeamImg} alt="Klinikalar uchun xizmatlar" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/70" />
         </div>
         <div className="container mx-auto px-4 relative z-10">
@@ -120,7 +120,7 @@ const ClinicServicesSection = () => {
             {clinicServices.map((service, i) => (
               <div key={i} className="group bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg transition-all">
                 <div className="h-48 overflow-hidden">
-                  <img src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img loading="lazy" decoding="async" src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-6">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">

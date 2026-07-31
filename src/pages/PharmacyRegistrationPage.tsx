@@ -180,7 +180,7 @@ const PharmacyRegistrationPage = () => {
                 </div>
                 <div><Label>Logotip</Label>
                   <div className="flex items-center gap-4 mt-1">
-                    {logoPreview ? <img src={logoPreview} className="w-16 h-16 rounded-xl object-cover border" /> : <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center"><Camera className="w-6 h-6 text-muted-foreground" /></div>}
+                    {logoPreview ? <img loading="lazy" decoding="async" src={logoPreview} className="w-16 h-16 rounded-xl object-cover border" /> : <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center"><Camera className="w-6 h-6 text-muted-foreground" /></div>}
                     <label className="cursor-pointer"><Input type="file" accept="image/*" className="hidden" onChange={handleLogo} /><span className="text-sm text-primary hover:underline flex items-center gap-1"><Upload className="w-4 h-4" /> Yuklash</span></label>
                   </div>
                 </div>

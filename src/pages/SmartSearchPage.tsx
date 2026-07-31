@@ -727,7 +727,7 @@ const ClinicCard = ({ clinic }: { clinic: any }) => (
       <div className="flex gap-3">
         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
           {clinic.logo_url || clinic.logo_external_url ? (
-            <img src={clinic.logo_url || clinic.logo_external_url} alt={clinic.name}
+            <img loading="lazy" decoding="async" src={clinic.logo_url || clinic.logo_external_url} alt={clinic.name}
               className="w-10 h-10 rounded-lg object-cover"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           ) : (
@@ -774,7 +774,7 @@ const LocalClinicCard = ({ clinic }: { clinic: any }) => (
       <div className="flex gap-3">
         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
           {clinic.logoUrl ? (
-            <img src={clinic.logoUrl} alt={clinic.name} className="w-10 h-10 rounded-lg object-cover"
+            <img loading="lazy" decoding="async" src={clinic.logoUrl} alt={clinic.name} className="w-10 h-10 rounded-lg object-cover"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
           ) : (
             <span className="text-xs font-bold text-primary">{clinic.logo}</span>
@@ -816,7 +816,7 @@ const DoctorCard = ({ doctor }: { doctor: any }) => (
       <div className="flex gap-3">
         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
           {doctor.photo_url ? (
-            <img src={doctor.photo_url} alt={doctor.full_name} className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={doctor.photo_url} alt={doctor.full_name} className="w-full h-full object-cover" />
           ) : (
             <Stethoscope className="w-5 h-5 text-primary" />
           )}

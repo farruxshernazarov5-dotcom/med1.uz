@@ -339,7 +339,7 @@ export default function RadiologySubmodulePage({
                 ) : (
                   <div className="border border-border rounded-xl p-3 bg-muted/20 flex items-start gap-3">
                     {filePreview ? (
-                      <img src={filePreview} alt="preview" className="w-24 h-24 object-cover rounded-lg" />
+                      <img loading="lazy" decoding="async" src={filePreview} alt="preview" className="w-24 h-24 object-cover rounded-lg" />
                     ) : (
                       <div className="w-24 h-24 rounded-lg bg-primary/10 flex items-center justify-center"><Eye className="w-8 h-8 text-primary" /></div>
                     )}

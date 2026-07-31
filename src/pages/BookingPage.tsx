@@ -311,7 +311,7 @@ const BookingPage = () => {
                     >
                       <div className="flex items-center gap-2">
                         {d.photo_url ? (
-                          <img src={d.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          <img loading="lazy" decoding="async" src={d.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <Stethoscope className="w-4 h-4 text-primary" />

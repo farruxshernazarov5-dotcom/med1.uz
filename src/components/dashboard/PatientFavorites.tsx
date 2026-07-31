@@ -59,7 +59,7 @@ const PatientFavorites = () => {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   {clinic.logo_url ? (
-                    <img src={clinic.logo_url} alt="" className="w-12 h-12 rounded-xl object-cover" />
+                    <img loading="lazy" decoding="async" src={clinic.logo_url} alt="" className="w-12 h-12 rounded-xl object-cover" />
                   ) : (
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
                       {clinic.name?.[0]}

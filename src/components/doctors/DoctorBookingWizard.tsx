@@ -344,7 +344,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
               <p className="font-bold">Qabul tasdiqlash uchun yuborildi</p>
               <p className="text-xs text-muted-foreground">Klinikada QR kodni ko'rsatasiz</p>
             </div>
-            {qr && <img src={qr} alt={`Bron kodi ${booking.booking_code}`} className="w-44 h-44 mx-auto rounded-xl border bg-white p-2" />}
+            {qr && <img loading="lazy" decoding="async" src={qr} alt={`Bron kodi ${booking.booking_code}`} className="w-44 h-44 mx-auto rounded-xl border bg-white p-2" />}
             <p className="text-sm font-mono font-bold tracking-widest">{booking.booking_code}</p>
             <div className="text-xs text-muted-foreground">{booking.service_name} · {booking.appointment_date} {String(booking.appointment_time).slice(0, 5)}</div>
 

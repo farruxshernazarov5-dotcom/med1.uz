@@ -74,7 +74,7 @@ const NewsDetailPage = () => {
       <main className="container mx-auto px-4 py-10">
         <div className="max-w-3xl mx-auto">
           <div className="rounded-2xl overflow-hidden mb-8 border border-border">
-            <img src={item.image} alt={item.title} className="w-full h-64 md:h-80 object-cover" />
+            <img loading="lazy" decoding="async" src={item.image} alt={item.title} className="w-full h-64 md:h-80 object-cover" />
           </div>
           <p className="text-muted-foreground italic mb-8 text-lg">{item.summary}</p>
           <div className="space-y-5">

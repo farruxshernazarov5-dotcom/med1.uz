@@ -316,7 +316,7 @@ const ClinicRegistrationPage = () => {
                     <div className="flex items-center gap-4">
                       {logoPreview ? (
                         <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-primary/30">
-                          <img src={logoPreview} alt="Klinika logotipi" className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={logoPreview} alt="Klinika logotipi" className="w-full h-full object-cover" />
                           <button onClick={() => { setLogoFile(null); setLogoPreview(""); }} className="absolute top-1 right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs">✕</button>
                         </div>
                       ) : (

@@ -206,7 +206,7 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-border bg-muted flex items-center justify-center">
             {logoUrl ? (
-              <img src={logoUrl} alt="Klinika logotipi" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={logoUrl} alt="Klinika logotipi" className="w-full h-full object-cover" />
             ) : (
               <Building2 className="w-8 h-8 text-muted-foreground" />
             )}
@@ -400,7 +400,7 @@ const ClinicProfileEditor = ({ clinic, onSaved }: ClinicProfileEditorProps) => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {photos.map((p) => (
             <div key={p.id} className="relative group rounded-xl overflow-hidden border border-border aspect-square">
-              <img src={p.url} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={p.url} alt="" className="w-full h-full object-cover" />
               <button
                 onClick={() => deletePhoto(p.id)}
                 className="absolute top-2 right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"

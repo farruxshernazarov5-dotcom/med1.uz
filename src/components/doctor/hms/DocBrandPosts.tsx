@@ -105,7 +105,7 @@ const DocBrandPosts = ({ doctorId }: Props) => {
             {uploading && <p className="text-xs text-muted-foreground mt-1">Yuklanmoqda...</p>}
             {form.media_url && (form.media_type === "video"
               ? <video src={form.media_url} className="mt-2 w-full max-h-48 rounded-lg" controls />
-              : <img src={form.media_url} className="mt-2 w-full max-h-48 rounded-lg object-cover" />)}
+              : <img loading="lazy" decoding="async" src={form.media_url} className="mt-2 w-full max-h-48 rounded-lg object-cover" />)}
           </div>
           <Button onClick={handleSave} className="w-full bg-gradient-to-r from-secondary to-accent text-white border-0">Saqlash</Button>
         </div>
@@ -119,7 +119,7 @@ const DocBrandPosts = ({ doctorId }: Props) => {
             <div key={p.id} className="bg-card rounded-2xl border border-border overflow-hidden">
               {p.media_url && (p.media_type === "video"
                 ? <video src={p.media_url} className="w-full h-48 object-cover" controls />
-                : <img src={p.media_url} className="w-full h-48 object-cover" />)}
+                : <img loading="lazy" decoding="async" src={p.media_url} className="w-full h-48 object-cover" />)}
               {!p.media_url && <div className="w-full h-48 bg-muted flex items-center justify-center"><ImageIcon className="w-10 h-10 text-muted-foreground/40" /></div>}
               <div className="p-4 space-y-2">
                 <div className="flex items-center gap-2">

@@ -46,7 +46,7 @@ const CompareBar = () => {
               <div key={d.id} className="border rounded-xl p-4 space-y-3">
                 <div className="flex items-start justify-between">
                   {d.photo_url ? (
-                    <img src={d.photo_url} alt={d.name} className="w-16 h-16 rounded-lg object-cover" />
+                    <img loading="lazy" decoding="async" src={d.photo_url} alt={d.name} className="w-16 h-16 rounded-lg object-cover" />
                   ) : (
                     <div className="w-16 h-16 rounded-lg bg-muted" />
                   )}
