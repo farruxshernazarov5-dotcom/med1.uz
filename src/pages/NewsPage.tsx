@@ -118,7 +118,7 @@ const NewsPage = () => {
                 style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div className="relative h-56 overflow-hidden">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"

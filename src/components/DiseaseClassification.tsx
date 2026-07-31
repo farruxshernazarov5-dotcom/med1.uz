@@ -149,7 +149,7 @@ const DiseaseClassification = () => {
               style={{ animationDelay: `${i * 0.08}s` }}
             >
               <div className="relative h-44 overflow-hidden">
-                <img
+                <img loading="lazy" decoding="async"
                   src={cat.image}
                   alt={cat.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

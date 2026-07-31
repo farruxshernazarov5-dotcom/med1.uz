@@ -354,7 +354,7 @@ const AIRadiologyPage = () => {
                   <div className="border border-border rounded-xl p-4 bg-muted/20">
                     <div className="flex items-start gap-4">
                       {filePreview ? (
-                        <img src={filePreview} alt={scanLabel} className="w-32 h-32 object-cover rounded-lg border border-border" />
+                        <img loading="lazy" decoding="async" src={filePreview} alt={scanLabel} className="w-32 h-32 object-cover rounded-lg border border-border" />
                       ) : (
                         <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center">
                           <Eye className="w-10 h-10 text-primary" />
@@ -428,7 +428,7 @@ const AIRadiologyPage = () => {
 
               {/* Image info */}
               <div className="bg-card border border-border rounded-xl p-5 flex items-center gap-4">
-                {filePreview && <img src={filePreview} alt={scanLabel} className="w-20 h-20 object-cover rounded-lg border border-border" />}
+                {filePreview && <img loading="lazy" decoding="async" src={filePreview} alt={scanLabel} className="w-20 h-20 object-cover rounded-lg border border-border" />}
                 <div>
                   <p className="text-sm text-muted-foreground">Tekshiruv turi: <strong className="text-foreground">{scanLabel}</strong></p>
                   <p className="text-sm text-muted-foreground">Tasvir turi: <strong className="text-foreground">{analysis.imageType}</strong></p>

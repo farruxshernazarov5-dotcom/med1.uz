@@ -76,7 +76,7 @@ const ClinicDetailPage = () => {
 
       {/* Hero image */}
       <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden mb-6">
-        <img src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4">
           <div className="flex items-center gap-2 flex-wrap">

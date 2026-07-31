@@ -81,7 +81,7 @@ const AIDiagnosticsServicesSection = () => {
           {aiModules.map((m, i) => (
             <div key={i} className="group bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-card-hover transition-all">
               <div className="h-48 overflow-hidden relative">
-                <img src={m.img} alt={m.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <img loading="lazy" decoding="async" src={m.img} alt={m.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <h3 className="absolute bottom-4 left-4 font-heading text-xl font-bold text-white">{m.title}</h3>
               </div>

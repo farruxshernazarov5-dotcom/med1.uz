@@ -187,7 +187,7 @@ const HMSAttendance = ({ clinicId }: Props) => {
           <Card>
             <CardHeader><CardTitle className="text-base flex items-center gap-2"><QrCode className="w-4 h-4" /> Dinamik QR Kod</CardTitle></CardHeader>
             <CardContent className="flex flex-col items-center gap-3">
-              {qrImg ? <img src={qrImg} className="w-72 h-72" alt="QR" /> : <div className="w-72 h-72 bg-muted animate-pulse rounded" />}
+              {qrImg ? <img loading="lazy" decoding="async" src={qrImg} className="w-72 h-72" alt="QR" /> : <div className="w-72 h-72 bg-muted animate-pulse rounded" />}
               {qrToken && <p className="text-xs text-muted-foreground">Yangilanadi: {format(new Date(qrToken.expires_at), "HH:mm:ss")}</p>}
               <Button variant="outline" size="sm" onClick={generateQr}><RefreshCw className="w-4 h-4 mr-1" /> Hozir yangilash</Button>
               <p className="text-xs text-muted-foreground text-center max-w-md">Xodim ushbu QR kodni <code>/check-in</code> sahifasida skaner qiladi. QR har {settings?.qr_rotate_seconds ?? 60} soniyada yangilanadi.</p>

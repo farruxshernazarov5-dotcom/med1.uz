@@ -101,6 +101,8 @@ const HambiDashboardPage = lazy(() => import("./pages/admin/HambiDashboardPage")
 const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage"));
 const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
 const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
+const SeoMonitorPage = lazy(() => import("./pages/admin/SeoMonitorPage"));
+
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
 const AIOncologyPage = lazy(() => import("./pages/AIOncologyPage"));
@@ -125,8 +127,22 @@ import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
+import RouteCanonical from "./components/seo/RouteCanonical";
 
-const queryClient = new QueryClient();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Core Web Vitals: keep fetched data warm so route re-entry is instant
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: 1,
+    },
+  },
+});
+
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -146,6 +162,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <CreditProvider>
+          <RouteCanonical />
+
           <ReferralCapture />
           <YandexAdsManager />
           <FloatingAISearch />
@@ -250,6 +268,8 @@ const App = () => (
                 <Route path="/admin/hambi-readiness" element={<HambiReadinessPage />} />
                 <Route path="/admin/payment-sandbox" element={<PaymentSandboxPage />} />
                 <Route path="/admin/tax-reports" element={<TaxReportsPage />} />
+                <Route path="/admin/seo-monitor" element={<SeoMonitorPage />} />
+
                 <Route path="/admin/api-center" element={<APICenterPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
                 <Route path="/legal" element={<LegalCenterPage />} />

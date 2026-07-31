@@ -131,7 +131,7 @@ const DentalImaging = ({ patients, clinicId }: DentalImagingProps) => {
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setPreviewUrl(null)}>
           <div className="relative max-w-4xl max-h-[90vh]">
             <Button size="icon" variant="ghost" className="absolute -top-10 right-0 text-white" onClick={() => setPreviewUrl(null)}><X className="w-6 h-6" /></Button>
-            <img src={previewUrl} alt="Preview" className="max-w-full max-h-[85vh] rounded-lg object-contain" />
+            <img loading="lazy" decoding="async" src={previewUrl} alt="Preview" className="max-w-full max-h-[85vh] rounded-lg object-contain" />
           </div>
         </div>
       )}

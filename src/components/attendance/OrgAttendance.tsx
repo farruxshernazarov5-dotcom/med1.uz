@@ -320,7 +320,7 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
               <CardTitle className="text-base flex items-center gap-2"><QrCode className="w-4 h-4" /> Dinamik QR Kod</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-3">
-              {qrImg ? <img src={qrImg} className="w-72 h-72" alt="QR" /> : <div className="w-72 h-72 bg-muted animate-pulse rounded" />}
+              {qrImg ? <img loading="lazy" decoding="async" src={qrImg} className="w-72 h-72" alt="QR" /> : <div className="w-72 h-72 bg-muted animate-pulse rounded" />}
               {qrToken && <p className="text-xs text-muted-foreground">Amal qiladi: {format(new Date(qrToken.expires_at),"HH:mm:ss")} gacha</p>}
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={generateQr}><RefreshCw className="w-4 h-4 mr-1" /> Yangilash</Button>

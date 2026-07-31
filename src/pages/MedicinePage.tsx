@@ -85,7 +85,7 @@ const MedicinePage = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={medicineHero} alt="Tibbiy entsiklopediya" className="w-full h-full object-cover" />
+          <img loading="lazy" decoding="async" src={medicineHero} alt="Tibbiy entsiklopediya" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-medical-navy/80" />
           <div className="absolute inset-0 bg-gradient-to-t from-medical-navy via-medical-navy/50 to-transparent" />
         </div>
@@ -185,7 +185,7 @@ const MedicinePage = () => {
             {categories.map((cat, i) => (
               <div key={cat.title} className="group relative bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 cursor-pointer animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="relative h-40 overflow-hidden">
-                  <img src={cat.image} alt={cat.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" decoding="async" src={cat.image} alt={cat.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
                   <div className="absolute bottom-3 left-4">
                     <span className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">{cat.count} atama</span>
@@ -317,7 +317,7 @@ const MedicinePage = () => {
               </div>
             </div>
             <div className="relative">
-              <img src={anatomyImg} alt="Inson anatomiyasi" className="rounded-3xl shadow-hero w-full" />
+              <img loading="lazy" decoding="async" src={anatomyImg} alt="Inson anatomiyasi" className="rounded-3xl shadow-hero w-full" />
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-medical-navy/60 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
                 <p className="font-heading text-primary-foreground font-semibold text-lg">"Inson tanasi — eng mukammal laboratoriya"</p>

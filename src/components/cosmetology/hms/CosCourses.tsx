@@ -544,7 +544,7 @@ const CourseDetailDialog = ({ course, centerId, onClose, onUpdate }: any) => {
                     <div className="mt-1">
                       {photoForm[`${t}_url`] ? (
                         <div className="relative">
-                          <img src={photoForm[`${t}_url`]} className="w-full aspect-square object-cover rounded-md" alt="" />
+                          <img loading="lazy" decoding="async" src={photoForm[`${t}_url`]} className="w-full aspect-square object-cover rounded-md" alt="" />
                           <button onClick={() => setPhotoForm({ ...photoForm, [`${t}_url`]: "" })} className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1"><XCircle className="w-3 h-3" /></button>
                         </div>
                       ) : (
@@ -630,8 +630,8 @@ const CourseDetailDialog = ({ course, centerId, onClose, onUpdate }: any) => {
                 {photos.map((p) => (
                   <div key={p.id} className="rounded-lg border border-border overflow-hidden">
                     <div className="grid grid-cols-2 gap-0.5 bg-muted">
-                      {p.before_url ? <img src={p.before_url} alt="before" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Oldin</div>}
-                      {p.after_url ? <img src={p.after_url} alt="after" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Keyin</div>}
+                      {p.before_url ? <img loading="lazy" decoding="async" src={p.before_url} alt="before" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Oldin</div>}
+                      {p.after_url ? <img loading="lazy" decoding="async" src={p.after_url} alt="after" className="aspect-square object-cover" /> : <div className="aspect-square flex items-center justify-center text-xs text-muted-foreground">Keyin</div>}
                     </div>
                     <div className="p-2">
                       <p className="text-[10px] text-muted-foreground">{new Date(p.created_at).toLocaleDateString("uz-UZ")}</p>

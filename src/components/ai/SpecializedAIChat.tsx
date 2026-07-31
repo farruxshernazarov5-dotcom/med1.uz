@@ -12,6 +12,9 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
+import { parseAiAnswer } from "@/lib/aiSources";
+import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
+
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 
@@ -162,11 +165,18 @@ export default function SpecializedAIChat({
                         <div className={`max-w-[85%] rounded-2xl px-3 py-2 ${
                           m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
                         }`}>
-                          {m.role === "assistant" ? (
-                            <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:mt-3 prose-headings:mb-1.5 prose-p:my-1.5 prose-table:my-2">
-                              <ReactMarkdown>{m.content}</ReactMarkdown>
-                            </div>
-                          ) : <p className="text-sm">{m.content}</p>}
+                          {m.role === "assistant" ? (() => {
+                            const parsed = parseAiAnswer(m.content);
+                            return (
+                              <>
+                                <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:mt-3 prose-headings:mb-1.5 prose-p:my-1.5 prose-table:my-2">
+                                  <ReactMarkdown>{parsed.body}</ReactMarkdown>
+                                </div>
+                                <AiSourcesBlock sources={parsed.sources} className="mt-2" compact />
+                              </>
+                            );
+                          })() : <p className="text-sm">{m.content}</p>}
+
                         </div>
                         {m.role === "user" && (
                           <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">

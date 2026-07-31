@@ -235,7 +235,7 @@ const AdminGeoTemplates = () => {
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
                   {clinic?.logo_url ? (
-                    <img src={clinic.logo_url} alt="" className="w-full h-full rounded-xl object-cover" />
+                    <img loading="lazy" decoding="async" src={clinic.logo_url} alt="" className="w-full h-full rounded-xl object-cover" />
                   ) : (
                     <Bell className="w-5 h-5 text-white" />
                   )}

@@ -85,7 +85,7 @@ const BloodGroupDetail = ({ group, onClose }: { group: BloodGroupInfo; onClose: 
   <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
     <div className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
       <div className="relative h-48 overflow-hidden rounded-t-2xl">
-        <img src={bloodLabImg} alt={group.type} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={bloodLabImg} alt={group.type} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
         <div className="absolute bottom-4 left-6 flex items-center gap-4">
           <div className={`w-20 h-20 rounded-full ${group.color} flex items-center justify-center shadow-lg`}>
@@ -216,7 +216,7 @@ const DonorInfoSection = () => {
           {openSection === key && (
             <CardContent className="pt-0 animate-fade-in">
               <div className="flex flex-col md:flex-row gap-4">
-                <img src={img} alt={data.title} className="w-full md:w-48 h-32 object-cover rounded-xl" />
+                <img loading="lazy" decoding="async" src={img} alt={data.title} className="w-full md:w-48 h-32 object-cover rounded-xl" />
                 <ul className="flex-1 space-y-2">
                   {data.content.map((item, i) => (
                     <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
@@ -236,7 +236,7 @@ const DonorInfoSection = () => {
 // ==================== SPECIALIST CARD ====================
 const SpecialistCard = ({ specialist }: { specialist: BloodBank["specialists"][0] }) => (
   <div className="flex items-center gap-3 bg-muted/40 rounded-xl p-3">
-    <img src={getSpecPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
+    <img loading="lazy" decoding="async" src={getSpecPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
     <div className="flex-1 min-w-0">
       <p className="font-semibold text-sm text-foreground truncate">{specialist.name}</p>
       <p className="text-xs text-muted-foreground">{specialist.specialty}</p>
@@ -256,7 +256,7 @@ const BloodBankCard = ({ bank }: { bank: BloodBank }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="h-40 overflow-hidden">
-        <img src={getBankImage(bank)} alt={bank.name} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={getBankImage(bank)} alt={bank.name} className="w-full h-full object-cover" />
       </div>
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">

@@ -46,7 +46,7 @@ const AboutPage = () => {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={missionImg} alt="Med1.uz missiyasi" className="w-full h-full object-cover" />
+          <img loading="lazy" decoding="async" src={missionImg} alt="Med1.uz missiyasi" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/60" />
         </div>
         <div className="relative container mx-auto px-4 py-20">
@@ -110,7 +110,7 @@ const AboutPage = () => {
             {/* Founder */}
             <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-lg transition-shadow">
               <div className="relative h-80 overflow-hidden">
-                <img src={founderImg} alt="Farrukh Farkhadovich" className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={founderImg} alt="Farrukh Farkhadovich" className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">Founder & CEO</span>
@@ -139,7 +139,7 @@ const AboutPage = () => {
             {/* SEO / Technical */}
             <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-lg transition-shadow">
               <div className="relative h-80 overflow-hidden">
-                <img src={seoImg} alt="Javokhir Kadirov" className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={seoImg} alt="Javokhir Kadirov" className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-foreground/80 to-transparent p-6">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">Technical SEO</span>

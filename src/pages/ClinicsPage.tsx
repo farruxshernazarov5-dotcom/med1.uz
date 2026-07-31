@@ -87,7 +87,7 @@ const MedTermsBanner = ({ terms }: { terms: typeof clinicMedicalTerms }) => {
 // ==================== SPECIALIST CARD ====================
 const SpecialistCard = ({ specialist }: { specialist: Clinic["specialists"][0] }) => (
   <div className="flex items-center gap-3 bg-muted/40 rounded-xl p-3">
-    <img src={getSpecialistPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
+    <img loading="lazy" decoding="async" src={getSpecialistPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
     <div className="flex-1 min-w-0">
       <p className="font-semibold text-sm text-foreground truncate">{specialist.name}</p>
       <p className="text-xs text-muted-foreground">{specialist.specialty}</p>
@@ -126,14 +126,14 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       {/* Clinic Image - links to detail */}
       <Link to={`/clinics/${clinic.id}`} className="block h-40 overflow-hidden">
-        <img src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+        <img loading="lazy" decoding="async" src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
       </Link>
       {/* Header */}
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
           <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 -mt-10 relative z-10 shadow-md bg-card overflow-hidden">
             {clinic.logoUrl ? (
-              <img src={clinic.logoUrl} alt={clinic.name} className="w-full h-full object-cover rounded-2xl" />
+              <img loading="lazy" decoding="async" src={clinic.logoUrl} alt={clinic.name} className="w-full h-full object-cover rounded-2xl" />
             ) : (
               <span className="text-sm font-bold text-primary">{clinic.logo}</span>
             )}

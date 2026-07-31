@@ -21,6 +21,8 @@ import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import RadiologyOnboardingModal from "@/components/ai/RadiologyOnboardingModal";
 import AiUsageLog from "@/components/ai/AiUsageLog";
+import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
+
 import { Info, Lightbulb, Users, Cog, HelpCircle } from "lucide-react";
 
 
@@ -44,7 +46,9 @@ interface Analysis {
   followUpStudies: string[];
   urgentAttention: boolean;
   disclaimer: string;
+  sources?: string[];
 }
+
 
 const severityConfig = {
   normal: { label: "Normal", color: "text-green-600", bg: "bg-green-50 dark:bg-green-950/30", dot: "🟢" },
@@ -335,7 +339,7 @@ export default function RadiologySubmodulePage({
                 ) : (
                   <div className="border border-border rounded-xl p-3 bg-muted/20 flex items-start gap-3">
                     {filePreview ? (
-                      <img src={filePreview} alt="preview" className="w-24 h-24 object-cover rounded-lg" />
+                      <img loading="lazy" decoding="async" src={filePreview} alt="preview" className="w-24 h-24 object-cover rounded-lg" />
                     ) : (
                       <div className="w-24 h-24 rounded-lg bg-primary/10 flex items-center justify-center"><Eye className="w-8 h-8 text-primary" /></div>
                     )}
@@ -471,7 +475,10 @@ export default function RadiologySubmodulePage({
                 <Link to="/ai-radiology" className="ml-auto"><Button variant="ghost" size="sm">Boshqa Radiology moduli →</Button></Link>
               </div>
 
+              <AiSourcesBlock sources={analysis.sources ?? []} />
+
               <p className="text-xs text-muted-foreground italic">{analysis.disclaimer}</p>
+
             </div>
           )}
 

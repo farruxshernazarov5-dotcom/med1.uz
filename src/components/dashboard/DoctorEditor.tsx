@@ -192,7 +192,7 @@ const DoctorEditor = ({ clinicId, doctors, onRefresh }: DoctorEditorProps) => {
                 onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
               >
                 {d.photo_url ? (
-                  <img src={d.photo_url} alt={d.full_name} className="w-12 h-12 rounded-full object-cover border-2 border-border" />
+                  <img loading="lazy" decoding="async" src={d.photo_url} alt={d.full_name} className="w-12 h-12 rounded-full object-cover border-2 border-border" />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Stethoscope className="w-5 h-5 text-primary" />
@@ -288,7 +288,7 @@ const DoctorEditor = ({ clinicId, doctors, onRefresh }: DoctorEditorProps) => {
             {/* Photo */}
             <div className="flex items-center gap-4">
               {form.photo_url ? (
-                <img src={form.photo_url} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-border" />
+                <img loading="lazy" decoding="async" src={form.photo_url} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-border" />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
                   <Camera className="w-6 h-6 text-muted-foreground" />

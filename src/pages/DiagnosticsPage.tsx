@@ -99,7 +99,7 @@ const DiagTypeDetail = ({ type, onClose }: { type: DiagnosticType; onClose: () =
   <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
     <div className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
       <div className="h-48 overflow-hidden rounded-t-2xl">
-        <img src={getDiagTypeImage(type.id)} alt={type.name} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={getDiagTypeImage(type.id)} alt={type.name} className="w-full h-full object-cover" />
       </div>
       <div className="p-6 space-y-4">
         <div className="flex items-start justify-between">
@@ -182,7 +182,7 @@ const DiagTypeDetail = ({ type, onClose }: { type: DiagnosticType; onClose: () =
 const DiagTypeCard = ({ type, onClick }: { type: DiagnosticType; onClick: () => void }) => (
   <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group" onClick={onClick}>
     <div className="h-32 overflow-hidden">
-      <img src={getDiagTypeImage(type.id)} alt={type.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      <img loading="lazy" decoding="async" src={getDiagTypeImage(type.id)} alt={type.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
     </div>
     <CardContent className="p-4">
       <h3 className="font-heading font-semibold text-sm text-foreground mb-1">{type.name}</h3>
@@ -198,7 +198,7 @@ const DiagTypeCard = ({ type, onClick }: { type: DiagnosticType; onClick: () => 
 // ==================== SPECIALIST CARD ====================
 const SpecialistCard = ({ specialist }: { specialist: DiagnosticCenter["specialists"][0] }) => (
   <div className="flex items-center gap-3 bg-muted/40 rounded-xl p-3">
-    <img src={getSpecPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
+    <img loading="lazy" decoding="async" src={getSpecPhoto(specialist.name)} alt={specialist.name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
     <div className="flex-1 min-w-0">
       <p className="font-semibold text-sm text-foreground truncate">{specialist.name}</p>
       <p className="text-xs text-muted-foreground">{specialist.specialty}</p>
@@ -218,7 +218,7 @@ const CenterCard = ({ center }: { center: DiagnosticCenter }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="h-40 overflow-hidden">
-        <img src={getDiagImage(center.diagnosticTypes)} alt={center.name} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={getDiagImage(center.diagnosticTypes)} alt={center.name} className="w-full h-full object-cover" />
       </div>
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">

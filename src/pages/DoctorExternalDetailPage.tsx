@@ -121,7 +121,7 @@ const DoctorExternalDetailPage = () => {
           </Link>
           <div className="bg-card rounded-2xl border p-6 md:p-8 flex flex-col md:flex-row gap-6">
             {doc.photo_url ? (
-              <img src={doc.photo_url} alt={doc.name}
+              <img loading="lazy" decoding="async" src={doc.photo_url} alt={doc.name}
                 className="w-32 h-32 md:w-40 md:h-40 rounded-2xl object-cover border-2 shrink-0" />
             ) : (
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center shrink-0">

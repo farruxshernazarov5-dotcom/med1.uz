@@ -59,7 +59,7 @@ const ClinicRecommendations = () => {
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   {clinic.logo_url ? (
-                    <img src={clinic.logo_url} alt="" className="w-12 h-12 rounded-lg object-cover border" />
+                    <img loading="lazy" decoding="async" src={clinic.logo_url} alt="" className="w-12 h-12 rounded-lg object-cover border" />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Building2 className="w-6 h-6 text-primary" />

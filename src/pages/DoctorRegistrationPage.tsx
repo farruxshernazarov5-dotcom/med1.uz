@@ -219,7 +219,7 @@ const DoctorRegistrationPage = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   {form.photo_url ? (
-                    <img src={form.photo_url} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-border" />
+                    <img loading="lazy" decoding="async" src={form.photo_url} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-border" />
                   ) : (
                     <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center">
                       <Camera className="w-8 h-8 text-muted-foreground" />

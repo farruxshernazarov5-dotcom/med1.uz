@@ -33,8 +33,8 @@ const SliderCompare = ({ before, after }: { before: string; after: string }) => 
       onTouchMove={(e) => onMove(e.touches[0].clientX)}
       onTouchStart={(e) => onMove(e.touches[0].clientX)}
     >
-      {after && <img src={after} alt="after" className="absolute inset-0 w-full h-full object-cover" draggable={false} />}
-      {before && <div className="absolute inset-0 overflow-hidden" style={{ width: `${pos}%` }}><img src={before} alt="before" className="w-full h-full object-cover" style={{ width: `${100 / (pos / 100)}%`, maxWidth: "none" }} draggable={false} /></div>}
+      {after && <img loading="lazy" decoding="async" src={after} alt="after" className="absolute inset-0 w-full h-full object-cover" draggable={false} />}
+      {before && <div className="absolute inset-0 overflow-hidden" style={{ width: `${pos}%` }}><img loading="lazy" decoding="async" src={before} alt="before" className="w-full h-full object-cover" style={{ width: `${100 / (pos / 100)}%`, maxWidth: "none" }} draggable={false} /></div>}
       <div className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg pointer-events-none" style={{ left: `${pos}%` }}>
         <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white shadow-xl flex items-center justify-center">
           <div className="flex"><div className="w-0.5 h-3 bg-foreground/40 mx-0.5" /><div className="w-0.5 h-3 bg-foreground/40 mx-0.5" /></div>
@@ -227,14 +227,14 @@ const CosBeforeAfter = ({ centerId }: { centerId: string }) => {
               <div>
                 <Label>Oldin *</Label>
                 <label className="mt-1 flex items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition-all overflow-hidden">
-                  {form.before_url ? <img src={form.before_url} alt="before" className="h-full object-contain" /> : <div className="text-center"><Upload className="w-6 h-6 text-muted-foreground mx-auto" /><span className="text-[10px] text-muted-foreground">Yuklash</span></div>}
+                  {form.before_url ? <img loading="lazy" decoding="async" src={form.before_url} alt="before" className="h-full object-contain" /> : <div className="text-center"><Upload className="w-6 h-6 text-muted-foreground mx-auto" /><span className="text-[10px] text-muted-foreground">Yuklash</span></div>}
                   <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], "before")} />
                 </label>
               </div>
               <div>
                 <Label>Keyin *</Label>
                 <label className="mt-1 flex items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition-all overflow-hidden">
-                  {form.after_url ? <img src={form.after_url} alt="after" className="h-full object-contain" /> : <div className="text-center"><Upload className="w-6 h-6 text-muted-foreground mx-auto" /><span className="text-[10px] text-muted-foreground">Yuklash</span></div>}
+                  {form.after_url ? <img loading="lazy" decoding="async" src={form.after_url} alt="after" className="h-full object-contain" /> : <div className="text-center"><Upload className="w-6 h-6 text-muted-foreground mx-auto" /><span className="text-[10px] text-muted-foreground">Yuklash</span></div>}
                   <input type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], "after")} />
                 </label>
               </div>

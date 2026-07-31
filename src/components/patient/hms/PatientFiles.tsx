@@ -108,7 +108,7 @@ const PatientFiles = () => {
               <div key={f.id} className="bg-card rounded-xl border border-border overflow-hidden group">
                 <div className="aspect-square bg-muted flex items-center justify-center relative">
                   {isImg ? (
-                    <img src={f.file_url} alt={f.title} className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={f.file_url} alt={f.title} className="w-full h-full object-cover" />
                   ) : (
                     <FileText className="w-12 h-12 text-muted-foreground" />
                   )}

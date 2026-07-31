@@ -75,7 +75,7 @@ const DiseasesPage = () => {
         <div className="animate-fade-up">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 rounded-2xl overflow-hidden border border-border">
-              <img src={currentCategory.image} alt={currentCategory.title} className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={currentCategory.image} alt={currentCategory.title} className="w-full h-full object-cover" />
             </div>
             <div>
               <h2 className="font-heading text-2xl font-bold text-foreground">{currentCategory.title}</h2>
