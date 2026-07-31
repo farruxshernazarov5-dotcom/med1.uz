@@ -21,6 +21,8 @@ import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import { downloadAIReport } from "@/utils/downloadAIReport";
 import RadiologyOnboardingModal from "@/components/ai/RadiologyOnboardingModal";
 import AiUsageLog from "@/components/ai/AiUsageLog";
+import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
+
 import { Info, Lightbulb, Users, Cog, HelpCircle } from "lucide-react";
 
 
