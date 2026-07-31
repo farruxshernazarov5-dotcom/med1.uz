@@ -44,7 +44,9 @@ interface Analysis {
   followUpStudies: string[];
   urgentAttention: boolean;
   disclaimer: string;
+  sources?: string[];
 }
+
 
 const severityConfig = {
   normal: { label: "Normal", color: "text-green-600", bg: "bg-green-50 dark:bg-green-950/30", dot: "🟢" },
