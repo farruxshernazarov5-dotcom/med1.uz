@@ -12,6 +12,9 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
+import { parseAiAnswer } from "@/lib/aiSources";
+import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
+
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import MedCoinCostBadge from "@/components/medcoin/MedCoinCostBadge";
 
