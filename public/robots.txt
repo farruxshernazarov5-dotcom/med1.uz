@@ -1,8 +1,29 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /oauth
+Disallow: /payment-success
+Disallow: /check-in
+Disallow: /unsubscribe
+Disallow: /*?utm_
+Disallow: /*?diag=
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+
+User-agent: Yandex
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Clean-param: utm_source&utm_medium&utm_campaign&ref&partner
 
 User-agent: Twitterbot
 Allow: /
@@ -10,7 +31,34 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: Googlebot-Image
+Allow: /
+
+# AI / LLM crawlers — allowed for medical knowledge discovery
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /oauth
+Disallow: /payment-success
+Disallow: /unsubscribe
 
 Sitemap: https://www.med1.uz/sitemap.xml
