@@ -158,6 +158,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <CreditProvider>
+          <RouteCanonical />
+
           <ReferralCapture />
           <YandexAdsManager />
           <FloatingAISearch />
