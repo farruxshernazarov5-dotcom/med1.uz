@@ -125,6 +125,8 @@ import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
+import RouteCanonical from "./components/seo/RouteCanonical";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
