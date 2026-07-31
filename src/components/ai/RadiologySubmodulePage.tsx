@@ -473,7 +473,10 @@ export default function RadiologySubmodulePage({
                 <Link to="/ai-radiology" className="ml-auto"><Button variant="ghost" size="sm">Boshqa Radiology moduli →</Button></Link>
               </div>
 
+              <AiSourcesBlock sources={analysis.sources ?? []} />
+
               <p className="text-xs text-muted-foreground italic">{analysis.disclaimer}</p>
+
             </div>
           )}
 
