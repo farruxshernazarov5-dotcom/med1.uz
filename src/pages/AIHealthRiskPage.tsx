@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -632,6 +633,7 @@ const AIHealthRiskPage = () => {
                 </Button>
               </div>
 
+              <AiSourcesBlock sources={((result as any)?.sources as string[]) || []} className="mb-4" />
               <MedicalDisclaimer />
             </div>
           )}

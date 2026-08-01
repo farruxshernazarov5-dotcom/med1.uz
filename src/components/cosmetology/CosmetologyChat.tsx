@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { Sparkles, Send, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -54,7 +54,7 @@ const CosmetologyChat = ({ messages, input, setInput, loading, onSend }: Props) 
               <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
                 {m.role === "assistant" ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                    <AiAnswer text={m.content} />
                   </div>
                 ) : <p className="text-sm">{m.content}</p>}
               </div>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Bot, Send, Loader2, Sparkles, Baby, Apple, Activity, Heart } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { useToast } from "@/hooks/use-toast";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -130,7 +130,7 @@ export const MatAIAssistant = () => {
               }`}>
                 {m.role === "assistant" ? (
                   <div className="prose prose-sm max-w-none prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
-                    <ReactMarkdown>{m.content || "..."}</ReactMarkdown>
+                    <AiAnswer text={m.content || "..."} />
                   </div>
                 ) : (
                   <p className="text-sm whitespace-pre-wrap">{m.content}</p>

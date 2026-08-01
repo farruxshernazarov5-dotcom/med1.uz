@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import {
   Baby, Heart, Calendar, MessageSquare, Send, Loader2,
   Activity, Apple, Pill, AlertTriangle, CheckCircle, Clock,
@@ -465,7 +465,7 @@ const AIPregnancyPage = () => {
                     <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                       <div className={cn("max-w-[85%] rounded-2xl px-4 py-3 text-sm",
                         m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted")}>
-                        {m.role === "assistant" ? <div className="prose prose-sm dark:prose-invert max-w-none"><ReactMarkdown>{m.content}</ReactMarkdown></div> : m.content}
+                        {m.role === "assistant" ? <div className="prose prose-sm dark:prose-invert max-w-none"><AiAnswer text={m.content} /></div> : m.content}
                       </div>
                     </div>
                   ))}

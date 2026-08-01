@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { downloadAIReport } from "@/utils/downloadAIReport";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import SkinScanner from "@/components/cosmetology/SkinScanner";
 import SkincareDashboard from "@/components/cosmetology/SkincareDashboard";
 import ClinicRecommendations from "@/components/cosmetology/ClinicRecommendations";
@@ -343,7 +343,7 @@ const AICosmetologyPage = () => {
             </CardHeader>
             <CardContent>
               <div className="prose prose-sm dark:prose-invert max-w-none max-h-[500px] overflow-y-auto">
-                <ReactMarkdown>{messages.filter(m => m.role === "assistant").pop()?.content || ""}</ReactMarkdown>
+                <AiAnswer text={messages.filter(m => m.role === "assistant").pop()?.content || ""} />
               </div>
             </CardContent>
           </Card>

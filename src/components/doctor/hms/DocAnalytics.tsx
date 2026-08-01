@@ -14,7 +14,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, LineChart, Line, Legend, AreaChart, Area,
 } from "recharts";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -436,7 +436,7 @@ export default function DocAnalytics({ doctorId }: Props) {
                   )}>
                     {m.role === "assistant" ? (
                       <div className="prose prose-sm dark:prose-invert max-w-none [&>*]:my-1 [&>p]:text-sm [&>ul]:text-sm [&>ol]:text-sm">
-                        <ReactMarkdown>{m.content || "..."}</ReactMarkdown>
+                        <AiAnswer text={m.content || "..."} />
                       </div>
                     ) : m.content}
                   </div>

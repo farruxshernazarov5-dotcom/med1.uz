@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
 import aiAssistantImg from "@/assets/ai-health-assistant.webp";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
@@ -246,7 +246,7 @@ const AIHealthAssistantPage = () => {
                 }`}>
                   {msg.role === "assistant" ? (
                     <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      <AiAnswer text={msg.content} />
                     </div>
                   ) : msg.content}
                 </div>

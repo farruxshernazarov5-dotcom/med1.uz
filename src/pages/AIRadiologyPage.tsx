@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -581,6 +582,7 @@ const AIRadiologyPage = () => {
                 </div>
               )}
 
+              <AiSourcesBlock sources={((analysis as any)?.sources as string[]) || []} className="mb-4" />
               <MedicalDisclaimer />
             </div>
           )}
