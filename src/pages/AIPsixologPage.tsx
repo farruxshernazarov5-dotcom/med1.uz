@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
 import { Send, Bot, User, Brain, Heart, Smile, Frown, Meh, Loader2, Phone } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
@@ -210,7 +210,7 @@ const AIPsixologPage = () => {
                         }`}>
                           {msg.role === "assistant" ? (
                             <div className="prose prose-sm dark:prose-invert max-w-none">
-                              <ReactMarkdown>{msg.content}</ReactMarkdown>
+                              <AiAnswer text={msg.content} />
                             </div>
                           ) : (
                             <p>{msg.content}</p>

@@ -13,7 +13,7 @@ import AIServiceHero from "@/components/AIServiceHero";
 import AIServiceUsageGuide from "@/components/AIServiceUsageGuide";
 import AIAccessBanner from "@/components/ai/AIAccessBanner";
 import aiDoctorImg from "@/assets/ai-doctor-chat.webp";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
@@ -163,7 +163,7 @@ const AIDoctorChatPage = () => {
                 }`}>
                   {msg.role === "assistant" ? (
                     <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      <AiAnswer text={msg.content} />
                     </div>
                   ) : msg.content}
                 </div>

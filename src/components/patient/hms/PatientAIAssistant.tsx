@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Bot, Send, Sparkles, AlertTriangle, User as UserIcon, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { useLanguage } from "@/hooks/useLanguage";
 import { fetchActiveAiDocuments } from "@/components/dashboard/PatientAIDocuments";
 import { logAiChat } from "@/lib/aiChatHistory";
@@ -139,7 +139,7 @@ const PatientAIAssistant = () => {
                 />
               ) : m.role === "assistant" ? (
                 <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-headings:my-2">
-                  <ReactMarkdown>{m.content}</ReactMarkdown>
+                  <AiAnswer text={m.content} />
                 </div>
               ) : <p className="whitespace-pre-wrap">{m.content}</p>}
             </div>

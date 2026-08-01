@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Pill, AlertTriangle, Plus, X, Loader2, Search } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
@@ -241,7 +241,7 @@ const AIFarmatsevtPage = () => {
                           }`}>
                             {msg.role === "assistant" ? (
                               <div className="prose prose-sm dark:prose-invert max-w-none">
-                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                <AiAnswer text={msg.content} />
                               </div>
                             ) : (
                               <p>{msg.content}</p>

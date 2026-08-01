@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Send, Bot, User, Dumbbell, Target, Clock, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
@@ -323,7 +323,7 @@ const AIFitnessPage = () => {
                           }`}>
                             {msg.role === "assistant" ? (
                               <div className="prose prose-sm dark:prose-invert max-w-none">
-                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                <AiAnswer text={msg.content} />
                               </div>
                             ) : (
                               <p>{msg.content}</p>

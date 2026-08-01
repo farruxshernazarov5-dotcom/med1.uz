@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Send, Bot, User, Apple, Calculator, Utensils, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import ReactMarkdown from "react-markdown";
+import AiAnswer from "@/components/ai/AiAnswer";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
@@ -287,7 +287,7 @@ const AIDietologPage = () => {
                           }`}>
                             {msg.role === "assistant" ? (
                               <div className="prose prose-sm dark:prose-invert max-w-none">
-                                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                <AiAnswer text={msg.content} />
                               </div>
                             ) : (
                               <p>{msg.content}</p>

@@ -1,5 +1,4 @@
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { parseAiAnswer } from "@/lib/aiSources";
 import AiSourcesBlock from "@/components/ai/AiSourcesBlock";
 
@@ -16,7 +15,7 @@ export function AiAnswer({ text, compact = true }: AiAnswerProps) {
   const { body, sources } = parseAiAnswer(text || "");
   return (
     <>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{body || "..."}</ReactMarkdown>
+      <ReactMarkdown>{body || "..."}</ReactMarkdown>
       {sources.length > 0 && (
         <div className="not-prose">
           <AiSourcesBlock sources={sources} className="mt-2" compact={compact} />
