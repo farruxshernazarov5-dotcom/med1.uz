@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { aiChannelHeaders } from "@/lib/aiChannel";
 import { recordAiDiagnostic } from "@/lib/aiDiagnostics";
+import { logActivity } from "@/lib/activityLog";
 
 const AI_FUNCTIONS = new Set([
   "symptom-checker",
@@ -77,6 +78,16 @@ export function installAiInvokeHeaders() {
       },
     });
     const durationMs = Math.round(performance.now() - t0);
+
+    logActivity({
+      action_type: "ai_request",
+      title: `AI so'rov: ${functionName}`,
+      description: (result as any)?.error ? "Xatolik bilan yakunlandi" : "Muvaffaqiyatli bajarildi",
+      module: "ai",
+      metadata: { function: functionName, duration_ms: durationMs, ok: !(result as any)?.error },
+    });
+
+
 
     const err = (result as any)?.error;
     if (err) {
