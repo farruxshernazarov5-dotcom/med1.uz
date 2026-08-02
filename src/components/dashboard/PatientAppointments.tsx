@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { logActivity } from "@/lib/activityLog";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -61,6 +62,7 @@ const PatientAppointments = () => {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Qabul bekor qilindi" });
+      logActivity({ action_type: "appointment", title: "Qabul bekor qilindi", module: "appointments", metadata: { appointment_id: id } });
       setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: "cancelled" } : a)));
     }
   };

@@ -36,11 +36,13 @@ export async function logActivity(input: ActivityInput): Promise<void> {
     if (!userId) return;
 
     const path = input.path ?? (typeof window !== "undefined" ? window.location.pathname : null);
-    const key = `${input.action_type}|${input.title}|${path}`;
-    const now = Date.now();
-    const last = recent.get(key);
-    if (last && now - last < RECENT_TTL_MS) return;
-    recent.set(key, now);
+    if (input.action_type === "page_view") {
+      const key = `${input.action_type}|${input.title}|${path}`;
+      const now = Date.now();
+      const last = recent.get(key);
+      if (last && now - last < RECENT_TTL_MS) return;
+      recent.set(key, now);
+    }
 
     await supabase.from("user_activity_log").insert({
       user_id: userId,
