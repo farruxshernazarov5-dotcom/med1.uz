@@ -29,6 +29,7 @@ import PatientMedicalHistory from "./PatientMedicalHistory";
 import PatientAIHistory from "./PatientAIHistory";
 import PatientRecommendations from "@/components/patient/PatientRecommendations";
 import PatientSecurity from "./PatientSecurity";
+import PatientActivityLog from "./PatientActivityLog";
 import PatientMedicalWorkflow from "./PatientMedicalWorkflow";
 import PatientOverview from "@/components/patient/hms/PatientOverview";
 import PatientLabResults from "@/components/patient/hms/PatientLabResults";
