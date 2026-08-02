@@ -55,7 +55,7 @@ type TabId =
   | "lab" | "prescriptions" | "files" | "documents" | "history"
   | "wallet" | "payments" | "promo" | "premium" | "partner-referral"
   | "family" | "favorites" | "reviews"
-  | "profile" | "notifications" | "security" | "settings" | "legal";
+  | "profile" | "notifications" | "security" | "settings" | "legal" | "activity";
 
 interface NavItem {
   id: TabId;
@@ -135,6 +135,7 @@ const NAV_GROUPS: NavGroup[] = [
       { id: "family", label: "Oila a'zolari", icon: Users },
       { id: "favorites", label: "Sevimlilar", icon: Heart },
       { id: "reviews", label: "Sharhlarim", icon: Star },
+      { id: "activity", label: "Faoliyat tarixi", icon: Activity },
     ],
   },
   {
@@ -215,6 +216,7 @@ const PatientDashboard = () => {
       case "family": return <PatientFamily />;
       case "favorites": return <PatientFavorites />;
       case "reviews": return <PatientReviews />;
+      case "activity": return <PatientActivityLog />;
       case "profile": return <PatientProfileEditor />;
       case "notifications": return <PatientNotifications />;
       case "security": return <PatientSecurity />;
