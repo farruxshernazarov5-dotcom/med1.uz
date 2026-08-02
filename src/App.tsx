@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
+import ActivityTracker from "@/components/activity/ActivityTracker";
 import { ThemeProvider } from "next-themes";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
@@ -163,6 +164,7 @@ const App = () => (
         <BrowserRouter>
           <CreditProvider>
           <RouteCanonical />
+          <ActivityTracker />
 
           <ReferralCapture />
           <YandexAdsManager />
