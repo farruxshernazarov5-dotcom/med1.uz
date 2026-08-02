@@ -163,6 +163,7 @@ const App = () => (
         <BrowserRouter>
           <CreditProvider>
           <RouteCanonical />
+          <ActivityTracker />
 
           <ReferralCapture />
           <YandexAdsManager />
