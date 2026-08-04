@@ -96,6 +96,8 @@ const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
+const PartnerTermsPage = lazy(() => import("./pages/PartnerTermsPage"));
+
 const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
 const AIAnalyticsPage = lazy(() => import("./pages/admin/AIAnalyticsPage"));
 const HambiDashboardPage = lazy(() => import("./pages/admin/HambiDashboardPage"));
