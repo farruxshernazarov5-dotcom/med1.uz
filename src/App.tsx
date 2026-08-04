@@ -96,6 +96,8 @@ const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
+const PartnerTermsPage = lazy(() => import("./pages/PartnerTermsPage"));
+
 const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
 const AIAnalyticsPage = lazy(() => import("./pages/admin/AIAnalyticsPage"));
 const HambiDashboardPage = lazy(() => import("./pages/admin/HambiDashboardPage"));
@@ -288,6 +290,8 @@ const App = () => (
                 <Route path="/saas-terms" element={<SaasTermsPage />} />
                 <Route path="/referral" element={<ReferralPage />} />
                 <Route path="/referral-terms" element={<ReferralTermsPage />} />
+                <Route path="/partner-terms" element={<PartnerTermsPage />} />
+
                 <Route path="/knowledge" element={<KnowledgePage />} />
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
