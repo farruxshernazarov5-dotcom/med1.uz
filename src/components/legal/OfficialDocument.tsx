@@ -11,14 +11,33 @@ interface Props {
   source: string;
   pdfUrl: string;
   pdfName: string;
+  backLabel?: string;
+  officialLabel?: string;
+  printLabel?: string;
+  footerNote?: string;
+  toolbar?: React.ReactNode;
   children?: React.ReactNode;
 }
 
 /**
- * Renders an official, legally binding MED1.UZ document (Uzbek master text)
+ * Renders an official, legally binding MED1.UZ document
  * with PDF download and print support.
  */
-export const OfficialDocument = ({ title, subtitle, edition = "Tahrir 1.0", source, pdfUrl, pdfName, children }: Props) => (
+export const OfficialDocument = ({
+  title,
+  subtitle,
+  edition = "Tahrir 1.0",
+  source,
+  pdfUrl,
+  pdfName,
+  backLabel = "Bosh sahifa",
+  officialLabel = "Rasmiy hujjat",
+  printLabel = "Chop etish",
+  footerNote,
+  toolbar,
+  children,
+}: Props) => (
+
   <div className="min-h-screen bg-background">
     <div className="max-w-4xl mx-auto px-4 py-10">
       <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-4">
