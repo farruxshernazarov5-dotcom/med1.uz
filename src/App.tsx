@@ -290,6 +290,8 @@ const App = () => (
                 <Route path="/saas-terms" element={<SaasTermsPage />} />
                 <Route path="/referral" element={<ReferralPage />} />
                 <Route path="/referral-terms" element={<ReferralTermsPage />} />
+                <Route path="/partner-terms" element={<PartnerTermsPage />} />
+
                 <Route path="/knowledge" element={<KnowledgePage />} />
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
