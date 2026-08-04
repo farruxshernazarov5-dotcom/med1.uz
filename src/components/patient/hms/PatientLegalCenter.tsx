@@ -16,6 +16,8 @@ const docLinks = [
   { title: "Maxfiylik siyosati", href: "/privacy", icon: Shield, badge: "Privacy" },
   { title: "Tibbiy ogohlantirish", href: "/disclaimer", icon: UserCheck, badge: "AI" },
   { title: "SaaS HMS shartlari", href: "/saas-terms", icon: Scale, badge: "To'lov" },
+  { title: "Hamkorlik shartnomasi", href: "/partner-terms", icon: Scale, badge: "Hamkor" },
+
   { title: "Referral shartlari", href: "/referral-terms", icon: FileText, badge: "Bonus" },
   { title: "Foydalanuvchi qo'llanmasi", href: "/user-guide", icon: BookOpen, badge: "Guide" },
   { title: "Barcha yuridik hujjatlar", href: "/legal-center", icon: Scale, badge: "Legal" },
