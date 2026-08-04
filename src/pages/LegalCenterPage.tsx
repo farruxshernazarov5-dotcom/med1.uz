@@ -194,12 +194,20 @@ export default function LegalCenterPage() {
           <p className="text-xs text-white/60 mb-4">
             Saytdagi barcha hujjatlar shu asosda yuritiladi. O'zbek tilidagi matn asosiy hisoblanadi.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { href: "/privacy", title: "Maxfiylik siyosati", desc: "Shaxsiy ma'lumotlarni qayta ishlash siyosati", pdf: privacyPdf.url, file: "MED1UZ-Maxfiylik-siyosati-UZ.pdf" },
-              { href: "/terms", title: "Foydalanuvchi shartnomasi", desc: "Ommaviy oferta (qo'shilish shartnomasi)", pdf: termsPdf.url, file: "MED1UZ-Foydalanuvchi-shartnomasi-UZ.pdf" },
-              { href: "/user-guide", title: "Foydalanuvchi qo'llanmasi", desc: "Platformadan foydalanish bo'yicha to'liq qo'llanma", pdf: null, file: "" },
-            ].map((d) => (
+              { href: "/privacy", ...getLegalDoc("privacy", lang) },
+              { href: "/terms", ...getLegalDoc("terms", lang) },
+              { href: "/partner-terms", ...getLegalDoc("partner", lang) },
+              {
+                href: "/user-guide",
+                title: lang === "ru" ? "Руководство пользователя" : lang === "en" ? "User guide" : "Foydalanuvchi qo'llanmasi",
+                subtitle: lang === "ru" ? "Полное руководство по платформе" : lang === "en" ? "Full platform usage guide" : "Platformadan foydalanish bo'yicha to'liq qo'llanma",
+                pdfUrl: null as string | null,
+                pdfName: "",
+              },
+            ].map((d) => ({ href: d.href, title: d.title, desc: d.subtitle, pdf: d.pdfUrl, file: d.pdfName })).map((d) => (
+
               <div key={d.href} className="rounded-xl border border-white/10 bg-white/5 p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <FileText className="w-4 h-4 text-[#7B61FF]" />
