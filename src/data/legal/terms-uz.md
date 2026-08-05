@@ -1,191 +1,163 @@
-**MED1.UZ**
+### MED1.UZ
 
-Raqamli tibbiyot ekotizimi • Digital Health Platform
+Raqamli tibbiyot ekotizimi
 
-**FOYDALANUVCHI SHARTNOMASI**
+FOYDALANUVCHI SHARTNOMASI MED1.UZ raqamli tibbiyot platformasidan foydalanish va xizmat ko'rsatish to'g'risidagi ommaviy oferta
 
-MED1.UZ raqamli tibbiyot platformasidan foydalanish va xizmat ko'rsatish to'g'risidagi OMMAVIY OFERTA (qo'shilish shartnomasi)
+| Tashkilot | "MED-ALL AI SYSTEM" MChJ |
+|---|---|
+| Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
+| Direktor | Shernazarov Farrux Farxodovich |
+| Aloqa | med1.uz · info@med1.uz · +998 99 214 41 03 |
+| Tahrir / sana | v2.1 · 2026-yil |
 
-| **Hujjat turi** | Ommaviy oferta (qo'shilish shartnomasi) |
-|----|----|
-| **Tahrir** | 1.0 |
-| **Kuchga kirish sanasi** | e'lon qilingan kundan |
-| **Amal qilish hududi** | O'zbekiston Respublikasi va undan tashqarida |
-| **Hujjat tili** | O'zbek tili (asosiy matn) |
-| **Oferent** | "MED-ALL AI SYSTEM" MChJ |
-| **STIR** | 312972027 |
-| **Direktor** | Shernazarov Farrux Farxodovich |
-| **Manzil** | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
-| **Veb-sayt / e-pochta** | med1.uz / info@med1.uz |
-| **Telefon** | +998 99 214 41 03 |
-
-*Ushbu hujjat med1.uz platformasining barcha modullari va xizmatlari uchun yagona foydalanuvchi shartnomasi hisoblanadi.*
-
-| **MUNDARIJA** |
-|---------------|
+### MUNDARIJA
 
 Muqaddima va oferta shartlari
 
-1-BO'LIM. ATAMALAR VA TA'RIFLAR
+### 1-BO'LIM. ATAMALAR VA TA'RIFLAR
 
-2-BO'LIM. UMUMIY QOIDALAR VA SHARTNOMANING HUQUQIY ASOSI
+### 2-BO'LIM. UMUMIY QOIDALAR VA SHARTNOMANING HUQUQIY ASOSI
 
-3-BO'LIM. SHARTNOMA PREDMETI
+### 3-BO'LIM. SHARTNOMA PREDMETI
 
-4-BO'LIM. PLATFORMA MODULLARI VA ULARDAN FOYDALANISH TARTIBI
+### 4-BO'LIM. PLATFORMA MODULLARI VA ULARDAN FOYDALANISH TARTIBI
 
-5-BO'LIM. RO'YXATDAN O'TISH, IDENTIFIKATSIYA VA HISOB
+### 5-BO'LIM. RO'YXATDAN O'TISH, IDENTIFIKATSIYA VA HISOB
 
-6-BO'LIM. TOMONLARNING HUQUQ VA MAJBURIYATLARI
+### 6-BO'LIM. TOMONLARNING HUQUQ VA MAJBURIYATLARI
 
-7-BO'LIM. TAQIQLANGAN HARAKATLAR (ACCEPTABLE USE POLICY)
+### 7-BO'LIM. TAQIQLANGAN HARAKATLAR (ACCEPTABLE USE POLICY)
 
-8-BO'LIM. NARX, TO'LOV VA HISOB-KITOB TARTIBI
+### 8-BO'LIM. NARX, TO'LOV VA HISOB-KITOB TARTIBI
 
-9-BO'LIM. XIZMATDAN VOZ KECHISH VA PULNI QAYTARISH (REFUND POLICY)
+### 9-BO'LIM. XIZMATDAN VOZ KECHISH VA PULNI QAYTARISH (REFUND POLICY)
 
-10-BO'LIM. SHAXSIY MA'LUMOTLAR VA TIBBIY SIR
+### 10-BO'LIM. SHAXSIY MA'LUMOTLAR VA TIBBIY SIR
 
-11-BO'LIM. INTELLEKTUAL MULK
+### 11-BO'LIM. INTELLEKTUAL MULK
 
-12-BO'LIM. TIBBIY MAS'ULIYAT VA RAD ETISH (MEDICAL DISCLAIMER)
+### 12-BO'LIM. TIBBIY MAS'ULIYAT VA RAD ETISH (MEDICAL DISCLAIMER)
 
-13-BO'LIM. XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM
+### 13-BO'LIM. XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM
 
-14-BO'LIM. KAFOLATLAR VA ULARNING CHEKLANISHI
+### 14-BO'LIM. KAFOLATLAR VA ULARNING CHEKLANISHI
 
-15-BO'LIM. JAVOBGARLIK VA UNING CHEGARALARI
+### 15-BO'LIM. JAVOBGARLIK VA UNING CHEGARALARI
 
-16-BO'LIM. FORS-MAJOR
+### 16-BO'LIM. FORS-MAJOR
 
-17-BO'LIM. SHARTNOMANI O'ZGARTIRISH VA BEKOR QILISH
+### 17-BO'LIM. SHARTNOMANI O'ZGARTIRISH VA BEKOR QILISH
 
-18-BO'LIM. NIZOLARNI HAL QILISH TARTIBI
+### 18-BO'LIM. NIZOLARNI HAL QILISH TARTIBI
 
-19-BO'LIM. XABARNOMALAR VA ALOQA
+### 19-BO'LIM. XABARNOMALAR VA ALOQA
 
-20-BO'LIM. MOBIL ILOVA VA UCHINCHI TOMON PLATFORMALARI
+### 20-BO'LIM. MOBIL ILOVA VA UCHINCHI TOMON PLATFORMALARI
 
-21-BO'LIM. KUKILAR, GEOLOKATSIYA, ANALITIKA VA AVTOMATLASHTIRILGAN QARORLAR
+### 21-BO'LIM. KUKILAR, GEOLOKATSIYA, ANALITIKA VA AVTOMATLASHTIRILGAN QARORLAR
 
-22-BO'LIM. KORPORATIV MIJOZLAR, SUG'URTA VA DAVLAT MUASSASALARI BILAN ISHLASH
+### 22-BO'LIM. KORPORATIV MIJOZLAR, SUG'URTA VA DAVLAT MUASSASALARI BILAN ISHLASH
 
-23-BO'LIM. REFERAL, AFFILIATE DASTURI VA REKLAMA
+### 23-BO'LIM. REFERAL, AFFILIATE DASTURI VA REKLAMA
 
-24-BO'LIM. VOYAGA YETMAGANLAR, VAKILLIK VA MAXSUS TOIFADAGI FOYDALANUVCHILAR
+### 24-BO'LIM. VOYAGA YETMAGANLAR, VAKILLIK VA MAXSUS TOIFADAGI FOYDALANUVCHILAR
 
-25-BO'LIM. AXBOROT XAVFSIZLIGI VA FOYDALANUVCHI MAS'ULIYATI
+### 25-BO'LIM. AXBOROT XAVFSIZLIGI VA FOYDALANUVCHI MAS'ULIYATI
 
 26-BO'LIM. ANTI-KORRUPTSIYA, SANKSIYALAR VA JINOIY DAROMADLARNI LEGALLASHTIRISHGA QARSHI KURASH
 
-27-BO'LIM. KONTENTNI OLIB TASHLASH, SHIKOYATLAR VA APELLYATSIYA
+### 27-BO'LIM. KONTENTNI OLIB TASHLASH, SHIKOYATLAR VA APELLYATSIYA
 
-28-BO'LIM. YAKUNIY QOIDALAR
+### 28-BO'LIM. YAKUNIY QOIDALAR
 
-29-BO'LIM. OPERATORNING REKVIZITLARI
+### 29-BO'LIM. OPERATORNING REKVIZITLARI
 
-ILOVA №1. AKSEPT VA ROZILIK BAYONNOMASI
+### ILOVA №1. AKSEPT VA ROZILIK BAYONNOMASI
 
-ILOVA №2. PLATFORMA MODULLARI VA TO'LOV MODELLARI
+### ILOVA №2. PLATFORMA MODULLARI VA TO'LOV MODELLARI
 
-ILOVA №3. QAYTA ISHLANADIGAN MA'LUMOTLAR TOIFALARI VA SAQLASH MUDDATLARI
+### ILOVA №3. QAYTA ISHLANADIGAN MA'LUMOTLAR TOIFALARI
 
-ILOVA №4. DA'VO (PRETENZIYA) ARIZASI SHAKLI
+### ILOVA №4. DA'VO (PRETENZIYA) ARIZASI SHAKLI
 
-| **MUQADDIMA** |
-|---------------|
-
-Ushbu hujjat O'zbekiston Respublikasi Fuqarolik kodeksining 367-, 369-, 370-, 375- va 377-moddalariga muvofiq "MED-ALL AI SYSTEM" MChJ (keyingi o'rinlarda — "Operator", "Platforma egasi" yoki "Biz") tomonidan noaniq shaxslar doirasiga yo'naltirilgan OMMAVIY OFERTA hisoblanadi.
+MUQADDIMA Ushbu hujjat O'zbekiston Respublikasi Fuqarolik kodeksining 367-, 369-, 370-, 375- va 377-moddalariga muvofiq "MED-ALL AI SYSTEM" MChJ (keyingi o'rinlarda — "Operator", "Platforma egasi" yoki "Biz") tomonidan noaniq shaxslar doirasiga yo'naltirilgan OMMAVIY OFERTA hisoblanadi.
 
 Ommaviy oferta shartlarini so'zsiz va to'liq qabul qilish (aksept) — med1.uz veb-sayti, mobil ilovasi yoki boshqa dasturiy interfeyslarida ro'yxatdan o'tish, "Roziman"/"Shartnoma shartlarini qabul qilaman" tugmasini bosish, hisob yaratish, buyurtma yoki yozuv rasmiylashtirish, to'lov amalga oshirish yoxud Platformadan har qanday tarzda amaliy foydalanish yo'li bilan yuzaga keladi.
 
 Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda tuzilgan yuridik kuchga ega shartnoma (qo'shilish shartnomasi — FK 358-modda) deb hisoblanadi va tomonlar uchun majburiy bo'ladi.
 
-**DIQQAT! Platformadan foydalanishni boshlashdan oldin ushbu Shartnomani, Maxfiylik siyosatini, Kukilar siyosatini, Tibbiy ma'lumotni rad etish (Medical Disclaimer) hujjatini va Tariflarni to'liq o'qib chiqing. Agar siz shartlarning biror qismiga rozi bo'lmasangiz — Platformadan foydalanishdan saqlaning va hisobingizni yaratmang.**
+DIQQAT! Platformadan foydalanishni boshlashdan oldin ushbu Shartnomani, Maxfiylik siyosatini, Kukilar siyosatini, Tibbiy ma'lumotni rad etish (Medical Disclaimer) hujjatini va Tariflarni to'liq o'qib chiqing. Agar siz shartlarning biror qismiga rozi bo'lmasangiz — Platformadan foydalanishdan saqlaning va hisobingizni yaratmang.
 
-**MED1.UZ TIBBIY MUASSASA EMAS VA SHOSHILINCH TIBBIY YORDAM XIZMATI EMAS. Hayotga xavf tug'diruvchi holatlarda darhol 103 raqamiga yoki eng yaqin tez tibbiy yordam muassasasiga murojaat qiling.**
+MED1.UZ TIBBIY MUASSASA EMAS VA SHOSHILINCH TIBBIY YORDAM XIZMATI EMAS. Hayotga xavf tug'diruvchi holatlarda darhol 103 raqamiga yoki eng yaqin tez tibbiy yordam muassasasiga murojaat qiling.
 
-| **1-BO'LIM. ATAMALAR VA TA'RIFLAR** |
-|-------------------------------------|
+### 1-BO'LIM
+
+### ATAMALAR VA TA'RIFLAR
 
 1.1. Ushbu Shartnomada quyidagi atamalar ushbu bo'limda belgilangan ma'noda qo'llaniladi. Boshqa atamalar O'zbekiston Respublikasi qonunchiligida belgilangan ma'noda tushuniladi.
 
-**Platforma (MED1.UZ)** — Operatorga tegishli bo'lgan, med1.uz domenida va unga bog'liq subdomenlarda, mobil ilovalarda, API interfeyslarida joylashtirilgan dasturiy-apparat majmuasi, ma'lumotlar bazalari, dizayn, kontent va funksional modullar birligi.
+Platforma (MED1.UZ) — Operatorga tegishli bo'lgan, med1.uz domenida va unga bog'liq subdomenlarda, mobil ilovalarda, API interfeyslarida joylashtirilgan dasturiy-apparat majmuasi, ma'lumotlar bazalari, dizayn, kontent va funksional modullar birligi.
 
-**Operator** — "MED-ALL AI SYSTEM" MChJ, STIR: 312972027, manzil: Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy. Platformaning huquq egasi va axborot tizimi egasi.
+SHFY, G'ijduvon ko'chasi, 173 A-uy. Platformaning huquq egasi va axborot tizimi egasi.
 
-**Foydalanuvchi** — Platformadan foydalanuvchi har qanday jismoniy yoki yuridik shaxs: Bemor, Shifokor, Klinika, Hamkor, Mehmon foydalanuvchi (ro'yxatdan o'tmagan tashrifchi).
+Foydalanuvchi — Platformadan foydalanuvchi har qanday jismoniy yoki yuridik shaxs: Bemor, Shifokor, Klinika, Hamkor, Mehmon foydalanuvchi (ro'yxatdan o'tmagan tashrifchi).
 
-**Bemor (Mijoz)** — tibbiy xizmatlarni qidirish, yozuv (band qilish), teletibbiyot, elektron tibbiy yozuvlarni yuritish va boshqa xizmatlardan shaxsiy maqsadlarda foydalanuvchi jismoniy shaxs.
+Bemor (Mijoz) — tibbiy xizmatlarni qidirish, yozuv (band qilish), teletibbiyot, elektron tibbiy yozuvlarni yuritish va boshqa xizmatlardan shaxsiy maqsadlarda foydalanuvchi jismoniy shaxs.
 
-**Shifokor (Tibbiyot xodimi)** — tegishli litsenziya, diplom va malaka sertifikatiga ega bo'lgan, Platformada verifikatsiyadan o'tgan va o'z tibbiy xizmatlarini taklif qiluvchi jismoniy shaxs yoki yakka tartibdagi tadbirkor.
+Shifokor (Tibbiyot xodimi) — tegishli litsenziya, diplom va malaka sertifikatiga ega bo'lgan, Platformada verifikatsiyadan o'tgan va o'z tibbiy xizmatlarini taklif qiluvchi jismoniy shaxs yoki yakka tartibdagi tadbirkor.
 
-**Klinika (Tibbiy tashkilot)** — tibbiy faoliyat yuritish litsenziyasiga ega yuridik shaxs yoki uning bo'linmasi, Platformada profil ochgan va xizmatlarini taklif qiluvchi shaxs.
+Klinika (Tibbiy tashkilot) — tibbiy faoliyat yuritish litsenziyasiga ega yuridik shaxs yoki uning bo'linmasi, Platformada profil ochgan va xizmatlarini taklif qiluvchi shaxs.
 
-**Kontent-provayder** — Platformaga maqola, video, ta'lim materiali yoki boshqa axborot joylashtiruvchi shaxs.
+Kontent-provayder — Platformaga maqola, video, ta'lim materiali yoki boshqa axborot joylashtiruvchi shaxs.
 
-**Hisob (Akkaunt)** — Foydalanuvchining Platformadagi shaxsiy yozuvi, unga kirish login, parol, telefon raqami, bir martalik kod (OTP) yoki uchinchi tomon identifikatori (OAuth) orqali amalga oshiriladi.
+Hisob (Akkaunt) — Foydalanuvchining Platformadagi shaxsiy yozuvi, unga kirish login, parol, telefon raqami, bir martalik kod (OTP) yoki uchinchi tomon identifikatori (OAuth) orqali amalga oshiriladi.
 
-**Yozuv (Appointment / Band qilish)** — Bemor tomonidan Shifokor yoki Klinikaning ma'lum vaqt oralig'ini qabulga rezervatsiya qilinishi.
+Yozuv (Appointment / Band qilish) — Bemor tomonidan Shifokor yoki Klinikaning ma'lum vaqt oralig'ini qabulga rezervatsiya qilinishi.
 
-**Teletibbiyot (Onlayn konsultatsiya)** — matnli chat, audio yoki video aloqa vositasida masofadan turib tibbiy maslahat berish shakli.
+Teletibbiyot (Onlayn konsultatsiya) — matnli chat, audio yoki video aloqa vositasida masofadan turib tibbiy maslahat berish shakli.
 
-**AI-xizmatlar (Sun'iy intellekt modullari)** — simptomlarni dastlabki tahlil qilish, hujjatlarni strukturalash, tibbiy matnlarni qisqartirish, tavsiyalar shakllantirish, tasvirlarni dastlabki qayta ishlash va shunga o'xshash avtomatlashtirilgan funksiyalar.
+AI-xizmatlar (Sun'iy intellekt modullari) — simptomlarni dastlabki tahlil qilish, hujjatlarni strukturalash, tibbiy matnlarni qisqartirish, tavsiyalar shakllantirish, tasvirlarni dastlabki qayta ishlash va shunga o'xshash avtomatlashtirilgan funksiyalar.
 
-**EMR/EHR (Elektron tibbiy yozuv)** — Bemor sog'lig'iga oid raqamli yozuvlar majmuasi: anamnez, tashxis, retsept, tahlil natijalari, tasvirlar, kuzatuv yozuvlari.
+EMR/EHR (Elektron tibbiy yozuv) — Bemor sog'lig'iga oid raqamli yozuvlar majmuasi: anamnez, tashxis, retsept, tahlil natijalari, tasvirlar, kuzatuv yozuvlari.
 
-**Med-Coin (bonus ballari)** — Platforma ichidagi rag'batlantirish birligi. Med-Coin pul birligi, elektron pul, kriptoaktiv yoki qimmatli qog'oz EMAS va naqd pulga almashtirilmaydi.
+Med-Coin (bonus ballari) — Platforma ichidagi rag'batlantirish birligi. Med-Coin pul birligi, elektron pul, kriptoaktiv yoki qimmatli qog'oz EMAS va naqd pulga almashtirilmaydi.
 
-**Tarif (Ta'rif rejasi)** — Platformaning pullik funksiyalari narxi va hajmi belgilangan hujjat; med1.uz/tariflar sahifasida e'lon qilinadi va Shartnomaning ajralmas qismidir.
+Tarif (Ta'rif rejasi) — Platformaning pullik funksiyalari narxi va hajmi belgilangan hujjat; med1.uz/tariflar sahifasida e'lon qilinadi va Shartnomaning ajralmas qismidir.
 
-**Shaxsiy ma'lumotlar** — «Shaxsiy ma'lumotlar to'g'risida»gi O'zbekiston Respublikasi Qonuni (O'RQ-547) 1-moddasida belgilangan tushuncha.
+Shaxsiy ma'lumotlar — «Shaxsiy ma'lumotlar to'g'risida»gi O'zbekiston Respublikasi Qonuni (O'RQ-547) 1-moddasida belgilangan tushuncha.
 
-**Sog'liq to'g'risidagi ma'lumot** — shaxsiy ma'lumotlarning alohida toifasi (maxsus toifa), qayta ishlanishi faqat subyektning yozma/elektron roziligi yoki qonun asosida mumkin.
+Sog'liq to'g'risidagi ma'lumot — shaxsiy ma'lumotlarning alohida toifasi (maxsus toifa), qayta ishlanishi faqat subyektning yozma/elektron roziligi yoki qonun asosida mumkin.
 
-**Shaxsiy kabinet** — Foydalanuvchi hisobiga kirish orqali ochiladigan yopiq bo'lim.
+Shaxsiy kabinet — Foydalanuvchi hisobiga kirish orqali ochiladigan yopiq bo'lim.
 
-**Kontent** — Platformada joylashtirilgan matn, tasvir, video, audio, kod, ma'lumotlar bazasi elementlari, logotip va boshqa obyektlar.
+Kontent — Platformada joylashtirilgan matn, tasvir, video, audio, kod, ma'lumotlar bazasi elementlari, logotip va boshqa obyektlar.
 
-**UGC (Foydalanuvchi kontenti)** — Foydalanuvchi tomonidan yuklangan sharh, reyting, savol, fayl, tasvir, matn va boshqa materiallar.
+UGC (Foydalanuvchi kontenti) — Foydalanuvchi tomonidan yuklangan sharh, reyting, savol, fayl, tasvir, matn va boshqa materiallar.
 
-**Fors-major** — tomonlarning irodasidan tashqari yuzaga kelgan yengib bo'lmas kuch holatlari.
+Fors-major — tomonlarning irodasidan tashqari yuzaga kelgan yengib bo'lmas kuch holatlari.
 
 1.2. Ushbu Shartnomada birlik sondagi atamalar ko'plikni ham, ko'plikdagilar birlikni ham anglatishi mumkin. Bo'lim sarlavhalari faqat qulaylik uchun bo'lib, sharhlashga ta'sir qilmaydi.
 
-| **2-BO'LIM. UMUMIY QOIDALAR VA SHARTNOMANING HUQUQIY ASOSI** |
-|--------------------------------------------------------------|
+### 2-BO'LIM
 
-2.1. Ushbu Shartnoma Operator va Foydalanuvchi o'rtasida Platformadan foydalanish, xizmatlar ko'rsatish, to'lovlar, javobgarlik va nizolarni hal qilish tartibini belgilaydi.
+UMUMIY QOIDALAR VA SHARTNOMANING HUQUQIY ASOSI 2.1. Ushbu Shartnoma Operator va Foydalanuvchi o'rtasida Platformadan foydalanish, xizmatlar ko'rsatish, to'lovlar, javobgarlik va nizolarni hal qilish tartibini belgilaydi.
 
 2.2. Shartnoma quyidagi normativ-huquqiy hujjatlarga asoslanadi:
 
 - O'zbekiston Respublikasi Konstitutsiyasi;
-
 - O'zbekiston Respublikasi Fuqarolik kodeksi;
-
 - «Aholi salomatligini saqlash to'g'risida»gi O'RQ-1043-son Qonuni;
-
 - «Shaxsiy ma'lumotlar to'g'risida»gi O'RQ-547-son Qonuni;
-
 - «Axborotlashtirish to'g'risida»gi Qonun;
-
 - «Elektron tijorat to'g'risida»gi O'RQ-792-son Qonuni;
-
 - «Elektron hujjat aylanishi to'g'risida»gi Qonun;
-
 - «Elektron raqamli imzo to'g'risida»gi Qonun;
-
 - «To'lovlar va to'lov tizimlari to'g'risida»gi O'RQ-578-son Qonuni;
-
 - «Iste'molchilarning huquqlarini himoya qilish to'g'risida»gi Qonun;
-
 - «Reklama to'g'risida»gi Qonun;
-
 - «Litsenziyalash, ruxsat berish va xabardor qilish tartib-taomillari to'g'risida»gi O'RQ-713-son Qonuni;
-
-- Vazirlar Mahkamasining shaxsiy ma'lumotlar bazalari ro'yxatga olinishi va telemeditsina to'g'risidagi qarorlari hamda Sog'liqni saqlash vazirligining tegishli buyruqlari.
-
-2.3. Operator Platformada axborot vositachisi (information intermediary) va dasturiy ta'minot provayderi sifatida faoliyat yuritadi. Operator TIBBIY XIZMAT KO'RSATUVCHI SHAXS EMAS va tibbiy faoliyat litsenziyasini talab qiluvchi xizmatlarni mustaqil ko'rsatmaydi, agar alohida hujjatda boshqacha ko'rsatilmagan bo'lsa.
+- Vazirlar Mahkamasining shaxsiy ma'lumotlar bazalari ro'yxatga olinishi va telemeditsina to'g'risidagi qarorlari hamda Sog'liqni saqlash vazirligining tegishli buyruqlari. 2.3. Operator Platformada axborot vositachisi (information intermediary) va dasturiy ta'minot provayderi sifatida faoliyat yuritadi. Operator TIBBIY XIZMAT KO'RSATUVCHI SHAXS EMAS va tibbiy faoliyat litsenziyasini talab qiluvchi xizmatlarni mustaqil ko'rsatmaydi, agar alohida hujjatda boshqacha ko'rsatilmagan bo'lsa.
 
 2.4. Tibbiy xizmatlar Platformada ro'yxatdan o'tgan litsenziyalangan Klinika va Shifokorlar tomonidan ular bilan Bemor o'rtasidagi mustaqil huquqiy munosabat doirasida ko'rsatiladi. Operator bunday munosabatda uchinchi shaxs — texnik va tashkiliy vositachidir.
 
@@ -199,53 +171,39 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 2.9. Shartnoma matni o'zbek, rus va ingliz tillarida tuzilishi mumkin. Tafovut yuzaga kelganda o'zbek tilidagi matn ustuvor hisoblanadi.
 
-| **3-BO'LIM. SHARTNOMA PREDMETI** |
-|----------------------------------|
+### 3-BO'LIM
 
-3.1. Ushbu Shartnoma predmeti — Operator tomonidan Foydalanuvchiga Platformaning funksional imkoniyatlaridan foydalanish huquqini (oddiy, mutlaq bo'lmagan litsenziya) berish hamda unga bog'liq axborot-texnologik, tashkiliy va yordamchi xizmatlarni ko'rsatishdir.
+SHARTNOMA PREDMETI 3.1. Ushbu Shartnoma predmeti — Operator tomonidan Foydalanuvchiga Platformaning funksional imkoniyatlaridan foydalanish huquqini (oddiy, mutlaq bo'lmagan litsenziya) berish hamda unga bog'liq axborot-texnologik, tashkiliy va yordamchi xizmatlarni ko'rsatishdir.
 
 3.2. Operator Foydalanuvchiga quyidagi asosiy imkoniyatlarni taqdim etadi (modullar ro'yxati Shartnomaning 4-bo'limida to'liq keltirilgan):
 
 - tibbiy tashkilotlar, shifokorlar va xizmatlar bo'yicha qidiruv va tanlov;
-
 - qabulga onlayn yozuv va navbatni boshqarish;
-
 - teletibbiyot (chat, audio, video konsultatsiya);
-
 - sun'iy intellekt asosidagi axborot-yordamchi modullar;
-
 - elektron tibbiy yozuvlar (EMR) va hujjatlar arxivi;
-
 - elektron retsept va tavsiyalarni saqlash/ko'rsatish (qonunchilik doirasida);
-
 - laboratoriya va diagnostika xizmatlariga buyurtma va natijalarni olish;
-
 - to'lov xizmatlari integratsiyasi va hujjatlar shakllantirish;
-
 - Med-Coin sodiqlik dasturi;
-
 - Klinika va Shifokorlar uchun SaaS-boshqaruv paneli (CRM, jadval, statistika);
-
 - API va integratsiya interfeyslari;
-
 - bildirishnomalar (SMS, push, email, messencher) tizimi;
-
 - sharhlar, reytinglar va ishonch tizimi;
-
 - tibbiy bilim bazasi, maqolalar va ta'lim kontenti;
-
-- marketpleys va hamkorlik moduli (Shartnoma 4.13-bandi).
-
-3.3. Litsenziyaning turi: oddiy (mutlaq bo'lmagan), o'tkazilmaydigan, sublitsenziya berish huquqisiz, butun dunyo bo'ylab amal qiladigan, Shartnoma amal qilgan muddatga beriladi.
+- marketpleys va hamkorlik moduli (Shartnoma 4.13-bandi). 3.3. Litsenziyaning turi: oddiy (mutlaq bo'lmagan), o'tkazilmaydigan, sublitsenziya berish huquqisiz, butun dunyo bo'ylab amal qiladigan, Shartnoma amal qilgan muddatga beriladi.
 
 3.4. Operator Platformaning ayrim funksiyalarini bepul (freemium), ayrimlarini esa pullik tarifda taqdim etishga haqli. Qaysi funksiya pullik ekanligi Tariflar hujjatida belgilanadi.
 
 3.5. Xizmat «HOZIRGI HOLATIDA» (AS IS) va «MAVJUD BO'LGAN DARAJADA» (AS AVAILABLE) taqdim etiladi, Shartnomaning 15-bo'limida ko'rsatilgan cheklovlar bilan.
 
-| **4-BO'LIM. PLATFORMA MODULLARI VA ULARDAN FOYDALANISH TARTIBI** |
-|------------------------------------------------------------------|
+### 4-BO'LIM
 
-**4.1. Qidiruv va katalog moduli**
+### PLATFORMA MODULLARI VA ULARDAN FOYDALANISH
+
+### TARTIBI
+
+4.1. Qidiruv va katalog moduli
 
 4.1.1. Platforma klinikalar, shifokorlar, xizmatlar, dori vositalari ma'lumotnomasi va tibbiy muassasalar bo'yicha qidiruv imkonini beradi. Qidiruv natijalari mutaxassislik, hudud, narx, reyting, ish vaqti, masofa va boshqa mezonlar bo'yicha saralanadi.
 
@@ -253,7 +211,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.1.3. Qidiruv natijalarida reklama va pullik joylashtirish (promotsiya) mavjud bo'lishi mumkin; bunday pozitsiyalar «Reklama» yoki «Homiylik» belgisi bilan ko'rsatiladi.
 
-**4.2. Onlayn yozuv (band qilish) moduli**
+4.2. Onlayn yozuv (band qilish) moduli
 
 4.2.1. Bemor Shifokor/Klinikaning bo'sh vaqt oralig'ini tanlab, yozuv so'rovini yuboradi. Yozuv Klinika/Shifokor tomonidan tasdiqlangandan so'ng kuchga kiradi.
 
@@ -265,7 +223,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.2.5. Operator qabulning haqiqatda o'tkazilishi, uning sifati va davomiyligi uchun javobgar emas.
 
-**4.3. Teletibbiyot (onlayn konsultatsiya) moduli**
+4.3. Teletibbiyot (onlayn konsultatsiya) moduli
 
 4.3.1. Teletibbiyot masofadan turib maslahat berish shakli bo'lib, u shaxsan ko'rikni, obyektiv tekshiruvni va instrumental diagnostikani ALMASHTIRMAYDI.
 
@@ -279,7 +237,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.3.6. Agar Shifokor holat masofadan hal qilinmasligini aniqlasa, u seansni to'xtatib, Bemorni shaxsan murojaat qilishga yo'naltirishi shart.
 
-**4.4. Sun'iy intellekt (AI) modullari**
+4.4. Sun'iy intellekt (AI) modullari
 
 4.4.1. Platforma quyidagi AI-funksiyalarni taqdim etishi mumkin: simptomlar bo'yicha dastlabki yo'naltirish (triaj), tibbiy hujjatlarni strukturalash va qisqartirish, tahlil natijalarini izohlash bo'yicha umumiy axborot, shifokor uchun yozuv (scribe) yordamchisi, tasvirlarni dastlabki belgilash, matnni tarjima qilish, chatbot yordami.
 
@@ -293,9 +251,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.4.6. AI natijalari asosida mustaqil ravishda dori qabul qilish, davolanishni to'xtatish yoki o'zgartirish oqibatlari uchun Operator javobgar emas.
 
-4.4.7. Operator AI modellarini takomillashtirish uchun depersonalizatsiyalangan (shaxssizlantirilgan) va agregatsiyalangan ma'lumotlardan foydalanishga haqli. Foydalanuvchi shaxsiy kabinetdan bunga e'tirozini bildirishi (opt-out) mumkin.
+4.4.7.     Operator      AI     modellarini      takomillashtirish   uchun    depersonalizatsiyalangan (shaxssizlantirilgan) va agregatsiyalangan ma'lumotlardan foydalanishga haqli. Foydalanuvchi shaxsiy kabinetdan bunga e'tirozini bildirishi (opt-out) mumkin.
 
-**4.5. Elektron tibbiy yozuvlar (EMR) moduli**
+4.5. Elektron tibbiy yozuvlar (EMR) moduli
 
 4.5.1. EMR modulida Bemorning tibbiy tarixi, tashxislar, retseptlar, tahlil va tekshiruv natijalari, tasvirlar, allergiya va surunkali kasalliklar to'g'risidagi yozuvlar saqlanadi.
 
@@ -309,7 +267,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.5.6. Tibbiy yozuvlar qonunchilikda belgilangan muddat davomida saqlanadi; Foydalanuvchi hisobini o'chirsa ham, qonun talab qilgan yozuvlar arxivda saqlanishi mumkin.
 
-**4.6. Elektron retsept va dori-darmon moduli**
+4.6. Elektron retsept va dori-darmon moduli
 
 4.6.1. Elektron retsept faqat vakolatli Shifokor tomonidan, qonunchilikda belgilangan shakl va tartibda shakllantiriladi.
 
@@ -319,7 +277,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.6.4. Platforma orqali retsept bo'yicha beriladigan, giyohvandlik yoki psixotrop moddalar sotilishi TAQIQLANADI.
 
-**4.7. Laboratoriya va diagnostika moduli**
+4.7. Laboratoriya va diagnostika moduli
 
 4.7.1. Foydalanuvchi hamkor laboratoriyalar xizmatlariga buyurtma berishi, uyga chaqirtirish (agar hamkor taqdim etsa) va natijalarni elektron shaklda olishi mumkin.
 
@@ -327,15 +285,15 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.7.3. Natijalar Bemorning shaxsiy kabinetiga yuklanadi va sog'liq to'g'risidagi maxsus toifadagi ma'lumot sifatida himoyalanadi.
 
-**4.8. To'lov moduli**
+4.8. To'lov moduli
 
 4.8.1. To'lovlar litsenziyalangan to'lov tashkilotlari va banklar (to'lov shlyuzlari) orqali amalga oshiriladi. Operator to'liq karta rekvizitlarini saqlamaydi.
 
-4.8.2. To'lov moduli quyidagilarni qo'llab-quvvatlashi mumkin: bir martalik to'lov, oldindan to'lov (depozit), obuna (rekurrent to'lov), bo'lib to'lash (hamkor bilan), qaytarish (refund), hisobvaraq-faktura shakllantirish.
+4.8.2. To'lov moduli quyidagilarni qo'llab-quvvatlashi mumkin: bir martalik to'lov, oldindan to'lov (depozit),     obuna   (rekurrent     to'lov),   bo'lib   to'lash   (hamkor   bilan),   qaytarish   (refund), hisobvaraq-faktura shakllantirish.
 
 4.8.3. Barcha to'lovlar O'zbekiston Respublikasi milliy valyutasi — so'mda amalga oshiriladi, agar qonunchilik boshqacha imkon bermasa.
 
-**4.9. Med-Coin sodiqlik moduli**
+4.9. Med-Coin sodiqlik moduli
 
 4.9.1. Med-Coin — Platforma ichidagi shartli rag'batlantirish birligi bo'lib, faoliyat (yozuv, sharh, profil to'ldirish, do'stni taklif qilish, aksiyalarda ishtirok) uchun beriladi.
 
@@ -347,7 +305,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.9.5. Sun'iy usullar bilan (bot, soxta hisob, soxta sharh) ball to'plash aniqlansa — ballar bekor qilinadi va hisob bloklanadi.
 
-**4.10. Klinika va Shifokorlar uchun SaaS-panel**
+4.10. Klinika va Shifokorlar uchun SaaS-panel
 
 4.10.1. SaaS-panel jadval boshqaruvi, bemorlar bazasi (CRM), yozuvlar oqimi, kassa/hisob-kitob, xodimlar va rollar boshqaruvi, statistika va hisobotlar, marketing vositalari, integratsiyalarni o'z ichiga oladi.
 
@@ -357,7 +315,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.10.4. SaaS-panelga kirish ma'lumotlarini uchinchi shaxsga berish taqiqlanadi.
 
-**4.11. API va integratsiyalar moduli**
+4.11. API va integratsiyalar moduli
 
 4.11.1. Operator hamkorlarga API kalitlari orqali dasturiy integratsiya imkonini berishi mumkin.
 
@@ -367,19 +325,19 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.11.4. Operator suiiste'mol aniqlanganda API kirishini ogohlantirishsiz to'xtatishi mumkin.
 
-**4.12. Bildirishnomalar moduli**
+4.12. Bildirishnomalar moduli
 
 4.12.1. Operator xizmatga oid (tranzaksion) bildirishnomalarni SMS, push, elektron pochta va messencherlar orqali yuboradi. Bunday bildirishnomalardan voz kechish xizmatning bir qismidan voz kechishni anglatadi.
 
 4.12.2. Marketing xarakteridagi xabarlar faqat Foydalanuvchi roziligi (opt-in) asosida yuboriladi va istalgan vaqtda bekor qilinishi (opt-out) mumkin.
 
-**4.13. Marketpleys va hamkorlik moduli**
+4.13. Marketpleys va hamkorlik moduli
 
 4.13.1. Platformada tibbiy tovarlar, sug'urta mahsulotlari, sanatoriy-kurort xizmatlari va boshqa hamkor takliflari joylashtirilishi mumkin.
 
 4.13.2. Bunday takliflar bo'yicha sotuvchi/xizmat ko'rsatuvchi — hamkor hisoblanadi; Operator vositachi bo'lib qoladi.
 
-**4.14. Sharhlar, reyting va moderatsiya**
+4.14. Sharhlar, reyting va moderatsiya
 
 4.14.1. Sharh qoldirish huquqi faqat haqiqiy xizmatdan foydalangan Foydalanuvchida bo'ladi.
 
@@ -389,14 +347,15 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 4.14.4. Reyting algoritmi Operator tomonidan belgilanadi va o'zgartirilishi mumkin.
 
-**4.15. Bilim bazasi va ta'lim kontenti**
+4.15. Bilim bazasi va ta'lim kontenti
 
 4.15.1. Platformadagi maqola, video va kurslar umumiy ma'rifiy xarakterga ega bo'lib, individual tibbiy tavsiya hisoblanmaydi.
 
 4.15.2. Ta'lim sertifikatlari (agar berilsa) faqat Platforma doirasida ahamiyatga ega bo'lib, davlat namunasidagi hujjat hisoblanmaydi, agar aksi ko'rsatilmagan bo'lsa.
 
-| **5-BO'LIM. RO'YXATDAN O'TISH, IDENTIFIKATSIYA VA HISOB** |
-|-----------------------------------------------------------|
+### 5-BO'LIM
+
+### RO'YXATDAN O'TISH, IDENTIFIKATSIYA VA HISOB
 
 5.1. Ro'yxatdan o'tish telefon raqami, elektron pochta yoki uchinchi tomon xizmatlari (OAuth) orqali amalga oshiriladi.
 
@@ -418,134 +377,84 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 5.10. Foydalanuvchi hisobini istalgan vaqtda o'chirish so'rovini yuborishi mumkin; o'chirish 30 kun ichida amalga oshiriladi, qonun talab qiladigan yozuvlar bundan mustasno.
 
-| **6-BO'LIM. TOMONLARNING HUQUQ VA MAJBURIYATLARI** |
-|----------------------------------------------------|
+### 6-BO'LIM
 
-**6.1. Foydalanuvchining huquqlari**
+### TOMONLARNING HUQUQ VA MAJBURIYATLARI
+
+6.1. Foydalanuvchining huquqlari
 
 - Platformaning ochiq va tarifiga mos funksiyalaridan foydalanish;
-
 - xizmat va narxlar to'g'risida to'liq, ishonchli axborot olish;
-
 - o'z shaxsiy ma'lumotlariga kirish, ularni to'g'rilash, bloklash, o'chirish va rozilikni qaytarib olish;
-
 - texnik yordamga murojaat qilish va oqilona muddatda javob olish;
-
 - xizmat sifatiga oid da'vo (pretenziya) taqdim etish;
-
 - hisobini o'chirish va Shartnomani bekor qilish;
-
-- o'z kontentiga mualliflik huquqini saqlab qolish.
-
-**6.2. Foydalanuvchining majburiyatlari**
+- o'z kontentiga mualliflik huquqini saqlab qolish. 6.2. Foydalanuvchining majburiyatlari
 
 - Shartnoma, Maxfiylik siyosati va qonunchilik talablariga rioya qilish;
-
 - haqiqiy ma'lumot taqdim etish va uni dolzarb holatda saqlash;
-
 - olingan pullik xizmatlar uchun o'z vaqtida to'lov qilish;
-
 - boshqa shaxslar huquqlarini (shaxsiy hayot daxlsizligi, mualliflik, obro') buzmaslik;
-
 - Platforma xavfsizligiga tahdid soluvchi harakatlardan tiyilish;
-
 - shifokor tavsiyalarini mustaqil ravishda tibbiy asosi bo'lmagan holda talqin qilmaslik;
-
-- qabulga kelmaslik yoki kechikish holatlarida oldindan xabar berish.
-
-**6.3. Operatorning huquqlari**
+- qabulga kelmaslik yoki kechikish holatlarida oldindan xabar berish. 6.3. Operatorning huquqlari
 
 - Platforma funksiyalarini, dizaynini va tarkibini bir tomonlama o'zgartirish, yangilash yoki to'xtatish;
-
 - Shartnoma buzilganda hisobni cheklash, to'xtatib turish yoki o'chirish;
-
 - kontentni moderatsiya qilish va qoidabuzar materiallarni olib tashlash;
-
 - profilaktika ishlarini o'tkazish (imkon qadar oldindan xabar berib);
-
 - xizmatlarni ko'rsatishga uchinchi shaxslarni jalb qilish;
-
 - statistik va depersonalizatsiyalangan ma'lumotlardan tahlil va marketing uchun foydalanish;
-
-- qarzdorlik yuzaga kelganda pullik funksiyalarni cheklash.
-
-**6.4. Operatorning majburiyatlari**
+- qarzdorlik yuzaga kelganda pullik funksiyalarni cheklash. 6.4. Operatorning majburiyatlari
 
 - Platformaning uzluksiz ishlashini oqilona darajada ta'minlash;
-
 - shaxsiy ma'lumotlarni qonunchilikka muvofiq himoya qilish;
-
 - texnik yordam ko'rsatish;
-
 - to'lovlarni to'g'ri hisoblash va hujjatlashtirish;
-
 - murojaatlarni belgilangan muddatda ko'rib chiqish;
-
-- muhim o'zgarishlar to'g'risida Foydalanuvchini xabardor qilish.
-
-**6.5. Shifokor va Klinikaning qo'shimcha majburiyatlari**
+- muhim o'zgarishlar to'g'risida Foydalanuvchini xabardor qilish. 6.5. Shifokor va Klinikaning qo'shimcha majburiyatlari
 
 - amaldagi litsenziya, diplom va sertifikatlarga ega bo'lish va ularning amal qilishini ta'minlash;
-
 - tibbiy deontologiya, etika va standartlarga rioya qilish;
 
 - bemor sirini (tibbiy sir) saqlash;
-
 - jadvalni dolzarb holatda yuritish va tasdiqlangan yozuvlarni bajarish;
-
 - narxlarni oshkora va haqqoniy ko'rsatish, yashirin to'lovlarga yo'l qo'ymaslik;
-
 - bemorning shikoyatiga o'z vaqtida javob berish;
-
 - Platforma orqali olingan bemor ma'lumotlarini faqat davolash maqsadida ishlatish.
 
-| **7-BO'LIM. TAQIQLANGAN HARAKATLAR (ACCEPTABLE USE POLICY)** |
-|--------------------------------------------------------------|
+### 7-BO'LIM
+
+### TAQIQLANGAN HARAKATLAR (ACCEPTABLE USE
+
+### POLICY)
 
 7.1. Platformada quyidagilar qat'iyan taqiqlanadi:
 
 - qonunga xilof, jinoiy yoki ma'muriy javobgarlikka sabab bo'luvchi har qanday faoliyat;
-
 - boshqa shaxs nomidan ro'yxatdan o'tish yoki shaxsni soxtalashtirish;
-
 - soxta tibbiy hujjat, spravka, retsept yoki xulosa yaratish/tarqatish;
-
 - litsenziyasiz tibbiy faoliyat yuritish yoki tibbiy xizmat taklif qilish;
-
 - isbotlanmagan, «mo''jizaviy» davolash usullarini, xalq tabobatini tibbiy xizmat sifatida reklama qilish;
-
 - giyohvandlik, psixotrop moddalar, retseptli dorilarni noqonuniy taklif qilish;
-
 - abort, evtanaziya va shu kabi masalalarda qonunga zid ko'rsatmalar tarqatish;
-
 - zararli dasturlar, viruslar, skript va botlarni yuklash;
-
 - avtomatlashtirilgan parsing, scraping, ma'lumotlarni ommaviy nusxalash;
-
 - DDoS, brute-force, SQL-injection, XSS va boshqa hujumlar;
-
 - teskari injiniring, dekompilyatsiya, kodni o'zgartirish, himoya vositalarini chetlab o'tish;
-
 - boshqa foydalanuvchilar hisobiga ruxsatsiz kirishga urinish;
-
 - spam, ommaviy tarqatma, mualliflik huquqini buzuvchi materiallar joylashtirish;
-
 - haqoratli, kamsituvchi, zo'ravonlikka undovchi, diniy yoki milliy adovat uyg'otuvchi kontent;
-
 - uchinchi shaxs shaxsiy va tibbiy ma'lumotlarini rozilikssiz joylashtirish;
-
 - narx va reytingni sun'iy ravishda manipulyatsiya qilish, soxta sharhlar;
-
 - Platformadan raqobatchi mahsulot yaratish maqsadida foydalanish;
-
-- Med-Coin yoki chegirmalarni firibgarlik yo'li bilan olish.
-
-7.2. Qoidabuzarlik aniqlanganda Operator quyidagi choralarni ko'rishi mumkin: ogohlantirish, kontentni o'chirish, funksiyalarni cheklash, hisobni vaqtincha to'xtatish, hisobni butunlay o'chirish, huquqni muhofaza qiluvchi organlarga murojaat qilish, yetkazilgan zararni undirish.
+- Med-Coin yoki chegirmalarni firibgarlik yo'li bilan olish. 7.2. Qoidabuzarlik aniqlanganda Operator quyidagi choralarni ko'rishi mumkin: ogohlantirish, kontentni o'chirish, funksiyalarni cheklash, hisobni vaqtincha to'xtatish, hisobni butunlay o'chirish, huquqni muhofaza qiluvchi organlarga murojaat qilish, yetkazilgan zararni undirish.
 
 7.3. Choralar ketma-ketligi majburiy emas — buzilish og'irligiga qarab Operator darhol eng qattiq chorani qo'llashi mumkin.
 
-| **8-BO'LIM. NARX, TO'LOV VA HISOB-KITOB TARTIBI** |
-|---------------------------------------------------|
+### 8-BO'LIM
+
+### NARX, TO'LOV VA HISOB-KITOB TARTIBI
 
 8.1. Xizmatlar narxi Tariflar hujjatida va/yoki xizmat sahifasida ko'rsatiladi. Narxlar QQS (agar qo'llanilsa) hisobga olingan holda ko'rsatiladi.
 
@@ -557,7 +466,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 8.5. Obuna (rekurrent to'lov) tanlanganda mablag' avtomatik ravishda har hisob davri boshida yechiladi. Foydalanuvchi obunani keyingi davr boshlanishidan kamida 1 (bir) kun oldin bekor qilishi mumkin.
 
-8.6. Bank/to'lov tizimi komissiyasi Foydalanuvchi zimmasida bo'ladi, agar boshqacha ko'rsatilmagan bo'lsa.
+8.6.   Bank/to'lov    tizimi   komissiyasi     Foydalanuvchi   zimmasida    bo'ladi,   agar   boshqacha ko'rsatilmagan bo'lsa.
 
 8.7. Klinika/Shifokor bilan hisob-kitob: Operator komissiya (agentlik haqi) ushlab qolgan holda mablag'ni hamkorga o'tkazadi. Komissiya miqdori Tariflar yoki alohida hamkorlik shartnomasida belgilanadi.
 
@@ -571,26 +480,18 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 8.12. Chargeback (to'lovni asossiz qaytarib olish) holatlarida Operator hisobni bloklash va yuzaga kelgan xarajatlarni undirish huquqiga ega.
 
-| **9-BO'LIM. XIZMATDAN VOZ KECHISH VA PULNI QAYTARISH (REFUND POLICY)** |
-|------------------------------------------------------------------------|
+### 9-BO'LIM
 
-9.1. Foydalanuvchi ko'rsatilmagan xizmat uchun to'langan mablag'ni qaytarishni talab qilishga haqli.
+XIZMATDAN VOZ KECHISH VA PULNI QAYTARISH (REFUND POLICY) 9.1. Foydalanuvchi ko'rsatilmagan xizmat uchun to'langan mablag'ni qaytarishni talab qilishga haqli.
 
 9.2. Qaytarish shartlari:
 
 - qabul boshlanishidan 3 soatdan ko'proq vaqt oldin bekor qilinsa — 100% qaytariladi;
-
 - 3 soatdan kam vaqt qolganda bekor qilinsa — Klinika qoidalariga muvofiq 0–100%;
-
 - Klinika/Shifokor aybi bilan bekor qilinsa — 100% qaytariladi;
-
 - texnik nosozlik tufayli teletibbiyot seansi o'tkazilmasa — 100% qaytariladi;
-
 - seans qisman o'tkazilsa — proporsional qaytariladi;
-
-- Bemor kelmasa (no-show) — qaytarilmaydi.
-
-9.3. Obuna (SaaS) to'lovlari, agar xizmat faol taqdim etilgan bo'lsa, foydalanilgan davr uchun qaytarilmaydi. Qolgan davr uchun proporsional qaytarish Operator qaroriga ko'ra amalga oshirilishi mumkin.
+- Bemor kelmasa (no-show) — qaytarilmaydi. 9.3. Obuna (SaaS) to'lovlari, agar xizmat faol taqdim etilgan bo'lsa, foydalanilgan davr uchun qaytarilmaydi. Qolgan davr uchun proporsional qaytarish Operator qaroriga ko'ra amalga oshirilishi mumkin.
 
 9.4. Med-Coin bilan qoplangan qism pul shaklida qaytarilmaydi — ballar hisobga tiklanadi.
 
@@ -598,8 +499,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 9.6. Individual tarzda tayyorlangan raqamli mahsulot (shaxsiylashtirilgan hisobot, tahlil, dastur) yetkazib berilgandan so'ng qaytarilmaydi.
 
-| **10-BO'LIM. SHAXSIY MA'LUMOTLAR VA TIBBIY SIR** |
-|--------------------------------------------------|
+### 10-BO'LIM
+
+### SHAXSIY MA'LUMOTLAR VA TIBBIY SIR
 
 10.1. Shaxsiy ma'lumotlarni qayta ishlash «Shaxsiy ma'lumotlar to'g'risida»gi O'RQ-547-son Qonuni va Platformaning Maxfiylik siyosatiga muvofiq amalga oshiriladi.
 
@@ -621,16 +523,15 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 10.10. Foydalanuvchi boshqa shaxs (bola, keksa qarindosh) ma'lumotlarini kiritganda, uni kiritishga huquqi borligini kafolatlaydi va uchinchi shaxs oldidagi javobgarlikni o'z zimmasiga oladi.
 
-| **11-BO'LIM. INTELLEKTUAL MULK** |
-|----------------------------------|
+### 11-BO'LIM
 
-11.1. Platformaning barcha elementlari — dastur kodi, dizayn, interfeys, logotip, tovar belgisi «MED1.UZ», ma'lumotlar bazalari, matnlar, grafika, video, audio va boshqa obyektlar Operatorning yoki uning litsenziarlarining mutlaq huquqlari obyekti hisoblanadi.
+INTELLEKTUAL MULK 11.1. Platformaning barcha elementlari — dastur kodi, dizayn, interfeys, logotip, tovar belgisi «MED1.UZ»,       ma'lumotlar     bazalari,   matnlar,   grafika,   video,   audio   va   boshqa   obyektlar Operatorning yoki uning litsenziarlarining mutlaq huquqlari obyekti hisoblanadi.
 
 11.2. Foydalanuvchiga faqat Shartnomada belgilangan doirada foydalanish huquqi beriladi. Huquqlarni o'tkazish yoki mulk huquqi berilishi nazarda tutilmagan.
 
 11.3. Taqiqlanadi: nusxalash, ko'paytirish, tarqatish, o'zgartirish, hosila asar yaratish, ijaraga berish, ommaga namoyish etish, tijoriy maqsadda foydalanish — Operatorning yozma roziligisiz.
 
-11.4. Foydalanuvchi kontenti (UGC) bo'yicha mualliflik huquqi Foydalanuvchida qoladi. Foydalanuvchi Operatorga bunday kontentdan Platforma ishlashi, ko'rsatilishi, moderatsiyasi va reklama qilinishi uchun bepul, butun dunyo bo'ylab amal qiluvchi, sublitsenziya berish huquqiga ega oddiy litsenziya beradi.
+11.4.   Foydalanuvchi      kontenti    (UGC)    bo'yicha   mualliflik   huquqi   Foydalanuvchida    qoladi. Foydalanuvchi Operatorga bunday kontentdan Platforma ishlashi, ko'rsatilishi, moderatsiyasi va reklama qilinishi uchun bepul, butun dunyo bo'ylab amal qiluvchi, sublitsenziya berish huquqiga ega oddiy litsenziya beradi.
 
 11.5. Foydalanuvchi joylashtirgan kontent uchinchi shaxs huquqlarini buzmasligini kafolatlaydi. Da'vo kelib tushsa, Foydalanuvchi Operatorni barcha zarardan xoli qiladi (indemnification).
 
@@ -638,28 +539,19 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 11.7. Fikr-mulohaza (feedback), takliflar va g'oyalar Operatorga hech qanday kompensatsiyasiz cheksiz foydalanish huquqi bilan o'tadi.
 
-| **12-BO'LIM. TIBBIY MAS'ULIYAT VA RAD ETISH (MEDICAL DISCLAIMER)** |
-|--------------------------------------------------------------------|
+### 12-BO'LIM
 
-12.1. Platformada joylashtirilgan har qanday axborot — maqola, AI natijasi, ma'lumotnoma, kalkulyator, test — UMUMIY MA'RIFIY XARAKTERGA ega bo'lib, individual tibbiy tavsiya, tashxis yoki davolash rejasi HISOBLANMAYDI.
+TIBBIY MAS'ULIYAT VA RAD ETISH (MEDICAL DISCLAIMER) 12.1. Platformada joylashtirilgan har qanday axborot — maqola, AI natijasi, ma'lumotnoma, kalkulyator, test — UMUMIY MA'RIFIY XARAKTERGA ega bo'lib, individual tibbiy tavsiya, tashxis yoki davolash rejasi HISOBLANMAYDI.
 
 12.2. Operator quyidagilar uchun javobgar EMAS:
 
 - Shifokor/Klinika tomonidan qo'yilgan tashxisning to'g'riligi;
-
 - tayinlangan davolash usuli va uning natijasi;
-
 - tibbiy xizmat sifati, muolaja asoratlari, jarrohlik natijalari;
-
 - dori vositasining nojo'ya ta'siri;
-
 - tibbiy xatolik (vrachebnaya oshibka) oqibatlari;
-
 - Bemorning shifokor tavsiyalariga rioya qilmasligi oqibatlari;
-
-- Foydalanuvchining o'z-o'zini davolashi natijasida yuzaga kelgan zarar.
-
-12.3. Tibbiy xizmat sifati uchun to'liq javobgarlik uni ko'rsatgan litsenziyalangan Klinika/Shifokor zimmasida bo'ladi. Bemor da'vosini bevosita ularga qaratadi.
+- Foydalanuvchining o'z-o'zini davolashi natijasida yuzaga kelgan zarar. 12.3. Tibbiy xizmat sifati uchun to'liq javobgarlik uni ko'rsatgan litsenziyalangan Klinika/Shifokor zimmasida bo'ladi. Bemor da'vosini bevosita ularga qaratadi.
 
 12.4. Operator o'z zimmasiga sog'ayish, aniq natija, muayyan davolash samarasi yoki tashxis aniqligi bo'yicha hech qanday kafolat olmaydi.
 
@@ -669,10 +561,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 12.7. Bemor sog'ligining o'zgarishi, allergiya, homiladorlik, surunkali kasalliklar va qabul qilinayotgan dorilar to'g'risida to'liq va rost ma'lumot berishi shart. Noto'liq ma'lumot oqibatlari Bemor zimmasida.
 
-| **13-BO'LIM. XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM** |
-|-------------------------------------------------------|
+### 13-BO'LIM
 
-13.1. Operator Platformaning yillik o'rtacha 99,0% (to'qson to'qqiz) foizlik ishlash barqarorligiga erishishga intiladi. Ushbu ko'rsatkich pullik SaaS tariflar uchun alohida SLA hujjatida kuchaytirilishi mumkin.
+XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM 13.1. Operator Platformaning yillik o'rtacha 99,0% (to'qson to'qqiz) foizlik ishlash barqarorligiga erishishga    intiladi.   Ushbu    ko'rsatkich   pullik   SaaS   tariflar   uchun   alohida   SLA   hujjatida kuchaytirilishi mumkin.
 
 13.2. SLA hisobiga kirmaydi: rejalashtirilgan texnik ishlar, fors-major, uchinchi tomon xizmatlari (to'lov shlyuzi, SMS-provayder, bulut provayderi) nosozligi, Foydalanuvchi tomonidagi internet yoki qurilma muammolari, DDoS hujumlari.
 
@@ -684,8 +575,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 13.6. SLA buzilgani uchun kompensatsiya faqat pullik tarifda va faqat xizmat muddatini uzaytirish yoki keyingi davr uchun chegirma shaklida beriladi.
 
-| **14-BO'LIM. KAFOLATLAR VA ULARNING CHEKLANISHI** |
-|---------------------------------------------------|
+### 14-BO'LIM
+
+### KAFOLATLAR VA ULARNING CHEKLANISHI
 
 14.1. Foydalanuvchi kafolat beradi: u to'liq muomala layoqatiga ega; Shartnoma tuzishga huquqi bor; taqdim etgan ma'lumotlari haqiqiy; Platformadan qonuniy maqsadlarda foydalanadi.
 
@@ -695,10 +587,11 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 14.4. Operator Foydalanuvchi qurilmasida yuzaga kelgan dasturiy yoki apparat nosozliklari uchun javobgar emas.
 
-| **15-BO'LIM. JAVOBGARLIK VA UNING CHEGARALARI** |
-|-------------------------------------------------|
+### 15-BO'LIM
 
-15.1. Tomonlar Shartnoma bo'yicha majburiyatlarni bajarmaganlik yoki lozim darajada bajarmaganlik uchun O'zbekiston Respublikasi qonunchiligiga muvofiq javobgar bo'ladilar.
+### JAVOBGARLIK VA UNING CHEGARALARI
+
+15.1.   Tomonlar     Shartnoma      bo'yicha    majburiyatlarni   bajarmaganlik    yoki   lozim   darajada bajarmaganlik uchun O'zbekiston Respublikasi qonunchiligiga muvofiq javobgar bo'ladilar.
 
 15.2. Operatorning har qanday da'vo bo'yicha jami javobgarligi, agar qonunchilikda majburiy boshqa qoida belgilanmagan bo'lsa, Foydalanuvchi tomonidan da'vo yuzaga kelishidan oldingi 3 (uch) oy davomida Operatorga haqiqatda to'lagan summasi bilan cheklanadi; bepul xizmatlar bo'yicha esa 10 (o'n) BHM miqdoridan oshmaydi.
 
@@ -710,8 +603,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 15.6. Ushbu bo'limdagi cheklovlar Operator qasddan yoki qo'pol ehtiyotsizlik bilan sodir etgan harakatlariga hamda hayot va sog'liqqa yetkazilgan zararga nisbatan qonunda taqiqlangan darajada qo'llanilmaydi.
 
-| **16-BO'LIM. FORS-MAJOR** |
-|---------------------------|
+### 16-BO'LIM
+
+### FORS-MAJOR
 
 16.1. Tomonlar fors-major holatlari yuzaga kelganda majburiyatlarni bajarmaganlik uchun javobgarlikdan ozod qilinadilar.
 
@@ -721,8 +615,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 16.4. Fors-major 3 (uch) oydan ortiq davom etsa, har bir tomon Shartnomani bir tomonlama bekor qilishga haqli; bunda ko'rsatilmagan xizmat uchun mablag' qaytariladi.
 
-| **17-BO'LIM. SHARTNOMANI O'ZGARTIRISH VA BEKOR QILISH** |
-|---------------------------------------------------------|
+### 17-BO'LIM
+
+### SHARTNOMANI O'ZGARTIRISH VA BEKOR QILISH
 
 17.1. Operator Shartnomaga bir tomonlama o'zgartirish kiritishga haqli. Yangi tahrir med1.uz saytida e'lon qilinadi va e'lon qilingan sanadan yoki unda ko'rsatilgan sanadan kuchga kiradi.
 
@@ -738,8 +633,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 17.7. Hisob o'chirilganda Foydalanuvchi 30 kun ichida o'z ma'lumotlarini eksport qilishi mumkin; keyin ular qonun talab qilgan yozuvlardan tashqari o'chiriladi.
 
-| **18-BO'LIM. NIZOLARNI HAL QILISH TARTIBI** |
-|---------------------------------------------|
+### 18-BO'LIM
+
+### NIZOLARNI HAL QILISH TARTIBI
 
 18.1. Tomonlar nizolarni muzokaralar yo'li bilan hal qilishga intiladi.
 
@@ -753,10 +649,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 18.6. Elektron yozishmalar, tizim jurnallari (loglar), IP-manzillar, bildirishnomalar va shaxsiy kabinetdagi yozuvlar sudda dalil sifatida qabul qilinishi mumkin va tomonlar bunga e'tiroz bildirmaydilar.
 
-| **19-BO'LIM. XABARNOMALAR VA ALOQA** |
-|--------------------------------------|
+### 19-BO'LIM
 
-19.1. Barcha xabarnomalar quyidagi kanallar orqali yuboriladi: Foydalanuvchi ko'rsatgan elektron pochta; telefon raqami (SMS/messencher); shaxsiy kabinetdagi bildirishnoma; med1.uz saytidagi e'lon.
+XABARNOMALAR VA ALOQA 19.1. Barcha xabarnomalar quyidagi kanallar orqali yuboriladi: Foydalanuvchi ko'rsatgan elektron pochta; telefon raqami (SMS/messencher); shaxsiy kabinetdagi bildirishnoma; med1.uz saytidagi e'lon.
 
 19.2. Elektron pochta orqali yuborilgan xabarnoma yuborilgan kundan keyingi ish kunida olingan hisoblanadi.
 
@@ -764,10 +659,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 19.4. Operatorning rasmiy aloqa ma'lumotlari 29-bo'limda keltirilgan.
 
-| **20-BO'LIM. MOBIL ILOVA VA UCHINCHI TOMON PLATFORMALARI** |
-|------------------------------------------------------------|
+### 20-BO'LIM
 
-20.1. Platformaning mobil ilovalari App Store, Google Play, AppGallery va boshqa raqamli do'konlar orqali tarqatilishi mumkin. Bunday holda tegishli do'kon qoidalari qo'shimcha ravishda qo'llaniladi.
+MOBIL ILOVA VA UCHINCHI TOMON PLATFORMALARI 20.1. Platformaning mobil ilovalari App Store, Google Play, AppGallery va boshqa raqamli do'konlar orqali tarqatilishi mumkin. Bunday holda tegishli do'kon qoidalari qo'shimcha ravishda qo'llaniladi.
 
 20.2. Ilovani yuklab olish orqali Foydalanuvchi unga cheklangan, o'tkazilmaydigan, mutlaq bo'lmagan litsenziya oladi. Ilovani modifikatsiya qilish, dekompilyatsiya qilish, «jailbreak»/«root» qilingan qurilmada xavfsizlikni chetlab o'tish maqsadida ishlatish taqiqlanadi.
 
@@ -781,10 +675,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 20.7. Ilovadan foydalanish natijasida yuzaga keladigan mobil internet trafigi xarajatlari Foydalanuvchi zimmasida.
 
-| **21-BO'LIM. KUKILAR, GEOLOKATSIYA, ANALITIKA VA AVTOMATLASHTIRILGAN QARORLAR** |
-|----|
+### 21-BO'LIM
 
-21.1. Platforma quyidagi turdagi kukilardan foydalanadi: qat'iy zarur (sessiya, autentifikatsiya, xavfsizlik), funksional (til, mintaqa, interfeys sozlamalari), analitik (foydalanish statistikasi), marketing (faqat rozilik bilan).
+KUKILAR, GEOLOKATSIYA, ANALITIKA VA AVTOMATLASHTIRILGAN QARORLAR 21.1. Platforma quyidagi turdagi kukilardan foydalanadi: qat'iy zarur (sessiya, autentifikatsiya, xavfsizlik), funksional (til, mintaqa, interfeys sozlamalari), analitik (foydalanish statistikasi), marketing (faqat rozilik bilan).
 
 21.2. Qat'iy zarur kukilardan tashqari barcha kukilar Foydalanuvchining ochiq roziligi (cookie banner) asosida o'rnatiladi va istalgan vaqtda bekor qilinishi mumkin.
 
@@ -798,10 +691,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 21.7. Operator hech qachon sog'liq ma'lumotlari asosida reklama targetlashini uchinchi tomon reklama tarmoqlariga uzatmaydi.
 
-| **22-BO'LIM. KORPORATIV MIJOZLAR, SUG'URTA VA DAVLAT MUASSASALARI BILAN ISHLASH** |
-|----|
+### 22-BO'LIM
 
-22.1. Yuridik shaxslar (korporativ mijozlar) o'z xodimlari uchun korporativ paketlarni rasmiylashtirishi mumkin. Bunday holda alohida yozma shartnoma tuziladi va u ustuvor kuchga ega bo'ladi.
+KORPORATIV MIJOZLAR, SUG'URTA VA DAVLAT MUASSASALARI BILAN ISHLASH 22.1.   Yuridik    shaxslar    (korporativ    mijozlar)   o'z   xodimlari   uchun   korporativ   paketlarni rasmiylashtirishi mumkin. Bunday holda alohida yozma shartnoma tuziladi va u ustuvor kuchga ega bo'ladi.
 
 22.2. Korporativ mijoz o'z xodimlarining shaxsiy va sog'liq ma'lumotlari Platformada qayta ishlanishiga ularning yozma roziligini olishi shart va bu majburiyatni to'liq o'z zimmasiga oladi.
 
@@ -815,8 +707,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 22.7. Korporativ hisoblarda foydalanuvchi rollari, kirish huquqlari va ma'lumot ko'rish darajalari korporativ mijoz administratori tomonidan boshqariladi va u ushbu sozlamalar oqibatlari uchun javobgar bo'ladi.
 
-| **23-BO'LIM. REFERAL, AFFILIATE DASTURI VA REKLAMA** |
-|------------------------------------------------------|
+### 23-BO'LIM
+
+### REFERAL, AFFILIATE DASTURI VA REKLAMA
 
 23.1. Foydalanuvchi referal havola orqali yangi foydalanuvchilarni taklif qilishi va rag'bat (Med-Coin, chegirma) olishi mumkin.
 
@@ -830,10 +723,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 23.6. Homiylik va reklama pozitsiyalari foydalanuvchi uchun ochiq belgilanadi va tibbiy tavsiya sifatida taqdim etilmaydi.
 
-| **24-BO'LIM. VOYAGA YETMAGANLAR, VAKILLIK VA MAXSUS TOIFADAGI FOYDALANUVCHILAR** |
-|----|
+### 24-BO'LIM
 
-24.1. 18 yoshga to'lmagan shaxs uchun yozuv, konsultatsiya va tibbiy yozuvlarni yuritish faqat qonuniy vakil hisobi orqali amalga oshiriladi.
+VOYAGA YETMAGANLAR, VAKILLIK VA MAXSUS TOIFADAGI FOYDALANUVCHILAR 24.1. 18 yoshga to'lmagan shaxs uchun yozuv, konsultatsiya va tibbiy yozuvlarni yuritish faqat qonuniy vakil hisobi orqali amalga oshiriladi.
 
 24.2. Qonuniy vakil bola nomidan barcha rozilikni beradi va taqdim etgan ma'lumotlari haqiqiyligi uchun javob beradi.
 
@@ -845,12 +737,11 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 24.6. Homiladorlik, reproduktiv salomatlik, ruhiy salomatlik, OIV/OITS va shunga o'xshash sezgir ma'lumotlar kuchaytirilgan maxfiylik rejimida saqlanadi va faqat davolovchi shifokorga ochiladi.
 
-| **25-BO'LIM. AXBOROT XAVFSIZLIGI VA FOYDALANUVCHI MAS'ULIYATI** |
-|-----------------------------------------------------------------|
+### 25-BO'LIM
 
-25.1. Foydalanuvchi kuchli parol qo'yishi, uni boshqa xizmatlarda takrorlamasligi va ikki bosqichli autentifikatsiyani yoqishi tavsiya etiladi.
+AXBOROT XAVFSIZLIGI VA FOYDALANUVCHI MAS'ULIYATI 25.1. Foydalanuvchi kuchli parol qo'yishi, uni boshqa xizmatlarda takrorlamasligi va ikki bosqichli autentifikatsiyani yoqishi tavsiya etiladi.
 
-25.2. Umumiy foydalanishdagi qurilmalarda hisobdan chiqish (logout) Foydalanuvchi mas'uliyatidir.
+25.2.    Umumiy      foydalanishdagi      qurilmalarda   hisobdan   chiqish   (logout)   Foydalanuvchi mas'uliyatidir.
 
 25.3. Foydalanuvchi Platformadagi zaiflikni (vulnerability) aniqlasa, uni oshkor qilmasdan darhol info@med1.uz manziliga xabar berishi kerak. Operator mas'uliyatli oshkor qilish (responsible disclosure) amaliyotini qo'llab-quvvatlaydi.
 
@@ -862,12 +753,11 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 25.7. Operator zaxira nusxalarni muntazam yaratadi, biroq Foydalanuvchiga muhim hujjatlarning mustaqil nusxasini saqlash tavsiya etiladi.
 
-| **26-BO'LIM. ANTI-KORRUPTSIYA, SANKSIYALAR VA JINOIY DAROMADLARNI LEGALLASHTIRISHGA QARSHI KURASH** |
-|----|
+### 26-BO'LIM
 
-26.1. Tomonlar korrupsiyaga qarshi qonunchilikka rioya qilishni, poraxo'rlik, tijorat pora va noqonuniy manfaat berishdan tiyilishni majburiyat sifatida oladilar.
+ANTI-KORRUPTSIYA, SANKSIYALAR VA JINOIY DAROMADLARNI LEGALLASHTIRISHGA QARSHI KURASH 26.1. Tomonlar korrupsiyaga qarshi qonunchilikka rioya qilishni, poraxo'rlik, tijorat pora va noqonuniy manfaat berishdan tiyilishni majburiyat sifatida oladilar.
 
-26.2. Operator jinoiy faoliyatdan olingan daromadlarni legallashtirishga va terrorizmni moliyalashtirishga qarshi kurash (AML/CFT) talablariga rioya qiladi va shubhali operatsiyalar to'g'risida vakolatli organga xabar berishga majbur.
+26.2.   Operator     jinoiy   faoliyatdan    olingan   daromadlarni   legallashtirishga   va   terrorizmni moliyalashtirishga qarshi kurash (AML/CFT) talablariga rioya qiladi va shubhali operatsiyalar to'g'risida vakolatli organga xabar berishga majbur.
 
 26.3. Operator zarur hollarda mijozni identifikatsiya qilish (KYC) tartib-taomillarini o'tkazishga haqli va tegishli hujjatlarni talab qilishi mumkin.
 
@@ -875,10 +765,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 26.5. Ushbu bo'lim buzilganda Operator Shartnomani darhol, bir tomonlama va kompensatsiyasiz bekor qilishga haqli.
 
-| **27-BO'LIM. KONTENTNI OLIB TASHLASH, SHIKOYATLAR VA APELLYATSIYA** |
-|---------------------------------------------------------------------|
+### 27-BO'LIM
 
-27.1. Har qanday shaxs Platformadagi noqonuniy kontent to'g'risida info@med1.uz manziliga xabar berishi mumkin. Xabarda: havola (URL), qoidabuzarlik tavsifi, murojaatchi ma'lumotlari va (agar mavjud bo'lsa) huquqni tasdiqlovchi hujjat ko'rsatiladi.
+KONTENTNI OLIB TASHLASH, SHIKOYATLAR VA APELLYATSIYA 27.1. Har qanday shaxs Platformadagi noqonuniy kontent to'g'risida info@med1.uz manziliga xabar berishi mumkin. Xabarda: havola (URL), qoidabuzarlik tavsifi, murojaatchi ma'lumotlari va (agar mavjud bo'lsa) huquqni tasdiqlovchi hujjat ko'rsatiladi.
 
 27.2. Operator xabarni 10 (o'n) ish kuni ichida ko'rib chiqadi. Aniq qonunbuzarlik holatlarida kontent darhol cheklanishi mumkin.
 
@@ -890,8 +779,9 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 27.6. Iste'molchi o'z huquqlarini himoya qilish uchun iste'molchilar huquqlarini himoya qilish bo'yicha vakolatli davlat organiga ham murojaat qilish huquqiga ega.
 
-| **28-BO'LIM. YAKUNIY QOIDALAR** |
-|---------------------------------|
+### 28-BO'LIM
+
+### YAKUNIY QOIDALAR
 
 28.1. Shartnoma aksept qilingan paytdan kuchga kiradi va muddatsiz amal qiladi.
 
@@ -911,27 +801,29 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 28.9. Shartnoma bo'yicha barcha muddatlar, agar boshqacha ko'rsatilmagan bo'lsa, kalendar kunlarida hisoblanadi; ish kunlari O'zbekiston Respublikasi ish taqvimi bo'yicha aniqlanadi.
 
-| **29-BO'LIM. OPERATORNING REKVIZITLARI** |
-|------------------------------------------|
+### 29-BO'LIM
 
-| **To'liq nomi** | "MED-ALL AI SYSTEM" MChJ |
-|----|----|
-| **Direktor** | Shernazarov Farrux Farxodovich |
-| **STIR (INN)** | 312972027 |
-| **H/r** | 20208000007455262001 |
-| **Bank** | AT "ANOR BANK" |
-| **MFO** | 01183 |
-| **Yuridik manzil** | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
-| **Veb-sayt** | med1.uz |
-| **E-pochta** | info@med1.uz |
-| **Telefon** | +998 99 214 41 03 |
+### OPERATORNING REKVIZITLARI
 
-Direktor \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Shernazarov Farrux Farxodovich
+| To'liq nomi | "MED-ALL AI SYSTEM" MChJ |
+|---|---|
+| Direktor | Shernazarov Farrux Farxodovich |
+| STIR (INN) | 312972027 |
+| H/r | 20208000007455262001 |
+| Bank | AT "ANOR BANK" |
+| MFO | 01183 |
+| Yuridik manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
+| Veb-sayt | med1.uz |
+| E-pochta | info@med1.uz |
+| Telefon | +998 99 214 41 03 |
 
-*M.O'.*
+Direktor ______________________ Shernazarov Farrux Farxodovich
 
-| **ILOVA №1. AKSEPT VA ROZILIK BAYONNOMASI** |
-|---------------------------------------------|
+### M.O'.
+
+### ILOVA 1
+
+### AKSEPT VA ROZILIK BAYONNOMASI
 
 Ushbu bayonnoma Foydalanuvchi tomonidan Platformada ro'yxatdan o'tish jarayonida elektron shaklda tasdiqlanadi va Shartnomaning ajralmas qismi hisoblanadi.
 
@@ -953,20 +845,21 @@ Ushbu bayonnoma Foydalanuvchi tomonidan Platformada ro'yxatdan o'tish jarayonida
 
 ☐ (Ixtiyoriy) Sifatni nazorat qilish uchun konsultatsiya yozib olinishiga roziman.
 
-| **Foydalanuvchi (F.I.Sh.)** | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-|-----------------------------|----------------------------------------------|
-| **Sana**                    | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
-| **Imzo / Elektron tasdiq**  | \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ |
+| Foydalanuvchi (F.I.Sh.) | _______________________________________ |
+|---|---|
+| Sana | ______ / ______ / 20____ |
+| Imzo / Elektron tasdiq | _______________________________________ |
 
-*Elektron aksept holatida imzo o'rnini tizim jurnalidagi yozuv (sana, vaqt, IP-manzil, qurilma identifikatori va bir martalik SMS-kod bilan tasdiqlash) egallaydi va u qo'lda qo'yilgan imzoga teng yuridik kuchga ega.*
+Elektron aksept holatida imzo o'rnini tizim jurnalidagi yozuv (sana, vaqt, IP-manzil, qurilma identifikatori va bir martalik SMS-kod bilan tasdiqlash) egallaydi va u qo'lda qo'yilgan imzoga teng yuridik kuchga ega.
 
-| **ILOVA №2. PLATFORMA MODULLARI VA TO'LOV MODELLARI** |
-|-------------------------------------------------------|
+### ILOVA 2
+
+### PLATFORMA MODULLARI VA TO'LOV MODELLARI
 
 Quyidagi jadval Platformaning barcha asosiy modullari, ular kimga mo'ljallanganligi va to'lov modelini umumlashtiradi. Aniq narxlar med1.uz/tariflar sahifasida e'lon qilinadi.
 
-| **Modul** | **Foydalanuvchi toifasi** | **To'lov modeli** |
-|----|----|----|
+| Modul | Foydalanuvchi toifasi | To'lov modeli |
+|---|---|---|
 | Qidiruv va katalog | Barcha | Bepul |
 | Onlayn yozuv | Bemor | Bepul / xizmat narxi klinika tomonidan |
 | Teletibbiyot | Bemor, Shifokor | Seans narxi + platforma komissiyasi |
@@ -978,11 +871,14 @@ Quyidagi jadval Platformaning barcha asosiy modullari, ular kimga mo'ljallanganl
 | Med-Coin | Bemor | Bepul (rag'bat) |
 | Reklama va promotsiya | Klinika, Hamkor | Media-reja bo'yicha |
 
-| **ILOVA №3. QAYTA ISHLANADIGAN MA'LUMOTLAR TOIFALARI VA SAQLASH MUDDATLARI** |
-|----|
+### ILOVA 3
 
-| **Ma'lumot toifasi** | **Misollar** | **Saqlash muddati** |
-|----|----|----|
+### QAYTA ISHLANADIGAN MA'LUMOTLAR TOIFALARI VA
+
+### SAQLASH MUDDATLARI
+
+| Ma'lumot toifasi | Misollar | Saqlash muddati |
+|---|---|---|
 | Identifikatsiya | F.I.Sh., tug'ilgan sana, jinsi, JSHSHIR | Hisob amal qilgunga qadar + 5 yil |
 | Aloqa | Telefon, e-pochta, manzil | Hisob amal qilgunga qadar + 3 yil |
 | Sog'liq (maxsus toifa) | Tashxis, anamnez, tahlil, retsept, tasvir | Qonunchilikda belgilangan muddat |
@@ -991,26 +887,34 @@ Quyidagi jadval Platformaning barcha asosiy modullari, ular kimga mo'ljallanganl
 | Kommunikatsiya | Murojaatlar, chat yozishmalari | 3 yil |
 | Marketing roziligi | Opt-in/opt-out yozuvlari | Rozilik bekor qilingunga qadar + 3 yil |
 
-*Saqlash muddatlari qonunchilik talablari o'zgarganda tegishli ravishda qayta ko'rib chiqiladi. Muddat tugagach ma'lumotlar o'chiriladi yoki qaytarib bo'lmaydigan tarzda depersonalizatsiya qilinadi.*
+Saqlash muddatlari qonunchilik talablari o'zgarganda tegishli ravishda qayta ko'rib chiqiladi.
 
-| **ILOVA №4. DA'VO (PRETENZIYA) ARIZASI SHAKLI** |
-|-------------------------------------------------|
+### ILOVA 4
+
+### DA'VO (PRETENZIYA) ARIZASI SHAKLI
 
 Kimga: "MED-ALL AI SYSTEM" MChJ, Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy
 
-E-pochta: info@med1.uz \| Telefon: +998 99 214 41 03
+E-pochta: info@med1.uz | Telefon: +998 99 214 41 03
 
-| **Murojaatchi F.I.Sh. / nomi**    |     |
-|-----------------------------------|-----|
-| **Hisob (login / telefon)**       |     |
-| **Aloqa telefoni va e-pochta**    |     |
-| **Xizmat turi / buyurtma raqami** |     |
-| **Voqea sanasi va vaqti**         |     |
-| **Holat bayoni**                  |     |
-| **Talab mazmuni**                 |     |
-| **Ilova qilinayotgan hujjatlar**  |     |
-| **Sana va imzo**                  |     |
+Murojaatchi F.I.Sh. / nomi
 
-Da'vo 15 (o'n besh) kalendar kun ichida ko'rib chiqiladi va yozma javob beriladi. Javob murojaatda ko'rsatilgan elektron pochta manziliga yuboriladi.
+Hisob (login / telefon)
 
-**Operator tomonidan to'ldiriladi: Ro'yxatga olish raqami \_\_\_\_\_\_\_\_\_\_\_\_\_\_ Qabul qilingan sana \_\_\_\_\_\_\_\_\_\_\_\_\_\_ Mas'ul xodim \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_**
+Aloqa telefoni va e-pochta
+
+Xizmat turi / buyurtma raqami
+
+Voqea sanasi va vaqti
+
+Holat bayoni
+
+Talab mazmuni
+
+Ilova qilinayotgan hujjatlar
+
+Sana va imzo
+
+Da'vo 15 (o'n besh) kalendar kun ichida ko'rib chiqiladi va yozma javob beriladi.
+
+Operator tomonidan to'ldiriladi: Ro'yxatga olish raqami ____________ Qabul qilingan sana ____________ Mas'ul xodim ____________________

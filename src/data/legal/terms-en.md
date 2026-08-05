@@ -1,180 +1,168 @@
-**MED1.UZ**
+### MED1.UZ
 
 Digital healthcare ecosystem
 
-**USER AGREEMENT**
+### USER AGREEMENT
 
 Public offer on the use of the MED1.UZ digital healthcare platform and provision of services
 
-Company
+| Company | MED-ALL AI SYSTEM LLC |
+|---|---|
+| TIN | 312972027 |
+| Address | Samarkand region, Gijduvan CGG, Gijduvan street, 173 A |
+| Director | Farrukh F. Shernazarov |
+| Contacts | med1.uz · info@med1.uz · +998 99 214 41 03 |
+| Version / date | v2.1 · 2026 |
 
-**MED-ALL AI SYSTEM LLC**
-
-**TIN**
-
-312972027
-
-Address
-
-Samarkand region, Gijduvan CGG, Gijduvan street, 173 A
-
-Director
-
-Farrukh F. Shernazarov
-
-Contacts
-
-med1.uz · info@med1.uz · +998 99 214 41 03
-
-Version / date
-
-v2.1 · 2026
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**TABLE OF CONTENTS**
+### TABLE OF CONTENTS
 
 Preamble and terms of the offer
 
-**SECTION 1. TERMS AND DEFINITIONS**
+### SECTION 1. TERMS AND DEFINITIONS
 
-**SECTION 2. GENERAL PROVISIONS AND LEGAL BASIS OF THE AGREEMENT**
+### SECTION 2. GENERAL PROVISIONS AND LEGAL BASIS OF THE AGREEMENT
 
-**SECTION 3. SUBJECT OF THE AGREEMENT**
+### SECTION 3. SUBJECT OF THE AGREEMENT
 
-**SECTION 4. PLATFORM MODULES AND PROCEDURE FOR THEIR USE**
+### SECTION 4. PLATFORM MODULES AND PROCEDURE FOR THEIR USE
 
-**SECTION 5. REGISTRATION, IDENTIFICATION, AND ACCOUNT**
+### SECTION 5. REGISTRATION, IDENTIFICATION, AND ACCOUNT
 
-**SECTION 6. RIGHTS AND OBLIGATIONS OF THE PARTIES**
+### SECTION 6. RIGHTS AND OBLIGATIONS OF THE PARTIES
 
-**SECTION 7. PROHIBITED ACTIONS (ACCEPTABLE USE POLICY)**
+### SECTION 7. PROHIBITED ACTIONS (ACCEPTABLE USE POLICY)
 
-**SECTION 8. PRICE, PAYMENT, AND SETTLEMENT PROCEDURE**
+### SECTION 8. PRICE, PAYMENT, AND SETTLEMENT PROCEDURE
 
-**SECTION 9. CANCELLATION OF SERVICE AND REFUND POLICY**
+### SECTION 9. CANCELLATION OF SERVICE AND REFUND POLICY
 
-**SECTION 10. PERSONAL DATA AND MEDICAL SECRECY**
+### SECTION 10. PERSONAL DATA AND MEDICAL SECRECY
 
-**SECTION 11. INTELLECTUAL PROPERTY**
+### SECTION 11. INTELLECTUAL PROPERTY
 
-**SECTION 12. MEDICAL LIABILITY AND MEDICAL DISCLAIMER**
+### SECTION 12. MEDICAL LIABILITY AND MEDICAL DISCLAIMER
 
-**SECTION 13. SERVICE LEVEL AGREEMENT (SLA) AND TECHNICAL SUPPORT**
+### SECTION 13. SERVICE LEVEL AGREEMENT (SLA) AND TECHNICAL SUPPORT
 
-**SECTION 14. WARRANTIES AND LIMITATIONS THEREOF**
+### SECTION 14. WARRANTIES AND LIMITATIONS THEREOF
 
-**SECTION 15. LIABILITY AND LIMITATIONS THEREOF**
+### SECTION 15. LIABILITY AND LIMITATIONS THEREOF
 
-**SECTION 16. FORCE MAJEURE**
+### SECTION 16. FORCE MAJEURE
 
-**SECTION 17. AMENDMENT AND TERMINATION OF THE AGREEMENT**
+### SECTION 17. AMENDMENT AND TERMINATION OF THE AGREEMENT
 
-**SECTION 18. DISPUTE RESOLUTION PROCEDURE**
+### SECTION 18. DISPUTE RESOLUTION PROCEDURE
 
-**SECTION 19. NOTICES AND COMMUNICATION**
+### SECTION 19. NOTICES AND COMMUNICATION
 
-**SECTION 20. MOBILE APPLICATION AND THIRD-PARTY PLATFORMS**
+### SECTION 20. MOBILE APPLICATION AND THIRD-PARTY PLATFORMS
 
-**SECTION 21. COOKIES, GEOLOCATION, ANALYTICS, AND AUTOMATED DECISIONS**
+### SECTION 21. COOKIES, GEOLOCATION, ANALYTICS, AND AUTOMATED DECISIONS
 
-**SECTION 22. INTERACTION WITH CORPORATE CLIENTS, INSURANCE, AND GOVERNMENT**
+### SECTION 22. INTERACTION WITH CORPORATE CLIENTS, INSURANCE, AND GOVERNMENT
 
-**INSTITUTIONS**
+### INSTITUTIONS
 
-**SECTION 23. REFERRAL, AFFILIATE PROGRAM, AND ADVERTISING**
+### SECTION 23. REFERRAL, AFFILIATE PROGRAM, AND ADVERTISING
 
-**SECTION 24. MINORS, REPRESENTATION, AND SPECIAL CATEGORIES OF USERS**
+### SECTION 24. MINORS, REPRESENTATION, AND SPECIAL CATEGORIES OF USERS
 
-**SECTION 25. INFORMATION SECURITY AND USER RESPONSIBILITY**
+### SECTION 25. INFORMATION SECURITY AND USER RESPONSIBILITY
 
-**SECTION 26. ANTI-CORRUPTION, SANCTIONS, AND ANTI-MONEY LAUNDERING (AML)**
+### SECTION 26. ANTI-CORRUPTION, SANCTIONS, AND ANTI-MONEY LAUNDERING (AML)
 
-**SECTION 27. CONTENT REMOVAL, COMPLAINTS, AND APPEALS**
+### SECTION 27. CONTENT REMOVAL, COMPLAINTS, AND APPEALS
 
-**SECTION 28. FINAL PROVISIONS**
+### SECTION 28. FINAL PROVISIONS
 
-**SECTION 29. REQUISITES OF THE OPERATOR**
+### SECTION 29. REQUISITES OF THE OPERATOR
 
-**ANNEX №1. STATEMENT OF ACCEPTANCE AND CONSENT**
+### ANNEX №1. STATEMENT OF ACCEPTANCE AND CONSENT
 
-**ANNEX №2. PLATFORM MODULES AND PAYMENT MODELS**
+### ANNEX №2. PLATFORM MODULES AND PAYMENT MODELS
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+### ANNEX №3. CATEGORIES OF PROCESSED DATA
 
-2
+### ANNEX №4. CLAIM FORM
 
-User Agreement
+PREAMBLE This document constitutes a PUBLIC OFFER addressed to an indefinite circle of persons by "MED-ALL AI SYSTEM" LLC (hereinafter referred to as the "Operator", "Platform Owner", or "We") in accordance with Articles 367, 369, 370, 375, and 377 of the Civil Code of the Republic of Uzbekistan.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
+Unconditional and full acceptance (acceptance) of the terms of the Public Offer occurs by registering on the med1.uz website, mobile application, or other software interfaces, clicking the "I agree"/"I accept the terms of the Agreement" button, creating an account, placing an order or booking, making a payment, or any other practical use of the Platform.
 
-**ANNEX №3. CATEGORIES OF PROCESSED DATA**
+Upon acceptance, this document shall be considered a legally binding agreement concluded in writing between the Operator and the User (adhesion agreement — Article 358 of the Civil Code) and shall be mandatory for the parties.
 
-**ANNEX №4. CLAIM FORM**
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-3
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**PREAMBLE**
-
-This document constitutes a PUBLIC OFFER addressed to an indefinite circle of persons by "MED-ALL AI SYSTEM" LLC (hereinafter referred to as the "Operator", "Platform Owner", or "We") in accordance with Articles 367, 369, 370, 375, and 377 of the Civil Code of the Republic of Uzbekistan. Unconditional and full acceptance (acceptance) of the terms of the Public Offer occurs by registering on the med1.uz website, mobile application, or other software interfaces, clicking the "I agree"/"I accept the terms of the Agreement" button, creating an account, placing an order or booking, making a payment, or any other practical use of the Platform. Upon acceptance, this document shall be considered a legally binding agreement concluded in writing between the Operator and the User (adhesion agreement — Article 358 of the Civil Code) and shall be mandatory for the parties. ATTENTION! Before starting to use the Platform, please read this Agreement, the Privacy Policy, the Cookie Policy, the Medical Disclaimer, and the Tariffs in full. If you do not agree with any part of the terms, please refrain from using the Platform and do not create an account.
+ATTENTION! Before starting to use the Platform, please read this Agreement, the Privacy Policy, the Cookie Policy, the Medical Disclaimer, and the Tariffs in full. If you do not agree with any part of the terms, please refrain from using the Platform and do not create an account.
 
 MED1.UZ IS NOT A MEDICAL INSTITUTION AND IS NOT AN EMERGENCY MEDICAL SERVICE. In life-threatening situations, immediately call 103 or contact the nearest emergency medical facility.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 1
 
-4
+### TERMS AND DEFINITIONS
 
-User Agreement
+1.1. In this Agreement, the following terms shall have the meanings defined in this section. Other terms shall be understood in the sense defined by the legislation of the Republic of Uzbekistan.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
+Platform (MED1.UZ) — a complex of software and hardware, databases, design, content, and functional modules owned by the Operator, located on the med1.uz domain and its related subdomains, mobile applications, and API interfaces.
 
-**CHAPTER 1**
+Operator — "MED-ALL AI SYSTEM" LLC, TIN: 312972027, address: 173 A Gijduvon Street, Gijduvon MCA, Samarkand Region. The copyright holder of the Platform and the owner of the information system.
 
-**TERMS AND DEFINITIONS**
+User — any physical or legal person using the Platform: Patient, Doctor, Clinic, Partner, Guest user (unregistered visitor).
 
-1.1. In this Agreement, the following terms shall have the meanings defined in this section. Other terms shall be understood in the sense defined by the legislation of the Republic of Uzbekistan. Platform (MED1.UZ) — a complex of software and hardware, databases, design, content, and functional modules owned by the Operator, located on the med1.uz domain and its related subdomains, mobile applications, and API interfaces. Operator — "MED-ALL AI SYSTEM" LLC, TIN: 312972027, address: 173 A Gijduvon Street, Gijduvon MCA, Samarkand Region. The copyright holder of the Platform and the owner of the information system. User — any physical or legal person using the Platform: Patient, Doctor, Clinic, Partner, Guest user (unregistered visitor). Patient (Client) — a physical person using services for searching medical services, booking (appointments), telemedicine, maintaining electronic medical records, and other services for personal purposes. Doctor (Medical professional) — a physical person or individual entrepreneur who possesses the relevant license, diploma, and qualification certificate, has passed verification on the Platform, and offers their medical services. Clinic (Medical organization) — a legal entity or a division thereof that has a license to perform medical activities, has opened a profile on the Platform, and offers its services. Content Provider — a person who posts articles, videos, educational materials, or other information on the Platform. Account — the User's personal record on the Platform, access to which is carried out via login, password, phone number, one-time code (OTP), or third-party identifier (OAuth). Appointment (Booking) — the reservation of a specific time slot of a Doctor or Clinic by a Patient for a consultation. Telemedicine (Online consultation) — a form of providing medical advice remotely via text chat, audio, or video communication. AI Services (Artificial Intelligence Modules) — automated functions such as preliminary analysis of symptoms, structuring of documents, summarization of medical texts, generation of recommendations, preliminary processing of images, and similar functions. EMR/EHR (Electronic Medical Record) — A set of digital records regarding a patient's health: medical history, diagnosis, prescription, analysis results, images, and observation notes. Med-Coin (bonus points) — An internal incentive unit within the Platform. Med-Coin is NOT a currency, electronic money, crypto-asset, or security, and it cannot be exchanged for cash. Tariff (Tariff Plan) — A document defining the price and scope of the Platform's paid functions; published on the med1.uz/tariflar page and constitutes an integral part of the Agreement. Personal Data — The concept defined in Article 1 of the Law of the Republic of Uzbekistan "On Personal Data" (LRU-547).
+Patient (Client) — a physical person using services for searching medical services, booking (appointments), telemedicine, maintaining electronic medical records, and other services for personal purposes.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+Doctor (Medical professional) — a physical person or individual entrepreneur who possesses the relevant license, diploma, and qualification certificate, has passed verification on the Platform, and offers their medical services.
 
-5
+Clinic (Medical organization) — a legal entity or a division thereof that has a license to perform medical activities, has opened a profile on the Platform, and offers its services.
 
-User Agreement
+Content Provider — a person who posts articles, videos, educational materials, or other information on the Platform.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
+Account — the User's personal record on the Platform, access to which is carried out via login, password, phone number, one-time code (OTP), or third-party identifier (OAuth).
 
-Health Data — A special category of personal data (special category), the processing of which is possible only based on the subject's written/electronic consent or on a legal basis. Personal Account — A private section accessed by logging into the User's account. Content — Text, images, video, audio, code, database elements, logos, and other objects placed on the Platform. UGC (User Generated Content) — Reviews, ratings, questions, files, images, text, and other materials uploaded by the User. Force Majeure — Circumstances of insurmountable force arising beyond the will of the parties.
+Appointment (Booking) — the reservation of a specific time slot of a Doctor or Clinic by a Patient for a consultation.
+
+Telemedicine (Online consultation) — a form of providing medical advice remotely via text chat, audio, or video communication.
+
+AI Services (Artificial Intelligence Modules) — automated functions such as preliminary analysis of symptoms, structuring of documents, summarization of medical texts, generation of recommendations, preliminary processing of images, and similar functions.
+
+EMR/EHR (Electronic Medical Record) — A set of digital records regarding a patient's health: medical history, diagnosis, prescription, analysis results, images, and observation notes.
+
+Med-Coin (bonus points) — An internal incentive unit within the Platform. Med-Coin is NOT a currency, electronic money, crypto-asset, or security, and it cannot be exchanged for cash.
+
+Tariff (Tariff Plan) — A document defining the price and scope of the Platform's paid functions; published on the med1.uz/tariflar page and constitutes an integral part of the Agreement.
+
+Personal Data — The concept defined in Article 1 of the Law of the Republic of Uzbekistan "On Personal Data" (LRU-547).
+
+Health Data — A special category of personal data (special category), the processing of which is possible only based on the subject's written/electronic consent or on a legal basis.
+
+Personal Account — A private section accessed by logging into the User's account.
+
+Content — Text, images, video, audio, code, database elements, logos, and other objects placed on the Platform.
+
+UGC (User Generated Content) — Reviews, ratings, questions, files, images, text, and other materials uploaded by the User.
+
+Force Majeure — Circumstances of insurmountable force arising beyond the will of the parties.
 
 1.2. In this Agreement, terms in the singular may include the plural and vice versa. Section headings are for convenience only and shall not affect the interpretation.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 2
 
-6
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 2**
-
-**GENERAL PROVISIONS AND LEGAL BASIS OF THE**
-
-**AGREEMENT**
-
-2.1. This Agreement defines the procedure for using the Platform, provision of services, payments, liability, and dispute resolution between the Operator and the User.
+GENERAL PROVISIONS AND LEGAL BASIS OF THE AGREEMENT 2.1. This Agreement defines the procedure for using the Platform, provision of services, payments, liability, and dispute resolution between the Operator and the User.
 
 2.2. The Agreement is based on the following regulatory legal acts:
 
-• The Constitution of the Republic of Uzbekistan; • The Civil Code of the Republic of Uzbekistan; • Law LRU-1043 "On Protection of Public Health"; • Law LRU-547 "On Personal Data"; • Law "On Informatization"; • Law LRU-792 "On Electronic Commerce"; • Law "On Electronic Document Management"; • Law "On Electronic Digital Signature"; • Law LRU-578 "On Payments and Payment Systems"; • Law "On Protection of Consumer Rights"; • Law "On Advertising"; • Law LRU-713 "On Procedures for Licensing, Permitting, and Notification"; • Resolutions of the Cabinet of Ministers regarding the registration of personal databases and telemedicine, as well as relevant orders of the Ministry of Health.
-
-2.3. The Operator acts on the Platform as an information intermediary and software provider. The Operator IS NOT A MEDICAL SERVICE PROVIDER and does not independently provide services requiring a medical activity license, unless otherwise specified in a separate document.
+- The Constitution of the Republic of Uzbekistan;
+- The Civil Code of the Republic of Uzbekistan;
+- Law LRU-1043 "On Protection of Public Health";
+- Law LRU-547 "On Personal Data";
+- Law "On Informatization";
+- Law LRU-792 "On Electronic Commerce";
+- Law "On Electronic Document Management";
+- Law "On Electronic Digital Signature";
+- Law LRU-578 "On Payments and Payment Systems";
+- Law "On Protection of Consumer Rights";
+- Law "On Advertising";
+- Law LRU-713 "On Procedures for Licensing, Permitting, and Notification";
+- Resolutions of the Cabinet of Ministers regarding the registration of personal databases and telemedicine, as well as relevant orders of the Ministry of Health. 2.3. The Operator acts on the Platform as an information intermediary and software provider. The Operator IS NOT A MEDICAL SERVICE PROVIDER and does not independently provide services requiring a medical activity license, unless otherwise specified in a separate document.
 
 2.4. Medical services are provided by licensed Clinics and Doctors registered on the Platform within the framework of an independent legal relationship between them and the Patient. The Operator is a third party in such relationships — a technical and organizational intermediary.
 
@@ -188,41 +176,35 @@ User Agreement
 
 2.9. The text of the Agreement may be drawn up in Uzbek, Russian, and English. In case of discrepancy, the Uzbek text shall prevail.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 3
 
-7
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 3**
-
-**SUBJECT OF THE AGREEMENT**
-
-3.1. The subject of this Agreement is the granting by the Operator to the User of the right to use the functional capabilities of the Platform (a simple, non-exclusive license) and the provision of related information-technological, organizational, and auxiliary services.
+SUBJECT OF THE AGREEMENT 3.1. The subject of this Agreement is the granting by the Operator to the User of the right to use the functional capabilities of the Platform (a simple, non-exclusive license) and the provision of related information-technological, organizational, and auxiliary services.
 
 3.2. The Operator provides the User with the following main capabilities (the list of modules is fully provided in Section 4 of the Agreement):
 
-• search and selection of medical organizations, doctors, and services; • online appointment booking and queue management; • telemedicine (chat, audio, video consultation); • AI-based information-auxiliary modules; • electronic medical records (EMR) and document archive; • storage/display of electronic prescriptions and recommendations (within the framework of legislation); • ordering laboratory and diagnostic services and receiving results; • integration of payment services and generation of documents; • Med-Coin loyalty program; • SaaS management panel for Clinics and Doctors (CRM, schedule, statistics); • API and integration interfaces; • notification system (SMS, push, email, messenger); • reviews, ratings, and trust system; • medical knowledge base, articles, and educational content; • marketplace and partnership module (Clause 4.13 of the Agreement).
-
-3.3. Type of license: simple (non-exclusive), non-transferable, without the right to sublicense, valid worldwide, granted for the term of the Agreement.
+- search and selection of medical organizations, doctors, and services;
+- online appointment booking and queue management;
+- telemedicine (chat, audio, video consultation);
+- AI-based information-auxiliary modules;
+- electronic medical records (EMR) and document archive;
+- storage/display of electronic prescriptions and recommendations (within the framework of legislation);
+- ordering laboratory and diagnostic services and receiving results;
+- integration of payment services and generation of documents;
+- Med-Coin loyalty program;
+- SaaS management panel for Clinics and Doctors (CRM, schedule, statistics);
+- API and integration interfaces;
+- notification system (SMS, push, email, messenger);
+- reviews, ratings, and trust system;
+- medical knowledge base, articles, and educational content;
+- marketplace and partnership module (Clause 4.13 of the Agreement). 3.3. Type of license: simple (non-exclusive), non-transferable, without the right to sublicense, valid worldwide, granted for the term of the Agreement.
 
 3.4. The Operator has the right to provide certain functions of the Platform for free (freemium) and others under a paid tariff. Which function is paid is determined in the Tariffs document.
 
 3.5. The Service is provided "AS IS" and "AS AVAILABLE", with the limitations specified in Section 15 of the Agreement.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 4
 
-8
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 4**
-
-**PLATFORM MODULES AND PROCEDURE FOR THEIR USE**
+### PLATFORM MODULES AND PROCEDURE FOR THEIR USE
 
 4.1. Search and catalog module
 
@@ -257,14 +239,6 @@ User Agreement
 4.3.5. The following are PROHIBITED via telemedicine: management of emergency and resuscitation cases; prescription of substances restricted by law (narcotic, psychotropic); initial diagnosis of severe mental illnesses; issuance of expert opinions of legal significance.
 
 4.3.6. If the Doctor determines that the condition cannot be resolved remotely, they must terminate the session and refer the Patient for an in-person consultation.
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-9
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
 
 4.4. Artificial Intelligence (AI) Modules
 
@@ -304,19 +278,9 @@ User Agreement
 
 4.6.3. Data in the drug directory is based on open sources and manufacturer documentation and cannot serve as a basis for self-treatment.
 
-4.6.4. The sale of prescription-only, narcotic, or psychotropic substances via the Platform is
-
-**PROHIBITED.**
+4.6.4. The sale of prescription-only, narcotic, or psychotropic substances via the Platform is PROHIBITED.
 
 4.7. Laboratory and Diagnostics Module
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-10
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
 
 4.7.1. The User may order services from partner laboratories, request home collection (if provided by the partner), and receive results in electronic form.
 
@@ -358,14 +322,6 @@ User Agreement
 
 4.11.1. The Operator may provide partners with software integration capabilities via API keys.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-11
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
 4.11.2. Use of the API is subject to a separate API Terms document, rate limits, and security requirements.
 
 4.11.3. Disclosure, resale, reverse engineering of the API key, or bypassing limits is prohibited.
@@ -400,23 +356,15 @@ User Agreement
 
 4.15.2. Educational certificates (if issued) are valid only within the Platform and do not constitute state-standard documents unless otherwise indicated.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 5
 
-12
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 5**
-
-**REGISTRATION, IDENTIFICATION, AND ACCOUNT**
+### REGISTRATION, IDENTIFICATION, AND ACCOUNT
 
 5.1. Registration is carried out via phone number, email, or third-party services (OAuth).
 
 5.2. The User must enter true, complete, and up-to-date information. Entering false information is grounds for account blocking.
 
-5.3. Doctors and Clinics undergo additional verification: diplomas, licenses, certificates, identification, STIR 312972027/JSHSHIR, and documents regarding the place of work are submitted. The Operator has the right to verify the authenticity of documents, however, such verification does not impose a medical quality guarantee on the Operator.
+5.3. Doctors and Clinics undergo additional verification: diplomas, licenses, certificates, submitted. The Operator has the right to verify the authenticity of documents, however, such verification does not impose a medical quality guarantee on the Operator.
 
 5.4. The verification mark ("verified profile") only indicates that documents have been submitted and is not a guarantee of medical results.
 
@@ -432,79 +380,82 @@ User Agreement
 
 5.10. The User may send a request to delete their account at any time; deletion shall be carried out within 30 days, except for records required by law.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 6
 
-13
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 6**
-
-**RIGHTS AND OBLIGATIONS OF THE PARTIES**
+### RIGHTS AND OBLIGATIONS OF THE PARTIES
 
 6.1. Rights of the User
 
-• To use the public functions of the Platform corresponding to their tariff; • to receive complete and reliable information about services and prices; • to access, correct, block, delete their personal data and withdraw consent; • to contact technical support and receive a response within a reasonable timeframe; • to submit a claim (complaint) regarding the quality of service; • to delete the account and terminate the Agreement; • to retain copyright over their own content.
+- To use the public functions of the Platform corresponding to their tariff;
+- to receive complete and reliable information about services and prices;
+- to access, correct, block, delete their personal data and withdraw consent;
+- to contact technical support and receive a response within a reasonable timeframe;
+- to submit a claim (complaint) regarding the quality of service;
+- to delete the account and terminate the Agreement;
+- to retain copyright over their own content. 6.2. Obligations of the User
 
-6.2. Obligations of the User
+- To comply with the requirements of the Agreement, Privacy Policy, and legislation;
+- to provide authentic information and keep it up to date;
+- to make timely payments for the paid services received;
+- not to violate the rights of other persons (privacy, copyright, reputation);
+- to refrain from actions that threaten the security of the Platform;
+- not to independently interpret doctor's recommendations without a medical basis;
+- to provide advance notice in cases of non-attendance or lateness for an appointment. 6.3. Rights of the Operator
 
-• To comply with the requirements of the Agreement, Privacy Policy, and legislation; • to provide authentic information and keep it up to date; • to make timely payments for the paid services received; • not to violate the rights of other persons (privacy, copyright, reputation); • to refrain from actions that threaten the security of the Platform; • not to independently interpret doctor's recommendations without a medical basis; • to provide advance notice in cases of non-attendance or lateness for an appointment.
+- To unilaterally change, update, or terminate the functions, design, and content of the Platform;
+- to limit, suspend, or delete an account in the event of a breach of the Agreement;
+- to moderate content and remove infringing materials;
+- to carry out preventive maintenance (with advance notice where possible);
+- to involve third parties in the provision of services;
+- to use statistical and depersonalized data for analysis and marketing;
+- to restrict paid functions in the event of an outstanding debt. 6.4. Obligations of the Operator
 
-6.3. Rights of the Operator
+- To ensure the continuous operation of the Platform at a reasonable level;
+- to protect personal data in accordance with legislation;
+- to provide technical support;
+- to correctly calculate and document payments;
+- to review inquiries within the established timeframe;
+- to notify the User of significant changes. 6.5. Additional Obligations of the Doctor and the Clinic
 
-• To unilaterally change, update, or terminate the functions, design, and content of the Platform; • to limit, suspend, or delete an account in the event of a breach of the Agreement; • to moderate content and remove infringing materials; • to carry out preventive maintenance (with advance notice where possible); • to involve third parties in the provision of services; • to use statistical and depersonalized data for analysis and marketing; • to restrict paid functions in the event of an outstanding debt.
+- To possess valid licenses, diplomas, and certificates and ensure their validity;
+- to comply with medical deontology, ethics, and standards;
+- to maintain patient confidentiality (medical secrecy);
 
-6.4. Obligations of the Operator
+- to maintain an up-to-date schedule and fulfill confirmed appointments;
+- to display prices transparently and truthfully, avoiding hidden fees;
+- to respond to patient complaints in a timely manner;
+- to use patient data obtained through the Platform solely for treatment purposes.
 
-• To ensure the continuous operation of the Platform at a reasonable level; • to protect personal data in accordance with legislation; • to provide technical support; • to correctly calculate and document payments; • to review inquiries within the established timeframe; • to notify the User of significant changes.
+## CHAPTER 7
 
-6.5. Additional Obligations of the Doctor and the Clinic
-
-• To possess valid licenses, diplomas, and certificates and ensure their validity; • to comply with medical deontology, ethics, and standards; • to maintain patient confidentiality (medical secrecy);
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-14
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-• to maintain an up-to-date schedule and fulfill confirmed appointments; • to display prices transparently and truthfully, avoiding hidden fees; • to respond to patient complaints in a timely manner; • to use patient data obtained through the Platform solely for treatment purposes.
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-15
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 7**
-
-**PROHIBITED ACTIONS (ACCEPTABLE USE POLICY)**
+### PROHIBITED ACTIONS (ACCEPTABLE USE POLICY)
 
 7.1. The following are strictly prohibited on the Platform:
 
-• any activity that is unlawful, criminal, or leads to administrative liability; • registering on behalf of another person or personification/impersonation; • creating/distributing false medical documents, certificates, prescriptions, or conclusions; • conducting unlicensed medical activity or offering medical services; • advertising unproven, "miraculous" treatment methods or folk medicine as medical services; • illegal offering of narcotics, psychotropic substances, or prescription drugs; • distributing instructions contrary to the law regarding abortion, euthanasia, and similar matters; • uploading malicious software, viruses, scripts, and bots; • automated parsing, scraping, or bulk copying of data; • DDoS, brute-force, SQL-injection, XSS, and other attacks; • reverse engineering, decompilation, code modification, or bypassing security measures; • attempting unauthorized access to other users' accounts; • posting spam, mass mailings, or materials that infringe copyright; • content that is offensive, discriminatory, inciting violence, or provoking religious or national enmity; • posting personal and medical data of a third party without consent; • artificial manipulation of prices and ratings, or fake reviews; • using the Platform for the purpose of creating a competing product; • obtaining Med-Coin or discounts through fraudulent means.
-
-7.2. Upon detection of a violation, the Operator may take the following measures: warning, removal of content, restriction of functions, temporary suspension of the account, permanent deletion of the account, referral to law enforcement agencies, and recovery of damages caused.
+- any activity that is unlawful, criminal, or leads to administrative liability;
+- registering on behalf of another person or personification/impersonation;
+- creating/distributing false medical documents, certificates, prescriptions, or conclusions;
+- conducting unlicensed medical activity or offering medical services;
+- advertising unproven, "miraculous" treatment methods or folk medicine as medical services;
+- illegal offering of narcotics, psychotropic substances, or prescription drugs;
+- distributing instructions contrary to the law regarding abortion, euthanasia, and similar matters;
+- uploading malicious software, viruses, scripts, and bots;
+- automated parsing, scraping, or bulk copying of data;
+- DDoS, brute-force, SQL-injection, XSS, and other attacks;
+- reverse engineering, decompilation, code modification, or bypassing security measures;
+- attempting unauthorized access to other users' accounts;
+- posting spam, mass mailings, or materials that infringe copyright;
+- content that is offensive, discriminatory, inciting violence, or provoking religious or national enmity;
+- posting personal and medical data of a third party without consent;
+- artificial manipulation of prices and ratings, or fake reviews;
+- using the Platform for the purpose of creating a competing product;
+- obtaining Med-Coin or discounts through fraudulent means. 7.2. Upon detection of a violation, the Operator may take the following measures: warning, removal of content, restriction of functions, temporary suspension of the account, permanent deletion of the account, referral to law enforcement agencies, and recovery of damages caused.
 
 7.3. The sequence of measures is not mandatory — depending on the severity of the violation, the Operator may immediately apply the most severe measure.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 8
 
-16
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 8**
-
-**PRICE, PAYMENT, AND SETTLEMENT PROCEDURE**
+### PRICE, PAYMENT, AND SETTLEMENT PROCEDURE
 
 8.1. The price of services is indicated in the Tariffs document and/or on the service page. Prices are indicated including VAT (if applicable).
 
@@ -530,25 +481,20 @@ User Agreement
 
 8.12. In cases of chargeback (unjustified reversal of payment), the Operator has the right to block the account and recover the incurred costs.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 9
 
-17
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 9**
-
-**CANCELLATION AND REFUND POLICY**
+### CANCELLATION AND REFUND POLICY
 
 9.1. The User is entitled to request a refund of funds paid for services not rendered.
 
 9.2. Refund conditions:
 
-• if cancelled more than 3 hours before the start of the appointment — 100% refund; • if cancelled less than 3 hours before the start — 0–100% in accordance with the Clinic's rules; • if cancelled due to the fault of the Clinic/Doctor — 100% refund; • if the telemedicine session is not held due to a technical failure — 100% refund; • if the session is partially held — proportional refund; • Patient no-show — no refund.
-
-9.3. Subscription (SaaS) payments are non-refundable for the period used if the service was actively provided. A proportional refund for the remaining period may be carried out at the Operator's discretion.
+- if cancelled more than 3 hours before the start of the appointment — 100% refund;
+- if cancelled less than 3 hours before the start — 0–100% in accordance with the Clinic's rules;
+- if cancelled due to the fault of the Clinic/Doctor — 100% refund;
+- if the telemedicine session is not held due to a technical failure — 100% refund;
+- if the session is partially held — proportional refund;
+- Patient no-show — no refund. 9.3. Subscription (SaaS) payments are non-refundable for the period used if the service was actively provided. A proportional refund for the remaining period may be carried out at the Operator's discretion.
 
 9.4. The portion covered by Med-Coin is not refundable in monetary form — points shall be restored to the account.
 
@@ -556,17 +502,9 @@ User Agreement
 
 9.6. Individually prepared digital products (personalized reports, analyses, programs) are non-refundable after delivery.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 10
 
-18
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 10**
-
-**PERSONAL DATA AND MEDICAL CONFIDENTIALITY**
+### PERSONAL DATA AND MEDICAL CONFIDENTIALITY
 
 10.1. Processing of personal data is carried out in accordance with the Law of the Republic of Uzbekistan No. ZRU-547 "On Personal Data" and the Platform's Privacy Policy.
 
@@ -588,19 +526,9 @@ User Agreement
 
 10.10. When the User enters data of another person (child, elderly relative), the User guarantees they have the right to enter it and assumes responsibility toward the third party.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 11
 
-19
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 11**
-
-**INTELLECTUAL PROPERTY**
-
-11.1. All elements of the Platform — software code, design, interface, logo, trademark "MED1.UZ", databases, texts, graphics, video, audio, and other objects — are objects of the exclusive rights of the Operator or its licensors.
+INTELLECTUAL PROPERTY 11.1. All elements of the Platform — software code, design, interface, logo, trademark "MED1.UZ", databases, texts, graphics, video, audio, and other objects — are objects of the exclusive rights of the Operator or its licensors.
 
 11.2. The User is granted the right of use only within the scope defined in the Agreement. No transfer of rights or grant of ownership is intended.
 
@@ -614,25 +542,19 @@ User Agreement
 
 11.7. Feedback, suggestions, and ideas are transferred to the Operator with the right of unlimited use without any compensation.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 12
 
-20
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 12**
-
-**MEDICAL RESPONSIBILITY AND DISCLAIMER**
-
-12.1. Any information posted on the Platform — articles, AI results, references, calculators, tests — is of a GENERAL EDUCATIONAL NATURE and DOES NOT CONSTITUTE individual medical advice, diagnosis, or treatment plan.
+MEDICAL RESPONSIBILITY AND DISCLAIMER 12.1. Any information posted on the Platform — articles, AI results, references, calculators, tests — is of a GENERAL EDUCATIONAL NATURE and DOES NOT CONSTITUTE individual medical advice, diagnosis, or treatment plan.
 
 12.2. The Operator is NOT responsible for:
 
-• the accuracy of the diagnosis made by the Doctor/Clinic; • the prescribed treatment method and its outcome; • the quality of medical services, complications of procedures, or surgical results; • side effects of medications; • consequences of medical errors (vrachebnaya oshibka); • Consequences of the Patient's failure to comply with the doctor's recommendations; • Damage resulting from the User's self-treatment.
-
-12.3. Full responsibility for the quality of medical services shall rest with the licensed Clinic/Doctor who provided them. The Patient shall direct claims directly to them.
+- the accuracy of the diagnosis made by the Doctor/Clinic;
+- the prescribed treatment method and its outcome;
+- the quality of medical services, complications of procedures, or surgical results;
+- side effects of medications;
+- consequences of medical errors (vrachebnaya oshibka);
+- Consequences of the Patient's failure to comply with the doctor's recommendations;
+- Damage resulting from the User's self-treatment. 12.3. Full responsibility for the quality of medical services shall rest with the licensed Clinic/Doctor who provided them. The Patient shall direct claims directly to them.
 
 12.4. The Operator does not assume any guarantee regarding recovery, specific results, the effectiveness of a particular treatment, or the accuracy of a diagnosis.
 
@@ -642,21 +564,9 @@ User Agreement
 
 12.7. The Patient is obliged to provide full and truthful information regarding changes in health, allergies, pregnancy, chronic diseases, and medications being taken. The consequences of providing incomplete information shall rest with the Patient.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 13
 
-21
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 13**
-
-**SERVICE LEVEL AGREEMENT (SLA) AND TECHNICAL**
-
-**SUPPORT**
-
-13.1. The Operator strives to achieve an average annual Platform stability of 99.0% (ninety-nine percent). This indicator may be enhanced in a separate SLA document for paid SaaS tariffs.
+SERVICE LEVEL AGREEMENT (SLA) AND TECHNICAL SUPPORT 13.1. The Operator strives to achieve an average annual Platform stability of 99.0% (ninety-nine percent). This indicator may be enhanced in a separate SLA document for paid SaaS tariffs.
 
 13.2. The following are not included in the SLA calculation: scheduled maintenance, force majeure, failures of third-party services (payment gateway, SMS provider, cloud provider), internet or device problems on the User's side, and DDoS attacks.
 
@@ -668,17 +578,9 @@ User Agreement
 
 13.6. Compensation for SLA violations is provided only under paid tariffs and only in the form of service period extension or a discount for the next period.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 14
 
-22
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 14**
-
-**WARRANTIES AND LIMITATIONS**
+### WARRANTIES AND LIMITATIONS
 
 14.1. The User warrants that: they have full legal capacity; they have the right to enter into the Agreement; the information provided is true; and they use the Platform for lawful purposes.
 
@@ -688,17 +590,9 @@ User Agreement
 
 14.4. The Operator is not responsible for software or hardware failures occurring on the User's device.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 15
 
-23
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 15**
-
-**LIABILITY AND LIMITATIONS OF LIABILITY**
+### LIABILITY AND LIMITATIONS OF LIABILITY
 
 15.1. The Parties shall be liable for non-performance or improper performance of obligations under the Agreement in accordance with the legislation of the Republic of Uzbekistan.
 
@@ -712,17 +606,9 @@ User Agreement
 
 15.6. The limitations in this section do not apply to actions committed by the Operator with intent or gross negligence, nor to damage to life and health to the extent prohibited by law.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 16
 
-24
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 16**
-
-**FORCE MAJEURE**
+### FORCE MAJEURE
 
 16.1. The Parties are released from liability for non-performance of obligations in the event of force majeure circumstances.
 
@@ -732,19 +618,9 @@ User Agreement
 
 16.4. If force majeure continues for more than 3 (three) months, each Party has the right to unilaterally terminate the Agreement; in such case, funds for unrendered services shall be refunded.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 17
 
-25
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 17**
-
-**AMENDMENT AND TERMINATION OF THE AGREEMENT**
-
-17.1. The Operator has the right to unilaterally amend the Agreement. The new version will be published on the med1.uz website and will take effect from the date of publication or the date specified therein.
+AMENDMENT AND TERMINATION OF THE AGREEMENT 17.1. The Operator has the right to unilaterally amend the Agreement. The new version will be published on the med1.uz website and will take effect from the date of publication or the date specified therein.
 
 17.2. The User will be notified of significant changes (price, liability, scope of data processing) at least 10 (ten) days in advance via email or notification.
 
@@ -758,17 +634,9 @@ User Agreement
 
 17.7. Upon account deletion, the User may export their data within 30 days; thereafter, it shall be deleted, except for records required to be kept by law.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 18
 
-26
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 18**
-
-**DISPUTE RESOLUTION PROCEDURE**
+### DISPUTE RESOLUTION PROCEDURE
 
 18.1. The Parties shall endeavor to resolve disputes through negotiations.
 
@@ -782,19 +650,9 @@ User Agreement
 
 18.6. Electronic correspondence, system journals (logs), IP addresses, notifications, and records in the personal account may be accepted as evidence in court, and the parties shall not object thereto.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 19
 
-27
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 19**
-
-**NOTIFICATIONS AND COMMUNICATION**
-
-19.1. All notifications shall be sent through the following channels: e-mail specified by the User; phone number (SMS/messenger); notification in the personal account; announcement on the med1.uz website.
+NOTIFICATIONS AND COMMUNICATION 19.1. All notifications shall be sent through the following channels: e-mail specified by the User; phone number (SMS/messenger); notification in the personal account; announcement on the med1.uz website.
 
 19.2. A notification sent via e-mail is considered received on the next business day following the date of sending.
 
@@ -802,41 +660,11 @@ User Agreement
 
 19.4. Official contact details of the Operator are provided in Section 29.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 20
 
-28
+MOBILE APPLICATION AND THIRD-PARTY PLATFORMS 20.1. Mobile applications of the Platform may be distributed through the App Store, Google Play, AppGallery, and other digital stores. In such cases, the rules of the respective store shall additionally apply.
 
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 20**
-
-**MOBILE APPLICATION AND THIRD-PARTY PLATFORMS**
-
-20.1. Mobile applications of the Platform may be distributed through the App Store, Google Play, AppGallery, and other digital stores. In such cases, the rules of the respective store shall additionally apply. 20.2.
-
-By
-
-downloading
-
-the
-
-Application,
-
-the
-
-User
-
-receives
-
-a
-
-limited,
-
-non-transferable,
-
-non-exclusive license. It is prohibited to modify, decompile, or use the Application to bypass security on a "jailbroken"/"rooted" device.
+20.2.   By   downloading      the    Application,    the   User   receives   a   limited,   non-transferable, non-exclusive license. It is prohibited to modify, decompile, or use the Application to bypass security on a "jailbroken"/"rooted" device.
 
 20.3. The Application may request access to the following device functions: camera (uploading documents/medical images), microphone (audio/video consultation), geolocation (finding nearby clinics), notifications, storage (uploading files), health data (if connected by the User). Each permission is requested separately and can be revoked at any time.
 
@@ -848,45 +676,9 @@ non-exclusive license. It is prohibited to modify, decompile, or use the Applica
 
 20.7. Mobile internet traffic costs arising from the use of the Application shall be borne by the User.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 21
 
-29
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 21**
-
-**COOKIES, GEOLOCATION, ANALYTICS, AND**
-
-**AUTOMATED DECISIONS**
-
-21.1.
-
-The
-
-Platform
-
-uses
-
-the
-
-following
-
-types
-
-of
-
-cookies:
-
-strictly
-
-necessary
-
-(session,
-
-authentication, security), functional (language, region, interface settings), analytical (usage statistics), marketing (only with consent).
+COOKIES, GEOLOCATION, ANALYTICS, AND AUTOMATED DECISIONS 21.1.   The    Platform    uses    the   following   types   of   cookies:   strictly   necessary   (session, authentication, security), functional (language, region, interface settings), analytical (usage statistics), marketing (only with consent).
 
 21.2. Except for strictly necessary cookies, all cookies are installed based on the User's explicit consent (cookie banner) and can be revoked at any time.
 
@@ -900,21 +692,9 @@ authentication, security), functional (language, region, interface settings), an
 
 21.7. The Operator never transfers advertising targeting based on health data to third-party advertising networks.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 22
 
-30
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 22**
-
-**INTERACTION WITH CORPORATE CLIENTS, INSURANCE,**
-
-**AND STATE INSTITUTIONS**
-
-22.1. Legal entities (corporate clients) may arrange corporate packages for their employees. In such cases, a separate written agreement shall be concluded, which shall have prevailing force.
+INTERACTION WITH CORPORATE CLIENTS, INSURANCE, AND STATE INSTITUTIONS 22.1. Legal entities (corporate clients) may arrange corporate packages for their employees. In such cases, a separate written agreement shall be concluded, which shall have prevailing force.
 
 22.2. The corporate client is obliged to obtain the written consent of its employees for the processing of their personal and health data on the Platform and fully assumes this obligation.
 
@@ -928,17 +708,9 @@ User Agreement
 
 22.7. User roles, access rights, and data visibility levels in corporate accounts are managed by the corporate client administrator, who shall be liable for the consequences of these settings.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 23
 
-31
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 23**
-
-**REFERRAL, AFFILIATE PROGRAM AND ADVERTISING**
+### REFERRAL, AFFILIATE PROGRAM AND ADVERTISING
 
 23.1. The User may invite new users via a referral link and receive incentives (Med-Coin, discount).
 
@@ -952,21 +724,9 @@ User Agreement
 
 23.6. Sponsorship and advertising positions are clearly marked for the user and are not presented as medical advice.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 24
 
-32
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 24**
-
-**MINORS, REPRESENTATION AND SPECIAL CATEGORIES**
-
-**OF USERS**
-
-24.1. For persons under the age of 18, appointments, consultations, and maintenance of medical records are carried out only through the account of a legal representative.
+MINORS, REPRESENTATION AND SPECIAL CATEGORIES OF USERS 24.1. For persons under the age of 18, appointments, consultations, and maintenance of medical records are carried out only through the account of a legal representative.
 
 24.2. The legal representative provides all consents on behalf of the child and is responsible for the authenticity of the information provided.
 
@@ -978,17 +738,9 @@ User Agreement
 
 24.6. Pregnancy, reproductive health, mental health, HIV/AIDS and similar sensitive data are stored in an enhanced confidentiality mode and are disclosed only to the attending physician.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 25
 
-33
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 25**
-
-**INFORMATION SECURITY AND USER RESPONSIBILITY**
+### INFORMATION SECURITY AND USER RESPONSIBILITY
 
 25.1. The User is recommended to set a strong password, not to reuse it in other services, and to enable two-factor authentication.
 
@@ -1004,21 +756,9 @@ User Agreement
 
 25.7. The Operator regularly creates backup copies, however, the User is recommended to keep an independent copy of important documents.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 26
 
-34
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 26**
-
-**ANTI-CORRUPTION, SANCTIONS AND ANTI-MONEY**
-
-**LAUNDERING**
-
-26.1. The Parties undertake to comply with anti-corruption legislation and to refrain from bribery, commercial bribery, and providing illegal benefits.
+ANTI-CORRUPTION, SANCTIONS AND ANTI-MONEY LAUNDERING 26.1. The Parties undertake to comply with anti-corruption legislation and to refrain from bribery, commercial bribery, and providing illegal benefits.
 
 26.2. The Operator complies with the requirements for anti-money laundering and countering the financing of terrorism (AML/CFT) and is obliged to report suspicious transactions to the competent authority.
 
@@ -1028,19 +768,9 @@ User Agreement
 
 26.5. In case of violation of this section, the Operator has the right to terminate the Agreement immediately, unilaterally, and without compensation.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 27
 
-35
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 27**
-
-**CONTENT REMOVAL, COMPLAINTS AND APPEALS**
-
-27.1. Any person may report illegal content on the Platform to info@med1.uz. The report shall include: link (URL), description of the violation, applicant's details, and (if available) a document confirming the rights.
+CONTENT REMOVAL, COMPLAINTS AND APPEALS 27.1. Any person may report illegal content on the Platform to info@med1.uz. The report shall include: link (URL), description of the violation, applicant's details, and (if available) a document confirming the rights.
 
 27.2. The Operator shall review the report within 10 (ten) working days. In cases of clear violations of the law, content may be restricted immediately.
 
@@ -1052,17 +782,9 @@ User Agreement
 
 27.6. To protect their rights, the consumer also has the right to apply to the competent state body for consumer protection.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 28
 
-36
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 28**
-
-**FINAL PROVISIONS**
+### FINAL PROVISIONS
 
 28.1. The Agreement enters into force from the moment of acceptance and is valid for an indefinite period.
 
@@ -1082,252 +804,120 @@ User Agreement
 
 28.9. All terms under the Agreement, unless otherwise specified, are calculated in calendar days; business days are determined according to the working calendar of the Republic of Uzbekistan.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+## CHAPTER 29
 
-37
+### DETAILS OF THE OPERATOR
 
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**CHAPTER 29**
-
-**DETAILS OF THE OPERATOR**
-
-Full name
-
-**"MED-ALL AI SYSTEM" LLC**
-
-Director
-
-Shernazarov Farrux Farxodovich
-
-**STIR (TIN)**
-
-312972027
-
-Settlement account
-
-20208000007455262001
-
-Bank
-
-**JSC "ANOR BANK"**
-
-**MFO**
-
-01183
-
-Legal address
-
-173 A, Gijduvon street, Gijduvon MCA, Samarkand region
-
-Website
-
-med1.uz
-
-E-mail
-
-info@med1.uz
-
-Telephone
-
-+998 99 214 41 03
+| Full name | "MED-ALL AI SYSTEM" LLC |
+|---|---|
+| Director | Shernazarov Farrux Farxodovich |
+| STIR (TIN) | 312972027 |
+| Settlement account | 20208000007455262001 |
+| Bank | JSC "ANOR BANK" |
+| MFO | 01183 |
+| Legal address | 173 A, Gijduvon street, Gijduvon MCA, Samarkand region |
+| Website | med1.uz |
+| E-mail | info@med1.uz |
+| Telephone | +998 99 214 41 03 |
 
 Director ______________________ Shernazarov Farrux Farxodovich
 
-**L.S.**
+### L.S.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+### ANNEX 1
 
-38
+### PROTOCOL OF ACCEPTANCE AND CONSENT
 
-User Agreement
+This protocol is confirmed electronically by the User during the registration process on the Platform and is an integral part of the Agreement.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
+☐ I have fully read, understood, and accept the terms of the User Agreement (Public Offer).
 
-**ANNEX 1**
+☐ I have familiarized myself with the Privacy Policy and Cookie Policy.
 
-**PROTOCOL OF ACCEPTANCE AND CONSENT**
+☐ I consent to the processing of my personal data.
 
-This protocol is confirmed electronically by the User during the registration process on the Platform and is an integral part of the Agreement. ☐ I have fully read, understood, and accept the terms of the User Agreement (Public Offer). ☐ I have familiarized myself with the Privacy Policy and Cookie Policy. ☐ I consent to the processing of my personal data. ☐ I provide separate consent for the processing of special categories of data CONCERNING MY
+☐ I provide separate consent for the processing of special categories of data CONCERNING MY HEALTH.
 
-**HEALTH.**
+☐ The nature and limitations of telemedicine services have been explained; I consent to remote consultation.
 
-☐ The nature and limitations of telemedicine services have been explained; I consent to remote consultation. ☐ I understand that the results of AI-modules are not a medical diagnosis. ☐ I consent to receive service (transactional) notifications. ☐ (Optional) I consent to receive marketing and promotional messages. ☐ (Optional) I consent to the recording of the consultation for quality control purposes. User (Full Name)
+☐ I understand that the results of AI-modules are not a medical diagnosis.
 
-_______________________________________
+☐ I consent to receive service (transactional) notifications.
 
-Date
+☐ (Optional) I consent to receive marketing and promotional messages.
 
-______ / ______ / 20____
+☐ (Optional) I consent to the recording of the consultation for quality control purposes.
 
-Signature / Electronic confirmation
-
-_______________________________________
+| User (Full Name) | _______________________________________ |
+|---|---|
+| Date | ______ / ______ / 20____ |
+| Signature / Electronic confirmation | _______________________________________ |
 
 In the case of electronic acceptance, the signature is replaced by a record in the system log (date, time, IP address, device identifier, and confirmation by a one-time SMS code) and has equal legal force to a handwritten signature.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-39
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**ANNEX 2**
-
-**PLATFORM MODULES AND PAYMENT MODELS**
-
-The following table summarizes all main modules of the Platform, their target audience, and the payment model. Exact prices are published on the med1.uz/tariflar page. Module
-
-User category
-
-Payment model
-
-Search and catalog
-
-All
-
-Free
-
-Online booking
-
-Patient
-
-Free / service price set by the clinic
-
-Telemedicine
-
-Patient, Doctor
-
-Session price + platform commission
-
-AI-modules
-
-Patient, Doctor
-
-Freemium / subscription
-
-EMR archive
-
-Patient, Clinic
-
-Free (basic) / extended subscription
-
-Laboratory order
-
-Patient
-
-Laboratory price + commission
-
-SaaS-panel (CRM)
-
-Clinic, Doctor
-
-Monthly/annual subscription
-
-API integration
-
-Partner
-
-Subscription / by volume of requests
-
-Med-Coin
-
-Patient
-
-Free (incentive)
-
-Advertising and promotion
-
-Clinic, Partner
-
-According to media plan
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
-
-40
-
-User Agreement
-
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
-
-**ANNEX 3**
-
-**CATEGORIES OF PROCESSED DATA AND RETENTION**
-
-**PERIODS**
-
-Data category
-
-Examples
-
-Retention period
-
-Identification
-
-Full name, date of birth, gender,
-
-**PINFL**
-
-Until account termination + 5 years
-
-Contact
-
-Telephone, e-mail, address
-
-Until account termination + 3 years
-
-Health (special category)
-
-Diagnosis, anamnesis, analysis, prescription, image
-
-Period established by legislation
-
-Payment
-
-Transaction ID, amount, masked card
-
-5 years (accounting requirement)
-
-Technical
-
-IP, device, browser, cookie, logs
-
-12 months
-
-Communication
-
-Requests, chat correspondence
-
-3 years
-
-Marketing consent
-
-Opt-in/opt-out records
-
-Until withdrawal of consent + 3 years
+### ANNEX 2
+
+### PLATFORM MODULES AND PAYMENT MODELS
+
+The following table summarizes all main modules of the Platform, their target audience, and the payment model. Exact prices are published on the med1.uz/tariflar page.
+
+| Module | User category | Payment model |
+|---|---|---|
+| Search and catalog | All | Free |
+| Online booking | Patient | Free / service price set by the clinic |
+| Telemedicine | Patient, Doctor | Session price + platform commission |
+| AI-modules | Patient, Doctor | Freemium / subscription |
+| EMR archive | Patient, Clinic | Free (basic) / extended subscription |
+| Laboratory order | Patient | Laboratory price + commission |
+| SaaS-panel (CRM) | Clinic, Doctor | Monthly/annual subscription |
+| API integration | Partner | Subscription / by volume of requests |
+| Med-Coin | Patient | Free (incentive) |
+| Advertising and promotion | Clinic, Partner | According to media plan |
+
+### ANNEX 3
+
+### CATEGORIES OF PROCESSED DATA AND RETENTION
+
+### PERIODS
+
+| Data category | Examples | Retention period |
+|---|---|---|
+| Identification | Full name, date of birth, gender, PINFL | Until account termination + 5 years |
+| Contact | Telephone, e-mail, address | Until account termination + 3 years |
+| Health (special category) | Diagnosis, anamnesis, analysis, prescription, image | Period established by legislation |
+| Payment | Transaction ID, amount, masked card | 5 years (accounting requirement) |
+| Technical | IP, device, browser, cookie, logs | 12 months |
+| Communication | Requests, chat correspondence | 3 years |
+| Marketing consent | Opt-in/opt-out records | Until withdrawal of consent + 3 years |
 
 Retention periods shall be revised accordingly in case of changes in legislative requirements.
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+### ANNEX 4
 
-41
+### CLAIM FORM
 
-User Agreement
+To: "MED-ALL AI SYSTEM" LLC, 173 A, Gijduvon street, Gijduvon MCA, Samarkand region
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027
+E-mail: info@med1.uz | Telephone: +998 99 214 41 03
 
-**ANNEX 4**
+Applicant Full Name / name
 
-**CLAIM FORM**
+Account (login / telephone)
 
-To: "MED-ALL AI SYSTEM" LLC, 173 A, Gijduvon street, Gijduvon MCA, Samarkand region E-mail: info@med1.uz | Telephone: +998 99 214 41 03 Applicant Full Name / name Account (login / telephone) Contact telephone and e-mail Service type / order number Date and time of event Description of circumstances Content of the claim Attached documents Date and signature
+Contact telephone and e-mail
 
-The claim shall be considered within 15 (fifteen) calendar days and a written response shall be provided. To be completed by the Operator: Registration number ____________ Date received ____________ Responsible employee ____________________
+Service type / order number
 
-"MED-ALL AI SYSTEM" MChJ · STIR 312972027 · med1.uz
+Date and time of event
 
-42
+Description of circumstances
+
+Content of the claim
+
+Attached documents
+
+Date and signature
+
+The claim shall be considered within 15 (fifteen) calendar days and a written response shall be provided.
+
+To be completed by the Operator: Registration number ____________ Date received ____________ Responsible employee ____________________
