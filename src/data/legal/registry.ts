@@ -9,6 +9,15 @@ import termsEn from "@/data/legal/terms-en.md?raw";
 import partnerUz from "@/data/legal/partner-uz.md?raw";
 import partnerRu from "@/data/legal/partner-ru.md?raw";
 import partnerEn from "@/data/legal/partner-en.md?raw";
+import cookiesUz from "@/data/legal/cookies-uz.md?raw";
+import cookiesRu from "@/data/legal/cookies-ru.md?raw";
+import cookiesEn from "@/data/legal/cookies-en.md?raw";
+import saasUz from "@/data/legal/saas-uz.md?raw";
+import saasRu from "@/data/legal/saas-ru.md?raw";
+import saasEn from "@/data/legal/saas-en.md?raw";
+import disclaimerUz from "@/data/legal/disclaimer-uz.md?raw";
+import disclaimerRu from "@/data/legal/disclaimer-ru.md?raw";
+import disclaimerEn from "@/data/legal/disclaimer-en.md?raw";
 
 import privacyPdfUz from "@/assets/legal/privacy-uz.pdf.asset.json";
 import privacyPdfRu from "@/assets/legal/privacy-ru.pdf.asset.json";
@@ -19,8 +28,18 @@ import termsPdfEn from "@/assets/legal/terms-en.pdf.asset.json";
 import partnerPdfUz from "@/assets/legal/partner-uz.pdf.asset.json";
 import partnerPdfRu from "@/assets/legal/partner-ru.pdf.asset.json";
 import partnerPdfEn from "@/assets/legal/partner-en.pdf.asset.json";
+import cookiesPdfUz from "@/assets/legal/cookies-uz.pdf.asset.json";
+import cookiesPdfRu from "@/assets/legal/cookies-ru.pdf.asset.json";
+import cookiesPdfEn from "@/assets/legal/cookies-en.pdf.asset.json";
+import saasPdfUz from "@/assets/legal/saas-uz.pdf.asset.json";
+import saasPdfRu from "@/assets/legal/saas-ru.pdf.asset.json";
+import saasPdfEn from "@/assets/legal/saas-en.pdf.asset.json";
+import disclaimerPdfUz from "@/assets/legal/disclaimer-uz.pdf.asset.json";
+import disclaimerPdfRu from "@/assets/legal/disclaimer-ru.pdf.asset.json";
+import disclaimerPdfEn from "@/assets/legal/disclaimer-en.pdf.asset.json";
 
-export type LegalDocId = "privacy" | "terms" | "partner";
+export type LegalDocId = "privacy" | "terms" | "partner" | "cookies" | "saas" | "disclaimer";
+
 
 export interface LegalDocVersion {
   title: string;
