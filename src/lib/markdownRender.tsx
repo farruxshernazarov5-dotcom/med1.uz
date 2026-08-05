@@ -103,8 +103,8 @@ export function MarkdownView({ source, className }: { source: string; className?
         if (b.type === "hr") return <hr key={i} className="my-3 border-current opacity-20" />;
         if (b.type === "ul") return <ul key={i} className="list-disc pl-5 space-y-1 my-2">{b.items.map((it, j) => <li key={j}>{renderRuns(it)}</li>)}</ul>;
         if (b.type === "table") return (
-          <div key={i} className="my-3 overflow-x-auto">
-            <table className="w-full text-xs border border-border rounded-lg overflow-hidden">
+          <div key={i} className="my-3 overflow-x-auto -mx-1 px-1">
+            <table className="w-full min-w-[480px] text-xs border border-border rounded-lg overflow-hidden">
               <thead className="bg-muted/60">
                 <tr>{b.head.map((c, j) => <th key={j} className="text-left font-semibold px-3 py-2 border-b border-border">{renderRuns(c)}</th>)}</tr>
               </thead>
