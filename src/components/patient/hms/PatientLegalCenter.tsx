@@ -18,7 +18,9 @@ const docLinks = [
   { title: "SaaS HMS shartlari", href: "/saas-terms", icon: Scale, badge: "To'lov" },
   { title: "Hamkorlik shartnomasi", href: "/partner-terms", icon: Scale, badge: "Hamkor" },
 
+  { title: "Cookie siyosati", href: "/cookies", icon: Cookie, badge: "Cookie" },
   { title: "Referral shartlari", href: "/referral-terms", icon: FileText, badge: "Bonus" },
+
   { title: "Foydalanuvchi qo'llanmasi", href: "/user-guide", icon: BookOpen, badge: "Guide" },
   { title: "Barcha yuridik hujjatlar", href: "/legal-center", icon: Scale, badge: "Legal" },
 ];
