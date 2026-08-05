@@ -178,7 +178,9 @@ GENERAL PROVISIONS AND LEGAL BASIS OF THE AGREEMENT 2.1. This Agreement defines 
 
 ## CHAPTER 3
 
-SUBJECT OF THE AGREEMENT 3.1. The subject of this Agreement is the granting by the Operator to the User of the right to use the functional capabilities of the Platform (a simple, non-exclusive license) and the provision of related information-technological, organizational, and auxiliary services.
+### SUBJECT OF THE AGREEMENT
+
+3.1. The subject of this Agreement is the granting by the Operator to the User of the right to use the functional capabilities of the Platform (a simple, non-exclusive license) and the provision of related information-technological, organizational, and auxiliary services.
 
 3.2. The Operator provides the User with the following main capabilities (the list of modules is fully provided in Section 4 of the Agreement):
 
@@ -528,7 +530,9 @@ SUBJECT OF THE AGREEMENT 3.1. The subject of this Agreement is the granting by t
 
 ## CHAPTER 11
 
-INTELLECTUAL PROPERTY 11.1. All elements of the Platform — software code, design, interface, logo, trademark "MED1.UZ", databases, texts, graphics, video, audio, and other objects — are objects of the exclusive rights of the Operator or its licensors.
+### INTELLECTUAL PROPERTY
+
+11.1. All elements of the Platform — software code, design, interface, logo, trademark "MED1.UZ", databases, texts, graphics, video, audio, and other objects — are objects of the exclusive rights of the Operator or its licensors.
 
 11.2. The User is granted the right of use only within the scope defined in the Agreement. No transfer of rights or grant of ownership is intended.
 
@@ -544,7 +548,9 @@ INTELLECTUAL PROPERTY 11.1. All elements of the Platform — software code, desi
 
 ## CHAPTER 12
 
-MEDICAL RESPONSIBILITY AND DISCLAIMER 12.1. Any information posted on the Platform — articles, AI results, references, calculators, tests — is of a GENERAL EDUCATIONAL NATURE and DOES NOT CONSTITUTE individual medical advice, diagnosis, or treatment plan.
+### MEDICAL RESPONSIBILITY AND DISCLAIMER
+
+12.1. Any information posted on the Platform — articles, AI results, references, calculators, tests — is of a GENERAL EDUCATIONAL NATURE and DOES NOT CONSTITUTE individual medical advice, diagnosis, or treatment plan.
 
 12.2. The Operator is NOT responsible for:
 
@@ -620,7 +626,9 @@ SERVICE LEVEL AGREEMENT (SLA) AND TECHNICAL SUPPORT 13.1. The Operator strives t
 
 ## CHAPTER 17
 
-AMENDMENT AND TERMINATION OF THE AGREEMENT 17.1. The Operator has the right to unilaterally amend the Agreement. The new version will be published on the med1.uz website and will take effect from the date of publication or the date specified therein.
+### AMENDMENT AND TERMINATION OF THE AGREEMENT
+
+17.1. The Operator has the right to unilaterally amend the Agreement. The new version will be published on the med1.uz website and will take effect from the date of publication or the date specified therein.
 
 17.2. The User will be notified of significant changes (price, liability, scope of data processing) at least 10 (ten) days in advance via email or notification.
 
@@ -652,7 +660,9 @@ AMENDMENT AND TERMINATION OF THE AGREEMENT 17.1. The Operator has the right to u
 
 ## CHAPTER 19
 
-NOTIFICATIONS AND COMMUNICATION 19.1. All notifications shall be sent through the following channels: e-mail specified by the User; phone number (SMS/messenger); notification in the personal account; announcement on the med1.uz website.
+### NOTIFICATIONS AND COMMUNICATION
+
+19.1. All notifications shall be sent through the following channels: e-mail specified by the User; phone number (SMS/messenger); notification in the personal account; announcement on the med1.uz website.
 
 19.2. A notification sent via e-mail is considered received on the next business day following the date of sending.
 
@@ -662,7 +672,9 @@ NOTIFICATIONS AND COMMUNICATION 19.1. All notifications shall be sent through th
 
 ## CHAPTER 20
 
-MOBILE APPLICATION AND THIRD-PARTY PLATFORMS 20.1. Mobile applications of the Platform may be distributed through the App Store, Google Play, AppGallery, and other digital stores. In such cases, the rules of the respective store shall additionally apply.
+### MOBILE APPLICATION AND THIRD-PARTY PLATFORMS
+
+20.1. Mobile applications of the Platform may be distributed through the App Store, Google Play, AppGallery, and other digital stores. In such cases, the rules of the respective store shall additionally apply.
 
 20.2.   By   downloading      the    Application,    the   User   receives   a   limited,   non-transferable, non-exclusive license. It is prohibited to modify, decompile, or use the Application to bypass security on a "jailbroken"/"rooted" device.
 
@@ -770,7 +782,9 @@ ANTI-CORRUPTION, SANCTIONS AND ANTI-MONEY LAUNDERING 26.1. The Parties undertake
 
 ## CHAPTER 27
 
-CONTENT REMOVAL, COMPLAINTS AND APPEALS 27.1. Any person may report illegal content on the Platform to info@med1.uz. The report shall include: link (URL), description of the violation, applicant's details, and (if available) a document confirming the rights.
+### CONTENT REMOVAL, COMPLAINTS AND APPEALS
+
+27.1. Any person may report illegal content on the Platform to info@med1.uz. The report shall include: link (URL), description of the violation, applicant's details, and (if available) a document confirming the rights.
 
 27.2. The Operator shall review the report within 10 (ten) working days. In cases of clear violations of the law, content may be restricted immediately.
 

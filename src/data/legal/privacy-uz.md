@@ -48,7 +48,9 @@ Shaxsiy ma'lumotlarni qayta ishlash siyosati
 
 ## 1-BOB
 
-UMUMIY QOIDALAR 1.1. Ushbu Maxfiylik siyosati (keyingi o'rinlarda — «Siyosat») "MED-ALL AI SYSTEM" MChJ (keyingi o'rinlarda — «Operator», «Kompaniya», «Biz») tomonidan med1.uz veb-sayti, MED1.UZ mobil ilovalari, ularning barcha bo'limlari, xizmatlari, API interfeyslari va shu bilan bog'liq boshqa raqamli     mahsulotlar      (birgalikda    —    «Platforma»)   orqali   foydalanuvchilarning   shaxsiy ma'lumotlarini qayta ishlash tartibi, maqsadlari, hajmi, muddatlari va himoya choralarini belgilaydi.
+### UMUMIY QOIDALAR
+
+1.1. Ushbu Maxfiylik siyosati (keyingi o'rinlarda — «Siyosat») "MED-ALL AI SYSTEM" MChJ (keyingi o'rinlarda — «Operator», «Kompaniya», «Biz») tomonidan med1.uz veb-sayti, MED1.UZ mobil ilovalari, ularning barcha bo'limlari, xizmatlari, API interfeyslari va shu bilan bog'liq boshqa raqamli     mahsulotlar      (birgalikda    —    «Platforma»)   orqali   foydalanuvchilarning   shaxsiy ma'lumotlarini qayta ishlash tartibi, maqsadlari, hajmi, muddatlari va himoya choralarini belgilaydi.
 
 1.2. Operator rekvizitlari: "MED-ALL AI SYSTEM" MChJ, STIR: 312972027, manzil: Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy, direktor: Shernazarov Farrux Farxodovich, telefon: +998 99 214 41 03, elektron pochta: info@med1.uz.
 
@@ -539,4 +541,6 @@ So'rov yuboruvchining shaxsini tasdiqlash zarur bo'lishi mumkin. Bu ma'lumotlarn
 | PCI DSS | To'lov kartalari sohasidagi xavfsizlik standarti |
 | AUP | Foydalanishning maqbul qoidalari |
 
-Ushbu Maxfiylik siyosati "MED-ALL AI SYSTEM" MChJ direktori tomonidan tasdiqlangan. Tahrir: 1.0. Sana: 2026-yil 28-iyul.
+### Ushbu Maxfiylik siyosati "MED-ALL AI SYSTEM" MChJ direktori tomonidan tasdiqlangan. Tahrir:
+
+1.0. Sana: 2026-yil 28-iyul.

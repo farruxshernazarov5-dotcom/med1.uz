@@ -16,7 +16,9 @@ Framework agreement for partners of the MED1.UZ digital healthcare ecosystem (pu
 
 ## CHAPTER 1
 
-General Provisions and Legal Status of the Agreement 1.1. This Partnership Agreement (hereinafter referred to as the "Agreement") is entered into between, on the one part, "MED-ALL AI SYSTEM" Limited Liability Company (STIR 312972027, legal address: 173-A Gijduvon Street, Gijduvon City, Samarkand Region), a legal entity organized and existing under the laws of the Republic of Uzbekistan, acting through its Director Shernazarov Farrux Farxodovich, hereinafter referred to as the "Operator" or "MED1.UZ", and on the other part, the legal entity, individual entrepreneur, or medical professional in private practice whose details are specified in the final part of the Agreement and who has signed the application for accession to the Agreement or the Appendix-Specification, hereinafter referred to as the "Partner".
+### General Provisions and Legal Status of the Agreement
+
+1.1. This Partnership Agreement (hereinafter referred to as the "Agreement") is entered into between, on the one part, "MED-ALL AI SYSTEM" Limited Liability Company (STIR 312972027, legal address: 173-A Gijduvon Street, Gijduvon City, Samarkand Region), a legal entity organized and existing under the laws of the Republic of Uzbekistan, acting through its Director Shernazarov Farrux Farxodovich, hereinafter referred to as the "Operator" or "MED1.UZ", and on the other part, the legal entity, individual entrepreneur, or medical professional in private practice whose details are specified in the final part of the Agreement and who has signed the application for accession to the Agreement or the Appendix-Specification, hereinafter referred to as the "Partner".
 
 1.2. The Agreement establishes the general legal framework for cooperation within the MED1.UZ digital health ecosystem. By its nature, the Agreement is a framework agreement: it sets forth general rules applicable to all types of cooperation between the Parties, while the specific type of service,    volume,     price,   and    technical    parameters    are   agreed    upon   separately   in Appendix-Specifications (Appendices A–J), which constitute an integral part of the Agreement.
 
@@ -41,7 +43,9 @@ Note. If an Appendix-Specification contains a provision contradicting the main t
 
 ## CHAPTER 2
 
-Terms and Definitions 2.1. The following terms are used in the Agreement with the following meanings. The definitions also apply to all appendices of the Agreement, unless otherwise specified in the relevant appendix.
+### Terms and Definitions
+
+2.1. The following terms are used in the Agreement with the following meanings. The definitions also apply to all appendices of the Agreement, unless otherwise specified in the relevant appendix.
 
 | Term | Definition |
 |---|---|
@@ -67,7 +71,9 @@ Terms and Definitions 2.1. The following terms are used in the Agreement with th
 
 ## CHAPTER 3
 
-Subject of the Agreement and Cooperation Models 3.1. Subject of the Agreement — provision by the Operator to the Partner of access to the MED1.UZ Platform's technological infrastructure, patient flow, digital marketing channels, payment and settlement tools, analytical panels, and AI-services; and the provision by the Partner of Services in accordance with its profile within the established quality standards and payment of the agreed fee (Commission or subscription) to the Operator.
+### Subject of the Agreement and Cooperation Models
+
+3.1. Subject of the Agreement — provision by the Operator to the Partner of access to the MED1.UZ Platform's technological infrastructure, patient flow, digital marketing channels, payment and settlement tools, analytical panels, and AI-services; and the provision by the Partner of Services in accordance with its profile within the established quality standards and payment of the agreed fee (Commission or subscription) to the Operator.
 
 3.2. Cooperation may be carried out according to one or more of the following models. The selected model is clearly indicated in the Appendix-Specification.
 
@@ -95,7 +101,9 @@ Note. This clause is considered the cornerstone of the Agreement, and any agreem
 
 ## CHAPTER 4
 
-Requirements for the Partner and Due Diligence 4.1. The Partner must meet the following requirements at the time of joining the Agreement and throughout its entire term: legal registration; validity of the license or permit corresponding to the type of activity; absence of overdue debts on taxes and mandatory payments; not being in the process of bankruptcy or liquidation; absence of managers and founders on sanctions lists.
+### Requirements for the Partner and Due Diligence
+
+4.1. The Partner must meet the following requirements at the time of joining the Agreement and throughout its entire term: legal registration; validity of the license or permit corresponding to the type of activity; absence of overdue debts on taxes and mandatory payments; not being in the process of bankruptcy or liquidation; absence of managers and founders on sanctions lists.
 
 4.2. A Partner engaged in medical activity shall additionally ensure: a medical activity license; diplomas, certificates, and qualification categories of employees; sanitary-epidemiological conclusion; technical inspection and metrological verification of medical equipment; professional liability insurance (if available); internal infection control protocols.
 
@@ -138,7 +146,9 @@ Creation, Moderation, and Placement of the Partner Profile 5.1. The Partner Prof
 
 ## CHAPTER 6
 
-Procedure for Accepting and Executing Orders 6.1. When a User places an Order through the Platform, the system sends a notification to the Partner (partner dashboard, push, SMS, or e-mail). The Partner must confirm the Order, suggest an alternative time, or reject it for a justified reason.
+### Procedure for Accepting and Executing Orders
+
+6.1. When a User places an Order through the Platform, the system sends a notification to the Partner (partner dashboard, push, SMS, or e-mail). The Partner must confirm the Order, suggest an alternative time, or reject it for a justified reason.
 
 | Order Type | Response Time | Execution Time |
 |---|---|---|
@@ -161,7 +171,9 @@ Procedure for Accepting and Executing Orders 6.1. When a User places an Order th
 
 ## CHAPTER 7
 
-Pricing Policy, Commission, and Tariffs 7.1. The service price is determined independently by the Partner. The Operator does not interfere in pricing but may provide advisory analysis regarding market averages.
+### Pricing Policy, Commission, and Tariffs
+
+7.1. The service price is determined independently by the Partner. The Operator does not interfere in pricing but may provide advisory analysis regarding market averages.
 
 7.2. The Operator's fee is calculated according to one or a combination of the following models: (a) percentage commission from the completed Order amount; (b) fixed fee for each confirmed Order; (c) monthly or annual subscription fee; (d) performance-based marketing fee (CPA/CPL); (e) one-time fee for integration and technical support.
 
@@ -183,7 +195,9 @@ Pricing Policy, Commission, and Tariffs 7.1. The service price is determined ind
 
 ## CHAPTER 8
 
-Payments, Acquiring, and Settlements 8.1. The User may pay for the service using one of the following methods: online via the Platform (card, mobile payment systems); at the Partner's cash desk in cash or via terminal; at the expense of an insurance policy; at the expense of a corporate agreement; partially at the expense of Med-Coin bonuses (if enabled).
+### Payments, Acquiring, and Settlements
+
+8.1. The User may pay for the service using one of the following methods: online via the Platform (card, mobile payment systems); at the Partner's cash desk in cash or via terminal; at the expense of an insurance policy; at the expense of a corporate agreement; partially at the expense of Med-Coin bonuses (if enabled).
 
 8.2. Acceptance of online payments is carried out through licensed payment organizations and bank acquiring. The Operator does not store full payment card details; payment data is processed in the payment provider's infrastructure compliant with PCI DSS requirements.
 
@@ -203,7 +217,9 @@ Payments, Acquiring, and Settlements 8.1. The User may pay for the service using
 
 ## CHAPTER 9
 
-Tax Matters and Document Flow 9.1. Each Party shall fulfill its tax obligations independently. The Operator is not considered a tax agent for the Partner, except in cases directly provided for by law.
+### Tax Matters and Document Flow
+
+9.1. Each Party shall fulfill its tax obligations independently. The Operator is not considered a tax agent for the Partner, except in cases directly provided for by law.
 
 9.2. Document flow is carried out in electronic form through the electronic invoicing system (EHF) of the Republic of Uzbekistan. Paper copies shall be exchanged if necessary.
 
@@ -215,7 +231,9 @@ Tax Matters and Document Flow 9.1. Each Party shall fulfill its tax obligations 
 
 ## CHAPTER 10
 
-Protection of Personal Data and Medical Secrecy 10.1. The Parties shall unconditionally comply with the requirements of Law No. ORQ-547, the Law "On the Protection of Citizens' Health," and other regulatory documents when processing personal data.
+### Protection of Personal Data and Medical Secrecy
+
+10.1. The Parties shall unconditionally comply with the requirements of Law No. ORQ-547, the Law "On the Protection of Citizens' Health," and other regulatory documents when processing personal data.
 
 10.2. Allocation of roles: in relation to the patient's medical data, the Partner acts as an independent data owner (controller), and the Operator acts as a processor based on the Partner's instructions. Within the scope of the Platform's own functions (registration, security, settlement), the Operator is considered an independent data owner.
 
@@ -239,7 +257,9 @@ Note. Detailed terms of data processing are provided in the DPA document in Appe
 
 ## CHAPTER 11
 
-Returns, Disputed Transactions, and Chargebacks 11.1. The User has the right to request a refund in the following cases: service not provided; service provided with poor quality and this is confirmed; double payment occurred; service canceled at the Partner's initiative; service description did not correspond to reality; other cases provided for by law.
+### Returns, Disputed Transactions, and Chargebacks
+
+11.1. The User has the right to request a refund in the following cases: service not provided; service provided with poor quality and this is confirmed; double payment occurred; service canceled at the Partner's initiative; service description did not correspond to reality; other cases provided for by law.
 
 11.2. The refund request shall be processed through the Platform and automatically sent to the Partner. The Partner shall review the request within 3 (three) business days and provide its consent or a reasoned objection. Failure to respond within the specified period shall be interpreted as consent.
 
@@ -270,7 +290,9 @@ may last up to 30 days; if the grounds are confirmed, the materials shall be sen
 
 ## CHAPTER 12
 
-Service Quality, KPI, and Quality Control 12.1. The Partner shall provide Services in accordance with medical standards, clinical protocols, and sanitary rules approved by the Ministry of Health of the Republic of Uzbekistan.
+### Service Quality, KPI, and Quality Control
+
+12.1. The Partner shall provide Services in accordance with medical standards, clinical protocols, and sanitary rules approved by the Ministry of Health of the Republic of Uzbekistan.
 
 12.2. The Parties agree on the following key performance indicators (KPIs). KPIs shall be measured in terms of the monthly reporting period and displayed in the partner dashboard in real-time.
 
@@ -302,7 +324,9 @@ Service Quality, KPI, and Quality Control 12.1. The Partner shall provide Servic
 
 ## CHAPTER 13
 
-Brand, Intellectual Property, and Licenses 13.1. The exclusive rights to the name MED1.UZ, logo, domain names, design system, software code, structure of databases, AI-models, document templates, and other results of intellectual activity belong to the Operator.
+### Brand, Intellectual Property, and Licenses
+
+13.1. The exclusive rights to the name MED1.UZ, logo, domain names, design system, software code, structure of databases, AI-models, document templates, and other results of intellectual activity belong to the Operator.
 
 13.2. The Partner retains the rights to its brand, trademark, logo, and content and grants the Operator a simple (non-exclusive), royalty-free, territorially unrestricted license to use them solely for the purpose of displaying the Partner's profile on the Platform, announcing the partnership in marketing materials, and placing them in the list of partners.
 
@@ -324,7 +348,9 @@ Brand, Intellectual Property, and Licenses 13.1. The exclusive rights to the nam
 
 ## CHAPTER 14
 
-Confidentiality and Non-Disclosure Agreement (NDA) 14.1. Confidential Information shall mean any information provided by the Parties to each other during the cooperation that is not available in public sources, including: commercial terms and prices; customer databases and statistics; technical documentation, API keys, and architecture; financial indicators; marketing plans; internal processes and procedures; any information regarding patients.
+### Confidentiality and Non-Disclosure Agreement (NDA)
+
+14.1. Confidential Information shall mean any information provided by the Parties to each other during the cooperation that is not available in public sources, including: commercial terms and prices; customer databases and statistics; technical documentation, API keys, and architecture; financial indicators; marketing plans; internal processes and procedures; any information regarding patients.
 
 14.2. Even if information is not designated as confidential, it shall be considered confidential if its nature implies confidentiality. In case of doubt, the information shall be treated as confidential.
 
@@ -348,7 +374,9 @@ Note. This chapter also functions as an independent NDA and remains in force eve
 
 ## CHAPTER 15
 
-Advertising, Marketing, and Joint Events 15.1. The Parties may agree to publicly announce the cooperation, conduct joint marketing campaigns, and post content on each other's channels. Each campaign shall be formalized based on a separate brief and budget.
+### Advertising, Marketing, and Joint Events
+
+15.1. The Parties may agree to publicly announce the cooperation, conduct joint marketing campaigns, and post content on each other's channels. Each campaign shall be formalized based on a separate brief and budget.
 
 15.2. Advertising of medical services must comply with the Law "On Advertising" and special requirements in the field of healthcare. The following are prohibited: guaranteeing treatment results; presenting patient testimonials as medical evidence; advertising prescription drugs to the general public; fear-based manipulation; disparaging other medical institutions.
 
@@ -364,7 +392,9 @@ Advertising, Marketing, and Joint Events 15.1. The Parties may agree to publicly
 
 ## CHAPTER 16
 
-Technical Integration, API, and Data Exchange 16.1. The Operator provides the Partner with the following tools for integration: REST API, webhook notifications, HL7 FHIR profile interface, CSV/XML export-import module, partner dashboard, and testing (sandbox) environment.
+### Technical Integration, API, and Data Exchange
+
+16.1. The Operator provides the Partner with the following tools for integration: REST API, webhook notifications, HL7 FHIR profile interface, CSV/XML export-import module, partner dashboard, and testing (sandbox) environment.
 
 16.2. Integration project stages: requirements gathering → approval of technical specifications → development in sandbox → functional and load testing → user acceptance testing (UAT) → production release → stabilization period (30 days).
 
@@ -389,7 +419,9 @@ Technical Integration, API, and Data Exchange 16.1. The Operator provides the Pa
 
 ## CHAPTER 17
 
-Service Level Agreement (SLA) and Technical Support 17.1. The Operator shall take reasonable measures to ensure the stable operation of the Platform. The target availability level is 99.5% per month; scheduled maintenance work is not included in this indicator.
+### Service Level Agreement (SLA) and Technical Support
+
+17.1. The Operator shall take reasonable measures to ensure the stable operation of the Platform. The target availability level is 99.5% per month; scheduled maintenance work is not included in this indicator.
 
 | Incident Level | Definition | Response | Resolution Aim |
 |---|---|---|---|
@@ -410,7 +442,9 @@ Service Level Agreement (SLA) and Technical Support 17.1. The Operator shall tak
 
 ## CHAPTER 18
 
-Information Security and Incident Management 18.1. The Parties shall rely on recognized information security practices (ISO/IEC 27001 principles, OWASP recommendations).
+### Information Security and Incident Management
+
+18.1. The Parties shall rely on recognized information security practices (ISO/IEC 27001 principles, OWASP recommendations).
 
 - access control: roles, periodic review, immediate deletion of accounts of dismissed employees;
 - password policy: complexity requirements, 2FA, non-use of shared accounts;
@@ -470,7 +504,9 @@ Rights and Obligations of the Parties
 
 ## CHAPTER 20
 
-Warranties and Limitations of Liability 20.1. Each Party warrants: that it possesses the necessary rights and powers to conclude the Agreement; that the Agreement does not contradict its constituent documents or other obligations; that the information provided is accurate and complete; and that it holds all permits relevant to its activities.
+### Warranties and Limitations of Liability
+
+20.1. Each Party warrants: that it possesses the necessary rights and powers to conclude the Agreement; that the Agreement does not contradict its constituent documents or other obligations; that the information provided is accurate and complete; and that it holds all permits relevant to its activities.
 
 20.2. The Partner additionally warrants: that the qualifications and certificates of its medical personnel are valid; that equipment is in technical working order; that medicines and consumables used are in legal circulation; and that necessary consent is obtained from patients.
 
@@ -482,7 +518,9 @@ Warranties and Limitations of Liability 20.1. Each Party warrants: that it posse
 
 ## CHAPTER 21
 
-Liability and its Limits 21.1. The Parties shall be liable for non-performance or improper performance of obligations under the Agreement in accordance with the legislation of the Republic of Uzbekistan.
+### Liability and its Limits
+
+21.1. The Parties shall be liable for non-performance or improper performance of obligations under the Agreement in accordance with the legislation of the Republic of Uzbekistan.
 
 21.2. Full and sole liability for the provision, quality, and safety of medical services, as well as for harm caused to the life and health of patients, shall rest with the Partner. The Operator, not being a subject of medical activity, shall not be liable for such harm.
 
@@ -506,7 +544,9 @@ Liability and its Limits 21.1. The Parties shall be liable for non-performance o
 
 ## CHAPTER 22
 
-Insurance 22.1. The Partner engaged in medical activities is recommended to have a professional liability insurance policy; in cases where it is mandatory by law, it is compulsory.
+### Insurance
+
+22.1. The Partner engaged in medical activities is recommended to have a professional liability insurance policy; in cases where it is mandatory by law, it is compulsory.
 
 22.2. The Partner shall provide a copy of the insurance policy to the Operator and confirm its renewal before its expiration date.
 
@@ -516,7 +556,9 @@ Insurance 22.1. The Partner engaged in medical activities is recommended to have
 
 ## CHAPTER 23
 
-Force Majeure 23.1. The Parties shall be released from liability for non-performance of obligations due to extraordinary and unavoidable circumstances (force majeure). Such circumstances include: natural disasters; military actions; epidemics and quarantine measures; prohibitive acts of state authorities; long-term interruptions of main communication channels or the national energy system; large-scale cyberattacks.
+### Force Majeure
+
+23.1. The Parties shall be released from liability for non-performance of obligations due to extraordinary and unavoidable circumstances (force majeure). Such circumstances include: natural disasters; military actions; epidemics and quarantine measures; prohibitive acts of state authorities; long-term interruptions of main communication channels or the national energy system; large-scale cyberattacks.
 
 23.2. The Party facing force majeure must notify the other Party within 5 working days and, if possible, provide confirmation from a competent authority. Failure to notify deprives the Party of the right to refer to force majeure.
 
@@ -545,7 +587,9 @@ Amendment, Suspension, and Termination of the Agreement 24.1. Amendments to the 
 
 ## CHAPTER 25
 
-Dispute Resolution Procedure 25.1. The Parties shall first seek to resolve disputes through negotiations. The claim procedure is mandatory: a written claim shall be sent to the other Party via official email or mail.
+### Dispute Resolution Procedure
+
+25.1. The Parties shall first seek to resolve disputes through negotiations. The claim procedure is mandatory: a written claim shall be sent to the other Party via official email or mail.
 
 25.2. The period for consideration of a claim is 20 (twenty) calendar days from the date of its receipt. In case of failure to respond or rejection, the dispute shall be referred to court.
 
@@ -559,7 +603,9 @@ Dispute Resolution Procedure 25.1. The Parties shall first seek to resolve dispu
 
 ## CHAPTER 26
 
-Anti-Corruption and Sanctions Compliance 26.1. The Parties shall unconditionally comply with anti-corruption legislation. Giving or receiving bribes in any form, commercial bribery, or offering illegal advantages is prohibited.
+### Anti-Corruption and Sanctions Compliance
+
+26.1. The Parties shall unconditionally comply with anti-corruption legislation. Giving or receiving bribes in any form, commercial bribery, or offering illegal advantages is prohibited.
 
 26.2. The Parties assume this obligation on behalf of their employees and intermediaries and shall establish an internal control system.
 
@@ -571,7 +617,9 @@ Anti-Corruption and Sanctions Compliance 26.1. The Parties shall unconditionally
 
 ## CHAPTER 27
 
-Patient Complaints and Their Consideration 27.1. A patient may submit a complaint through the Platform, directly to the Partner, or to a competent authority. A complaint received through the Platform shall be automatically forwarded to the Partner.
+### Patient Complaints and Their Consideration
+
+27.1. A patient may submit a complaint through the Platform, directly to the Partner, or to a competent authority. A complaint received through the Platform shall be automatically forwarded to the Partner.
 
 | Type of Complaint | Response Time | Review Period |
 |---|---|---|
@@ -592,7 +640,9 @@ Patient Complaints and Their Consideration 27.1. A patient may submit a complain
 
 ## CHAPTER 28
 
-Cooperation Development, Training, and Joint Projects 28.1. The Operator shall conduct initial training (onboarding) for the Partner's employees on the use of the Platform, providing video tutorials, a knowledge base, and help articles.
+### Cooperation Development, Training, and Joint Projects
+
+28.1. The Operator shall conduct initial training (onboarding) for the Partner's employees on the use of the Platform, providing video tutorials, a knowledge base, and help articles.
 
 28.2. Additional training shall be organized when new modules are introduced. Advanced or individual training programs may be provided on a separate fee basis.
 
@@ -616,7 +666,9 @@ Assignment of Rights, Reorganization, and Third Parties 29.1. The Partner shall 
 
 ## CHAPTER 30
 
-Final Provisions 30.1. The Agreement enters into force from the date of signing (acceptance) and is concluded for a term of 1 (one) year. If neither Party expresses an intention to terminate 30 days before the expiry of the term, the Agreement shall be automatically extended for the same term each time.
+### Final Provisions
+
+30.1. The Agreement enters into force from the date of signing (acceptance) and is concluded for a term of 1 (one) year. If neither Party expresses an intention to terminate 30 days before the expiry of the term, the Agreement shall be automatically extended for the same term each time.
 
 30.2. If any provision of the Agreement is found to be invalid, this shall not affect the validity of the remaining provisions. The provision found to be invalid shall be replaced by a legal term closest to its economic substance.
 

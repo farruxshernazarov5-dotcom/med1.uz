@@ -48,7 +48,9 @@ Personal data processing policy
 
 ## CHAPTER 1
 
-GENERAL PROVISIONS 1.1. This Privacy Policy (hereinafter — the "Policy") establishes the procedure, purposes, scope, terms, and protection measures for the processing of users' personal data by "MED-ALL AI SYSTEM" LLC (hereinafter — the "Operator", "Company", "We") through the med1.uz website, MED1.UZ mobile applications, all their sections, services, API interfaces, and other related digital products (collectively — the "Platform").
+### GENERAL PROVISIONS
+
+1.1. This Privacy Policy (hereinafter — the "Policy") establishes the procedure, purposes, scope, terms, and protection measures for the processing of users' personal data by "MED-ALL AI SYSTEM" LLC (hereinafter — the "Operator", "Company", "We") through the med1.uz website, MED1.UZ mobile applications, all their sections, services, API interfaces, and other related digital products (collectively — the "Platform").
 
 1.2. Operator details: "MED-ALL AI SYSTEM" LLC, STIR: 312972027, address: House 173-A, Gijduvon Street, Gijduvon MCA, Samarkand Region, Director: Shernazarov Farrux Farxodovich, telephone: +998 99 214 41 03, email: info@med1.uz.
 

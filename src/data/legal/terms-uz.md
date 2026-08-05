@@ -174,7 +174,9 @@ UMUMIY QOIDALAR VA SHARTNOMANING HUQUQIY ASOSI 2.1. Ushbu Shartnoma Operator va 
 
 ### 3-BO'LIM
 
-SHARTNOMA PREDMETI 3.1. Ushbu Shartnoma predmeti — Operator tomonidan Foydalanuvchiga Platformaning funksional imkoniyatlaridan foydalanish huquqini (oddiy, mutlaq bo'lmagan litsenziya) berish hamda unga bog'liq axborot-texnologik, tashkiliy va yordamchi xizmatlarni ko'rsatishdir.
+### SHARTNOMA PREDMETI
+
+3.1. Ushbu Shartnoma predmeti — Operator tomonidan Foydalanuvchiga Platformaning funksional imkoniyatlaridan foydalanish huquqini (oddiy, mutlaq bo'lmagan litsenziya) berish hamda unga bog'liq axborot-texnologik, tashkiliy va yordamchi xizmatlarni ko'rsatishdir.
 
 3.2. Operator Foydalanuvchiga quyidagi asosiy imkoniyatlarni taqdim etadi (modullar ro'yxati Shartnomaning 4-bo'limida to'liq keltirilgan):
 
@@ -526,7 +528,9 @@ XIZMATDAN VOZ KECHISH VA PULNI QAYTARISH (REFUND POLICY) 9.1. Foydalanuvchi ko'r
 
 ### 11-BO'LIM
 
-INTELLEKTUAL MULK 11.1. Platformaning barcha elementlari — dastur kodi, dizayn, interfeys, logotip, tovar belgisi «MED1.UZ»,       ma'lumotlar     bazalari,   matnlar,   grafika,   video,   audio   va   boshqa   obyektlar Operatorning yoki uning litsenziarlarining mutlaq huquqlari obyekti hisoblanadi.
+### INTELLEKTUAL MULK
+
+11.1. Platformaning barcha elementlari — dastur kodi, dizayn, interfeys, logotip, tovar belgisi «MED1.UZ»,       ma'lumotlar     bazalari,   matnlar,   grafika,   video,   audio   va   boshqa   obyektlar Operatorning yoki uning litsenziarlarining mutlaq huquqlari obyekti hisoblanadi.
 
 11.2. Foydalanuvchiga faqat Shartnomada belgilangan doirada foydalanish huquqi beriladi. Huquqlarni o'tkazish yoki mulk huquqi berilishi nazarda tutilmagan.
 
@@ -564,7 +568,9 @@ TIBBIY MAS'ULIYAT VA RAD ETISH (MEDICAL DISCLAIMER) 12.1. Platformada joylashtir
 
 ### 13-BO'LIM
 
-XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM 13.1. Operator Platformaning yillik o'rtacha 99,0% (to'qson to'qqiz) foizlik ishlash barqarorligiga erishishga    intiladi.   Ushbu    ko'rsatkich   pullik   SaaS   tariflar   uchun   alohida   SLA   hujjatida kuchaytirilishi mumkin.
+### XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM
+
+13.1. Operator Platformaning yillik o'rtacha 99,0% (to'qson to'qqiz) foizlik ishlash barqarorligiga erishishga    intiladi.   Ushbu    ko'rsatkich   pullik   SaaS   tariflar   uchun   alohida   SLA   hujjatida kuchaytirilishi mumkin.
 
 13.2. SLA hisobiga kirmaydi: rejalashtirilgan texnik ishlar, fors-major, uchinchi tomon xizmatlari (to'lov shlyuzi, SMS-provayder, bulut provayderi) nosozligi, Foydalanuvchi tomonidagi internet yoki qurilma muammolari, DDoS hujumlari.
 
@@ -652,7 +658,9 @@ XIZMAT DARAJASI (SLA) VA TEXNIK YORDAM 13.1. Operator Platformaning yillik o'rta
 
 ### 19-BO'LIM
 
-XABARNOMALAR VA ALOQA 19.1. Barcha xabarnomalar quyidagi kanallar orqali yuboriladi: Foydalanuvchi ko'rsatgan elektron pochta; telefon raqami (SMS/messencher); shaxsiy kabinetdagi bildirishnoma; med1.uz saytidagi e'lon.
+### XABARNOMALAR VA ALOQA
+
+19.1. Barcha xabarnomalar quyidagi kanallar orqali yuboriladi: Foydalanuvchi ko'rsatgan elektron pochta; telefon raqami (SMS/messencher); shaxsiy kabinetdagi bildirishnoma; med1.uz saytidagi e'lon.
 
 19.2. Elektron pochta orqali yuborilgan xabarnoma yuborilgan kundan keyingi ish kunida olingan hisoblanadi.
 
@@ -662,7 +670,9 @@ XABARNOMALAR VA ALOQA 19.1. Barcha xabarnomalar quyidagi kanallar orqali yuboril
 
 ### 20-BO'LIM
 
-MOBIL ILOVA VA UCHINCHI TOMON PLATFORMALARI 20.1. Platformaning mobil ilovalari App Store, Google Play, AppGallery va boshqa raqamli do'konlar orqali tarqatilishi mumkin. Bunday holda tegishli do'kon qoidalari qo'shimcha ravishda qo'llaniladi.
+### MOBIL ILOVA VA UCHINCHI TOMON PLATFORMALARI
+
+20.1. Platformaning mobil ilovalari App Store, Google Play, AppGallery va boshqa raqamli do'konlar orqali tarqatilishi mumkin. Bunday holda tegishli do'kon qoidalari qo'shimcha ravishda qo'llaniladi.
 
 20.2. Ilovani yuklab olish orqali Foydalanuvchi unga cheklangan, o'tkazilmaydigan, mutlaq bo'lmagan litsenziya oladi. Ilovani modifikatsiya qilish, dekompilyatsiya qilish, «jailbreak»/«root» qilingan qurilmada xavfsizlikni chetlab o'tish maqsadida ishlatish taqiqlanadi.
 

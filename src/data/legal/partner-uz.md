@@ -16,7 +16,9 @@ MED1.UZ raqamli tibbiyot ekotizimi hamkorlari uchun ramkaviy shartnoma (ommaviy 
 
 ## 1-BOB
 
-Umumiy qoidalar va shartnomaning huquqiy maqomi 1.1. Ushbu Hamkorlik shartnomasi (keyingi o‘rinlarda — «Shartnoma») bir tomondan O‘zbekiston Respublikasi qonunchiligiga muvofiq tashkil etilgan va faoliyat yuritayotgan «MED-ALL AI SYSTEM» mas’uliyati cheklangan jamiyati (STIR 312972027, huquqiy manzil: Samarqand viloyati, G‘ijduvon SHG, G‘ijduvon ko‘chasi, 173-A uy), direktor Shernazarov Farrux Farxodovich shaxsida ish yurituvchi va keyingi o‘rinlarda «Operator» yoxud «MED1.UZ» deb yuritiluvchi yuridik shaxs bilan, ikkinchi tomondan Shartnomaning yakuniy qismida rekvizitlari ko‘rsatilgan hamda Shartnomaga qo‘shilish to‘g‘risidagi ariza yoki Ilova-spetsifikatsiyani imzolagan yuridik shaxs, yakka tartibdagi tadbirkor yoxud xususiy amaliyot bilan shug‘ullanuvchi tibbiyot xodimi — «Hamkor» o‘rtasida tuzildi.
+### Umumiy qoidalar va shartnomaning huquqiy maqomi
+
+1.1. Ushbu Hamkorlik shartnomasi (keyingi o‘rinlarda — «Shartnoma») bir tomondan O‘zbekiston Respublikasi qonunchiligiga muvofiq tashkil etilgan va faoliyat yuritayotgan «MED-ALL AI SYSTEM» mas’uliyati cheklangan jamiyati (STIR 312972027, huquqiy manzil: Samarqand viloyati, G‘ijduvon SHG, G‘ijduvon ko‘chasi, 173-A uy), direktor Shernazarov Farrux Farxodovich shaxsida ish yurituvchi va keyingi o‘rinlarda «Operator» yoxud «MED1.UZ» deb yuritiluvchi yuridik shaxs bilan, ikkinchi tomondan Shartnomaning yakuniy qismida rekvizitlari ko‘rsatilgan hamda Shartnomaga qo‘shilish to‘g‘risidagi ariza yoki Ilova-spetsifikatsiyani imzolagan yuridik shaxs, yakka tartibdagi tadbirkor yoxud xususiy amaliyot bilan shug‘ullanuvchi tibbiyot xodimi — «Hamkor» o‘rtasida tuzildi.
 
 1.2. Shartnoma MED1.UZ raqamli tibbiyot ekotizimi doirasidagi hamkorlikning umumiy huquqiy asosini belgilaydi. Shartnoma o‘z tabiatiga ko‘ra ramkaviy (framework) shartnoma hisoblanadi: unda Tomonlar o‘rtasidagi barcha hamkorlik turlariga nisbatan qo‘llaniladigan umumiy qoidalar mustahkamlanadi, aniq xizmat turi, hajmi, narxi va texnik parametrlari esa Shartnomaning ajralmas qismi bo‘lgan Ilova-spetsifikatsiyalarda (A–J ilovalari) alohida kelishiladi.
 
@@ -41,7 +43,9 @@ ogohlantirish). Ziddiyat yuzaga kelganda yuqoriroq o‘rindagi hujjat ustunlik q
 
 ## 2-BOB
 
-Atamalar va ta’riflar 2.1. Shartnomada quyidagi atamalar quyidagi ma’nolarda qo‘llaniladi. Ta’riflar Shartnomaning barcha ilovalariga ham tatbiq etiladi, agar tegishli ilovada boshqacha ko‘rsatilmagan bo‘lsa.
+### Atamalar va ta’riflar
+
+2.1. Shartnomada quyidagi atamalar quyidagi ma’nolarda qo‘llaniladi. Ta’riflar Shartnomaning barcha ilovalariga ham tatbiq etiladi, agar tegishli ilovada boshqacha ko‘rsatilmagan bo‘lsa.
 
 | Atama | Ta’rifi |
 |---|---|
@@ -69,7 +73,9 @@ qulaylik uchun berilgan va Shartnomani talqin qilishda mustaqil huquqiy ahamiyat
 
 ## 3-BOB
 
-Shartnoma predmeti va hamkorlik modellari 3.1. Shartnoma predmeti — Operator tomonidan Hamkorga MED1.UZ Platformasining texnologik infratuzilmasi, bemor oqimi, raqamli marketing kanallari, to‘lov va hisob-kitob vositalari, tahliliy panellari hamda AI-servislaridan foydalanish imkoniyatini taqdim etish; Hamkor tomonidan esa o‘z profiliga muvofiq Xizmatlarni belgilangan sifat standartlari doirasida ko‘rsatish va Operatorga kelishilgan haq (Komissiya yoki obuna) to‘lashdir.
+### Shartnoma predmeti va hamkorlik modellari
+
+3.1. Shartnoma predmeti — Operator tomonidan Hamkorga MED1.UZ Platformasining texnologik infratuzilmasi, bemor oqimi, raqamli marketing kanallari, to‘lov va hisob-kitob vositalari, tahliliy panellari hamda AI-servislaridan foydalanish imkoniyatini taqdim etish; Hamkor tomonidan esa o‘z profiliga muvofiq Xizmatlarni belgilangan sifat standartlari doirasida ko‘rsatish va Operatorga kelishilgan haq (Komissiya yoki obuna) to‘lashdir.
 
 3.2. Hamkorlik quyidagi modellardan biri yoki bir nechtasi bo‘yicha amalga oshirilishi mumkin. Tanlangan model Ilova-spetsifikatsiyada aniq ko‘rsatiladi.
 
@@ -119,7 +125,9 @@ Hamkorga qo‘yiladigan talablar va tekshiruv (due diligence) 4.1. Hamkor Shartn
 
 ## 5-BOB
 
-Hamkor profilini yaratish, moderatsiya va joylashtirish 5.1. Hamkor profili — bu Platformada Hamkor va uning Xizmatlari to‘g‘risidagi ma’lumotlarni aks ettiruvchi sahifa. Profil nomi, logotipi, manzili, ish vaqti, narxlari, shifokorlari, xizmat turlari, fotosuratlari va tavsiflaridan iborat bo‘ladi.
+### Hamkor profilini yaratish, moderatsiya va joylashtirish
+
+5.1. Hamkor profili — bu Platformada Hamkor va uning Xizmatlari to‘g‘risidagi ma’lumotlarni aks ettiruvchi sahifa. Profil nomi, logotipi, manzili, ish vaqti, narxlari, shifokorlari, xizmat turlari, fotosuratlari va tavsiflaridan iborat bo‘ladi.
 
 5.2. Hamkor profildagi barcha ma’lumotlarning to‘g‘riligi, dolzarbligi va reklama qonunchiligiga muvofiqligi uchun javobgardir. Yolg‘on yoki chalg‘ituvchi ma’lumot, isbotlanmagan davolash natijalari   va’dasi,   «100%     kafolat»,    «yagona»,   «eng    yaxshi»   kabi   taqqoslovchi   bahoni asoslanmagan holda ishlatish taqiqlanadi.
 
@@ -138,7 +146,9 @@ Hamkor profilini yaratish, moderatsiya va joylashtirish 5.1. Hamkor profili — 
 
 ## 6-BOB
 
-Buyurtmalarni qabul qilish va bajarish tartibi 6.1. Foydalanuvchi Platforma orqali Buyurtma rasmiylashtirganda, tizim Hamkorga bildirishnoma yuboradi (hamkorlar kabineti, push, SMS yoki e-mail). Hamkor Buyurtmani tasdiqlashi, muqobil vaqt taklif qilishi yoki asoslantirilgan sababga ko‘ra rad etishi lozim.
+### Buyurtmalarni qabul qilish va bajarish tartibi
+
+6.1. Foydalanuvchi Platforma orqali Buyurtma rasmiylashtirganda, tizim Hamkorga bildirishnoma yuboradi (hamkorlar kabineti, push, SMS yoki e-mail). Hamkor Buyurtmani tasdiqlashi, muqobil vaqt taklif qilishi yoki asoslantirilgan sababga ko‘ra rad etishi lozim.
 
 | Buyurtma turi | Javob berish muddati | Bajarish muddati |
 |---|---|---|
@@ -161,7 +171,9 @@ Buyurtmalarni qabul qilish va bajarish tartibi 6.1. Foydalanuvchi Platforma orqa
 
 ## 7-BOB
 
-Narx siyosati, komissiya va tariflar 7.1. Xizmat narxini Hamkor mustaqil belgilaydi. Operator narxni belgilashga aralashmaydi, biroq bozor o‘rtacha ko‘rsatkichlari to‘g‘risida tavsiyaviy tahlil taqdim etishi mumkin.
+### Narx siyosati, komissiya va tariflar
+
+7.1. Xizmat narxini Hamkor mustaqil belgilaydi. Operator narxni belgilashga aralashmaydi, biroq bozor o‘rtacha ko‘rsatkichlari to‘g‘risida tavsiyaviy tahlil taqdim etishi mumkin.
 
 7.2. Operatorning haqi quyidagi modellardan biri yoki kombinatsiyasi bo‘yicha hisoblanadi: (a) bajarilgan Buyurtma summasidan foizli komissiya; (b) har bir tasdiqlangan Buyurtma uchun qat’iy to‘lov; (c) oylik yoki yillik obuna to‘lovi; (d) natijaga bog‘liq marketing to‘lovi (CPA/CPL); (e) integratsiya va texnik qo‘llab-quvvatlash uchun bir martalik to‘lov.
 
@@ -183,7 +195,9 @@ Narx siyosati, komissiya va tariflar 7.1. Xizmat narxini Hamkor mustaqil belgila
 
 ## 8-BOB
 
-To‘lovlar, ekvayring va hisob-kitob 8.1. Foydalanuvchi xizmat haqini quyidagi usullardan biri bilan to‘lashi mumkin: Platforma orqali onlayn (karta, mobil to‘lov tizimlari); Hamkorning kassasida naqd yoki terminal orqali; sug‘urta polisi hisobidan; korporativ shartnoma hisobidan; qisman Med-Coin bonuslari hisobidan (agar yoqilgan bo‘lsa).
+### To‘lovlar, ekvayring va hisob-kitob
+
+8.1. Foydalanuvchi xizmat haqini quyidagi usullardan biri bilan to‘lashi mumkin: Platforma orqali onlayn (karta, mobil to‘lov tizimlari); Hamkorning kassasida naqd yoki terminal orqali; sug‘urta polisi hisobidan; korporativ shartnoma hisobidan; qisman Med-Coin bonuslari hisobidan (agar yoqilgan bo‘lsa).
 
 8.2. Onlayn to‘lovlarni qabul qilish litsenziyalangan to‘lov tashkilotlari va bank ekvayringi orqali amalga oshiriladi. Operator to‘lov kartalarining to‘liq rekvizitlarini saqlamaydi; to‘lov ma’lumotlari to‘lov provayderining PCI DSS talablariga mos infratuzilmasida qayta ishlanadi.
 
@@ -203,7 +217,9 @@ To‘lovlar, ekvayring va hisob-kitob 8.1. Foydalanuvchi xizmat haqini quyidagi 
 
 ## 9-BOB
 
-Soliq masalalari va hujjat aylanishi 9.1. Har bir Tomon o‘z soliq majburiyatlarini mustaqil bajaradi. Operator Hamkorning soliq agenti hisoblanmaydi, bundan qonunchilikda bevosita nazarda tutilgan hollar mustasno.
+### Soliq masalalari va hujjat aylanishi
+
+9.1. Har bir Tomon o‘z soliq majburiyatlarini mustaqil bajaradi. Operator Hamkorning soliq agenti hisoblanmaydi, bundan qonunchilikda bevosita nazarda tutilgan hollar mustasno.
 
 9.2. Hujjat aylanishi elektron shaklda, O‘zbekiston Respublikasining elektron hisobvaraq-faktura tizimi (EHF) orqali amalga oshiriladi. Zarurat bo‘lganda qog‘oz nusxalari almashiladi.
 
@@ -215,7 +231,9 @@ Soliq masalalari va hujjat aylanishi 9.1. Har bir Tomon o‘z soliq majburiyatla
 
 ## 10-BOB
 
-Shaxsga doir ma’lumotlar va tibbiy sirni himoya qilish 10.1. Tomonlar shaxsga doir ma’lumotlarni qayta ishlashda ORQ-547-son Qonun, «Fuqarolarning sog‘lig‘ini saqlash to‘g‘risida»gi Qonun va boshqa normativ hujjatlar talablariga so‘zsiz rioya qiladilar.
+### Shaxsga doir ma’lumotlar va tibbiy sirni himoya qilish
+
+10.1. Tomonlar shaxsga doir ma’lumotlarni qayta ishlashda ORQ-547-son Qonun, «Fuqarolarning sog‘lig‘ini saqlash to‘g‘risida»gi Qonun va boshqa normativ hujjatlar talablariga so‘zsiz rioya qiladilar.
 
 10.2. Rollar taqsimoti: bemorning tibbiy ma’lumotlariga nisbatan Hamkor — mustaqil ma’lumot egasi (controller) sifatida, Operator esa Hamkor topshirig‘i asosida qayta ishlovchi (processor) sifatida ish yuritadi. Platformaning o‘z funksiyalari (ro‘yxatdan o‘tkazish, xavfsizlik, hisob-kitob) doirasida Operator mustaqil ma’lumot egasi hisoblanadi.
 
@@ -239,7 +257,9 @@ Eslatma. Ma’lumotlarni qayta ishlashning batafsil sharti F ilovasidagi DPA huj
 
 ## 11-BOB
 
-Qaytarish, nizoli tranzaksiyalar va chargeback 11.1. Foydalanuvchi to‘lovni qaytarishni talab qilishga quyidagi hollarda haqli: xizmat ko‘rsatilmagan; xizmat sifatsiz ko‘rsatilgan va bu tasdiqlangan; ikki marta to‘lov amalga oshgan; xizmat Hamkor tashabbusi bilan bekor qilingan; xizmat tavsifi haqiqatga mos kelmagan; qonunchilikda nazarda tutilgan boshqa hollar.
+### Qaytarish, nizoli tranzaksiyalar va chargeback
+
+11.1. Foydalanuvchi to‘lovni qaytarishni talab qilishga quyidagi hollarda haqli: xizmat ko‘rsatilmagan; xizmat sifatsiz ko‘rsatilgan va bu tasdiqlangan; ikki marta to‘lov amalga oshgan; xizmat Hamkor tashabbusi bilan bekor qilingan; xizmat tavsifi haqiqatga mos kelmagan; qonunchilikda nazarda tutilgan boshqa hollar.
 
 11.2. Qaytarish so‘rovi Platforma orqali rasmiylashtiriladi va avtomatik ravishda Hamkorga yuboriladi. Hamkor 3 (uch) ish kuni ichida so‘rovni ko‘rib chiqib, roziligini yoki asoslantirilgan e’tirozini bildiradi. Belgilangan muddatda javob bermaslik rozilik sifatida talqin qilinadi.
 
@@ -268,7 +288,9 @@ Qaytarish, nizoli tranzaksiyalar va chargeback 11.1. Foydalanuvchi to‘lovni qa
 
 ## 12-BOB
 
-Xizmat sifati, KPI va sifat nazorati 12.1. Hamkor Xizmatlarni O‘zbekiston Respublikasi Sog‘liqni saqlash vazirligi tomonidan tasdiqlangan tibbiy standartlar, klinik protokollar va sanitariya qoidalariga muvofiq ko‘rsatishi shart.
+### Xizmat sifati, KPI va sifat nazorati
+
+12.1. Hamkor Xizmatlarni O‘zbekiston Respublikasi Sog‘liqni saqlash vazirligi tomonidan tasdiqlangan tibbiy standartlar, klinik protokollar va sanitariya qoidalariga muvofiq ko‘rsatishi shart.
 
 12.2. Tomonlar quyidagi asosiy samaradorlik ko‘rsatkichlari (KPI) bo‘yicha kelishadilar. KPI oylik hisobot davri kesimida o‘lchanadi va hamkorlar kabinetida real vaqt rejimida ko‘rsatib boriladi.
 
@@ -300,7 +322,9 @@ Xizmat sifati, KPI va sifat nazorati 12.1. Hamkor Xizmatlarni O‘zbekiston Resp
 
 ## 13-BOB
 
-Brend, intellektual mulk va litsenziyalar 13.1. MED1.UZ nomi, logotipi, domen nomlari, dizayn tizimi, dasturiy kodi, ma’lumotlar bazalarining tuzilmasi, AI-modellari, hujjat shablonlari va boshqa intellektual faoliyat natijalariga bo‘lgan mutlaq huquqlar Operatorga tegishli.
+### Brend, intellektual mulk va litsenziyalar
+
+13.1. MED1.UZ nomi, logotipi, domen nomlari, dizayn tizimi, dasturiy kodi, ma’lumotlar bazalarining tuzilmasi, AI-modellari, hujjat shablonlari va boshqa intellektual faoliyat natijalariga bo‘lgan mutlaq huquqlar Operatorga tegishli.
 
 13.2. Hamkor o‘z brendi, tovar belgisi, logotipi va kontentiga bo‘lgan huquqlarni saqlab qoladi va Operatorga ularni faqat Platformada Hamkor profilini ko‘rsatish, marketing materiallarida hamkorlikni e’lon qilish va hamkorlar ro‘yxatida joylashtirish maqsadida foydalanish uchun oddiy (mutlaq bo‘lmagan), royalti to‘lanmaydigan, hududiy cheklovsiz litsenziya beradi.
 
@@ -322,7 +346,9 @@ Brend, intellektual mulk va litsenziyalar 13.1. MED1.UZ nomi, logotipi, domen no
 
 ## 14-BOB
 
-Maxfiylik va oshkor qilmaslik majburiyati (NDA) 14.1. Maxfiy axborot deb Tomonlar hamkorlik davomida bir-biriga taqdim etadigan, ochiq manbalarda mavjud bo‘lmagan har qanday axborot tushuniladi, jumladan: tijorat shartlari va narxlar; mijozlar bazasi va statistikasi; texnik hujjatlar, API kalitlari va arxitektura; moliyaviy ko‘rsatkichlar; marketing rejalari; ichki jarayonlar va tartiblar; bemorlarga oid har qanday ma’lumot.
+### Maxfiylik va oshkor qilmaslik majburiyati (NDA)
+
+14.1. Maxfiy axborot deb Tomonlar hamkorlik davomida bir-biriga taqdim etadigan, ochiq manbalarda mavjud bo‘lmagan har qanday axborot tushuniladi, jumladan: tijorat shartlari va narxlar; mijozlar bazasi va statistikasi; texnik hujjatlar, API kalitlari va arxitektura; moliyaviy ko‘rsatkichlar; marketing rejalari; ichki jarayonlar va tartiblar; bemorlarga oid har qanday ma’lumot.
 
 14.2. Axborot maxfiy deb belgilanmagan bo‘lsa ham, uning tabiatidan maxfiyligi anglashilsa, u maxfiy hisoblanadi. Shubha bo‘lganda axborot maxfiy deb qaraladi.
 
@@ -346,7 +372,9 @@ Eslatma. Ushbu bob mustaqil NDA sifatida ham amal qiladi va Shartnomaning boshqa
 
 ## 15-BOB
 
-Reklama, marketing va qo‘shma tadbirlar 15.1. Tomonlar hamkorlikni ommaga e’lon qilish, qo‘shma marketing kampaniyalarini o‘tkazish va bir-birining kanallarida kontent joylashtirish bo‘yicha kelishishlari mumkin. Har bir kampaniya alohida brif va byudjet asosida rasmiylashtiriladi.
+### Reklama, marketing va qo‘shma tadbirlar
+
+15.1. Tomonlar hamkorlikni ommaga e’lon qilish, qo‘shma marketing kampaniyalarini o‘tkazish va bir-birining kanallarida kontent joylashtirish bo‘yicha kelishishlari mumkin. Har bir kampaniya alohida brif va byudjet asosida rasmiylashtiriladi.
 
 15.2. Tibbiy xizmatlar reklamasi «Reklama to‘g‘risida»gi Qonun va sog‘liqni saqlash sohasidagi maxsus talablarga muvofiq bo‘lishi shart. Taqiqlanadi: davolash natijasini kafolatlash; bemor guvohliklarini tibbiy dalil sifatida taqdim etish; retsept bo‘yicha beriladigan dorilarni keng ommaga reklama qilish; qo‘rquvga asoslangan manipulyatsiya; boshqa tibbiyot muassasalarini kamsitish.
 
@@ -362,7 +390,9 @@ Reklama, marketing va qo‘shma tadbirlar 15.1. Tomonlar hamkorlikni ommaga e’
 
 ## 16-BOB
 
-Texnik integratsiya, API va ma’lumot almashinuvi 16.1. Operator Hamkorga integratsiya uchun quyidagi vositalarni taqdim etadi: REST API, veb-huk (webhook) bildirishnomalari, HL7 FHIR profil interfeysi, CSV/XML eksport-import moduli, hamkorlar kabineti va sinov (sandbox) muhiti.
+### Texnik integratsiya, API va ma’lumot almashinuvi
+
+16.1. Operator Hamkorga integratsiya uchun quyidagi vositalarni taqdim etadi: REST API, veb-huk (webhook) bildirishnomalari, HL7 FHIR profil interfeysi, CSV/XML eksport-import moduli, hamkorlar kabineti va sinov (sandbox) muhiti.
 
 16.2. Integratsiya loyihasi bosqichlari: talablarni yig‘ish → texnik topshiriqni tasdiqlash → sandbox’da ishlab chiqish → funksional va yuklama sinovi → qabul qilish sinovi (UAT) → ishlab chiqarishga chiqarish → barqarorlashtirish davri (30 kun).
 
@@ -387,7 +417,9 @@ Texnik integratsiya, API va ma’lumot almashinuvi 16.1. Operator Hamkorga integ
 
 ## 17-BOB
 
-Xizmat darajasi (SLA) va texnik qo‘llab-quvvatlash 17.1. Operator Platformaning barqaror ishlashini ta’minlash uchun asosli choralarni ko‘radi. Maqsadli mavjudlik (availability) darajasi oyiga 99,5% ni tashkil etadi; rejalashtirilgan texnik ishlar bu ko‘rsatkichga kiritilmaydi.
+### Xizmat darajasi (SLA) va texnik qo‘llab-quvvatlash
+
+17.1. Operator Platformaning barqaror ishlashini ta’minlash uchun asosli choralarni ko‘radi. Maqsadli mavjudlik (availability) darajasi oyiga 99,5% ni tashkil etadi; rejalashtirilgan texnik ishlar bu ko‘rsatkichga kiritilmaydi.
 
 | Insident darajasi | Ta’rifi | Javob berish | Bartaraf etishga intilish |
 |---|---|---|---|
@@ -408,7 +440,9 @@ Xizmat darajasi (SLA) va texnik qo‘llab-quvvatlash 17.1. Operator Platformanin
 
 ## 18-BOB
 
-Axborot xavfsizligi va insidentlarni boshqarish 18.1. Tomonlar axborot xavfsizligini ta’minlash bo‘yicha tan olingan amaliyotlarga (ISO/IEC 27001 tamoyillari, OWASP tavsiyalari) tayanadilar.
+### Axborot xavfsizligi va insidentlarni boshqarish
+
+18.1. Tomonlar axborot xavfsizligini ta’minlash bo‘yicha tan olingan amaliyotlarga (ISO/IEC 27001 tamoyillari, OWASP tavsiyalari) tayanadilar.
 
 - kirishni boshqarish: rollar, davriy qayta ko‘rib chiqish, ishdan bo‘shagan xodim hisobini darhol o‘chirish;
 - parol siyosati: murakkablik talablari, 2FA, umumiy hisoblardan foydalanmaslik;
@@ -470,7 +504,9 @@ mustaqil murojaat qilgan holatlar mustasno.
 
 ## 20-BOB
 
-Kafolatlar va ularning cheklanishi 20.1. Har bir Tomon kafolatlaydi: Shartnomani tuzishga zarur huquq va vakolatga egaligini; Shartnoma uning ta’sis hujjatlari yoki boshqa majburiyatlariga zid emasligini; taqdim etilgan ma’lumotlar to‘g‘ri va to‘liq ekanini; faoliyatiga daxldor barcha ruxsatnomalarga egaligini.
+### Kafolatlar va ularning cheklanishi
+
+20.1. Har bir Tomon kafolatlaydi: Shartnomani tuzishga zarur huquq va vakolatga egaligini; Shartnoma uning ta’sis hujjatlari yoki boshqa majburiyatlariga zid emasligini; taqdim etilgan ma’lumotlar to‘g‘ri va to‘liq ekanini; faoliyatiga daxldor barcha ruxsatnomalarga egaligini.
 
 20.2. Hamkor qo‘shimcha ravishda kafolatlaydi: tibbiy xodimlarining malakasi va sertifikatlari amaldaligini; uskunalar texnik holatda ekanini; ishlatiladigan dori va sarf materiallari qonuniy muomalada ekanini; bemorlardan zarur rozilikni olishini.
 
@@ -482,7 +518,9 @@ Kafolatlar va ularning cheklanishi 20.1. Har bir Tomon kafolatlaydi: Shartnomani
 
 ## 21-BOB
 
-Javobgarlik va uning chegaralari 21.1. Tomonlar Shartnoma bo‘yicha majburiyatlarni bajarmaganlik yoki lozim darajada bajarmaganlik uchun O‘zbekiston Respublikasi qonunchiligiga muvofiq javobgar bo‘ladilar.
+### Javobgarlik va uning chegaralari
+
+21.1. Tomonlar Shartnoma bo‘yicha majburiyatlarni bajarmaganlik yoki lozim darajada bajarmaganlik uchun O‘zbekiston Respublikasi qonunchiligiga muvofiq javobgar bo‘ladilar.
 
 21.2. Tibbiy xizmatning ko‘rsatilishi, sifati, xavfsizligi hamda bemor hayoti va sog‘lig‘iga yetkazilgan zarar uchun to‘liq va yakka javobgarlik Hamkor zimmasida bo‘ladi. Operator tibbiy faoliyat subyekti bo‘lmagani sababli bunday zarar uchun javobgar bo‘lmaydi.
 
@@ -506,7 +544,9 @@ Javobgarlik va uning chegaralari 21.1. Tomonlar Shartnoma bo‘yicha majburiyatl
 
 ## 22-BOB
 
-Sug‘urta 22.1. Tibbiy faoliyat yurituvchi Hamkorga kasbiy javobgarlik sug‘urtasi polisiga ega bo‘lish tavsiya etiladi; qonunchilikda majburiy deb belgilangan hollarda esa bu majburiydir.
+### Sug‘urta
+
+22.1. Tibbiy faoliyat yurituvchi Hamkorga kasbiy javobgarlik sug‘urtasi polisiga ega bo‘lish tavsiya etiladi; qonunchilikda majburiy deb belgilangan hollarda esa bu majburiydir.
 
 22.2. Hamkor sug‘urta polisi nusxasini Operatorga taqdim etadi va uning amal qilish muddati tugashidan oldin yangilanganini tasdiqlaydi.
 
@@ -516,7 +556,9 @@ Sug‘urta 22.1. Tibbiy faoliyat yurituvchi Hamkorga kasbiy javobgarlik sug‘ur
 
 ## 23-BOB
 
-Forsmajor holatlari 23.1. Tomonlar favqulodda va oldini olib bo‘lmaydigan holatlar (forsmajor) tufayli majburiyatlarni bajarmaganlik uchun javobgarlikdan ozod qilinadilar. Bunday holatlarga quyidagilar kiradi: tabiiy ofatlar; harbiy harakatlar; epidemiya va karantin choralari; davlat organlarining taqiqlovchi hujjatlari; magistral aloqa kanallarining yoki milliy energotizimning uzoq muddatli uzilishi; keng ko‘lamli kiberhujumlar.
+### Forsmajor holatlari
+
+23.1. Tomonlar favqulodda va oldini olib bo‘lmaydigan holatlar (forsmajor) tufayli majburiyatlarni bajarmaganlik uchun javobgarlikdan ozod qilinadilar. Bunday holatlarga quyidagilar kiradi: tabiiy ofatlar; harbiy harakatlar; epidemiya va karantin choralari; davlat organlarining taqiqlovchi hujjatlari; magistral aloqa kanallarining yoki milliy energotizimning uzoq muddatli uzilishi; keng ko‘lamli kiberhujumlar.
 
 23.2. Forsmajorga duch kelgan Tomon 5 ish kuni ichida ikkinchi Tomonni xabardor qilishi va imkoniyat bo‘lganda vakolatli organ tasdig‘ini taqdim etishi shart. Xabar bermaslik forsmajorga havola qilish huquqidan mahrum qiladi.
 
@@ -545,7 +587,9 @@ Shartnomani o‘zgartirish, to‘xtatib turish va bekor qilish 24.1. Shartnomaga
 
 ## 25-BOB
 
-Nizolarni hal qilish tartibi 25.1. Tomonlar nizolarni birinchi navbatda muzokaralar yo‘li bilan hal qilishga intiladilar. Da’vo tartibi majburiy: yozma da’vo ikkinchi Tomonga rasmiy elektron pochta yoki pochta orqali yuboriladi.
+### Nizolarni hal qilish tartibi
+
+25.1. Tomonlar nizolarni birinchi navbatda muzokaralar yo‘li bilan hal qilishga intiladilar. Da’vo tartibi majburiy: yozma da’vo ikkinchi Tomonga rasmiy elektron pochta yoki pochta orqali yuboriladi.
 
 25.2. Da’voni ko‘rib chiqish muddati — uni olgan kundan boshlab 20 (yigirma) kalendar kun. Javob berilmasa yoki rad etilsa, nizo sudga oshiriladi.
 
@@ -559,7 +603,9 @@ Nizolarni hal qilish tartibi 25.1. Tomonlar nizolarni birinchi navbatda muzokara
 
 ## 26-BOB
 
-Antikorrupsiya va sanksiyalarga rioya qilish 26.1. Tomonlar korrupsiyaga qarshi kurashish to‘g‘risidagi qonunchilikka so‘zsiz rioya qiladilar. Har qanday shaklda pora berish, olish, tijorat pora bilan sotib olish, noqonuniy imtiyoz taklif qilish taqiqlanadi.
+### Antikorrupsiya va sanksiyalarga rioya qilish
+
+26.1. Tomonlar korrupsiyaga qarshi kurashish to‘g‘risidagi qonunchilikka so‘zsiz rioya qiladilar. Har qanday shaklda pora berish, olish, tijorat pora bilan sotib olish, noqonuniy imtiyoz taklif qilish taqiqlanadi.
 
 26.2. Tomonlar o‘z xodimlari va vositachilarining nomidan ham shu majburiyatni oladilar hamda ichki nazorat tizimini yo‘lga qo‘yadilar.
 
@@ -571,7 +617,9 @@ Antikorrupsiya va sanksiyalarga rioya qilish 26.1. Tomonlar korrupsiyaga qarshi 
 
 ## 27-BOB
 
-Bemorlar shikoyatlari va ularni ko‘rib chiqish 27.1. Bemor shikoyatni Platforma orqali, Hamkorga bevosita yoki vakolatli organga yuborishi mumkin. Platforma orqali kelgan shikoyat avtomatik ravishda Hamkorga yo‘naltiriladi.
+### Bemorlar shikoyatlari va ularni ko‘rib chiqish
+
+27.1. Bemor shikoyatni Platforma orqali, Hamkorga bevosita yoki vakolatli organga yuborishi mumkin. Platforma orqali kelgan shikoyat avtomatik ravishda Hamkorga yo‘naltiriladi.
 
 | Shikoyat turi | Javob muddati | Ko‘rib chiqish muddati |
 |---|---|---|
@@ -616,7 +664,9 @@ Huquqlarni o‘tkazish, qayta tashkil etish va uchinchi shaxslar 29.1. Hamkor Sh
 
 ## 30-BOB
 
-Yakuniy qoidalar 30.1. Shartnoma imzolangan (aksept qilingan) sanadan kuchga kiradi va 1 (bir) yil muddatga tuziladi. Muddat tugashidan 30 kun oldin hech bir Tomon bekor qilish niyatini bildirmasa, Shartnoma har safar shu muddatga avtomatik uzaytiriladi.
+### Yakuniy qoidalar
+
+30.1. Shartnoma imzolangan (aksept qilingan) sanadan kuchga kiradi va 1 (bir) yil muddatga tuziladi. Muddat tugashidan 30 kun oldin hech bir Tomon bekor qilish niyatini bildirmasa, Shartnoma har safar shu muddatga avtomatik uzaytiriladi.
 
 30.2. Shartnomaning biror bandi haqiqiy emas deb topilsa, bu qolgan bandlarning haqiqiyligiga ta’sir qilmaydi. Haqiqiy emas deb topilgan band iqtisodiy mazmuniga eng yaqin qonuniy shart bilan almashtiriladi.
 
