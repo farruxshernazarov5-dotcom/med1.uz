@@ -199,6 +199,10 @@ export default function LegalCenterPage() {
               { href: "/privacy", ...getLegalDoc("privacy", lang) },
               { href: "/terms", ...getLegalDoc("terms", lang) },
               { href: "/partner-terms", ...getLegalDoc("partner", lang) },
+              { href: "/cookies", ...getLegalDoc("cookies", lang) },
+              { href: "/saas-terms", ...getLegalDoc("saas", lang) },
+              { href: "/disclaimer", ...getLegalDoc("disclaimer", lang) },
+
               {
                 href: "/user-guide",
                 title: lang === "ru" ? "Руководство пользователя" : lang === "en" ? "User guide" : "Foydalanuvchi qo'llanmasi",
