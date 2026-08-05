@@ -90,6 +90,8 @@ const TermsPage = lazy(() => import("./pages/TermsPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const DisclaimerPage = lazy(() => import("./pages/DisclaimerPage"));
 const SaasTermsPage = lazy(() => import("./pages/SaasTermsPage"));
+const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
+
 const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
 const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
@@ -288,6 +290,9 @@ const App = () => (
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/disclaimer" element={<DisclaimerPage />} />
                 <Route path="/saas-terms" element={<SaasTermsPage />} />
+                <Route path="/cookies" element={<CookiePolicyPage />} />
+                <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+
                 <Route path="/referral" element={<ReferralPage />} />
                 <Route path="/referral-terms" element={<ReferralTermsPage />} />
                 <Route path="/partner-terms" element={<PartnerTermsPage />} />

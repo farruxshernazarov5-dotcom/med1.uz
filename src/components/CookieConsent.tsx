@@ -55,8 +55,10 @@ const CookieConsent = () => {
         <p className="text-sm text-muted-foreground mb-4">
           {before}
           <a href="/privacy" className="text-primary underline">{c.privacyLinkLabel}</a>
-          {after}
+          {after}{" "}
+          <a href="/cookies" className="text-primary underline">Cookie</a>
         </p>
+
 
         {showSettings && (
           <div className="space-y-3 mb-4 p-3 bg-muted/50 rounded-xl">
