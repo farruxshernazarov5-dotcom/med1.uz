@@ -131,7 +131,86 @@ export const LEGAL_DOCS: Registry = {
       pdfName: "MED1UZ-Partnership-Agreement-EN.pdf",
     },
   },
+  cookies: {
+    uz: {
+      title: "Cookie (kuki) siyosati",
+      subtitle: "Kuki va shunga o'xshash texnologiyalardan foydalanish qoidalari · MED1.UZ",
+      edition: "Tahrir 2.1 · 2026",
+      source: cookiesUz,
+      pdfUrl: cookiesPdfUz.url,
+      pdfName: "MED1UZ-Cookie-siyosati-UZ.pdf",
+    },
+    ru: {
+      title: "Политика использования cookie",
+      subtitle: "Правила использования cookie и аналогичных технологий · MED1.UZ",
+      edition: "Редакция 2.1 · 2026",
+      source: cookiesRu,
+      pdfUrl: cookiesPdfRu.url,
+      pdfName: "MED1UZ-Cookie-siyosati-RU.pdf",
+    },
+    en: {
+      title: "Cookie Policy",
+      subtitle: "Rules for the use of cookies and similar technologies · MED1.UZ",
+      edition: "Version 2.1 · 2026",
+      source: cookiesEn,
+      pdfUrl: cookiesPdfEn.url,
+      pdfName: "MED1UZ-Cookie-Policy-EN.pdf",
+    },
+  },
+  saas: {
+    uz: {
+      title: "HMS SaaS foydalanish shartlari",
+      subtitle: "Tibbiy muassasalar uchun SaaS xizmatidan foydalanish shartlari · MED1.UZ",
+      edition: "Tahrir 2.1 · 2026",
+      source: saasUz,
+      pdfUrl: saasPdfUz.url,
+      pdfName: "MED1UZ-HMS-SaaS-shartlari-UZ.pdf",
+    },
+    ru: {
+      title: "Условия использования HMS SaaS",
+      subtitle: "Условия SaaS-сервиса для медицинских учреждений · MED1.UZ",
+      edition: "Редакция 2.1 · 2026",
+      source: saasRu,
+      pdfUrl: saasPdfRu.url,
+      pdfName: "MED1UZ-HMS-SaaS-shartlari-RU.pdf",
+    },
+    en: {
+      title: "HMS SaaS Terms of Use",
+      subtitle: "SaaS service terms for medical institutions · MED1.UZ",
+      edition: "Version 2.1 · 2026",
+      source: saasEn,
+      pdfUrl: saasPdfEn.url,
+      pdfName: "MED1UZ-HMS-SaaS-Terms-EN.pdf",
+    },
+  },
+  disclaimer: {
+    uz: {
+      title: "Tibbiy ogohlantirish",
+      subtitle: "AI xizmatlari va tibbiy ma'lumotlar bo'yicha ogohlantirish · MED1.UZ",
+      edition: "Tahrir 2.1 · 2026",
+      source: disclaimerUz,
+      pdfUrl: disclaimerPdfUz.url,
+      pdfName: "MED1UZ-Tibbiy-ogohlantirish-UZ.pdf",
+    },
+    ru: {
+      title: "Медицинское предупреждение",
+      subtitle: "Предупреждение относительно AI-сервисов и медицинской информации · MED1.UZ",
+      edition: "Редакция 2.1 · 2026",
+      source: disclaimerRu,
+      pdfUrl: disclaimerPdfRu.url,
+      pdfName: "MED1UZ-Tibbiy-ogohlantirish-RU.pdf",
+    },
+    en: {
+      title: "Medical Disclaimer",
+      subtitle: "Disclaimer regarding AI services and medical information · MED1.UZ",
+      edition: "Version 2.1 · 2026",
+      source: disclaimerEn,
+      pdfUrl: disclaimerPdfEn.url,
+      pdfName: "MED1UZ-Medical-Disclaimer-EN.pdf",
+    },
+  },
 };
+
 
 export const getLegalDoc = (id: LegalDocId, lang: SupportedLanguage): LegalDocVersion =>
   LEGAL_DOCS[id][lang] ?? LEGAL_DOCS[id].uz;
