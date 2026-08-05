@@ -364,7 +364,7 @@ SUBJECT OF THE AGREEMENT 3.1. The subject of this Agreement is the granting by t
 
 5.2. The User must enter true, complete, and up-to-date information. Entering false information is grounds for account blocking.
 
-5.3. Doctors and Clinics undergo additional verification: diplomas, licenses, certificates, submitted. The Operator has the right to verify the authenticity of documents, however, such verification does not impose a medical quality guarantee on the Operator.
+5.3. Doctors and Clinics undergo additional verification: diplomas, licenses, certificates, identification, STIR 312972027/JSHSHIR, and documents regarding the place of work are submitted. The Operator has the right to verify the authenticity of documents, however, such verification does not impose a medical quality guarantee on the Operator.
 
 5.4. The verification mark ("verified profile") only indicates that documents have been submitted and is not a guarantee of medical results.
 

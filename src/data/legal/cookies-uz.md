@@ -8,6 +8,7 @@ MED1.UZ · Kuki va shunga o'xshash texnologiyalardan foydalanish qoidalari
 
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
 |---|---|
+| STIR | 312972027 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
 | Direktor | Shernazarov Farrux Farxodovich |
 | Aloqa | med1.uz · info@med1.uz · +998 99 214 41 03 |

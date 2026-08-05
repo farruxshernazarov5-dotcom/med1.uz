@@ -8,6 +8,7 @@ Shaxsiy ma'lumotlarni qayta ishlash siyosati
 
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
 |---|---|
+| STIR | 312972027 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
 | Direktor | Shernazarov Farrux Farxodovich |
 | Aloqa | med1.uz · info@med1.uz · +998 99 214 41 03 |
@@ -49,7 +50,7 @@ Shaxsiy ma'lumotlarni qayta ishlash siyosati
 
 UMUMIY QOIDALAR 1.1. Ushbu Maxfiylik siyosati (keyingi o'rinlarda — «Siyosat») "MED-ALL AI SYSTEM" MChJ (keyingi o'rinlarda — «Operator», «Kompaniya», «Biz») tomonidan med1.uz veb-sayti, MED1.UZ mobil ilovalari, ularning barcha bo'limlari, xizmatlari, API interfeyslari va shu bilan bog'liq boshqa raqamli     mahsulotlar      (birgalikda    —    «Platforma»)   orqali   foydalanuvchilarning   shaxsiy ma'lumotlarini qayta ishlash tartibi, maqsadlari, hajmi, muddatlari va himoya choralarini belgilaydi.
 
-viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy, direktor: Shernazarov Farrux Farxodovich, telefon: +998 99 214 41 03, elektron pochta: info@med1.uz.
+1.2. Operator rekvizitlari: "MED-ALL AI SYSTEM" MChJ, STIR: 312972027, manzil: Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy, direktor: Shernazarov Farrux Farxodovich, telefon: +998 99 214 41 03, elektron pochta: info@med1.uz.
 
 1.3. Siyosat Operator tomonidan bir tomonlama tasdiqlanadi va Platformada joylashtirilgan paytdan boshlab kuchga kiradi. Siyosat matni med1.uz manzilida cheklovsiz va bepul ko'rish uchun ochiq.
 
@@ -491,6 +492,7 @@ SUN'IY INTELLEKT VA AVTOMATLASHTIRILGAN QARORLAR 9.1. Platformada simptomlarni d
 
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
 |---|---|
+| STIR | 312972027 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
 | Direktor | Shernazarov Farrux Farxodovich |
 | Telefon | +998 99 214 41 03 |

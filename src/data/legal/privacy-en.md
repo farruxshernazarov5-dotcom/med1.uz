@@ -50,7 +50,7 @@ Personal data processing policy
 
 GENERAL PROVISIONS 1.1. This Privacy Policy (hereinafter — the "Policy") establishes the procedure, purposes, scope, terms, and protection measures for the processing of users' personal data by "MED-ALL AI SYSTEM" LLC (hereinafter — the "Operator", "Company", "We") through the med1.uz website, MED1.UZ mobile applications, all their sections, services, API interfaces, and other related digital products (collectively — the "Platform").
 
-Gijduvon Street, Gijduvon MCA, Samarkand Region, Director: Shernazarov Farrux Farxodovich, telephone: +998 99 214 41 03, email: info@med1.uz.
+1.2. Operator details: "MED-ALL AI SYSTEM" LLC, STIR: 312972027, address: House 173-A, Gijduvon Street, Gijduvon MCA, Samarkand Region, Director: Shernazarov Farrux Farxodovich, telephone: +998 99 214 41 03, email: info@med1.uz.
 
 1.3. The Policy is approved unilaterally by the Operator and enters into force from the moment of its posting on the Platform. The text of the Policy is open for unrestricted and free viewing at med1.uz.
 
@@ -175,6 +175,7 @@ Gijduvon Street, Gijduvon MCA, Samarkand Region, Director: Shernazarov Farrux Fa
 - cookie identifiers and similar technologies. 6.7. Professional data (for doctors, clinics, employees)
 
 - diploma, certificate, category, work experience, specialization;
+- license number, organization name, STIR 312972027 and legal address;
 - work schedule, appointment prices, list of services;
 - rating, history of reviews and complaints. 6.8. Communication data
 
@@ -491,6 +492,7 @@ ARTIFICIAL INTELLIGENCE AND AUTOMATED DECISIONS 9.1. AI-modules are used on the 
 
 | Organization | "MED-ALL AI SYSTEM" LLC |
 |---|---|
+| STIR | 312972027 |
 | Address | 173 A, Gijduvon Street, Gijduvon MCA, Samarkand Region |
 | Director | Shernazarov Farrux Farxodovich |
 | Telephone | +998 99 214 41 03 |

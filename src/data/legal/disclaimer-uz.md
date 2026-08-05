@@ -8,6 +8,7 @@ Medical Disclaimer — tibbiy axborot, AI-modullar va telemeditsina xizmatlari
 
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
 |---|---|
+| STIR | 312972027 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
 | Direktor | Shernazarov Farrux Farxodovich |
 | Aloqa | med1.uz · info@med1.uz · +998 99 214 41 03 |
@@ -705,6 +706,7 @@ Rekvizitlar
 | Rekvizit | Ma'lumot |
 |---|---|
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
+| STIR | 312972027 |
 | H/r | 20208000007455262001 |
 | Bank | AJ "ANOR BANK", MFO 01183 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |

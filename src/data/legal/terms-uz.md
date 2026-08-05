@@ -6,6 +6,7 @@ FOYDALANUVCHI SHARTNOMASI MED1.UZ raqamli tibbiyot platformasidan foydalanish va
 
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
 |---|---|
+| STIR | 312972027 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
 | Direktor | Shernazarov Farrux Farxodovich |
 | Aloqa | med1.uz · info@med1.uz · +998 99 214 41 03 |
@@ -99,7 +100,7 @@ MED1.UZ TIBBIY MUASSASA EMAS VA SHOSHILINCH TIBBIY YORDAM XIZMATI EMAS. Hayotga 
 
 Platforma (MED1.UZ) — Operatorga tegishli bo'lgan, med1.uz domenida va unga bog'liq subdomenlarda, mobil ilovalarda, API interfeyslarida joylashtirilgan dasturiy-apparat majmuasi, ma'lumotlar bazalari, dizayn, kontent va funksional modullar birligi.
 
-SHFY, G'ijduvon ko'chasi, 173 A-uy. Platformaning huquq egasi va axborot tizimi egasi.
+Operator — "MED-ALL AI SYSTEM" MChJ, STIR: 312972027, manzil: Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy. Platformaning huquq egasi va axborot tizimi egasi.
 
 Foydalanuvchi — Platformadan foydalanuvchi har qanday jismoniy yoki yuridik shaxs: Bemor, Shifokor, Klinika, Hamkor, Mehmon foydalanuvchi (ro'yxatdan o'tmagan tashrifchi).
 

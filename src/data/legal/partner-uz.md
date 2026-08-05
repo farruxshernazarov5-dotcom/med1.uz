@@ -8,6 +8,7 @@ MED1.UZ raqamli tibbiyot ekotizimi hamkorlari uchun ramkaviy shartnoma (ommaviy 
 
 | Tashkilot | "MED-ALL AI SYSTEM" MChJ |
 |---|---|
+| STIR | 312972027 |
 | Manzil | Samarqand viloyati, G'ijduvon SHFY, G'ijduvon ko'chasi, 173 A-uy |
 | Direktor | Shernazarov Farrux Farxodovich |
 | Aloqa | med1.uz · info@med1.uz · +998 99 214 41 03 |
@@ -15,7 +16,7 @@ MED1.UZ raqamli tibbiyot ekotizimi hamkorlari uchun ramkaviy shartnoma (ommaviy 
 
 ## 1-BOB
 
-Umumiy qoidalar va shartnomaning huquqiy maqomi 1.1. Ushbu Hamkorlik shartnomasi (keyingi o‘rinlarda — «Shartnoma») bir tomondan O‘zbekiston Respublikasi qonunchiligiga muvofiq tashkil etilgan va faoliyat yuritayotgan «MED-ALL AI G‘ijduvon SHG, G‘ijduvon ko‘chasi, 173-A uy), direktor Shernazarov Farrux Farxodovich shaxsida ish yurituvchi va keyingi o‘rinlarda «Operator» yoxud «MED1.UZ» deb yuritiluvchi yuridik shaxs bilan, ikkinchi tomondan Shartnomaning yakuniy qismida rekvizitlari ko‘rsatilgan hamda Shartnomaga qo‘shilish to‘g‘risidagi ariza yoki Ilova-spetsifikatsiyani imzolagan yuridik shaxs, yakka tartibdagi tadbirkor yoxud xususiy amaliyot bilan shug‘ullanuvchi tibbiyot xodimi — «Hamkor» o‘rtasida tuzildi.
+Umumiy qoidalar va shartnomaning huquqiy maqomi 1.1. Ushbu Hamkorlik shartnomasi (keyingi o‘rinlarda — «Shartnoma») bir tomondan O‘zbekiston Respublikasi qonunchiligiga muvofiq tashkil etilgan va faoliyat yuritayotgan «MED-ALL AI SYSTEM» mas’uliyati cheklangan jamiyati (STIR 312972027, huquqiy manzil: Samarqand viloyati, G‘ijduvon SHG, G‘ijduvon ko‘chasi, 173-A uy), direktor Shernazarov Farrux Farxodovich shaxsida ish yurituvchi va keyingi o‘rinlarda «Operator» yoxud «MED1.UZ» deb yuritiluvchi yuridik shaxs bilan, ikkinchi tomondan Shartnomaning yakuniy qismida rekvizitlari ko‘rsatilgan hamda Shartnomaga qo‘shilish to‘g‘risidagi ariza yoki Ilova-spetsifikatsiyani imzolagan yuridik shaxs, yakka tartibdagi tadbirkor yoxud xususiy amaliyot bilan shug‘ullanuvchi tibbiyot xodimi — «Hamkor» o‘rtasida tuzildi.
 
 1.2. Shartnoma MED1.UZ raqamli tibbiyot ekotizimi doirasidagi hamkorlikning umumiy huquqiy asosini belgilaydi. Shartnoma o‘z tabiatiga ko‘ra ramkaviy (framework) shartnoma hisoblanadi: unda Tomonlar o‘rtasidagi barcha hamkorlik turlariga nisbatan qo‘llaniladigan umumiy qoidalar mustahkamlanadi, aniq xizmat turi, hajmi, narxi va texnik parametrlari esa Shartnomaning ajralmas qismi bo‘lgan Ilova-spetsifikatsiyalarda (A–J ilovalari) alohida kelishiladi.
 
@@ -629,7 +630,7 @@ Yakuniy qoidalar 30.1. Shartnoma imzolangan (aksept qilingan) sanadan kuchga kir
 
 | Operator | Hamkor |
 |---|---|
-| MChJ<br/>STIR: 312972027<br/>Manzil: Samarqand viloyati, G‘ijduvon SHG, G‘ijduvon ko‘chasi, 173-A<br/>H/r: 20208000007455 262001<br/>Bank: AJ "ANOR BANK", MFO 01183<br/>Tel: +998 99 214 41 03<br/>E-mail: info@med1.uz<br/>Direktor: Shernazarov Farrux Farxodovich< br/><br/>_______________ (imzo, muhr) | ______________________________<br/>Manzil: ____________________________<br/>H/r: _______________________________<br/>Bank / MFO: ________________________<br/>Tel: _______________________________<br/>E-mail: ____________________________<br/>Rahbar: ____________________________<br/><br/>_______________ (imzo, muhr) |
+| "MED-ALL AI SYSTEM" MChJ<br/>STIR: 312972027<br/>Manzil: Samarqand viloyati, G‘ijduvon SHG, G‘ijduvon ko‘chasi, 173-A<br/>H/r: 20208000007455 262001<br/>Bank: AJ "ANOR BANK", MFO 01183<br/>Tel: +998 99 214 41 03<br/>E-mail: info@med1.uz<br/>Direktor: Shernazarov Farrux Farxodovich< br/><br/>_______________ (imzo, muhr) | Nomi: ______________________________<br/>STIR: ______________________________<br/>Manzil: ____________________________<br/>H/r: _______________________________<br/>Bank / MFO: ________________________<br/>Tel: _______________________________<br/>E-mail: ____________________________<br/>Rahbar: ____________________________<br/><br/>_______________ (imzo, muhr) |
 
 A ilova. Klinika hamkorligi Ushbu ilova ko‘p tarmoqli va ixtisoslashgan klinikalar, tibbiy markazlar va statsionarlar bilan hamkorlik shartlarini belgilaydi. Klinika Platformada profil ochadi, shifokorlar jadvalini yuritadi va onlayn yozilish oqimini qabul qiladi.
 

@@ -689,6 +689,7 @@ Licensor Details
 | Detail | Information |
 |---|---|
 | Organization | "MED-ALL AI SYSTEM" LLC |
+| STIR | 312972027 |
 | Settlement Account | 20208000007455262001 |
 | Bank | JSC "ANOR BANK", MFO 01183 |
 | Address | 173 A, Gijduvon Street, Gijduvon MCA, Samarkand Region |
