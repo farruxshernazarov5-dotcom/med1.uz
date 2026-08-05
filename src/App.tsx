@@ -290,6 +290,9 @@ const App = () => (
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/disclaimer" element={<DisclaimerPage />} />
                 <Route path="/saas-terms" element={<SaasTermsPage />} />
+                <Route path="/cookies" element={<CookiePolicyPage />} />
+                <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+
                 <Route path="/referral" element={<ReferralPage />} />
                 <Route path="/referral-terms" element={<ReferralTermsPage />} />
                 <Route path="/partner-terms" element={<PartnerTermsPage />} />
