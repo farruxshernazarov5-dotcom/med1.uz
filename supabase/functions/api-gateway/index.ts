@@ -990,12 +990,15 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     }
     const { data: partner } = await supabase.from("api_partners").select("id").eq("owner_user_id", partnerOwnerId).maybeSingle();
     if (!partner) return json(403, { code: "no_partner", message: "Partner not resolved" }, requestId);
+    const secret = `whsec_${crypto.randomUUID().replace(/-/g, "")}`;
     const { data, error } = await supabase.from("api_webhooks").insert({
       partner_id: partner.id,
       url: body.url,
       events: Array.isArray(body.events) ? body.events : ["*"],
+      secret,
       is_active: true,
     }).select().maybeSingle();
+
     if (error) return json(400, { code: "insert_failed", message: error.message }, requestId);
     return json(201, data, requestId);
   }
