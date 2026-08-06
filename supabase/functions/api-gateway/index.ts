@@ -920,7 +920,9 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
   if ((path === "/v1/knowledge/search" || path === "/v1/articles") && req.method === "GET") {
     let qry = supabase.from("knowledge_articles")
       .select("id, title, slug, category, excerpt, language, created_at", { count: "exact" })
+      .eq("published", true)
       .order("created_at", { ascending: false }).range(offset, offset + limit - 1);
+
     if (q) qry = qry.or(`title.ilike.%${q}%,content.ilike.%${q}%`);
     const category = url.searchParams.get("category");
     if (category) qry = qry.eq("category", category);
