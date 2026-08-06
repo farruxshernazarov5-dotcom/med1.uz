@@ -95,6 +95,8 @@ const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
 const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
+const PartnerIntegrationPage = lazy(() => import("./pages/PartnerIntegrationPage"));
+
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
