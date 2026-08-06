@@ -302,6 +302,8 @@ const App = () => (
                 <Route path="/knowledge" element={<KnowledgePage />} />
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
+                <Route path="/integration" element={<PartnerIntegrationPage />} />
+
                 <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
                 <Route path="*" element={<NotFound />} />
