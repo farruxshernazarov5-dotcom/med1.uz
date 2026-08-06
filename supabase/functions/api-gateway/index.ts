@@ -897,7 +897,204 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     return json(200, data, requestId);
   }
 
+  // ==================== DENTAL ====================
+  if (path === "/v1/dental" && req.method === "GET") {
+    let qry = supabase.from("registered_dental_clinics").select("*", { count: "exact" })
+      .eq("is_active", true).order("name").range(offset, offset + limit - 1);
+    if (q) qry = qry.ilike("name", `%${q}%`);
+    if (city) qry = qry.ilike("city", `%${city}%`);
+    const { data, error, count } = await qry;
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
+  }
+  const dentalIdMatch = path.match(/^\/v1\/dental\/([^/]+)$/);
+  if (dentalIdMatch && req.method === "GET") {
+    const { data, error } = await supabase.from("registered_dental_clinics").select("*").eq("id", dentalIdMatch[1]).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    if (!data) return json(404, { code: "not_found", message: "Dental clinic not found" }, requestId);
+    return json(200, data, requestId);
+  }
+
+  // ==================== KNOWLEDGE / ARTICLES / ICD ====================
+  if ((path === "/v1/knowledge/search" || path === "/v1/articles") && req.method === "GET") {
+    let qry = supabase.from("knowledge_articles")
+      .select("id, title, slug, category, excerpt, language, created_at", { count: "exact" })
+      .order("created_at", { ascending: false }).range(offset, offset + limit - 1);
+    if (q) qry = qry.or(`title.ilike.%${q}%,content.ilike.%${q}%`);
+    const category = url.searchParams.get("category");
+    if (category) qry = qry.eq("category", category);
+    const lang = url.searchParams.get("lang");
+    if (lang) qry = qry.eq("language", lang);
+    const { data, error, count } = await qry;
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [], count: count ?? 0, limit, offset }, requestId);
+  }
+  if (path === "/v1/icd/search" && req.method === "GET") {
+    if (!q) return json(400, { code: "missing_query", message: "`q` query parameter required" }, requestId);
+    const { data, error } = await supabase.from("icd10_codes")
+      .select("code, name_uz, name_ru, name_en, category")
+      .or(`code.ilike.%${q}%,name_uz.ilike.%${q}%,name_ru.ilike.%${q}%,name_en.ilike.%${q}%`)
+      .limit(limit);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [], count: (data ?? []).length }, requestId);
+  }
+
+  // ==================== MED COIN ====================
+  if (path === "/v1/med-coin/balance" && req.method === "GET") {
+    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
+    const { data, error } = await supabase.from("user_credits").select("*").eq("user_id", uid).maybeSingle();
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, data ?? { user_id: uid, balance: 0 }, requestId);
+  }
+
+  // ==================== DISCOVERY ====================
+  if (path === "/v1/endpoints" && req.method === "GET") {
+    const items = [
+      ...Object.entries(ROUTES).map(([k, v]) => {
+        const [method, p] = k.split(" ");
+        return { method, path: p, scope: v.scope };
+      }),
+      ...DYNAMIC_ROUTES.map((r) => ({ method: r.method, path: r.pattern.source, scope: r.scope, dynamic: true })),
+    ];
+    return json(200, { items, count: items.length, docs: "https://med1.uz/api-docs", openapi: "https://med1.uz/openapi.json" }, requestId);
+  }
+  if (path === "/v1/ai/services" && req.method === "GET") {
+    return json(200, {
+      items: Object.keys(AI_SERVICES).map((s) => ({ service: s, path: `/v1/ai/${s}`, method: "POST", scope: "ai:chat" })),
+      count: Object.keys(AI_SERVICES).length,
+    }, requestId);
+  }
+  if (path === "/v1/me" && req.method === "GET") {
+    const { data: partner } = await supabase.from("api_partners")
+      .select("id, org_name, status, tier, allowed_domains, ip_whitelist, require_hmac")
+      .eq("owner_user_id", partnerOwnerId ?? "00000000-0000-0000-0000-000000000000").maybeSingle();
+    return json(200, { partner: partner ?? null, server_time: new Date().toISOString() }, requestId);
+  }
+
+  // ==================== WEBHOOKS (partner self-service) ====================
+  if (path === "/v1/webhooks" && req.method === "GET") {
+    const { data: partner } = await supabase.from("api_partners").select("id").eq("owner_user_id", partnerOwnerId).maybeSingle();
+    if (!partner) return json(403, { code: "no_partner", message: "Partner not resolved" }, requestId);
+    const { data, error } = await supabase.from("api_webhooks").select("*").eq("partner_id", partner.id);
+    if (error) return json(500, { code: "db_error", message: error.message }, requestId);
+    return json(200, { items: data ?? [] }, requestId);
+  }
+  if (path === "/v1/webhooks" && req.method === "POST") {
+    let body: any = {}; try { body = await req.json(); } catch {}
+    if (!body?.url || !/^https:\/\//.test(String(body.url))) {
+      return json(400, { code: "invalid_url", message: "https `url` required" }, requestId);
+    }
+    const { data: partner } = await supabase.from("api_partners").select("id").eq("owner_user_id", partnerOwnerId).maybeSingle();
+    if (!partner) return json(403, { code: "no_partner", message: "Partner not resolved" }, requestId);
+    const { data, error } = await supabase.from("api_webhooks").insert({
+      partner_id: partner.id,
+      url: body.url,
+      events: Array.isArray(body.events) ? body.events : ["*"],
+      is_active: true,
+    }).select().maybeSingle();
+    if (error) return json(400, { code: "insert_failed", message: error.message }, requestId);
+    return json(201, data, requestId);
+  }
+  const webhookDelMatch = path.match(/^\/v1\/webhooks\/([^/]+)$/);
+  if (webhookDelMatch && req.method === "DELETE") {
+    const { data: partner } = await supabase.from("api_partners").select("id").eq("owner_user_id", partnerOwnerId).maybeSingle();
+    if (!partner) return json(403, { code: "no_partner", message: "Partner not resolved" }, requestId);
+    const { error } = await supabase.from("api_webhooks").delete().eq("id", webhookDelMatch[1]).eq("partner_id", partner.id);
+    if (error) return json(400, { code: "delete_failed", message: error.message }, requestId);
+    return json(200, { deleted: true, id: webhookDelMatch[1] }, requestId);
+  }
+
+  // ==================== AI SERVICES (/v1/ai/<service>) ====================
+  if (path.startsWith("/v1/ai/") && req.method === "POST") {
+    const service = path.slice("/v1/ai/".length);
+    const cfg = AI_SERVICES[service];
+    if (!cfg) {
+      return json(404, {
+        code: "unknown_ai_service",
+        message: `Unknown AI service '${service}'`,
+        available: Object.keys(AI_SERVICES),
+      }, requestId);
+    }
+    let body: any = {}; try { body = await req.json(); } catch {
+      return json(400, { code: "invalid_json", message: "Body must be JSON" }, requestId);
+    }
+
+    // A) End-user mode — forward the user's JWT so their own balance/limits apply.
+    const userJwt = req.headers.get("x-user-jwt") || "";
+    if (userJwt) {
+      const supaUrl = Deno.env.get("SUPABASE_URL")!;
+      const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const r = await fetch(`${supaUrl}/functions/v1/${cfg.fn}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: anon,
+          Authorization: `Bearer ${userJwt}`,
+          "x-med1-channel": "api",
+        },
+        body: JSON.stringify(body),
+      });
+      const text = await r.text();
+      let parsed: any; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+      return json(r.ok ? 200 : r.status, r.ok ? { service, ...parsed } : parsed, requestId);
+    }
+
+    // B) Partner mode — gateway answers directly and bills the partner account.
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) return json(500, { code: "ai_unconfigured", message: "AI gateway is not configured" }, requestId);
+
+    const messages = Array.isArray(body?.messages) && body.messages.length
+      ? body.messages
+      : (typeof body?.input === "string" && body.input.trim()
+        ? [{ role: "user", content: body.input.trim() }]
+        : null);
+    if (!messages) {
+      return json(400, {
+        code: "invalid_messages",
+        message: "`messages` array or `input` string required",
+        example: { messages: [{ role: "user", content: "Boshim og'riyapti" }] },
+      }, requestId);
+    }
+    if (messages.length > 30) return json(400, { code: "too_many_messages", message: "Max 30 messages per request" }, requestId);
+
+    const mapped = mapModel(typeof body?.model === "string" ? body.model : null, { service: `api-gateway:ai-${service}` });
+    const model = mapped.model;
+    const usageId = partnerOwnerId
+      ? await createAiUsageEvent({ userId: partnerOwnerId, serviceId: `api-gateway:ai-${service}`, req, channel: "api", model })
+      : null;
+
+    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "system", content: cfg.prompt }, ...messages],
+        temperature: typeof body?.temperature === "number" ? body.temperature : 0.6,
+      }),
+    });
+
+    if (aiRes.status === 429) {
+      await instrumentError(usageId, startTime, { status: "rate_limited", errorCode: "429", errorMessage: "AI rate limit reached" });
+      return json(429, { code: "ai_rate_limited", message: "AI rate limit reached, retry later" }, requestId);
+    }
+    if (aiRes.status === 402) {
+      await instrumentError(usageId, startTime, { status: "error", errorCode: "402", errorMessage: "AI credits exhausted" });
+      return json(402, { code: "ai_credits_exhausted", message: "AI credits exhausted" }, requestId);
+    }
+    if (!aiRes.ok) {
+      const txt = await aiRes.text();
+      await instrumentError(usageId, startTime, { status: statusFromHttp(aiRes.status), errorCode: String(aiRes.status), errorMessage: txt.slice(0, 500) });
+      return json(502, { code: "ai_upstream_error", message: txt.slice(0, 300) }, requestId);
+    }
+    const ai = await aiRes.json();
+    const content = ai?.choices?.[0]?.message?.content || "";
+    await instrumentJson(ai, usageId, startTime, estimateTokensFromMessages(messages), content);
+    return json(200, { service, model, response: content, message: ai?.choices?.[0]?.message ?? null, usage: ai?.usage ?? null }, requestId);
+  }
+
   return json(501, { code: "not_implemented", message: `${path} handler pending` }, requestId);
+
 }
 
 // ---- Sandbox dispatcher: deterministic mock data for testing partner integrations. ----
