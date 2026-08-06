@@ -4,249 +4,3524 @@
     "title": "MED1.UZ Enterprise API",
     "version": "1.1.0",
     "description": "Unified REST API for MED1.UZ — Auth, User, Directory (Clinics/Doctors/Diagnostics/Pharmacies/Maternity), Appointments, EMR, Payments, Notifications, Maps, and 14 AI services.\n\n**Authentication:** `x-api-key` header (or `Authorization: Bearer <key>`).\n\n**HMAC (optional):** if the partner or key has `require_hmac = true`, requests must include:\n- `x-timestamp`: unix seconds (max ±300s skew)\n- `x-signature`: hex(HMAC-SHA256(secret, `${ts}.${METHOD}.${path}.${sha256Hex(body)}`))\n\n**Sandbox:** keys with `is_sandbox = true` are routed to a mock layer that returns deterministic fake data (never touches production). Every response includes `sandbox: true`.\n\n**Rate limits:** 30 req/min, 1000 req/day (per key by default).\n\n**Disclaimer:** AI responses are informational only.",
-    "contact": { "name": "MED1.UZ Partners", "url": "https://med1.uz/partnership", "email": "partners@med1.uz" },
-    "license": { "name": "Proprietary", "url": "https://med1.uz/terms" }
+    "contact": {
+      "name": "MED1.UZ Partners",
+      "url": "https://med1.uz/partnership",
+      "email": "partners@med1.uz"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://med1.uz/terms"
+    }
   },
   "servers": [
-    { "url": "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway", "description": "Production gateway" }
+    {
+      "url": "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway",
+      "description": "Production gateway"
+    }
   ],
-  "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    },
+    {
+      "BearerAuth": []
+    }
+  ],
   "tags": [
-    { "name": "Health" }, { "name": "Auth" }, { "name": "User" },
-    { "name": "Directory" }, { "name": "Appointments" }, { "name": "EMR" },
-    { "name": "Payments" }, { "name": "Notifications" }, { "name": "Maps" },
-    { "name": "AI" }
+    {
+      "name": "Health"
+    },
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Directory"
+    },
+    {
+      "name": "Appointments"
+    },
+    {
+      "name": "EMR"
+    },
+    {
+      "name": "Payments"
+    },
+    {
+      "name": "Notifications"
+    },
+    {
+      "name": "Maps"
+    },
+    {
+      "name": "AI"
+    }
   ],
   "paths": {
     "/v1/ping": {
-      "get": { "tags": ["Health"], "operationId": "ping", "summary": "Liveness check",
-        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } } } }
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "operationId": "ping",
+        "summary": "Liveness check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "/v1/auth/login": {
-      "post": { "tags": ["Auth"], "operationId": "authLogin", "summary": "Login (password)",
-        "requestBody": { "$ref": "#/components/requestBodies/LoginBody" },
-        "responses": { "200": { "$ref": "#/components/responses/Session" }, "401": { "$ref": "#/components/responses/Unauthorized" } } }
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "authLogin",
+        "summary": "Login (password)",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/LoginBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Session"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
     },
     "/v1/auth/register": {
-      "post": { "tags": ["Auth"], "operationId": "authRegister", "summary": "Register new user",
-        "requestBody": { "$ref": "#/components/requestBodies/RegisterBody" },
-        "responses": { "201": { "$ref": "#/components/responses/Session" }, "400": { "$ref": "#/components/responses/BadRequest" } } }
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "authRegister",
+        "summary": "Register new user",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RegisterBody"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Session"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
     },
     "/v1/auth/refresh": {
-      "post": { "tags": ["Auth"], "operationId": "authRefresh", "summary": "Refresh access token",
-        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["refresh_token"], "properties": { "refresh_token": { "type": "string" } } } } } },
-        "responses": { "200": { "$ref": "#/components/responses/Session" } } }
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "authRefresh",
+        "summary": "Refresh access token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "refresh_token"
+                ],
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Session"
+          }
+        }
+      }
     },
-    "/v1/auth/logout": { "post": { "tags": ["Auth"], "operationId": "authLogout", "summary": "Revoke session", "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
+    "/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "authLogout",
+        "summary": "Revoke session",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
     "/v1/auth/forgot-password": {
-      "post": { "tags": ["Auth"], "operationId": "authForgot", "summary": "Send password reset email",
-        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "email": { "type": "string", "format": "email" } } } } } },
-        "responses": { "200": { "$ref": "#/components/responses/Ok" } } }
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "authForgot",
+        "summary": "Send password reset email",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
     },
     "/v1/auth/otp/send": {
-      "post": { "tags": ["Auth"], "operationId": "otpSend", "summary": "Send OTP via SMS/Email",
-        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "phone": { "type": "string" }, "email": { "type": "string" } } } } } },
-        "responses": { "200": { "$ref": "#/components/responses/Ok" } } }
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "otpSend",
+        "summary": "Send OTP via SMS/Email",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
     },
     "/v1/auth/otp/verify": {
-      "post": { "tags": ["Auth"], "operationId": "otpVerify", "summary": "Verify OTP",
-        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["token"], "properties": { "token": { "type": "string" }, "phone": { "type": "string" }, "email": { "type": "string" }, "type": { "type": "string", "enum": ["sms","email"] } } } } } },
-        "responses": { "200": { "$ref": "#/components/responses/Session" } } }
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "otpVerify",
+        "summary": "Verify OTP",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "sms",
+                      "email"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Session"
+          }
+        }
+      }
     },
-
     "/v1/user/profile": {
-      "get": { "tags": ["User"], "operationId": "getProfile", "summary": "Get current user profile",
-        "parameters": [{ "$ref": "#/components/parameters/UserId" }],
-        "responses": { "200": { "$ref": "#/components/responses/Ok" } } },
-      "patch": { "tags": ["User"], "operationId": "updateProfile", "summary": "Update profile",
-        "parameters": [{ "$ref": "#/components/parameters/UserId" }],
-        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProfilePatch" } } } },
-        "responses": { "200": { "$ref": "#/components/responses/Ok" } } }
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "getProfile",
+        "summary": "Get current user profile",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "updateProfile",
+        "summary": "Update profile",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfilePatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
     },
     "/v1/user/settings": {
-      "patch": { "tags": ["User"], "operationId": "updateSettings", "summary": "Update user settings",
-        "parameters": [{ "$ref": "#/components/parameters/UserId" }],
-        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "language": { "type": "string", "enum": ["uz","ru","en"] } } } } } },
-        "responses": { "200": { "$ref": "#/components/responses/Ok" } } }
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "updateSettings",
+        "summary": "Update user settings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "language": {
+                    "type": "string",
+                    "enum": [
+                      "uz",
+                      "ru",
+                      "en"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
     },
-
     "/v1/clinics": {
-      "get": { "tags": ["Directory"], "operationId": "listClinics", "summary": "List clinics",
-        "parameters": [{ "$ref": "#/components/parameters/Q" }, { "$ref": "#/components/parameters/City" }, { "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Offset" }],
-        "responses": { "200": { "$ref": "#/components/responses/ClinicList" } } }
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "listClinics",
+        "summary": "List clinics",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Q"
+          },
+          {
+            "$ref": "#/components/parameters/City"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ClinicList"
+          }
+        }
+      }
     },
     "/v1/clinics/{id}": {
-      "get": { "tags": ["Directory"], "operationId": "getClinic", "summary": "Get clinic by id",
-        "parameters": [{ "$ref": "#/components/parameters/Id" }],
-        "responses": { "200": { "$ref": "#/components/responses/Ok" }, "404": { "$ref": "#/components/responses/NotFound" } } }
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "getClinic",
+        "summary": "Get clinic by id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
     },
     "/v1/doctors": {
-      "get": { "tags": ["Directory"], "operationId": "listDoctors", "summary": "List doctors",
-        "parameters": [{ "$ref": "#/components/parameters/Q" }, { "$ref": "#/components/parameters/City" },
-          { "in": "query", "name": "specialty", "schema": { "type": "string" } },
-          { "$ref": "#/components/parameters/Limit" }, { "$ref": "#/components/parameters/Offset" }],
-        "responses": { "200": { "$ref": "#/components/responses/Ok" } } }
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "listDoctors",
+        "summary": "List doctors",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Q"
+          },
+          {
+            "$ref": "#/components/parameters/City"
+          },
+          {
+            "in": "query",
+            "name": "specialty",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
     },
-    "/v1/doctors/{id}": { "get": { "tags": ["Directory"], "operationId": "getDoctor", "summary": "Get doctor",
-      "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/diagnostics": { "get": { "tags": ["Directory"], "operationId": "listDiagnostics", "summary": "List diagnostic labs",
-      "parameters": [{ "$ref": "#/components/parameters/City" }, { "$ref": "#/components/parameters/Limit" }],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/diagnostics/{id}": { "get": { "tags": ["Directory"], "operationId": "getDiagnostics",
-      "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/pharmacies": { "get": { "tags": ["Directory"], "operationId": "listPharmacies", "summary": "List pharmacies",
-      "parameters": [{ "$ref": "#/components/parameters/City" }, { "in": "query", "name": "is_24h", "schema": { "type": "boolean" } }, { "in": "query", "name": "has_delivery", "schema": { "type": "boolean" } }, { "$ref": "#/components/parameters/Limit" }],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/pharmacies/{id}": { "get": { "tags": ["Directory"], "operationId": "getPharmacy",
-      "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/maternity": { "get": { "tags": ["Directory"], "operationId": "listMaternity", "summary": "List maternity clinics",
-      "parameters": [{ "$ref": "#/components/parameters/City" }, { "$ref": "#/components/parameters/Limit" }],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-
+    "/v1/doctors/{id}": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "getDoctor",
+        "summary": "Get doctor",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/diagnostics": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "listDiagnostics",
+        "summary": "List diagnostic labs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/City"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/diagnostics/{id}": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "getDiagnostics",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/pharmacies": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "listPharmacies",
+        "summary": "List pharmacies",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/City"
+          },
+          {
+            "in": "query",
+            "name": "is_24h",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "has_delivery",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/pharmacies/{id}": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "getPharmacy",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/maternity": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "operationId": "listMaternity",
+        "summary": "List maternity clinics",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/City"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
     "/v1/appointments": {
-      "post": { "tags": ["Appointments"], "operationId": "createAppointment", "summary": "Book an appointment",
-        "parameters": [{ "$ref": "#/components/parameters/UserId" }],
-        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AppointmentCreate" } } } },
-        "responses": { "201": { "$ref": "#/components/responses/Ok" } } }
+      "post": {
+        "tags": [
+          "Appointments"
+        ],
+        "operationId": "createAppointment",
+        "summary": "Book an appointment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
     },
-    "/v1/appointments/history": { "get": { "tags": ["Appointments"], "operationId": "appointmentHistory",
-      "parameters": [{ "$ref": "#/components/parameters/UserId" }, { "$ref": "#/components/parameters/Limit" }],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/appointments/{id}": { "delete": { "tags": ["Appointments"], "operationId": "cancelAppointment", "summary": "Cancel appointment",
-      "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/appointments/{id}/checkin": { "post": { "tags": ["Appointments"], "operationId": "checkinAppointment", "summary": "Check in",
-      "parameters": [{ "$ref": "#/components/parameters/Id" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-
-    "/v1/emr/records":       { "get": { "tags": ["EMR"], "operationId": "emrRecords",       "parameters": [{ "$ref": "#/components/parameters/UserId" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/emr/analyses":      { "get": { "tags": ["EMR"], "operationId": "emrAnalyses",      "parameters": [{ "$ref": "#/components/parameters/UserId" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/emr/prescriptions": { "get": { "tags": ["EMR"], "operationId": "emrPrescriptions", "parameters": [{ "$ref": "#/components/parameters/UserId" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/emr/diagnoses":     { "get": { "tags": ["EMR"], "operationId": "emrDiagnoses",     "parameters": [{ "$ref": "#/components/parameters/UserId" }], "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-
-    "/v1/payments/click": { "post": { "tags": ["Payments"], "operationId": "payClick", "summary": "Create Click invoice",
-      "requestBody": { "$ref": "#/components/requestBodies/PaymentBody" }, "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/payments/payme": { "post": { "tags": ["Payments"], "operationId": "payPayme", "summary": "Create Payme invoice",
-      "requestBody": { "$ref": "#/components/requestBodies/PaymentBody" }, "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/payments/uzum":  { "post": { "tags": ["Payments"], "operationId": "payUzum",  "summary": "Create Uzum Bank invoice",
-      "requestBody": { "$ref": "#/components/requestBodies/PaymentBody" }, "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/payments/history": { "get": { "tags": ["Payments"], "operationId": "payHistory",
-      "parameters": [{ "$ref": "#/components/parameters/UserId" }, { "$ref": "#/components/parameters/Limit" }],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/subscriptions": { "get": { "tags": ["Payments"], "operationId": "listSubscriptions",
-      "parameters": [{ "$ref": "#/components/parameters/UserId" }],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/med-coin/purchase": { "post": { "tags": ["Payments"], "operationId": "buyMedCoin", "summary": "Purchase Med Coins",
-      "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["amount"], "properties": { "amount": { "type": "integer", "minimum": 1 } } } } } },
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-
-    "/v1/notifications/telegram": { "post": { "tags": ["Notifications"], "operationId": "notifyTelegram",
-      "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["chat_id","text"], "properties": { "chat_id": { "type": "string" }, "text": { "type": "string" } } } } } },
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/notifications/email": { "post": { "tags": ["Notifications"], "operationId": "notifyEmail",
-      "requestBody": { "content": { "application/json": { "schema": { "type": "object", "required": ["to","subject","template"], "properties": { "to": { "type": "string", "format": "email" }, "subject": { "type": "string" }, "template": { "type": "string" }, "data": { "type": "object" } } } } } },
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/notifications/sms":  { "post": { "tags": ["Notifications"], "operationId": "notifySms",  "responses": { "202": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/notifications/push": { "post": { "tags": ["Notifications"], "operationId": "notifyPush", "responses": { "202": { "$ref": "#/components/responses/Ok" } } } },
-
-    "/v1/maps/nearby": { "get": { "tags": ["Maps"], "operationId": "mapsNearby", "summary": "Nearby clinics by GPS",
-      "parameters": [
-        { "in": "query", "name": "lat", "required": true, "schema": { "type": "number" } },
-        { "in": "query", "name": "lng", "required": true, "schema": { "type": "number" } },
-        { "in": "query", "name": "radius_km", "schema": { "type": "number", "default": 10 } }
-      ],
-      "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-    "/v1/maps/geofence": { "get": { "tags": ["Maps"], "operationId": "mapsGeofence", "responses": { "200": { "$ref": "#/components/responses/Ok" } } } },
-
-    "/v1/ai/chat":         { "post": { "tags": ["AI"], "operationId": "aiChat",         "summary": "Generic AI chat",           "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" }, "402": { "$ref": "#/components/responses/CreditsExhausted" }, "429": { "$ref": "#/components/responses/RateLimit" } } } },
-    "/v1/ai/doctor":       { "post": { "tags": ["AI"], "operationId": "aiDoctor",       "summary": "AI Doctor",                 "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/symptoms":     { "post": { "tags": ["AI"], "operationId": "aiSymptoms",     "summary": "Symptom checker",           "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/laboratory":   { "post": { "tags": ["AI"], "operationId": "aiLaboratory",   "summary": "Lab report analysis",       "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/radiology":    { "post": { "tags": ["AI"], "operationId": "aiRadiology",    "summary": "Radiology (image+text)",    "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/pregnancy":    { "post": { "tags": ["AI"], "operationId": "aiPregnancy",    "summary": "Pregnancy companion",       "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/baby-care":    { "post": { "tags": ["AI"], "operationId": "aiBabyCare",     "summary": "Baby care (pediatrics)",    "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/psychologist": { "post": { "tags": ["AI"], "operationId": "aiPsychologist", "summary": "AI Psychologist",           "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/diet":         { "post": { "tags": ["AI"], "operationId": "aiDiet",         "summary": "AI Dietitian",              "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/pharmacy":     { "post": { "tags": ["AI"], "operationId": "aiPharmacy",     "summary": "AI Pharmacist",             "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/cosmetology":  { "post": { "tags": ["AI"], "operationId": "aiCosmetology",  "summary": "AI Cosmetology",            "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/fitness":      { "post": { "tags": ["AI"], "operationId": "aiFitness",      "summary": "AI Fitness coach",          "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/assistant":    { "post": { "tags": ["AI"], "operationId": "aiAssistant",    "summary": "General health assistant",  "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/monitoring":   { "post": { "tags": ["AI"], "operationId": "aiMonitoring",   "summary": "Vital signs monitoring",    "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } },
-    "/v1/ai/prediction":   { "post": { "tags": ["AI"], "operationId": "aiPrediction",   "summary": "Health-risk prediction",    "requestBody": { "$ref": "#/components/requestBodies/AiChatBody" }, "responses": { "200": { "$ref": "#/components/responses/AiResponse" } } } }
+    "/v1/appointments/history": {
+      "get": {
+        "tags": [
+          "Appointments"
+        ],
+        "operationId": "appointmentHistory",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/appointments/{id}": {
+      "delete": {
+        "tags": [
+          "Appointments"
+        ],
+        "operationId": "cancelAppointment",
+        "summary": "Cancel appointment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/appointments/{id}/checkin": {
+      "post": {
+        "tags": [
+          "Appointments"
+        ],
+        "operationId": "checkinAppointment",
+        "summary": "Check in",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/emr/records": {
+      "get": {
+        "tags": [
+          "EMR"
+        ],
+        "operationId": "emrRecords",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/emr/analyses": {
+      "get": {
+        "tags": [
+          "EMR"
+        ],
+        "operationId": "emrAnalyses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/emr/prescriptions": {
+      "get": {
+        "tags": [
+          "EMR"
+        ],
+        "operationId": "emrPrescriptions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/emr/diagnoses": {
+      "get": {
+        "tags": [
+          "EMR"
+        ],
+        "operationId": "emrDiagnoses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/payments/click": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "payClick",
+        "summary": "Create Click invoice",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PaymentBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/payments/payme": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "payPayme",
+        "summary": "Create Payme invoice",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PaymentBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/payments/uzum": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "payUzum",
+        "summary": "Create Uzum Bank invoice",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PaymentBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/payments/history": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "payHistory",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/subscriptions": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "listSubscriptions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/med-coin/purchase": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "buyMedCoin",
+        "summary": "Purchase Med Coins",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "amount"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/notifications/telegram": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "notifyTelegram",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "chat_id",
+                  "text"
+                ],
+                "properties": {
+                  "chat_id": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/notifications/email": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "notifyEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "to",
+                  "subject",
+                  "template"
+                ],
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "template": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/notifications/sms": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "notifySms",
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/notifications/push": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "operationId": "notifyPush",
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/maps/nearby": {
+      "get": {
+        "tags": [
+          "Maps"
+        ],
+        "operationId": "mapsNearby",
+        "summary": "Nearby clinics by GPS",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lng",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "radius_km",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/maps/geofence": {
+      "get": {
+        "tags": [
+          "Maps"
+        ],
+        "operationId": "mapsGeofence",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Ok"
+          }
+        }
+      }
+    },
+    "/v1/ai/chat": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "aiChat",
+        "summary": "Generic AI chat",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AiChatBody"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AiResponse"
+          },
+          "402": {
+            "$ref": "#/components/responses/CreditsExhausted"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        }
+      }
+    },
+    "/v1/ai/doctor": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: doctor",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/symptoms": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: symptoms",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/laboratory": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: laboratory",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/pregnancy": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: pregnancy",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/baby-care": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: baby-care",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/psychologist": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: psychologist",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/diet": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: diet",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/pharmacy": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: pharmacy",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/cosmetology": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: cosmetology",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/fitness": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: fitness",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/assistant": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: assistant",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/monitoring": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: monitoring",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/prediction": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: prediction",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/endpoints": {
+      "get": {
+        "tags": [
+          "Discovery"
+        ],
+        "summary": "Barcha mavjud endpointlar ro'yxati",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "Discovery"
+        ],
+        "summary": "Partner profili va sozlamalari",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/v1/ai/services": {
+      "get": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmatlari katalogi",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/v1/ai/oncology": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: oncology",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/diabetes": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: diabetes",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/orchestrator": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: orchestrator",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/dental": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: dental",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/pulmonology": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/pulmonology",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/brain": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/brain",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/bone": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/bone",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/chest-ct": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/chest-ct",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/mammography": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/mammography",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/abdomen": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/abdomen",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/radiology/spine": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "summary": "AI xizmati: radiology/spine",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "input": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "messages": [
+                  {
+                    "role": "user",
+                    "content": "Bosh og'rig'i va isitma"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dental": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "summary": "Stomatologiya klinikalari ro'yxati",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nom bo'yicha qidiruv"
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Shahar"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Max 100"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Offset"
+          }
+        ]
+      }
+    },
+    "/v1/dental/{id}": {
+      "get": {
+        "tags": [
+          "Directory"
+        ],
+        "summary": "Stomatologiya klinikasi tafsiloti",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/knowledge/search": {
+      "get": {
+        "tags": [
+          "Knowledge"
+        ],
+        "summary": "Tibbiy bilimlar bazasidan qidirish",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Qidiruv so'zi"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kategoriya"
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "uz|ru|en"
+          }
+        ]
+      }
+    },
+    "/v1/articles": {
+      "get": {
+        "tags": [
+          "Knowledge"
+        ],
+        "summary": "Maqolalar ro'yxati",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kategoriya"
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "uz|ru|en"
+          }
+        ]
+      }
+    },
+    "/v1/icd/search": {
+      "get": {
+        "tags": [
+          "Knowledge"
+        ],
+        "summary": "ICD-10 kodlari bo'yicha qidiruv",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Kod yoki nom"
+          }
+        ]
+      }
+    },
+    "/v1/med-coin/balance": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Med Coin balansi",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/webhooks": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Webhooklar ro'yxati",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Webhook qo'shish",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "url": "https://partner.uz/hooks/med1",
+                "events": [
+                  "appointment.created"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/webhooks/{id}": {
+      "delete": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Webhookni o'chirish",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
   },
   "components": {
     "securitySchemes": {
-      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "x-api-key" },
-      "BearerAuth": { "type": "http", "scheme": "bearer" }
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
     },
     "parameters": {
-      "Id":     { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } },
-      "UserId": { "in": "header", "name": "x-user-id", "required": false, "schema": { "type": "string", "format": "uuid" }, "description": "End-user id for user-scoped calls" },
-      "Q":      { "in": "query", "name": "q",      "schema": { "type": "string" } },
-      "City":   { "in": "query", "name": "city",   "schema": { "type": "string" } },
-      "Limit":  { "in": "query", "name": "limit",  "schema": { "type": "integer", "default": 50, "maximum": 100 } },
-      "Offset": { "in": "query", "name": "offset", "schema": { "type": "integer", "default": 0 } }
+      "Id": {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "UserId": {
+        "in": "header",
+        "name": "x-user-id",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "End-user id for user-scoped calls"
+      },
+      "Q": {
+        "in": "query",
+        "name": "q",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "City": {
+        "in": "query",
+        "name": "city",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Limit": {
+        "in": "query",
+        "name": "limit",
+        "schema": {
+          "type": "integer",
+          "default": 50,
+          "maximum": 100
+        }
+      },
+      "Offset": {
+        "in": "query",
+        "name": "offset",
+        "schema": {
+          "type": "integer",
+          "default": 0
+        }
+      }
     },
     "schemas": {
       "Envelope": {
         "type": "object",
         "properties": {
-          "success":    { "type": "boolean" },
-          "data":       { "type": "object" },
-          "error":      { "type": "object", "properties": { "code": { "type": "string" }, "message": { "type": "string" } } },
-          "request_id": { "type": "string", "format": "uuid" },
-          "sandbox":    { "type": "boolean", "description": "Present when the response was served by the sandbox mock layer." }
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "object"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sandbox": {
+            "type": "boolean",
+            "description": "Present when the response was served by the sandbox mock layer."
+          }
         }
       },
-      "Message": { "type": "object", "required": ["role","content"],
-        "properties": { "role": { "type": "string", "enum": ["system","user","assistant"] }, "content": { "type": "string" } } },
-      "AiChatRequest": { "type": "object", "required": ["messages"],
+      "Message": {
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
         "properties": {
-          "messages":    { "type": "array", "items": { "$ref": "#/components/schemas/Message" }, "minItems": 1, "maxItems": 30 },
-          "lang":        { "type": "string", "enum": ["uz","ru","en"] },
-          "model":       { "type": "string", "description": "Optional model override" },
-          "temperature": { "type": "number", "default": 0.7 }
-        } },
-      "ProfilePatch": { "type": "object",
-        "properties": { "full_name": { "type": "string" }, "phone": { "type": "string" }, "avatar_url": { "type": "string" },
-          "language": { "type": "string" }, "region": { "type": "string" }, "district": { "type": "string" } } },
-      "AppointmentCreate": { "type": "object", "required": ["clinic_id","date","time","patient_name","patient_phone"],
+          "role": {
+            "type": "string",
+            "enum": [
+              "system",
+              "user",
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+      "AiChatRequest": {
+        "type": "object",
+        "required": [
+          "messages"
+        ],
         "properties": {
-          "clinic_id":     { "type": "string", "format": "uuid" },
-          "doctor_id":     { "type": "string", "format": "uuid" },
-          "service_id":    { "type": "string", "format": "uuid" },
-          "date":          { "type": "string", "format": "date" },
-          "time":          { "type": "string", "example": "10:00" },
-          "patient_name":  { "type": "string" },
-          "patient_phone": { "type": "string", "example": "+998901234567" },
-          "notes":         { "type": "string" }
-        } },
-      "Clinic": { "type": "object",
-        "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "service_city": { "type": "string" },
-          "address": { "type": "string" }, "phone": { "type": "string" }, "latitude": { "type": "number" }, "longitude": { "type": "number" } } },
-      "Session": { "type": "object",
-        "properties": { "access_token": { "type": "string" }, "refresh_token": { "type": "string" }, "token_type": { "type": "string" },
-          "expires_in": { "type": "integer" }, "user": { "type": "object" } } }
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "minItems": 1,
+            "maxItems": 30
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "uz",
+              "ru",
+              "en"
+            ]
+          },
+          "model": {
+            "type": "string",
+            "description": "Optional model override"
+          },
+          "temperature": {
+            "type": "number",
+            "default": 0.7
+          }
+        }
+      },
+      "ProfilePatch": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "avatar_url": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          }
+        }
+      },
+      "AppointmentCreate": {
+        "type": "object",
+        "required": [
+          "clinic_id",
+          "date",
+          "time",
+          "patient_name",
+          "patient_phone"
+        ],
+        "properties": {
+          "clinic_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "doctor_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "service_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "time": {
+            "type": "string",
+            "example": "10:00"
+          },
+          "patient_name": {
+            "type": "string"
+          },
+          "patient_phone": {
+            "type": "string",
+            "example": "+998901234567"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "Clinic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "service_city": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer"
+          },
+          "user": {
+            "type": "object"
+          }
+        }
+      }
     },
     "requestBodies": {
-      "LoginBody":    { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["password"],
-        "properties": { "email": { "type": "string" }, "phone": { "type": "string" }, "password": { "type": "string" } } } } } },
-      "RegisterBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["password"],
-        "properties": { "email": { "type": "string" }, "phone": { "type": "string" }, "password": { "type": "string" }, "metadata": { "type": "object" } } } } } },
-      "AiChatBody":   { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AiChatRequest" } } } },
-      "PaymentBody":  { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["amount"],
-        "properties": { "amount": { "type": "integer" }, "currency": { "type": "string", "default": "UZS" },
-          "order_id": { "type": "string" }, "description": { "type": "string" }, "return_url": { "type": "string" } } } } } }
+      "LoginBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RegisterBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AiChatBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AiChatRequest"
+            }
+          }
+        }
+      },
+      "PaymentBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "amount"
+              ],
+              "properties": {
+                "amount": {
+                  "type": "integer"
+                },
+                "currency": {
+                  "type": "string",
+                  "default": "UZS"
+                },
+                "order_id": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "return_url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "responses": {
-      "Ok":               { "description": "Success", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } },
-      "Session":          { "description": "Auth session issued", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } },
-      "AiResponse":       { "description": "AI response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } },
-      "ClinicList":       { "description": "Paginated clinic list", "content": { "application/json": { "schema": { "type": "object",
-        "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/Clinic" } }, "count": { "type": "integer" } } } } } },
-      "BadRequest":       { "description": "Invalid input",       "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } },
-      "Unauthorized":     { "description": "Missing/invalid API key or HMAC", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } },
-      "NotFound":         { "description": "Resource not found",  "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } },
-      "CreditsExhausted": { "description": "AI credits exhausted (402)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } },
-      "RateLimit":        { "description": "Rate limit exceeded (429)",  "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Envelope" } } } }
+      "Ok": {
+        "description": "Success",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      },
+      "Session": {
+        "description": "Auth session issued",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Session"
+            }
+          }
+        }
+      },
+      "AiResponse": {
+        "description": "AI response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      },
+      "ClinicList": {
+        "description": "Paginated clinic list",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Clinic"
+                  }
+                },
+                "count": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Invalid input",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Missing/invalid API key or HMAC",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      },
+      "CreditsExhausted": {
+        "description": "AI credits exhausted (402)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      },
+      "RateLimit": {
+        "description": "Rate limit exceeded (429)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Envelope"
+            }
+          }
+        }
+      }
     }
   }
 }
