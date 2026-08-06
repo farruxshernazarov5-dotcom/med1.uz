@@ -146,6 +146,32 @@ const ROUTES: Record<string, { scope: string; method: string }> = {
   "POST /v1/ai/assistant": { scope: "ai:chat", method: "POST" },
   "POST /v1/ai/monitoring": { scope: "ai:chat", method: "POST" },
   "POST /v1/ai/prediction": { scope: "ai:chat", method: "POST" },
+  // AI — specialized modules
+  "POST /v1/ai/oncology": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/diabetes": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/orchestrator": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/dental": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/pulmonology": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/brain": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/bone": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/chest-ct": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/mammography": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/abdomen": { scope: "ai:chat", method: "POST" },
+  "POST /v1/ai/radiology/spine": { scope: "ai:chat", method: "POST" },
+  // Discovery & self-service
+  "GET /v1/me": { scope: "*", method: "GET" },
+  "GET /v1/endpoints": { scope: "*", method: "GET" },
+  "GET /v1/ai/services": { scope: "*", method: "GET" },
+  // Content & reference data
+  "GET /v1/dental": { scope: "clinic:read", method: "GET" },
+  "GET /v1/knowledge/search": { scope: "knowledge:read", method: "GET" },
+  "GET /v1/articles": { scope: "knowledge:read", method: "GET" },
+  "GET /v1/icd/search": { scope: "knowledge:read", method: "GET" },
+  // Wallet
+  "GET /v1/med-coin/balance": { scope: "payment:read", method: "GET" },
+  // Webhooks (partner self-service)
+  "GET /v1/webhooks": { scope: "webhook:manage", method: "GET" },
+  "POST /v1/webhooks": { scope: "webhook:manage", method: "POST" },
 };
 
 // Dynamic route patterns (path segments starting with ":" are wildcards)
@@ -154,9 +180,44 @@ const DYNAMIC_ROUTES: Array<{ method: string; pattern: RegExp; scope: string }> 
   { method: "GET", pattern: /^\/v1\/doctors\/[^/]+$/, scope: "doctor:read" },
   { method: "GET", pattern: /^\/v1\/diagnostics\/[^/]+$/, scope: "diagnostics:read" },
   { method: "GET", pattern: /^\/v1\/pharmacies\/[^/]+$/, scope: "pharmacy:read" },
+  { method: "GET", pattern: /^\/v1\/dental\/[^/]+$/, scope: "clinic:read" },
   { method: "DELETE", pattern: /^\/v1\/appointments\/[^/]+$/, scope: "booking:write" },
   { method: "POST", pattern: /^\/v1\/appointments\/[^/]+\/checkin$/, scope: "booking:write" },
+  { method: "DELETE", pattern: /^\/v1\/webhooks\/[^/]+$/, scope: "webhook:manage" },
 ];
+
+// ---- AI service catalog: /v1/ai/<service> ----
+// `fn` = internal edge function used when the caller forwards an end-user JWT
+// (x-user-jwt) so the user's own Med Coin balance and instrumentation apply.
+// Otherwise the gateway answers directly and bills the partner account.
+const AI_SERVICES: Record<string, { fn: string; prompt: string }> = {
+  doctor: { fn: "ai-doctor-chat", prompt: "Sen Med1.uz AI shifokor assistentisan. Ilmiy asoslangan, ICD-10 kodli, tugallangan javob ber." },
+  symptoms: { fn: "symptom-checker", prompt: "Sen Med1.uz AI erta diagnostika tizimisan. Simptomlarni tahlil qilib, ehtimoliy tashxislarni ICD-10 bilan ko'rsat." },
+  laboratory: { fn: "ai-report-analysis", prompt: "Sen laboratoriya natijalarini tahlil qiluvchi AI mutaxassisisan. Norma qiymatlari bilan solishtir." },
+  radiology: { fn: "ai-radiology", prompt: "Sen AI radiologiya mutaxassisisan. Tasvir tavsifidan topilmalarni strukturali ko'rsat." },
+  pregnancy: { fn: "ai-pregnancy", prompt: "Sen homiladorlik va ona-bola sog'lig'i bo'yicha AI mutaxassisisan." },
+  "baby-care": { fn: "ai-baby-care", prompt: "Sen bola parvarishi va pediatriya bo'yicha AI mutaxassisisan." },
+  psychologist: { fn: "ai-psixolog", prompt: "Sen psixologiya bo'yicha AI mutaxassisisan. Empatik va xavfsiz javob ber." },
+  diet: { fn: "ai-dietolog", prompt: "Sen dietologiya va ovqatlanish bo'yicha AI mutaxassisisan." },
+  pharmacy: { fn: "ai-farmatsevt", prompt: "Sen farmatsevtika bo'yicha AI mutaxassisisan. Dorilar o'zaro ta'sirini tekshir." },
+  cosmetology: { fn: "ai-cosmetology", prompt: "Sen kosmetologiya va dermatologiya bo'yicha AI mutaxassisisan." },
+  fitness: { fn: "ai-fitness", prompt: "Sen fitness va sport tibbiyoti bo'yicha AI mutaxassisisan." },
+  assistant: { fn: "ai-health-assistant", prompt: "Sen umumiy sog'liq bo'yicha AI assistentisan." },
+  monitoring: { fn: "ai-health-assistant", prompt: "Sen sog'liq monitoringi va vital belgilar tahlili bo'yicha AI mutaxassisisan." },
+  prediction: { fn: "ai-health-risk", prompt: "Sen sog'liq xavfi prognozi bo'yicha AI mutaxassisisan. Xavf darajasini foizda ber." },
+  oncology: { fn: "ai-oncology", prompt: "Sen onkologiya bo'yicha AI mutaxassisisan. TNM va skrining tavsiyalarini ko'rsat." },
+  diabetes: { fn: "ai-diabetes", prompt: "Sen diabetologiya bo'yicha AI mutaxassisisan. HbA1c va glikemik nazoratga e'tibor ber." },
+  orchestrator: { fn: "ai-orchestrator", prompt: "Sen Med1.uz AI orkestratorisan. So'rov qaysi tibbiy modulga tegishli ekanini aniqla." },
+  dental: { fn: "dental-ai-chat", prompt: "Sen stomatologiya bo'yicha AI mutaxassisisan. FDI tish raqamlashdan foydalan." },
+  "radiology/pulmonology": { fn: "ai-radiology-pulmonology", prompt: "Sen ko'krak qafasi rentgenografiyasi bo'yicha AI radiologsan." },
+  "radiology/brain": { fn: "ai-radiology-brain", prompt: "Sen bosh miya MRT/KT bo'yicha AI radiologsan." },
+  "radiology/bone": { fn: "ai-radiology-bone", prompt: "Sen suyak va bo'g'imlar rentgeni bo'yicha AI radiologsan." },
+  "radiology/chest-ct": { fn: "ai-radiology-chest-ct", prompt: "Sen ko'krak qafasi KT bo'yicha AI radiologsan." },
+  "radiology/mammography": { fn: "ai-radiology-mammography", prompt: "Sen mammografiya bo'yicha AI radiologsan. BI-RADS toifasini ko'rsat." },
+  "radiology/abdomen": { fn: "ai-radiology-abdomen", prompt: "Sen qorin bo'shlig'i tasvirlash bo'yicha AI radiologsan." },
+  "radiology/spine": { fn: "ai-radiology-spine", prompt: "Sen umurtqa pog'onasi tasvirlash bo'yicha AI radiologsan." },
+};
+
 
 function matchRoute(method: string, path: string): { scope: string } | null {
   const key = `${method} ${path}`;
