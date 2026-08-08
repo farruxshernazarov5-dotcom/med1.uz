@@ -57,6 +57,7 @@ const CosmetologyRegistrationPage = lazy(() => import("./pages/CosmetologyRegist
 const DoctorsPage = lazy(() => import("./pages/DoctorsPage"));
 const DoctorProfilePage = lazy(() => import("./pages/DoctorProfilePage"));
 const DoctorExternalDetailPage = lazy(() => import("./pages/DoctorExternalDetailPage"));
+const DoctorSpecialtyPage = lazy(() => import("./pages/DoctorSpecialtyPage"));
 const DoctorRegistrationPage = lazy(() => import("./pages/DoctorRegistrationPage"));
 const SmartSearchPage = lazy(() => import("./pages/SmartSearchPage"));
 const AIDiagnostikaPage = lazy(() => import("./pages/AIDiagnostikaPage"));
