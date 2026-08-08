@@ -110,7 +110,6 @@ export const DOCTOR_REGIONS = [
   { slug: "fargona", db: "Ферганская область", uz: "Farg'ona viloyati" },
   { slug: "qoraqalpogiston", db: "Каракалпакстан", uz: "Qoraqalpog'iston" },
   { slug: "navoiy", db: "Навоийская область", uz: "Navoiy viloyati" },
-  { slug: "surxondaryo", db: "Сурхандарьинская область", uz: "Surxondaryo viloyati" },
 ];
 
 export const REGION_BY_SLUG = new Map(DOCTOR_REGIONS.map((r) => [r.slug, r]));

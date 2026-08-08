@@ -221,6 +221,7 @@ const App = () => (
                 <Route path="/cosmetology-register" element={<CosmetologyRegistrationPage />} />
                 <Route path="/doctor-register" element={<DoctorRegistrationPage />} />
                 <Route path="/doctors" element={<DoctorsPage />} />
+                <Route path="/doctors/mutaxassislik/:slug" element={<DoctorSpecialtyPage />} />
                 <Route path="/doctors/ext/:slug" element={<DoctorExternalDetailPage />} />
                 <Route path="/doctors/:doctorId" element={<DoctorProfilePage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
