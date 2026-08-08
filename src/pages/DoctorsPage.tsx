@@ -16,20 +16,13 @@ import DoctorCard, { DoctorCardData } from "@/components/doctors/DoctorCard";
 import CuratedSections from "@/components/doctors/CuratedSections";
 import CompareBar from "@/components/doctors/CompareBar";
 import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
+import SpecialtyHubLinks from "@/components/doctors/SpecialtyHubLinks";
 import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
+import { buildDoctorSearchFilter } from "@/lib/doctorSearch";
+import { DOCTOR_SPECIALTIES, DOCTOR_REGIONS } from "@/data/doctorSpecialties";
 
-const SPECIALTIES = [
-  "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
-  "Невропатолог","Стоматолог","Педиатр","Уролог","Эндокринолог","Офтальмолог",
-  "Невролог","Ортопед","Гастроэнтеролог","Дерматолог","Лаборант","Реаниматолог",
-  "Радиолог","Терапевт","Пульмонолог",
-];
-const REGIONS = [
-  "г. Ташкент","Самаркандская область","Бухарская область","Ташкентская область",
-  "Кашкадарьинская область","Андижанская область","Сырдарьинская область",
-  "Наманганская область","Хорезмская область","Джизакская область",
-  "Ферганская область","Каракалпакстан","Навоийская область","Сурхандарьинская область",
-];
+const SPECIALTIES = DOCTOR_SPECIALTIES.map((s) => ({ value: s.db, label: s.uz }));
+const REGIONS = DOCTOR_REGIONS.map((r) => ({ value: r.db, label: r.uz }));
 const LANGUAGES = ["Ўзбек","Русский","English","Тоҷикӣ","Türkçe","العربية"];
 const PAGE_SIZE = 24;
 const SELECT = "id,slug,name,rank,experience,photo_url,rating,reviews_count,primary_specialty,primary_region,clinic_id,languages";
@@ -111,8 +104,8 @@ const DoctorsPage = () => {
       }
       const r = parseFloat(minRating); if (r > 0) q = q.gte("rating", r);
       const e = parseInt(minExp, 10); if (e > 0) q = q.gte("experience", e);
-      const s = debouncedSearch.trim();
-      if (s.length >= 2) q = q.ilike("name", `%${s}%`);
+      const orFilter = buildDoctorSearchFilter(debouncedSearch);
+      if (orFilter) q = q.or(orFilter);
       const sv = serviceQuery.trim();
       if (sv.length >= 2) q = q.contains("services", [sv]);
 
@@ -195,12 +188,15 @@ const DoctorsPage = () => {
                 className={`text-xs px-3 py-1.5 rounded-full border flex items-center gap-1.5 transition-colors ${onlyFavs ? "bg-red-50 text-red-600 border-red-200" : "bg-card hover:bg-accent"}`}>
                 <Heart className={`w-3 h-3 ${onlyFavs ? "fill-current" : ""}`} /> Sevimlilar ({fav.ids.length})
               </button>
-              {["Кардиолог","Педиатр","Стоматолог","Гинеколог","Невролог"].map(s => (
-                <button key={s} onClick={() => setSpecialty(s)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${specialty === s ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-accent"}`}>
-                  {s}
-                </button>
-              ))}
+              {["kardiolog","pediatr","stomatolog","ginekolog","nevrolog"].map(slug => {
+                const sp = DOCTOR_SPECIALTIES.find(x => x.slug === slug)!;
+                return (
+                  <button key={sp.slug} onClick={() => setSpecialty(sp.db)}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${specialty === sp.db ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-accent"}`}>
+                    {sp.uz}
+                  </button>
+                );
+              })}
             </div>
 
             {showFilters && (
@@ -209,14 +205,14 @@ const DoctorsPage = () => {
                   <SelectTrigger><SelectValue placeholder="Mutaxassislik" /></SelectTrigger>
                   <SelectContent className="max-h-80">
                     <SelectItem value="all">Barcha mutaxassisliklar</SelectItem>
-                    {SPECIALTIES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    {SPECIALTIES.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={region} onValueChange={setRegion}>
                   <SelectTrigger><SelectValue placeholder="Hudud" /></SelectTrigger>
                   <SelectContent className="max-h-80">
                     <SelectItem value="all">Barcha hududlar</SelectItem>
-                    {REGIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                    {REGIONS.map(r => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={language} onValueChange={setLanguage}>
@@ -326,7 +322,12 @@ const DoctorsPage = () => {
               )}
             </>
           ) : (
-            <CuratedSections />
+            <>
+              <CuratedSections />
+              <div className="mt-12">
+                <SpecialtyHubLinks />
+              </div>
+            </>
           )}
         </div>
       </section>

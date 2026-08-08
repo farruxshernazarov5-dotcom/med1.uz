@@ -207,6 +207,17 @@ async function loadDynamic() {
   } catch (e) { console.warn("doctors load failed:", (e as Error).message); }
 
 
+  // Doctor specialty + region landing hubs (/doctors/mutaxassislik/:slug)
+  try {
+    const mod: any = await import("../src/data/doctorSpecialties");
+    for (const sp of mod.DOCTOR_SPECIALTIES ?? []) {
+      dynamicEntries.push({ path: `/doctors/mutaxassislik/${sp.slug}`, changefreq: "daily", priority: "0.8" });
+      for (const r of mod.DOCTOR_REGIONS ?? []) {
+        dynamicEntries.push({ path: `/doctors/mutaxassislik/${sp.slug}?hudud=${r.slug}`, changefreq: "weekly", priority: "0.6" });
+      }
+    }
+  } catch (e) { console.warn("doctor specialties load failed:", (e as Error).message); }
+
   // MedTech: /med-tech/:equipmentId
   try {
     const src = readFileSync(resolve("src/data/medtech.ts"), "utf8");

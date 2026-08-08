@@ -10,6 +10,9 @@
     <loc>https://www.med1.uz/sitemap-dental.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://www.med1.uz/sitemap-doctors.xml</loc>
+    <loc>https://www.med1.uz/sitemap-doctors-1.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.med1.uz/sitemap-doctors-2.xml</loc>
   </sitemap>
 </sitemapindex>
