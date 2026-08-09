@@ -13,7 +13,6 @@ import {
 import { Search, Stethoscope, Filter, X, Map as MapIcon, Sparkles, Heart, Building2 } from "lucide-react";
 import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 import DoctorCard, { DoctorCardData } from "@/components/doctors/DoctorCard";
-import CuratedSections from "@/components/doctors/CuratedSections";
 import CompareBar from "@/components/doctors/CompareBar";
 import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import SpecialtyHubLinks from "@/components/doctors/SpecialtyHubLinks";
@@ -59,10 +58,6 @@ const DoctorsPage = () => {
     specialty !== "all" || region !== "all" || language !== "all" ||
     minRating !== "0" || minExp !== "0" ||
     debouncedSearch.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
-
-  // Always render the public catalog. Previously an unfiltered visit skipped
-  // the database query entirely, which looked like an empty doctor directory.
-  const isBrowsing = true;
 
   // Debounce free-text search so each keystroke does not trigger a count query
   useEffect(() => {
