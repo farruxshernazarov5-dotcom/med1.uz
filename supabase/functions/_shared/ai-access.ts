@@ -334,13 +334,16 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       const access = Array.isArray(accessRows) ? accessRows[0] : accessRows;
       if (access) {
         const allowed = (access.allowed_services as string[]) || [];
-        if (allowed.length > 0 && !allowed.includes(serviceId)) {
+        // Coin-based access must match the frontend: any 1-Coin service can be
+        // paid from real balance, including the monthly bonus grant.
+        const isBonusCoinService = creditCost === 1;
+        if (!isBonusCoinService && allowed.length > 0 && !allowed.includes(serviceId)) {
           return { allowed: false, status: 403, error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.` };
         }
-        if (typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) {
+        if (!isBonusCoinService && typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) {
           return { allowed: false, status: 429, error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}).` };
         }
-        if (typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit) {
+        if (!isBonusCoinService && typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit) {
           return { allowed: false, status: 429, error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}).` };
         }
       }

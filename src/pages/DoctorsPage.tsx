@@ -13,7 +13,6 @@ import {
 import { Search, Stethoscope, Filter, X, Map as MapIcon, Sparkles, Heart, Building2 } from "lucide-react";
 import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 import DoctorCard, { DoctorCardData } from "@/components/doctors/DoctorCard";
-import CuratedSections from "@/components/doctors/CuratedSections";
 import CompareBar from "@/components/doctors/CompareBar";
 import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import SpecialtyHubLinks from "@/components/doctors/SpecialtyHubLinks";
@@ -60,8 +59,6 @@ const DoctorsPage = () => {
     minRating !== "0" || minExp !== "0" ||
     debouncedSearch.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
 
-  const isBrowsing = filtersActive; // show list only when user searches/filters
-
   // Debounce free-text search so each keystroke does not trigger a count query
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -80,7 +77,6 @@ const DoctorsPage = () => {
   }, [clinicIdParam]);
 
   useEffect(() => {
-    if (!isBrowsing) { setDoctors([]); setTotal(0); return; }
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -117,7 +113,7 @@ const DoctorsPage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [isBrowsing, debouncedSearch, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
+  }, [debouncedSearch, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
 
   const clearFilters = () => {
     setSearch(""); setSpecialty("all"); setRegion("all"); setLanguage("all");
@@ -276,8 +272,7 @@ const DoctorsPage = () => {
 
       <section className="py-10">
         <div className="container mx-auto px-4 max-w-6xl">
-          {isBrowsing ? (
-            <>
+          <>
               <div className="flex items-center justify-between mb-6">
                 <p className="text-sm text-muted-foreground">
                   {loading ? "Yuklanmoqda..." : `${total.toLocaleString()} ta shifokor topildi`}
@@ -320,15 +315,10 @@ const DoctorsPage = () => {
                   )}
                 </>
               )}
-            </>
-          ) : (
-            <>
-              <CuratedSections />
-              <div className="mt-12">
-                <SpecialtyHubLinks />
-              </div>
-            </>
-          )}
+            <div className="mt-12">
+              <SpecialtyHubLinks />
+            </div>
+          </>
         </div>
       </section>
 
