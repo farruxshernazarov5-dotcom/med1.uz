@@ -1,7 +1,7 @@
 /**
  * Regression tests for CreditProvider:
  *  - Renders inside <BrowserRouter> without throwing (useLocation crash regression)
- *  - Refetches credits when the route changes
+ *  - Does not refetch a fresh credit cache on route changes
  *  - Hydrates initial balance from sessionStorage so deep-link / refresh paints
  *    the correct value without a loading flash
  */
@@ -31,6 +31,7 @@ vi.mock("@/integrations/supabase/client", () => {
   return {
     supabase: {
       from: () => builder(),
+      rpc: () => Promise.resolve({ data: null, error: null }),
       channel: () => ({ on: () => ({ subscribe: () => ({}) }) }),
       removeChannel: () => {},
     },
@@ -77,18 +78,15 @@ describe("CreditProvider", () => {
     expect(fetchSpy).toHaveBeenCalled();
   });
 
-  it("refetches credits on client-side route change (regression: routing sync)", async () => {
+  it("reuses a fresh cache on client-side route change", async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId("balance").textContent).toBe("42"));
     const before = fetchSpy.mock.calls.length;
     expect(before).toBeGreaterThan(0);
-    await act(async () => { await new Promise((r) => setTimeout(r, 1700)); });
     await act(async () => { screen.getByTestId("go").click(); });
-    await waitFor(
-      () => expect(fetchSpy.mock.calls.length).toBeGreaterThan(before),
-      { timeout: 3000 },
-    );
-  }, 10000);
+    await act(async () => { await new Promise((r) => setTimeout(r, 50)); });
+    expect(fetchSpy.mock.calls.length).toBe(before);
+  });
 
   it("hydrates initial balance from sessionStorage on deep-link entry", async () => {
     sessionStorage.setItem(
