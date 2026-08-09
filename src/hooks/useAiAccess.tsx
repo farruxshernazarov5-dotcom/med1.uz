@@ -31,7 +31,7 @@ interface AiAccessState {
 const DEFAULT_ACCESS: AiAccess = {
   plan_id: "free",
   tier: "free",
-  daily_limit: 1,
+  daily_limit: FREE_MONTHLY_GRANT,
   monthly_limit: 30,
   allowed_services: ["ai-health-assistant", "symptom-checker"],
   status: "active",
@@ -76,7 +76,7 @@ export function useAiAccess(): AiAccessState {
       setAccess(row ? {
         plan_id: row.plan_id ?? "free",
         tier: (row.tier ?? "free") as any,
-        daily_limit: row.daily_limit ?? 1,
+        daily_limit: row.daily_limit ?? FREE_MONTHLY_GRANT,
         monthly_limit: row.monthly_limit ?? 30,
         allowed_services: (row.allowed_services as string[]) ?? DEFAULT_ACCESS.allowed_services,
         status: row.status ?? "active",
