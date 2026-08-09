@@ -60,7 +60,9 @@ const DoctorsPage = () => {
     minRating !== "0" || minExp !== "0" ||
     debouncedSearch.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
 
-  const isBrowsing = filtersActive; // show list only when user searches/filters
+  // Always render the public catalog. Previously an unfiltered visit skipped
+  // the database query entirely, which looked like an empty doctor directory.
+  const isBrowsing = true;
 
   // Debounce free-text search so each keystroke does not trigger a count query
   useEffect(() => {
@@ -80,7 +82,6 @@ const DoctorsPage = () => {
   }, [clinicIdParam]);
 
   useEffect(() => {
-    if (!isBrowsing) { setDoctors([]); setTotal(0); return; }
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -117,7 +118,7 @@ const DoctorsPage = () => {
       }
     })();
     return () => { cancelled = true; };
-  }, [isBrowsing, debouncedSearch, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
+  }, [debouncedSearch, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
 
   const clearFilters = () => {
     setSearch(""); setSpecialty("all"); setRegion("all"); setLanguage("all");
@@ -276,8 +277,7 @@ const DoctorsPage = () => {
 
       <section className="py-10">
         <div className="container mx-auto px-4 max-w-6xl">
-          {isBrowsing ? (
-            <>
+          <>
               <div className="flex items-center justify-between mb-6">
                 <p className="text-sm text-muted-foreground">
                   {loading ? "Yuklanmoqda..." : `${total.toLocaleString()} ta shifokor topildi`}
@@ -320,15 +320,10 @@ const DoctorsPage = () => {
                   )}
                 </>
               )}
-            </>
-          ) : (
-            <>
-              <CuratedSections />
-              <div className="mt-12">
-                <SpecialtyHubLinks />
-              </div>
-            </>
-          )}
+            <div className="mt-12">
+              <SpecialtyHubLinks />
+            </div>
+          </>
         </div>
       </section>
 
