@@ -50,6 +50,18 @@ const SponsorsLeaderboard = () => {
   const [showAll, setShowAll] = useState(false);
   const [animatedTotal, setAnimatedTotal] = useState(0);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyCard = async () => {
+    try {
+      await navigator.clipboard.writeText(CARD_NUMBER);
+      setCopied(true);
+      toast({ title: "Karta raqami nusxalandi", description: formatCard(CARD_NUMBER) });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ title: "Nusxalab bo'lmadi", description: formatCard(CARD_NUMBER), variant: "destructive" });
+    }
+  };
 
   const totalAmount = DEMO_SPONSORS.reduce((s, sp) => s + sp.amount, 0);
   const progressPercent = Math.min((totalAmount / GOAL_AMOUNT) * 100, 100);
