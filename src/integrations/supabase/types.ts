@@ -16918,6 +16918,18 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_public_sponsors: {
+        Args: { _limit?: number }
+        Returns: {
+          amount: number
+          created_at: string
+          display_name: string
+          id: string
+          is_anonymous: boolean
+          message: string
+          region: string
+        }[]
+      }
       get_referral_stats: {
         Args: { _owner_id: string }
         Returns: {
@@ -16941,6 +16953,14 @@ export type Database = {
           limits: Json
           status: string
           tier: string
+        }[]
+      }
+      get_sponsors_summary: {
+        Args: never
+        Returns: {
+          max_amount: number
+          sponsors_count: number
+          total_amount: number
         }[]
       }
       get_user_ai_access: {
