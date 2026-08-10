@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Copy, Check, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,10 @@ const SponsorApplyDialog = ({ open, onOpenChange, defaultAmount = "", onSubmitte
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open && defaultAmount) setAmount(defaultAmount);
+  }, [open, defaultAmount]);
 
   const copyCard = async () => {
     try {
