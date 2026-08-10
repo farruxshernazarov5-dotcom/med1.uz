@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Trophy, Star, Crown, Medal, Gift, Users, TrendingUp, Sparkles, Zap, Target, ArrowUp } from "lucide-react";
+import { Heart, Trophy, Star, Crown, Medal, Gift, Users, TrendingUp, Sparkles, Zap, Target, ArrowUp, CreditCard, Copy, Check, Stethoscope, Cpu, BookOpen, ShieldCheck, HandHeart, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -25,6 +25,24 @@ const DEMO_SPONSORS = [
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000, 100000, 200000];
 const GOAL_AMOUNT = 5000000;
 
+const CARD_NUMBER = "5614684809699026";
+const CARD_HOLDER = "Shernazarov F";
+
+const FUND_USAGE = [
+  { icon: Cpu, title: "AI xizmatlari", desc: "14+ AI modul serverlari va tibbiy modellar uchun", percent: 40, color: "from-violet-500 to-purple-600" },
+  { icon: BookOpen, title: "Bilimlar bazasi", desc: "12 000+ tibbiy maqola va atamalarni yangilash", percent: 25, color: "from-blue-500 to-indigo-600" },
+  { icon: Stethoscope, title: "Yangi xizmatlar", desc: "Shifokor qidiruv, telemeditsina, laboratoriya", percent: 20, color: "from-emerald-500 to-teal-600" },
+  { icon: ShieldCheck, title: "Xavfsizlik", desc: "Ma'lumotlar himoyasi va tizim barqarorligi", percent: 15, color: "from-amber-500 to-orange-600" },
+];
+
+const IMPACT_TIERS = [
+  { amount: 10000, label: "1 000 foydalanuvchiga bepul AI maslahat", emoji: "💡" },
+  { amount: 50000, label: "Bir kunlik server xarajati qoplanadi", emoji: "⚡" },
+  { amount: 200000, label: "Yangi tibbiy modul ishga tushadi", emoji: "🚀" },
+];
+
+const formatCard = (v: string) => v.replace(/(.{4})/g, "$1 ").trim();
+
 const SponsorsLeaderboard = () => {
   const [showDonate, setShowDonate] = useState(false);
   const [amount, setAmount] = useState("");
@@ -32,6 +50,18 @@ const SponsorsLeaderboard = () => {
   const [showAll, setShowAll] = useState(false);
   const [animatedTotal, setAnimatedTotal] = useState(0);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyCard = async () => {
+    try {
+      await navigator.clipboard.writeText(CARD_NUMBER);
+      setCopied(true);
+      toast({ title: "Karta raqami nusxalandi", description: formatCard(CARD_NUMBER) });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ title: "Nusxalab bo'lmadi", description: formatCard(CARD_NUMBER), variant: "destructive" });
+    }
+  };
 
   const totalAmount = DEMO_SPONSORS.reduce((s, sp) => s + sp.amount, 0);
   const progressPercent = Math.min((totalAmount / GOAL_AMOUNT) * 100, 100);
@@ -91,6 +121,42 @@ const SponsorsLeaderboard = () => {
             Loyiha rivojiga hissa qo'shgan barcha homiylarimizga minnatdorchilik bildiramiz!
           </p>
         </div>
+
+        {/* Donation card — always visible */}
+        <div className="max-w-2xl mx-auto mb-10">
+          <div className="relative rounded-3xl p-[1px] bg-gradient-to-r from-primary via-secondary to-emerald-500 shadow-2xl">
+            <div className="rounded-3xl bg-card p-6 md:p-7">
+              <div className="flex items-center gap-2 mb-4">
+                <CreditCard className="w-5 h-5 text-primary" />
+                <span className="font-bold text-foreground">Hissa qo'shish uchun karta</span>
+                <Badge className="ml-auto bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">HUMO / UZCARD</Badge>
+              </div>
+              <button
+                onClick={copyCard}
+                className="w-full group text-left rounded-2xl bg-gradient-to-br from-[#0A2540] to-[#1e3a5f] p-5 hover:shadow-lg transition-all">
+                <p className="text-white/50 text-[11px] mb-1">Karta raqami</p>
+                <p className="font-mono text-xl md:text-2xl font-black text-white tracking-wider select-all">
+                  {formatCard(CARD_NUMBER)}
+                </p>
+                <div className="flex items-end justify-between mt-4">
+                  <div>
+                    <p className="text-white/50 text-[10px]">Karta egasi</p>
+                    <p className="text-white font-semibold text-sm uppercase tracking-wide">{CARD_HOLDER}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-white/10 px-3 py-2 rounded-lg group-hover:bg-white/20 transition-colors">
+                    {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    {copied ? "Nusxalandi" : "Nusxalash"}
+                  </span>
+                </div>
+              </button>
+              <p className="text-[11px] text-muted-foreground mt-3 text-center">
+                Har qanday summa — hatto 5 000 so'm ham loyihaga katta yordam. Rahmat! 💚
+              </p>
+            </div>
+          </div>
+        </div>
+
+
 
         {/* Progress bar */}
         <div className="max-w-2xl mx-auto mb-10">
@@ -221,6 +287,77 @@ const SponsorsLeaderboard = () => {
           )}
         </div>
 
+        {/* Where the money goes */}
+        <div className="max-w-4xl mx-auto mt-14">
+          <h3 className="text-center font-black text-xl md:text-2xl text-foreground mb-2">
+            Yig'ilgan mablag' qayerga sarflanadi?
+          </h3>
+          <p className="text-center text-sm text-muted-foreground mb-7 max-w-xl mx-auto">
+            Har bir so'm shaffof tarzda platformani yaxshilashga yo'naltiriladi — yangi xizmatlar,
+            tezroq ishlash va foydalanuvchilar uchun qulayliklar.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {FUND_USAGE.map((f, i) => (
+              <div key={i} className="group bg-card border border-border rounded-2xl p-5 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className={`w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                    <f.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-bold text-foreground text-sm">{f.title}</p>
+                      <span className="text-xs font-black text-primary">{f.percent}%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{f.desc}</p>
+                    <div className="h-1.5 bg-muted rounded-full mt-3 overflow-hidden">
+                      <div className={`h-full rounded-full bg-gradient-to-r ${f.color}`} style={{ width: `${f.percent}%` }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Impact tiers — psychological nudge */}
+        <div className="max-w-4xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {IMPACT_TIERS.map((t, i) => (
+            <button key={i} onClick={() => { setAmount(String(t.amount)); setShowDonate(true); }}
+              className="text-left bg-gradient-to-br from-card to-primary/5 border border-primary/15 rounded-2xl p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+              <span className="text-2xl">{t.emoji}</span>
+              <p className="font-black text-foreground text-lg mt-2">{t.amount.toLocaleString()} so'm</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{t.label}</p>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-primary mt-3">
+                Shu summani tanlash <ArrowUp className="w-3 h-3 rotate-45" />
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Creative thank-you */}
+        <div className="max-w-3xl mx-auto mt-12">
+          <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-card to-primary/5 p-7 md:p-9 text-center">
+            <Quote className="absolute top-4 left-4 w-10 h-10 text-emerald-500/10" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/25">
+              <HandHeart className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-black text-xl text-foreground mb-3">Tashakkurnoma 🌿</h3>
+            <p className="text-muted-foreground leading-relaxed max-w-xl mx-auto">
+              Siz shunchaki pul o'tkazmaysiz — siz kimningdir vaqtida to'g'ri maslahat olishiga,
+              kimningdir kasalligini erta aniqlashiga sabab bo'lasiz.
+              <br className="hidden md:block" />
+              <strong className="text-foreground"> Yaxshilik zanjirining bir halqasi bo'lganingiz uchun rahmat!</strong>
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+              {["Ismingiz homiylar reytingida", "Rasmiy tashakkurnoma", "Premium xizmatlarga erta kirish"].map((b, i) => (
+                <Badge key={i} className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-medium">
+                  <Gift className="w-3 h-3 mr-1" /> {b}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* CTA - premium */}
         <div className="text-center mt-12 animate-fade-in">
           <div className="relative max-w-xl mx-auto">
@@ -292,6 +429,18 @@ const SponsorsLeaderboard = () => {
                 </p>
               </div>
             )}
+            <button onClick={copyCard}
+              className="w-full text-left rounded-xl bg-gradient-to-br from-[#0A2540] to-[#1e3a5f] p-4">
+              <p className="text-white/50 text-[10px]">Karta raqami — nusxalab o'tkazing</p>
+              <p className="font-mono text-lg font-black text-white tracking-wider">{formatCard(CARD_NUMBER)}</p>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-white/70 text-xs uppercase">{CARD_HOLDER}</span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-white/10 px-2 py-1 rounded">
+                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  {copied ? "Nusxalandi" : "Nusxalash"}
+                </span>
+              </div>
+            </button>
             <Button onClick={handleDonate}
               className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold shadow-lg" size="lg">
               <Heart className="w-5 h-5 mr-2" /> Hissa qo'shish
