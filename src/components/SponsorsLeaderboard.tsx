@@ -287,6 +287,77 @@ const SponsorsLeaderboard = () => {
           )}
         </div>
 
+        {/* Where the money goes */}
+        <div className="max-w-4xl mx-auto mt-14">
+          <h3 className="text-center font-black text-xl md:text-2xl text-foreground mb-2">
+            Yig'ilgan mablag' qayerga sarflanadi?
+          </h3>
+          <p className="text-center text-sm text-muted-foreground mb-7 max-w-xl mx-auto">
+            Har bir so'm shaffof tarzda platformani yaxshilashga yo'naltiriladi — yangi xizmatlar,
+            tezroq ishlash va foydalanuvchilar uchun qulayliklar.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {FUND_USAGE.map((f, i) => (
+              <div key={i} className="group bg-card border border-border rounded-2xl p-5 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className={`w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                    <f.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-bold text-foreground text-sm">{f.title}</p>
+                      <span className="text-xs font-black text-primary">{f.percent}%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{f.desc}</p>
+                    <div className="h-1.5 bg-muted rounded-full mt-3 overflow-hidden">
+                      <div className={`h-full rounded-full bg-gradient-to-r ${f.color}`} style={{ width: `${f.percent}%` }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Impact tiers — psychological nudge */}
+        <div className="max-w-4xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {IMPACT_TIERS.map((t, i) => (
+            <button key={i} onClick={() => { setAmount(String(t.amount)); setShowDonate(true); }}
+              className="text-left bg-gradient-to-br from-card to-primary/5 border border-primary/15 rounded-2xl p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+              <span className="text-2xl">{t.emoji}</span>
+              <p className="font-black text-foreground text-lg mt-2">{t.amount.toLocaleString()} so'm</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{t.label}</p>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-primary mt-3">
+                Shu summani tanlash <ArrowUp className="w-3 h-3 rotate-45" />
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Creative thank-you */}
+        <div className="max-w-3xl mx-auto mt-12">
+          <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-card to-primary/5 p-7 md:p-9 text-center">
+            <Quote className="absolute top-4 left-4 w-10 h-10 text-emerald-500/10" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/25">
+              <HandHeart className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="font-black text-xl text-foreground mb-3">Tashakkurnoma 🌿</h3>
+            <p className="text-muted-foreground leading-relaxed max-w-xl mx-auto">
+              Siz shunchaki pul o'tkazmaysiz — siz kimningdir vaqtida to'g'ri maslahat olishiga,
+              kimningdir kasalligini erta aniqlashiga sabab bo'lasiz.
+              <br className="hidden md:block" />
+              <strong className="text-foreground"> Yaxshilik zanjirining bir halqasi bo'lganingiz uchun rahmat!</strong>
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+              {["Ismingiz homiylar reytingida", "Rasmiy tashakkurnoma", "Premium xizmatlarga erta kirish"].map((b, i) => (
+                <Badge key={i} className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 font-medium">
+                  <Gift className="w-3 h-3 mr-1" /> {b}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* CTA - premium */}
         <div className="text-center mt-12 animate-fade-in">
           <div className="relative max-w-xl mx-auto">
