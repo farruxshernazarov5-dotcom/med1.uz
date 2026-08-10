@@ -110,6 +110,8 @@ const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage")
 const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
 const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
 const SeoMonitorPage = lazy(() => import("./pages/admin/SeoMonitorPage"));
+const SponsorsModerationPage = lazy(() => import("./pages/admin/SponsorsModerationPage"));
+const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
 
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
