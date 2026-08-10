@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Trophy, Star, Crown, Medal, Gift, Users, TrendingUp, Sparkles, Zap, Target, ArrowUp } from "lucide-react";
+import { Heart, Trophy, Star, Crown, Medal, Gift, Users, TrendingUp, Sparkles, Zap, Target, ArrowUp, CreditCard, Copy, Check, Stethoscope, Cpu, BookOpen, ShieldCheck, HandHeart, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -24,6 +24,24 @@ const DEMO_SPONSORS = [
 
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000, 100000, 200000];
 const GOAL_AMOUNT = 5000000;
+
+const CARD_NUMBER = "5614684809699026";
+const CARD_HOLDER = "Shernazarov F";
+
+const FUND_USAGE = [
+  { icon: Cpu, title: "AI xizmatlari", desc: "14+ AI modul serverlari va tibbiy modellar uchun", percent: 40, color: "from-violet-500 to-purple-600" },
+  { icon: BookOpen, title: "Bilimlar bazasi", desc: "12 000+ tibbiy maqola va atamalarni yangilash", percent: 25, color: "from-blue-500 to-indigo-600" },
+  { icon: Stethoscope, title: "Yangi xizmatlar", desc: "Shifokor qidiruv, telemeditsina, laboratoriya", percent: 20, color: "from-emerald-500 to-teal-600" },
+  { icon: ShieldCheck, title: "Xavfsizlik", desc: "Ma'lumotlar himoyasi va tizim barqarorligi", percent: 15, color: "from-amber-500 to-orange-600" },
+];
+
+const IMPACT_TIERS = [
+  { amount: 10000, label: "1 000 foydalanuvchiga bepul AI maslahat", emoji: "💡" },
+  { amount: 50000, label: "Bir kunlik server xarajati qoplanadi", emoji: "⚡" },
+  { amount: 200000, label: "Yangi tibbiy modul ishga tushadi", emoji: "🚀" },
+];
+
+const formatCard = (v: string) => v.replace(/(.{4})/g, "$1 ").trim();
 
 const SponsorsLeaderboard = () => {
   const [showDonate, setShowDonate] = useState(false);
