@@ -429,6 +429,18 @@ const SponsorsLeaderboard = () => {
                 </p>
               </div>
             )}
+            <button onClick={copyCard}
+              className="w-full text-left rounded-xl bg-gradient-to-br from-[#0A2540] to-[#1e3a5f] p-4">
+              <p className="text-white/50 text-[10px]">Karta raqami — nusxalab o'tkazing</p>
+              <p className="font-mono text-lg font-black text-white tracking-wider">{formatCard(CARD_NUMBER)}</p>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-white/70 text-xs uppercase">{CARD_HOLDER}</span>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-white/10 px-2 py-1 rounded">
+                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  {copied ? "Nusxalandi" : "Nusxalash"}
+                </span>
+              </div>
+            </button>
             <Button onClick={handleDonate}
               className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold shadow-lg" size="lg">
               <Heart className="w-5 h-5 mr-2" /> Hissa qo'shish
