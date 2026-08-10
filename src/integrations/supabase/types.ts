@@ -7927,6 +7927,93 @@ export type Database = {
           },
         ]
       }
+      fund_allocations: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          percent: number
+          planned_amount: number
+          sort_order: number
+          spent_amount: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          percent?: number
+          planned_amount?: number
+          sort_order?: number
+          spent_amount?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          percent?: number
+          planned_amount?: number
+          sort_order?: number
+          spent_amount?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fund_updates: {
+        Row: {
+          amount_used: number
+          body: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          period_end: string | null
+          period_start: string | null
+          period_type: string
+          progress_percent: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount_used?: number
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string
+          progress_percent?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount_used?: number
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string
+          progress_percent?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       geo_creative_templates: {
         Row: {
           category: string
@@ -15898,6 +15985,63 @@ export type Database = {
           token_overage_enabled?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      sponsor_contributions: {
+        Row: {
+          amount: number
+          created_at: string
+          display_name: string
+          full_name: string
+          id: string
+          is_anonymous: boolean
+          message: string | null
+          moderation_note: string | null
+          paid_at: string | null
+          phone: string | null
+          region: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          display_name: string
+          full_name: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          moderation_note?: string | null
+          paid_at?: string | null
+          phone?: string | null
+          region?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          display_name?: string
+          full_name?: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          moderation_note?: string | null
+          paid_at?: string | null
+          phone?: string | null
+          region?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
