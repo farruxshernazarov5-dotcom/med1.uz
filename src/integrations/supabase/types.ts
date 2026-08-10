@@ -7927,6 +7927,93 @@ export type Database = {
           },
         ]
       }
+      fund_allocations: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          percent: number
+          planned_amount: number
+          sort_order: number
+          spent_amount: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          percent?: number
+          planned_amount?: number
+          sort_order?: number
+          spent_amount?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          percent?: number
+          planned_amount?: number
+          sort_order?: number
+          spent_amount?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fund_updates: {
+        Row: {
+          amount_used: number
+          body: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          period_end: string | null
+          period_start: string | null
+          period_type: string
+          progress_percent: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount_used?: number
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string
+          progress_percent?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount_used?: number
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string
+          progress_percent?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       geo_creative_templates: {
         Row: {
           category: string
@@ -15901,6 +15988,63 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsor_contributions: {
+        Row: {
+          amount: number
+          created_at: string
+          display_name: string
+          full_name: string
+          id: string
+          is_anonymous: boolean
+          message: string | null
+          moderation_note: string | null
+          paid_at: string | null
+          phone: string | null
+          region: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          display_name: string
+          full_name: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          moderation_note?: string | null
+          paid_at?: string | null
+          phone?: string | null
+          region?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          display_name?: string
+          full_name?: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          moderation_note?: string | null
+          paid_at?: string | null
+          phone?: string | null
+          region?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -16774,6 +16918,18 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_public_sponsors: {
+        Args: { _limit?: number }
+        Returns: {
+          amount: number
+          created_at: string
+          display_name: string
+          id: string
+          is_anonymous: boolean
+          message: string
+          region: string
+        }[]
+      }
       get_referral_stats: {
         Args: { _owner_id: string }
         Returns: {
@@ -16797,6 +16953,14 @@ export type Database = {
           limits: Json
           status: string
           tier: string
+        }[]
+      }
+      get_sponsors_summary: {
+        Args: never
+        Returns: {
+          max_amount: number
+          sponsors_count: number
+          total_amount: number
         }[]
       }
       get_user_ai_access: {

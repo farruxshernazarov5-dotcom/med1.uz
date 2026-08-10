@@ -110,6 +110,8 @@ const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage")
 const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
 const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
 const SeoMonitorPage = lazy(() => import("./pages/admin/SeoMonitorPage"));
+const SponsorsModerationPage = lazy(() => import("./pages/admin/SponsorsModerationPage"));
+const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
 
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
@@ -279,6 +281,8 @@ const App = () => (
                 <Route path="/admin/payment-sandbox" element={<PaymentSandboxPage />} />
                 <Route path="/admin/tax-reports" element={<TaxReportsPage />} />
                 <Route path="/admin/seo-monitor" element={<SeoMonitorPage />} />
+                <Route path="/admin/sponsors" element={<SponsorsModerationPage />} />
+                <Route path="/transparency" element={<TransparencyPage />} />
 
                 <Route path="/admin/api-center" element={<APICenterPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
