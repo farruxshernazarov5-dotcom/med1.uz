@@ -122,6 +122,42 @@ const SponsorsLeaderboard = () => {
           </p>
         </div>
 
+        {/* Donation card — always visible */}
+        <div className="max-w-2xl mx-auto mb-10">
+          <div className="relative rounded-3xl p-[1px] bg-gradient-to-r from-primary via-secondary to-emerald-500 shadow-2xl">
+            <div className="rounded-3xl bg-card p-6 md:p-7">
+              <div className="flex items-center gap-2 mb-4">
+                <CreditCard className="w-5 h-5 text-primary" />
+                <span className="font-bold text-foreground">Hissa qo'shish uchun karta</span>
+                <Badge className="ml-auto bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px]">HUMO / UZCARD</Badge>
+              </div>
+              <button
+                onClick={copyCard}
+                className="w-full group text-left rounded-2xl bg-gradient-to-br from-[#0A2540] to-[#1e3a5f] p-5 hover:shadow-lg transition-all">
+                <p className="text-white/50 text-[11px] mb-1">Karta raqami</p>
+                <p className="font-mono text-xl md:text-2xl font-black text-white tracking-wider select-all">
+                  {formatCard(CARD_NUMBER)}
+                </p>
+                <div className="flex items-end justify-between mt-4">
+                  <div>
+                    <p className="text-white/50 text-[10px]">Karta egasi</p>
+                    <p className="text-white font-semibold text-sm uppercase tracking-wide">{CARD_HOLDER}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-white/10 px-3 py-2 rounded-lg group-hover:bg-white/20 transition-colors">
+                    {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    {copied ? "Nusxalandi" : "Nusxalash"}
+                  </span>
+                </div>
+              </button>
+              <p className="text-[11px] text-muted-foreground mt-3 text-center">
+                Har qanday summa — hatto 5 000 so'm ham loyihaga katta yordam. Rahmat! 💚
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+
         {/* Progress bar */}
         <div className="max-w-2xl mx-auto mb-10">
           <div className="flex items-center justify-between mb-2">
