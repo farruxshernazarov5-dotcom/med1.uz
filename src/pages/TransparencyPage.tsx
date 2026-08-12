@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import SponsorApplyDialog from "@/components/sponsors/SponsorApplyDialog";
+import useCountUp from "@/hooks/useCountUp";
 
 const Footer = lazy(() => import("@/components/Footer"));
 
@@ -58,6 +59,9 @@ const TransparencyPage = () => {
   useEffect(() => { load(); }, []);
 
   const totalSpent = allocations.reduce((s, a) => s + Number(a.spent_amount), 0);
+  const animatedTotal = useCountUp(total);
+  const animatedCount = useCountUp(count, 900);
+  const animatedSpent = useCountUp(totalSpent);
   const progressPercent = Math.min((total / GOAL_AMOUNT) * 100, 100);
 
   return (

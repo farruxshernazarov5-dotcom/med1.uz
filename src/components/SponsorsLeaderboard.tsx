@@ -114,6 +114,11 @@ const SponsorsLeaderboard = () => {
             <ShieldCheck className="w-4 h-4" /> Mablag' qayerga sarflanadi — shaffoflik sahifasi
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
+          <div>
+            <Link to="/sponsors" className="inline-flex items-center gap-1.5 mt-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+              <Users className="w-4 h-4" /> Barcha homiylar profillari
+            </Link>
+          </div>
         </div>
 
         {/* Donation card */}
@@ -209,7 +214,11 @@ const SponsorsLeaderboard = () => {
                       {idx + 1}
                     </div>
                   </div>
-                  <p className={`font-bold text-foreground ${isFirst ? "text-sm" : "text-xs"} truncate max-w-24 text-center`}>{sp.display_name}</p>
+                  {sp.slug ? (
+                    <Link to={`/sponsors/${sp.slug}`} className={`font-bold text-foreground hover:text-primary ${isFirst ? "text-sm" : "text-xs"} truncate max-w-24 text-center`}>{sp.display_name}</Link>
+                  ) : (
+                    <p className={`font-bold text-foreground ${isFirst ? "text-sm" : "text-xs"} truncate max-w-24 text-center`}>{sp.display_name}</p>
+                  )}
                   <p className="text-[10px] text-muted-foreground">{sp.region}</p>
                   <Badge className={`mt-1.5 ${isFirst ? "bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 dark:from-yellow-900/40 dark:to-amber-900/40 dark:text-yellow-300 shadow-sm" : "bg-muted text-muted-foreground"} ${sizes.badge} font-bold`}>
                     {(Number(sp.amount) / 1000).toFixed(0)}K UZS
@@ -258,7 +267,11 @@ const SponsorsLeaderboard = () => {
                     {sp.is_anonymous ? "🎭" : sp.display_name[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-foreground text-sm truncate">{sp.display_name}</p>
+                    {sp.slug ? (
+                      <Link to={`/sponsors/${sp.slug}`} className="font-bold text-foreground hover:text-primary text-sm truncate block">{sp.display_name}</Link>
+                    ) : (
+                      <p className="font-bold text-foreground text-sm truncate">{sp.display_name}</p>
+                    )}
                     {sp.region && <p className="text-[11px] text-muted-foreground">{sp.region}</p>}
                   </div>
                   <div className="text-right">
