@@ -112,6 +112,8 @@ const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
 const SeoMonitorPage = lazy(() => import("./pages/admin/SeoMonitorPage"));
 const SponsorsModerationPage = lazy(() => import("./pages/admin/SponsorsModerationPage"));
 const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
+const SponsorsPage = lazy(() => import("./pages/SponsorsPage"));
+const SponsorProfilePage = lazy(() => import("./pages/SponsorProfilePage"));
 
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
@@ -283,6 +285,8 @@ const App = () => (
                 <Route path="/admin/seo-monitor" element={<SeoMonitorPage />} />
                 <Route path="/admin/sponsors" element={<SponsorsModerationPage />} />
                 <Route path="/transparency" element={<TransparencyPage />} />
+                <Route path="/sponsors" element={<SponsorsPage />} />
+                <Route path="/sponsors/:slug" element={<SponsorProfilePage />} />
 
                 <Route path="/admin/api-center" element={<APICenterPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
