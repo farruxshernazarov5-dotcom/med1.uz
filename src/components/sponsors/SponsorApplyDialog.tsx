@@ -32,6 +32,9 @@ const SponsorApplyDialog = ({ open, onOpenChange, defaultAmount = "", onSubmitte
   const [phone, setPhone] = useState("+998");
   const [amount, setAmount] = useState(defaultAmount);
   const [message, setMessage] = useState("");
+  const [bio, setBio] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -54,6 +57,7 @@ const SponsorApplyDialog = ({ open, onOpenChange, defaultAmount = "", onSubmitte
   const reset = () => {
     setFullName(""); setDisplayName(""); setRegion(""); setPhone("+998");
     setAmount(""); setMessage(""); setIsAnonymous(false);
+    setBio(""); setOccupation(""); setWebsiteUrl("");
   };
 
   const submit = async () => {
@@ -70,6 +74,14 @@ const SponsorApplyDialog = ({ open, onOpenChange, defaultAmount = "", onSubmitte
     }
     if (phone.trim() && !/^\+998\d{9}$/.test(phone.trim())) {
       toast({ title: "Telefon formati: +998XXXXXXXXX", variant: "destructive" });
+      return;
+    }
+    if (bio.length > 400) {
+      toast({ title: "Bio 400 belgidan oshmasin", variant: "destructive" });
+      return;
+    }
+    if (websiteUrl.trim() && !/^https?:\/\/.+\..+/.test(websiteUrl.trim())) {
+      toast({ title: "Veb-sayt havolasi https:// bilan boshlansin", variant: "destructive" });
       return;
     }
     if (message.length > 300) {
@@ -91,6 +103,9 @@ const SponsorApplyDialog = ({ open, onOpenChange, defaultAmount = "", onSubmitte
       phone: phone.trim() === "+998" ? null : phone.trim(),
       amount: sum,
       message: message.trim() ? message.trim().slice(0, 300) : null,
+      bio: !isAnonymous && bio.trim() ? bio.trim().slice(0, 400) : null,
+      occupation: !isAnonymous && occupation.trim() ? occupation.trim().slice(0, 80) : null,
+      website_url: !isAnonymous && websiteUrl.trim() ? websiteUrl.trim().slice(0, 200) : null,
       is_anonymous: isAnonymous,
       status: "pending",
     });
@@ -160,6 +175,28 @@ const SponsorApplyDialog = ({ open, onOpenChange, defaultAmount = "", onSubmitte
               <Input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={60}
                 placeholder="Masalan: FARRUX ****" className="mt-1.5" />
             </div>
+          )}
+
+          {!isAnonymous && (
+            <>
+              <div>
+                <Label className="text-sm font-semibold">Kasb / faoliyat (ixtiyoriy)</Label>
+                <Input value={occupation} onChange={e => setOccupation(e.target.value)} maxLength={80}
+                  placeholder="Masalan: Shifokor, tadbirkor" className="mt-1.5" />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold">Qisqa bio (ixtiyoriy)</Label>
+                <Textarea value={bio} onChange={e => setBio(e.target.value)} maxLength={400} rows={3}
+                  placeholder="O'zingiz haqingizda qisqacha — ommaviy profil kartangizda ko'rinadi"
+                  className="mt-1.5" />
+                <p className="text-[10px] text-muted-foreground mt-1">{bio.length}/400 — ommaviy profil sahifangizda chiqadi</p>
+              </div>
+              <div>
+                <Label className="text-sm font-semibold">Veb-sayt (ixtiyoriy)</Label>
+                <Input value={websiteUrl} onChange={e => setWebsiteUrl(e.target.value)} maxLength={200}
+                  placeholder="https://..." className="mt-1.5" />
+              </div>
+            </>
           )}
 
           <div>

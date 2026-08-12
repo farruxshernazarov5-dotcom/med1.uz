@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import SponsorApplyDialog, { CARD_NUMBER, CARD_HOLDER, formatCard } from "@/components/sponsors/SponsorApplyDialog";
+import useCountUp from "@/hooks/useCountUp";
 
 const GOAL_AMOUNT = 5000000;
 
@@ -27,6 +28,8 @@ const IMPACT_TIERS = [
 
 interface PublicSponsor {
   id: string;
+  slug: string | null;
+  bio: string | null;
   display_name: string;
   region: string | null;
   amount: number;
@@ -38,7 +41,6 @@ const SponsorsLeaderboard = () => {
   const [showApply, setShowApply] = useState(false);
   const [applyAmount, setApplyAmount] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [animatedTotal, setAnimatedTotal] = useState(0);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -55,17 +57,7 @@ const SponsorsLeaderboard = () => {
   const top3 = sponsors.slice(0, 3);
   const rest = displaySponsors.slice(3);
 
-  useEffect(() => {
-    if (!totalAmount) { setAnimatedTotal(0); return; }
-    let start = 0;
-    const step = totalAmount / 60;
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= totalAmount) { setAnimatedTotal(totalAmount); clearInterval(timer); }
-      else setAnimatedTotal(Math.floor(start));
-    }, 16);
-    return () => clearInterval(timer);
-  }, [totalAmount]);
+  const animatedTotal = useCountUp(totalAmount);
 
   const copyCard = async () => {
     try {
