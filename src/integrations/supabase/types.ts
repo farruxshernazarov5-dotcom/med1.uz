@@ -15991,6 +15991,7 @@ export type Database = {
       sponsor_contributions: {
         Row: {
           amount: number
+          bio: string | null
           created_at: string
           display_name: string
           full_name: string
@@ -15998,17 +15999,21 @@ export type Database = {
           is_anonymous: boolean
           message: string | null
           moderation_note: string | null
+          occupation: string | null
           paid_at: string | null
           phone: string | null
           region: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          slug: string | null
           status: string
           updated_at: string
           user_id: string | null
+          website_url: string | null
         }
         Insert: {
           amount: number
+          bio?: string | null
           created_at?: string
           display_name: string
           full_name: string
@@ -16016,17 +16021,21 @@ export type Database = {
           is_anonymous?: boolean
           message?: string | null
           moderation_note?: string | null
+          occupation?: string | null
           paid_at?: string | null
           phone?: string | null
           region?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          slug?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
+          website_url?: string | null
         }
         Update: {
           amount?: number
+          bio?: string | null
           created_at?: string
           display_name?: string
           full_name?: string
@@ -16034,14 +16043,17 @@ export type Database = {
           is_anonymous?: boolean
           message?: string | null
           moderation_note?: string | null
+          occupation?: string | null
           paid_at?: string | null
           phone?: string | null
           region?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          slug?: string | null
           status?: string
           updated_at?: string
           user_id?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -16918,16 +16930,36 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_public_sponsor: {
+        Args: { _slug: string }
+        Returns: {
+          amount: number
+          bio: string
+          created_at: string
+          display_name: string
+          id: string
+          message: string
+          occupation: string
+          rank: number
+          region: string
+          slug: string
+          website_url: string
+        }[]
+      }
       get_public_sponsors: {
         Args: { _limit?: number }
         Returns: {
           amount: number
+          bio: string
           created_at: string
           display_name: string
           id: string
           is_anonymous: boolean
           message: string
+          occupation: string
           region: string
+          slug: string
+          website_url: string
         }[]
       }
       get_referral_stats: {

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import SponsorApplyDialog from "@/components/sponsors/SponsorApplyDialog";
+import useCountUp from "@/hooks/useCountUp";
 
 const Footer = lazy(() => import("@/components/Footer"));
 
@@ -58,6 +59,9 @@ const TransparencyPage = () => {
   useEffect(() => { load(); }, []);
 
   const totalSpent = allocations.reduce((s, a) => s + Number(a.spent_amount), 0);
+  const animatedTotal = useCountUp(total);
+  const animatedCount = useCountUp(count, 900);
+  const animatedSpent = useCountUp(totalSpent);
   const progressPercent = Math.min((total / GOAL_AMOUNT) * 100, 100);
 
   return (
@@ -91,10 +95,10 @@ const TransparencyPage = () => {
         {/* Summary */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-10">
           {[
-            { icon: Heart, label: "Yig'ilgan", value: `${total.toLocaleString()} so'm`, color: "from-emerald-500 to-teal-600" },
-            { icon: TrendingUp, label: "Sarflangan", value: `${totalSpent.toLocaleString()} so'm`, color: "from-blue-500 to-indigo-600" },
+            { icon: Heart, label: "Yig'ilgan", value: `${animatedTotal.toLocaleString()} so'm`, color: "from-emerald-500 to-teal-600" },
+            { icon: TrendingUp, label: "Sarflangan", value: `${animatedSpent.toLocaleString()} so'm`, color: "from-blue-500 to-indigo-600" },
             { icon: Target, label: "Maqsad", value: `${(GOAL_AMOUNT / 1e6).toFixed(0)}M so'm`, color: "from-amber-500 to-orange-600" },
-            { icon: Sparkles, label: "Homiylar", value: String(count), color: "from-violet-500 to-purple-600" },
+            { icon: Sparkles, label: "Homiylar", value: String(animatedCount), color: "from-violet-500 to-purple-600" },
           ].map((s, i) => (
             <div key={i} className="bg-card border border-border rounded-2xl p-4 text-center">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mx-auto mb-2`}>
