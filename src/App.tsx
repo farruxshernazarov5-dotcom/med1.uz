@@ -97,6 +97,7 @@ const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
 const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 const PartnerIntegrationPage = lazy(() => import("./pages/PartnerIntegrationPage"));
+const PartnerDocsPage = lazy(() => import("./pages/PartnerDocsPage"));
 
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
@@ -313,6 +314,8 @@ const App = () => (
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="/integration" element={<PartnerIntegrationPage />} />
+                <Route path="/partner-docs" element={<PartnerDocsPage />} />
+                <Route path="/docs" element={<PartnerDocsPage />} />
 
                 <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
