@@ -314,6 +314,8 @@ const App = () => (
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="/integration" element={<PartnerIntegrationPage />} />
+                <Route path="/partner-docs" element={<PartnerDocsPage />} />
+                <Route path="/docs" element={<PartnerDocsPage />} />
 
                 <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
