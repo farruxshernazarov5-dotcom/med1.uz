@@ -1,0 +1,134 @@
+{
+  "info": {
+    "name": "MED1.UZ Partner API v1",
+    "description": "Official Postman collection for the MED1.UZ Partner API. Docs: https://med1.uz/partner-docs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway" },
+    { "key": "api_key", "value": "md1_sandbox_xxx" },
+    { "key": "user_jwt", "value": "" }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "x-api-key" },
+      { "key": "value", "value": "{{api_key}}" },
+      { "key": "in", "value": "header" }
+    ]
+  },
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        { "name": "Ping", "request": { "method": "GET", "url": "{{base_url}}/v1/ping" } },
+        { "name": "Health", "request": { "method": "GET", "url": "{{base_url}}/v1/health" } },
+        { "name": "Limits", "request": { "method": "GET", "url": "{{base_url}}/v1/limits" } }
+      ]
+    },
+    {
+      "name": "Auth & User",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"+998901234567\",\n  \"password\": \"sandbox123\"\n}" },
+            "url": "{{base_url}}/v1/auth/login"
+          }
+        },
+        {
+          "name": "Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-jwt", "value": "{{user_jwt}}" }],
+            "url": "{{base_url}}/v1/user/profile"
+          }
+        },
+        {
+          "name": "Credits",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-jwt", "value": "{{user_jwt}}" }],
+            "url": "{{base_url}}/v1/user/credits"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Directory",
+      "item": [
+        { "name": "Clinics", "request": { "method": "GET", "url": "{{base_url}}/v1/clinics?city=Tashkent&limit=20" } },
+        { "name": "Doctors", "request": { "method": "GET", "url": "{{base_url}}/v1/doctors?specialty=cardiology&limit=20" } },
+        { "name": "Doctor slots", "request": { "method": "GET", "url": "{{base_url}}/v1/doctors/00000000-0000-0000-0000-000000000201/slots?date=2026-09-01" } },
+        { "name": "Nearby", "request": { "method": "GET", "url": "{{base_url}}/v1/maps/nearby?lat=41.31&lng=69.28&radius_km=5" } }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-request-id", "value": "{{$guid}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"clinic_id\": \"00000000-0000-0000-0000-000000000101\",\n  \"doctor_id\": \"00000000-0000-0000-0000-000000000201\",\n  \"date\": \"2026-09-01\",\n  \"time\": \"10:00\",\n  \"patient_name\": \"Ali Valiyev\",\n  \"patient_phone\": \"+998901234567\"\n}" },
+            "url": "{{base_url}}/v1/appointments"
+          }
+        },
+        { "name": "List appointments", "request": { "method": "GET", "url": "{{base_url}}/v1/appointments?page=1&limit=20" } }
+      ]
+    },
+    {
+      "name": "AI Services",
+      "item": [
+        {
+          "name": "AI Doctor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"messages\": [{ \"role\": \"user\", \"content\": \"Boshim og'riyapti\" }],\n  \"lang\": \"uz\"\n}" },
+            "url": "{{base_url}}/v1/ai/doctor"
+          }
+        },
+        {
+          "name": "AI Symptoms",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"symptoms\": [\"headache\", \"fever\"],\n  \"age\": 30,\n  \"lang\": \"uz\"\n}" },
+            "url": "{{base_url}}/v1/ai/symptoms"
+          }
+        },
+        {
+          "name": "AI Orchestrator",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"query\": \"Qandli diabet uchun parhez\",\n  \"lang\": \"uz\"\n}" },
+            "url": "{{base_url}}/v1/ai/orchestrator"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Register webhook",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"url\": \"https://partner.uz/hooks/med1\",\n  \"events\": [\"appointment.created\", \"payment.succeeded\"],\n  \"is_active\": true\n}" },
+            "url": "{{base_url}}/v1/webhooks"
+          }
+        },
+        { "name": "List webhooks", "request": { "method": "GET", "url": "{{base_url}}/v1/webhooks" } }
+      ]
+    }
+  ]
+}

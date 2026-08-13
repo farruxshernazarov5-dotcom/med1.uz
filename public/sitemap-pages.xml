@@ -230,14 +230,4 @@
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
-  <url>
-    <loc>https://www.med1.uz/sponsors</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.med1.uz/transparency</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
 </urlset>
