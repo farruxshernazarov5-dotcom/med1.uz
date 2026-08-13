@@ -97,6 +97,7 @@ const KnowledgePage = lazy(() => import("./pages/KnowledgePage"));
 const KnowledgeArticlePage = lazy(() => import("./pages/KnowledgeArticlePage"));
 const DevelopersPage = lazy(() => import("./pages/DevelopersPage"));
 const PartnerIntegrationPage = lazy(() => import("./pages/PartnerIntegrationPage"));
+const PartnerDocsPage = lazy(() => import("./pages/PartnerDocsPage"));
 
 const PartnerDashboardPage = lazy(() => import("./pages/PartnerDashboardPage"));
 const ReferralPage = lazy(() => import("./pages/ReferralPage"));
