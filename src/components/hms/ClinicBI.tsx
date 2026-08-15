@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { PeriodKey, PERIOD_LABELS, getRange } from "@/lib/clinicBI";
-import { computeBIMetrics } from "@/lib/clinicBIMetrics";
+import { computeBI } from "@/lib/clinicBIMetrics";
 import { useClinicBI, logReportAudit } from "@/hooks/useClinicBI";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -46,10 +46,43 @@ const ClinicBI = ({ clinicId, clinicName = "Klinika" }: Props) => {
   const [tab, setTab] = useState<TabKey>("executive");
   const [period, setPeriod] = useState<PeriodKey>("month");
   const [custom, setCustom] = useState<{ from?: string; to?: string }>({});
-  const { data, loading, lastSync, refresh } = useClinicBI(clinicId);
+  const { data, loading, lastSync, reload } = useClinicBI(clinicId);
 
   const range = useMemo(() => getRange(period, custom), [period, custom.from, custom.to]);
-  const metrics = useMemo(() => (data ? computeBIMetrics(data, range) : null), [data, range]);
+  const metrics = useMemo(() => (data ? computeBI(data, range) : null), [data, range]);
+
+  const pharmacy = useMemo(() => {
+    const rows = data.pharmacy || [];
+    const now = Date.now();
+    const low = rows.filter((r: any) => Number(r.quantity ?? r.stock_quantity ?? 0) <= Number(r.min_quantity ?? r.reorder_level ?? 0)).length;
+    const expiring = rows.filter((r: any) => {
+      const d = r.expiry_date ? new Date(r.expiry_date).getTime() : 0;
+      return d && d - now < 1000 * 60 * 60 * 24 * 90;
+    }).length;
+    const top = [...rows]
+      .map((r: any) => ({
+        name: r.name || r.drug_name || r.item_name || "—",
+        qty: Number(r.quantity ?? r.stock_quantity ?? 0),
+        value: Number(r.quantity ?? r.stock_quantity ?? 0) * Number(r.unit_price ?? r.price ?? 0),
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+    return { low, expiring, top };
+  }, [data.pharmacy]);
+
+  const referrals = useMemo(() => {
+    const rows = (data.patients || []).filter((p: any) =>
+      String(p.referral_source || p.source || p.referred_by || "").trim() !== ""
+    );
+    const converted = rows.filter((p: any) =>
+      (data.appointments || []).some((a: any) => a.patient_id === p.id)
+    );
+    const ids = new Set(converted.map((p: any) => p.id));
+    const revenue = (data.invoices || [])
+      .filter((i: any) => ids.has(i.patient_id))
+      .reduce((s: number, i: any) => s + Number(i.paid_amount || i.total_amount || 0), 0);
+    return { total: rows.length, converted: converted.length, revenue };
+  }, [data.patients, data.appointments, data.invoices]);
 
   const changeTab = (k: TabKey) => {
     setTab(k);
@@ -80,7 +113,7 @@ const ClinicBI = ({ clinicId, clinicName = "Klinika" }: Props) => {
             Real-time · oxirgi yangilanish {lastSync ? lastSync.toLocaleTimeString("uz-UZ") : "—"}
           </p>
         </div>
-        <Button size="sm" variant="outline" onClick={refresh} className="gap-1 h-8 text-xs">
+        <Button size="sm" variant="outline" onClick={reload} className="gap-1 h-8 text-xs">
           <RefreshCw className={cn("w-3 h-3", loading && "animate-spin")} /> Yangilash
         </Button>
       </div>
@@ -115,16 +148,16 @@ const ClinicBI = ({ clinicId, clinicName = "Klinika" }: Props) => {
       </div>
 
       {/* Content */}
-      {tab === "executive" && <BIExecutive m={metrics} clinicName={clinicName} onDrill={(k) => changeTab(k as TabKey)} />}
-      {tab === "finance" && <BIFinance m={metrics} clinicName={clinicName} />}
-      {tab === "doctors" && <BIDoctors m={metrics} clinicName={clinicName} />}
-      {tab === "patients" && <BIPatients m={metrics} clinicName={clinicName} />}
-      {tab === "operations" && <BIOperations m={metrics} clinicName={clinicName} />}
-      {tab === "growth" && <BIGrowth m={metrics} referrals={data!.referrals} />}
-      {tab === "targets" && <BITargets m={metrics} clinicId={clinicId} targets={data!.targets} onSaved={refresh} />}
+      {tab === "executive" && <BIExecutive m={metrics} onDrill={(k) => changeTab(k as TabKey)} />}
+      {tab === "finance" && <BIFinance m={metrics} />}
+      {tab === "doctors" && <BIDoctors m={metrics} />}
+      {tab === "patients" && <BIPatients m={metrics} />}
+      {tab === "operations" && <BIOperations m={metrics} pharmacyLow={pharmacy.low} pharmacyExpiring={pharmacy.expiring} topDrugs={pharmacy.top} />}
+      {tab === "growth" && <BIGrowth m={metrics} referrals={referrals} />}
+      {tab === "targets" && <BITargets m={metrics} clinicId={clinicId} targets={data.targets} onSaved={reload} />}
       {tab === "analyst" && <BIAnalyst m={metrics} clinicId={clinicId} />}
       {tab === "builder" && <BIBuilder m={metrics} clinicId={clinicId} clinicName={clinicName} />}
-      {tab === "classic" && <HMSReports />}
+      {tab === "classic" && <HMSReports clinicId={clinicId} />}
     </div>
   );
 };
