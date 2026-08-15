@@ -5,7 +5,7 @@ import { fmtMoney } from "@/lib/clinicBI";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Bot, Send, Loader2, Lightbulb } from "lucide-react";
-import { renderMarkdown } from "@/lib/markdownRender";
+import { MarkdownView } from "@/lib/markdownRender";
 import { logReportAudit } from "@/hooks/useClinicBI";
 
 const SUGGESTIONS = [
@@ -120,7 +120,7 @@ const BIAnalyst = ({ m, clinicId }: { m: BIMetrics; clinicId: string }) => {
           <p className="text-[11px] text-muted-foreground flex items-center gap-1 mb-2">
             <Lightbulb className="w-3 h-3" /> Faktlar real ma'lumotdan, prognozlar alohida belgilangan.
           </p>
-          <div className="prose prose-sm max-w-none dark:prose-invert text-sm">{renderMarkdown(answer)}</div>
+          <MarkdownView source={answer} className="text-sm" />
         </div>
       )}
     </div>
