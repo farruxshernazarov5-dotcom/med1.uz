@@ -39,19 +39,16 @@ const BIFinance = ({ m }: { m: BIMetrics }) => {
     : [];
   const doctorAppts = drill.doctorId ? serviceAppts.filter((a) => a.doctor_id === drill.doctorId) : [];
 
-  const doctorsInService = Array.from(
-    doctorAppts.length || !drill.service
-      ? new Map<string, { id: string; name: string; count: number; revenue: number }>()
-      : serviceAppts.reduce((map, a) => {
-          const doc = m.doctorRows.find((d) => d.id === a.doctor_id);
-          const id = a.doctor_id || "none";
-          const cur = map.get(id) || { id, name: doc?.name || "Biriktirilmagan", count: 0, revenue: 0 };
-          cur.count += 1;
-          cur.revenue += Number(a.total_price || 0);
-          map.set(id, cur);
-          return map;
-        }, new Map<string, { id: string; name: string; count: number; revenue: number }>())
-  ).map(([, v]) => v).sort((a, b) => b.revenue - a.revenue);
+  const docMap = new Map<string, { id: string; name: string; count: number; revenue: number }>();
+  serviceAppts.forEach((a) => {
+    const id = a.doctor_id || "none";
+    const doc = m.doctorRows.find((d) => d.id === a.doctor_id);
+    const cur = docMap.get(id) || { id, name: doc?.name || "Biriktirilmagan", count: 0, revenue: 0 };
+    cur.count += 1;
+    cur.revenue += Number(a.total_price || 0);
+    docMap.set(id, cur);
+  });
+  const doctorsInService = Array.from(docMap.values()).sort((a, b) => b.revenue - a.revenue);
 
   return (
     <div className="space-y-5">
