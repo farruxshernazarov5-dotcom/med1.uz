@@ -35,7 +35,7 @@ import HMSEquipment from "@/components/hms/HMSEquipment";
 import HMSQueue from "@/components/hms/HMSQueue";
 import HMSEmergency from "@/components/hms/HMSEmergency";
 import HMSQA from "@/components/hms/HMSQA";
-import HMSReports from "@/components/hms/HMSReports";
+import ClinicBI from "@/components/hms/ClinicBI";
 import HMSAppointmentPortal from "@/components/hms/HMSAppointmentPortal";
 import HMSPatientPortal from "@/components/hms/HMSPatientPortal";
 import HMSInfection from "@/components/hms/HMSInfection";
@@ -280,7 +280,7 @@ const ClinicDashboard = () => {
       {tab === "hms-queue" && <HMSQueue clinicId={clinic.id} />}
       {tab === "hms-emergency" && <HMSEmergency clinicId={clinic.id} />}
       {tab === "hms-qa" && <HMSQA clinicId={clinic.id} />}
-      {tab === "hms-reports" && <HMSReports clinicId={clinic.id} />}
+      {tab === "hms-reports" && <ClinicBI clinicId={clinic.id} clinicName={clinic.name} />}
       {tab === "hms-appointment-portal" && <HMSAppointmentPortal clinicId={clinic.id} />}
       {tab === "hms-patient-portal" && <HMSPatientPortal clinicId={clinic.id} />}
       {tab === "hms-infection" && <HMSInfection clinicId={clinic.id} />}

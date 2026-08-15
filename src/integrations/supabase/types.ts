@@ -1419,6 +1419,69 @@ export type Database = {
           },
         ]
       }
+      clinic_bi_saved_reports: {
+        Row: {
+          clinic_id: string
+          config: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      clinic_bi_targets: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          metric: string
+          period: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metric: string
+          period?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metric?: string
+          period?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clinic_payments: {
         Row: {
           amount: number
@@ -1527,6 +1590,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clinic_report_audit: {
+        Row: {
+          action: string
+          clinic_id: string
+          created_at: string
+          filters: Json
+          id: string
+          report_key: string
+          user_id: string | null
+        }
+        Insert: {
+          action?: string
+          clinic_id: string
+          created_at?: string
+          filters?: Json
+          id?: string
+          report_key: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          clinic_id?: string
+          created_at?: string
+          filters?: Json
+          id?: string
+          report_key?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       clinic_services: {
         Row: {
@@ -17042,6 +17135,7 @@ export type Database = {
         }
         Returns: string
       }
+      is_clinic_owner: { Args: { _clinic_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
