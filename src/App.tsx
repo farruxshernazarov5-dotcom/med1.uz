@@ -21,6 +21,7 @@ const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
 const ArticleDetailPage = lazy(() => import("./pages/ArticleDetailPage"));
 const CategoryArticlesPage = lazy(() => import("./pages/CategoryArticlesPage"));
 const ClinicsPage = lazy(() => import("./pages/ClinicsPage"));
+const TopClinicsTashkentPage = lazy(() => import("./pages/TopClinicsTashkentPage"));
 const ClinicDetailPage = lazy(() => import("./pages/ClinicDetailPage"));
 const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
 const MedTechPage = lazy(() => import("./pages/MedTechPage"));
@@ -202,6 +203,7 @@ const App = () => (
                 <Route path="/articles" element={<ArticlesPage />} />
                 <Route path="/articles/:categoryId" element={<CategoryArticlesPage />} />
                 <Route path="/articles/:categoryId/:slug" element={<ArticleDetailPage />} />
+                <Route path="/blog/top-clinics-tashkent" element={<TopClinicsTashkentPage />} />
                 <Route path="/clinics" element={<ClinicsPage />} />
                 <Route path="/clinics/:clinicId" element={<ClinicDetailPage />} />
                 <Route path="/med-tech" element={<MedTechPage />} />

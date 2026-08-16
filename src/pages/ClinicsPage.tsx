@@ -464,6 +464,18 @@ const ClinicsPage = () => {
       subtitle="O'zbekistondagi barcha klinikalar — davlat, xususiy, poliklinikalar"
       icon={<Building2 className="w-7 h-7 text-primary-foreground" />}
     >
+      {/* Guide link */}
+      <Link
+        to="/blog/top-clinics-tashkent"
+        className="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4 hover:bg-primary/10 transition-colors"
+      >
+        <div>
+          <p className="font-semibold text-sm">Toshkentdagi eng yaxshi klinikalar — solishtirma qo'llanma</p>
+          <p className="text-xs text-muted-foreground">Yo'nalishlar, ish vaqti va reyting bo'yicha solishtirish + AI-yordamli tanlov</p>
+        </div>
+        <Award className="w-5 h-5 text-primary shrink-0" />
+      </Link>
+
       {/* Medical Terms */}
       <MedTermsBanner terms={clinicMedicalTerms} />
 
