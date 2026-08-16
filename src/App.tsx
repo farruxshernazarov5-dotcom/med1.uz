@@ -21,6 +21,7 @@ const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
 const ArticleDetailPage = lazy(() => import("./pages/ArticleDetailPage"));
 const CategoryArticlesPage = lazy(() => import("./pages/CategoryArticlesPage"));
 const ClinicsPage = lazy(() => import("./pages/ClinicsPage"));
+const TopClinicsTashkentPage = lazy(() => import("./pages/TopClinicsTashkentPage"));
 const ClinicDetailPage = lazy(() => import("./pages/ClinicDetailPage"));
 const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
 const MedTechPage = lazy(() => import("./pages/MedTechPage"));
