@@ -203,6 +203,7 @@ const App = () => (
                 <Route path="/articles" element={<ArticlesPage />} />
                 <Route path="/articles/:categoryId" element={<CategoryArticlesPage />} />
                 <Route path="/articles/:categoryId/:slug" element={<ArticleDetailPage />} />
+                <Route path="/blog/top-clinics-tashkent" element={<TopClinicsTashkentPage />} />
                 <Route path="/clinics" element={<ClinicsPage />} />
                 <Route path="/clinics/:clinicId" element={<ClinicDetailPage />} />
                 <Route path="/med-tech" element={<MedTechPage />} />
