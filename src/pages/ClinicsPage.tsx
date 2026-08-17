@@ -222,9 +222,9 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* Google Map */}
             {clinic.coordinates && (
               <div>
-                <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
+                <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
                   <MapPin className="w-4 h-4 text-primary" /> Xaritada
-                </h4>
+                </h3>
                 <div className="rounded-xl overflow-hidden border border-border">
                   <iframe
                     title={`${clinic.name} joylashuvi`}
@@ -259,7 +259,7 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* Services */}
             {clinic.services && clinic.services.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-foreground mb-2">Xizmatlar</h4>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Xizmatlar</h3>
                 <div className="flex flex-wrap gap-1">
                   {clinic.services.map((s) => (
                     <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>
@@ -270,7 +270,7 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
 
             {/* All specialties */}
             <div>
-              <h4 className="text-sm font-semibold text-foreground mb-2">Barcha yo'nalishlar</h4>
+              <h3 className="text-sm font-semibold text-foreground mb-2">Barcha yo'nalishlar</h3>
               <div className="flex flex-wrap gap-1">
                 {clinic.specialties.map((s) => (
                   <Badge key={s} variant="outline" className="text-[10px]">{s}</Badge>
@@ -281,7 +281,7 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* All amenities */}
             {clinic.amenities.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-foreground mb-2">Qulayliklar</h4>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Qulayliklar</h3>
                 <div className="flex flex-wrap gap-1">
                   {clinic.amenities.map((a) => (
                     <span key={a} className="text-[10px] bg-accent text-accent-foreground px-2 py-1 rounded-full">{a}</span>
@@ -293,7 +293,7 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* All phones */}
             {clinic.phone.length > 1 && (
               <div>
-                <h4 className="text-sm font-semibold text-foreground mb-2">Telefon raqamlari</h4>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Telefon raqamlari</h3>
                 {clinic.phone.map((p) => (
                   <p key={p} className="text-sm text-primary font-medium">{p}</p>
                 ))}
@@ -303,9 +303,9 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* Specialists */}
             {clinic.specialists.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
+                <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
                   <Award className="w-4 h-4" /> Mutaxassislar
-                </h4>
+                </h3>
                 <div className="space-y-2">
                   {clinic.specialists.map((sp) => (
                     <SpecialistCard key={sp.id} specialist={sp} />
@@ -317,9 +317,9 @@ const ClinicCard = ({ clinic }: { clinic: Clinic }) => {
             {/* Reviews */}
             {clinic.reviews.length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
+                <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-1">
                   <MessageSquare className="w-4 h-4" /> Sharhlar
-                </h4>
+                </h3>
                 <div className="space-y-2">
                   {clinic.reviews.map((r) => (
                     <ReviewCard key={r.id} review={r} />
@@ -633,10 +633,13 @@ const ClinicsPage = () => {
           })()}
         </div>
       ) : (
+        <div>
+        <h2 className="font-heading text-lg font-bold text-foreground mb-4">Klinikalar ro'yxati</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredClinics.map((clinic) => (
             <ClinicCard key={clinic.id} clinic={clinic} />
           ))}
+        </div>
         </div>
       )}
 
