@@ -177,8 +177,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <CreditProvider>
+          <RouteCanonical />
           <RouteMeta />
-          <ActivityTracker />
           <ActivityTracker />
 
           <ReferralCapture />
