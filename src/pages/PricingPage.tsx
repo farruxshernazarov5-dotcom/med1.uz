@@ -187,7 +187,7 @@ const PricingPage = () => {
 
                 {cat.id === "ai" && (
                   <div className="mt-8 rounded-2xl border border-border bg-card p-6">
-                    <h3 className="font-heading text-xl font-bold text-foreground mb-4">AI xizmatlar Med Coin narxlari</h3>
+                    <h2 className="font-heading text-xl font-bold text-foreground mb-4">AI xizmatlar Med Coin narxlari</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {AI_SERVICE_TARIFFS.map((service) => (
                         <div key={service.id} className="rounded-xl border border-border bg-background p-4">

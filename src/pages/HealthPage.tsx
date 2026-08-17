@@ -118,6 +118,7 @@ const HealthPage = () => {
       </div>
 
       {/* Featured categories grid */}
+      <h2 className="font-heading text-xl font-bold text-foreground mb-4">Asosiy salomatlik yo'nalishlari</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
         {healthCategoriesData.slice(0, 4).map((cat, idx) => {
           const Icon = iconMap[cat.id];
@@ -170,6 +171,7 @@ const HealthPage = () => {
       </div>
 
       {/* Secondary categories */}
+      <h2 className="font-heading text-xl font-bold text-foreground mb-4">Qo'shimcha yo'nalishlar</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {healthCategoriesData.slice(4).map((cat, idx) => {
           const Icon = iconMap[cat.id];
@@ -215,7 +217,7 @@ const HealthPage = () => {
 
       {/* Health facts banner */}
       <div className="mt-12 rounded-2xl bg-gradient-to-r from-primary to-secondary p-8 text-primary-foreground">
-        <h3 className="font-heading text-xl font-bold mb-4">💡 Foydali faktlar</h3>
+        <h2 className="font-heading text-xl font-bold mb-4">💡 Foydali faktlar</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { stat: `${totalTips}+`, label: "Jami salomatlik maslahatlari 8 ta bo'limda jamlangan" },
