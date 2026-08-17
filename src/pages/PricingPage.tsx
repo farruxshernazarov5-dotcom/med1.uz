@@ -97,6 +97,9 @@ const PricingPage = () => {
       {/* Plans by category */}
       <section className="pb-24">
         <div className="container mx-auto px-4">
+          <h2 className="font-heading text-2xl font-bold text-foreground mb-6 text-center">
+            Tarif rejalari
+          </h2>
           <Tabs defaultValue="ai" className="w-full">
             <TabsList className="flex flex-wrap gap-2 bg-transparent justify-center mb-12 h-auto">
               {categories.map((cat) => (
