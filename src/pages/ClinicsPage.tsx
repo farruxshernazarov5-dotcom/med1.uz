@@ -640,6 +640,7 @@ const ClinicsPage = () => {
             <ClinicCard key={clinic.id} clinic={clinic} />
           ))}
         </div>
+        </div>
       )}
 
       {filteredClinics.length === 0 && (
