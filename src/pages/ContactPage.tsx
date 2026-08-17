@@ -63,6 +63,7 @@ const ContactPage = () => {
 
           {/* Form */}
           <div className="bg-card rounded-2xl border border-border p-6">
+            <h2 className="text-xl font-bold text-foreground mb-4">Xabar yuborish</h2>
             <ContactMessageForm />
           </div>
         </div>
