@@ -69,7 +69,7 @@ const PaymentSuccessPage = () => {
       }
       setPayment(data as PaymentRow);
 
-      if (data.status === "paid") setStatus("paid");
+      if (data.status === "paid" || data.status === "completed") setStatus("paid");
       else if (data.status === "failed" || data.status === "cancelled") setStatus("failed");
       else {
         setStatus("pending");
