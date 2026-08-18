@@ -14419,6 +14419,7 @@ export type Database = {
           metadata: Json | null
           package_id: string | null
           paid_at: string | null
+          prepare_id: number | null
           provider: string
           provider_payment_id: string | null
           provider_transaction_id: string | null
@@ -14438,6 +14439,7 @@ export type Database = {
           metadata?: Json | null
           package_id?: string | null
           paid_at?: string | null
+          prepare_id?: number | null
           provider: string
           provider_payment_id?: string | null
           provider_transaction_id?: string | null
@@ -14457,6 +14459,7 @@ export type Database = {
           metadata?: Json | null
           package_id?: string | null
           paid_at?: string | null
+          prepare_id?: number | null
           provider?: string
           provider_payment_id?: string | null
           provider_transaction_id?: string | null
