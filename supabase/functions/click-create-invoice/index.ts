@@ -92,9 +92,13 @@ Deno.serve(async (req) => {
     }
     if (!(amount > 0)) return json({ error: "Noto'g'ri to'lov summasi" }, 400);
 
-    const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
+    // my.click.uz checkout'dagi `merchant_id` — Click SHOP API'dagi
+    // merchant_user_id qiymati. Korxonaning Merchant ID qiymatini bu yerga
+    // yuborish checkout ochilgandan keyin "yetkazib beruvchi ma'lumoti yetarli
+    // emas" xatosiga olib keladi.
+    const merchantUserId = Deno.env.get("CLICK_MERCHANT_USER_ID");
     const serviceId = Deno.env.get("CLICK_SERVICE_ID");
-    if (!merchantId || !serviceId) {
+    if (!merchantUserId || !serviceId) {
       return json({ error: "Click credentials sozlanmagan. Super Admin → Payments → Click." }, 503);
     }
 
@@ -131,7 +135,7 @@ Deno.serve(async (req) => {
 
     const checkout_url =
       `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}` +
-      `&merchant_id=${encodeURIComponent(merchantId)}` +
+      `&merchant_id=${encodeURIComponent(merchantUserId)}` +
       `&amount=${amount}` +
       `&transaction_param=${payment.id}` +
       `&return_url=${encodeURIComponent(returnWithId)}`;
