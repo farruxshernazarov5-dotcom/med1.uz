@@ -12091,6 +12091,59 @@ export type Database = {
           },
         ]
       }
+      med_coin_ledger: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          description: string | null
+          id: string
+          order_id: string | null
+          payment_id: string | null
+          source: string
+          transaction_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          source?: string
+          transaction_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          source?: string
+          transaction_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med_coin_ledger_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_records: {
         Row: {
           attachments: string[] | null
@@ -13391,6 +13444,172 @@ export type Database = {
           },
         ]
       }
+      payment_invoices: {
+        Row: {
+          amount: number
+          coin_amount: number
+          created_at: string
+          currency: string
+          id: string
+          invoice_number: string
+          issued_at: string
+          package_code: string | null
+          payment_id: string
+          product_name: string
+          provider: string
+          provider_transaction_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          invoice_number: string
+          issued_at?: string
+          package_code?: string | null
+          payment_id: string
+          product_name: string
+          provider?: string
+          provider_transaction_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          invoice_number?: string
+          issued_at?: string
+          package_code?: string | null
+          payment_id?: string
+          product_name?: string
+          provider?: string
+          provider_transaction_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_invoices_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_packages: {
+        Row: {
+          bonus_coins: number
+          code: string
+          coin_amount: number
+          created_at: string
+          currency: string
+          duration_days: number
+          id: string
+          is_active: boolean
+          kind: string
+          name_en: string
+          name_ru: string
+          name_uz: string
+          price: number
+          sort_order: number
+          subscription_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          bonus_coins?: number
+          code: string
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          kind: string
+          name_en: string
+          name_ru: string
+          name_uz: string
+          price: number
+          sort_order?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bonus_coins?: number
+          code?: string
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name_en?: string
+          name_ru?: string
+          name_uz?: string
+          price?: number
+          sort_order?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_refunds: {
+        Row: {
+          admin_id: string | null
+          amount: number
+          coin_adjustment: number
+          created_at: string
+          id: string
+          payment_id: string
+          reason: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          amount: number
+          coin_adjustment?: number
+          created_at?: string
+          id?: string
+          payment_id: string
+          reason: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          amount?: number
+          coin_adjustment?: number
+          created_at?: string
+          id?: string
+          payment_id?: string
+          reason?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_refunds_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pharmacy_customers: {
         Row: {
           address: string | null
@@ -14194,8 +14413,11 @@ export type Database = {
           amount: number
           created_at: string
           currency: string
+          fulfilled_at: string | null
           id: string
+          is_test: boolean
           metadata: Json | null
+          package_id: string | null
           paid_at: string | null
           provider: string
           provider_payment_id: string | null
@@ -14210,8 +14432,11 @@ export type Database = {
           amount: number
           created_at?: string
           currency?: string
+          fulfilled_at?: string | null
           id?: string
+          is_test?: boolean
           metadata?: Json | null
+          package_id?: string | null
           paid_at?: string | null
           provider: string
           provider_payment_id?: string | null
@@ -14226,8 +14451,11 @@ export type Database = {
           amount?: number
           created_at?: string
           currency?: string
+          fulfilled_at?: string | null
           id?: string
+          is_test?: boolean
           metadata?: Json | null
+          package_id?: string | null
           paid_at?: string | null
           provider?: string
           provider_payment_id?: string | null
@@ -14238,7 +14466,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "platform_payments_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "payment_packages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       platform_plans: {
         Row: {
@@ -16985,6 +17221,11 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      click_fulfill_payment: { Args: { _payment_id: string }; Returns: Json }
+      click_refund_payment: {
+        Args: { _admin: string; _payment_id: string; _reason: string }
+        Returns: Json
       }
       deduct_ai_credits: {
         Args: {
