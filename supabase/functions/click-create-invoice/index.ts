@@ -34,28 +34,41 @@ Deno.serve(async (req) => {
     const packageId = body?.package_id ? String(body.package_id) : null;
     const returnUrl = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
 
-    // Paketsiz (ad-hoc) to'lovlar: shifokor broni, klinika xizmati, SaaS va h.k.
+    // Paketsiz (ad-hoc) to'lovlar: shifokor broni, klinika xizmati, SaaS, obuna, invoys va h.k.
+    // purpose "prefix:reference" ko'rinishida bo'lishi mumkin — prefiks bo'yicha tekshiramiz.
     const ADHOC_PURPOSES = new Set([
       "doctor_appointment",
       "clinic_service",
+      "clinic_invoice",
+      "dental_invoice",
       "clinic_saas",
       "dental_saas",
+      "diagnostics_saas",
+      "pharmacy_saas",
+      "maternity_saas",
+      "cosmetology_saas",
+      "subscription",
+      "ai_subscription",
+      "med_coin",
+      "sandbox_test",
       "appointment",
       "other",
     ]);
     const rawAmount = Number(body?.amount);
     const adhocPurpose = body?.purpose ? String(body.purpose) : null;
+    const purposePrefix = adhocPurpose ? adhocPurpose.split(":")[0] : null;
     const referenceId = body?.reference_id ? String(body.reference_id) : null;
     const isAdhoc = !packageCode && !packageId;
 
     if (isAdhoc) {
-      if (!adhocPurpose || !ADHOC_PURPOSES.has(adhocPurpose)) {
-        return json({ error: "package_code, package_id yoki to'g'ri purpose talab qilinadi" }, 400);
+      if (!purposePrefix || !ADHOC_PURPOSES.has(purposePrefix)) {
+        return json({ error: `Noto'g'ri to'lov maqsadi: ${adhocPurpose ?? "yo'q"}` }, 400);
       }
       if (!Number.isFinite(rawAmount) || rawAmount <= 0 || rawAmount > 500_000_000) {
         return json({ error: "Noto'g'ri to'lov summasi" }, 400);
       }
     }
+
 
     let pkg: Record<string, any> | null = null;
     if (!isAdhoc) {
@@ -69,7 +82,7 @@ Deno.serve(async (req) => {
 
     // Shifokor broni bo'lsa — narx server tomonda tekshiriladi (fraud himoyasi)
     let amount = isAdhoc ? Math.round(rawAmount) : Number(pkg!.price);
-    if (isAdhoc && adhocPurpose === "doctor_appointment" && referenceId) {
+    if (isAdhoc && purposePrefix === "doctor_appointment" && referenceId) {
       const { data: appt } = await admin
         .from("doctor_ext_appointments")
         .select("id, price")
@@ -92,11 +105,11 @@ Deno.serve(async (req) => {
         provider: "click",
         amount,
         currency: pkg?.currency || "UZS",
-        purpose: pkg ? (pkg.kind === "subscription" ? "ai_subscription" : "med_coin") : adhocPurpose!,
+        purpose: pkg ? (pkg.kind === "subscription" ? "ai_subscription" : "med_coin") : purposePrefix!,
         package_id: pkg?.id ?? null,
         reference_id: pkg?.code ?? referenceId,
         status: "pending",
-        metadata: { return_url: returnUrl, package_code: pkg?.code ?? null, purpose: adhocPurpose },
+        metadata: { return_url: returnUrl, package_code: pkg?.code ?? null, purpose: adhocPurpose, purpose_ref: referenceId },
       })
       .select()
       .single();
