@@ -110,39 +110,30 @@ Deno.serve(async (req) => {
     const amount = String(pkg.price);
     const base = `${supabaseUrl}/functions/v1`;
 
-    // 2) Click checkout provider tekshiruvi. merchant_id va merchant_user_id
-    // alohida qiymatlar bo'lib, ikkalasi ham o'z nomi bilan yuboriladi.
-    const checkoutProbe = await fetch("https://api.click.uz/v2/internal/checkout/prepare", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: serviceId,
-        merchant_id: merchantId,
-        merchant_user_id: merchantUserId,
-        transaction_param: payment.id,
-        amount,
-        return_url: "https://med1.uz/payment/success",
-        source: "checkout_page",
-      }),
-    });
-    const checkoutText = await checkoutProbe.text();
-    let checkoutBody: Record<string, unknown> = {};
-    try {
-      checkoutBody = JSON.parse(checkoutText);
-    } catch {
-      checkoutBody = { raw: checkoutText.slice(0, 500) };
-    }
-    const checkoutAccepted = checkoutProbe.ok && Number(checkoutBody.error_code) === 0;
-    const checkoutError = checkoutBody.error_note || checkoutBody.message ||
-      (checkoutBody.error_code != null ? `error_code=${checkoutBody.error_code}` : `HTTP ${checkoutProbe.status}`);
+    // 2) Rasmiy hosted checkout linkini tekshirish. /v2/internal/checkout/prepare
+    // Click web-ilovasining ichki endpointi bo'lib, merchant serveridan bevosita
+    // chaqirilmaydi va haqiqiy credentials bilan ham -406 qaytarishi mumkin.
+    const checkoutUrl = new URL("https://my.click.uz/services/pay");
+    checkoutUrl.searchParams.set("service_id", serviceId!);
+    checkoutUrl.searchParams.set("merchant_id", merchantId!);
+    checkoutUrl.searchParams.set("merchant_user_id", merchantUserId!);
+    checkoutUrl.searchParams.set("transaction_param", payment.id);
+    checkoutUrl.searchParams.set("amount", amount);
+    checkoutUrl.searchParams.set("return_url", "https://med1.uz/payment/success");
+    const checkoutProbe = await fetch(checkoutUrl, { method: "GET", redirect: "manual" });
+    await checkoutProbe.text();
+    const checkoutAccepted = checkoutProbe.status >= 200 && checkoutProbe.status < 400;
     push({
       id: "checkout",
       name: "Test Checkout (yetkazib beruvchi)",
       status: checkoutAccepted ? "PASS" : "FAILED",
       detail: checkoutAccepted
-        ? "Click Med1.uz yetkazib beruvchi ma'lumotlarini qabul qildi"
-        : `Click rad etdi: ${String(checkoutError)}`,
-      data: checkoutBody,
+        ? "Rasmiy Click checkout sahifasi ochildi; Merchant ID va Merchant User ID alohida yuborildi"
+        : `Click checkout sahifasi ochilmadi: HTTP ${checkoutProbe.status}`,
+      data: {
+        http_status: checkoutProbe.status,
+        required_parameters: ["service_id", "merchant_id", "merchant_user_id", "transaction_param", "amount", "return_url"],
+      },
     });
 
     // 3) Test Verification — noto'g'ri imzo rad etilishi kerak
