@@ -76,9 +76,11 @@ const PaymentMethodPicker = ({
           return_url: returnUrl || `${window.location.origin}/payment/success`,
         },
       });
-      if (error) throw error;
+      if (error) throw new Error((data as any)?.error || error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
       if (!data?.checkout_url) throw new Error("Checkout URL olinmadi");
       window.location.href = data.checkout_url;
+
     } catch (err: any) {
       toast({
         title: "To'lov xatoligi",
