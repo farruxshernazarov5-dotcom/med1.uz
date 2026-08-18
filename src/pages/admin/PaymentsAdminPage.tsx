@@ -136,9 +136,11 @@ const PaymentsAdminPage = () => {
     if (!reason) return;
     setRefundingId(payment.id);
     try {
+      const { data: authUser } = await supabase.auth.getUser();
       const { data, error } = await supabase.rpc("click_refund_payment", {
-        p_payment_id: payment.id,
-        p_reason: reason,
+        _admin: authUser.user!.id,
+        _payment_id: payment.id,
+        _reason: reason,
       });
       if (error) throw error;
       toast({ title: "Refund bajarildi", description: JSON.stringify(data) });
