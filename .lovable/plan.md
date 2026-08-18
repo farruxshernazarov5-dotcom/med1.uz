@@ -1,140 +1,70 @@
+# Click to'lov tizimi — production integratsiya
 
-# MED1.UZ Mobile API Platform va Super Admin API Management Center
+Hozirgi holat (tekshirildi): `click-create-invoice` + `click-webhook` edge funksiyalari bor, MD5 imzo, sign_time freshness, rate-limit, replay himoyasi va `click_webhook_log` jadvali ishlaydi. `platform_payments` jadvali to'lovni `paid` holatiga o'tkazadi, **lekin to'lovdan keyin hech narsa bermaydi** — Med Coin qo'shilmaydi, obuna faollashmaydi, invoice yaratilmaydi, Telegram xabar ketmaydi. Click sozlamalari va monitoring uchun Super Admin bo'limi ham yo'q.
 
-**Umumiy strategiya:** Loyihada allaqachon mustahkam poydevor bor — `api-gateway` edge function, `api_keys`, `api_partners`, `api_request_logs`, `api_webhooks`, `api_webhook_deliveries` jadvallari, OpenAPI JSON, Swagger UI (`/api-docs`), va 14 ta AI edge functions. Yangi kod yozish o'rniga **mavjud infratuzilmani kengaytiramiz**, dublikat qilmaymiz.
+Reja shu bo'shliqlarni to'ldiradi va mavjud tizimni buzmaydi.
 
-Mobil ilova = **Flutter**. Autentifikatsiya = **ikki xil**: end-user'lar uchun Supabase JWT (mobile app login), tashqi hamkorlar uchun OAuth 2.0 + API Key (hozirgidek).
+## 1. Ma'lumotlar bazasi
 
----
+Yangi jadvallar:
+- `payment_packages` — sotiladigan mahsulotlar katalogi (turi: `med_coin` yoki `subscription`, narx, Med Coin miqdori, bonus, obuna tarifi/muddati, faol/nofaol). Miqdorlar kodga yozilmaydi, shu jadvaldan olinadi. Boshlang'ich yozuvlar: 15 000 → 40 coin, 60 000 → 150 coin, 120 000 → 350 coin, hamda LITE / STANDARD / PREMIUM 30 kunlik obunalar.
+- `med_coin_ledger` — har bir balans o'zgarishi: user, payment, tur (PURCHASE / USAGE / REFUND / BONUS / ADMIN_ADJUSTMENT), miqdor, balance_before, balance_after, manba, sana.
+- `payment_invoices` — invoice raqami (INV-YYYY-NNNNN), payment, Click transaction ID, mahsulot, summa, valyuta, status, Med Coin miqdori.
+- `payment_refunds` — payment, sabab, summa, admin, sana, status.
 
-## Bosqich 1 — Baza kengaytirish (DB + Gateway)
+Mavjud jadvallarni kengaytirish:
+- `platform_payments`: `package_id`, `status` ro'yxatiga `prepared` va `completed` qo'shish, `(provider, provider_transaction_id)` bo'yicha unique index (idempotentlik).
+- `click_webhook_log` allaqachon bor — o'zgartirilmaydi.
 
-**Migration:**
-- `api_endpoints` jadvali — barcha endpointlarni ro'yxatga olish (path, method, scope, category: mobile/web/hambi/partner/ai, description, is_deprecated, rate_limit_override)
-- `api_oauth_clients` jadvali — OAuth 2.0 clientlar (client_id, client_secret_hash, redirect_uris, scopes, partner_id)
-- `api_sdk_versions` jadvali — SDK release'lar (language, version, download_url, changelog)
-- `api_monitoring_alerts` jadvali — real-time alert konfiguratsiya (error_rate_threshold, latency_threshold, notify_channel)
-- Barchasiga GRANT + RLS (faqat admin ko'ra oladi)
+Barcha yangi jadvallarga GRANT + RLS: foydalanuvchi faqat o'zinikini ko'radi, admin hammasini, yozish faqat service_role (edge funksiyalar) orqali.
 
-**Gateway kengaytirish (`supabase/functions/api-gateway/index.ts`):**
-- Yangi endpointlar (ROUTES map'ga qo'shish):
-  - `POST /v1/auth/login`, `/register`, `/otp/send`, `/otp/verify`, `/refresh`, `/logout`, `/forgot-password`
-  - `GET/PATCH /v1/user/profile`, `POST /v1/user/avatar`, `PATCH /v1/user/settings`
-  - `POST /v1/ai/{doctor|symptoms|laboratory|radiology|pregnancy|baby-care|psychologist|diet|pharmacy|cosmetology|fitness|assistant|monitoring|prediction}` — mavjud `ai-*` edge functionlarga proxy
-  - `GET /v1/clinics/:id`, `/doctors/:id`, `/diagnostics/:id`, `/maternity`, `/pharmacies/:id`
-  - `POST /v1/appointments`, `DELETE /v1/appointments/:id`, `GET /v1/appointments/history`, `POST /v1/appointments/:id/checkin`
-  - `GET /v1/emr/records`, `/analyses`, `/prescriptions`, `/diagnoses`
-  - `POST /v1/payments/click|payme|uzum`, `GET /v1/payments/history`, `/subscriptions`, `POST /v1/med-coin/purchase`
-  - `POST /v1/notifications/push|sms|email|telegram`
-  - `GET /v1/maps/nearby`, `/geofence`
-- Har bir request `api_request_logs`ga yoziladi (allaqachon bor)
-- Rate limit: minute + day tekshiruvi (per key)
-- Sandbox rejim: `environment='sandbox'` bo'lgan kalitlar `/v1/sandbox/*` prefiksga yo'naltiriladi, test ma'lumotlar qaytaradi
+Med Coin berish/qaytarish atomik `credit_purchase_apply(payment_id)` DB funksiyasi orqali bo'ladi: `user_credits` ga yozadi, `credit_history` va `med_coin_ledger` ga yozuv qo'shadi, invoice yaratadi — hammasi bitta tranzaksiyada, payment allaqachon fulfilled bo'lsa hech narsa qilmaydi.
 
----
+## 2. Backend endpointlar
 
-## Bosqich 2 — Super Admin API Management Center UI
+Click alohida Prepare va Complete URL talab qilgani uchun ikkita yangi funksiya:
 
-`src/components/admin/api/` papkasida modul:
+| Maqsad | URL |
+|---|---|
+| Prepare | `https://med1.uz/api/click/prepare` |
+| Complete | `https://med1.uz/api/click/complete` |
 
-- **`APIManagementCenter.tsx`** — asosiy shell, tabbed navigation
-- **`APIDashboard.tsx`** — KPI kartlar (requests/24h, error rate, avg latency, active keys, top endpoints)
-- **`APIEndpointsManager.tsx`** — `api_endpoints` CRUD, scope tayinlash, deprecated belgilash
-- **`APIKeysManager.tsx`** — `api_keys` boshqaruvi (yaratish, revoke, rotate, scope tahrirlash)
-- **`OAuthClientsManager.tsx`** — OAuth clientlar
-- **`JWTTokensViewer.tsx`** — faol sessiyalar (auth.sessions dan)
-- **`MobileAPIPanel.tsx`, `WebAPIPanel.tsx`, `HambiAPIPanel.tsx`, `PartnerAPIPanel.tsx`, `AIAPIPanel.tsx`** — kategoriya bo'yicha filtered view
-- **`WebhookManager.tsx`** — `api_webhooks` + `api_webhook_deliveries` (mavjud)
-- **`APIMonitoring.tsx`** — real-time alerts, health status
-- **`APILogsViewer.tsx`** — `api_request_logs` filter/search
-- **`APIAnalytics.tsx`** — Recharts: requests over time, top endpoints, channel breakdown (android/ios/web/hambi/telegram/partner)
-- **`APIRateLimits.tsx`** — per-key/per-tier limitlarni tahrirlash
-- **`APISecurityCenter.tsx`** — IP whitelist, CORS, audit log
-- **`APIDocumentation.tsx`** — Developer Portal iframe/link
-- **`SDKDownloads.tsx`** — SDK versiyalari download
-- **`SandboxPanel.tsx`** — test API key generatsiyasi, test user
+Bular Vite/hosting rewrite orqali `click-prepare` va `click-complete` edge funksiyalariga yo'naltiriladi (agar rewrite ishlamasa, Click panelga to'g'ridan-to'g'ri funksiya URL'i beriladi va admin panelda aynan ishlaydigan URL ko'rsatiladi — placeholder qoldirilmaydi).
 
-**Yo'nalish:** `/admin/api-center` route (faqat `admin` roli). `AdminDashboard.tsx`ga link qo'shiladi.
+Mavjud `click-webhook` o'chirilmaydi — ichki mantiq umumiy `_shared/click.ts` modulga ko'chiriladi va uchala endpoint ham shundan foydalanadi (dublikat logika bo'lmaydi).
 
----
+**Prepare** (action=0): imzo, sign_time, service_id, rate-limit, payment mavjudligi, summa DB dagi paket narxiga tengligi, dublikat order tekshiruvi → status `prepared`, `merchant_prepare_id` qaytariladi.
 
-## Bosqich 3 — Developer Portal + OpenAPI
+**Complete** (action=1): imzo va barcha yuqoridagi tekshiruvlar + `merchant_prepare_id` mosligi + `click_trans_id` bo'yicha idempotentlik. Muvaffaqiyat bo'lsa bitta tranzaksiyada: payment → `completed`, Med Coin balansiga qo'shish yoki obunani faollashtirish (`ai_subscriptions`, 30 kun), invoice yaratish, ledger yozuvi, audit log, Telegram xabar (foydalanuvchi + admin). Xato bo'lsa Click protokolining rasmiy error kodlari qaytariladi va hech narsa berilmaydi.
 
-- **`public/openapi.json` kengaytirish** — barcha yangi endpointlarni qo'shish (auth, user, ai, appointments, emr, payments, notifications, maps). Har birida request/response schema, security scheme (bearerAuth + apiKeyAuth), example.
-- **`src/pages/DeveloperPortalPage.tsx`** — public sahifa `/developers`:
-  - Getting Started
-  - Authentication (JWT vs OAuth vs API Key)
-  - Endpoint reference (Swagger UI embed — mavjud `/api-docs`)
-  - SDK downloads (Flutter, JS, Kotlin, Swift, React Native, Node, Python, Laravel)
-  - Code samples har bir endpoint uchun (cURL, Dart/Flutter, JavaScript, Kotlin, Swift)
-  - Rate limits, error codes, webhooks docs, changelog
-- Code sample generator: OpenAPI spec'dan avtomatik yaratish (client-side)
+`click-create-invoice` yangilanadi: frontenddan summa emas, `package_id` qabul qiladi; summa DB dan olinadi (fraud himoyasi).
 
----
+## 3. Frontend
 
-## Bosqich 4 — Flutter SDK
+- To'lov sahifasi paketlarni `payment_packages` dan oladi, Click tugmasi `package_id` yuboradi.
+- `/payment/success` sahifasi natijani serverdan polling qiladi — "muvaffaqiyatli" deb faqat DB status `completed` bo'lgandagina ko'rsatiladi.
+- Profil → To'lovlar: to'lovlar tarixi, Med Coin ledger, obunalar, invoice ro'yxati + PDF yuklab olish (mavjud `src/lib/pdf.ts` va invoice util'lari asosida, bo'sh PDF chiqmasligi tekshiriladi).
+- Barcha matnlar va xato xabarlari UZ/RU/EN (mavjud i18n).
 
-`sdk/flutter/med1_api/` papkasida standalone Dart package (repo ichida, alohida publish):
-- `Med1ApiClient` — Dio-based HTTP client, auto JWT refresh, retry logic
-- `AuthApi`, `UserApi`, `AiApi`, `ClinicsApi`, `AppointmentsApi`, `EmrApi`, `PaymentsApi`, `NotificationsApi`, `MapsApi`
-- Model class'lar (freezed)
-- `README.md` — pub.dev uchun tayyor
-- Namuna: `example/main.dart`
+## 4. Super Admin — `/admin/payments`
 
-Flutter'chilarga `SDKDownloads.tsx` orqali `.tar.gz` yoki GitHub link.
+Tab'lar: Overview (analitika), Click Integration (sozlamalar + URL'lar), Transactions, Successful / Failed / Pending, Refunds, Invoices, Med Coin Transactions, Subscription Payments, Callback Logs, Security Logs.
 
----
+- **Click Integration**: Merchant ID, Merchant User ID, Service ID — maskalangan holda (oxirgi 4 belgi), Secret Key umuman ko'rsatilmaydi, faqat "sozlangan/sozlanmagan" holati. Prepare/Complete URL avtomatik ko'rsatiladi + Copy tugmasi. Oxirgi callback va oxirgi muvaffaqiyatli to'lov vaqti.
+- **Test paneli**: Test Connection / Prepare / Complete / Verification / Callback / Invoice / Med Coin / Notification — har biri PASS/FAILED va xato sababi bilan. Testlar sandbox payment yaratib, imzoni real algoritm bo'yicha hisoblab, endpointlarga yuboradi; test yozuvlari `is_test` bilan belgilanadi va real hisobotlarga kirmaydi.
+- **Analytics**: bugungi/haftalik/oylik/jami tushum, muvaffaqiyatli va muvaffaqiyatsiz to'lovlar, o'rtacha chek, eng ko'p sotilgan tarif, Med Coin va obuna tushumi — Recharts grafiklari bilan.
+- Refund oynasi: admin sabab bilan refund yozadi, tegishli Med Coin/obuna qaytariladi (ledger REFUND yozuvi).
 
-## Bosqich 5 — Sandbox + Monitoring
+Mavjud `/admin/payment-sandbox` sahifasi yangi bo'limga havola qiladi.
 
-- **Sandbox:** `api-gateway`da `environment='sandbox'` kalitlar uchun alohida test ma'lumotlar (mock clinics, mock AI response, mock Med Coin balance, mock payment success). Real DB'ga yozmaydi.
-- **Monitoring cron:** yangi edge function `api-health-monitor` — har 5 daqiqada `api_request_logs`ni tekshiradi:
-  - Error rate > threshold → admin'ga email + telegram alert
-  - Avg latency > threshold → alert
-  - Suspicious token usage (100+ 401 in 5 min) → alert
-- `pg_cron` bilan schedule
+## 5. Secrets va Click paneli
 
----
+Kerakli secretlar (hammasi allaqachon mavjud): `CLICK_MERCHANT_ID`, `CLICK_MERCHANT_USER_ID`, `CLICK_SERVICE_ID`, `CLICK_SECRET_KEY`, `TELEGRAM_API_KEY`, `TELEGRAM_ADMIN_CHAT_ID`.
 
-## Bosqich 6 — Xavfsizlik qatlami
+Click merchant kabinetiga kiritiladigan URL'lar (skrinshotdagi maydonlar):
+- Prepare URL → `https://med1.uz/api/click/prepare`
+- Complete URL → `https://med1.uz/api/click/complete`
 
-- **Request Signature (HMAC):** hamkorlar uchun optional — `X-Signature: HMAC-SHA256(secret, timestamp+body)` header validation
-- **Refresh Token rotation** — Supabase auth allaqachon qiladi, hujjatlashtiramiz
-- **CORS whitelist** — `api_partners.allowed_domains` (mavjud) qat'iy tekshiruv
-- **Audit log:** har bir API Center action `audit_logs`ga yoziladi (kim yaratdi/revoke qildi kalit)
-- **security scan:** yangi endpointlar uchun input validation (Zod har bir handler'da)
+## 6. Yakunda beriladigan hisobot
 
----
-
-## Texnik tafsilotlar
-
-```text
-Loyiha strukturasi:
-├── supabase/
-│   ├── migrations/            → api_endpoints, api_oauth_clients, api_sdk_versions, api_monitoring_alerts
-│   └── functions/
-│       ├── api-gateway/       → kengaytirilgan (auth+user+ai+emr+payments+notif+maps)
-│       └── api-health-monitor/ → yangi, cron bilan
-├── src/
-│   ├── pages/
-│   │   ├── admin/APICenterPage.tsx    → /admin/api-center
-│   │   └── DeveloperPortalPage.tsx    → /developers
-│   └── components/admin/api/  → 18 ta komponent
-├── sdk/flutter/med1_api/      → Dart package
-└── public/openapi.json        → to'liq spec
-```
-
-**Ish tartibi (har bosqich alohida xabar):**
-1. **1-xabar:** Bosqich 1 (DB migration + gateway kengaytirish)
-2. **2-xabar:** Bosqich 2 (Super Admin UI — API Management Center)
-3. **3-xabar:** Bosqich 3 (Developer Portal + OpenAPI)
-4. **4-xabar:** Bosqich 4 (Flutter SDK)
-5. **5-xabar:** Bosqich 5+6 (Sandbox, Monitoring, Security)
-
-Har bosqich mustaqil ishlaydi va build/test bilan tekshiriladi. Umumiy hajm katta — taxminan 40-50 ta yangi/o'zgartirilgan fayl.
-
-**Muhim eslatma:** Barcha to'lov (Stripe/Click/Payme), AI (Gemini/Lovable AI), va notifications (Telegram/Email) — allaqachon ishlaydigan edge function'larga proxy qilamiz. Dublikat logic yozmaymiz.
-
----
-
-**Tasdiqlang va men Bosqich 1'dan boshlayman.**
+Ish tugagach: yaratilgan endpointlar ro'yxati, aniq Prepare/Complete URL, kerakli secretlar, Click paneliga kiritish yo'riqnomasi, test panel natijalari va Click tomonidan tasdiq talab qiladigan qismlar ko'rsatiladi.
