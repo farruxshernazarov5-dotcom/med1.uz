@@ -110,7 +110,33 @@ Deno.serve(async (req) => {
     const amount = String(pkg.price);
     const base = `${supabaseUrl}/functions/v1`;
 
-    // 2) Test Verification — noto'g'ri imzo rad etilishi kerak
+    // 2) Click checkout provider tekshiruvi. Checkout URL'dagi merchant_id
+    // maydoni merchant_user_id bo'lishi shart; aks holda Click ilovasi
+    // "yetkazib beruvchi ma'lumoti yetarli emas" deb rad etadi.
+    const checkoutProbe = await fetch("https://api.click.uz/v2/internal/checkout/prepare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id: serviceId,
+        merchant_id: merchantUserId,
+        transaction_param: payment.id,
+        amount,
+        return_url: "https://med1.uz/payment/success",
+        source: "checkout_page",
+      }),
+    });
+    const checkoutBody = await checkoutProbe.json().catch(() => ({}));
+    push({
+      id: "checkout",
+      name: "Test Checkout (yetkazib beruvchi)",
+      status: checkoutProbe.ok && checkoutBody?.error_code === 0 ? "PASS" : "FAILED",
+      detail: checkoutBody?.error_code === 0
+        ? "Click Med1.uz yetkazib beruvchi ma'lumotlarini qabul qildi"
+        : `Click javobi: ${checkoutBody?.error_note || checkoutProbe.status}`,
+      data: { error_code: checkoutBody?.error_code, error_note: checkoutBody?.error_note },
+    });
+
+    // 3) Test Verification — noto'g'ri imzo rad etilishi kerak
     const badRes = await fetch(`${base}/click-prepare`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -133,7 +159,7 @@ Deno.serve(async (req) => {
       detail: badBody?.error === -1 ? "Noto'g'ri imzo rad etildi (-1)" : `Kutilmagan javob: ${JSON.stringify(badBody)}`,
     });
 
-    // 3) Test Prepare
+    // 4) Test Prepare
     const signTime0 = tashkentSignTime();
     const sign0 = md5(`${clickTransId}${serviceId}${secretKey}${payment.id}${amount}0${signTime0}`);
     const prepRes = await fetch(`${base}/click-prepare`, {
@@ -164,7 +190,7 @@ Deno.serve(async (req) => {
 
     let complete: any = null;
     if (prep?.error === 0 && prepareId) {
-      // 4) Test Complete
+      // 5) Test Complete
       const signTime1 = tashkentSignTime();
       const sign1 = md5(`${clickTransId}${serviceId}${secretKey}${payment.id}${prepareId}${amount}1${signTime1}`);
       const compRes = await fetch(`${base}/click-complete`, {
@@ -193,7 +219,7 @@ Deno.serve(async (req) => {
         data: complete,
       });
 
-      // 5) Test Callback (idempotentlik — takroriy complete)
+      // 6) Test Callback (idempotentlik — takroriy complete)
       const dupRes = await fetch(`${base}/click-complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -221,7 +247,7 @@ Deno.serve(async (req) => {
       push({ id: "callback", name: "Test Callback", status: "SKIPPED", detail: "Prepare muvaffaqiyatsiz" });
     }
 
-    // 6) Test Invoice
+    // 7) Test Invoice
     const { data: invoice } = await admin
       .from("payment_invoices")
       .select("*")
@@ -235,7 +261,7 @@ Deno.serve(async (req) => {
       data: invoice,
     });
 
-    // 7) Test Med Coin
+    // 8) Test Med Coin
     const { data: ledger } = await admin
       .from("med_coin_ledger")
       .select("*")
@@ -251,7 +277,7 @@ Deno.serve(async (req) => {
       data: ledger,
     });
 
-    // 8) Test Notification
+    // 9) Test Notification
     const notified = await notifyPaymentSuccess(admin, {
       userId,
       amount: Number(pkg.price),
