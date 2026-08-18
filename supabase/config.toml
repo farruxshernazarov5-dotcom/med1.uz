@@ -53,6 +53,10 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.click-webhook]
     verify_jwt = false
+  [functions.click-prepare]
+    verify_jwt = false
+  [functions.click-complete]
+    verify_jwt = false
   [functions.api-gateway]
     verify_jwt = false
   [functions.webhook-dispatcher]
