@@ -119,14 +119,17 @@ Deno.serve(async (req) => {
     const checkout_url =
       `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}` +
       `&merchant_id=${encodeURIComponent(merchantId)}` +
-      `&amount=${pkg.price}` +
+      `&amount=${amount}` +
       `&transaction_param=${payment.id}` +
       `&return_url=${encodeURIComponent(returnWithId)}`;
 
     return json({
       ok: true,
       payment: { id: payment.id, amount: payment.amount, currency: payment.currency, status: payment.status },
-      package: { code: pkg.code, name: pkg.name_uz, coins: pkg.coin_amount + pkg.bonus_coins },
+      package: pkg
+        ? { code: pkg.code, name: pkg.name_uz, coins: (pkg.coin_amount || 0) + (pkg.bonus_coins || 0) }
+        : { code: null, name: adhocPurpose, coins: 0 },
+
       checkout_url,
     });
   } catch (err) {
