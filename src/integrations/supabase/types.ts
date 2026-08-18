@@ -17497,11 +17497,11 @@ export type Database = {
         Args: { _hash_id: string }
         Returns: {
           is_valid: boolean
-          method: Database["public"]["Enums"]["signature_method"]
+          method: string
           signature_hash: string
           signed_at: string
           signer_name: string
-          signer_role: Database["public"]["Enums"]["contract_party_role"]
+          signer_role: string
         }[]
       }
     }
