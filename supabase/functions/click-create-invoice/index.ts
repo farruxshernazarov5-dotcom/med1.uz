@@ -34,16 +34,50 @@ Deno.serve(async (req) => {
     const packageId = body?.package_id ? String(body.package_id) : null;
     const returnUrl = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
 
-    if (!packageCode && !packageId) {
-      return json({ error: "package_code yoki package_id talab qilinadi" }, 400);
+    // Paketsiz (ad-hoc) to'lovlar: shifokor broni, klinika xizmati, SaaS va h.k.
+    const ADHOC_PURPOSES = new Set([
+      "doctor_appointment",
+      "clinic_service",
+      "clinic_saas",
+      "dental_saas",
+      "appointment",
+      "other",
+    ]);
+    const rawAmount = Number(body?.amount);
+    const adhocPurpose = body?.purpose ? String(body.purpose) : null;
+    const referenceId = body?.reference_id ? String(body.reference_id) : null;
+    const isAdhoc = !packageCode && !packageId;
+
+    if (isAdhoc) {
+      if (!adhocPurpose || !ADHOC_PURPOSES.has(adhocPurpose)) {
+        return json({ error: "package_code, package_id yoki to'g'ri purpose talab qilinadi" }, 400);
+      }
+      if (!Number.isFinite(rawAmount) || rawAmount <= 0 || rawAmount > 500_000_000) {
+        return json({ error: "Noto'g'ri to'lov summasi" }, 400);
+      }
     }
 
-    const q = admin.from("payment_packages").select("*").eq("is_active", true);
-    const { data: pkg } = packageId
-      ? await q.eq("id", packageId).maybeSingle()
-      : await q.eq("code", packageCode!).maybeSingle();
+    let pkg: Record<string, any> | null = null;
+    if (!isAdhoc) {
+      const q = admin.from("payment_packages").select("*").eq("is_active", true);
+      const { data } = packageId
+        ? await q.eq("id", packageId).maybeSingle()
+        : await q.eq("code", packageCode!).maybeSingle();
+      pkg = data;
+      if (!pkg) return json({ error: "Paket topilmadi yoki faol emas" }, 404);
+    }
 
-    if (!pkg) return json({ error: "Paket topilmadi yoki faol emas" }, 404);
+    // Shifokor broni bo'lsa — narx server tomonda tekshiriladi (fraud himoyasi)
+    let amount = isAdhoc ? Math.round(rawAmount) : Number(pkg!.price);
+    if (isAdhoc && adhocPurpose === "doctor_appointment" && referenceId) {
+      const { data: appt } = await admin
+        .from("doctor_ext_appointments")
+        .select("id, price")
+        .eq("id", referenceId)
+        .maybeSingle();
+      if (appt?.price != null) amount = Number(appt.price);
+    }
+    if (!(amount > 0)) return json({ error: "Noto'g'ri to'lov summasi" }, 400);
 
     const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
     const serviceId = Deno.env.get("CLICK_SERVICE_ID");
@@ -56,18 +90,19 @@ Deno.serve(async (req) => {
       .insert({
         user_id: userId,
         provider: "click",
-        amount: pkg.price,
-        currency: pkg.currency,
-        purpose: pkg.kind === "subscription" ? "ai_subscription" : "med_coin",
-        package_id: pkg.id,
-        reference_id: pkg.code,
+        amount,
+        currency: pkg?.currency || "UZS",
+        purpose: pkg ? (pkg.kind === "subscription" ? "ai_subscription" : "med_coin") : adhocPurpose!,
+        package_id: pkg?.id ?? null,
+        reference_id: pkg?.code ?? referenceId,
         status: "pending",
-        metadata: { return_url: returnUrl, package_code: pkg.code },
+        metadata: { return_url: returnUrl, package_code: pkg?.code ?? null, purpose: adhocPurpose },
       })
       .select()
       .single();
 
     if (payErr) throw payErr;
+
 
     const returnWithId = (() => {
       try {
@@ -84,14 +119,17 @@ Deno.serve(async (req) => {
     const checkout_url =
       `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}` +
       `&merchant_id=${encodeURIComponent(merchantId)}` +
-      `&amount=${pkg.price}` +
+      `&amount=${amount}` +
       `&transaction_param=${payment.id}` +
       `&return_url=${encodeURIComponent(returnWithId)}`;
 
     return json({
       ok: true,
       payment: { id: payment.id, amount: payment.amount, currency: payment.currency, status: payment.status },
-      package: { code: pkg.code, name: pkg.name_uz, coins: pkg.coin_amount + pkg.bonus_coins },
+      package: pkg
+        ? { code: pkg.code, name: pkg.name_uz, coins: (pkg.coin_amount || 0) + (pkg.bonus_coins || 0) }
+        : { code: null, name: adhocPurpose, coins: 0 },
+
       checkout_url,
     });
   } catch (err) {
