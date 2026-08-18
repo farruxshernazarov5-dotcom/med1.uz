@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
 
     // Shifokor broni bo'lsa — narx server tomonda tekshiriladi (fraud himoyasi)
     let amount = isAdhoc ? Math.round(rawAmount) : Number(pkg!.price);
-    if (isAdhoc && adhocPurpose === "doctor_appointment" && referenceId) {
+    if (isAdhoc && purposePrefix === "doctor_appointment" && referenceId) {
       const { data: appt } = await admin
         .from("doctor_ext_appointments")
         .select("id, price")
@@ -105,11 +105,11 @@ Deno.serve(async (req) => {
         provider: "click",
         amount,
         currency: pkg?.currency || "UZS",
-        purpose: pkg ? (pkg.kind === "subscription" ? "ai_subscription" : "med_coin") : adhocPurpose!,
+        purpose: pkg ? (pkg.kind === "subscription" ? "ai_subscription" : "med_coin") : purposePrefix!,
         package_id: pkg?.id ?? null,
         reference_id: pkg?.code ?? referenceId,
         status: "pending",
-        metadata: { return_url: returnUrl, package_code: pkg?.code ?? null, purpose: adhocPurpose },
+        metadata: { return_url: returnUrl, package_code: pkg?.code ?? null, purpose: adhocPurpose, purpose_ref: referenceId },
       })
       .select()
       .single();
