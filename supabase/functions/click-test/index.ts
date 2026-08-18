@@ -112,29 +112,45 @@ Deno.serve(async (req) => {
 
     // 2) Click checkout provider tekshiruvi. merchant_id va merchant_user_id
     // alohida qiymatlar bo'lib, ikkalasi ham o'z nomi bilan yuboriladi.
-    const checkoutProbe = await fetch("https://api.click.uz/v2/internal/checkout/prepare", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const probeCheckout = async (variant: string, merchant_id: string, merchant_user_id?: string) => {
+      const payload: Record<string, unknown> = {
         service_id: serviceId,
-        merchant_id: merchantId,
-        merchant_user_id: merchantUserId,
+        merchant_id,
         transaction_param: payment.id,
         amount,
         return_url: "https://med1.uz/payment/success",
         source: "checkout_page",
-      }),
-    });
-    const checkoutText = await checkoutProbe.text();
-    let checkoutBody: Record<string, unknown> = {};
-    try {
-      checkoutBody = JSON.parse(checkoutText);
-    } catch {
-      checkoutBody = { raw: checkoutText.slice(0, 500) };
-    }
-    const checkoutAccepted = checkoutProbe.ok && Number(checkoutBody.error_code) === 0;
-    const checkoutError = checkoutBody.error_note || checkoutBody.message ||
-      (checkoutBody.error_code != null ? `error_code=${checkoutBody.error_code}` : `HTTP ${checkoutProbe.status}`);
+      };
+      if (merchant_user_id) payload.merchant_user_id = merchant_user_id;
+      const response = await fetch("https://api.click.uz/v2/internal/checkout/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const text = await response.text();
+      let body: Record<string, unknown> = {};
+      try {
+        body = JSON.parse(text);
+      } catch {
+        body = { raw: text.slice(0, 500) };
+      }
+      return { variant, http_status: response.status, body };
+    };
+    const checkoutProbes = await Promise.all([
+      probeCheckout("merchant+user", merchantId!, merchantUserId!),
+      probeCheckout("merchant-only", merchantId!),
+      probeCheckout("user-as-merchant", merchantUserId!),
+      probeCheckout("swapped", merchantUserId!, merchantId!),
+    ]);
+    const acceptedProbe = checkoutProbes.find((probe) =>
+      probe.http_status >= 200 && probe.http_status < 300 && Number(probe.body.error_code) === 0
+    );
+    const checkoutAccepted = Boolean(acceptedProbe);
+    const expectedProbe = checkoutProbes[0];
+    const checkoutError = expectedProbe.body.error_note || expectedProbe.body.message ||
+      (expectedProbe.body.error_code != null
+        ? `error_code=${expectedProbe.body.error_code}`
+        : `HTTP ${expectedProbe.http_status}`);
     push({
       id: "checkout",
       name: "Test Checkout (yetkazib beruvchi)",
@@ -142,7 +158,15 @@ Deno.serve(async (req) => {
       detail: checkoutAccepted
         ? "Click Med1.uz yetkazib beruvchi ma'lumotlarini qabul qildi"
         : `Click rad etdi: ${String(checkoutError)}`,
-      data: checkoutBody,
+      data: {
+        accepted_variant: acceptedProbe?.variant ?? null,
+        probes: checkoutProbes.map((probe) => ({
+          variant: probe.variant,
+          http_status: probe.http_status,
+          error_code: probe.body.error_code,
+          error_note: probe.body.error_note,
+        })),
+      },
     });
 
     // 3) Test Verification — noto'g'ri imzo rad etilishi kerak
