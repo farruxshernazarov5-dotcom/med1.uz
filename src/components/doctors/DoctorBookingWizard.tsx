@@ -122,7 +122,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     if (!paymentId || payState !== "awaiting") return;
     const t = setInterval(async () => {
       const { data } = await supabase.from("platform_payments").select("status").eq("id", paymentId).maybeSingle();
-      if (data?.status === "paid") {
+      if (data?.status === "paid" || data?.status === "completed") {
         setPayState("paid");
         setBooking((b: any) => (b ? { ...b, payment_status: "paid", status: "confirmed" } : b));
         toast({ title: "To'lov qabul qilindi", description: "Bron tasdiqlandi" });
