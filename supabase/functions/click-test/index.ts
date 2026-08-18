@@ -110,62 +110,29 @@ Deno.serve(async (req) => {
     const amount = String(pkg.price);
     const base = `${supabaseUrl}/functions/v1`;
 
-    // 2) Click checkout provider tekshiruvi. merchant_id va merchant_user_id
-    // alohida qiymatlar bo'lib, ikkalasi ham o'z nomi bilan yuboriladi.
-    const probeCheckout = async (variant: string, merchant_id: string, merchant_user_id?: string) => {
-      const payload: Record<string, unknown> = {
-        service_id: serviceId,
-        merchant_id,
-        transaction_param: payment.id,
-        amount,
-        return_url: "https://med1.uz/payment/success",
-        source: "checkout_page",
-      };
-      if (merchant_user_id) payload.merchant_user_id = merchant_user_id;
-      const response = await fetch("https://api.click.uz/v2/internal/checkout/prepare", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const text = await response.text();
-      let body: Record<string, unknown> = {};
-      try {
-        body = JSON.parse(text);
-      } catch {
-        body = { raw: text.slice(0, 500) };
-      }
-      return { variant, http_status: response.status, body };
-    };
-    const checkoutProbes = await Promise.all([
-      probeCheckout("merchant+user", merchantId!, merchantUserId!),
-      probeCheckout("merchant-only", merchantId!),
-      probeCheckout("user-as-merchant", merchantUserId!),
-      probeCheckout("swapped", merchantUserId!, merchantId!),
-    ]);
-    const acceptedProbe = checkoutProbes.find((probe) =>
-      probe.http_status >= 200 && probe.http_status < 300 && Number(probe.body.error_code) === 0
-    );
-    const checkoutAccepted = Boolean(acceptedProbe);
-    const expectedProbe = checkoutProbes[0];
-    const checkoutError = expectedProbe.body.error_note || expectedProbe.body.message ||
-      (expectedProbe.body.error_code != null
-        ? `error_code=${expectedProbe.body.error_code}`
-        : `HTTP ${expectedProbe.http_status}`);
+    // 2) Rasmiy hosted checkout linkini tekshirish. /v2/internal/checkout/prepare
+    // Click web-ilovasining ichki endpointi bo'lib, merchant serveridan bevosita
+    // chaqirilmaydi va haqiqiy credentials bilan ham -406 qaytarishi mumkin.
+    const checkoutUrl = new URL("https://my.click.uz/services/pay");
+    checkoutUrl.searchParams.set("service_id", serviceId!);
+    checkoutUrl.searchParams.set("merchant_id", merchantId!);
+    checkoutUrl.searchParams.set("merchant_user_id", merchantUserId!);
+    checkoutUrl.searchParams.set("transaction_param", payment.id);
+    checkoutUrl.searchParams.set("amount", amount);
+    checkoutUrl.searchParams.set("return_url", "https://med1.uz/payment/success");
+    const checkoutProbe = await fetch(checkoutUrl, { method: "GET", redirect: "manual" });
+    await checkoutProbe.text();
+    const checkoutAccepted = checkoutProbe.status >= 200 && checkoutProbe.status < 400;
     push({
       id: "checkout",
       name: "Test Checkout (yetkazib beruvchi)",
       status: checkoutAccepted ? "PASS" : "FAILED",
       detail: checkoutAccepted
-        ? "Click Med1.uz yetkazib beruvchi ma'lumotlarini qabul qildi"
-        : `Click rad etdi: ${String(checkoutError)}`,
+        ? "Rasmiy Click checkout sahifasi ochildi; Merchant ID va Merchant User ID alohida yuborildi"
+        : `Click checkout sahifasi ochilmadi: HTTP ${checkoutProbe.status}`,
       data: {
-        accepted_variant: acceptedProbe?.variant ?? null,
-        probes: checkoutProbes.map((probe) => ({
-          variant: probe.variant,
-          http_status: probe.http_status,
-          error_code: probe.body.error_code,
-          error_note: probe.body.error_note,
-        })),
+        http_status: checkoutProbe.status,
+        required_parameters: ["service_id", "merchant_id", "merchant_user_id", "transaction_param", "amount", "return_url"],
       },
     });
 
