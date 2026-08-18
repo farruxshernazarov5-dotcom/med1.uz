@@ -59,12 +59,9 @@ Deno.serve(async (req) => {
       return jsonResponse(body);
     }
 
-    // Idempotent prepare: prepare_id faqat bir marta beriladi
-    let prepareId: number | null = payment.prepare_id ?? null;
-    if (!prepareId) {
-      const { data: seq } = await admin.rpc("next_prepare_id");
-      prepareId = Number(seq);
-    }
+    // Idempotent prepare: prepare_id faqat bir marta beriladi (Click butun son talab qiladi)
+    const prepareId: number = Number(payment.prepare_id) ||
+      Number(`${Date.now()}${Math.floor(Math.random() * 90 + 10)}`);
 
     await admin
       .from("platform_payments")
