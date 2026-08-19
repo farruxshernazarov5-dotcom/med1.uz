@@ -57,37 +57,50 @@ Deno.serve(async (req) => {
 
     // 1) merchant_prepare_id mosligi
     if (!payment.prepare_id || String(payment.prepare_id) !== String(p.merchant_prepare_id)) {
-      return await respond({
-        click_trans_id: p.click_trans_id,
-        merchant_trans_id: p.merchant_trans_id,
-        error: ClickError.TRANSACTION_NOT_FOUND,
-        error_note: "Transaction does not exist",
-      }, "error", "merchant_prepare_id mismatch");
+      return await respond(
+        {
+          click_trans_id: p.click_trans_id,
+          merchant_trans_id: p.merchant_trans_id,
+          error: ClickError.TRANSACTION_NOT_FOUND,
+          error_note: "Transaction does not exist",
+        },
+        "error",
+        "merchant_prepare_id mismatch",
+      );
     }
 
     // 2) Click tomonidan bekor qilingan
     if (isClickCancelled(p)) {
-      await admin.from("platform_payments")
+      await admin
+        .from("platform_payments")
         .update({ status: "cancelled" })
         .eq("id", payment.id)
         .in("status", ["pending", "prepared"]);
-      return await respond({
-        click_trans_id: p.click_trans_id,
-        merchant_trans_id: p.merchant_trans_id,
-        error: ClickError.TRANSACTION_CANCELLED,
-        error_note: "Transaction cancelled",
-      }, "error", "cancelled by click");
+      return await respond(
+        {
+          click_trans_id: p.click_trans_id,
+          merchant_trans_id: p.merchant_trans_id,
+          error: ClickError.TRANSACTION_CANCELLED,
+          error_note: "Transaction cancelled",
+        },
+        "error",
+        "cancelled by click",
+      );
     }
 
     // 3) Idempotentlik — allaqachon bajarilgan bo'lsa Click'ga muvaffaqiyat qaytariladi
     if (payment.fulfilled_at || payment.status === "completed") {
-      return await respond({
-        click_trans_id: p.click_trans_id,
-        merchant_trans_id: p.merchant_trans_id,
-        merchant_confirm_id: Number(payment.prepare_id),
-        error: ClickError.SUCCESS,
-        error_note: "Success",
-      }, "rejected_replay", "already fulfilled");
+      return await respond(
+        {
+          click_trans_id: p.click_trans_id,
+          merchant_trans_id: p.merchant_trans_id,
+          merchant_confirm_id: Number(payment.prepare_id),
+          error: ClickError.SUCCESS,
+          error_note: "Success",
+        },
+        "rejected_replay",
+        "already fulfilled",
+      );
     }
 
     // 4) Atomik holat o'zgarishi: faqat pending/prepared → paid
@@ -105,12 +118,16 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (!locked) {
-      return await respond({
-        click_trans_id: p.click_trans_id,
-        merchant_trans_id: p.merchant_trans_id,
-        error: ClickError.ALREADY_PAID,
-        error_note: "Already paid",
-      }, "rejected_replay", "concurrent complete");
+      return await respond(
+        {
+          click_trans_id: p.click_trans_id,
+          merchant_trans_id: p.merchant_trans_id,
+          error: ClickError.ALREADY_PAID,
+          error_note: "Already paid",
+        },
+        "rejected_replay",
+        "concurrent complete",
+      );
     }
 
     // 5) Fulfillment — Med Coin / obuna / invoice / ledger / audit (bitta tranzaksiyada)
@@ -121,12 +138,16 @@ Deno.serve(async (req) => {
     if (fErr || !(fulfil as any)?.ok) {
       console.error("fulfillment failed:", fErr, fulfil);
       await admin.from("platform_payments").update({ status: "paid" }).eq("id", payment.id);
-      return await respond({
-        click_trans_id: p.click_trans_id,
-        merchant_trans_id: p.merchant_trans_id,
-        error: ClickError.FAILED_TO_UPDATE_USER,
-        error_note: "Failed to update user",
-      }, "error", `fulfillment: ${fErr?.message || JSON.stringify(fulfil)}`);
+      return await respond(
+        {
+          click_trans_id: p.click_trans_id,
+          merchant_trans_id: p.merchant_trans_id,
+          error: ClickError.FAILED_TO_UPDATE_USER,
+          error_note: "Failed to update user",
+        },
+        "error",
+        `fulfillment: ${fErr?.message || JSON.stringify(fulfil)}`,
+      );
     }
 
     const result = fulfil as any;
@@ -142,13 +163,16 @@ Deno.serve(async (req) => {
       isTest: Boolean(payment.is_test),
     });
 
-    return await respond({
-      click_trans_id: p.click_trans_id,
-      merchant_trans_id: p.merchant_trans_id,
-      merchant_confirm_id: Number(payment.prepare_id),
-      error: ClickError.SUCCESS,
-      error_note: "Success",
-    }, "processed");
+    return await respond(
+      {
+        click_trans_id: p.click_trans_id,
+        merchant_trans_id: p.merchant_trans_id,
+        merchant_confirm_id: Number(payment.prepare_id),
+        error: ClickError.SUCCESS,
+        error_note: "Success",
+      },
+      "processed",
+    );
   } catch (err) {
     console.error("click-complete error:", err);
     await writeCallbackLog(admin, {
