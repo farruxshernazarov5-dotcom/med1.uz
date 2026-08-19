@@ -133,13 +133,17 @@ Deno.serve(async (req) => {
       }
     })();
 
+    // Rasmiy Click hosted checkout formati (docs.click.uz → "To'lov havolasi"):
+    // service_id, merchant_id, amount, transaction_param, return_url.
+    // merchant_user_id bu havolada ISHLATILMAYDI — u faqat Merchant API (Auth header) uchun.
+    // Ortiqcha/notanish parametr "Yetkazib beruvchidan ma'lumot yetarli emas" xatosini keltirib chiqaradi.
     const checkout_url =
       `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}` +
       `&merchant_id=${encodeURIComponent(merchantId)}` +
-      `&merchant_user_id=${encodeURIComponent(merchantUserId)}` +
       `&amount=${amount}` +
-      `&transaction_param=${payment.id}` +
+      `&transaction_param=${encodeURIComponent(payment.id)}` +
       `&return_url=${encodeURIComponent(returnWithId)}`;
+
 
     return json({
       ok: true,
