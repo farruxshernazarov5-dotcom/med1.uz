@@ -48,14 +48,12 @@ Deno.serve(async (req) => {
     const push = (r: TestResult) => results.push(r);
 
     const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
-    const merchantUserId = Deno.env.get("CLICK_MERCHANT_USER_ID");
     const serviceId = Deno.env.get("CLICK_SERVICE_ID");
     const secretKey = Deno.env.get("CLICK_SECRET_KEY");
 
     // 1) Test Connection — credentials mavjudligi
     const missing = [
       !merchantId && "CLICK_MERCHANT_ID",
-      !merchantUserId && "CLICK_MERCHANT_USER_ID",
       !serviceId && "CLICK_SERVICE_ID",
       !secretKey && "CLICK_SECRET_KEY",
     ].filter(Boolean);
@@ -110,12 +108,10 @@ Deno.serve(async (req) => {
     const amount = String(pkg.price);
     const base = `${supabaseUrl}/functions/v1`;
 
-    // 2) Hosted checkout linkini tekshirish. Click checkout ilovasi merchant_id va
-    // merchant_user_id ni alohida o'qiydi; ikkalasi aynan o'z maydonida yuboriladi.
+    // 2) Hosted checkout linkini Click Button rasmiy formatida tekshirish.
     const checkoutUrl = new URL("https://my.click.uz/services/pay");
     checkoutUrl.searchParams.set("service_id", serviceId!);
     checkoutUrl.searchParams.set("merchant_id", merchantId!);
-    checkoutUrl.searchParams.set("merchant_user_id", merchantUserId!);
     checkoutUrl.searchParams.set("transaction_param", payment.id);
     checkoutUrl.searchParams.set("amount", amount);
     checkoutUrl.searchParams.set("return_url", "https://med1.uz/payment/success");
@@ -127,11 +123,11 @@ Deno.serve(async (req) => {
       name: "Test Checkout (yetkazib beruvchi)",
       status: checkoutAccepted ? "PASS" : "FAILED",
       detail: checkoutAccepted
-        ? "Rasmiy Click checkout sahifasi ochildi; Merchant ID va Merchant User ID alohida yuborildi"
+        ? "Rasmiy Click Button checkout sahifasi ochildi"
         : `Click checkout sahifasi ochilmadi: HTTP ${checkoutProbe.status}`,
       data: {
         http_status: checkoutProbe.status,
-        required_parameters: ["service_id", "merchant_id", "merchant_user_id", "transaction_param", "amount", "return_url"],
+        required_parameters: ["service_id", "merchant_id", "transaction_param", "amount", "return_url"],
       },
     });
 
