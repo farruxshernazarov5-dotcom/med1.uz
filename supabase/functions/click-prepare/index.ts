@@ -15,6 +15,19 @@ import {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Kabinetda URL tekshirilganda yoki brauzerda ochilganda Click parametrlari
+  // bo'lmaydi. Buni action=-3 deb loglamaymiz; haqiqiy callback action=0 bilan
+  // POST yoki query orqali kelganda quyidagi protokol odatdagidek ishlaydi.
+  const requestUrl = new URL(req.url);
+  if (req.method === "GET" && !requestUrl.searchParams.has("action")) {
+    return jsonResponse({
+      ok: true,
+      endpoint: "click-prepare",
+      expected_action: 0,
+      message: "Click Prepare endpoint is ready; callback parameters are required",
+    });
+  }
+
   const admin = adminClient();
   const ip = getClientIp(req);
 
