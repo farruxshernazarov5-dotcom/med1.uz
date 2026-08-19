@@ -110,9 +110,8 @@ Deno.serve(async (req) => {
     const amount = String(pkg.price);
     const base = `${supabaseUrl}/functions/v1`;
 
-    // 2) Rasmiy hosted checkout linkini tekshirish. /v2/internal/checkout/prepare
-    // Click web-ilovasining ichki endpointi bo'lib, merchant serveridan bevosita
-    // chaqirilmaydi va haqiqiy credentials bilan ham -406 qaytarishi mumkin.
+    // 2) Hosted checkout linkini tekshirish. Click checkout ilovasi merchant_id va
+    // merchant_user_id ni alohida o'qiydi; ikkalasi aynan o'z maydonida yuboriladi.
     const checkoutUrl = new URL("https://my.click.uz/services/pay");
     checkoutUrl.searchParams.set("service_id", serviceId!);
     checkoutUrl.searchParams.set("merchant_id", merchantId!);

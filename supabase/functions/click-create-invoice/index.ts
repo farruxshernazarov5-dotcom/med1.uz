@@ -94,7 +94,8 @@ Deno.serve(async (req) => {
 
     // Click checkout ikkita alohida identifikatorni qabul qiladi:
     // merchant_id = korxona/merchant ID, merchant_user_id = merchant foydalanuvchisi.
-    // Ulardan birini ikkinchisining o'rniga yuborish provider ma'lumoti xatosini beradi.
+    // Ikkalasini ham o'z nomi bilan yuborish kerak. Click'ning hosted checkout ilovasi
+    // merchant_user_id ni query'dan o'qib, internal checkout/prepare so'roviga uzatadi.
     const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
     const merchantUserId = Deno.env.get("CLICK_MERCHANT_USER_ID");
     const serviceId = Deno.env.get("CLICK_SERVICE_ID");
@@ -133,16 +134,17 @@ Deno.serve(async (req) => {
       }
     })();
 
-    // Rasmiy Click hosted checkout formati (docs.click.uz → "To'lov havolasi"):
-    // service_id, merchant_id, amount, transaction_param, return_url.
-    // merchant_user_id bu havolada ISHLATILMAYDI — u faqat Merchant API (Auth header) uchun.
-    // Ortiqcha/notanish parametr "Yetkazib beruvchidan ma'lumot yetarli emas" xatosini keltirib chiqaradi.
-    const checkout_url =
-      `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}` +
-      `&merchant_id=${encodeURIComponent(merchantId)}` +
-      `&amount=${amount}` +
-      `&transaction_param=${encodeURIComponent(payment.id)}` +
-      `&return_url=${encodeURIComponent(returnWithId)}`;
+    // Click hosted checkout parametrlarini URL API orqali yig'amiz. merchant_user_id
+    // yetishmasa Click callbacklarimizga yetib kelmasdan "yetkazib beruvchi ma'lumoti
+    // yetarli emas" deb rad etadi.
+    const checkoutUrl = new URL("https://my.click.uz/services/pay");
+    checkoutUrl.searchParams.set("service_id", serviceId);
+    checkoutUrl.searchParams.set("merchant_id", merchantId);
+    checkoutUrl.searchParams.set("merchant_user_id", merchantUserId);
+    checkoutUrl.searchParams.set("amount", String(amount));
+    checkoutUrl.searchParams.set("transaction_param", payment.id);
+    checkoutUrl.searchParams.set("return_url", returnWithId);
+    const checkout_url = checkoutUrl.toString();
 
 
     return json({
