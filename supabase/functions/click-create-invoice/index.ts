@@ -92,14 +92,11 @@ Deno.serve(async (req) => {
     }
     if (!(amount > 0)) return json({ error: "Noto'g'ri to'lov summasi" }, 400);
 
-    // Click checkout ikkita alohida identifikatorni qabul qiladi:
-    // merchant_id = korxona/merchant ID, merchant_user_id = merchant foydalanuvchisi.
-    // Ikkalasini ham o'z nomi bilan yuborish kerak. Click'ning hosted checkout ilovasi
-    // merchant_user_id ni query'dan o'qib, internal checkout/prepare so'roviga uzatadi.
+    // Click Button rasmiy formatida hosted checkout uchun service_id va merchant_id
+    // yuboriladi. merchant_user_id bu havolaning parametri emas.
     const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
-    const merchantUserId = Deno.env.get("CLICK_MERCHANT_USER_ID");
     const serviceId = Deno.env.get("CLICK_SERVICE_ID");
-    if (!merchantId || !merchantUserId || !serviceId) {
+    if (!merchantId || !serviceId) {
       return json({ error: "Click credentials sozlanmagan. Super Admin → Payments → Click." }, 503);
     }
 
@@ -134,13 +131,10 @@ Deno.serve(async (req) => {
       }
     })();
 
-    // Click hosted checkout parametrlarini URL API orqali yig'amiz. merchant_user_id
-    // yetishmasa Click callbacklarimizga yetib kelmasdan "yetkazib beruvchi ma'lumoti
-    // yetarli emas" deb rad etadi.
+    // Click operatori bergan Click Button formatiga qat'iy mos checkout havolasi.
     const checkoutUrl = new URL("https://my.click.uz/services/pay");
     checkoutUrl.searchParams.set("service_id", serviceId);
     checkoutUrl.searchParams.set("merchant_id", merchantId);
-    checkoutUrl.searchParams.set("merchant_user_id", merchantUserId);
     checkoutUrl.searchParams.set("amount", String(amount));
     checkoutUrl.searchParams.set("transaction_param", payment.id);
     checkoutUrl.searchParams.set("return_url", returnWithId);
