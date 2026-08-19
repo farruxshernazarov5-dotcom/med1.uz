@@ -94,10 +94,17 @@ Deno.serve(async (req) => {
 
     // Click Button rasmiy formatida hosted checkout uchun service_id va merchant_id
     // yuboriladi. merchant_user_id bu havolaning parametri emas.
-    const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
-    const serviceId = Deno.env.get("CLICK_SERVICE_ID");
+    const merchantId = (Deno.env.get("CLICK_MERCHANT_ID") ?? "").trim();
+    const serviceId = (Deno.env.get("CLICK_SERVICE_ID") ?? "").trim();
     if (!merchantId || !serviceId) {
       return json({ error: "Click credentials sozlanmagan. Super Admin → Payments → Click." }, 503);
+    }
+    if (!/^\d+$/.test(merchantId) || !/^\d+$/.test(serviceId)) {
+      console.error("Click checkout configuration invalid", {
+        merchant_id_is_numeric: /^\d+$/.test(merchantId),
+        service_id_is_numeric: /^\d+$/.test(serviceId),
+      });
+      return json({ error: "Click Merchant ID yoki Service ID formati noto'g'ri." }, 503);
     }
 
     const { data: payment, error: payErr } = await admin
@@ -139,6 +146,15 @@ Deno.serve(async (req) => {
     checkoutUrl.searchParams.set("transaction_param", payment.id);
     checkoutUrl.searchParams.set("return_url", returnWithId);
     const checkout_url = checkoutUrl.toString();
+
+    console.log("Click checkout created", {
+      payment_id: payment.id,
+      amount,
+      purpose: payment.purpose,
+      has_merchant_id: true,
+      has_service_id: true,
+      return_origin: new URL(returnWithId).origin,
+    });
 
 
     return json({
