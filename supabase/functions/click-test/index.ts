@@ -47,9 +47,9 @@ Deno.serve(async (req) => {
     const results: TestResult[] = [];
     const push = (r: TestResult) => results.push(r);
 
-    const merchantId = Deno.env.get("CLICK_MERCHANT_ID");
-    const serviceId = Deno.env.get("CLICK_SERVICE_ID");
-    const secretKey = Deno.env.get("CLICK_SECRET_KEY");
+    const merchantId = (Deno.env.get("CLICK_MERCHANT_ID") ?? "").trim();
+    const serviceId = (Deno.env.get("CLICK_SERVICE_ID") ?? "").trim();
+    const secretKey = (Deno.env.get("CLICK_SECRET_KEY") ?? "").trim();
 
     // 1) Test Connection — credentials mavjudligi
     const missing = [
@@ -65,6 +65,20 @@ Deno.serve(async (req) => {
     });
 
     if (missing.length) return json({ ok: false, results });
+
+    const malformed = [
+      !/^\d+$/.test(merchantId) && "CLICK_MERCHANT_ID raqam bo'lishi kerak",
+      !/^\d+$/.test(serviceId) && "CLICK_SERVICE_ID raqam bo'lishi kerak",
+    ].filter(Boolean);
+    if (malformed.length) {
+      push({
+        id: "credential-format",
+        name: "Credential formati",
+        status: "FAILED",
+        detail: malformed.join("; "),
+      });
+      return json({ ok: false, results });
+    }
 
     // Test paketi
     const { data: pkg } = await admin

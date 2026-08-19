@@ -15,6 +15,10 @@ export const corsHeaders = {
 export const SIGN_TIME_MAX_AGE_SEC = 300;
 export const RATE_LIMIT_PER_MIN = 120;
 
+function readRequiredEnv(name: string): string {
+  return (Deno.env.get(name) ?? "").trim();
+}
+
 /** Click rasmiy error kodlari */
 export const ClickError = {
   SUCCESS: 0,
@@ -149,8 +153,10 @@ export async function guardClickRequest(
   ip: string,
   expectedAction: "0" | "1",
 ): Promise<GuardResult> {
-  const secretKey = Deno.env.get("CLICK_SECRET_KEY") ?? "";
-  const serviceId = Deno.env.get("CLICK_SERVICE_ID") ?? "";
+  // Kabinetdan nusxalangan qiymatlarda tasodifiy bo'sh joy/yangi qator bo'lsa,
+  // imzo va service_id tekshiruvi noto'g'ri ishlamasligi uchun trim qilamiz.
+  const secretKey = readRequiredEnv("CLICK_SECRET_KEY");
+  const serviceId = readRequiredEnv("CLICK_SERVICE_ID");
 
   const base = {
     click_trans_id: p.click_trans_id,
@@ -174,7 +180,12 @@ export async function guardClickRequest(
     return { ok: false as const, response: jsonResponse(body) };
   };
 
-  if (!secretKey || !serviceId) {
+  if (!secretKey || !serviceId || !/^\d+$/.test(serviceId)) {
+    console.error("Click callback configuration invalid", {
+      has_secret_key: Boolean(secretKey),
+      has_service_id: Boolean(serviceId),
+      service_id_is_numeric: /^\d+$/.test(serviceId),
+    });
     return await fail(ClickError.ERROR_IN_REQUEST, "Merchant credentials not configured", "error");
   }
 
