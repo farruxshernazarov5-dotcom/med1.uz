@@ -42,7 +42,7 @@ const DoctorProfilePage = () => {
       if (!doctorId) return;
       const { data: doc } = await supabase
         .from("doctors")
-        .select("*")
+        .select("id, clinic_id, full_name, specialty, experience_years, photo_url, bio, consultation_price, is_active, created_at, certificates, schedule, avg_rating, review_count, user_id, education, languages, online_consultation, social_links, region, city")
         .eq("id", doctorId)
         .single();
 

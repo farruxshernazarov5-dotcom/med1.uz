@@ -56,7 +56,7 @@ const BookingPage = () => {
   useEffect(() => {
     if (form.clinic_id) {
       Promise.all([
-        supabase.from("doctors").select("*").eq("clinic_id", form.clinic_id).eq("is_active", true),
+        supabase.from("doctors").select("id, clinic_id, full_name, specialty, experience_years, photo_url, bio, consultation_price, is_active, avg_rating, review_count, online_consultation, languages, education").eq("clinic_id", form.clinic_id).eq("is_active", true),
         supabase.from("clinic_services").select("*").eq("clinic_id", form.clinic_id).eq("is_active", true),
       ]).then(([docRes, srvRes]) => {
         setDoctors(docRes.data || []);
