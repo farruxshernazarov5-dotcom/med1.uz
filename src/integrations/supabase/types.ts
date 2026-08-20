@@ -1363,6 +1363,57 @@ export type Database = {
         }
         Relationships: []
       }
+      click_fiscal_receipts: {
+        Row: {
+          click_trans_id: string | null
+          created_at: string
+          error_note: string | null
+          id: string
+          items: Json
+          mode: string
+          payment_id: string | null
+          received_card: number
+          received_cash: number
+          received_ecash: number
+          request_body: Json | null
+          response_body: Json | null
+          service_id: string | null
+          status: string
+        }
+        Insert: {
+          click_trans_id?: string | null
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          items?: Json
+          mode?: string
+          payment_id?: string | null
+          received_card?: number
+          received_cash?: number
+          received_ecash?: number
+          request_body?: Json | null
+          response_body?: Json | null
+          service_id?: string | null
+          status?: string
+        }
+        Update: {
+          click_trans_id?: string | null
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          items?: Json
+          mode?: string
+          payment_id?: string | null
+          received_card?: number
+          received_cash?: number
+          received_ecash?: number
+          request_body?: Json | null
+          response_body?: Json | null
+          service_id?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       click_webhook_log: {
         Row: {
           action: string
@@ -1418,6 +1469,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clinic_bi_saved_reports: {
+        Row: {
+          clinic_id: string
+          config: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      clinic_bi_targets: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          metric: string
+          period: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metric: string
+          period?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metric?: string
+          period?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       clinic_payments: {
         Row: {
@@ -1527,6 +1641,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clinic_report_audit: {
+        Row: {
+          action: string
+          clinic_id: string
+          created_at: string
+          filters: Json
+          id: string
+          report_key: string
+          user_id: string | null
+        }
+        Insert: {
+          action?: string
+          clinic_id: string
+          created_at?: string
+          filters?: Json
+          id?: string
+          report_key: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          clinic_id?: string
+          created_at?: string
+          filters?: Json
+          id?: string
+          report_key?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       clinic_services: {
         Row: {
@@ -7927,6 +8071,93 @@ export type Database = {
           },
         ]
       }
+      fund_allocations: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          percent: number
+          planned_amount: number
+          sort_order: number
+          spent_amount: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          percent?: number
+          planned_amount?: number
+          sort_order?: number
+          spent_amount?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          percent?: number
+          planned_amount?: number
+          sort_order?: number
+          spent_amount?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fund_updates: {
+        Row: {
+          amount_used: number
+          body: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          period_end: string | null
+          period_start: string | null
+          period_type: string
+          progress_percent: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount_used?: number
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string
+          progress_percent?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount_used?: number
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string
+          progress_percent?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       geo_creative_templates: {
         Row: {
           category: string
@@ -11911,6 +12142,59 @@ export type Database = {
           },
         ]
       }
+      med_coin_ledger: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          description: string | null
+          id: string
+          order_id: string | null
+          payment_id: string | null
+          source: string
+          transaction_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          source?: string
+          transaction_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          payment_id?: string | null
+          source?: string
+          transaction_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med_coin_ledger_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_records: {
         Row: {
           attachments: string[] | null
@@ -13211,6 +13495,172 @@ export type Database = {
           },
         ]
       }
+      payment_invoices: {
+        Row: {
+          amount: number
+          coin_amount: number
+          created_at: string
+          currency: string
+          id: string
+          invoice_number: string
+          issued_at: string
+          package_code: string | null
+          payment_id: string
+          product_name: string
+          provider: string
+          provider_transaction_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          invoice_number: string
+          issued_at?: string
+          package_code?: string | null
+          payment_id: string
+          product_name: string
+          provider?: string
+          provider_transaction_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          invoice_number?: string
+          issued_at?: string
+          package_code?: string | null
+          payment_id?: string
+          product_name?: string
+          provider?: string
+          provider_transaction_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_invoices_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_packages: {
+        Row: {
+          bonus_coins: number
+          code: string
+          coin_amount: number
+          created_at: string
+          currency: string
+          duration_days: number
+          id: string
+          is_active: boolean
+          kind: string
+          name_en: string
+          name_ru: string
+          name_uz: string
+          price: number
+          sort_order: number
+          subscription_tier: string | null
+          updated_at: string
+        }
+        Insert: {
+          bonus_coins?: number
+          code: string
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          kind: string
+          name_en: string
+          name_ru: string
+          name_uz: string
+          price: number
+          sort_order?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bonus_coins?: number
+          code?: string
+          coin_amount?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          kind?: string
+          name_en?: string
+          name_ru?: string
+          name_uz?: string
+          price?: number
+          sort_order?: number
+          subscription_tier?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_refunds: {
+        Row: {
+          admin_id: string | null
+          amount: number
+          coin_adjustment: number
+          created_at: string
+          id: string
+          payment_id: string
+          reason: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          amount: number
+          coin_adjustment?: number
+          created_at?: string
+          id?: string
+          payment_id: string
+          reason: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          amount?: number
+          coin_adjustment?: number
+          created_at?: string
+          id?: string
+          payment_id?: string
+          reason?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_refunds_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pharmacy_customers: {
         Row: {
           address: string | null
@@ -14014,9 +14464,13 @@ export type Database = {
           amount: number
           created_at: string
           currency: string
+          fulfilled_at: string | null
           id: string
+          is_test: boolean
           metadata: Json | null
+          package_id: string | null
           paid_at: string | null
+          prepare_id: number | null
           provider: string
           provider_payment_id: string | null
           provider_transaction_id: string | null
@@ -14030,9 +14484,13 @@ export type Database = {
           amount: number
           created_at?: string
           currency?: string
+          fulfilled_at?: string | null
           id?: string
+          is_test?: boolean
           metadata?: Json | null
+          package_id?: string | null
           paid_at?: string | null
+          prepare_id?: number | null
           provider: string
           provider_payment_id?: string | null
           provider_transaction_id?: string | null
@@ -14046,9 +14504,13 @@ export type Database = {
           amount?: number
           created_at?: string
           currency?: string
+          fulfilled_at?: string | null
           id?: string
+          is_test?: boolean
           metadata?: Json | null
+          package_id?: string | null
           paid_at?: string | null
+          prepare_id?: number | null
           provider?: string
           provider_payment_id?: string | null
           provider_transaction_id?: string | null
@@ -14058,7 +14520,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "platform_payments_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "payment_packages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       platform_plans: {
         Row: {
@@ -15901,6 +16371,75 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsor_contributions: {
+        Row: {
+          amount: number
+          bio: string | null
+          created_at: string
+          display_name: string
+          full_name: string
+          id: string
+          is_anonymous: boolean
+          message: string | null
+          moderation_note: string | null
+          occupation: string | null
+          paid_at: string | null
+          phone: string | null
+          region: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          slug: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          website_url: string | null
+        }
+        Insert: {
+          amount: number
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          full_name: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          moderation_note?: string | null
+          occupation?: string | null
+          paid_at?: string | null
+          phone?: string | null
+          region?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          slug?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          amount?: number
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          full_name?: string
+          id?: string
+          is_anonymous?: boolean
+          message?: string | null
+          moderation_note?: string | null
+          occupation?: string | null
+          paid_at?: string | null
+          phone?: string | null
+          region?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          slug?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -16089,6 +16628,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_activity_log: {
+        Row: {
+          action_type: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json
+          module: string | null
+          path: string | null
+          title: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          module?: string | null
+          path?: string | null
+          title: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          module?: string | null
+          path?: string | null
+          title?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_ai_documents: {
         Row: {
@@ -16698,6 +17276,11 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      click_fulfill_payment: { Args: { _payment_id: string }; Returns: Json }
+      click_refund_payment: {
+        Args: { _admin: string; _payment_id: string; _reason: string }
+        Returns: Json
+      }
       deduct_ai_credits: {
         Args: {
           _channel?: string
@@ -16735,6 +17318,38 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_public_sponsor: {
+        Args: { _slug: string }
+        Returns: {
+          amount: number
+          bio: string
+          created_at: string
+          display_name: string
+          id: string
+          message: string
+          occupation: string
+          rank: number
+          region: string
+          slug: string
+          website_url: string
+        }[]
+      }
+      get_public_sponsors: {
+        Args: { _limit?: number }
+        Returns: {
+          amount: number
+          bio: string
+          created_at: string
+          display_name: string
+          id: string
+          is_anonymous: boolean
+          message: string
+          occupation: string
+          region: string
+          slug: string
+          website_url: string
+        }[]
+      }
       get_referral_stats: {
         Args: { _owner_id: string }
         Returns: {
@@ -16758,6 +17373,14 @@ export type Database = {
           limits: Json
           status: string
           tier: string
+        }[]
+      }
+      get_sponsors_summary: {
+        Args: never
+        Returns: {
+          max_amount: number
+          sponsors_count: number
+          total_amount: number
         }[]
       }
       get_user_ai_access: {
@@ -16807,6 +17430,7 @@ export type Database = {
         }
         Returns: string
       }
+      is_clinic_owner: { Args: { _clinic_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -16924,11 +17548,11 @@ export type Database = {
         Args: { _hash_id: string }
         Returns: {
           is_valid: boolean
-          method: Database["public"]["Enums"]["signature_method"]
+          method: string
           signature_hash: string
           signed_at: string
           signer_name: string
-          signer_role: Database["public"]["Enums"]["contract_party_role"]
+          signer_role: string
         }[]
       }
     }
