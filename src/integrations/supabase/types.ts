@@ -1363,6 +1363,57 @@ export type Database = {
         }
         Relationships: []
       }
+      click_fiscal_receipts: {
+        Row: {
+          click_trans_id: string | null
+          created_at: string
+          error_note: string | null
+          id: string
+          items: Json
+          mode: string
+          payment_id: string | null
+          received_card: number
+          received_cash: number
+          received_ecash: number
+          request_body: Json | null
+          response_body: Json | null
+          service_id: string | null
+          status: string
+        }
+        Insert: {
+          click_trans_id?: string | null
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          items?: Json
+          mode?: string
+          payment_id?: string | null
+          received_card?: number
+          received_cash?: number
+          received_ecash?: number
+          request_body?: Json | null
+          response_body?: Json | null
+          service_id?: string | null
+          status?: string
+        }
+        Update: {
+          click_trans_id?: string | null
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          items?: Json
+          mode?: string
+          payment_id?: string | null
+          received_card?: number
+          received_cash?: number
+          received_ecash?: number
+          request_body?: Json | null
+          response_body?: Json | null
+          service_id?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       click_webhook_log: {
         Row: {
           action: string
