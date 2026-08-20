@@ -112,7 +112,10 @@ export default function PaymentSandboxPage() {
         </div>
       </div>
 
+      <ClickTestPanel />
+
       <Card>
+
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Test invoice parametrlari</CardTitle>
         </CardHeader>
