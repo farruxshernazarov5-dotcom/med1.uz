@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, CreditCard, ExternalLink, ShieldCheck, AlertTriangle } from "lucide-react";
+import ClickTestPanel from "@/components/admin/payments/ClickTestPanel";
+
 
 type Provider = "click" | "payme" | "uzum";
 
