@@ -114,6 +114,7 @@ const AIRadiologyAbdomenPage = lazy(() => import("./pages/AIRadiologyAbdomenPage
 const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
 const AIOrchestratorPage = lazy(() => import("./pages/AIOrchestratorPage"));
 const OAuthConsentPage = lazy(() => import("./pages/OAuthConsentPage"));
+const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -242,6 +243,9 @@ const App = () => (
                 <Route path="/ai-orchestrator" element={<AIOrchestratorPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin/seo-monitor" element={<AdminPage initialTab="monitoring" />} />
+                <Route path="/admin/payments" element={<Navigate to="/admin/payment-sandbox" replace />} />
+                <Route path="/admin/sponsors" element={<AdminPage initialTab="sponsors" />} />
                 <Route path="/admin/legal" element={<AdminLegalPage />} />
                 <Route path="/admin/partners/:slug" element={<HambiPartnerAdminPage />} />
                 <Route path="/admin/partners" element={<HambiPartnerAdminPage />} />
@@ -270,6 +274,7 @@ const App = () => (
                 <Route path="/knowledge/:lang/:slug" element={<KnowledgeArticlePage />} />
                 <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="/partner" element={<PartnerDashboardPage />} />
+                <Route path="/transparency" element={<TransparencyPage />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

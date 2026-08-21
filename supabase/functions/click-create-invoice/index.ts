@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkoutUrl, clickEnv, validateClickConfig } from "../_shared/click.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -44,8 +45,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const merchantId = Deno.env.get("CLICK_MERCHANT_ID")!;
-    const serviceId = Deno.env.get("CLICK_SERVICE_ID")!;
+    const click = clickEnv();
+    const configErrors = validateClickConfig(click).filter((issue) => issue.level === "error");
+    if (configErrors.length > 0) {
+      console.error("click-create-invoice configuration error", configErrors.map((issue) => issue.message));
+      return new Response(JSON.stringify({ error: "Click konfiguratsiyasi to'liq emas" }), {
+        status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const admin = createClient(supabaseUrl, serviceKey);
 
@@ -79,7 +86,13 @@ Deno.serve(async (req) => {
     })();
 
     // Click checkout URL
-    const checkout_url = `https://my.click.uz/services/pay?service_id=${encodeURIComponent(serviceId)}&merchant_id=${encodeURIComponent(merchantId)}&amount=${amount}&transaction_param=${payment.id}&return_url=${encodeURIComponent(returnWithId)}`;
+    const checkout_url = checkoutUrl({
+      serviceId: click.serviceId,
+      merchantId: click.merchantId,
+      amount,
+      transactionParam: payment.id,
+      returnUrl: returnWithId,
+    });
 
     return new Response(JSON.stringify({ ok: true, payment, checkout_url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
