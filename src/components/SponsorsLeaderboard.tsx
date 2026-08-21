@@ -15,7 +15,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCountUp } from "@/hooks/useCountUp";
-import { UZBEKISTAN_REGIONS } from "@/data/uzbekistanRegions";
+import { getRegionNames } from "@/data/uzbekistanRegions";
 
 const QUICK_AMOUNTS = [5000, 10000, 25000, 50000, 100000, 200000];
 const GOAL_AMOUNT = 5000000;
@@ -393,10 +393,9 @@ const SponsorsLeaderboard = () => {
                   <select value={form.region} onChange={e => setForm({ ...form, region: e.target.value })}
                     className="mt-1.5 w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
                     <option value="">Tanlang</option>
-                    {UZBEKISTAN_REGIONS.map((r: any) => {
-                      const name = typeof r === "string" ? r : r.name;
-                      return <option key={name} value={name}>{name}</option>;
-                    })}
+                    {getRegionNames().map((name) => (
+                      <option key={name} value={name}>{name}</option>
+                    ))}
                   </select>
                 </div>
               </>
