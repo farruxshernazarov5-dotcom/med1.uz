@@ -2,7 +2,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import AdminDashboard from "@/components/dashboard/AdminDashboard";
 
-const AdminPage = () => {
+interface AdminPageProps {
+  initialTab?: string;
+}
+
+const AdminPage = ({ initialTab }: AdminPageProps) => {
   const { user, loading, userRole } = useAuth();
 
   if (loading) {
@@ -19,7 +23,7 @@ const AdminPage = () => {
   if (!user) return <Navigate to="/auth" replace />;
   if (userRole !== "admin") return <Navigate to={`/dashboard/${userRole || "patient"}`} replace />;
 
-  return <AdminDashboard />;
+  return <AdminDashboard initialTab={initialTab} />;
 };
 
 export default AdminPage;

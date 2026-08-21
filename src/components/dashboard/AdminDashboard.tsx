@@ -24,6 +24,7 @@ import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import MasterContractsArchive from "@/components/admin/legal/MasterContractsArchive";
 import SecurityCenterModule from "@/components/admin/SecurityCenterModule";
 import TaxReportsModule from "@/components/admin/TaxReportsModule";
+import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -85,6 +86,8 @@ const sidebarSections = [
     label: "Tizim", items: [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
+      { id: "payments", label: "To'lov testi", icon: CreditCard, href: "/admin/payment-sandbox" },
+      { id: "sponsors", label: "Homiylar", icon: Gift },
       { id: "tax_reports", label: "🧾 Soliq hisobotlari", icon: Receipt },
       { id: "saas", label: "SaaS Boshqaruv", icon: Crown },
       { id: "ai", label: "AI Monitor", icon: Bot },
@@ -100,11 +103,15 @@ const sidebarSections = [
   },
 ];
 
-const AdminDashboard = () => {
+interface AdminDashboardProps {
+  initialTab?: string;
+}
+
+const AdminDashboard = ({ initialTab = "overview" }: AdminDashboardProps) => {
   const { signOut, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState(initialTab);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [stats, setStats] = useState<any>({});
   const [clinics, setClinics] = useState<any[]>([]);
@@ -1427,6 +1434,7 @@ const AdminDashboard = () => {
 
           {tab === "security_center" && <SecurityCenterModule />}
           {tab === "tax_reports" && <TaxReportsModule />}
+          {tab === "sponsors" && <SponsorsLeaderboard />}
 
           {tab === "audit" && (
             <div className="space-y-3">

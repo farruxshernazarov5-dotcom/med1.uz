@@ -43,8 +43,8 @@ Deno.serve(async (req) => {
         },
         issues: validateClickConfig(env),
         endpoints: {
-          prepare_url: `${base}/click-webhook`,
-          complete_url: `${base}/click-webhook`,
+          prepare_url: `${base}/click-prepare`,
+          complete_url: `${base}/click-complete`,
           return_url: "https://med1.uz/payment/success",
         },
       });
@@ -98,7 +98,8 @@ Deno.serve(async (req) => {
         const sign = action === "1"
           ? md5(`${clickTransId}${env.serviceId}${env.secretKey}${paymentId}${prepareId}${amount}${action}${now}`)
           : md5(`${clickTransId}${env.serviceId}${env.secretKey}${paymentId}${amount}${action}${now}`);
-        const resp = await fetch(`${base}/click-webhook`, {
+        const endpoint = action === "0" ? "click-prepare" : "click-complete";
+        const resp = await fetch(`${base}/${endpoint}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
