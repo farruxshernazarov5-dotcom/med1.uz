@@ -115,6 +115,7 @@ const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
 const AIOrchestratorPage = lazy(() => import("./pages/AIOrchestratorPage"));
 const OAuthConsentPage = lazy(() => import("./pages/OAuthConsentPage"));
 const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
+const SponsorProfilePage = lazy(() => import("./pages/SponsorProfilePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingAIPanel from "./components/FloatingAIPanel";
@@ -275,6 +276,7 @@ const App = () => (
                 <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="/transparency" element={<TransparencyPage />} />
+                <Route path="/sponsor/:slug" element={<SponsorProfilePage />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

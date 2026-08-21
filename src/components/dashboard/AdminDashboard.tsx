@@ -24,7 +24,7 @@ import LegalAdminDashboard from "@/components/admin/legal/LegalAdminDashboard";
 import MasterContractsArchive from "@/components/admin/legal/MasterContractsArchive";
 import SecurityCenterModule from "@/components/admin/SecurityCenterModule";
 import TaxReportsModule from "@/components/admin/TaxReportsModule";
-import SponsorsLeaderboard from "@/components/SponsorsLeaderboard";
+import SponsorsAdmin from "@/components/admin/SponsorsAdmin";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -1434,7 +1434,7 @@ const AdminDashboard = ({ initialTab = "overview" }: AdminDashboardProps) => {
 
           {tab === "security_center" && <SecurityCenterModule />}
           {tab === "tax_reports" && <TaxReportsModule />}
-          {tab === "sponsors" && <SponsorsLeaderboard />}
+          {tab === "sponsors" && <SponsorsAdmin />}
 
           {tab === "audit" && (
             <div className="space-y-3">
