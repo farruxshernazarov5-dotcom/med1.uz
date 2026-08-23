@@ -260,6 +260,54 @@ const ClickTestPanel = () => {
       <Card>
         <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" /> Domen va URL tekshiruvi
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={runHealthcheck} disabled={busy !== null}>
+              {busy === "health" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+              Tekshirish
+            </Button>
+            <Button size="sm" onClick={testCallbacks} disabled={busy !== null}>
+              {busy === "callback" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <PlayCircle className="h-4 w-4 mr-2" />}
+              Callback test so'rovi
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {!health && <p className="text-xs text-muted-foreground">Joriy rejim uchun URL, domen va konfiguratsiya avtomatik tekshiriladi.</p>}
+          {health && (
+            <>
+              <Badge variant={health.ok ? "secondary" : "destructive"}>
+                {health.ok ? "Muammo topilmadi" : `${health.errors} ta ogohlantirish`}
+              </Badge>
+              <div className="space-y-1.5">
+                {health.checks.map((c) => (
+                  <div key={c.name} className={`flex items-start gap-2 text-xs ${c.ok ? "text-muted-foreground" : "text-destructive"}`}>
+                    {c.ok ? <ShieldCheck className="h-3.5 w-3.5 mt-0.5 shrink-0" /> : <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />}
+                    <span className="font-medium break-all w-56 shrink-0">{c.name}</span>
+                    <span className="break-all">{c.detail}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {callbackTest ? (
+            <>
+              <Separator />
+              <div className="text-xs text-muted-foreground">Callback javoblari (prepare + complete):</div>
+              <pre className="text-[11px] bg-muted p-3 rounded overflow-auto max-h-64">
+                {JSON.stringify(callbackTest, null, 2)}
+              </pre>
+            </>
+          ) : null}
+        </CardContent>
+      </Card>
+
+
+
+      <Card>
+        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-base flex items-center gap-2">
             <Copy className="h-4 w-4" /> Click'ga yuboriladigan matn
           </CardTitle>
           <div className="flex gap-2">
