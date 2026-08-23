@@ -203,6 +203,36 @@ const ClickTestPanel = () => {
       </Card>
 
       <Card>
+        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Copy className="h-4 w-4" /> Click'ga yuboriladigan matn
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm"
+              onClick={() => { navigator.clipboard.writeText(activationText); toast.success("Matn nusxalandi"); }}>
+              <Copy className="h-3.5 w-3.5 mr-2" /> Nusxalash
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <a href={`mailto:support@click.uz?subject=${encodeURIComponent("MED1.UZ xizmatini faollashtirish")}&body=${encodeURIComponent(activationText)}`}>
+                <ExternalLink className="h-3.5 w-3.5 mr-2" /> Email
+              </a>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-xs text-muted-foreground">
+            Quyidagi matn joriy konfiguratsiya asosida avtomatik shakllantiriladi. Secret Key hech qachon
+            qo'shilmaydi — uni Click'ga yubormang.
+          </p>
+          <pre className="text-[11px] leading-relaxed bg-muted p-3 rounded overflow-auto max-h-96 whitespace-pre-wrap">
+            {activationText}
+          </pre>
+        </CardContent>
+      </Card>
+
+
+
+      <Card>
         <CardHeader className="pb-3"><CardTitle className="text-base">To'lov testi</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
