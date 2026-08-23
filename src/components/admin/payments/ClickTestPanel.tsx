@@ -186,14 +186,34 @@ const ClickTestPanel = () => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0 gap-3">
           <CardTitle className="text-base flex items-center gap-2">
             <ShieldCheck className="h-4 w-4" /> Click konfiguratsiyasi
+            <Badge variant={environment === "production" ? "destructive" : "secondary"}>
+              {environment === "production" ? "PRODUCTION" : "SANDBOX"}
+            </Badge>
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={loadConfig} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-md border overflow-hidden">
+              {(["sandbox", "production"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setEnvironment(m)}
+                  className={`px-3 py-1.5 text-xs transition-colors ${
+                    environment === m ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                  }`}
+                >
+                  {m === "sandbox" ? "Sandbox" : "Production"}
+                </button>
+              ))}
+            </div>
+            <Button variant="outline" size="sm" onClick={loadConfig} disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            </Button>
+          </div>
         </CardHeader>
+
         <CardContent className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-4 text-sm">
             <div><div className="text-muted-foreground text-xs">Service ID</div><code>{cfg?.config.service_id ?? "—"}</code></div>
