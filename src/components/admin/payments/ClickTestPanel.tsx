@@ -110,6 +110,29 @@ const ClickTestPanel = () => {
     loadLogs();
   });
 
+  const runHealthcheck = () => run("health", async () => {
+    const d = await call("click-admin-diag", { action: "healthcheck", environment });
+    setHealth(d as unknown as { ok: boolean; errors: number; checks: HealthCheck[] });
+    if ((d as { ok?: boolean }).ok) toast.success("Barcha tekshiruvlar muvaffaqiyatli");
+    else toast.warning(`${(d as { errors?: number }).errors ?? 0} ta muammo aniqlandi`);
+  });
+
+  const testCallbacks = () => run("callback", async () => {
+    let pid = lastPaymentId;
+    if (!pid) {
+      const c = await call("click-admin-diag", { action: "checkout", amount: Number(amount) || 1000, environment });
+      pid = String(c.payment_id);
+      setLastPaymentId(pid);
+      setCheckoutUrl(String(c.checkout_url));
+    }
+    const d = await call("click-admin-diag", { action: "simulate", payment_id: pid, environment });
+    setCallbackTest(d);
+    setResult(d);
+    toast.success("Prepare va Complete callback so'rovlari yuborildi");
+    loadLogs();
+  });
+
+
   const errors = cfg?.issues.filter((i) => i.level === "error") ?? [];
   const warns = cfg?.issues.filter((i) => i.level === "warn") ?? [];
 
