@@ -46,17 +46,20 @@ const ClickTestPanel = () => {
   const [packageCode, setPackageCode] = useState("1512216");
   const [vat, setVat] = useState("12");
   const [result, setResult] = useState<unknown>(null);
+  const [environment, setEnvironment] = useState<"sandbox" | "production">("production");
+  const [health, setHealth] = useState<{ ok: boolean; errors: number; checks: HealthCheck[] } | null>(null);
+  const [callbackTest, setCallbackTest] = useState<unknown>(null);
 
   const loadConfig = useCallback(async () => {
     setLoading(true);
     try {
-      setCfg((await call("click-admin-diag", { action: "config" })) as unknown as ConfigResp);
+      setCfg((await call("click-admin-diag", { action: "config", environment })) as unknown as ConfigResp);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [environment]);
 
   const loadLogs = useCallback(async () => {
     try {
@@ -70,6 +73,7 @@ const ClickTestPanel = () => {
   }, []);
 
   useEffect(() => { loadConfig(); loadLogs(); }, [loadConfig, loadLogs]);
+
 
   const run = async (key: string, fn: () => Promise<void>) => {
     setBusy(key);
