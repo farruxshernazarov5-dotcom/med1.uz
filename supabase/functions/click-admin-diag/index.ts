@@ -133,19 +133,21 @@ Deno.serve(async (req) => {
 
       const { data: payment, error } = await admin.from("platform_payments").insert({
         user_id: userId, provider: "click", amount, purpose: "admin_test",
-        status: "pending", metadata: { admin_test: true },
+        status: "pending", metadata: { admin_test: true, environment },
       }).select().single();
       if (error) throw error;
 
       return json({
         ok: true,
+        environment,
         payment_id: payment.id,
         checkout_url: checkoutUrl({
           serviceId: env.serviceId, merchantId: env.merchantId, amount,
           transactionParam: payment.id,
-          returnUrl: `https://med1.uz/payment/success?payment_id=${payment.id}&provider=click`,
+          returnUrl: `${siteBase}/payment/success?payment_id=${payment.id}&provider=click`,
         }),
       });
+
     }
 
     // Callback simulyatsiyasi — Click imzosi bilan prepare + complete
