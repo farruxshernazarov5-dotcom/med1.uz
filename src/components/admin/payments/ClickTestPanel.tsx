@@ -108,6 +108,46 @@ const ClickTestPanel = () => {
   const errors = cfg?.issues.filter((i) => i.level === "error") ?? [];
   const warns = cfg?.issues.filter((i) => i.level === "warn") ?? [];
 
+  const activationText = [
+    "Assalomu alaykum, Click qo'llab-quvvatlash xizmati!",
+    "",
+    "MED1.UZ xizmatini production rejimida faollashtirishingizni so'raymiz.",
+    "",
+    "1) Tashkilot va xizmat",
+    "   Tashkilot: MED-ALL AI SYSTEM MCHJ",
+    "   Xizmat nomi: MED1.UZ",
+    `   Service ID: ${cfg?.config.service_id ?? "—"}`,
+    `   Merchant ID: ${cfg?.config.merchant_id ?? "—"}`,
+    `   Merchant User ID: ${cfg?.config.merchant_user_id ?? "—"}`,
+    "",
+    "2) Domenlar",
+    "   https://med1.uz",
+    "   https://www.med1.uz",
+    "",
+    "3) Callback URL'lar (metod: POST, protokol: HTTPS, port: 443)",
+    `   Prepare (action=0): ${cfg?.endpoints?.prepare_url ?? "—"}`,
+    `   Complete (action=1): ${cfg?.endpoints?.complete_url ?? "—"}`,
+    `   Return URL: ${cfg?.endpoints?.return_url ?? "https://med1.uz/payment/success"}`,
+    "",
+    "4) Server / tarmoq ma'lumotlari",
+    "   Billing backend: Lovable Cloud (EU Central) edge infratuzilmasi",
+    "   Server TAS-IX tarmog'ida EMAS.",
+    "   Kafolatlangan statik outbound IP mavjud emas — iltimos, whitelist'ni",
+    "   domen (med1.uz, www.med1.uz) bo'yicha amalga oshiring yoki domen orqali",
+    "   whitelist qilish imkoniyatini tasdiqlang.",
+    "",
+    "5) Iltimos, tekshirib bering",
+    "   - Service ID Merchant ID bilan to'g'ri bog'langanmi;",
+    "   - Xizmat production/active holatdami;",
+    "   - Prepare/Complete URL'lar va domen whitelist'ga qo'shilganmi;",
+    "   - Hosted checkout havolasida merchant_user_id parametri talab qilinadimi.",
+    "",
+    "Hozircha hosted checkout \"Yetkazib beruvchidan ma'lumot yetarli emas\" xatosini qaytarmoqda.",
+    "",
+    "Hurmat bilan, MED1.UZ texnik jamoasi",
+  ].join("\n");
+
+
   return (
     <div className="space-y-6">
       <Card>
