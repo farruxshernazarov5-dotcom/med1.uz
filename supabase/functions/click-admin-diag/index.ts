@@ -28,12 +28,23 @@ Deno.serve(async (req) => {
     const env = clickEnv();
     const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
     const action = String(body?.action ?? "config");
+    const environment = String(body?.environment ?? "production") === "sandbox" ? "sandbox" : "production";
 
     const base = `${supabaseUrl}/functions/v1`;
+    const siteBase = environment === "sandbox"
+      ? "https://id-preview--89a5c0ff-a25e-4201-b8e8-56f5f02a2027.lovable.app"
+      : "https://med1.uz";
+    const endpoints = {
+      prepare_url: `${base}/click-prepare`,
+      complete_url: `${base}/click-complete`,
+      return_url: `${siteBase}/payment/success`,
+    };
 
     if (action === "config") {
       return json({
         ok: true,
+        environment,
+        site_base: siteBase,
         config: {
           service_id: env.serviceId || null,
           merchant_id: env.merchantId || null,
@@ -42,13 +53,67 @@ Deno.serve(async (req) => {
           secret_key_length: env.secretKey.length,
         },
         issues: validateClickConfig(env),
-        endpoints: {
-          prepare_url: `${base}/click-prepare`,
-          complete_url: `${base}/click-complete`,
-          return_url: "https://med1.uz/payment/success",
-        },
+        endpoints,
       });
     }
+
+    // Domen / callback URL avtomatik tekshiruvi
+    if (action === "healthcheck") {
+      const checks: { name: string; ok: boolean; status?: number; detail: string }[] = [];
+
+      for (const [name, url] of Object.entries(endpoints)) {
+        if (!/^https:\/\//.test(url)) {
+          checks.push({ name, ok: false, detail: "URL HTTPS bo'lishi shart" });
+          continue;
+        }
+        try {
+          const r = await fetch(url, { method: "GET" });
+          const txt = (await r.text()).slice(0, 200);
+          const ok = name === "return_url" ? r.status < 400 : r.status === 200;
+          checks.push({
+            name, ok, status: r.status,
+            detail: ok ? `Javob berdi (${r.status})` : `Kutilmagan javob (${r.status}): ${txt}`,
+          });
+        } catch (e) {
+          checks.push({ name, ok: false, detail: `So'rov muvaffaqiyatsiz: ${e instanceof Error ? e.message : String(e)}` });
+        }
+      }
+
+      // Domen whitelist tekshiruvi
+      for (const domain of environment === "sandbox" ? [siteBase] : ["https://med1.uz", "https://www.med1.uz"]) {
+        try {
+          const r = await fetch(domain, { method: "GET", redirect: "follow" });
+          checks.push({
+            name: `domain:${domain}`, ok: r.status < 400, status: r.status,
+            detail: r.status < 400 ? "Domen HTTPS orqali ochilmoqda" : `Domen ${r.status} qaytardi`,
+          });
+        } catch (e) {
+          checks.push({ name: `domain:${domain}`, ok: false, detail: `Domen ochilmadi: ${e instanceof Error ? e.message : String(e)}` });
+        }
+      }
+
+      const cfgIssues = validateClickConfig(env);
+      for (const i of cfgIssues) {
+        checks.push({ name: `config:${i.level}`, ok: i.level !== "error", detail: i.message });
+      }
+
+      if (environment === "production") {
+        checks.push({
+          name: "network",
+          ok: false,
+          detail: "Backend EU Central'da ishlaydi — TAS-IX tarmog'ida emas va statik outbound IP yo'q. Click'dan domen bo'yicha whitelist so'rang.",
+        });
+      }
+
+      return json({
+        ok: checks.every((c) => c.ok),
+        environment,
+        endpoints,
+        checks,
+        errors: checks.filter((c) => !c.ok).length,
+      });
+    }
+
 
     if (action === "logs") {
       const [logs, payments, fiscal] = await Promise.all([
@@ -68,19 +133,21 @@ Deno.serve(async (req) => {
 
       const { data: payment, error } = await admin.from("platform_payments").insert({
         user_id: userId, provider: "click", amount, purpose: "admin_test",
-        status: "pending", metadata: { admin_test: true },
+        status: "pending", metadata: { admin_test: true, environment },
       }).select().single();
       if (error) throw error;
 
       return json({
         ok: true,
+        environment,
         payment_id: payment.id,
         checkout_url: checkoutUrl({
           serviceId: env.serviceId, merchantId: env.merchantId, amount,
           transactionParam: payment.id,
-          returnUrl: `https://med1.uz/payment/success?payment_id=${payment.id}&provider=click`,
+          returnUrl: `${siteBase}/payment/success?payment_id=${payment.id}&provider=click`,
         }),
       });
+
     }
 
     // Callback simulyatsiyasi — Click imzosi bilan prepare + complete

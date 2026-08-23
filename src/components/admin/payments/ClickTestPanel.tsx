@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 interface Issue { level: "error" | "warn"; message: string }
+interface HealthCheck { name: string; ok: boolean; status?: number; detail: string }
 interface ConfigResp {
   config: {
     service_id: string | null;
@@ -46,17 +47,20 @@ const ClickTestPanel = () => {
   const [packageCode, setPackageCode] = useState("1512216");
   const [vat, setVat] = useState("12");
   const [result, setResult] = useState<unknown>(null);
+  const [environment, setEnvironment] = useState<"sandbox" | "production">("production");
+  const [health, setHealth] = useState<{ ok: boolean; errors: number; checks: HealthCheck[] } | null>(null);
+  const [callbackTest, setCallbackTest] = useState<unknown>(null);
 
   const loadConfig = useCallback(async () => {
     setLoading(true);
     try {
-      setCfg((await call("click-admin-diag", { action: "config" })) as unknown as ConfigResp);
+      setCfg((await call("click-admin-diag", { action: "config", environment })) as unknown as ConfigResp);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [environment]);
 
   const loadLogs = useCallback(async () => {
     try {
@@ -70,6 +74,7 @@ const ClickTestPanel = () => {
   }, []);
 
   useEffect(() => { loadConfig(); loadLogs(); }, [loadConfig, loadLogs]);
+
 
   const run = async (key: string, fn: () => Promise<void>) => {
     setBusy(key);
@@ -105,40 +110,69 @@ const ClickTestPanel = () => {
     loadLogs();
   });
 
+  const runHealthcheck = () => run("health", async () => {
+    const d = await call("click-admin-diag", { action: "healthcheck", environment });
+    setHealth(d as unknown as { ok: boolean; errors: number; checks: HealthCheck[] });
+    if ((d as { ok?: boolean }).ok) toast.success("Barcha tekshiruvlar muvaffaqiyatli");
+    else toast.warning(`${(d as { errors?: number }).errors ?? 0} ta muammo aniqlandi`);
+  });
+
+  const testCallbacks = () => run("callback", async () => {
+    let pid = lastPaymentId;
+    if (!pid) {
+      const c = await call("click-admin-diag", { action: "checkout", amount: Number(amount) || 1000, environment });
+      pid = String(c.payment_id);
+      setLastPaymentId(pid);
+      setCheckoutUrl(String(c.checkout_url));
+    }
+    const d = await call("click-admin-diag", { action: "simulate", payment_id: pid, environment });
+    setCallbackTest(d);
+    setResult(d);
+    toast.success("Prepare va Complete callback so'rovlari yuborildi");
+    loadLogs();
+  });
+
+
   const errors = cfg?.issues.filter((i) => i.level === "error") ?? [];
   const warns = cfg?.issues.filter((i) => i.level === "warn") ?? [];
+
+  const domains = environment === "sandbox"
+    ? [(cfg?.endpoints?.return_url ?? "").replace(/\/payment\/success$/, "")].filter(Boolean)
+    : ["https://med1.uz", "https://www.med1.uz"];
 
   const activationText = [
     "Assalomu alaykum, Click qo'llab-quvvatlash xizmati!",
     "",
-    "MED1.UZ xizmatini production rejimida faollashtirishingizni so'raymiz.",
+    environment === "sandbox"
+      ? "MED1.UZ xizmatini SANDBOX (test) rejimida sozlashda yordam so'raymiz."
+      : "MED1.UZ xizmatini PRODUCTION rejimida faollashtirishingizni so'raymiz.",
     "",
     "1) Tashkilot va xizmat",
     "   Tashkilot: MED-ALL AI SYSTEM MCHJ",
     "   Xizmat nomi: MED1.UZ",
+    `   Rejim: ${environment === "sandbox" ? "Sandbox (test)" : "Production (live)"}`,
     `   Service ID: ${cfg?.config.service_id ?? "—"}`,
     `   Merchant ID: ${cfg?.config.merchant_id ?? "—"}`,
     `   Merchant User ID: ${cfg?.config.merchant_user_id ?? "—"}`,
     "",
     "2) Domenlar",
-    "   https://med1.uz",
-    "   https://www.med1.uz",
+    ...domains.map((d) => `   ${d}`),
     "",
     "3) Callback URL'lar (metod: POST, protokol: HTTPS, port: 443)",
     `   Prepare (action=0): ${cfg?.endpoints?.prepare_url ?? "—"}`,
     `   Complete (action=1): ${cfg?.endpoints?.complete_url ?? "—"}`,
-    `   Return URL: ${cfg?.endpoints?.return_url ?? "https://med1.uz/payment/success"}`,
+    `   Return URL: ${cfg?.endpoints?.return_url ?? "—"}`,
     "",
     "4) Server / tarmoq ma'lumotlari",
     "   Billing backend: Lovable Cloud (EU Central) edge infratuzilmasi",
     "   Server TAS-IX tarmog'ida EMAS.",
     "   Kafolatlangan statik outbound IP mavjud emas — iltimos, whitelist'ni",
-    "   domen (med1.uz, www.med1.uz) bo'yicha amalga oshiring yoki domen orqali",
+    `   domen (${domains.join(", ")}) bo'yicha amalga oshiring yoki domen orqali`,
     "   whitelist qilish imkoniyatini tasdiqlang.",
     "",
     "5) Iltimos, tekshirib bering",
     "   - Service ID Merchant ID bilan to'g'ri bog'langanmi;",
-    "   - Xizmat production/active holatdami;",
+    `   - Xizmat ${environment === "sandbox" ? "test" : "production/active"} holatdami;`,
     "   - Prepare/Complete URL'lar va domen whitelist'ga qo'shilganmi;",
     "   - Hosted checkout havolasida merchant_user_id parametri talab qilinadimi.",
     "",
@@ -148,17 +182,38 @@ const ClickTestPanel = () => {
   ].join("\n");
 
 
+
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0 gap-3">
           <CardTitle className="text-base flex items-center gap-2">
             <ShieldCheck className="h-4 w-4" /> Click konfiguratsiyasi
+            <Badge variant={environment === "production" ? "destructive" : "secondary"}>
+              {environment === "production" ? "PRODUCTION" : "SANDBOX"}
+            </Badge>
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={loadConfig} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-md border overflow-hidden">
+              {(["sandbox", "production"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setEnvironment(m)}
+                  className={`px-3 py-1.5 text-xs transition-colors ${
+                    environment === m ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                  }`}
+                >
+                  {m === "sandbox" ? "Sandbox" : "Production"}
+                </button>
+              ))}
+            </div>
+            <Button variant="outline" size="sm" onClick={loadConfig} disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            </Button>
+          </div>
         </CardHeader>
+
         <CardContent className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-4 text-sm">
             <div><div className="text-muted-foreground text-xs">Service ID</div><code>{cfg?.config.service_id ?? "—"}</code></div>
@@ -201,6 +256,54 @@ const ClickTestPanel = () => {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" /> Domen va URL tekshiruvi
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={runHealthcheck} disabled={busy !== null}>
+              {busy === "health" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+              Tekshirish
+            </Button>
+            <Button size="sm" onClick={testCallbacks} disabled={busy !== null}>
+              {busy === "callback" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <PlayCircle className="h-4 w-4 mr-2" />}
+              Callback test so'rovi
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {!health && <p className="text-xs text-muted-foreground">Joriy rejim uchun URL, domen va konfiguratsiya avtomatik tekshiriladi.</p>}
+          {health && (
+            <>
+              <Badge variant={health.ok ? "secondary" : "destructive"}>
+                {health.ok ? "Muammo topilmadi" : `${health.errors} ta ogohlantirish`}
+              </Badge>
+              <div className="space-y-1.5">
+                {health.checks.map((c) => (
+                  <div key={c.name} className={`flex items-start gap-2 text-xs ${c.ok ? "text-muted-foreground" : "text-destructive"}`}>
+                    {c.ok ? <ShieldCheck className="h-3.5 w-3.5 mt-0.5 shrink-0" /> : <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />}
+                    <span className="font-medium break-all w-56 shrink-0">{c.name}</span>
+                    <span className="break-all">{c.detail}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {callbackTest ? (
+            <>
+              <Separator />
+              <div className="text-xs text-muted-foreground">Callback javoblari (prepare + complete):</div>
+              <pre className="text-[11px] bg-muted p-3 rounded overflow-auto max-h-64">
+                {JSON.stringify(callbackTest, null, 2)}
+              </pre>
+            </>
+          ) : null}
+        </CardContent>
+      </Card>
+
+
 
       <Card>
         <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
