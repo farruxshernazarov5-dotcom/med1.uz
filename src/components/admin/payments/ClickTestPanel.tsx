@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 interface Issue { level: "error" | "warn"; message: string }
+interface HealthCheck { name: string; ok: boolean; status?: number; detail: string }
 interface ConfigResp {
   config: {
     service_id: string | null;
