@@ -26,6 +26,7 @@ const Header = () => {
     { label: t("nav.articles"), href: "/articles" },
     { label: t("nav.encyclopedia"), href: "/knowledge" },
     { label: t("nav.clinics"), href: "/clinics" },
+    { label: "Med1 TOP", href: "/med1-top" },
     { label: t("nav.aiServices"), href: "/ai-services" },
     { label: "API", href: "/api-docs" },
     { label: t("nav.medtech"), href: "/med-tech" },

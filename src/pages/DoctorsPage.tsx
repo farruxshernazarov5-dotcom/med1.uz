@@ -17,6 +17,7 @@ import CuratedSections from "@/components/doctors/CuratedSections";
 import CompareBar from "@/components/doctors/CompareBar";
 import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
+import SponsoredAds from "@/components/med1top/SponsoredAds";
 
 const SPECIALTIES = [
   "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
@@ -296,6 +297,7 @@ const DoctorsPage = () => {
                 </div>
               ) : (
                 <>
+                  <SponsoredAds entityType="doctor" limit={3} className="mb-5" />
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {doctors.map((d) => <DoctorCard key={d.id} doctor={d} />)}
                   </div>

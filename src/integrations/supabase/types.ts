@@ -12195,6 +12195,309 @@ export type Database = {
           },
         ]
       }
+      med1_ad_bids: {
+        Row: {
+          amount: number
+          bidder_id: string
+          campaign_id: string
+          created_at: string
+          id: string
+          placement_id: string | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          bidder_id: string
+          campaign_id: string
+          created_at?: string
+          id?: string
+          placement_id?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number
+          bidder_id?: string
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          placement_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med1_ad_bids_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "med1_ad_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "med1_ad_bids_placement_id_fkey"
+            columns: ["placement_id"]
+            isOneToOne: false
+            referencedRelation: "med1_ad_placements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      med1_ad_campaigns: {
+        Row: {
+          address: string | null
+          ai_flags: Json
+          ai_score: number | null
+          auto_renew: boolean
+          bid_amount: number
+          brand_name: string | null
+          clicks: number
+          created_at: string
+          description: string | null
+          duration_days: number
+          end_date: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          impressions: number
+          instagram_url: string | null
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          moderation_notes: string | null
+          owner_id: string
+          paid_amount: number
+          payment_id: string | null
+          phone: string | null
+          placement_id: string | null
+          region: string | null
+          specialty: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["med1_ad_status"]
+          telegram_url: string | null
+          title: string
+          top_rank: number | null
+          updated_at: string
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          address?: string | null
+          ai_flags?: Json
+          ai_score?: number | null
+          auto_renew?: boolean
+          bid_amount?: number
+          brand_name?: string | null
+          clicks?: number
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          end_date?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          impressions?: number
+          instagram_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          logo_url?: string | null
+          moderation_notes?: string | null
+          owner_id: string
+          paid_amount?: number
+          payment_id?: string | null
+          phone?: string | null
+          placement_id?: string | null
+          region?: string | null
+          specialty?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["med1_ad_status"]
+          telegram_url?: string | null
+          title: string
+          top_rank?: number | null
+          updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          address?: string | null
+          ai_flags?: Json
+          ai_score?: number | null
+          auto_renew?: boolean
+          bid_amount?: number
+          brand_name?: string | null
+          clicks?: number
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          end_date?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          impressions?: number
+          instagram_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          logo_url?: string | null
+          moderation_notes?: string | null
+          owner_id?: string
+          paid_amount?: number
+          payment_id?: string | null
+          phone?: string | null
+          placement_id?: string | null
+          region?: string | null
+          specialty?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["med1_ad_status"]
+          telegram_url?: string | null
+          title?: string
+          top_rank?: number | null
+          updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med1_ad_campaigns_placement_id_fkey"
+            columns: ["placement_id"]
+            isOneToOne: false
+            referencedRelation: "med1_ad_placements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      med1_ad_events: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          event_type: string
+          id: string
+          meta: Json
+          region: string | null
+          user_id: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          meta?: Json
+          region?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          meta?: Json
+          region?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med1_ad_events_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "med1_ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      med1_ad_placements: {
+        Row: {
+          bid_step: number
+          category: string
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          min_bid: number
+          name_en: string
+          name_ru: string
+          name_uz: string
+          region: string | null
+          slots: number
+          sort_order: number
+          specialty: string | null
+          updated_at: string
+        }
+        Insert: {
+          bid_step?: number
+          category?: string
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_bid?: number
+          name_en: string
+          name_ru: string
+          name_uz: string
+          region?: string | null
+          slots?: number
+          sort_order?: number
+          specialty?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bid_step?: number
+          category?: string
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_bid?: number
+          name_en?: string
+          name_ru?: string
+          name_uz?: string
+          region?: string | null
+          slots?: number
+          sort_order?: number
+          specialty?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      med1_ad_revshare: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          id: string
+          partner_amount: number
+          partner_id: string | null
+          partner_name: string | null
+          partner_share_pct: number
+          platform_amount: number
+          total_amount: number
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          id?: string
+          partner_amount?: number
+          partner_id?: string | null
+          partner_name?: string | null
+          partner_share_pct?: number
+          platform_amount?: number
+          total_amount?: number
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          id?: string
+          partner_amount?: number
+          partner_id?: string | null
+          partner_name?: string | null
+          partner_share_pct?: number
+          platform_amount?: number
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med1_ad_revshare_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "med1_ad_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_records: {
         Row: {
           attachments: string[] | null
@@ -17431,6 +17734,33 @@ export type Database = {
         Returns: string
       }
       is_clinic_owner: { Args: { _clinic_id: string }; Returns: boolean }
+      med1_ads_auction_state: {
+        Args: never
+        Returns: {
+          active_ads: number
+          bid_step: number
+          category: string
+          code: string
+          current_top_bid: number
+          min_bid: number
+          name_en: string
+          name_ru: string
+          name_uz: string
+          next_min_bid: number
+          placement_id: string
+          region: string
+          slots: number
+          specialty: string
+        }[]
+      }
+      med1_ads_recompute_ranks: {
+        Args: { _placement_id?: string }
+        Returns: undefined
+      }
+      med1_ads_track: {
+        Args: { _campaign_id: string; _event_type: string; _meta?: Json }
+        Returns: undefined
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -17590,6 +17920,16 @@ export type Database = {
         | "expired"
         | "terminated"
         | "cancelled"
+      med1_ad_status:
+        | "draft"
+        | "pending_payment"
+        | "pending"
+        | "ai_flagged"
+        | "approved"
+        | "active"
+        | "rejected"
+        | "paused"
+        | "expired"
       referral_reward_kind: "credits" | "months" | "ai_credits"
       referral_status:
         | "pending"
@@ -17765,6 +18105,17 @@ export const Constants = {
         "expired",
         "terminated",
         "cancelled",
+      ],
+      med1_ad_status: [
+        "draft",
+        "pending_payment",
+        "pending",
+        "ai_flagged",
+        "approved",
+        "active",
+        "rejected",
+        "paused",
+        "expired",
       ],
       referral_reward_kind: ["credits", "months", "ai_credits"],
       referral_status: [

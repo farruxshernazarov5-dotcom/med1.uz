@@ -115,6 +115,9 @@ const AIRadiologySpinePage = lazy(() => import("./pages/AIRadiologySpinePage"));
 const AIOrchestratorPage = lazy(() => import("./pages/AIOrchestratorPage"));
 const OAuthConsentPage = lazy(() => import("./pages/OAuthConsentPage"));
 const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
+const Med1TopPage = lazy(() => import("./pages/Med1TopPage"));
+const Med1TopCreatePage = lazy(() => import("./pages/Med1TopCreatePage"));
+const Med1TopMyAdsPage = lazy(() => import("./pages/Med1TopMyAdsPage"));
 const SponsorProfilePage = lazy(() => import("./pages/SponsorProfilePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
@@ -276,6 +279,10 @@ const App = () => (
                 <Route path="/developers" element={<DevelopersPage />} />
                 <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="/transparency" element={<TransparencyPage />} />
+                <Route path="/med1-top" element={<Med1TopPage />} />
+                <Route path="/med1-top/new" element={<Med1TopCreatePage />} />
+                <Route path="/med1-top/my" element={<Med1TopMyAdsPage />} />
+                <Route path="/admin/ads" element={<AdminPage initialTab="medical_ads" />} />
                 <Route path="/sponsor/:slug" element={<SponsorProfilePage />} />
                 <Route path="/.lovable/oauth/consent" element={<OAuthConsentPage />} />
                 <Route path="*" element={<NotFound />} />
