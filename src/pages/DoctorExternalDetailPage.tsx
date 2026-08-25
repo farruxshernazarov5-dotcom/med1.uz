@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -100,14 +101,13 @@ const DoctorExternalDetailPage = () => {
             <ChevronLeft className="w-4 h-4" /> Barcha shifokorlar
           </Link>
           <div className="bg-card rounded-2xl border p-6 md:p-8 flex flex-col md:flex-row gap-6">
-            {doc.photo_url ? (
-              <img src={doc.photo_url} alt={doc.name}
-                className="w-32 h-32 md:w-40 md:h-40 rounded-2xl object-cover border-2 shrink-0" />
-            ) : (
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center shrink-0">
-                <Stethoscope className="w-16 h-16 text-primary" />
-              </div>
-            )}
+            <DoctorAvatar
+              name={doc.name}
+              photoUrl={doc.photo_url}
+              specialty={doc.primary_specialty}
+              rounded="rounded-2xl"
+              className="w-32 h-32 md:w-40 md:h-40 border-2 shrink-0 text-4xl"
+            />
             <div className="flex-1 min-w-0">
               <h1 className="font-heading text-2xl md:text-3xl font-bold">{doc.name}</h1>
               <p className="text-primary font-semibold mt-1">{doc.primary_specialty}</p>

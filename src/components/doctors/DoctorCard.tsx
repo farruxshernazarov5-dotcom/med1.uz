@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Star, Stethoscope, Award, MapPin, Heart, Scale, Languages } from "lucide-react";
 import { useDoctorFavorites, useDoctorCompare } from "@/hooks/useDoctorFavorites";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { cn } from "@/lib/utils";
 
 export interface DoctorCardData {
@@ -56,24 +57,15 @@ const DoctorCard = ({ doctor: d, compact = false, showActions = true }: Props) =
 
       <Link to={`/doctors/ext/${d.slug}`} className="block p-5">
         <div className="flex items-start gap-4">
-          {d.photo_url ? (
-            <img
-              src={d.photo_url}
-              alt={d.name}
-              loading="lazy"
-              className={cn(
-                "rounded-xl object-cover border-2 border-primary/10 group-hover:border-primary/30 transition-colors",
-                compact ? "w-14 h-14" : "w-16 h-16"
-              )}
-            />
-          ) : (
-            <div className={cn(
-              "rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center",
+          <DoctorAvatar
+            name={d.name}
+            photoUrl={d.photo_url}
+            specialty={d.primary_specialty}
+            className={cn(
+              "border-2 border-primary/10 group-hover:border-primary/30 transition-colors text-xl",
               compact ? "w-14 h-14" : "w-16 h-16"
-            )}>
-              <Stethoscope className="w-7 h-7 text-primary" />
-            </div>
-          )}
+            )}
+          />
           <div className="min-w-0 flex-1 pr-16">
             <h3 className="font-heading font-bold text-base group-hover:text-primary transition-colors line-clamp-2">
               {d.name}

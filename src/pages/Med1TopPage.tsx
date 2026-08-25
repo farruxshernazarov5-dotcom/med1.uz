@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import AdCard from "@/components/med1top/AdCard";
+import ShowcaseBrandCard from "@/components/med1top/ShowcaseBrandCard";
+import CreativeGuide from "@/components/med1top/CreativeGuide";
+import { SHOWCASE_BRANDS } from "@/data/med1TopShowcase";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   AD_REGIONS,
@@ -145,6 +148,32 @@ const Med1TopPage = () => {
             ))}
           </div>
         </section>
+
+        {/* Showcase: available directions / brand categories */}
+        <section className="container mx-auto px-4 py-8 border-t border-border">
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-2">
+            <div>
+              <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" /> 24 tibbiy yo'nalish — bo'sh o'rinlar
+              </h2>
+              <p className="text-sm text-muted-foreground max-w-2xl mt-1">
+                Quyidagi kartochkalar Med1 TOP auksionidagi tibbiyot yo'nalishlari bo'yicha bo'sh o'rinlar namunasi.
+                Har biri bo'yicha auditoriya, talab va boshlang'ich taklif ko'rsatilgan — “Batafsil” tugmasi orqali
+                to'liq brend brifini ko'ring.
+              </p>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <a href="#creative-guide">Kreativ qo'llanma</a>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+            {SHOWCASE_BRANDS.map((b) => (
+              <ShowcaseBrandCard key={b.code} brand={b} />
+            ))}
+          </div>
+        </section>
+
+        <CreativeGuide />
 
         {/* Filters */}
         <section className="container mx-auto px-4 pb-4">
