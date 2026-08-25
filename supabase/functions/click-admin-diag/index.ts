@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
         environment,
         payment_id: payment.id,
         checkout_url: checkoutUrl({
-          serviceId: env.serviceId, merchantId: env.merchantId, amount,
+          serviceId: env.serviceId, merchantId: env.merchantId, merchantUserId: env.merchantUserId, amount,
           transactionParam: payment.id,
           returnUrl: `${siteBase}/payment/success?payment_id=${payment.id}&provider=click`,
         }),
