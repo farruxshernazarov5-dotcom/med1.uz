@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Stethoscope, Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 
 interface Doc {
   id: string;
@@ -32,18 +33,13 @@ function Avatar({ d, i }: { d: Doc; i: number }) {
     >
       <div className="relative mx-auto w-16 h-16">
         <span className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-        {d.photo_url ? (
-          <img
-            src={d.photo_url}
-            alt={`${d.name} — ${d.primary_specialty || "shifokor"}`}
-            loading="lazy"
-            className="relative w-16 h-16 rounded-full object-cover ring-2 ring-primary/25 group-hover:ring-primary transition"
-          />
-        ) : (
-          <div className="relative w-16 h-16 rounded-full bg-primary/10 ring-2 ring-primary/25 flex items-center justify-center">
-            <Stethoscope className="w-6 h-6 text-primary" />
-          </div>
-        )}
+        <DoctorAvatar
+          name={d.name}
+          photoUrl={d.photo_url}
+          specialty={d.primary_specialty}
+          rounded="rounded-full"
+          className="relative w-16 h-16 ring-2 ring-primary/25 group-hover:ring-primary transition text-lg"
+        />
       </div>
       <p className="mt-2 text-[11px] font-semibold leading-tight line-clamp-2">{d.name}</p>
       <p className="text-[9px] text-primary line-clamp-1">{d.primary_specialty}</p>
@@ -60,7 +56,6 @@ export default function AnimatedDoctorsStrip() {
     supabase
       .from("doctors_external")
       .select("id, slug, name, photo_url, primary_specialty, experience")
-      .not("photo_url", "is", null)
       .order("rating", { ascending: false })
       .limit(24)
       .then(({ data }) => alive && setDocs((data as Doc[]) || []));
