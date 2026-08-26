@@ -23,6 +23,7 @@ interface ConfigResp {
   };
   issues: Issue[];
   endpoints: Record<string, string>;
+  proxy?: { domain: string; static_ip: string; network: string } | null;
 }
 
 const call = async (fn: string, body: Record<string, unknown>) => {
@@ -164,11 +165,15 @@ const ClickTestPanel = () => {
     `   Return URL: ${cfg?.endpoints?.return_url ?? "—"}`,
     "",
     "4) Server / tarmoq ma'lumotlari",
-    "   Billing backend: Lovable Cloud (EU Central) edge infratuzilmasi",
-    "   Server TAS-IX tarmog'ida EMAS.",
-    "   Kafolatlangan statik outbound IP mavjud emas — iltimos, whitelist'ni",
-    `   domen (${domains.join(", ")}) bo'yicha amalga oshiring yoki domen orqali`,
-    "   whitelist qilish imkoniyatini tasdiqlang.",
+    environment === "production"
+      ? `   Callback proxy: ${cfg?.proxy?.domain ?? "pay.med1.uz"}`
+      : "   Callback: Lovable Cloud test infratuzilmasi",
+    environment === "production"
+      ? `   Server: Toshkent, TAS-IX, statik IP ${cfg?.proxy?.static_ip ?? "89.39.95.5"}`
+      : "   Test server TAS-IX tarmog'ida emas.",
+    environment === "production"
+      ? `   Whitelist uchun IP: ${cfg?.proxy?.static_ip ?? "89.39.95.5"}`
+      : `   Domenlar: ${domains.join(", ")}`,
     "",
     "5) Iltimos, tekshirib bering",
     "   - Service ID Merchant ID bilan to'g'ri bog'langanmi;",
@@ -241,6 +246,13 @@ const ClickTestPanel = () => {
           )}
 
           <Separator />
+          {environment === "production" && (
+            <div className="grid gap-3 rounded-md border p-3 sm:grid-cols-3 text-sm">
+              <div><div className="text-muted-foreground text-xs">TAS-IX proxy</div><code>{cfg?.proxy?.domain ?? "pay.med1.uz"}</code></div>
+              <div><div className="text-muted-foreground text-xs">Statik IP / whitelist</div><code>{cfg?.proxy?.static_ip ?? "89.39.95.5"}</code></div>
+              <div><div className="text-muted-foreground text-xs">Tarmoq</div><Badge variant="secondary">{cfg?.proxy?.network ?? "TAS-IX"}</Badge></div>
+            </div>
+          )}
           <div className="space-y-1 text-xs">
             <div className="text-muted-foreground">Click kabinetiga qo'yiladigan URL'lar:</div>
             {Object.entries(cfg?.endpoints ?? {}).map(([k, v]) => (
