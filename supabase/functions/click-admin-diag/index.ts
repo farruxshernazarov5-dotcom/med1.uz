@@ -34,9 +34,10 @@ Deno.serve(async (req) => {
     const siteBase = environment === "sandbox"
       ? "https://id-preview--89a5c0ff-a25e-4201-b8e8-56f5f02a2027.lovable.app"
       : "https://med1.uz";
+    const callbackBase = environment === "sandbox" ? base : "https://pay.med1.uz/click";
     const endpoints = {
-      prepare_url: `${base}/click-prepare`,
-      complete_url: `${base}/click-complete`,
+      prepare_url: environment === "sandbox" ? `${callbackBase}/click-prepare` : `${callbackBase}/prepare`,
+      complete_url: environment === "sandbox" ? `${callbackBase}/click-complete` : `${callbackBase}/complete`,
       return_url: `${siteBase}/payment/success`,
     };
 
@@ -54,6 +55,11 @@ Deno.serve(async (req) => {
         },
         issues: validateClickConfig(env),
         endpoints,
+        proxy: environment === "production" ? {
+          domain: "pay.med1.uz",
+          static_ip: "89.39.95.5",
+          network: "TAS-IX",
+        } : null,
       });
     }
 
@@ -69,10 +75,15 @@ Deno.serve(async (req) => {
         try {
           const r = await fetch(url, { method: "GET" });
           const txt = (await r.text()).slice(0, 200);
-          const ok = name === "return_url" ? r.status < 400 : r.status === 200;
+          const proxyHeader = r.headers.get("x-med1-tasix-proxy");
+          const isCallback = name === "prepare_url" || name === "complete_url";
+          const proxyOk = environment !== "production" || !isCallback || proxyHeader === "89.39.95.5";
+          const ok = (name === "return_url" ? r.status < 400 : r.status === 200) && proxyOk;
           checks.push({
             name, ok, status: r.status,
-            detail: ok ? `Javob berdi (${r.status})` : `Kutilmagan javob (${r.status}): ${txt}`,
+            detail: ok
+              ? `Javob berdi (${r.status})${proxyHeader ? `, TAS-IX proxy ${proxyHeader}` : ""}`
+              : proxyOk ? `Kutilmagan javob (${r.status}): ${txt}` : "Javob TAS-IX proxy orqali kelmadi",
           });
         } catch (e) {
           checks.push({ name, ok: false, detail: `So'rov muvaffaqiyatsiz: ${e instanceof Error ? e.message : String(e)}` });
@@ -99,9 +110,9 @@ Deno.serve(async (req) => {
 
       if (environment === "production") {
         checks.push({
-          name: "network",
-          ok: false,
-          detail: "Backend EU Central'da ishlaydi — TAS-IX tarmog'ida emas va statik outbound IP yo'q. Click'dan domen bo'yicha whitelist so'rang.",
+          name: "network:tas-ix",
+          ok: checks.some((c) => (c.name === "prepare_url" || c.name === "complete_url") && c.ok),
+          detail: "CLICK callback kirish nuqtasi: pay.med1.uz, statik IP: 89.39.95.5",
         });
       }
 
@@ -165,8 +176,8 @@ Deno.serve(async (req) => {
         const sign = action === "1"
           ? md5(`${clickTransId}${env.serviceId}${env.secretKey}${paymentId}${prepareId}${amount}${action}${now}`)
           : md5(`${clickTransId}${env.serviceId}${env.secretKey}${paymentId}${amount}${action}${now}`);
-        const endpoint = action === "0" ? "click-prepare" : "click-complete";
-        const resp = await fetch(`${base}/${endpoint}`, {
+        const endpoint = action === "0" ? endpoints.prepare_url : endpoints.complete_url;
+        const resp = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
