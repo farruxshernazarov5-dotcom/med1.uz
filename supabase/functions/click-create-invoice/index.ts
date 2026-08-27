@@ -89,7 +89,6 @@ Deno.serve(async (req) => {
     const checkout_url = checkoutUrl({
       serviceId: click.serviceId,
       merchantId: click.merchantId,
-      merchantUserId: click.merchantUserId,
       amount,
       transactionParam: payment.id,
       returnUrl: returnWithId,
