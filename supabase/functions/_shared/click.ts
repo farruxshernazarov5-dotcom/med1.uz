@@ -30,7 +30,6 @@ export async function clickAuthHeader(merchantUserId: string, secretKey: string)
 export function checkoutUrl(opts: {
   serviceId: string;
   merchantId: string;
-  merchantUserId?: string;
   amount: number;
   transactionParam: string;
   returnUrl: string;
@@ -42,11 +41,6 @@ export function checkoutUrl(opts: {
     transaction_param: opts.transactionParam,
     return_url: opts.returnUrl,
   };
-
-  // Click hosted checkout validates some production services by Merchant User ID.
-  // Without it the mobile app can show: "Yetkazib beruvchidan ma'lumot yetarli emas"
-  // before our prepare/complete callbacks are called.
-  if (opts.merchantUserId) params.merchant_user_id = opts.merchantUserId;
 
   const p = new URLSearchParams(params);
   return `https://my.click.uz/services/pay?${p.toString()}`;
