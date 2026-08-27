@@ -39,8 +39,13 @@ export function checkoutUrl(opts: {
     merchant_id: opts.merchantId,
     amount: String(opts.amount),
     transaction_param: opts.transactionParam,
-    return_url: opts.returnUrl,
   };
+
+  // CLICK hosted checkout only guarantees these four parameters. The callback
+  // URLs and return URL are configured on the CLICK service itself. Some
+  // production services reject extra query parameters with the generic
+  // "supplier information is insufficient" error.
+  void opts.returnUrl;
 
   const p = new URLSearchParams(params);
   return `https://my.click.uz/services/pay?${p.toString()}`;
