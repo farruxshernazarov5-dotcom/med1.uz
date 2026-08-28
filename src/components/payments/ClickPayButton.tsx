@@ -48,7 +48,11 @@ const ClickPayButton = ({
           return_url: returnUrl || `${window.location.origin}/payment/success`,
         },
       });
-      if (error) throw error;
+      if (error) {
+        const context = "context" in error ? error.context as Response | undefined : undefined;
+        const payload = context ? await context.clone().json().catch(() => null) as { error?: string } | null : null;
+        throw new Error(payload?.error || (context?.status === 401 ? "To'lov uchun tizimga qayta kiring" : error.message));
+      }
       if (!data?.checkout_url) throw new Error("Checkout URL olinmadi");
       window.location.href = data.checkout_url;
     } catch (err: any) {

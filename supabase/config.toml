@@ -57,6 +57,12 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.click-complete]
     verify_jwt = false
+  [functions.click-create-invoice]
+    verify_jwt = false
+  [functions.click-admin-diag]
+    verify_jwt = false
+  [functions.click-fiscal]
+    verify_jwt = false
   [functions.api-gateway]
     verify_jwt = false
   [functions.webhook-dispatcher]

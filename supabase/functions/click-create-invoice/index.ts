@@ -33,7 +33,12 @@ Deno.serve(async (req) => {
     }
     const userId = claims.claims.sub as string;
 
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return new Response(JSON.stringify({ error: "So'rov formati noto'g'ri" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const amount = Number(body?.amount);
     const purpose = String(body?.purpose || "ai_subscription");
     const reference_id = body?.reference_id ? String(body.reference_id) : null;
@@ -41,6 +46,17 @@ Deno.serve(async (req) => {
 
     if (!amount || amount <= 0 || amount > 100000000) {
       return new Response(JSON.stringify({ error: "Noto'g'ri summa" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    try {
+      const parsedReturnUrl = new URL(return_url);
+      const allowedHosts = new Set(["med1.uz", "www.med1.uz", "localhost"]);
+      if (parsedReturnUrl.protocol !== "https:" && parsedReturnUrl.hostname !== "localhost") throw new Error();
+      if (!allowedHosts.has(parsedReturnUrl.hostname) && !parsedReturnUrl.hostname.endsWith(".lovable.app")) throw new Error();
+    } catch {
+      return new Response(JSON.stringify({ error: "Qaytish manzili ruxsat etilmagan" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
