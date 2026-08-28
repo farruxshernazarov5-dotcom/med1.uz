@@ -208,6 +208,20 @@ Deno.serve(async (req) => {
       return resp;
     }
 
+    // CLICK Merchant API expects merchant_prepare_id to be a numeric identifier.
+    // Keep it stable across Prepare/Complete by storing CLICK's own numeric
+    // transaction id instead of returning our UUID payment id.
+    const numericPrepareId = Number(click_trans_id);
+    if (!Number.isSafeInteger(numericPrepareId) || numericPrepareId <= 0) {
+      const resp = reply(-8, "Invalid click_trans_id");
+      await writeLog({
+        click_trans_id, action, merchant_trans_id, payment_id: payment.id,
+        request_ip: ip, request_body: params, status: "error",
+        error_note: "click_trans_id is not a safe positive integer",
+      });
+      return resp;
+    }
+
     // ---- 7) Asosiy logika ----
     let response: Record<string, unknown>;
 
@@ -215,15 +229,26 @@ Deno.serve(async (req) => {
       // Prepare
       await admin.from("platform_payments").update({
         provider_transaction_id: click_trans_id,
+        prepare_id: numericPrepareId,
         metadata: { ...(payment.metadata ?? {}), prepare_at: new Date().toISOString(), prepare_ip: ip },
       }).eq("id", payment.id);
 
       response = {
         click_trans_id, merchant_trans_id,
-        merchant_prepare_id: payment.id,
+        merchant_prepare_id: numericPrepareId,
         error: 0, error_note: "Success",
       };
     } else if (action === "1") {
+      if (!merchant_prepare_id || String(payment.prepare_id ?? "") !== merchant_prepare_id) {
+        const resp = reply(-6, "Transaction does not exist");
+        await writeLog({
+          click_trans_id, action, merchant_trans_id, payment_id: payment.id,
+          request_ip: ip, request_body: params, status: "error",
+          error_note: "merchant_prepare_id mismatch",
+        });
+        return resp;
+      }
+
       // Complete — atomic guard: faqat pending bo'lsa update bo'ladi
       const { data: updated, error: uErr } = await admin
         .from("platform_payments")
