@@ -274,7 +274,9 @@ Deno.serve(async (req) => {
 
       response = {
         click_trans_id, merchant_trans_id,
-        merchant_confirm_id: payment.id,
+        // CLICK expects a numeric merchant transaction identifier here too.
+        // Reuse the persisted Prepare identifier instead of exposing our UUID.
+        merchant_confirm_id: Number(payment.prepare_id),
         error: 0, error_note: "Success",
       };
     } else {
