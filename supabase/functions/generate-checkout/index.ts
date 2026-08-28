@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { checkoutUrl } from '../_shared/click.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -94,7 +95,13 @@ Deno.serve(async (req) => {
     const selectedProvider = provider || 'click';
 
     if (selectedProvider === 'click' && clinic.click_merchant_id && clinic.click_service_id) {
-      checkout_url = `https://my.click.uz/services/pay?service_id=${encodeURIComponent(clinic.click_service_id)}&merchant_id=${encodeURIComponent(clinic.click_merchant_id)}&amount=${numAmount}&transaction_param=${payment.id}`;
+      checkout_url = checkoutUrl({
+        serviceId: String(clinic.click_service_id).trim(),
+        merchantId: String(clinic.click_merchant_id).trim(),
+        amount: numAmount,
+        transactionParam: payment.id,
+        returnUrl: 'https://med1.uz/payment/success',
+      });
     } else if (selectedProvider === 'payme' && clinic.payme_merchant_id) {
       const params = btoa(JSON.stringify({
         m: clinic.payme_merchant_id,
@@ -122,7 +129,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    console.error('generate-checkout error:', err);
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : 'Internal server error' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
