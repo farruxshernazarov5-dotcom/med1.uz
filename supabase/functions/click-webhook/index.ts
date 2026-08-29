@@ -73,6 +73,7 @@ Deno.serve(async (req) => {
     const sign_time = String(params.sign_time ?? "");
     const sign_string = String(params.sign_string ?? "");
     const merchant_prepare_id = String(params.merchant_prepare_id ?? "");
+    const expectedAction = req.headers.get("x-click-expected-action");
 
     const reply = (error: number, error_note: string, extra: Record<string, unknown> = {}) => {
       const body = { click_trans_id, merchant_trans_id, ...extra, error, error_note };
@@ -80,6 +81,18 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     };
+
+    // Prepare va Complete kabinet URL'lari almashib qolgan bo'lsa, xatoni
+    // yashirmasdan CLICK protokoli bo'yicha aniq javob qaytaramiz.
+    if (expectedAction && action !== expectedAction) {
+      const resp = reply(-3, "Action not found");
+      await writeLog({
+        click_trans_id, action, merchant_trans_id, request_ip: ip,
+        request_body: params, status: "error",
+        error_note: `callback route expects action=${expectedAction}, received action=${action}`,
+      });
+      return resp;
+    }
 
     // ---- 1) Rate limit ----
     const sinceMin = new Date(Date.now() - 60_000).toISOString();
@@ -182,11 +195,14 @@ Deno.serve(async (req) => {
       });
       return resp;
     }
-    if (Number(payment.amount) !== Number(amount)) {
+    const paymentAmount = Number(payment.amount);
+    const clickAmount = Number(amount);
+    if (!Number.isFinite(clickAmount) || paymentAmount.toFixed(2) !== clickAmount.toFixed(2)) {
       const resp = reply(-2, "Incorrect parameter amount");
       await writeLog({
         click_trans_id, action, merchant_trans_id, payment_id: payment.id,
-        request_ip: ip, request_body: params, status: "error", error_note: "amount mismatch",
+        request_ip: ip, request_body: params, status: "error",
+        error_note: `amount mismatch: expected=${payment.amount}, received=${amount}`,
       });
       return resp;
     }

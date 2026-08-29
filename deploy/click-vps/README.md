@@ -43,8 +43,12 @@ Whitelist IP: 89.39.95.5
 curl -i https://pay.med1.uz/health
 curl -i https://pay.med1.uz/click/prepare
 curl -i https://pay.med1.uz/click/complete
+curl -i https://pay.med1.uz/click-prepare
+curl -i https://pay.med1.uz/click-complete
 sudo nginx -t
 sudo journalctl -u nginx --since "10 minutes ago"
 ```
 
 GET readiness javoblari `200` bo'lishi kerak. Haqiqiy POST imzosi va to'lov zanjiri Super Admin → To'lov testi orqali tekshiriladi.
+
+`pay.med1.uz` bosh sahifasining 404 qaytarishi eski Nginx konfiguratsiyasi hali serverga qo'llanganini bildiradi. `sudo ./install.sh billing@med1.uz` ni qayta ishga tushirgach bosh sahifa `https://med1.uz/payment/success` ga yo'naladi va eski `/click-prepare`, `/click-complete` aliaslari ham ishlaydi.
