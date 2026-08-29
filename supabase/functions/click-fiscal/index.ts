@@ -51,6 +51,43 @@ Deno.serve(async (req) => {
     const clickTransId = body?.click_trans_id ? String(body.click_trans_id) : null;
     const paymentId = body?.payment_id ? String(body.payment_id) : null;
 
+    if (mode === "live" && !paymentId) {
+      return json({
+        ok: false,
+        code: "PAYMENT_REQUIRED",
+        error: "Avval haqiqiy CLICK to'lovini yakunlang. Fiskal chek faqat to'langan tranzaksiya uchun yuboriladi.",
+      });
+    }
+
+    if (mode === "live" && paymentId) {
+      const { data: payment, error: paymentError } = await admin
+        .from("platform_payments")
+        .select("id,status,provider_transaction_id,provider_payment_id")
+        .eq("id", paymentId)
+        .eq("provider", "click")
+        .maybeSingle();
+
+      if (paymentError || !payment) {
+        return json({ ok: false, code: "PAYMENT_NOT_FOUND", error: "CLICK to'lovi topilmadi." });
+      }
+      if (payment.status !== "paid") {
+        return json({
+          ok: false,
+          code: "PAYMENT_NOT_PAID",
+          error: "To'lov hali yakunlanmagan. CLICK Complete callback muvaffaqiyatli kelgach fiskal chek yuboring.",
+        });
+      }
+
+      const persistedClickTransId = String(payment.provider_payment_id ?? payment.provider_transaction_id ?? "");
+      if (!clickTransId || clickTransId !== persistedClickTransId) {
+        return json({
+          ok: false,
+          code: "CLICK_TRANSACTION_MISMATCH",
+          error: "CLICK tranzaksiya raqami to'langan yozuv bilan mos emas. Loglarni yangilang va qayta urinib ko'ring.",
+        });
+      }
+    }
+
     const auth = await clickAuthHeader(env.merchantUserId, env.secretKey);
 
     if (action === "status") {
@@ -102,7 +139,7 @@ Deno.serve(async (req) => {
     let errorNote: string | null = null;
 
     if (mode === "live") {
-      if (!clickTransId) return json({ error: "Live rejimda click_trans_id majburiy" }, 400);
+      if (!clickTransId) return json({ ok: false, code: "CLICK_TRANSACTION_REQUIRED", error: "Live rejimda click_trans_id majburiy" });
       const resp = await fetch(FISCAL_PREPARE, {
         method: "POST",
         headers: { "Auth": auth, "Content-Type": "application/json", "Accept": "application/json" },

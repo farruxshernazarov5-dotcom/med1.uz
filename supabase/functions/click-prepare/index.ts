@@ -22,7 +22,10 @@ Deno.serve(async (req) => {
   const body = await req.arrayBuffer();
   const response = await fetch(target, {
     method: "POST",
-    headers: { "Content-Type": contentType },
+    headers: {
+      "Content-Type": contentType,
+      "X-Click-Expected-Action": "0",
+    },
     body,
   });
 

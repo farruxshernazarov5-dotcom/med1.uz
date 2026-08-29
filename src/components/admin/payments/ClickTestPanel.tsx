@@ -28,7 +28,13 @@ interface ConfigResp {
 
 const call = async (fn: string, body: Record<string, unknown>) => {
   const { data, error } = await supabase.functions.invoke(fn, { body });
-  if (error) throw new Error((data as { error?: string })?.error || error.message);
+  if (error) {
+    const context = "context" in error ? error.context as Response | undefined : undefined;
+    const payload = context
+      ? await context.clone().json().catch(() => null) as { error?: string; message?: string } | null
+      : null;
+    throw new Error(payload?.error || payload?.message || error.message);
+  }
   if ((data as { error?: string })?.error) throw new Error((data as { error: string }).error);
   return data as Record<string, unknown>;
 };
@@ -99,13 +105,18 @@ const ClickTestPanel = () => {
   });
 
   const sendFiscal = (mode: "test" | "live") => run(`fiscal-${mode}`, async () => {
+    const selectedPayment = payments.find((p) => p.id === lastPaymentId);
+    if (mode === "live" && (!selectedPayment || selectedPayment.status !== "paid" || !selectedPayment.provider_transaction_id)) {
+      throw new Error("Live fiskalizatsiya uchun avval CLICK orqali haqiqiy to'lovni yakunlang va loglarni yangilang.");
+    }
     const d = await call("click-fiscal", {
       action: "send",
       mode,
       payment_id: lastPaymentId || null,
-      click_trans_id: (payments.find((p) => p.id === lastPaymentId)?.provider_transaction_id as string) || null,
+      click_trans_id: (selectedPayment?.provider_transaction_id as string) || null,
       items: [{ Name: itemName, SPIC: spic, PackageCode: packageCode, Price: Number(amount), Units: 1, VATPercent: Number(vat) }],
     });
+    if (d.ok === false) throw new Error(String(d.error || "Fiskalizatsiya muvaffaqiyatsiz"));
     setResult(d);
     toast.success(mode === "test" ? "Test chipta tuzildi" : "Chipta Click'ga yuborildi");
     loadLogs();
@@ -394,7 +405,10 @@ const ClickTestPanel = () => {
               {busy === "fiscal-test" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Test chipta tuzish
             </Button>
-            <Button onClick={() => sendFiscal("live")} disabled={busy !== null}>
+            <Button
+              onClick={() => sendFiscal("live")}
+              disabled={busy !== null || !payments.some((p) => p.id === lastPaymentId && p.status === "paid" && p.provider_transaction_id)}
+            >
               {busy === "fiscal-live" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Click'ga yuborish (live)
             </Button>
