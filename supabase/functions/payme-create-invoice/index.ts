@@ -2,6 +2,8 @@
 // Foydalanuvchi uchun to'lov invoice yaratadi va Payme checkout URL qaytaradi.
 // URL formati: https://checkout.paycom.uz/base64(m=MERCHANT;ac.order_id=UUID;a=AMOUNT_TIYIN;c=RETURN_URL)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildFiscalDetail } from "../_shared/payme.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -80,12 +82,61 @@ Deno.serve(async (req) => {
 
     // Payme summani tiyinda kutadi (1 so'm = 100 tiyin)
     const amountTiyin = Math.round(amount * 100);
-    const params = `m=${merchantId};ac.order_id=${payment.id};a=${amountTiyin};c=${returnWithId}`;
-    const encoded = btoa(params);
-    const host = environment === "sandbox" ? "https://test.paycom.uz" : "https://checkout.paycom.uz";
-    const checkout_url = `${host}/${encoded}`;
+    const lang = ["uz", "ru", "en"].includes(String(body?.lang)) ? String(body.lang) : "uz";
 
-    return json(200, { ok: true, payment, checkout_url, environment });
+    // Fiskal ma'lumot (MXIK, o'lchov birligi, QQS) — soliq oborotida chek ko'rinishi uchun
+    const { data: fiscalRow } = await admin
+      .from("payme_fiscal_items")
+      .select("title,mxik_code,package_code,vat_percent,units")
+      .eq("purpose", purpose)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    const detail = buildFiscalDetail(fiscalRow, amountTiyin);
+    const detailBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(detail))));
+
+    const host = environment === "sandbox" ? "https://test.paycom.uz" : "https://checkout.paycom.uz";
+
+    // 1) GET usuli — https://developer.help.paycom.uz/initsializatsiya-platezhey/otpravka-cheka-po-metodu-get
+    const getParams = [
+      `m=${merchantId}`,
+      `ac.order_id=${payment.id}`,
+      `a=${amountTiyin}`,
+      `l=${lang}`,
+      `c=${returnWithId}`,
+      `ct=15000`,
+      `cr=UZS`,
+      `d=${detailBase64}`,
+    ].join(";");
+    const checkout_url = `${host}/${btoa(getParams)}`;
+
+    // 2) POST usuli — https://developer.help.paycom.uz/initsializatsiya-platezhey/otpravka-cheka-po-metodu-post
+    const post_form = {
+      action: host,
+      method: "POST",
+      fields: {
+        merchant: merchantId,
+        amount: String(amountTiyin),
+        "account[order_id]": payment.id,
+        lang,
+        currency: "860",
+        callback: returnWithId,
+        callback_timeout: "15000",
+        description: detail.items[0].title,
+        detail: detailBase64,
+      },
+    };
+
+    return json(200, {
+      ok: true,
+      payment,
+      checkout_url,
+      post_form,
+      detail,
+      amount_tiyin: amountTiyin,
+      environment,
+    });
+
   } catch (err) {
     console.error("payme-create-invoice error:", err);
     return json(500, { error: err instanceof Error ? err.message : "Server xatolik" });

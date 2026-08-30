@@ -13798,6 +13798,87 @@ export type Database = {
           },
         ]
       }
+      payme_fiscal_items: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          mxik_code: string
+          package_code: string
+          purpose: string
+          title: string
+          units: number | null
+          updated_at: string
+          vat_percent: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          mxik_code: string
+          package_code: string
+          purpose: string
+          title: string
+          units?: number | null
+          updated_at?: string
+          vat_percent?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          mxik_code?: string
+          package_code?: string
+          purpose?: string
+          title?: string
+          units?: number | null
+          updated_at?: string
+          vat_percent?: number
+        }
+        Relationships: []
+      }
+      payme_webhook_log: {
+        Row: {
+          created_at: string
+          error_note: string | null
+          id: string
+          method: string | null
+          payme_transaction_id: string | null
+          payment_id: string | null
+          request_body: Json | null
+          request_ip: string | null
+          response_body: Json | null
+          rpc_id: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          method?: string | null
+          payme_transaction_id?: string | null
+          payment_id?: string | null
+          request_body?: Json | null
+          request_ip?: string | null
+          response_body?: Json | null
+          rpc_id?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_note?: string | null
+          id?: string
+          method?: string | null
+          payme_transaction_id?: string | null
+          payment_id?: string | null
+          request_body?: Json | null
+          request_ip?: string | null
+          response_body?: Json | null
+          rpc_id?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       payment_invoices: {
         Row: {
           amount: number
