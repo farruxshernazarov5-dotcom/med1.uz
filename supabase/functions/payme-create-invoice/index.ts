@@ -2,6 +2,8 @@
 // Foydalanuvchi uchun to'lov invoice yaratadi va Payme checkout URL qaytaradi.
 // URL formati: https://checkout.paycom.uz/base64(m=MERCHANT;ac.order_id=UUID;a=AMOUNT_TIYIN;c=RETURN_URL)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildFiscalDetail } from "../_shared/payme.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
