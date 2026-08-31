@@ -216,8 +216,30 @@ Loglarni faqat Super Admin ko'ra oladi.
 
 | Maydon | Qiymat |
 |---|---|
-| Endpoint (Merchant API URL) | `https://med1.uz/api/payme` |
-| Buyurtma maydoni (account) | `order_id` (UUID) |
-| Valyuta | UZS (860) |
+| Endpoint (Merchant API URL) | `https://pay.med1.uz/payme` |
+| Server IP (TAS-IX, whitelist) | `89.39.95.5` |
+| Buyurtma maydoni (account) | `order_id` — UUID, majburiy, matn |
+| Valyuta | UZS (860), summalar tiyinda |
 | Return / callback URL | `https://med1.uz/payment/success` |
+
+### Payme jamoasiga yuboriladigan matn
+
+```text
+Endpoint URL (Merchant API, JSON-RPC 2.0, POST):
+  https://pay.med1.uz/payme
+  Server: TAS-IX, statik IP 89.39.95.5, HTTPS (Let's Encrypt)
+
+Account parameters:
+  order_id — buyurtma identifikatori (UUID, matn, majburiy)
+  Namuna: {"account": {"order_id": "3f2a1c4e-8b52-4a1d-9f77-6d0b1c2e3a45"}}
+
+Valyuta: UZS (860), summalar tiyinda.
+Amalga oshirilgan metodlar: CheckPerformTransaction, CreateTransaction,
+PerformTransaction, CancelTransaction, CheckTransaction, GetStatement.
+Fiskalizatsiya: CheckPerformTransaction javobida detail.items[] —
+title, price (tiyin), count, code (MXIK), package_code, vat_percent.
+Chek yaratish: GET (base64 link) va POST forma — ikkalasi ham qo'llab-quvvatlanadi.
+Kompaniya: MED-ALL AI SYSTEM MCHJ (MED1.UZ), sayt: https://med1.uz
+```
+
 | Fiskalizatsiya | Yoqilgan (`detail` CheckPerformTransaction javobida) |
