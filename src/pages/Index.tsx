@@ -24,6 +24,7 @@ const AnimatedDoctorsStrip = lazy(() => import("@/components/AnimatedDoctorsStri
 const HomeAIServicesSection = lazy(() => import("@/components/HomeAIServicesSection"));
 const HomeEcosystemSection = lazy(() => import("@/components/HomeEcosystemSection"));
 const AnimatedServicesShowcase = lazy(() => import("@/components/AnimatedServicesShowcase"));
+const Med1TopHomeSection = lazy(() => import("@/components/med1top/Med1TopHomeSection"));
 const SponsorsLeaderboard = lazy(() => import("@/components/SponsorsLeaderboard"));
 const NearbyMap = lazy(() => import("@/components/geo/NearbyMap").then(m => ({ default: m.NearbyMap })));
 
@@ -98,6 +99,7 @@ const Index = () => {
           <div className="no-cinematic">
             <HomeEcosystemSection />
           </div>
+          <Med1TopHomeSection />
           <SponsorsLeaderboard />
           <CosmetologyPromo />
           <PartnerClinics />

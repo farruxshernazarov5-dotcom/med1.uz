@@ -117,6 +117,7 @@ const OAuthConsentPage = lazy(() => import("./pages/OAuthConsentPage"));
 const TransparencyPage = lazy(() => import("./pages/TransparencyPage"));
 const Med1TopPage = lazy(() => import("./pages/Med1TopPage"));
 const Med1TopCreatePage = lazy(() => import("./pages/Med1TopCreatePage"));
+const Med1TopGuidePage = lazy(() => import("./pages/Med1TopGuidePage"));
 const Med1TopMyAdsPage = lazy(() => import("./pages/Med1TopMyAdsPage"));
 const SponsorProfilePage = lazy(() => import("./pages/SponsorProfilePage"));
 
@@ -280,6 +281,7 @@ const App = () => (
                 <Route path="/partner" element={<PartnerDashboardPage />} />
                 <Route path="/transparency" element={<TransparencyPage />} />
                 <Route path="/med1-top" element={<Med1TopPage />} />
+                <Route path="/med1-top/guide" element={<Med1TopGuidePage />} />
                 <Route path="/med1-top/new" element={<Med1TopCreatePage />} />
                 <Route path="/med1-top/my" element={<Med1TopMyAdsPage />} />
                 <Route path="/admin/ads" element={<AdminPage initialTab="medical_ads" />} />
