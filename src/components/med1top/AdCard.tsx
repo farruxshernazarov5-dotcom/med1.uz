@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
-import { Phone, MapPin, CalendarCheck, ExternalLink, Navigation, Star, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Phone, MapPin, CalendarCheck, ExternalLink, Navigation, Star, Send, Info, Eye, MousePointerClick, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import AdDetailDialog from "./AdDetailDialog";
 import { type AdCampaign, type Lang, formatSum, trackAdEvent, tr } from "@/lib/med1Top";
 
 interface Props {
@@ -20,6 +21,7 @@ const rankTone = (rank: number | null) => {
 const AdCard = ({ ad, lang, compact = false, showBid = true }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useRef(false);
+  const [detail, setDetail] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -97,7 +99,32 @@ const AdCard = ({ ad, lang, compact = false, showBid = true }: Props) => {
         </p>
       ) : null}
 
+      {/* Live performance — ko'rishlar / kliklar / CTR */}
+      <div className="grid grid-cols-3 gap-2 rounded-xl bg-muted/40 p-2 text-center">
+        <div>
+          <Eye className="w-3.5 h-3.5 mx-auto text-muted-foreground" />
+          <p className="text-sm font-semibold text-foreground">{Number(ad.impressions || 0).toLocaleString("ru-RU")}</p>
+          <p className="text-[10px] text-muted-foreground">{lang === "ru" ? "Показы" : lang === "en" ? "Views" : "Ko'rishlar"}</p>
+        </div>
+        <div>
+          <MousePointerClick className="w-3.5 h-3.5 mx-auto text-muted-foreground" />
+          <p className="text-sm font-semibold text-foreground">{Number(ad.clicks || 0).toLocaleString("ru-RU")}</p>
+          <p className="text-[10px] text-muted-foreground">{lang === "ru" ? "Клики" : lang === "en" ? "Clicks" : "Kliklar"}</p>
+        </div>
+        <div>
+          <BarChart3 className="w-3.5 h-3.5 mx-auto text-muted-foreground" />
+          <p className="text-sm font-semibold text-primary">
+            {ad.impressions > 0 ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0.0"}%
+          </p>
+          <p className="text-[10px] text-muted-foreground">CTR</p>
+        </div>
+      </div>
+
       <div className="flex flex-wrap gap-2 mt-auto pt-1">
+        <Button size="sm" variant="secondary" onClick={() => setDetail(true)}>
+          <Info className="w-3.5 h-3.5 mr-1" />
+          {lang === "ru" ? "Подробная информация" : lang === "en" ? "Full details" : "Batafsil ma'lumot"}
+        </Button>
         {ad.website_url ? (
           <Button asChild size="sm" variant="default" onClick={() => trackAdEvent(ad.id, "click")}>
             <a href={ad.website_url} target="_blank" rel="nofollow noopener noreferrer">
@@ -134,6 +161,8 @@ const AdCard = ({ ad, lang, compact = false, showBid = true }: Props) => {
           </Button>
         ) : null}
       </div>
+
+      <AdDetailDialog ad={ad} lang={lang} open={detail} onOpenChange={setDetail} />
     </div>
   );
 };
