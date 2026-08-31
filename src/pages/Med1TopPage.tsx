@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Crown, Megaphone, TrendingUp, MapPin, Search, Trophy, Sparkles } from "lucide-react";
+import { Crown, Megaphone, TrendingUp, MapPin, Search, Trophy, Sparkles, ExternalLink } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SEO } from "@/components/SEO";
@@ -8,9 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import AdCard from "@/components/med1top/AdCard";
-import ShowcaseBrandCard from "@/components/med1top/ShowcaseBrandCard";
-import CreativeGuide from "@/components/med1top/CreativeGuide";
-import { SHOWCASE_BRANDS } from "@/data/med1TopShowcase";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   AD_REGIONS,
