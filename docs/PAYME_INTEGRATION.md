@@ -14,10 +14,15 @@ to'liq tavsiflaydi va Payme texnik jamoasiga taqdim etish uchun mo'ljallangan.
 
 | Muhit | URL |
 |---|---|
-| Live | `https://med1.uz/api/payme` → `https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/payme-webhook` |
+| Live | `https://pay.med1.uz/payme` (TAS-IX, statik IP **89.39.95.5**) |
 | Test (sandbox) | shu URL, `PAYME_SECRET_KEY_TEST` kaliti bilan |
 
+Bu manzil TAS-IX tarmog'idagi statik IP'li (89.39.95.5) HTTPS reverse proxy bo'lib,
+so'rovni o'zgartirmasdan `payme-webhook` backend funksiyasiga uzatadi
+(`Authorization` sarlavhasi ham to'liq saqlanadi).
+
 Metod: `POST`, `Content-Type: application/json`.
+
 
 ### Autorizatsiya
 
