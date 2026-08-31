@@ -14,10 +14,15 @@ to'liq tavsiflaydi va Payme texnik jamoasiga taqdim etish uchun mo'ljallangan.
 
 | Muhit | URL |
 |---|---|
-| Live | `https://med1.uz/api/payme` → `https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/payme-webhook` |
+| Live | `https://pay.med1.uz/payme` (TAS-IX, statik IP **89.39.95.5**) |
 | Test (sandbox) | shu URL, `PAYME_SECRET_KEY_TEST` kaliti bilan |
 
+Bu manzil TAS-IX tarmog'idagi statik IP'li (89.39.95.5) HTTPS reverse proxy bo'lib,
+so'rovni o'zgartirmasdan `payme-webhook` backend funksiyasiga uzatadi
+(`Authorization` sarlavhasi ham to'liq saqlanadi).
+
 Metod: `POST`, `Content-Type: application/json`.
+
 
 ### Autorizatsiya
 
@@ -211,8 +216,30 @@ Loglarni faqat Super Admin ko'ra oladi.
 
 | Maydon | Qiymat |
 |---|---|
-| Endpoint (Merchant API URL) | `https://med1.uz/api/payme` |
-| Buyurtma maydoni (account) | `order_id` (UUID) |
-| Valyuta | UZS (860) |
+| Endpoint (Merchant API URL) | `https://pay.med1.uz/payme` |
+| Server IP (TAS-IX, whitelist) | `89.39.95.5` |
+| Buyurtma maydoni (account) | `order_id` — UUID, majburiy, matn |
+| Valyuta | UZS (860), summalar tiyinda |
 | Return / callback URL | `https://med1.uz/payment/success` |
+
+### Payme jamoasiga yuboriladigan matn
+
+```text
+Endpoint URL (Merchant API, JSON-RPC 2.0, POST):
+  https://pay.med1.uz/payme
+  Server: TAS-IX, statik IP 89.39.95.5, HTTPS (Let's Encrypt)
+
+Account parameters:
+  order_id — buyurtma identifikatori (UUID, matn, majburiy)
+  Namuna: {"account": {"order_id": "3f2a1c4e-8b52-4a1d-9f77-6d0b1c2e3a45"}}
+
+Valyuta: UZS (860), summalar tiyinda.
+Amalga oshirilgan metodlar: CheckPerformTransaction, CreateTransaction,
+PerformTransaction, CancelTransaction, CheckTransaction, GetStatement.
+Fiskalizatsiya: CheckPerformTransaction javobida detail.items[] —
+title, price (tiyin), count, code (MXIK), package_code, vat_percent.
+Chek yaratish: GET (base64 link) va POST forma — ikkalasi ham qo'llab-quvvatlanadi.
+Kompaniya: MED-ALL AI SYSTEM MCHJ (MED1.UZ), sayt: https://med1.uz
+```
+
 | Fiskalizatsiya | Yoqilgan (`detail` CheckPerformTransaction javobida) |
