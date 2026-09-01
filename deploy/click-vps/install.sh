@@ -42,10 +42,26 @@ nginx -t
 systemctl reload nginx
 
 echo "HTTPS va callbacklar tekshirilmoqda..."
-curl --fail --silent --show-error "https://${DOMAIN}/health"
-echo
-curl --fail --silent --show-error "https://${DOMAIN}/click/prepare"
-echo
-curl --fail --silent --show-error "https://${DOMAIN}/click/complete"
-echo
+HEALTH="$(curl --fail --silent --show-error "https://${DOMAIN}/health")"
+if [[ "${HEALTH}" != *'"config":"2026-09-01-v2"'* ]]; then
+  echo "Xato: eski Nginx konfiguratsiyasi ishlayapti: ${HEALTH}" >&2
+  exit 1
+fi
+echo "${HEALTH}"
+
+for PATH_NAME in click/prepare click/complete click-prepare click-complete; do
+  BODY="$(curl --fail --silent --show-error "https://${DOMAIN}/${PATH_NAME}")"
+  if [[ "${BODY}" != *'"ok":true'* ]]; then
+    echo "Xato: /${PATH_NAME} noto'g'ri javob qaytardi: ${BODY}" >&2
+    exit 1
+  fi
+  echo "/${PATH_NAME}: OK"
+done
+
+ROOT_STATUS="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "https://${DOMAIN}/")"
+if [[ "${ROOT_STATUS}" != "302" ]]; then
+  echo "Xato: ${DOMAIN}/ uchun 302 kutilgan, ${ROOT_STATUS} olindi" >&2
+  exit 1
+fi
+
 echo "Tayyor: CLICK kabinetiga https://${DOMAIN}/click/prepare va https://${DOMAIN}/click/complete kiriting."

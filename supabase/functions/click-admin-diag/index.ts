@@ -109,6 +109,30 @@ Deno.serve(async (req) => {
       }
 
       if (environment === "production") {
+        const proxyChecks = [
+          { name: "proxy:health", url: "https://pay.med1.uz/health", expectedStatus: 200, marker: "2026-09-01-v2" },
+          { name: "proxy:root", url: "https://pay.med1.uz/", expectedStatus: 302 },
+          { name: "proxy:legacy-prepare", url: "https://pay.med1.uz/click-prepare", expectedStatus: 200 },
+          { name: "proxy:legacy-complete", url: "https://pay.med1.uz/click-complete", expectedStatus: 200 },
+        ];
+        for (const proxyCheck of proxyChecks) {
+          try {
+            const r = await fetch(proxyCheck.url, { method: "GET", redirect: "manual" });
+            const txt = (await r.text()).slice(0, 300);
+            const markerOk = !proxyCheck.marker || txt.includes(proxyCheck.marker);
+            const ok = r.status === proxyCheck.expectedStatus && markerOk;
+            checks.push({
+              name: proxyCheck.name,
+              ok,
+              status: r.status,
+              detail: ok
+                ? `VPS konfiguratsiyasi to'g'ri (${r.status})`
+                : `VPS'da eski/noto'g'ri Nginx konfiguratsiyasi: ${r.status}${markerOk ? "" : ", versiya belgisi yo'q"}`,
+            });
+          } catch (e) {
+            checks.push({ name: proxyCheck.name, ok: false, detail: `VPS tekshiruvi bajarilmadi: ${e instanceof Error ? e.message : String(e)}` });
+          }
+        }
         checks.push({
           name: "network:tas-ix",
           ok: checks.some((c) => (c.name === "prepare_url" || c.name === "complete_url") && c.ok),
