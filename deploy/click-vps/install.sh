@@ -26,9 +26,16 @@ fi
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get install -y nginx certbot python3-certbot-nginx ufw curl
 
+VDS_HOSTNAME="$(hostname)"
+if ! grep -Eq "(^|[[:space:]])${VDS_HOSTNAME}([[:space:]]|$)" /etc/hosts; then
+  printf '127.0.1.1 %s\n' "${VDS_HOSTNAME}" >> /etc/hosts
+fi
+
 install -m 0644 "${SCRIPT_DIR}/nginx-pay.med1.uz.conf" /etc/nginx/sites-available/pay.med1.uz.conf
+find /etc/nginx/sites-enabled -xtype l -delete
 ln -sfn /etc/nginx/sites-available/pay.med1.uz.conf /etc/nginx/sites-enabled/pay.med1.uz.conf
 rm -f /etc/nginx/sites-available/pay.med1.uz /etc/nginx/sites-enabled/pay.med1.uz
+rm -f /etc/nginx/sites-enabled/pay.med1server
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
 systemctl enable --now nginx

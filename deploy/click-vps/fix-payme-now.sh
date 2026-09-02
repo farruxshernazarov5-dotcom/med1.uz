@@ -7,6 +7,47 @@ set -euo pipefail
 SB="https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1"
 CONF=/etc/nginx/sites-available/pay.med1.uz.conf
 
+if [[ "${EUID}" -ne 0 ]]; then
+  echo "Xato: root sifatida ishga tushiring: sudo bash fix-payme-now.sh" >&2
+  exit 1
+fi
+
+# Minimal VDS obrazlarida hostname /etc/hosts ichida bo'lmasa sudo ogohlantiradi.
+VDS_HOSTNAME="$(hostname)"
+if ! grep -Eq "(^|[[:space:]])${VDS_HOSTNAME}([[:space:]]|$)" /etc/hosts; then
+  printf '127.0.1.1 %s\n' "$VDS_HOSTNAME" >> /etc/hosts
+fi
+
+# Skrinshotdagi "Could not resolve host" holatini tiklash.
+if ! getent ahostsv4 med1.uz >/dev/null 2>&1; then
+  if systemctl is-active --quiet systemd-resolved 2>/dev/null; then
+    mkdir -p /etc/systemd/resolved.conf.d
+    cat > /etc/systemd/resolved.conf.d/med1-dns.conf <<'DNS'
+[Resolve]
+DNS=1.1.1.1 8.8.8.8
+FallbackDNS=9.9.9.9
+DNSSEC=allow-downgrade
+DNS
+    systemctl restart systemd-resolved
+  else
+    cp -a /etc/resolv.conf "/etc/resolv.conf.med1-backup-$(date +%s)" || true
+    cat > /etc/resolv.conf <<'DNS'
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+DNS
+  fi
+fi
+getent ahostsv4 med1.uz >/dev/null || {
+  echo "Xato: VDS tashqi DNS nomlarini hali ham aniqlay olmayapti." >&2
+  exit 1
+}
+
+command -v nginx >/dev/null || {
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y nginx certbot python3-certbot-nginx curl
+}
+mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+
 proxy_block() {
   cat <<EOF
         proxy_pass $SB/$1;
@@ -59,10 +100,13 @@ EOF
   echo '}'
 } > "$CONF"
 
-ln -sf "$CONF" /etc/nginx/sites-enabled/pay.med1.uz.conf
+find /etc/nginx/sites-enabled -xtype l -delete
+ln -sfn "$CONF" /etc/nginx/sites-enabled/pay.med1.uz.conf
 rm -f /etc/nginx/sites-available/pay.med1.uz /etc/nginx/sites-enabled/pay.med1.uz
+rm -f /etc/nginx/sites-enabled/pay.med1server
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
+systemctl enable --now nginx
 systemctl reload nginx
 
 # HTTPS ni tiklash (sertifikat allaqachon bor bo'lsa qayta ishlatiladi)
