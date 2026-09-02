@@ -83,7 +83,8 @@ qo'llanmasiga amal qiling.
 Yangi `nginx-pay.med1.uz.conf` faylni VPS'ga nusxalab:
 
 ```bash
-sudo cp nginx-pay.med1.uz.conf /etc/nginx/sites-available/pay.med1.uz
+sudo cp nginx-pay.med1.uz.conf /etc/nginx/sites-available/pay.med1.uz.conf
+sudo ln -sfn /etc/nginx/sites-available/pay.med1.uz.conf /etc/nginx/sites-enabled/pay.med1.uz.conf
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
