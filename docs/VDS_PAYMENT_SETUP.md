@@ -15,6 +15,18 @@ qolgani aniqlandi:
 
 Demak muammo domen yoki backendda emas. VDS'dagi Nginx faylini yangilash kerak.
 
+## 0. Eng tez yo'l (bitta buyruq)
+
+VDS'ga SSH bilan kiring va shuni bajaring:
+
+```bash
+curl -fsSL https://med1.uz/deploy/fix-payme-now.sh -o /tmp/fix-payme-now.sh
+sudo EMAIL=billing@med1.uz bash /tmp/fix-payme-now.sh
+```
+
+Skript yakunida `/health` javobida `"config":"2026-09-02-v3"` chiqishi va `/payme`
+`-32504` qaytarishi kerak. Shundan keyin Payme sandbox 6 metodi o'tadi.
+
 ## 1. VDS'ga SSH orqali kirish
 
 Windows PowerShell, macOS yoki Linux terminalida:
