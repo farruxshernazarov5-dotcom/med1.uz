@@ -51,9 +51,7 @@ fi
 echo "${HEALTH}"
 
 for PATH_NAME in click/prepare click/complete click-prepare click-complete; do
-  BODY="$(curl --fail --silent --show-error --request POST \
-    --header 'Content-Type: application/x-www-form-urlencoded' \
-    --data 'action=0' "https://${DOMAIN}/${PATH_NAME}")"
+  BODY="$(curl --fail --silent --show-error "https://${DOMAIN}/${PATH_NAME}")"
   if [[ "${BODY}" != *'"ok":true'* ]]; then
     echo "Xato: /${PATH_NAME} noto'g'ri javob qaytardi: ${BODY}" >&2
     exit 1
