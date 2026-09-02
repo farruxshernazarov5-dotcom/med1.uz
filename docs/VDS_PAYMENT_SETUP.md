@@ -24,6 +24,26 @@ curl -fsSL https://med1.uz/deploy/fix-payme-now.sh -o /tmp/fix-payme-now.sh
 sudo EMAIL=billing@med1.uz bash /tmp/fix-payme-now.sh
 ```
 
+### Agar `Could not resolve host` chiqsa
+
+Skrinshotdagi VDS'da tashqi DNS va lokal hostname noto'g'ri. Avval quyidagi blokni
+to'liq ko'chiring (har bir qator oxirida Enter bosing):
+
+```bash
+HN="$(hostname)"
+grep -qE "(^|[[:space:]])${HN}([[:space:]]|$)" /etc/hosts || echo "127.0.1.1 ${HN}" >> /etc/hosts
+cp -a /etc/resolv.conf /etc/resolv.conf.backup
+printf 'nameserver 1.1.1.1\nnameserver 8.8.8.8\n' > /etc/resolv.conf
+getent hosts med1.uz
+```
+
+Oxirgi buyruq IP qaytargach, tezkor skriptni qayta yuklab ishga tushiring. Skript
+`/etc/nginx/sites-enabled/pay.med1server` kabi mavjud bo'lmagan faylga qaragan
+singan havolalarni ham avtomatik o'chiradi.
+
+Muhim: `sshroot@...`, `cd/click` yoki `curl -fsSLhttps://...` shaklida yozmang —
+buyruq va parametrlar orasida bo'sh joy bo'lishi shart.
+
 Skript yakunida `/health` javobida `"config":"2026-09-02-v3"` chiqishi va `/payme`
 `-32504` qaytarishi kerak. Shundan keyin Payme sandbox 6 metodi o'tadi.
 
