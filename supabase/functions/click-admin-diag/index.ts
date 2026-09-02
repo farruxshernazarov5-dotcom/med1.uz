@@ -110,10 +110,11 @@ Deno.serve(async (req) => {
 
       if (environment === "production") {
         const proxyChecks = [
-          { name: "proxy:health", url: "https://pay.med1.uz/health", expectedStatus: 200, marker: "2026-09-01-v2" },
+          { name: "proxy:health", url: "https://pay.med1.uz/health", expectedStatus: 200, marker: "2026-09-02-v3" },
           { name: "proxy:root", url: "https://pay.med1.uz/", expectedStatus: 302 },
           { name: "proxy:legacy-prepare", url: "https://pay.med1.uz/click-prepare", expectedStatus: 200 },
           { name: "proxy:legacy-complete", url: "https://pay.med1.uz/click-complete", expectedStatus: 200 },
+          { name: "proxy:payme", url: "https://pay.med1.uz/payme", expectedStatus: 200 },
         ];
         for (const proxyCheck of proxyChecks) {
           try {

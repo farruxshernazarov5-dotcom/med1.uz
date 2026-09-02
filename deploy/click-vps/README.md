@@ -71,15 +71,20 @@ GET readiness javoblari `200` bo'lishi kerak. Haqiqiy POST imzosi va to'lov zanj
 `pay.med1.uz` bosh sahifasining 404 qaytarishi eski Nginx konfiguratsiyasi hali serverga qo'llanganini bildiradi. `sudo ./install.sh billing@med1.uz` ni qayta ishga tushirgach bosh sahifa `https://med1.uz/payment/success` ga yo'naladi va eski `/click-prepare`, `/click-complete` aliaslari ham ishlaydi.
 
 Joriy server holatini aniq ajratish uchun `/health` javobida
-`"config":"2026-09-01-v2"` bo'lishi shart. Bu marker yo'q bo'lsa repodagi yangi
+`"config":"2026-09-02-v3"` bo'lishi shart. Bu marker yo'q bo'lsa repodagi yangi
 konfiguratsiya VPS'ga hali o'rnatilmagan.
+
+VDS'ni noldan sozlash, fayllarni topish, 404 xatosini yo'qotish va barcha
+endpointlarni tekshirish uchun [`../../docs/VDS_PAYMENT_SETUP.md`](../../docs/VDS_PAYMENT_SETUP.md)
+qo'llanmasiga amal qiling.
 
 ## 5. Payme yo'lini qo'shgandan keyin
 
 Yangi `nginx-pay.med1.uz.conf` faylni VPS'ga nusxalab:
 
 ```bash
-sudo cp nginx-pay.med1.uz.conf /etc/nginx/sites-available/pay.med1.uz
+sudo cp nginx-pay.med1.uz.conf /etc/nginx/sites-available/pay.med1.uz.conf
+sudo ln -sfn /etc/nginx/sites-available/pay.med1.uz.conf /etc/nginx/sites-enabled/pay.med1.uz.conf
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
