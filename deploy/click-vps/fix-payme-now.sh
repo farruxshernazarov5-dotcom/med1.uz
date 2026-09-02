@@ -63,6 +63,11 @@ rm -f /etc/nginx/sites-enabled/default
 nginx -t
 systemctl reload nginx
 
+# HTTPS ni tiklash (sertifikat allaqachon bor bo'lsa qayta ishlatiladi)
+certbot --nginx --non-interactive --agree-tos --redirect \
+  --email "${EMAIL:-billing@med1.uz}" -d pay.med1.uz || true
+nginx -t && systemctl reload nginx
+
 echo "--- self-test ---"
 for u in /health /payme /click/prepare /click/complete; do
   code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://127.0.0.1$u" -H 'Host: pay.med1.uz' -H 'Content-Type: application/json' -d '{}')
