@@ -11,6 +11,7 @@ proxy_block() {
   cat <<EOF
         proxy_pass $SB/$1;
         proxy_ssl_server_name on;
+        proxy_ssl_name wiqcfyecdmararxqdmfk.supabase.co;
         proxy_set_header Host wiqcfyecdmararxqdmfk.supabase.co;
         proxy_set_header Authorization \$http_authorization;
         proxy_pass_header Authorization;
@@ -59,6 +60,7 @@ EOF
 } > "$CONF"
 
 ln -sf "$CONF" /etc/nginx/sites-enabled/pay.med1.uz.conf
+rm -f /etc/nginx/sites-available/pay.med1.uz /etc/nginx/sites-enabled/pay.med1.uz
 rm -f /etc/nginx/sites-enabled/default
 nginx -t
 systemctl reload nginx
