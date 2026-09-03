@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // MD5 — Web Crypto API'da yo'q, shuning uchun npm:blueimp-md5 ishlatamiz
 import md5 from "npm:blueimp-md5@2.19.0";
+import { notifyPaymentPaid } from "../_shared/payment-notify.ts";
 
 // Click webhook — public endpoint
 // Himoya qatlamlari:
@@ -293,6 +294,15 @@ Deno.serve(async (req) => {
         });
         return resp;
       }
+
+      await notifyPaymentPaid(admin, {
+        provider: "click",
+        amount: paymentAmount,
+        purpose: payment.purpose,
+        paymentId: payment.id,
+        userId: payment.user_id,
+        transactionId: click_trans_id,
+      });
 
       response = {
         click_trans_id, merchant_trans_id,
