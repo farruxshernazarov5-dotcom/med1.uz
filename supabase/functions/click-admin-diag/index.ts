@@ -115,7 +115,8 @@ Deno.serve(async (req) => {
           { name: "proxy:legacy-prepare", url: "https://pay.med1.uz/click-prepare", expectedStatus: 200 },
           { name: "proxy:legacy-complete", url: "https://pay.med1.uz/click-complete", expectedStatus: 200 },
           { name: "proxy:payme", url: "https://pay.med1.uz/payme", expectedStatus: 200 },
-          { name: "proxy:uzum", url: "https://pay.med1.uz/uzum", expectedStatus: 200 },
+          // Uzum webhooki bo'sh GET so'roviga 400 qaytaradi — bu proxy ishlayotganini bildiradi.
+          { name: "proxy:uzum", url: "https://pay.med1.uz/uzum", expectedStatus: 200, alsoOk: [400, 401, 405] },
         ];
         for (const proxyCheck of proxyChecks) {
           try {
