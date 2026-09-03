@@ -52,17 +52,20 @@ const Med1TopMyAdsPage = () => {
     [rows],
   );
 
-  const pay = async (ad: AdCampaign) => {
+  const pay = async (ad: AdCampaign, provider: "click" | "payme" = "click") => {
     setBusy(ad.id);
     try {
-      const { data, error } = await supabase.functions.invoke("click-create-invoice", {
-        body: {
-          amount: Number(ad.bid_amount),
-          purpose: "med1_ad",
-          reference_id: ad.id,
-          return_url: `${window.location.origin}/med1-top/my`,
+      const { data, error } = await supabase.functions.invoke(
+        provider === "payme" ? "payme-create-invoice" : "click-create-invoice",
+        {
+          body: {
+            amount: Number(ad.bid_amount),
+            purpose: "med1_ad",
+            reference_id: ad.id,
+            return_url: `${window.location.origin}/med1-top/my`,
+          },
         },
-      });
+      );
       if (error) throw error;
       if (data?.checkout_url) window.location.href = data.checkout_url as string;
     } catch (e) {
