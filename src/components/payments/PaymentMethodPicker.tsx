@@ -50,6 +50,36 @@ const PaymentMethodPicker = ({
 }: PaymentMethodPickerProps) => {
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
   const [loading, setLoading] = useState(false);
+  const [botLoading, setBotLoading] = useState(false);
+
+  const sendToBot = async () => {
+    if (!amount || amount <= 0) {
+      toast({ title: "Xatolik", description: "Noto'g'ri summa", variant: "destructive" });
+      return;
+    }
+    setBotLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-payment-link", {
+        body: {
+          amount,
+          purpose,
+          reference_id: referenceId,
+          return_url: returnUrl || `${window.location.origin}/payment/success`,
+        },
+      });
+      if (error) {
+        const context = "context" in error ? (error.context as Response | undefined) : undefined;
+        const payload = context ? ((await context.clone().json().catch(() => null)) as { error?: string } | null) : null;
+        throw new Error(payload?.error || error.message);
+      }
+      if (!data?.success) throw new Error(data?.error || "Yuborilmadi");
+      toast({ title: "📲 Botga yuborildi", description: "Telegram botdagi tugmalar orqali to'lang" });
+    } catch (err: any) {
+      toast({ title: "Botga yuborilmadi", description: err?.message || "Xatolik", variant: "destructive" });
+    } finally {
+      setBotLoading(false);
+    }
+  };
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const bank = { ...DEFAULT_BANK, ...(bankDetails || {}) };
