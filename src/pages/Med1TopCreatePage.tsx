@@ -54,6 +54,7 @@ const Med1TopCreatePage = () => {
   const [busy, setBusy] = useState(false);
   const [advice, setAdvice] = useState<string>("");
   const [adviceBusy, setAdviceBusy] = useState(false);
+  const [provider, setProvider] = useState<"click" | "payme">("click");
 
   useEffect(() => {
     fetchAuctionState().then(setAuction).catch(() => setAuction([]));
@@ -176,7 +177,7 @@ const Med1TopCreatePage = () => {
         body: { action: "moderate", campaign_id: campaign.id, lang },
       });
 
-      const { data: pay, error: payErr } = await supabase.functions.invoke("click-create-invoice", {
+      const { data: pay, error: payErr } = await supabase.functions.invoke(provider === "payme" ? "payme-create-invoice" : "click-create-invoice", {
         body: {
           amount: bid,
           purpose: `med1_ad:${placement.code}`,
@@ -359,9 +360,21 @@ const Med1TopCreatePage = () => {
           </label>
         </div>
 
+        <div className="mb-3">
+          <p className="text-sm font-semibold mb-2">To'lov tizimini tanlang</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button type="button" variant={provider === "click" ? "default" : "outline"} onClick={() => setProvider("click")}>
+              Click
+            </Button>
+            <Button type="button" variant={provider === "payme" ? "default" : "outline"} onClick={() => setProvider("payme")}>
+              Payme
+            </Button>
+          </div>
+        </div>
+
         <Button onClick={submit} disabled={busy} size="lg" className="w-full">
           {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wallet className="w-4 h-4 mr-2" />}
-          To'lovga o'tish — {formatSum(bid)} <ArrowRight className="w-4 h-4 ml-1" />
+          {provider === "payme" ? "Payme" : "Click"} bilan to'lovga o'tish — {formatSum(bid)} <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
         <p className="text-xs text-muted-foreground mt-3 text-center">
           CREATE → PAYMENT → CONFIRMATION → MODERATION → PUBLISH
