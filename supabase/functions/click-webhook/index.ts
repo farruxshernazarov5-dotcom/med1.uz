@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // MD5 — Web Crypto API'da yo'q, shuning uchun npm:blueimp-md5 ishlatamiz
 import md5 from "npm:blueimp-md5@2.19.0";
+import { notifyPaymentPaid } from "../_shared/payment-notify.ts";
 
 // Click webhook — public endpoint
 // Himoya qatlamlari:
@@ -55,15 +56,21 @@ Deno.serve(async (req) => {
     const secretKey = Deno.env.get("CLICK_SECRET_KEY")!;
     const serviceId = Deno.env.get("CLICK_SERVICE_ID")!;
 
-    // ---- Body parse ----
-    const contentType = req.headers.get("content-type") || "";
+    // ---- Body parse (content-type bo'lmasa ham ishlaydi) ----
+    const contentType = (req.headers.get("content-type") || "").toLowerCase();
     let params: Record<string, string> = {};
-    if (contentType.includes("application/json")) {
-      params = await req.json();
-    } else {
-      const form = await req.formData();
-      for (const [k, v] of form.entries()) params[k] = String(v);
+    const rawBody = await req.text();
+    const fromQuery = new URL(req.url).searchParams;
+    if (rawBody.trim().startsWith("{")) {
+      try { params = JSON.parse(rawBody); } catch { params = {}; }
+    } else if (rawBody.trim().length > 0) {
+      for (const [k, v] of new URLSearchParams(rawBody).entries()) params[k] = String(v);
     }
+    if (Object.keys(params).length === 0) {
+      for (const [k, v] of fromQuery.entries()) params[k] = String(v);
+    }
+    void contentType;
+
 
     const action = String(params.action ?? "");
     const click_trans_id = String(params.click_trans_id ?? "");
@@ -287,6 +294,15 @@ Deno.serve(async (req) => {
         });
         return resp;
       }
+
+      await notifyPaymentPaid(admin, {
+        provider: "click",
+        amount: paymentAmount,
+        purpose: payment.purpose,
+        paymentId: payment.id,
+        userId: payment.user_id,
+        transactionId: click_trans_id,
+      });
 
       response = {
         click_trans_id, merchant_trans_id,

@@ -4,6 +4,7 @@
 // Auth: Basic base64("Paycom:PAYME_SECRET_KEY")
 // Hujjat: https://developer.help.paycom.uz/metody-merchant-api/
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { notifyPaymentPaid } from "../_shared/payment-notify.ts";
 import {
   paymeCors as corsHeaders,
   PAYME_ERR as ERR,
@@ -100,14 +101,14 @@ Deno.serve(async (req) => {
   const loadOrder = async (oid: string) =>
     (await admin
       .from("platform_payments")
-      .select("id,amount,status,purpose,transaction_id,metadata")
+      .select("id,amount,status,purpose,transaction_id,metadata,user_id")
       .eq("id", oid)
       .maybeSingle()).data;
 
   const loadByTx = async (txId: string) =>
     (await admin
       .from("platform_payments")
-      .select("id,amount,status,purpose,transaction_id,metadata")
+      .select("id,amount,status,purpose,transaction_id,metadata,user_id")
       .eq("transaction_id", txId)
       .maybeSingle()).data;
 
@@ -246,6 +247,15 @@ Deno.serve(async (req) => {
         if (!updated) {
           return fail(ERR.CANNOT_PERFORM, "concurrent", { payment_id: p.id, payme_transaction_id: String(params.id) });
         }
+
+        await notifyPaymentPaid(admin, {
+          provider: "payme",
+          amount: Number(p.amount),
+          purpose: p.purpose,
+          paymentId: p.id,
+          userId: (p as { user_id?: string | null }).user_id ?? null,
+          transactionId: String(params.id),
+        });
 
         await admin.from("audit_logs").insert({
           action: "payment_completed",
