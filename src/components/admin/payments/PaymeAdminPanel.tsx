@@ -270,7 +270,7 @@ export default function PaymeAdminPanel() {
                     <td className="py-1">{new Date(l.created_at).toLocaleString("uz-UZ")}</td>
                     <td className="font-mono">{l.method}</td>
                     <td className="font-mono">{l.payme_transaction_id ? String(l.payme_transaction_id).slice(0, 10) + "…" : "—"}</td>
-                    <td>{l.error_code ? <span className="text-destructive">{l.error_code}</span> : <span className="text-green-600">OK</span>}</td>
+                    <td>{l.status === "ok" ? <span className="text-green-600">OK</span> : <span className="text-destructive">{l.status}{l.error_note ? ` · ${l.error_note}` : ""}</span>}</td>
                   </tr>
                 ))}
               </tbody>

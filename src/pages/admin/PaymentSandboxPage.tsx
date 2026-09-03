@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, CreditCard, ExternalLink, ShieldCheck, AlertTriangle } from "lucide-react";
 import ClickTestPanel from "@/components/admin/payments/ClickTestPanel";
+import PaymeAdminPanel from "@/components/admin/payments/PaymeAdminPanel";
 
 
 type Provider = "click" | "payme" | "uzum";
@@ -115,6 +116,8 @@ export default function PaymentSandboxPage() {
       </div>
 
       <ClickTestPanel />
+
+      <PaymeAdminPanel />
 
       <Card>
 
