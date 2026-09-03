@@ -52,17 +52,20 @@ const Med1TopMyAdsPage = () => {
     [rows],
   );
 
-  const pay = async (ad: AdCampaign) => {
+  const pay = async (ad: AdCampaign, provider: "click" | "payme" = "click") => {
     setBusy(ad.id);
     try {
-      const { data, error } = await supabase.functions.invoke("click-create-invoice", {
-        body: {
-          amount: Number(ad.bid_amount),
-          purpose: "med1_ad",
-          reference_id: ad.id,
-          return_url: `${window.location.origin}/med1-top/my`,
+      const { data, error } = await supabase.functions.invoke(
+        provider === "payme" ? "payme-create-invoice" : "click-create-invoice",
+        {
+          body: {
+            amount: Number(ad.bid_amount),
+            purpose: "med1_ad",
+            reference_id: ad.id,
+            return_url: `${window.location.origin}/med1-top/my`,
+          },
         },
-      });
+      );
       if (error) throw error;
       if (data?.checkout_url) window.location.href = data.checkout_url as string;
     } catch (e) {
@@ -174,10 +177,16 @@ const Med1TopMyAdsPage = () => {
 
                   <div className="flex flex-wrap gap-2 mt-3">
                     {ad.status === "pending_payment" ? (
-                      <Button size="sm" onClick={() => void pay(ad)} disabled={busy === ad.id}>
-                        {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
-                        To'lash
-                      </Button>
+                      <>
+                        <Button size="sm" onClick={() => void pay(ad, "click")} disabled={busy === ad.id} className="bg-[#00B4E5] hover:bg-[#0098C2] text-white">
+                          {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
+                          Click orqali to'lash
+                        </Button>
+                        <Button size="sm" onClick={() => void pay(ad, "payme")} disabled={busy === ad.id} className="bg-[#33CCCC] hover:bg-[#2BB3B3] text-white">
+                          {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
+                          Payme orqali to'lash
+                        </Button>
+                      </>
                     ) : null}
                     <Button size="sm" variant="outline" onClick={() => void toggleRenew(ad)}>
                       <RefreshCw className="w-3.5 h-3.5 mr-1" /> Auto-renew: {ad.auto_renew ? "yoqilgan" : "o'chiq"}

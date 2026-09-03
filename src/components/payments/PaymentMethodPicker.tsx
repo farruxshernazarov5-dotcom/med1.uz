@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet } from "lucide-react";
+import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -50,6 +50,36 @@ const PaymentMethodPicker = ({
 }: PaymentMethodPickerProps) => {
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
   const [loading, setLoading] = useState(false);
+  const [botLoading, setBotLoading] = useState(false);
+
+  const sendToBot = async () => {
+    if (!amount || amount <= 0) {
+      toast({ title: "Xatolik", description: "Noto'g'ri summa", variant: "destructive" });
+      return;
+    }
+    setBotLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-payment-link", {
+        body: {
+          amount,
+          purpose,
+          reference_id: referenceId,
+          return_url: returnUrl || `${window.location.origin}/payment/success`,
+        },
+      });
+      if (error) {
+        const context = "context" in error ? (error.context as Response | undefined) : undefined;
+        const payload = context ? ((await context.clone().json().catch(() => null)) as { error?: string } | null) : null;
+        throw new Error(payload?.error || error.message);
+      }
+      if (!data?.success) throw new Error(data?.error || "Yuborilmadi");
+      toast({ title: "📲 Botga yuborildi", description: "Telegram botdagi tugmalar orqali to'lang" });
+    } catch (err: any) {
+      toast({ title: "Botga yuborilmadi", description: err?.message || "Xatolik", variant: "destructive" });
+    } finally {
+      setBotLoading(false);
+    }
+  };
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const bank = { ...DEFAULT_BANK, ...(bankDetails || {}) };
@@ -231,7 +261,21 @@ const PaymentMethodPicker = ({
           <span className="ml-auto font-bold">{amount.toLocaleString("uz-UZ")} so'm</span>
         )}
       </Button>
+
+      {(method === "click" || method === "payme") && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={sendToBot}
+          disabled={botLoading}
+          className="w-full gap-2"
+        >
+          {botLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          To'lov havolasini Telegram botga yuborish
+        </Button>
+      )}
     </div>
+
   );
 };
 
