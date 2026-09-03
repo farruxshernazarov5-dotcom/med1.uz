@@ -235,7 +235,7 @@ const DentalSaaS = ({ clinic }: DentalSaaSProps) => {
               purpose={`dental_saas:${payDialog.plan.id}`}
               referenceId={`DEN-SAAS-${clinic?.id || ""}-${Date.now()}`}
               returnUrl={`${window.location.origin}/dashboard?paid=1`}
-              allowed={["click", "cash", "bank"]}
+              allowed={["click", "payme", "cash", "bank"]}
               bankDetails={{
                 bank_name: "Med1.uz - SaaS to'lovi",
                 recipient: "Med1.uz MChJ",

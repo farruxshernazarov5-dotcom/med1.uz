@@ -136,7 +136,7 @@ const SubscriptionContactModal = ({
                   amount={numericPrice}
                   purpose={`subscription:${category || "general"}:${planName || ""}`}
                   referenceId={`SUB-${Date.now()}`}
-                  allowed={["click", "cash", "bank"]}
+                  allowed={["click", "payme", "cash", "bank"]}
                 />
               </div>
             ) : (
