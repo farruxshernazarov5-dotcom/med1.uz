@@ -153,6 +153,46 @@ Deno.serve(async (req) => {
       });
     }
 
+    // CLICK Merchant API orqali service_id / merchant_user_id / secret_key juftligini jonli tekshirish.
+    // "Yetkazib beruvchidan ma'lumot yetarli emas" xatosi ko'pincha shu juftlik mos kelmasa chiqadi.
+    if (action === "merchant_api") {
+      const issues = validateClickConfig(env).filter((i) => i.level === "error");
+      if (issues.length) return json({ ok: false, issues, error: issues.map((i) => i.message).join("; ") }, 400);
+      if (!env.merchantUserId) {
+        return json({ ok: false, error: "CLICK_MERCHANT_USER_ID yo'q — Merchant API tekshirib bo'lmaydi" }, 400);
+      }
+      const { clickAuthHeader } = await import("../_shared/click.ts");
+      const auth = await clickAuthHeader(env.merchantUserId, env.secretKey);
+      const probeId = "1";
+      const url = `https://api.click.uz/v2/merchant/payment/status/${env.serviceId}/${probeId}`;
+      try {
+        const r = await fetch(url, { headers: { Auth: auth, "Content-Type": "application/json" } });
+        const text = await r.text();
+        let payload: Record<string, unknown> | null = null;
+        try { payload = JSON.parse(text); } catch { /* matn holida qoladi */ }
+        const errCode = Number(payload?.error_code ?? payload?.error ?? 0);
+        // -1 SIGN CHECK FAILED, -5 user does not exist, -8 error in request from click
+        const credentialsOk = errCode !== -1 && errCode !== -5 && r.status !== 401 && r.status !== 403;
+        return json({
+          ok: credentialsOk,
+          http_status: r.status,
+          error_code: errCode || null,
+          raw: text.slice(0, 300),
+          detail: credentialsOk
+            ? "CLICK Merchant API kalitlarni qabul qildi (service_id + merchant_user_id + secret_key mos)"
+            : "CLICK kalitlari mos emas: kabinetdagi Service ID, Merchant User ID va Secret key qayta tekshirilsin",
+          config: {
+            service_id: env.serviceId,
+            merchant_id: env.merchantId,
+            merchant_user_id: env.merchantUserId,
+            secret_key_masked: mask(env.secretKey),
+          },
+        });
+      } catch (e) {
+        return json({ ok: false, error: `CLICK Merchant API'ga ulanib bo'lmadi: ${e instanceof Error ? e.message : String(e)}` }, 502);
+      }
+    }
+
 
     if (action === "logs") {
       const [logs, payments, fiscal] = await Promise.all([
