@@ -96,23 +96,23 @@ serve(async (req) => {
       }
     }
 
-    // ── 3) Email (enqueue if queue exists)
+    // ── 3) Email
     if (channels.includes("email")) {
       const { data: usr } = await admin.auth.admin.getUserById(payload.user_id);
       const email = usr?.user?.email;
       if (email) {
         try {
-          await admin.rpc("enqueue_email", {
-            queue_name: "transactional_emails",
-            payload: {
+          const { error } = await admin.functions.invoke("send-app-email", {
+            body: {
               to: email,
               subject: payload.title,
+              html: `<h2>${esc(payload.title)}</h2><p>${esc(payload.body ?? "")}</p>`,
               text: payload.body ?? "",
-              template: "referral_event",
-              meta: { type: payload.type, ...(payload.data ?? {}) },
+              idempotency_key: `referral-${payload.type}-${payload.user_id}`,
             },
           });
-          results.email = { queued: true };
+          if (error) throw error;
+          results.email = { sent: true };
         } catch (e) {
           results.email = { error: String((e as Error).message ?? e) };
         }
