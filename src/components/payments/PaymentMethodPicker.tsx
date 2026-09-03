@@ -231,7 +231,21 @@ const PaymentMethodPicker = ({
           <span className="ml-auto font-bold">{amount.toLocaleString("uz-UZ")} so'm</span>
         )}
       </Button>
+
+      {(method === "click" || method === "payme") && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={sendToBot}
+          disabled={botLoading}
+          className="w-full gap-2"
+        >
+          {botLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          To'lov havolasini Telegram botga yuborish
+        </Button>
+      )}
     </div>
+
   );
 };
 
