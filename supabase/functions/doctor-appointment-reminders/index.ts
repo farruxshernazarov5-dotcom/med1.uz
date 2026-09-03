@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
           const to = authUser?.user?.email;
           if (!to) { errText = "email_missing"; }
           else {
-            const res = await supabase.functions.invoke("send-transactional-email", {
+            const res = await supabase.functions.invoke("send-app-email", {
               body: {
                 to,
                 subject: msg.subject,

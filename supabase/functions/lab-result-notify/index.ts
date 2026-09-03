@@ -112,7 +112,7 @@ serve(async (req) => {
     // === EMAIL via transactional email system ===
     if (activeChannels.includes("email") && email_data?.recipient_email) {
       try {
-        const { error } = await supabase.functions.invoke("send-transactional-email", {
+        const { error } = await supabase.functions.invoke("send-app-email", {
           body: {
             templateName: "lab-result-notification",
             recipientEmail: email_data.recipient_email,

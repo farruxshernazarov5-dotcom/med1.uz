@@ -761,7 +761,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     let body: any = {}; try { body = await req.json(); } catch {}
     const supaUrl = Deno.env.get("SUPABASE_URL")!;
     const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const r = await fetch(`${supaUrl}/functions/v1/send-transactional-email`, {
+    const r = await fetch(`${supaUrl}/functions/v1/send-app-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json", apikey: anon, Authorization: `Bearer ${anon}` },
       body: JSON.stringify(body),

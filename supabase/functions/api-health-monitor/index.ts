@@ -97,7 +97,7 @@ serve(async (req) => {
       }
       // Email
       if (alert.notify_email) {
-        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-transactional-email`, {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-app-email`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}` },
           body: JSON.stringify({
