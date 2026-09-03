@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet } from "lucide-react";
+import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
