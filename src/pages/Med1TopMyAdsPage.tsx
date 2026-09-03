@@ -177,10 +177,16 @@ const Med1TopMyAdsPage = () => {
 
                   <div className="flex flex-wrap gap-2 mt-3">
                     {ad.status === "pending_payment" ? (
-                      <Button size="sm" onClick={() => void pay(ad)} disabled={busy === ad.id}>
-                        {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
-                        To'lash
-                      </Button>
+                      <>
+                        <Button size="sm" onClick={() => void pay(ad, "click")} disabled={busy === ad.id} className="bg-[#00B4E5] hover:bg-[#0098C2] text-white">
+                          {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
+                          Click orqali to'lash
+                        </Button>
+                        <Button size="sm" onClick={() => void pay(ad, "payme")} disabled={busy === ad.id} className="bg-[#33CCCC] hover:bg-[#2BB3B3] text-white">
+                          {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
+                          Payme orqali to'lash
+                        </Button>
+                      </>
                     ) : null}
                     <Button size="sm" variant="outline" onClick={() => void toggleRenew(ad)}>
                       <RefreshCw className="w-3.5 h-3.5 mr-1" /> Auto-renew: {ad.auto_renew ? "yoqilgan" : "o'chiq"}
