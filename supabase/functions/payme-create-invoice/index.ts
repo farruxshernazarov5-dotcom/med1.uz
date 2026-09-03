@@ -40,16 +40,18 @@ Deno.serve(async (req) => {
     const purpose = String(body?.purpose || "ai_subscription");
     const reference_id = body?.reference_id ? String(body.reference_id) : null;
     const return_url = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
-    const environment = body?.environment === "sandbox" ? "sandbox" : "live";
+    const requestedEnv = body?.environment === "sandbox" ? "sandbox" : "live";
 
     if (!amount || amount <= 0 || amount > 100_000_000) {
       return json(400, { error: "Noto'g'ri summa" });
     }
 
-    const merchantId =
-      environment === "sandbox"
-        ? Deno.env.get("PAYME_MERCHANT_ID_SANDBOX") || Deno.env.get("PAYME_MERCHANT_ID")
-        : Deno.env.get("PAYME_MERCHANT_ID");
+    const liveMerchant = Deno.env.get("PAYME_MERCHANT_ID");
+    const sandboxMerchant = Deno.env.get("PAYME_MERCHANT_ID_SANDBOX");
+    // Production kalitlari hali qo'shilmagan bo'lsa, to'lov oqimi buzilmasligi uchun
+    // avtomatik ravishda sandbox merchant ishlatiladi.
+    const environment = requestedEnv === "live" && !liveMerchant && sandboxMerchant ? "sandbox" : requestedEnv;
+    const merchantId = environment === "sandbox" ? (sandboxMerchant || liveMerchant) : liveMerchant;
     if (!merchantId) return json(500, { error: "Payme merchant sozlanmagan" });
 
     const admin = createClient(supabaseUrl, serviceKey);
