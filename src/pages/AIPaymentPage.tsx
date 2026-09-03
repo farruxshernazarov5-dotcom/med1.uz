@@ -317,7 +317,7 @@ ${plan === "professional" || plan === "family" ? "âœ“ Barcha 13 ta AI xizmat\nâœ
                   onBeforeConfirm={guardWithLegal}
                   onCashSelected={() => handleManualPayment("cash")}
                   onBankSelected={() => handleManualPayment("bank")}
-                  allowed={["click", "cash", "bank"]}
+                  allowed={["click", "payme", "cash", "bank"]}
                 />
               </div>
 
