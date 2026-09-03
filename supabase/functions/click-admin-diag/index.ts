@@ -117,13 +117,14 @@ Deno.serve(async (req) => {
           { name: "proxy:payme", url: "https://pay.med1.uz/payme", expectedStatus: 200 },
           // Uzum webhooki bo'sh GET so'roviga 400 qaytaradi — bu proxy ishlayotganini bildiradi.
           { name: "proxy:uzum", url: "https://pay.med1.uz/uzum", expectedStatus: 200, alsoOk: [400, 401, 405] },
-        ];
+        ] as { name: string; url: string; expectedStatus: number; marker?: string; alsoOk?: number[] }[];
         for (const proxyCheck of proxyChecks) {
           try {
             const r = await fetch(proxyCheck.url, { method: "GET", redirect: "manual" });
             const txt = (await r.text()).slice(0, 300);
             const markerOk = !proxyCheck.marker || txt.includes(proxyCheck.marker);
-            const ok = r.status === proxyCheck.expectedStatus && markerOk;
+            const statusOk = r.status === proxyCheck.expectedStatus || (proxyCheck.alsoOk ?? []).includes(r.status);
+            const ok = statusOk && markerOk;
             checks.push({
               name: proxyCheck.name,
               ok,
