@@ -19,13 +19,24 @@ const PatientPayments = () => {
   useEffect(() => {
     if (!user) return;
     const fetchAll = async () => {
-      const [clinic, dental] = await Promise.all([
+      const [clinic, dental, online] = await Promise.all([
         supabase.from("clinic_payments").select("*, registered_clinics(name)").eq("patient_id", user.id).order("created_at", { ascending: false }),
         supabase.from("dental_transactions").select("*, registered_dental_clinics(name)").eq("patient_id", user.id).order("created_at", { ascending: false }),
+        supabase.from("platform_payments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
       ]);
       const combined = [
         ...(clinic.data || []).map(p => ({ ...p, _src: "Klinika", _name: (p as any).registered_clinics?.name, _amount: p.amount, _status: p.status, _date: p.created_at, _invoice: p.invoice_number })),
         ...(dental.data || []).map(p => ({ ...p, _src: "Stomatologiya", _name: (p as any).registered_dental_clinics?.name, _amount: p.total_amount, _status: p.status, _date: p.created_at, _invoice: p.invoice_number })),
+        ...(online.data || []).map(p => ({
+          ...p,
+          _src: p.provider === "payme" ? "Payme" : p.provider === "click" ? "Click" : "Online",
+          _name: p.purpose,
+          _amount: p.amount,
+          _status: p.status,
+          _date: p.created_at,
+          _invoice: String(p.id).slice(0, 8),
+          _online: true,
+        })),
       ].sort((a, b) => new Date(b._date).getTime() - new Date(a._date).getTime());
       setPayments(combined);
       setLoading(false);
