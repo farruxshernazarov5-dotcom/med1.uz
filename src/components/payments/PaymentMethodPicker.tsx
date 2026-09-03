@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle } from "lucide-react";
+import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-export type PaymentMethod = "click" | "cash" | "bank";
+export type PaymentMethod = "click" | "payme" | "cash" | "bank";
 
 interface PaymentMethodPickerProps {
   amount: number;
@@ -44,7 +44,7 @@ const PaymentMethodPicker = ({
   onCashSelected,
   onBankSelected,
   bankDetails,
-  allowed = ["click", "cash", "bank"],
+  allowed = ["click", "payme", "cash", "bank"],
   onBeforeConfirm,
   className = "",
 }: PaymentMethodPickerProps) => {
@@ -61,14 +61,15 @@ const PaymentMethodPicker = ({
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleClickPay = async () => {
+  const handleOnlinePay = async (provider: "click" | "payme") => {
     if (!amount || amount <= 0) {
       toast({ title: "Xatolik", description: "Noto'g'ri summa", variant: "destructive" });
       return;
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("click-create-invoice", {
+      const fnName = provider === "payme" ? "payme-create-invoice" : "click-create-invoice";
+      const { data, error } = await supabase.functions.invoke(fnName, {
         body: {
           amount,
           purpose,
@@ -86,7 +87,7 @@ const PaymentMethodPicker = ({
     } catch (err: any) {
       toast({
         title: "To'lov xatoligi",
-        description: err?.message || "Click bilan bog'lanib bo'lmadi",
+        description: err?.message || `${provider === "payme" ? "Payme" : "Click"} bilan bog'lanib bo'lmadi`,
         variant: "destructive",
       });
       setLoading(false);
@@ -94,7 +95,7 @@ const PaymentMethodPicker = ({
   };
 
   const runConfirm = () => {
-    if (method === "click") return handleClickPay();
+    if (method === "click" || method === "payme") return handleOnlinePay(method);
     if (method === "cash") {
       onCashSelected?.();
       toast({
@@ -121,6 +122,7 @@ const PaymentMethodPicker = ({
 
   const allMethods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string }[] = [
     { id: "click", label: "Click", desc: "Online to'lov • bir necha soniyada", icon: CreditCard, color: "text-[#00B4E5]" },
+    { id: "payme", label: "Payme", desc: "Payme orqali xavfsiz online to'lov", icon: Wallet, color: "text-[#33CCCC]" },
     { id: "cash", label: "Naqd", desc: "Kassa yoki administrator orqali", icon: Banknote, color: "text-green-600" },
     { id: "bank", label: "Bank o'tkazma", desc: "Yuridik shaxslar uchun", icon: Building2, color: "text-blue-600" },
   ];
@@ -206,19 +208,23 @@ const PaymentMethodPicker = ({
         size="lg"
         className={cn(
           "w-full gap-2",
-          method === "click" && "bg-[#00B4E5] hover:bg-[#0098C2] text-white"
+          method === "click" && "bg-[#00B4E5] hover:bg-[#0098C2] text-white",
+          method === "payme" && "bg-[#33CCCC] hover:bg-[#2BB3B3] text-white"
         )}
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : method === "click" ? (
           <CreditCard className="w-5 h-5" />
+        ) : method === "payme" ? (
+          <Wallet className="w-5 h-5" />
         ) : method === "cash" ? (
           <Banknote className="w-5 h-5" />
         ) : (
           <Building2 className="w-5 h-5" />
         )}
         {method === "click" && "Click orqali to'lash"}
+        {method === "payme" && "Payme orqali to'lash"}
         {method === "cash" && "Naqd to'lovni tasdiqlash"}
         {method === "bank" && "Bank o'tkazmani tasdiqlash"}
         {amount > 0 && (
