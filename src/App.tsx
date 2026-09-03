@@ -82,7 +82,6 @@ const LegalCenterPage = lazy(() => import("./pages/LegalCenterPage"));
 const AIVitalSignsPage = lazy(() => import("./pages/AIVitalSignsPage"));
 const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistrationPage"));
 const DentalRegistrationPage = lazy(() => import("./pages/DentalRegistrationPage"));
-const UnsubscribePage = lazy(() => import("./pages/UnsubscribePage"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 const DiagnosticsBookingPage = lazy(() => import("./pages/DiagnosticsBookingPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
@@ -267,7 +266,6 @@ const App = () => (
                 <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
                 <Route path="/blood-donor-register" element={<BloodDonorRegistrationPage />} />
                 <Route path="/dental-register" element={<DentalRegistrationPage />} />
-                <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 <Route path="/payment/success" element={<PaymentSuccessPage />} />
                 <Route path="/payment/result" element={<PaymentSuccessPage />} />
                 <Route path="/diagnostics/:id/book" element={<DiagnosticsBookingPage />} />

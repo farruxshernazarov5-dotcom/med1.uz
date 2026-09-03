@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
         } else {
           const r = await withRetry(async () => {
             try {
-              const { error } = await admin.functions.invoke("send-transactional-email", {
+              const { error } = await admin.functions.invoke("send-app-email", {
                 body: {
                   templateName: "security-alert",
                   recipientEmail: sub.email_address,

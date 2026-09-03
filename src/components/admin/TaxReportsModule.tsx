@@ -279,7 +279,7 @@ const TaxReportsModule = () => {
           <td style="padding:6px;border:1px solid #e2e8f0;text-align:right"><b>${fmt(r.amount)}</b></td>
         </tr>`).join("")}</tbody></table>`;
 
-      const { error } = await supabase.functions.invoke("send-transactional-email", {
+      const { error } = await supabase.functions.invoke("send-app-email", {
         body: {
           templateName: "tax-report",
           recipientEmail: emailTo,
