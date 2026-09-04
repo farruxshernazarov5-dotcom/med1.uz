@@ -101,20 +101,25 @@ Deno.serve(async (req) => {
   const loadOrder = async (oid: string) =>
     (await admin
       .from("platform_payments")
-      .select("id,amount,status,purpose,transaction_id,metadata,user_id")
+      .select("id,amount,status,purpose,provider_transaction_id,metadata,user_id,created_at")
       .eq("id", oid)
       .maybeSingle()).data;
 
   const loadByTx = async (txId: string) =>
     (await admin
       .from("platform_payments")
-      .select("id,amount,status,purpose,transaction_id,metadata,user_id")
-      .eq("transaction_id", txId)
+      .select("id,amount,status,purpose,provider_transaction_id,metadata,user_id,created_at")
+      .eq("provider_transaction_id", txId)
       .maybeSingle()).data;
 
   const amountMatches = (dbAmount: number) =>
     Number.isFinite(Number(amountTiyin)) &&
     Math.round(Number(dbAmount) * 100) === Number(amountTiyin);
+
+  // Buyurtma (order_id) amal qilish muddati — 24 soat
+  const ORDER_TTL_MS = 24 * 60 * 60 * 1000;
+  const orderExpired = (createdAt?: string | null) =>
+    !!createdAt && Date.now() - new Date(createdAt).getTime() > ORDER_TTL_MS;
 
   const isUuid = (v: unknown) =>
     typeof v === "string" &&
@@ -129,6 +134,9 @@ Deno.serve(async (req) => {
         if (!p) return fail(ERR.ORDER_NOT_FOUND, "order_id");
         if (!amountMatches(Number(p.amount))) return fail(ERR.INVALID_AMOUNT);
         if (p.status !== "pending") return fail(ERR.ORDER_UNAVAILABLE, "order_id", { payment_id: p.id });
+        if (orderExpired((p as { created_at?: string }).created_at)) {
+          return fail(ERR.ORDER_UNAVAILABLE, "order_id", { payment_id: p.id });
+        }
 
         // Fiskal ma'lumot (soliq oboroti uchun) — MXIK, package_code, QQS
         const { data: fiscal } = await admin
@@ -176,12 +184,15 @@ Deno.serve(async (req) => {
           return fail(ERR.ORDER_UNAVAILABLE, "order_id", { payment_id: p.id });
         }
         if (p.status !== "pending") return fail(ERR.ORDER_UNAVAILABLE, "order_id", { payment_id: p.id });
+        if (orderExpired((p as { created_at?: string }).created_at)) {
+          return fail(ERR.ORDER_UNAVAILABLE, "order_id", { payment_id: p.id });
+        }
 
         const create_time = Date.now();
         const { data: updated } = await admin
           .from("platform_payments")
           .update({
-            transaction_id: params.id,
+            provider_transaction_id: params.id,
             metadata: {
               ...meta,
               payme_id: params.id,
@@ -192,7 +203,7 @@ Deno.serve(async (req) => {
           })
           .eq("id", p.id)
           .eq("status", "pending")
-          .is("transaction_id", null)
+          .is("provider_transaction_id", null)
           .select("id")
           .maybeSingle();
 
@@ -326,16 +337,16 @@ Deno.serve(async (req) => {
 
         const { data } = await admin
           .from("platform_payments")
-          .select("id,amount,transaction_id,metadata,created_at")
+          .select("id,amount,provider_transaction_id,metadata,created_at")
           .eq("provider", "payme")
-          .not("transaction_id", "is", null)
+          .not("provider_transaction_id", "is", null)
           .gte("created_at", new Date(from).toISOString())
           .lte("created_at", new Date(to).toISOString());
 
         const transactions = (data ?? []).map((r: any) => {
           const meta = (r.metadata ?? {}) as Meta;
           return {
-            id: r.transaction_id,
+            id: r.provider_transaction_id,
             time: Number(meta.payme_time ?? 0),
             amount: Math.round(Number(r.amount) * 100),
             account: { order_id: r.id },

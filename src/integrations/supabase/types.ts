@@ -17680,15 +17680,6 @@ export type Database = {
           usage_id: string
         }[]
       }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
-      email_queue_dispatch: { Args: never; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
-      }
       enqueue_webhook_event: {
         Args: { _event: string; _payload: Json }
         Returns: number
@@ -17842,24 +17833,7 @@ export type Database = {
         Args: { _campaign_id: string; _event_type: string; _meta?: Json }
         Returns: undefined
       }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
       purge_security_logs: { Args: { _days?: number }; Returns: number }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
-        }[]
-      }
       refund_ai_credits: {
         Args: {
           _cost: number

@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       await admin.from("platform_payments").update({
         status: "paid",
         paid_at: new Date().toISOString(),
-        transaction_id: transaction_id || order_id,
+        provider_transaction_id: transaction_id || order_id,
         metadata: { ...meta, uzum_service_id: service_id, uzum_confirmed_at: Date.now() },
       }).eq("id", p.id);
       await admin.from("audit_logs").insert({ action: "payment_completed", entity_type: "platform_payments", entity_id: p.id, details: { provider: "uzum", transaction_id } });
