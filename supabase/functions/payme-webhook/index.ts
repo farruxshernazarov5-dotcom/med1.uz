@@ -101,15 +101,15 @@ Deno.serve(async (req) => {
   const loadOrder = async (oid: string) =>
     (await admin
       .from("platform_payments")
-      .select("id,amount,status,purpose,transaction_id,metadata,user_id")
+      .select("id,amount,status,purpose,provider_transaction_id,metadata,user_id")
       .eq("id", oid)
       .maybeSingle()).data;
 
   const loadByTx = async (txId: string) =>
     (await admin
       .from("platform_payments")
-      .select("id,amount,status,purpose,transaction_id,metadata,user_id")
-      .eq("transaction_id", txId)
+      .select("id,amount,status,purpose,provider_transaction_id,metadata,user_id")
+      .eq("provider_transaction_id", txId)
       .maybeSingle()).data;
 
   const amountMatches = (dbAmount: number) =>
@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
         const { data: updated } = await admin
           .from("platform_payments")
           .update({
-            transaction_id: params.id,
+            provider_transaction_id: params.id,
             metadata: {
               ...meta,
               payme_id: params.id,
@@ -192,7 +192,7 @@ Deno.serve(async (req) => {
           })
           .eq("id", p.id)
           .eq("status", "pending")
-          .is("transaction_id", null)
+          .is("provider_transaction_id", null)
           .select("id")
           .maybeSingle();
 
@@ -326,16 +326,16 @@ Deno.serve(async (req) => {
 
         const { data } = await admin
           .from("platform_payments")
-          .select("id,amount,transaction_id,metadata,created_at")
+          .select("id,amount,provider_transaction_id,metadata,created_at")
           .eq("provider", "payme")
-          .not("transaction_id", "is", null)
+          .not("provider_transaction_id", "is", null)
           .gte("created_at", new Date(from).toISOString())
           .lte("created_at", new Date(to).toISOString());
 
         const transactions = (data ?? []).map((r: any) => {
           const meta = (r.metadata ?? {}) as Meta;
           return {
-            id: r.transaction_id,
+            id: r.provider_transaction_id,
             time: Number(meta.payme_time ?? 0),
             amount: Math.round(Number(r.amount) * 100),
             account: { order_id: r.id },
