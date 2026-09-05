@@ -1147,7 +1147,7 @@ function SandboxPanel() {
 
   const [path, method] = selected.split("|");
   const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
-  const gatewayBase = `https://${projectId}.functions.supabase.co/api-gateway`;
+  const gatewayBase = "https://api.med1.uz";
   const fullUrl = `${gatewayBase}${path}`;
 
   const runTest = async () => {
