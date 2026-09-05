@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
  * Keeps only:
  *  - R-A-19106572-2 — Fullscreen (desktop)
  *  - R-A-19106572-3 — Fullscreen (touch/mobile)
+ *  - R-A-19106572-7 — Fullscreen (desktop, additional block)
  */
 const YandexAdsManager: React.FC = () => {
   useEffect(() => {
