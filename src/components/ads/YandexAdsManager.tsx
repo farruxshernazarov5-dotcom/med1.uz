@@ -33,6 +33,12 @@ const YandexAdsManager: React.FC = () => {
         });
 
         Ya.Context.AdvManager.render({
+          blockId: 'R-A-19106572-7',
+          type: 'fullscreen',
+          platform: 'desktop',
+        });
+
+        Ya.Context.AdvManager.render({
           blockId: 'R-A-19106572-3',
           type: 'fullscreen',
           platform: 'touch',
