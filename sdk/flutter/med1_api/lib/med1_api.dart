@@ -1,7 +1,7 @@
 /// MED1.UZ Flutter SDK
 /// Official Dart/Flutter client for the MED1.UZ REST API v1.
 ///
-/// Base URL: https://med1.uz/api-gateway/v1
+/// Base URL: https://api.med1.uz/v1
 ///
 /// Auth: JWT (end users) or X-Api-Key (partners / HAMBI)
 ///
@@ -15,8 +15,8 @@ library med1_api;
 
 import 'package:dio/dio.dart';
 
-const String kMed1BaseUrl = 'https://med1.uz/api-gateway/v1';
-const String kMed1SandboxBaseUrl = 'https://med1.uz/api-gateway/sandbox/v1';
+const String kMed1BaseUrl = 'https://api.med1.uz/v1';
+const String kMed1SandboxBaseUrl = 'https://api.med1.uz/v1';
 
 /// Root client. Instantiate once and reuse across the app.
 class Med1ApiClient {
