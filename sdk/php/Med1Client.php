@@ -19,7 +19,7 @@ class Med1ApiException extends \RuntimeException {
 }
 
 class Med1Client {
-    public const BASE_URL = 'https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway';
+    public const BASE_URL = 'https://api.med1.uz';
 
     private string $apiKey;
     private string $baseUrl;

@@ -13,6 +13,7 @@ import {
   FileCode, Download, Beaker, Rocket, Search, RefreshCw, Copy, Plus, Trash2, Pause, Play,
   Smartphone, Globe, Handshake, Cpu, Lock, BookOpen, Users, ScrollText, AlertTriangle, CheckCircle2,
 } from "lucide-react";
+import ApiDomainPanel from "./ApiDomainPanel";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, PieChart, Pie, Cell, Legend } from "recharts";
 
 
@@ -75,6 +76,7 @@ export default function APIManagementCenter() {
           <div className="overflow-x-auto -mx-2 px-2 pb-2">
             <TabsList className="bg-white/5 border border-white/10 flex-nowrap w-max">
               <TabsTrigger value="dashboard"><Activity className="w-4 h-4 mr-1" />Dashboard</TabsTrigger>
+              <TabsTrigger value="domain"><Globe className="w-4 h-4 mr-1" />api.med1.uz</TabsTrigger>
               <TabsTrigger value="endpoints"><Layers className="w-4 h-4 mr-1" />Endpoints</TabsTrigger>
               <TabsTrigger value="keys"><Key className="w-4 h-4 mr-1" />API Keys</TabsTrigger>
               <TabsTrigger value="oauth"><Lock className="w-4 h-4 mr-1" />OAuth</TabsTrigger>
@@ -93,6 +95,7 @@ export default function APIManagementCenter() {
           </div>
 
           <TabsContent value="dashboard"><DashboardPanel /></TabsContent>
+          <TabsContent value="domain"><ApiDomainPanel /></TabsContent>
           <TabsContent value="endpoints"><EndpointsPanel /></TabsContent>
           <TabsContent value="keys"><KeysPanel /></TabsContent>
           <TabsContent value="oauth"><OAuthPanel /></TabsContent>
@@ -1143,8 +1146,7 @@ function SandboxPanel() {
   useEffect(() => { sessionStorage.setItem("api_center_test_hmac", hmacSecret); }, [hmacSecret]);
 
   const [path, method] = selected.split("|");
-  const projectId = (import.meta as any).env.VITE_SUPABASE_PROJECT_ID;
-  const gatewayBase = `https://${projectId}.functions.supabase.co/api-gateway`;
+  const gatewayBase = "https://api.med1.uz";
   const fullUrl = `${gatewayBase}${path}`;
 
   const runTest = async () => {

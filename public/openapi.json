@@ -8,7 +8,7 @@
     "license": { "name": "Proprietary", "url": "https://med1.uz/terms" }
   },
   "servers": [
-    { "url": "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway", "description": "Production gateway" }
+    { "url": "https://api.med1.uz", "description": "Production gateway" }
   ],
   "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }],
   "tags": [

@@ -1,11 +1,11 @@
 /**
  * MED1.UZ JavaScript / TypeScript SDK
- * Base URL default: https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway
+ * Base URL default: https://api.med1.uz
  * Docs: https://med1.uz/api-docs · OpenAPI: https://med1.uz/openapi.json
  */
 
 export const MED1_BASE_URL =
-  "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway";
+  "https://api.med1.uz";
 
 export interface Med1ClientOptions {
   apiKey?: string;
