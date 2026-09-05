@@ -21,7 +21,7 @@ public final class Med1Client {
 
     public init(
         apiKey: String,
-        baseUrl: URL = URL(string: "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway")!,
+        baseUrl: URL = URL(string: "https://api.med1.uz")!,
         hmacSecret: String? = nil,
         session: URLSession = .shared
     ) {

@@ -18,5 +18,5 @@ All SDKs share the same feature set:
 - Sandbox support: keys with `is_sandbox = true` return deterministic mock data.
 - 14 AI services, Auth, User, Directory (clinics/doctors/labs/pharmacies), Appointments, EMR, Payments (Click/Payme/Uzum), Notifications, Maps.
 
-Base URL: `https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway`
+Base URL: `https://api.med1.uz`
 Interactive docs: <https://med1.uz/api-docs> · OpenAPI: <https://med1.uz/openapi.json>

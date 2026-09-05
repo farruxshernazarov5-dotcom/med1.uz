@@ -20,7 +20,7 @@ class Med1ApiException(val status: Int, val code: String, message: String) : Run
 
 class Med1Client(
     private val apiKey: String,
-    private val baseUrl: String = "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway",
+    private val baseUrl: String = "https://api.med1.uz",
     private val hmacSecret: String? = null,
 ) {
     private val http = OkHttpClient()

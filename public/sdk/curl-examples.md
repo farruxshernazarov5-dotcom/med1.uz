@@ -1,11 +1,11 @@
 # MED1.UZ cURL examples
 
-Base URL: `https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway`
+Base URL: `https://api.med1.uz`
 
 Set:
 ```bash
 export MED1_KEY="md1_live_..."          # or md1_sandbox_...
-export MED1_BASE="https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway"
+export MED1_BASE="https://api.med1.uz"
 ```
 
 ## Ping

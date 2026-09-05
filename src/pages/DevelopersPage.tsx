@@ -57,23 +57,23 @@ const ALL_SCOPES = [
 
 const CODE_EXAMPLES: Record<string, string> = {
   curl: `curl -H "x-api-key: mall_live_xxxxxxxxxxxx" \\
-  https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway/v1/clinics`,
+  https://api.med1.uz/v1/clinics`,
   js: `const res = await fetch(
-  "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway/v1/clinics",
+  "https://api.med1.uz/v1/clinics",
   { headers: { "x-api-key": "mall_live_xxxxxxxxxxxx" } }
 );
 const { data } = await res.json();`,
   python: `import requests
 r = requests.get(
-  "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway/v1/clinics",
+  "https://api.med1.uz/v1/clinics",
   headers={"x-api-key": "mall_live_xxxxxxxxxxxx"},
 )
 print(r.json())`,
   flutter: `final res = await http.get(
-  Uri.parse('https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway/v1/clinics'),
+  Uri.parse('https://api.med1.uz/v1/clinics'),
   headers: {'x-api-key': 'mall_live_xxxxxxxxxxxx'},
 );`,
-  php: `$ch = curl_init("https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway/v1/clinics");
+  php: `$ch = curl_init("https://api.med1.uz/v1/clinics");
 curl_setopt($ch, CURLOPT_HTTPHEADER, ["x-api-key: mall_live_xxxxxxxxxxxx"]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($ch);`,

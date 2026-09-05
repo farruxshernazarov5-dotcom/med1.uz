@@ -13,7 +13,7 @@ from typing import Any, Optional
 
 import requests
 
-MED1_BASE_URL = "https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1/api-gateway"
+MED1_BASE_URL = "https://api.med1.uz"
 
 
 class Med1ApiError(Exception):
