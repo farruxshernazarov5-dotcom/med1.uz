@@ -1,3 +1,4 @@
+import StaffMediaDialog from "@/components/media/StaffMediaDialog";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -79,6 +80,7 @@ const PhStaff = ({ pharmacyId }: { pharmacyId: string }) => {
                 <p className="text-xs text-muted-foreground mt-1">{s.phone} {s.email && `· ${s.email}`}</p>
                 {s.salary && <p className="text-xs mt-1">Maosh: <span className="text-foreground font-medium">{Number(s.salary).toLocaleString()} so'm</span></p>}
               </div>
+              <StaffMediaDialog entityType="pharmacy" entityId={pharmacyId} staffId={s.id} staffName={s.full_name} />
               <Button size="icon" variant="ghost" onClick={() => del(s.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
             </CardContent></Card>
           ))}

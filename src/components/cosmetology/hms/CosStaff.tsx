@@ -1,3 +1,4 @@
+import StaffMediaDialog from "@/components/media/StaffMediaDialog";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -333,6 +334,7 @@ const CosStaff = ({ centerId }: { centerId: string }) => {
                       <div className="flex flex-col gap-1">
                         <Button size="icon" variant="ghost" className="w-7 h-7" onClick={() => startEdit(s)}><Edit className="w-3.5 h-3.5" /></Button>
                         <Button size="icon" variant="ghost" className="w-7 h-7" onClick={() => toggleActive(s)}><Power className={`w-3.5 h-3.5 ${isActive ? "text-green-500" : "text-muted-foreground"}`} /></Button>
+                        <StaffMediaDialog entityType="cosmetology" entityId={centerId} staffId={s.id} staffName={s.full_name} />
                         <Button size="icon" variant="ghost" className="w-7 h-7" onClick={() => remove(s.id)}><Trash2 className="w-3.5 h-3.5 text-destructive" /></Button>
                       </div>
                     </div>

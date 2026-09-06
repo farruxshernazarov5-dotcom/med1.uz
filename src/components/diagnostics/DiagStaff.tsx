@@ -1,3 +1,4 @@
+import StaffMediaDialog from "@/components/media/StaffMediaDialog";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -254,6 +255,7 @@ const DiagStaff = ({ centerId, staff, onReload }: Props) => {
                       <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => toggleActive(s)} title="Faol/Nofaol">
                         <Activity className={`w-4 h-4 ${s.is_active ? "text-primary" : "text-muted-foreground"}`} />
                       </Button>
+                      <StaffMediaDialog entityType="diagnostics" entityId={centerId} staffId={s.id} staffName={s.full_name} />
                       <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => deleteStaff(s.id)}><Trash2 className="w-4 h-4" /></Button>
                     </div>
                   </div>
