@@ -1,3 +1,4 @@
+import StaffMediaDialog from "@/components/media/StaffMediaDialog";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -80,6 +81,7 @@ export const MatStaff = ({ centerId }: { centerId: string }) => {
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">{s.phone} {s.email && `• ${s.email}`}</p>
               </div>
+              <StaffMediaDialog entityType="maternity" entityId={centerId} staffId={s.id} staffName={s.full_name} />
               <Button size="icon" variant="ghost" className="text-destructive" onClick={() => del(s.id)}><Trash2 className="w-4 h-4" /></Button>
             </CardContent></Card>
           ))}

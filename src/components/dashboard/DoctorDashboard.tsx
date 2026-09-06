@@ -1,3 +1,5 @@
+import MediaLinksManager from "@/components/media/MediaLinksManager";
+import { Share2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -188,6 +190,7 @@ const DoctorDashboard = () => {
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
+    { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
   return (
@@ -390,6 +393,7 @@ const DoctorDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="doctor" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="doctor" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "social-media" && <MediaLinksManager entityType="doctor" entityId={doctor.id} />}
     </DashboardShell>
   );
 };

@@ -1,3 +1,4 @@
+import StaffMediaDialog from "@/components/media/StaffMediaDialog";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -405,6 +406,7 @@ const HMSStaffManagement = ({ clinicId }: Props) => {
                 <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-1 justify-end">
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(s)}><Edit2 className="w-3.5 h-3.5" /></Button>
+                    <StaffMediaDialog entityType="clinic" entityId={clinicId} staffId={s.id} staffName={s.full_name} />
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(s.id)}><Trash2 className="w-3.5 h-3.5 text-destructive" /></Button>
                   </div>
                 </TableCell>

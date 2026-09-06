@@ -1,3 +1,5 @@
+import MediaLinksManager from "@/components/media/MediaLinksManager";
+import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,6 +85,7 @@ const CosmetologyDashboard = () => {
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "settings", label: "Sozlamalar", icon: Settings },
+    { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
   return (
@@ -110,6 +113,7 @@ const CosmetologyDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="cosmetology" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="cosmetology" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "social-media" && <MediaLinksManager entityType="cosmetology" entityId={center.id} />}
     </DashboardShell>
   );
 };

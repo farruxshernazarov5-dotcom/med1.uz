@@ -1,3 +1,4 @@
+import StaffMediaDialog from "@/components/media/StaffMediaDialog";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -216,6 +217,9 @@ const DentalStaff = ({ clinicId }: DentalStaffProps) => {
                     <p className="text-xs text-muted-foreground">{doc.specialty} • {doc.experience_years || 0} yil • {doc.phone}</p>
                   </div>
                   <Badge variant="outline" className="shrink-0">{st.label}</Badge>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <StaffMediaDialog entityType="dental" entityId={clinicId} staffId={doc.id} staffName={doc.full_name} />
+                  </div>
                 </div>
               </div>
             );

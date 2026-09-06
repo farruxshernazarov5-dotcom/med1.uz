@@ -1,3 +1,4 @@
+import SocialVideoShowcase from "@/components/media/SocialVideoShowcase";
 import { useParams, Link } from "react-router-dom";
 import { useMemo } from "react";
 import SEO from "@/components/SEO";
@@ -191,6 +192,8 @@ const ClinicDetailPage = () => {
 
       {/* Doctors linked/related to this clinic */}
       <ClinicDoctorsSection clinicId={clinic.id} clinicName={clinic.name} city={clinic.city} />
+
+      <SocialVideoShowcase entityType="clinic" entityId={clinic.id} includeStaff />
 
 
 

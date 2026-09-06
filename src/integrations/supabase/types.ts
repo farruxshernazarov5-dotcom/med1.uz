@@ -7984,6 +7984,60 @@ export type Database = {
         }
         Relationships: []
       }
+      entity_media_links: {
+        Row: {
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          is_published: boolean
+          kind: string
+          owner_id: string
+          platform: string
+          sort_order: number
+          staff_id: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          is_published?: boolean
+          kind?: string
+          owner_id?: string
+          platform?: string
+          sort_order?: number
+          staff_id?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          is_published?: boolean
+          kind?: string
+          owner_id?: string
+          platform?: string
+          sort_order?: number
+          staff_id?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       family_members: {
         Row: {
           allergies: string | null

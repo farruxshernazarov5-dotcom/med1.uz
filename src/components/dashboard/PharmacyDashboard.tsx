@@ -1,3 +1,5 @@
+import MediaLinksManager from "@/components/media/MediaLinksManager";
+import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -121,6 +123,7 @@ const PharmacyDashboard = () => {
     { id: "settings", label: "Sozlamalar", icon: Settings, group: "Tizim" },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Tizim" },
+    { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
   return (
@@ -215,6 +218,7 @@ const PharmacyDashboard = () => {
       )}
       {tab === "attendance" && <OrgAttendance orgType="pharmacy" orgName={pharmacy.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="pharmacy" />}
+      {tab === "social-media" && <MediaLinksManager entityType="pharmacy" entityId={pharmacy.id} />}
     </DashboardShell>
   );
 };

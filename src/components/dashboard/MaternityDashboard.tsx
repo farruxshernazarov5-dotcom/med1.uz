@@ -1,3 +1,5 @@
+import MediaLinksManager from "@/components/media/MediaLinksManager";
+import { Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,6 +56,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
   { id: "premium", label: "💎 Premium", icon: Crown, group: "Boshqaruv" },
   { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Boshqaruv" },
+    { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
 ];
 
 const MaternityDashboard = () => {
@@ -121,6 +124,7 @@ const MaternityDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="maternity" />}
       {tab === "premium" && <PremiumPerksPanel moduleId="maternity" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "social-media" && <MediaLinksManager entityType="maternity" entityId={center.id} />}
     </DashboardShell>
   );
 };
