@@ -1,3 +1,5 @@
+import MediaLinksManager from "@/components/media/MediaLinksManager";
+import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -194,6 +196,7 @@ const ClinicDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown, group: "TARIF" },
     { id: "premium", label: "💎 Premium imkoniyatlar", icon: Crown, group: "TARIF" },
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift, group: "TARIF" },
+    { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
   return (
@@ -308,6 +311,7 @@ const ClinicDashboard = () => {
         currentTier={tier}
         requiredTier={lockedItem?.requiredTier}
       />
+      {tab === "social-media" && <MediaLinksManager entityType="clinic" entityId={clinic.id} />}
     </DashboardShell>
   );
 };
