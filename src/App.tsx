@@ -131,6 +131,8 @@ import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
+import SubdomainRouter from "./components/SubdomainRouter";
+
 
 const queryClient = new QueryClient();
 
@@ -152,7 +154,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <CreditProvider>
+          <SubdomainRouter />
           <ReferralCapture />
+
           <YandexAdsManager />
           <FloatingAISearch />
           <FloatingAIPanel />
