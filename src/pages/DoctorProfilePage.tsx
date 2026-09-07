@@ -10,8 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import {
 import SocialVideoShowcase from "@/components/media/SocialVideoShowcase";
+import {
   Stethoscope, Star, MapPin, Clock, Phone, Mail, Globe,
   Award, Calendar, Building2, MessageCircle, ChevronLeft,
   Send, GraduationCap, Languages, Instagram, Facebook, Youtube
