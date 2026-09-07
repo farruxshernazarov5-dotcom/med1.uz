@@ -1,4 +1,4 @@
-export type MediaKind = "social" | "video";
+export type MediaKind = "social" | "video" | "photo";
 
 export interface MediaLink {
   id: string;
@@ -37,11 +37,25 @@ export const VIDEO_PLATFORMS = [
   { value: "other", label: "Boshqa", color: "text-muted-foreground" },
 ];
 
+export const PHOTO_PLATFORMS = [
+  { value: "direct", label: "To'g'ridan-to'g'ri rasm (jpg/png)", color: "text-emerald-600" },
+  { value: "instagram", label: "Instagram post", color: "text-pink-600" },
+  { value: "telegram", label: "Telegram post", color: "text-sky-600" },
+  { value: "facebook", label: "Facebook albom", color: "text-blue-600" },
+  { value: "other", label: "Boshqa", color: "text-muted-foreground" },
+];
+
+export const platformsFor = (kind: MediaKind) =>
+  kind === "video" ? VIDEO_PLATFORMS : kind === "photo" ? PHOTO_PLATFORMS : SOCIAL_PLATFORMS;
+
 export const platformLabel = (kind: MediaKind, value: string) =>
-  (kind === "video" ? VIDEO_PLATFORMS : SOCIAL_PLATFORMS).find((p) => p.value === value)?.label || value;
+  platformsFor(kind).find((p) => p.value === value)?.label || value;
 
 export const platformColor = (kind: MediaKind, value: string) =>
-  (kind === "video" ? VIDEO_PLATFORMS : SOCIAL_PLATFORMS).find((p) => p.value === value)?.color || "text-muted-foreground";
+  platformsFor(kind).find((p) => p.value === value)?.color || "text-muted-foreground";
+
+/** Havola to'g'ridan-to'g'ri rasmga ishora qiladimi */
+export const isImageUrl = (url: string) => /\.(jpe?g|png|webp|gif|avif)(\?|#|$)/i.test(url);
 
 /** URL bo'yicha platformani avtomatik aniqlash */
 export const detectPlatform = (url: string): string => {
