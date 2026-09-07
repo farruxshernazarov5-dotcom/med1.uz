@@ -12,6 +12,7 @@ import {
   Stethoscope, Star, MapPin, Award, Languages, ChevronLeft,
   Building2, Calendar, ShieldCheck,
 } from "lucide-react";
+import SocialVideoShowcase from "@/components/media/SocialVideoShowcase";
 import RecommendedAnalyses from "@/components/doctors/RecommendedAnalyses";
 import NearbyDoctorsMap from "@/components/doctors/NearbyDoctorsMap";
 import DoctorServicesSection from "@/components/doctors/DoctorServicesSection";
@@ -246,6 +247,12 @@ const DoctorExternalDetailPage = () => {
           </div>
         </div>
       </section>
+
+      {doc && (
+        <section className="container mx-auto px-4 pb-10">
+          <SocialVideoShowcase entityType="doctor_ext" entityId={doc.id} />
+        </section>
+      )}
 
       <Footer />
     </div>

@@ -10,10 +10,10 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import {
-  Link2, Loader2, Plus, Save, Trash2, Video, X, ExternalLink, Eye, EyeOff, ArrowUp, ArrowDown,
+  Link2, Loader2, Plus, Save, Trash2, Video, X, ExternalLink, Eye, EyeOff, ArrowUp, ArrowDown, Image as ImageIcon,
 } from "lucide-react";
 import {
-  MediaKind, MediaLink, SOCIAL_PLATFORMS, VIDEO_PLATFORMS, detectPlatform, getEmbedUrl,
+  MediaKind, MediaLink, detectPlatform, getEmbedUrl, isImageUrl, platformsFor,
   getVideoThumb, isValidUrl, normalizeUrl, platformLabel,
 } from "./mediaLinks";
 
@@ -87,7 +87,7 @@ const MediaLinksManager = ({ entityType, entityId, staffId, compact, title, subt
       url,
       title: form.title || null,
       description: form.description || null,
-      thumbnail_url: kind === "video" ? getVideoThumb(url) : null,
+      thumbnail_url: kind === "video" ? getVideoThumb(url) : kind === "photo" && isImageUrl(url) ? url : null,
       is_published: form.is_published,
       sort_order: editId ? undefined : links.length,
     };
@@ -128,7 +128,7 @@ const MediaLinksManager = ({ entityType, entityId, staffId, compact, title, subt
     load();
   };
 
-  const platforms = kind === "video" ? VIDEO_PLATFORMS : SOCIAL_PLATFORMS;
+  const platforms = platformsFor(kind);
   const current = links.filter((l) => l.kind === kind);
 
   const renderList = () => {
@@ -136,18 +136,23 @@ const MediaLinksManager = ({ entityType, entityId, staffId, compact, title, subt
     if (current.length === 0) {
       return (
         <Card><CardContent className="py-8 text-center text-muted-foreground text-sm">
-          {kind === "video" ? <Video className="w-8 h-8 mx-auto mb-2 opacity-50" /> : <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />}
+          {kind === "video" ? <Video className="w-8 h-8 mx-auto mb-2 opacity-50" /> : kind === "photo" ? <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-50" /> : <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />}
           Hozircha havola qo'shilmagan
         </CardContent></Card>
       );
     }
     return (
-      <div className={kind === "video" ? "grid grid-cols-1 md:grid-cols-2 gap-3" : "space-y-2"}>
+      <div className={kind === "social" ? "space-y-2" : "grid grid-cols-1 md:grid-cols-2 gap-3"}>
         {current.map((l, idx) => {
           const embed = kind === "video" ? getEmbedUrl(l.url) : null;
           return (
             <Card key={l.id} className={l.is_published ? "" : "opacity-60"}>
               <CardContent className="p-3 space-y-2">
+                {kind === "photo" && isImageUrl(l.url) && (
+                  <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted">
+                    <img src={l.url} alt={l.title || "Foto material"} loading="lazy" className="w-full h-full object-cover" />
+                  </div>
+                )}
                 {embed && (
                   <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted">
                     <iframe src={embed} title={l.title || "Video"} className="w-full h-full" loading="lazy"
@@ -193,15 +198,16 @@ const MediaLinksManager = ({ entityType, entityId, staffId, compact, title, subt
     <div className="space-y-4">
       {!compact && (
         <div>
-          <h2 className="font-heading text-xl font-bold text-foreground">{title || "Ijtimoiy tarmoq va videolar"}</h2>
+          <h2 className="font-heading text-xl font-bold text-foreground">{title || "Ijtimoiy tarmoq, video va foto materiallar"}</h2>
           <p className="text-xs text-muted-foreground">{subtitle || "Havolalar saytdagi profilingizda ko'rsatiladi"}</p>
         </div>
       )}
 
       <Tabs value={kind} onValueChange={(v) => { setKind(v as MediaKind); reset(); }}>
-        <TabsList className="grid grid-cols-2 w-full max-w-sm">
-          <TabsTrigger value="social" className="text-xs"><Link2 className="w-3.5 h-3.5 mr-1" />Ijtimoiy tarmoqlar</TabsTrigger>
-          <TabsTrigger value="video" className="text-xs"><Video className="w-3.5 h-3.5 mr-1" />Video materiallar</TabsTrigger>
+        <TabsList className="grid grid-cols-3 w-full max-w-md">
+          <TabsTrigger value="social" className="text-xs"><Link2 className="w-3.5 h-3.5 mr-1" />Ijtimoiy</TabsTrigger>
+          <TabsTrigger value="video" className="text-xs"><Video className="w-3.5 h-3.5 mr-1" />Video</TabsTrigger>
+          <TabsTrigger value="photo" className="text-xs"><ImageIcon className="w-3.5 h-3.5 mr-1" />Foto</TabsTrigger>
         </TabsList>
 
         <TabsContent value={kind} className="space-y-3 mt-3">
@@ -224,7 +230,7 @@ const MediaLinksManager = ({ entityType, entityId, staffId, compact, title, subt
                   </div>
                   <div>
                     <Label>Havola *</Label>
-                    <Input className="mt-1" value={form.url} placeholder="https://..."
+                    <Input className="mt-1" value={form.url} placeholder={kind === "photo" ? "https://.../rasm.jpg" : "https://..."}
                       onChange={(e) => {
                         const url = e.target.value;
                         setForm((p) => ({ ...p, url, platform: p.platform === "other" && url ? detectPlatform(url) : p.platform }));
@@ -233,7 +239,7 @@ const MediaLinksManager = ({ entityType, entityId, staffId, compact, title, subt
                   <div className="md:col-span-2">
                     <Label>Sarlavha</Label>
                     <Input className="mt-1" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-                      placeholder={kind === "video" ? "Video nomi" : "Masalan: Rasmiy Telegram kanal"} />
+                      placeholder={kind === "video" ? "Video nomi" : kind === "photo" ? "Foto nomi" : "Masalan: Rasmiy Telegram kanal"} />
                   </div>
                   <div className="md:col-span-2">
                     <Label>Tavsif</Label>

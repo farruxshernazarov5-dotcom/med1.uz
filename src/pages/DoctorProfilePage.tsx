@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import SocialVideoShowcase from "@/components/media/SocialVideoShowcase";
 import {
   Stethoscope, Star, MapPin, Clock, Phone, Mail, Globe,
   Award, Calendar, Building2, MessageCircle, ChevronLeft,
@@ -395,6 +396,11 @@ const DoctorProfilePage = () => {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Social / Video / Photo */}
+          <div className="mt-8 bg-card rounded-2xl border border-border shadow-card p-6 md:p-8">
+            <SocialVideoShowcase entityType="doctor" entityId={doctor.id} />
           </div>
 
           {/* Reviews Section */}
