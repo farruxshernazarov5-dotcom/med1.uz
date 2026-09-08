@@ -1,6 +1,13 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { currentSubdomain, isActiveSubdomainHost, isProductionHost, ownerOf, urlForPath } from "@/lib/subdomains";
+import {
+  SUBDOMAIN_ROUTING_ENABLED,
+  currentSubdomain,
+  isActiveSubdomainHost,
+  isProductionHost,
+  ownerOf,
+  urlForPath,
+} from "@/lib/subdomains";
 
 /**
  * Subdomen marshrutizatsiyasi:
