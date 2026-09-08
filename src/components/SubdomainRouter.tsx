@@ -1,6 +1,13 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { currentSubdomain, isActiveSubdomainHost, isProductionHost, ownerOf, urlForPath } from "@/lib/subdomains";
+import {
+  SUBDOMAIN_ROUTING_ENABLED,
+  currentSubdomain,
+  isActiveSubdomainHost,
+  isProductionHost,
+  ownerOf,
+  urlForPath,
+} from "@/lib/subdomains";
 
 /**
  * Subdomen marshrutizatsiyasi:
@@ -13,6 +20,7 @@ const SubdomainRouter = () => {
 
   // 1 + 2: joriy manzilni tekshirish
   useEffect(() => {
+    if (!SUBDOMAIN_ROUTING_ENABLED) return;
     if (!isProductionHost()) return;
     const host = window.location.hostname;
     const sub = currentSubdomain(host);
@@ -31,6 +39,7 @@ const SubdomainRouter = () => {
 
   // 3: ichki havolalarni ushlab, kerakli subdomenga yuborish
   useEffect(() => {
+    if (!SUBDOMAIN_ROUTING_ENABLED) return;
     if (!isProductionHost()) return;
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
