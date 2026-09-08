@@ -28,9 +28,6 @@ Deno.serve(async (req) => {
 
     for (let i = 0; i < ids.length; i += 500) {
       const chunk = ids.slice(i, i + 500);
-      for (const id of chunk) {
-        // eslint-disable-next-line no-await-in-loop
-      }
       const { error } = await admin.rpc("sync_doctor_photo_urls", {
         _ids: chunk,
         _base: PHOTO_BASE,
