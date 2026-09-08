@@ -20,6 +20,7 @@ const SubdomainRouter = () => {
 
   // 1 + 2: joriy manzilni tekshirish
   useEffect(() => {
+    if (!SUBDOMAIN_ROUTING_ENABLED) return;
     if (!isProductionHost()) return;
     const host = window.location.hostname;
     const sub = currentSubdomain(host);
@@ -38,6 +39,7 @@ const SubdomainRouter = () => {
 
   // 3: ichki havolalarni ushlab, kerakli subdomenga yuborish
   useEffect(() => {
+    if (!SUBDOMAIN_ROUTING_ENABLED) return;
     if (!isProductionHost()) return;
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
