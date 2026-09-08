@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { currentSubdomain, isProductionHost, ownerOf, urlForPath } from "@/lib/subdomains";
+import { currentSubdomain, isActiveSubdomainHost, isProductionHost, ownerOf, urlForPath } from "@/lib/subdomains";
 
 /**
  * Subdomen marshrutizatsiyasi:
@@ -24,7 +24,7 @@ const SubdomainRouter = () => {
     }
 
     const target = ownerOf(path);
-    if (target.host !== host) {
+    if (target.host !== host && isActiveSubdomainHost(target.host)) {
       window.location.replace(`https://${target.host}${path}${location.search}${location.hash}`);
     }
   }, [location.pathname, location.search, location.hash]);
