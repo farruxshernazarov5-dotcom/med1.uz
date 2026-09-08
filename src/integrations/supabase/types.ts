@@ -17747,6 +17747,17 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_partner_organizations: {
+        Args: { _limit?: number }
+        Returns: {
+          city: string
+          created_at: string
+          id: string
+          logo_url: string
+          name: string
+          org_type: string
+        }[]
+      }
       get_public_sponsor: {
         Args: { _slug: string }
         Returns: {
