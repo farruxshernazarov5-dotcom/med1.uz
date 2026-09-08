@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground } from "@/components/futuristic";
 import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
+import OrgStatusBanner from "./OrgStatusBanner";
 import {
   LogOut, Menu, X, ChevronLeft, ChevronRight, Lock, Sparkles,
 } from "lucide-react";
@@ -192,6 +193,7 @@ const DashboardShell = ({
 
         {/* Page content */}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+          <OrgStatusBanner />
           {children}
         </main>
         <footer className="py-3 px-4 text-center text-[11px] text-white/40 border-t border-white/10 bg-[hsl(213,73%,15%)]/40">

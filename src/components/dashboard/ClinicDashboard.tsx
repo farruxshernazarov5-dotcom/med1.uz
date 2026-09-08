@@ -14,6 +14,8 @@ import {
   CalendarDays, ShieldAlert, User, Globe, TrendingUp, CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import ClinicProfileEditor from "./ClinicProfileEditor";
@@ -196,6 +198,7 @@ const ClinicDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown, group: "TARIF" },
     { id: "premium", label: "💎 Premium imkoniyatlar", icon: Crown, group: "TARIF" },
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift, group: "TARIF" },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
@@ -301,6 +304,7 @@ const ClinicDashboard = () => {
       {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="clinic" />}
           {tab === "partner-referral" && <ReferralPanel />}
+          {tab === "legal" && <OrgLegalCenter contractSlug="clinic-hms-agreement" moduleTitle="Klinika HMS shartnomasi" />}
 
       <UpgradeModal
         open={!!lockedItem}

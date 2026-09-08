@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Microscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import DiagnosticsSubscription from "./DiagnosticsSubscription";
@@ -142,6 +144,7 @@ const DiagnosticsDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
@@ -214,6 +217,7 @@ const DiagnosticsDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="diagnostics" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="diagnostics" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="diagnostics-lis-agreement" moduleTitle="Diagnostika LIS shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="diagnostics" entityId={center.id} />}
     </DashboardShell>
   );

@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.ensure_org_subscription() FROM public, anon, authenticated;

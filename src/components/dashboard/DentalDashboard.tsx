@@ -11,6 +11,8 @@ import {
   Activity, Heart, Camera, FlaskConical, Package, Bell, FileText,
   ClipboardList, UserCheck, Wrench, MessageSquare, Brain, Crown, ScrollText, PieChart, ShieldCheck, Shield, Gift
 } from "lucide-react";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import type { SidebarItem } from "./DashboardShell";
@@ -129,6 +131,7 @@ const DentalDashboard = () => {
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "insurance", label: "Sug'urta", icon: Shield },
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
@@ -204,6 +207,7 @@ const DentalDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="dental" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="dental" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="dental-hms-agreement" moduleTitle="Stomatologiya shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="dental" entityId={clinic.id} />}
     </DashboardShell>
   );
