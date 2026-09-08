@@ -17,6 +17,8 @@ import {
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
@@ -134,6 +136,7 @@ const BloodBankDashboard = () => {
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "profile", label: "Profil", icon: Settings },
   ];
 
@@ -282,6 +285,7 @@ const BloodBankDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="bloodbank" orgName={bank.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="saas-subscription-agreement" moduleTitle="Qon banki shartnomasi" />}
     </DashboardShell>
   );
 };

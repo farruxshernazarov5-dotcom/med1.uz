@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Package, Wrench, Calendar, Users, Box, UserCog, DollarSign, BarChart3, LayoutDashboard, Gift } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import MTOverview from "@/components/medtech/MTOverview";
@@ -55,6 +57,7 @@ const VendorDashboard = () => {
     { id: "technicians", label: "Texniklar", icon: UserCog },
     { id: "finance", label: "Moliya", icon: DollarSign },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
   ];
 
   return (
@@ -69,6 +72,7 @@ const VendorDashboard = () => {
       {tab === "technicians" && <MTTechnicians vendorId={vendorId} />}
       {tab === "finance" && <MTFinance vendorId={vendorId} />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="medtech-vendor-agreement" moduleTitle="Medtexnika shartnomasi" />}
     </DashboardShell>
   );
 };

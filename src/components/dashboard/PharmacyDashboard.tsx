@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import PhOverview from "@/components/pharmacy/PhOverview";
@@ -123,6 +125,7 @@ const PharmacyDashboard = () => {
     { id: "settings", label: "Sozlamalar", icon: Settings, group: "Tizim" },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck, group: "Boshqaruv" },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Tizim" },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
 
@@ -148,6 +151,7 @@ const PharmacyDashboard = () => {
       {tab === "staff" && <PhStaff pharmacyId={pharmacy.id} />}
       {tab === "finance" && <PhFinance pharmacyId={pharmacy.id} />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="pharmacy-agreement" moduleTitle="Dorixona shartnomasi" />}
 
       {tab === "products" && (
         <div className="space-y-4">

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FuturisticBackground } from "@/components/futuristic";
 import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
+import OrgStatusBanner from "./OrgStatusBanner";
 import {
   LogOut, Menu, X, ChevronLeft, ChevronRight, Lock, Sparkles,
 } from "lucide-react";

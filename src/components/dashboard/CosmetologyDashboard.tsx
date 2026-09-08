@@ -13,6 +13,8 @@ import {
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
@@ -84,6 +86,7 @@ const CosmetologyDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
+    { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
   ];
@@ -113,6 +116,7 @@ const CosmetologyDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="cosmetology" />}
           {tab === "premium" && <PremiumPerksPanel moduleId="cosmetology" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="cosmetology-center-agreement" moduleTitle="Kosmetologiya shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="cosmetology" entityId={center.id} />}
     </DashboardShell>
   );

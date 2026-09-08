@@ -11,6 +11,8 @@ import {
   Stethoscope, Bed, Siren, Bot
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
+import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
@@ -56,6 +58,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "insurance", label: "Sug'urta", icon: Shield, group: "Boshqaruv" },
   { id: "premium", label: "💎 Premium", icon: Crown, group: "Boshqaruv" },
   { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Boshqaruv" },
+  { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
 ];
 
@@ -124,6 +127,7 @@ const MaternityDashboard = () => {
       {tab === "insurance" && <InsuranceModule ownerId={user!.id} module="maternity" />}
       {tab === "premium" && <PremiumPerksPanel moduleId="maternity" />}
       {tab === "partner-referral" && <ReferralPanel />}
+      {tab === "legal" && <OrgLegalCenter contractSlug="maternity-hms-agreement" moduleTitle="Tug'ruqxona shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="maternity" entityId={center.id} />}
     </DashboardShell>
   );
