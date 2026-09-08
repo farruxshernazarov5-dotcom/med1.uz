@@ -11,6 +11,13 @@
 export type SubdomainKey = "clinic" | "doctors" | "ai" | "admin" | "www";
 
 export const ROOT_DOMAIN = "med1.uz";
+export const PRIMARY_HOST = `www.${ROOT_DOMAIN}`;
+
+/**
+ * Only hosts already attached to Lovable may receive cross-domain navigation.
+ * Add a service host here after its custom-domain status becomes Active.
+ */
+const ACTIVE_HOSTS = new Set([ROOT_DOMAIN, PRIMARY_HOST]);
 
 interface SubdomainConfig {
   key: SubdomainKey;
@@ -62,14 +69,14 @@ export const SUBDOMAINS: SubdomainConfig[] = [
 
 const WWW: SubdomainConfig = {
   key: "www",
-  host: ROOT_DOMAIN,
+  host: PRIMARY_HOST,
   home: "/",
   prefixes: [],
 };
 
 /** Faqat haqiqiy med1.uz hostlarida subdomen mantiqini yoqamiz (preview/localhost — yo'q) */
 export function isProductionHost(host: string = window.location.hostname): boolean {
-  return host === ROOT_DOMAIN || host.endsWith(`.${ROOT_DOMAIN}`);
+  return host === ROOT_DOMAIN || host === PRIMARY_HOST || SUBDOMAINS.some((s) => s.host === host);
 }
 
 export function currentSubdomain(host: string = window.location.hostname): SubdomainConfig {
@@ -90,6 +97,11 @@ export function ownerOf(path: string): SubdomainConfig {
 export function urlForPath(path: string, host: string = window.location.hostname): string | null {
   if (!isProductionHost(host)) return null;
   const target = ownerOf(path);
+  if (!ACTIVE_HOSTS.has(target.host)) return null;
   if (target.host === host) return null;
   return `https://${target.host}${path}`;
+}
+
+export function isActiveSubdomainHost(host: string): boolean {
+  return ACTIVE_HOSTS.has(host);
 }
