@@ -14,6 +14,12 @@ export const ROOT_DOMAIN = "med1.uz";
 export const PRIMARY_HOST = `www.${ROOT_DOMAIN}`;
 
 /**
+ * Subdomen marshrutizatsiyasi vaqtincha o'chirilgan.
+ * clinic/doctors/ai/admin subdomenlari Lovable'ga ulangach `true` qiling.
+ */
+export const SUBDOMAIN_ROUTING_ENABLED = false;
+
+/**
  * Only hosts already attached to Lovable may receive cross-domain navigation.
  * Add a service host here after its custom-domain status becomes Active.
  */
