@@ -192,6 +192,7 @@ const DashboardShell = ({
 
         {/* Page content */}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+          <OrgStatusBanner />
           {children}
         </main>
         <footer className="py-3 px-4 text-center text-[11px] text-white/40 border-t border-white/10 bg-[hsl(213,73%,15%)]/40">
