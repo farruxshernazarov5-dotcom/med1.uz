@@ -23,7 +23,10 @@ Deno.serve(async (req) => {
       .download("doctor_photo_ids.json");
     if (dlErr || !file) throw new Error(dlErr?.message || "import file not found");
 
-    const ids: string[] = JSON.parse(await file.text());
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const ids: string[] = (JSON.parse(await file.text()) as string[]).filter(
+      (id) => typeof id === "string" && uuidRe.test(id.trim()),
+    ).map((id) => id.trim());
     let updated = 0;
 
     for (let i = 0; i < ids.length; i += 500) {
