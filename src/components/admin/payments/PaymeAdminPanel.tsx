@@ -28,6 +28,7 @@ export default function PaymeAdminPanel() {
   const [amount, setAmount] = useState("5000");
   const [busy, setBusy] = useState<string | null>(null);
   const [rpcResult, setRpcResult] = useState<any>(null);
+  const [testOrder, setTestOrder] = useState<{ paymentId: string; amount: number; transactionId: string | null } | null>(null);
 
   const call = useCallback(async (action: string, extra: Record<string, unknown> = {}) => {
     const { data: res, error } = await supabase.functions.invoke("payme-admin-diag", {
@@ -70,6 +71,7 @@ export default function PaymeAdminPanel() {
     try {
       const res = await call("test_order", { amount: Number(amount) });
       setRpcResult(res);
+      setTestOrder({ paymentId: res.payment_id, amount: Number(res.amount), transactionId: null });
       toast.success(`Test buyurtma yaratildi: ${res.payment_id}`);
       await loadConfig();
     } catch (e: any) {
@@ -80,17 +82,24 @@ export default function PaymeAdminPanel() {
   const runRpc = async (method: string) => {
     setBusy(method);
     try {
-      const pid = rpcResult?.payment_id || data?.payments?.[0]?.id;
-      const amt = Math.round(Number(rpcResult?.amount || data?.payments?.[0]?.amount || amount) * 100);
+      const pid = testOrder?.paymentId || data?.payments?.[0]?.id;
+      const orderAmount = testOrder?.amount ?? Number(data?.payments?.[0]?.amount || amount);
+      const amt = Math.round(orderAmount * 100);
+      const transactionId = testOrder?.transactionId ?? `test-${Date.now()}`;
       const params: Record<string, unknown> =
         method === "GetStatement"
           ? { from: Date.now() - 86400000, to: Date.now() }
           : method === "CheckPerformTransaction"
             ? { amount: amt, account: { order_id: pid } }
             : method === "CreateTransaction"
-              ? { id: `test-${Date.now()}`, time: Date.now(), amount: amt, account: { order_id: pid } }
-              : { id: `test-${Date.now()}` };
+              ? { id: transactionId, time: Date.now(), amount: amt, account: { order_id: pid } }
+              : method === "CancelTransaction"
+                ? { id: transactionId, reason: 5 }
+                : { id: transactionId };
       const res = await call("rpc", { method, params });
+      if (method === "CreateTransaction" && res?.response?.result) {
+        setTestOrder((current) => current ? { ...current, transactionId } : current);
+      }
       setRpcResult({ ...res, payment_id: pid });
     } catch (e: any) {
       toast.error(e?.message || "RPC xatolik");
@@ -206,6 +215,7 @@ export default function PaymeAdminPanel() {
             <div className="flex-1">
               <Label className="text-xs">Summa (so'm)</Label>
               <Input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="numeric" />
+              <p className="mt-1 text-xs text-muted-foreground">Paycom testiga {Math.round(Number(amount || 0) * 100).toLocaleString("uz-UZ")} tiyin kiriting.</p>
             </div>
             <Button onClick={createTestOrder} disabled={busy === "order"}>
               {busy === "order" ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <PlayCircle className="w-4 h-4 mr-1" />} Test buyurtma
