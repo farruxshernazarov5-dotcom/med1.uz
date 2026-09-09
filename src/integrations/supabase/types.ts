@@ -13891,6 +13891,51 @@ export type Database = {
         }
         Relationships: []
       }
+      payme_transactions: {
+        Row: {
+          account: Json
+          amount: number
+          cancel_time: number
+          create_time: number
+          created_at: string
+          id: string
+          payme_time: number | null
+          payment_id: string
+          perform_time: number
+          reason: number | null
+          state: number
+          updated_at: string
+        }
+        Insert: {
+          account?: Json
+          amount: number
+          cancel_time?: number
+          create_time?: number
+          created_at?: string
+          id: string
+          payme_time?: number | null
+          payment_id: string
+          perform_time?: number
+          reason?: number | null
+          state?: number
+          updated_at?: string
+        }
+        Update: {
+          account?: Json
+          amount?: number
+          cancel_time?: number
+          create_time?: number
+          created_at?: string
+          id?: string
+          payme_time?: number | null
+          payment_id?: string
+          perform_time?: number
+          reason?: number | null
+          state?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payme_webhook_log: {
         Row: {
           created_at: string
