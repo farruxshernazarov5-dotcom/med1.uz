@@ -51,6 +51,14 @@ Deno.serve(async (req) => {
     });
   };
 
+  // Paycom Merchant API faqat POST qabul qiladi.
+  if (req.method !== "POST") {
+    return await send(
+      { jsonrpc: "2.0", id: null, error: ERR.TRANSPORT },
+      { method: "transport", status: "error", error_note: "POST required" },
+    );
+  }
+
   // 1) Autorizatsiya
   if (!verifyPaymeAuth(req.headers.get("Authorization"))) {
     return await send(
@@ -60,7 +68,7 @@ Deno.serve(async (req) => {
   }
 
   // 2) JSON-RPC tanasi
-  let body: { id?: unknown; method?: string; params?: Record<string, any> } | null = null;
+  let body: { jsonrpc?: unknown; id?: unknown; method?: unknown; params?: unknown } | null = null;
   try {
     body = await req.json();
   } catch {
@@ -72,14 +80,20 @@ Deno.serve(async (req) => {
 
   const id = body?.id ?? null;
   const method = body?.method;
-  const params = body?.params ?? {};
+  const params = body?.params;
 
-  if (!method || typeof method !== "string") {
+  if (
+    !body || body.jsonrpc !== "2.0" || body.id === undefined ||
+    typeof method !== "string" || !method ||
+    typeof params !== "object" || params === null || Array.isArray(params)
+  ) {
     return await send(
       { jsonrpc: "2.0", id, error: ERR.INVALID_RPC },
       { method: "unknown", rpc_id: String(id), status: "error", error_note: "method missing" },
     );
   }
+
+  const rpcParams = params as Record<string, unknown>;
 
   const ok = (result: unknown, log: Record<string, unknown> = {}) =>
     send({ jsonrpc: "2.0", id, result }, {
@@ -93,11 +107,14 @@ Deno.serve(async (req) => {
     });
 
   // account: order_id (asosiy parametr)
-  const account = (params?.account ?? {}) as Record<string, any>;
-  const orderId: string | undefined =
-    account?.order_id ?? account?.payment_id ?? account?.order ?? undefined;
-  const amountTiyin = Number(params?.amount);
-  const txId = params?.id != null ? String(params.id) : "";
+  const account = (
+    typeof rpcParams.account === "object" && rpcParams.account !== null && !Array.isArray(rpcParams.account)
+      ? rpcParams.account
+      : {}
+  ) as Record<string, unknown>;
+  const orderId = typeof account.order_id === "string" ? account.order_id : undefined;
+  const amountTiyin = Number(rpcParams.amount);
+  const txId = rpcParams.id != null ? String(rpcParams.id) : "";
 
   const isUuid = (v: unknown) =>
     typeof v === "string" &&
@@ -123,7 +140,7 @@ Deno.serve(async (req) => {
    */
   const resolveOrder = async () => {
     if (!isUuid(orderId)) return { error: ERR.ORDER_NOT_FOUND, data: "order_id" as const, order: null };
-    const p = await loadOrder(orderId!);
+    const p = await loadOrder(orderId);
     if (!p) return { error: ERR.ORDER_NOT_FOUND, data: "order_id" as const, order: null };
     if (!Number.isFinite(amountTiyin) || Math.round(Number(p.amount) * 100) !== amountTiyin) {
       return { error: ERR.INVALID_AMOUNT, data: undefined, order: p };
@@ -205,7 +222,7 @@ Deno.serve(async (req) => {
           amount: amountTiyin,
           account,
           state: 1,
-          payme_time: Number(params?.time) || null,
+          payme_time: Number(rpcParams.time) || null,
           create_time,
         });
         if (insErr) return fail(ERR.ORDER_UNAVAILABLE, "order_id", { payment_id: p.id });
@@ -282,7 +299,7 @@ Deno.serve(async (req) => {
       case "CancelTransaction": {
         const tx = await loadTx(txId);
         if (!tx) return fail(ERR.TX_NOT_FOUND);
-        const reason = Number(params?.reason) || null;
+        const reason = Number(rpcParams.reason) || null;
 
         if (tx.state === -1 || tx.state === -2) {
           return ok(
@@ -323,8 +340,8 @@ Deno.serve(async (req) => {
 
       // ---------------------------------------------------------------
       case "GetStatement": {
-        const from = Number(params?.from);
-        const to = Number(params?.to);
+        const from = Number(rpcParams.from);
+        const to = Number(rpcParams.to);
         if (!Number.isFinite(from) || !Number.isFinite(to)) return fail(ERR.INVALID_PARAMS, "from/to");
 
         const { data } = await admin
