@@ -19,6 +19,7 @@ import {
   type DiagnosticCenter,
   type DiagnosticType,
 } from "@/data/diagnostics";
+import RegisteredCentersSection from "@/components/diagnostics/RegisteredCentersSection";
 import { regions } from "@/data/clinics";
 import diagMrtImg from "@/assets/diag-mrt.webp";
 import diagUziImg from "@/assets/diag-uzi.webp";
@@ -514,6 +515,8 @@ const DiagnosticsPage = () => {
 
         {/* ===== CENTERS TAB ===== */}
         <TabsContent value="centers">
+          <RegisteredCentersSection />
+
           <AddCenterForm />
 
           {/* Search & Filter */}
