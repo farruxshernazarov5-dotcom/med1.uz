@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import AdCard from "@/components/med1top/AdCard";
+import ShowcaseGallery from "@/components/med1top/ShowcaseGallery";
 import { useLanguage } from "@/hooks/useLanguage";
 import {
   AD_REGIONS,
@@ -223,6 +224,8 @@ const Med1TopPage = () => {
             </div>
           )}
         </div>
+
+        <ShowcaseGallery />
       </main>
 
       <Footer />

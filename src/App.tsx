@@ -84,6 +84,7 @@ const BloodDonorRegistrationPage = lazy(() => import("./pages/BloodDonorRegistra
 const DentalRegistrationPage = lazy(() => import("./pages/DentalRegistrationPage"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 const DiagnosticsBookingPage = lazy(() => import("./pages/DiagnosticsBookingPage"));
+const DiagnosticsDetailPage = lazy(() => import("./pages/DiagnosticsDetailPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const DisclaimerPage = lazy(() => import("./pages/DisclaimerPage"));
@@ -273,6 +274,7 @@ const App = () => (
                 <Route path="/payment/success" element={<PaymentSuccessPage />} />
                 <Route path="/payment/result" element={<PaymentSuccessPage />} />
                 <Route path="/diagnostics/:id/book" element={<DiagnosticsBookingPage />} />
+                <Route path="/diagnostics/:id" element={<DiagnosticsDetailPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/disclaimer" element={<DisclaimerPage />} />
