@@ -64,11 +64,13 @@ const Index = () => {
           <AISearchSection />
         </Suspense>
 
-        <Suspense fallback={<Fallback />}>
-          <section className="container mx-auto px-4 py-6">
-            <NearbyMap height={400} />
-          </section>
-        </Suspense>
+        <LazySection minHeight={440}>
+          <Suspense fallback={<Fallback />}>
+            <section className="container mx-auto px-4 py-6">
+              <NearbyMap height={400} />
+            </section>
+          </Suspense>
+        </LazySection>
 
         <Suspense fallback={<Fallback />}>
           <section className="py-8 relative">
