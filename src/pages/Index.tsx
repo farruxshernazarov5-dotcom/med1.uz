@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import SectionTicker from "@/components/SectionTicker";
 import HomeServicesMenu from "@/components/HomeServicesMenu";
 import { FuturisticBackground } from "@/components/futuristic";
+import LazySection from "@/components/perf/LazySection";
 import { SEO } from "@/components/SEO";
 
 // Below-the-fold — lazy load to reduce initial bundle & LCP
@@ -96,19 +97,38 @@ const Index = () => {
           <div className="no-cinematic">
             <HomeAIServicesSection />
           </div>
-          <div className="no-cinematic">
-            <HomeEcosystemSection />
-          </div>
-          <Med1TopHomeSection />
-          <SponsorsLeaderboard />
-          <CosmetologyPromo />
-          <PartnerClinics />
-          <AnimatedDoctorsStrip />
-
-          <HomeSectionsPreview />
-          <HomeArticlesPreview />
-          <HomeNewsSection />
-          <ContactLocationSection />
+          <LazySection minHeight={420}>
+            <div className="no-cinematic">
+              <HomeEcosystemSection />
+            </div>
+          </LazySection>
+          <LazySection minHeight={420}>
+            <Med1TopHomeSection />
+          </LazySection>
+          <LazySection minHeight={360}>
+            <SponsorsLeaderboard />
+          </LazySection>
+          <LazySection minHeight={360}>
+            <CosmetologyPromo />
+          </LazySection>
+          <LazySection minHeight={280}>
+            <PartnerClinics />
+          </LazySection>
+          <LazySection minHeight={280}>
+            <AnimatedDoctorsStrip />
+          </LazySection>
+          <LazySection minHeight={420}>
+            <HomeSectionsPreview />
+          </LazySection>
+          <LazySection minHeight={420}>
+            <HomeArticlesPreview />
+          </LazySection>
+          <LazySection minHeight={420}>
+            <HomeNewsSection />
+          </LazySection>
+          <LazySection minHeight={360}>
+            <ContactLocationSection />
+          </LazySection>
         </Suspense>
       </div>
 
