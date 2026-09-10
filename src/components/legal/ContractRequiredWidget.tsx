@@ -60,6 +60,13 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
   const isActive = contract?.status === "active";
   const isPending = contract?.approval_status === "pending";
 
+  const steps = [
+    "Shartnoma matnini o'qing",
+    "Muassasa ma'lumotlarini tasdiqlang",
+    "Telefoningizga kelgan SMS kodni kiriting",
+    "Imzoni ekranda chizib, yakunlang",
+  ];
+
   return (
     <>
       <Card className={`p-4 border-2 ${isActive ? "border-emerald-500/40 bg-emerald-500/5" : "border-amber-500/40 bg-amber-500/5"}`}>
@@ -73,20 +80,51 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
               {isActive && <Badge className="bg-emerald-500/20 text-emerald-700 border-emerald-500/30">Imzolangan</Badge>}
               {isPending && <Badge className="bg-amber-500/20 text-amber-700 border-amber-500/30">Admin tasdiqi kutilmoqda</Badge>}
               {!contract && <Badge variant="outline">Imzolanmagan</Badge>}
+              {contract && !isActive && !isPending && <Badge variant="outline">Imzo kutilmoqda</Badge>}
             </div>
             <p className="text-xs text-muted-foreground line-clamp-2">{template.summary_uz}</p>
-            <div className="flex gap-2 mt-3">
+
+            {isActive ? (
+              <p className="text-xs text-emerald-700 mt-2">
+                Shartnoma raqami: <span className="font-semibold">{contract.contract_number || "—"}</span>
+                {contract.signed_at ? ` · ${new Date(contract.signed_at).toLocaleDateString("uz-UZ")}` : ""}
+              </p>
+            ) : (
+              <div className="mt-3 rounded-lg bg-background/70 border border-border p-3">
+                <p className="text-xs font-semibold text-foreground mb-1.5">
+                  Shartnoma to'liq onlayn imzolanadi — qog'oz nusxa shart emas
+                </p>
+                <ol className="text-xs text-muted-foreground space-y-1">
+                  {steps.map((s, i) => (
+                    <li key={s} className="flex gap-2">
+                      <span className="w-4 h-4 rounded-full bg-primary/15 text-primary text-[10px] flex items-center justify-center shrink-0">
+                        {i + 1}
+                      </span>
+                      {s}
+                    </li>
+                  ))}
+                </ol>
+                <p className="text-[11px] text-muted-foreground mt-2">
+                  Imzolangan shartnoma PDF ko'rinishida saqlanadi va QR kod orqali istalgan vaqtda tekshiriladi.
+                </p>
+              </div>
+            )}
+
+            <div className="flex gap-2 mt-3 flex-wrap">
               {contract ? (
                 isActive ? (
-                  <Link to="/legal-center"><Button size="sm" variant="outline"><FileSignature className="w-3 h-3 mr-1" /> Ko'rish</Button></Link>
+                  <>
+                    <Link to="/legal-center"><Button size="sm" variant="outline"><FileSignature className="w-3 h-3 mr-1" /> Shartnomani ko'rish / PDF</Button></Link>
+                    <Link to="/contract-verify"><Button size="sm" variant="ghost"><ShieldCheck className="w-3 h-3 mr-1" /> Tekshirish</Button></Link>
+                  </>
                 ) : (
                   <Button size="sm" onClick={() => setSignOpen(true)}>
-                    <FileSignature className="w-3 h-3 mr-1" /> Imzolashni davom ettirish
+                    <FileSignature className="w-3 h-3 mr-1" /> Onlayn imzolashni davom ettirish
                   </Button>
                 )
               ) : (
                 <Button size="sm" onClick={createAndOpen}>
-                  <FileSignature className="w-3 h-3 mr-1" /> Shartnomani imzolash
+                  <FileSignature className="w-3 h-3 mr-1" /> Onlayn imzolash
                 </Button>
               )}
               <Link to="/legal-center">
