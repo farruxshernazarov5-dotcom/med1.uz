@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -137,6 +139,7 @@ const BloodBankDashboard = () => {
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
     { id: "profile", label: "Profil", icon: Settings },
   ];
 
@@ -286,6 +289,7 @@ const BloodBankDashboard = () => {
           {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="saas-subscription-agreement" moduleTitle="Qon banki shartnomasi" />}
+      {tab === "gallery" && <OrgGalleryManager orgType="bloodbank" orgId={bank.id} />}
     </DashboardShell>
   );
 };

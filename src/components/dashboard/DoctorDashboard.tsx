@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -194,6 +196,7 @@ const DoctorDashboard = () => {
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
   ];
 
   return (
@@ -398,6 +401,7 @@ const DoctorDashboard = () => {
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="doctor-platform-agreement" moduleTitle="Shifokor platforma shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="doctor" entityId={doctor.id} />}
+      {tab === "gallery" && <OrgGalleryManager orgType="doctor" orgId={doctor.id} />}
     </DashboardShell>
   );
 };

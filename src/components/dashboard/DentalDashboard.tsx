@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -133,6 +135,7 @@ const DentalDashboard = () => {
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
   ];
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
@@ -209,6 +212,7 @@ const DentalDashboard = () => {
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="dental-hms-agreement" moduleTitle="Stomatologiya shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="dental" entityId={clinic.id} />}
+      {tab === "gallery" && <OrgGalleryManager orgType="dental" orgId={clinic.id} />}
     </DashboardShell>
   );
 };
