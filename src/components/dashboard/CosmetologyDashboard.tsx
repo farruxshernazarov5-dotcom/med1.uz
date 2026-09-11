@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -89,6 +91,7 @@ const CosmetologyDashboard = () => {
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "settings", label: "Sozlamalar", icon: Settings },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
   ];
 
   return (
@@ -118,6 +121,7 @@ const CosmetologyDashboard = () => {
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="cosmetology-center-agreement" moduleTitle="Kosmetologiya shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="cosmetology" entityId={center.id} />}
+      {tab === "gallery" && <OrgGalleryManager orgType="cosmetology" orgId={center.id} />}
     </DashboardShell>
   );
 };

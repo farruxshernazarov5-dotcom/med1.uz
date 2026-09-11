@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -127,6 +129,7 @@ const PharmacyDashboard = () => {
     { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Tizim" },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
   ];
 
   return (
@@ -223,6 +226,7 @@ const PharmacyDashboard = () => {
       {tab === "attendance" && <OrgAttendance orgType="pharmacy" orgName={pharmacy.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="pharmacy" />}
       {tab === "social-media" && <MediaLinksManager entityType="pharmacy" entityId={pharmacy.id} />}
+      {tab === "gallery" && <OrgGalleryManager orgType="pharmacy" orgId={pharmacy.id} />}
     </DashboardShell>
   );
 };

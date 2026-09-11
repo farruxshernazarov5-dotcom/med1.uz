@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -60,6 +62,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "partner-referral", label: "🎁 Referral", icon: Gift, group: "Boshqaruv" },
   { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
 ];
 
 const MaternityDashboard = () => {
@@ -129,6 +132,7 @@ const MaternityDashboard = () => {
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="maternity-hms-agreement" moduleTitle="Tug'ruqxona shartnomasi" />}
       {tab === "social-media" && <MediaLinksManager entityType="maternity" entityId={center.id} />}
+      {tab === "gallery" && <OrgGalleryManager orgType="maternity" orgId={center.id} />}
     </DashboardShell>
   );
 };

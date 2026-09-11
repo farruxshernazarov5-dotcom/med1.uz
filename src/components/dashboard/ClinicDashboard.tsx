@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -200,6 +202,7 @@ const ClinicDashboard = () => {
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift, group: "TARIF" },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
   ];
 
   return (
@@ -316,6 +319,7 @@ const ClinicDashboard = () => {
         requiredTier={lockedItem?.requiredTier}
       />
       {tab === "social-media" && <MediaLinksManager entityType="clinic" entityId={clinic.id} />}
+      {tab === "gallery" && <OrgGalleryManager orgType="clinic" orgId={clinic.id} />}
     </DashboardShell>
   );
 };
