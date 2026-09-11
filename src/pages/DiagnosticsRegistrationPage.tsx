@@ -195,7 +195,12 @@ const DiagnosticsRegistrationPage = () => {
     if (error) {
       toast({ title: "Xatolik", description: error.message, variant: "destructive" });
     } else {
-      await supabase.from("user_roles").update({ role: "diagnostics" as any }).eq("user_id", user.id);
+      // Rolni ishonchli almashtirish: eski "patient" rolini olib tashlab, "diagnostics" qo'shamiz
+      await supabase.from("user_roles").delete().eq("user_id", user.id).eq("role", "patient" as any);
+      await supabase.from("user_roles").upsert(
+        { user_id: user.id, role: "diagnostics" as any } as any,
+        { onConflict: "user_id,role" } as any
+      );
       toast({ title: "✅ Diagnostika markazi muvaffaqiyatli ro'yxatdan o'tkazildi!" });
       supabase.functions.invoke("telegram-notify", {
         body: { type: "new_registration", data: { name: form.name.trim(), type: "Diagnostika markazi", phone: form.phone.trim() } },
