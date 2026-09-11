@@ -13606,6 +13606,54 @@ export type Database = {
         }
         Relationships: []
       }
+      org_gallery_photos: {
+        Row: {
+          branch_name: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          org_id: string | null
+          org_type: string
+          owner_id: string
+          sort_order: number
+          storage_path: string | null
+          title: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          branch_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          org_id?: string | null
+          org_type: string
+          owner_id: string
+          sort_order?: number
+          storage_path?: string | null
+          title?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          branch_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          org_id?: string | null
+          org_type?: string
+          owner_id?: string
+          sort_order?: number
+          storage_path?: string | null
+          title?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       partner_conversions: {
         Row: {
           amount: number | null
