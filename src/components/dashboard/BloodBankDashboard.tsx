@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -287,6 +289,7 @@ const BloodBankDashboard = () => {
           {tab === "premium" && <PremiumPerksPanel moduleId="bloodbank" />}
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="saas-subscription-agreement" moduleTitle="Qon banki shartnomasi" />}
+      {tab === "gallery" && <OrgGalleryManager orgType="bloodbank" orgId={bank.id} />}
     </DashboardShell>
   );
 };
