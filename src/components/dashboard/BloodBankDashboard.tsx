@@ -137,6 +137,7 @@ const BloodBankDashboard = () => {
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
     { id: "profile", label: "Profil", icon: Settings },
   ];
 
