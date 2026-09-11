@@ -1,3 +1,5 @@
+import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import { Images } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +60,7 @@ const VendorDashboard = () => {
     { id: "finance", label: "Moliya", icon: DollarSign },
     { id: "partner-referral", label: "🎁 Referral", icon: Gift },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
+    { id: "gallery", label: "Fotogalereya", icon: Images },
   ];
 
   return (
@@ -73,6 +76,7 @@ const VendorDashboard = () => {
       {tab === "finance" && <MTFinance vendorId={vendorId} />}
       {tab === "partner-referral" && <ReferralPanel />}
       {tab === "legal" && <OrgLegalCenter contractSlug="medtech-vendor-agreement" moduleTitle="Medtexnika shartnomasi" />}
+      {tab === "gallery" && <OrgGalleryManager orgType="medtech" orgId={vendor.id} />}
     </DashboardShell>
   );
 };
