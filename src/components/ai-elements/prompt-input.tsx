@@ -155,7 +155,7 @@ const captureScreenshot = async (): Promise<File | null> => {
 
     const timestamp = new Date()
       .toISOString()
-      .replaceAll(/[:.]/g, "-")
+      .replace(/[:.]/g, "-")
       .replace("T", "_")
       .replace("Z", "");
 
@@ -1216,7 +1216,7 @@ export type PromptInputSubmitProps = ComponentProps<typeof InputGroupButton> & {
 export const PromptInputSubmit = ({
   className,
   variant = "default",
-  size = "icon-sm",
+  size = "icon",
   status,
   onStop,
   onClick,
