@@ -5,7 +5,7 @@ import {
   FileText, FolderOpen, Brain, Shield, QrCode, FlaskConical, Pill, ImageIcon,
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
   ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
-  Sun, Moon, Gift, Coins, Scale,
+  Sun, Moon, Gift, Coins, Scale, Headphones,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
@@ -46,10 +46,12 @@ import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 import MedCoinOnboarding from "@/components/medcoin/MedCoinOnboarding";
 import MedCoinExpiryReminder from "@/components/medcoin/MedCoinExpiryReminder";
 import HambiMobileBanner from "@/components/hambi/HambiMobileBanner";
+import PatientAIHub from "@/components/patient/PatientAIHub";
+import SupportChat from "@/components/support/SupportChat";
 
 
 type TabId =
-  | "overview" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking"
+  | "overview" | "ai-services" | "ai-assistant" | "ai-history" | "recommendations" | "health" | "tracking" | "support"
   | "appointments" | "nearby" | "workflow"
   | "lab" | "prescriptions" | "files" | "documents" | "history"
   | "wallet" | "payments" | "promo" | "premium" | "partner-referral"
@@ -85,11 +87,20 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Tibbiy xizmatlar",
     icon: Stethoscope,
     items: [
+      { id: "ai-services", label: "AI xizmatlari", icon: Brain },
       { id: "ai-assistant", label: "AI Yordamchi", icon: Bot },
       { id: "recommendations", label: "AI Tavsiyalar", icon: Sparkles },
       { id: "ai-history", label: "AI tahlillar", icon: Brain, premium: true },
       { id: "health", label: "BMI / Bosim", icon: Activity },
       { id: "tracking", label: "Monitoring", icon: LineChart, premium: true },
+    ],
+  },
+  {
+    id: "support",
+    label: "Yordam",
+    icon: Headphones,
+    items: [
+      { id: "support", label: "Jonli operator", icon: Headphones, badge: "LIVE" },
     ],
   },
   {
@@ -193,6 +204,7 @@ const PatientDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "overview": return <PatientOverview onNavigate={(t) => setActiveTab(t as TabId)} />;
+      case "ai-services": return <PatientAIHub />;
       case "ai-assistant": return <PatientAIAssistant />;
       case "ai-history": return <PatientAIHistory />;
       case "recommendations": return <PatientRecommendations />;
@@ -219,6 +231,7 @@ const PatientDashboard = () => {
       case "security": return <PatientSecurity />;
       case "legal": return <PatientLegalCenter />;
       case "settings": return <PatientSettings />;
+      case "support": return <SupportChat />;
       default: return null;
     }
   };
@@ -392,7 +405,8 @@ const PatientDashboard = () => {
             <QuickAction icon={Plus} label="Qabulga yozilish" to="/clinics" />
             <QuickAction icon={Search} label="Shifokor topish" to="/doctors" />
             <QuickAction icon={FlaskConical} label="Analiz topshirish" onClick={() => setActiveTab("workflow")} />
-            <QuickAction icon={Bot} label="AI so'rov" onClick={() => setActiveTab("ai-assistant")} highlight />
+            <QuickAction icon={Brain} label="AI xizmatlari" onClick={() => setActiveTab("ai-services")} highlight />
+            <QuickAction icon={Headphones} label="Jonli yordam" onClick={() => setActiveTab("support")} />
             <QuickAction icon={Pill} label="Dorixonalar" to="/pharmacies" />
             <QuickAction icon={MapPin} label="Yaqin atrofda" onClick={() => setActiveTab("nearby")} />
           </div>
