@@ -8,7 +8,7 @@ import {
   Pill, Baby, Sparkles, Droplets, BarChart3, TrendingUp, AlertTriangle,
   Bot, CreditCard, Search, RefreshCw, Monitor, Cpu, Wrench, Store, Plus,
   ChevronLeft, ChevronRight, Home, UserCog, Trash2, Edit, Power,
-  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt, Rocket
+  Settings, Database, Wifi, Heart, Microscope, Menu, Crown, Megaphone, Plug, Gift, ShieldAlert, Handshake, Receipt, Rocket, Headphones
 } from "lucide-react";
 import SaaSAdminManager from "@/components/admin/SaaSAdminManager";
 import AdminMarketingModule from "@/components/admin/AdminMarketingModule";
@@ -26,6 +26,7 @@ import SecurityCenterModule from "@/components/admin/SecurityCenterModule";
 import TaxReportsModule from "@/components/admin/TaxReportsModule";
 import SponsorsAdmin from "@/components/admin/SponsorsAdmin";
 import MedicalAdsModule from "@/components/admin/MedicalAdsModule";
+import AdminSupportCenter from "@/components/admin/AdminSupportCenter";
 import { AI_SERVICE_TARIFFS } from "@/data/aiTariffs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,7 @@ const sidebarSections = [
       { id: "overview", label: "Bosh sahifa", icon: Home },
       { id: "notifications", label: "Bildirishnomalar", icon: Bell },
       { id: "messages", label: "Xabarlar", icon: MessageSquare },
+      { id: "live_support", label: "Jonli yordam", icon: Headphones },
     ]
   },
   {
@@ -724,6 +726,9 @@ const AdminDashboard = ({ initialTab = "overview" }: AdminDashboardProps) => {
               {messages.length === 0 && <p className="text-center py-12 text-muted-foreground">Xabarlar yo'q</p>}
             </div>
           )}
+
+          {/* ═══ LIVE SUPPORT ═══ */}
+          {tab === "live_support" && <AdminSupportCenter />}
 
           {/* ═══ CLINICS ═══ */}
           {tab === "clinics" && (
