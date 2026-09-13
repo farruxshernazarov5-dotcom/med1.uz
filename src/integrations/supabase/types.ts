@@ -1898,6 +1898,50 @@ export type Database = {
           },
         ]
       }
+      contract_signature_challenges: {
+        Row: {
+          canonical_payload: string
+          challenge_id: string
+          consumed_at: string | null
+          contract_id: string
+          created_at: string
+          document_hash: string
+          expires_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          canonical_payload: string
+          challenge_id: string
+          consumed_at?: string | null
+          contract_id: string
+          created_at?: string
+          document_hash: string
+          expires_at: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          canonical_payload?: string
+          challenge_id?: string
+          consumed_at?: string | null
+          contract_id?: string
+          created_at?: string
+          document_hash?: string
+          expires_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signature_challenges_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_signature_otps: {
         Row: {
           attempts: number
