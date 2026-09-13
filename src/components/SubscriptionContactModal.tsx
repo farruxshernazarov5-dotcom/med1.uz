@@ -31,6 +31,7 @@ const SubscriptionContactModal = ({
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"contact" | "pay">("contact");
   const [contractActive, setContractActive] = useState(false);
+  const [contractRefreshKey, setContractRefreshKey] = useState(0);
   const contractSlug = contractSlugForCategory(category);
   const [form, setForm] = useState({
     name: "",
@@ -50,7 +51,7 @@ const SubscriptionContactModal = ({
       .eq("contract_signatures.method", "eimzo").eq("contract_signatures.verification_status", "verified").eq("contract_signatures.is_valid", true)
       .limit(1).maybeSingle().then(({ data }: any) => { if (alive) setContractActive(Boolean(data)); });
     return () => { alive = false; };
-  }, [open, user, mode, contractSlug]);
+  }, [open, user, mode, contractSlug, contractRefreshKey]);
 
   const handleSubmit = async () => {
     if (!form.name || !form.phone) {
@@ -149,7 +150,9 @@ const SubscriptionContactModal = ({
             {mode === "pay" && numericPrice > 0 ? (
               <div className="mt-4 space-y-4">
                 {!contractActive && (
-                  <ContractRequiredWidget templateSlug={contractSlug} moduleTitle="Pullik obuna shartnomasi" />
+                  <div onClickCapture={() => window.setTimeout(() => setContractRefreshKey((key) => key + 1), 1200)}>
+                    <ContractRequiredWidget templateSlug={contractSlug} moduleTitle="Pullik obuna shartnomasi" />
+                  </div>
                 )}
                 {contractActive ? (
                   <PaymentMethodPicker
