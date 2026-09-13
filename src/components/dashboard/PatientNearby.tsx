@@ -53,6 +53,8 @@ const PatientNearby = () => {
   const [sortBy, setSortBy] = useState<"distance" | "name">("distance");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
 
+  const [nearbyOrgs, setNearbyOrgs] = useState<any[]>([]);
+
   useEffect(() => {
     supabase
       .from("registered_clinics")
@@ -63,6 +65,25 @@ const PatientNearby = () => {
         setLoading(false);
       });
   }, []);
+
+  // Barcha yangi ro'yxatdan o'tgan tibbiy xizmatlar (jonli, joylashuv bo'yicha)
+  useEffect(() => {
+    if (!userLocation) return;
+    let alive = true;
+    (supabase as any)
+      .rpc("get_nearby_medical_services", {
+        _lat: userLocation.lat,
+        _lng: userLocation.lng,
+        _radius_km: 50,
+        _limit: 200,
+      })
+      .then(({ data }: any) => {
+        if (alive) setNearbyOrgs(data || []);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [userLocation?.lat, userLocation?.lng]);
 
   const getLocation = () => {
     setLocating(true);
@@ -139,6 +160,38 @@ const PatientNearby = () => {
       });
     });
 
+    // Yangi ro'yxatdan o'tgan barcha turdagi muassasalar (diagnostika, dorixona, va h.k.)
+    const ORG_CAT: Record<string, string> = {
+      clinic: "klinika",
+      diagnostics: "diagnostika",
+      pharmacy: "dorixona",
+      cosmetology: "kosmetologiya",
+      maternity: "tug'ruqxona",
+      bloodbank: "qon banki",
+      doctor: "shifokor",
+    };
+    const ORG_LINK: Record<string, string> = {
+      clinic: "/clinics",
+      diagnostics: "/diagnostics",
+      doctor: "/doctors",
+    };
+    nearbyOrgs.forEach((o: any) => {
+      result.push({
+        id: o.id,
+        name: o.name,
+        address: o.address || o.city || "",
+        phone: o.phone || null,
+        category: ORG_CAT[o.org_type] || o.org_type,
+        specialties: [],
+        latitude: o.latitude,
+        longitude: o.longitude,
+        logo_url: o.logo_url || null,
+        working_hours: null,
+        source: "registered",
+        linkTo: `${ORG_LINK[o.org_type] || "/clinics"}/${o.id}`,
+      });
+    });
+
     // Deduplicate by name
     const seen = new Set<string>();
     return result.filter((c) => {
@@ -147,7 +200,7 @@ const PatientNearby = () => {
       seen.add(key);
       return true;
     });
-  }, [registeredClinics]);
+  }, [registeredClinics, nearbyOrgs]);
 
   // Collect unique specialties
   const allSpecialties = useMemo(() => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, Send, X, Loader2, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,12 @@ export function SmartMatchPanel() {
   const [text, setText] = useState("");
   const { match, trackClick, loading, result, reset } = useSmartMatch();
 
+  useEffect(() => {
+    const openFromDock = () => setOpen(true);
+    window.addEventListener("med1:open-smart-match", openFromDock);
+    return () => window.removeEventListener("med1:open-smart-match", openFromDock);
+  }, []);
+
   const send = async (q?: string) => {
     const v = (q ?? text).trim();
     if (!v) return;
@@ -21,18 +27,7 @@ export function SmartMatchPanel() {
     await match(v, { source_channel: "web_search" });
   };
 
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-4 md:right-6 z-40 flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 rounded-full shadow-lg hover:scale-105 transition-transform"
-        aria-label="AI Smart Match"
-      >
-        <Sparkles className="w-5 h-5" />
-        <span className="text-sm font-semibold hidden sm:inline">AI Tavsiya</span>
-      </button>
-    );
-  }
+  if (!open) return null;
 
   return (
     <div className="fixed bottom-4 right-4 left-4 md:left-auto md:right-6 md:w-[400px] z-50 bg-card border border-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
