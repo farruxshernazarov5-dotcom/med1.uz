@@ -49,7 +49,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
       template_id: template.id, owner_id: user.id,
       title_uz: template.title_uz, title_ru: template.title_ru,
       body_uz: template.body_uz, body_ru: template.body_ru,
-      language: "uz", status: "draft",
+      language: "uz", status: "draft", approval_status: "not_required",
     }).select().single();
     if (error) return;
     setContract(data); setSignOpen(true);
