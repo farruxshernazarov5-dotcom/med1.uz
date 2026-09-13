@@ -196,6 +196,7 @@ const OrgAiTariffSection = () => {
         onOpenChange={setContactOpen}
         planName={selectedPlan?.name}
         planPrice={selectedPlan?.price}
+        category="general"
       />
     </section>
   );

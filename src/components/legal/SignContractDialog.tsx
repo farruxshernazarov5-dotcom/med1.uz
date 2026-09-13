@@ -7,8 +7,9 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Mail, Send, ShieldCheck, Eraser, FileSignature, Download } from "lucide-react";
+import { Mail, Send, ShieldCheck, Eraser, FileSignature, Download, KeyRound, Loader2 } from "lucide-react";
 import { downloadContractPDF } from "@/utils/downloadContractPDF";
+import { createEimzo, type Certificate } from "eimzo-client";
 
 interface Props {
   open: boolean;
@@ -35,6 +36,9 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [downloading, setDownloading] = useState(false);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [selectedCertificate, setSelectedCertificate] = useState("");
+  const [eimzoLoading, setEimzoLoading] = useState(false);
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -148,6 +152,56 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
     }
   };
 
+  const loadCertificates = async () => {
+    setEimzoLoading(true);
+    try {
+      const eimzo = createEimzo();
+      await eimzo.install();
+      const keys = await eimzo.listKeys();
+      setCertificates(keys.filter((certificate) => certificate.validTo.getTime() > Date.now()));
+      if (keys[0]) setSelectedCertificate(keys[0].alias);
+      if (!keys.length) toast.error("Amaldagi E-IMZO sertifikati topilmadi");
+    } catch (error: any) {
+      toast.error(error?.message || "E-IMZO dasturiga ulanib bo‘lmadi");
+    } finally {
+      setEimzoLoading(false);
+    }
+  };
+
+  const signWithEimzo = async () => {
+    const certificate = certificates.find((item) => item.alias === selectedCertificate);
+    if (!certificate) return toast.error("E-IMZO sertifikatini tanlang");
+    setSubmitting(true);
+    try {
+      const { data: challenge, error: challengeError } = await supabase.functions.invoke("contract-signature", {
+        body: { action: "get_eimzo_challenge", contract_id: contract.id },
+      });
+      if (challengeError || challenge?.error) throw new Error(challenge?.error || challengeError?.message);
+      const eimzo = createEimzo();
+      await eimzo.install();
+      const signed = await eimzo.sign(certificate, challenge.canonical_payload);
+      const { data, error } = await supabase.functions.invoke("contract-signature", {
+        body: {
+          action: "sign_eimzo", contract_id: contract.id, challenge_id: challenge.challenge_id,
+          pkcs7: signed.pkcs7, signer_name: certificate.CN,
+          certificate: {
+            serial_number: certificate.serialNumber, subject: certificate.CN,
+            organization: certificate.O, tin: certificate.TIN, pinfl: certificate.PINFL,
+            valid_from: certificate.validFrom.toISOString(), valid_until: certificate.validTo.toISOString(),
+          },
+        },
+      });
+      if (error || data?.error) throw new Error(data?.error || error?.message);
+      toast.success(data?.verification_status === "verified" ? "E-IMZO tekshirildi va shartnoma faollashdi" : "E-IMZO qabul qilindi, server tekshiruvi kutilmoqda");
+      onOpenChange(false);
+      onSigned?.();
+    } catch (error: any) {
+      toast.error(error?.message || "E-IMZO bilan imzolashda xato");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -187,6 +241,23 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
                 {sending ? "Yuborilmoqda..." : "Tasdiqlash kodini olish"}
               </Button>
             </DialogFooter>
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-3">
+              <div className="flex gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span><b>E-IMZO (tavsiya etiladi).</b> Kompyuterda E-IMZO dasturi ishlayotgan bo‘lishi kerak. Sertifikat va PKCS#7 dalili serverda tekshiriladi.</span></div>
+              {certificates.length === 0 ? (
+                <Button variant="outline" onClick={loadCertificates} disabled={eimzoLoading || blocked} className="w-full">
+                  {eimzoLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <KeyRound className="w-4 h-4 mr-2" />} E-IMZO sertifikatlarini ochish
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="eimzo-certificate">Sertifikat</Label>
+                  <select id="eimzo-certificate" value={selectedCertificate} onChange={(event) => setSelectedCertificate(event.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
+                    {certificates.map((certificate) => <option key={certificate.alias} value={certificate.alias}>{certificate.CN} · {certificate.serialNumber} · {certificate.validTo.toLocaleDateString("uz-UZ")}</option>)}
+                  </select>
+                  <Button onClick={signWithEimzo} disabled={submitting || blocked} className="w-full"><KeyRound className="w-4 h-4 mr-2" />{submitting ? "Imzolanmoqda..." : "E-IMZO bilan imzolash"}</Button>
+                </div>
+              )}
+              <p className="text-[11px] text-muted-foreground">OTP + ekranda chizilgan imzo oddiy elektron tasdiqdir; u malakali E-IMZO sifatida ko‘rsatilmaydi.</p>
+            </div>
           </>
         )}
 

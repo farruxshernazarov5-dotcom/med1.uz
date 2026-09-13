@@ -1,11 +1,11 @@
 import SocialVideoShowcase from "@/components/media/SocialVideoShowcase";
 import { useParams, Link } from "react-router-dom";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SEO from "@/components/SEO";
 import SectionLayout from "@/components/SectionLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import ShareButton from "@/components/ShareButton";
-import { Building2, MapPin, Phone, Clock, Star, Globe, Stethoscope, ArrowLeft } from "lucide-react";
+import { Building2, MapPin, Phone, Clock, Star, Globe, Stethoscope, ArrowLeft, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import clinicPolyclinicImg from "@/assets/clinic-polyclinic.webp";
 import clinicEmergencyImg from "@/assets/clinic-emergency.webp";
 import type { Clinic } from "@/data/clinics";
 import ClinicDoctorsSection from "@/components/doctors/ClinicDoctorsSection";
+import { supabase } from "@/integrations/supabase/client";
 
 const getClinicImage = (type: Clinic["type"]) => {
   if (type === "xususiy") return clinicPrivateImg;
@@ -29,14 +30,50 @@ const ClinicDetailPage = () => {
   const { clinicId } = useParams<{ clinicId: string }>();
   
   const allClinics = useMemo(() => [...clinics, ...externalClinics], []);
-  const clinic = useMemo(() => allClinics.find(c => c.id === clinicId), [clinicId, allClinics]);
+  const staticClinic = useMemo(() => allClinics.find(c => c.id === clinicId), [clinicId, allClinics]);
+  const [registeredClinic, setRegisteredClinic] = useState<Clinic | null>(null);
+  const [loading, setLoading] = useState(!staticClinic);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    if (staticClinic || !clinicId) { setLoading(false); return; }
+    let alive = true;
+    setLoading(true);
+    setLoadError(false);
+    supabase.from("registered_clinics").select("*").eq("id", clinicId).eq("is_active", true).maybeSingle()
+      .then(({ data, error }) => {
+        if (!alive) return;
+        if (error) setLoadError(true);
+        if (data) {
+          const hours = data.working_hours as Record<string, unknown> | null;
+          setRegisteredClinic({
+            id: data.id, name: data.name, type: data.category === "davlat" ? "davlat" : "xususiy",
+            region: data.service_city || "O‘zbekiston", city: data.service_city || "", district: "",
+            address: data.address || "Manzil ko‘rsatilmagan", landmark: "",
+            phone: [data.phone, data.additional_phone].filter((phone): phone is string => Boolean(phone)),
+            specialties: data.specialties || [], amenities: data.amenities || [],
+            workingHours: typeof hours?.common === "string" ? hours.common : "Ish vaqti ko‘rsatilmagan",
+            description: data.description || `${data.name} — Med1.uz tizimida ro‘yxatdan o‘tgan tibbiy muassasa.`,
+            rating: 0, reviewCount: 0, logo: data.logo_url || "", image: data.logo_url || "", specialists: [], reviews: [],
+            coordinates: data.latitude && data.longitude ? { lat: data.latitude, lng: data.longitude } : undefined,
+            website: data.website || undefined, logoUrl: data.logo_url || undefined,
+            socialLinks: (data.social_links as Record<string, string | null> | null) || null,
+          });
+        }
+        setLoading(false);
+      });
+    return () => { alive = false; };
+  }, [clinicId, staticClinic]);
+
+  const clinic = staticClinic || registeredClinic;
+  if (loading) return <div className="min-h-[50vh] flex items-center justify-center"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>;
 
   if (!clinic) {
     return (
       <SectionLayout title="Klinika topilmadi" subtitle="" icon={<Building2 className="w-7 h-7 text-primary-foreground" />}>
         <div className="text-center py-16">
           <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <p className="text-lg font-semibold text-foreground mb-4">Klinika topilmadi</p>
+          <p className="text-lg font-semibold text-foreground mb-4">{loadError ? "Ma’lumotni yuklab bo‘lmadi" : "Klinika topilmadi"}</p>
           <Link to="/clinics">
             <Button><ArrowLeft className="w-4 h-4 mr-2" /> Klinikalarga qaytish</Button>
           </Link>
@@ -77,7 +114,7 @@ const ClinicDetailPage = () => {
 
       {/* Hero image */}
       <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden mb-6">
-        <img src={getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover" />
+        <img src={clinic.image || clinic.logoUrl || getClinicImage(clinic.type)} alt={clinic.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4">
           <div className="flex items-center gap-2 flex-wrap">

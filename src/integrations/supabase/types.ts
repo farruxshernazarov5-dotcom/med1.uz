@@ -1898,6 +1898,50 @@ export type Database = {
           },
         ]
       }
+      contract_signature_challenges: {
+        Row: {
+          canonical_payload: string
+          challenge_id: string
+          consumed_at: string | null
+          contract_id: string
+          created_at: string
+          document_hash: string
+          expires_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          canonical_payload: string
+          challenge_id: string
+          consumed_at?: string | null
+          contract_id: string
+          created_at?: string
+          document_hash: string
+          expires_at: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          canonical_payload?: string
+          challenge_id?: string
+          consumed_at?: string | null
+          contract_id?: string
+          created_at?: string
+          document_hash?: string
+          expires_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_signature_challenges_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_signature_otps: {
         Row: {
           attempts: number
@@ -1947,8 +1991,14 @@ export type Database = {
       }
       contract_signatures: {
         Row: {
+          certificate_issuer: string | null
+          certificate_serial: string | null
+          certificate_subject: string | null
+          certificate_valid_from: string | null
+          certificate_valid_until: string | null
           contract_id: string
           device_type: string | null
+          document_hash: string | null
           geo_city: string | null
           geo_country: string | null
           id: string
@@ -1957,6 +2007,7 @@ export type Database = {
           method: Database["public"]["Enums"]["signature_method"]
           otp_channel: string | null
           otp_verified: boolean
+          pkcs7_signature: string | null
           revoked_at: string | null
           revoked_reason: string | null
           signature_hash: string
@@ -1968,10 +2019,18 @@ export type Database = {
           signer_phone: string | null
           signer_role: Database["public"]["Enums"]["contract_party_role"]
           user_agent: string | null
+          verification_details: Json
+          verification_status: string
         }
         Insert: {
+          certificate_issuer?: string | null
+          certificate_serial?: string | null
+          certificate_subject?: string | null
+          certificate_valid_from?: string | null
+          certificate_valid_until?: string | null
           contract_id: string
           device_type?: string | null
+          document_hash?: string | null
           geo_city?: string | null
           geo_country?: string | null
           id?: string
@@ -1980,6 +2039,7 @@ export type Database = {
           method?: Database["public"]["Enums"]["signature_method"]
           otp_channel?: string | null
           otp_verified?: boolean
+          pkcs7_signature?: string | null
           revoked_at?: string | null
           revoked_reason?: string | null
           signature_hash: string
@@ -1991,10 +2051,18 @@ export type Database = {
           signer_phone?: string | null
           signer_role?: Database["public"]["Enums"]["contract_party_role"]
           user_agent?: string | null
+          verification_details?: Json
+          verification_status?: string
         }
         Update: {
+          certificate_issuer?: string | null
+          certificate_serial?: string | null
+          certificate_subject?: string | null
+          certificate_valid_from?: string | null
+          certificate_valid_until?: string | null
           contract_id?: string
           device_type?: string | null
+          document_hash?: string | null
           geo_city?: string | null
           geo_country?: string | null
           id?: string
@@ -2003,6 +2071,7 @@ export type Database = {
           method?: Database["public"]["Enums"]["signature_method"]
           otp_channel?: string | null
           otp_verified?: boolean
+          pkcs7_signature?: string | null
           revoked_at?: string | null
           revoked_reason?: string | null
           signature_hash?: string
@@ -2014,6 +2083,8 @@ export type Database = {
           signer_phone?: string | null
           signer_role?: Database["public"]["Enums"]["contract_party_role"]
           user_agent?: string | null
+          verification_details?: Json
+          verification_status?: string
         }
         Relationships: [
           {
@@ -18253,7 +18324,7 @@ export type Database = {
         | "expired"
         | "cancelled"
       referral_tier_level: "bronze" | "silver" | "gold" | "platinum" | "vip"
-      signature_method: "otp" | "canvas" | "otp_canvas" | "checkbox"
+      signature_method: "otp" | "canvas" | "otp_canvas" | "checkbox" | "eimzo"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -18441,7 +18512,7 @@ export const Constants = {
         "cancelled",
       ],
       referral_tier_level: ["bronze", "silver", "gold", "platinum", "vip"],
-      signature_method: ["otp", "canvas", "otp_canvas", "checkbox"],
+      signature_method: ["otp", "canvas", "otp_canvas", "checkbox", "eimzo"],
     },
   },
 } as const

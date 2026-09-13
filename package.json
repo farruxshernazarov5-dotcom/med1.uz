@@ -60,6 +60,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "eimzo-client": "^0.2.1",
     "embla-carousel-react": "^8.6.0",
     "html5-qrcode": "^2.3.8",
     "i18next": "^26.2.0",

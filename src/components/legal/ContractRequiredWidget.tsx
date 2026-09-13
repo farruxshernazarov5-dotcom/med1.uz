@@ -49,7 +49,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
       template_id: template.id, owner_id: user.id,
       title_uz: template.title_uz, title_ru: template.title_ru,
       body_uz: template.body_uz, body_ru: template.body_ru,
-      language: "uz", status: "draft",
+      language: "uz", status: "draft", approval_status: "not_required",
     }).select().single();
     if (error) return;
     setContract(data); setSignOpen(true);
@@ -63,8 +63,8 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
   const steps = [
     "Shartnoma matnini o'qing",
     "Muassasa ma'lumotlarini tasdiqlang",
-    "Telefoningizga kelgan SMS kodni kiriting",
-    "Imzoni ekranda chizib, yakunlang",
+    "E-IMZO sertifikatini tanlang",
+    "PKCS#7 elektron imzoni yarating va yuboring",
   ];
 
   return (
@@ -92,7 +92,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
             ) : (
               <div className="mt-3 rounded-lg bg-background/70 border border-border p-3">
                 <p className="text-xs font-semibold text-foreground mb-1.5">
-                  Shartnoma to'liq onlayn imzolanadi — qog'oz nusxa shart emas
+                  Shartnomani E-IMZO orqali onlayn imzolash mumkin
                 </p>
                 <ol className="text-xs text-muted-foreground space-y-1">
                   {steps.map((s, i) => (
@@ -105,7 +105,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
                   ))}
                 </ol>
                 <p className="text-[11px] text-muted-foreground mt-2">
-                  Imzolangan shartnoma PDF ko'rinishida saqlanadi va QR kod orqali istalgan vaqtda tekshiriladi.
+                  Imzo dalili serverda tekshirilgach shartnoma faollashadi. PDF va QR orqali holatini tekshirish mumkin.
                 </p>
               </div>
             )}

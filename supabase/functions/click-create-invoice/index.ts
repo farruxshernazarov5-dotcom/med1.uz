@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkoutUrl, clickEnv, validateClickConfig } from "../_shared/click.ts";
+import { requireSubscriptionContract } from "../_shared/subscription-contract.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,6 +72,12 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(supabaseUrl, serviceKey);
+    const contractGate = await requireSubscriptionContract(admin, userId, purpose);
+    if (!contractGate.allowed) {
+      return new Response(JSON.stringify({ error: "Pullik obunadan oldin elektron shartnomani imzolash shart", code: "CONTRACT_REQUIRED", contract_slug: contractGate.slug }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const { data: payment, error: payErr } = await admin
       .from("platform_payments")
@@ -81,7 +88,7 @@ Deno.serve(async (req) => {
         purpose,
         reference_id,
         status: "pending",
-        metadata: { return_url },
+        metadata: { return_url, contract_id: contractGate.contractId },
       })
       .select()
       .single();

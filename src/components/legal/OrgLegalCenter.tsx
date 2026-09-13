@@ -65,8 +65,8 @@ const OrgLegalCenter = ({ contractSlug, moduleTitle }: Props) => (
     </div>
 
     <Card className="p-4 text-xs text-muted-foreground leading-relaxed">
-      Barcha hujjatlar MED-ALL AI SYSTEM MCHJ tomonidan tasdiqlangan. Shartnomalar elektron imzo
-      (OTP + qo'lyozma imzo) orqali imzolanadi va QR kod bilan tekshiriladi.
+      Barcha hujjatlar MED-ALL AI SYSTEM MCHJ tomonidan tasdiqlangan. Tarif shartnomalari E-IMZO
+      sertifikati bilan imzolanadi, imzo dalillari saqlanadi va QR kod orqali tekshiriladi.
     </Card>
   </div>
 );
