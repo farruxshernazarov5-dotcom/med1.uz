@@ -22,6 +22,10 @@ async function sha256(text: string) {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function json(status: number, body: unknown) {
+  return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+}
+
 async function sendTelegram(chatId: string, text: string) {
   if (!TELEGRAM_BOT_TOKEN || !chatId) return;
   await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -62,7 +66,7 @@ Deno.serve(async (req) => {
     // Load contract & verify access
     const { data: contract } = await admin
       .from("contracts")
-      .select("id, owner_id, counterparty_id, status, approval_status, required_signatures, title_uz")
+      .select("id, owner_id, counterparty_id, status, approval_status, required_signatures, title_uz, body_uz, contract_number, hash_id")
       .eq("id", contractId)
       .maybeSingle();
     if (!contract) {
@@ -74,6 +78,57 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (action === "get_eimzo_challenge") {
+      if (contract.approval_status === "rejected" || contract.status === "cancelled") return json(400, { error: "Shartnoma imzolash uchun mavjud emas" });
+      if (contract.approval_status === "pending") return json(400, { error: "Shartnoma admin tomonidan tasdiqlanmagan" });
+      const challengeId = crypto.randomUUID();
+      const issuedAt = new Date().toISOString();
+      const documentHash = await sha256(`${contract.id}|${contract.contract_number}|${contract.title_uz}|${contract.body_uz}`);
+      const canonicalPayload = JSON.stringify({ version: 1, purpose: "MED1_CONTRACT_SIGNATURE", contract_id: contract.id, contract_number: contract.contract_number, document_hash: documentHash, signer_id: user.id, challenge_id: challengeId, issued_at: issuedAt });
+      const { error } = await admin.from("contract_notifications").insert({
+        contract_id: contractId, user_id: user.id, channel: "system", kind: "eimzo_challenge",
+        payload: { challenge_id: challengeId, canonical_payload: canonicalPayload, document_hash: documentHash, expires_at: new Date(Date.now() + 10 * 60_000).toISOString(), consumed: false },
+      });
+      if (error) return json(500, { error: "E-IMZO so‘rovini yaratib bo‘lmadi" });
+      return json(200, { challenge_id: challengeId, canonical_payload: canonicalPayload, document_hash: documentHash, expires_in: 600 });
+    }
+
+    if (action === "sign_eimzo") {
+      const pkcs7 = typeof body.pkcs7 === "string" ? body.pkcs7 : "";
+      const certificate = body.certificate || {};
+      if (!pkcs7 || pkcs7.length < 100 || !body.challenge_id || !certificate.serial_number || !body.signer_name) return json(400, { error: "E-IMZO ma’lumotlari to‘liq emas" });
+      const { data: challenge } = await admin.from("contract_notifications").select("id,payload").eq("contract_id", contractId).eq("user_id", user.id).eq("kind", "eimzo_challenge").order("created_at", { ascending: false }).limit(1).maybeSingle();
+      const payload = challenge?.payload as Record<string, any> | undefined;
+      if (!challenge || payload?.challenge_id !== body.challenge_id || payload?.consumed || new Date(payload?.expires_at || 0) < new Date()) return json(400, { error: "E-IMZO so‘rovi eskirgan. Qaytadan urinib ko‘ring" });
+
+      let verificationStatus = "pending";
+      let verificationDetails: Record<string, unknown> = { client_certificate: certificate, reason: "Accredited verifier is not configured" };
+      const verifierUrl = Deno.env.get("EIMZO_VERIFY_URL");
+      const verifierToken = Deno.env.get("EIMZO_VERIFY_TOKEN");
+      if (verifierUrl) {
+        const verifyResponse = await fetch(verifierUrl, { method: "POST", headers: { "Content-Type": "application/json", ...(verifierToken ? { Authorization: `Bearer ${verifierToken}` } : {}) }, body: JSON.stringify({ pkcs7, data: payload.canonical_payload, document_hash: payload.document_hash }) });
+        const verifyData = await verifyResponse.json().catch(() => ({}));
+        verificationStatus = verifyResponse.ok && (verifyData.valid === true || verifyData.verified === true) ? "verified" : "failed";
+        verificationDetails = { provider_status: verifyResponse.status, response: verifyData };
+      }
+      if (verificationStatus === "failed") return json(400, { error: "E-IMZO server tekshiruvidan o‘tmadi" });
+
+      const signatureHash = await sha256(pkcs7);
+      const { data: sig, error: sigError } = await admin.from("contract_signatures").insert({
+        contract_id: contractId, signer_id: user.id, signer_name: body.signer_name, signer_email: user.email,
+        method: "eimzo", signature_hash: signatureHash, pkcs7_signature: pkcs7,
+        certificate_serial: certificate.serial_number, certificate_subject: certificate.subject || body.signer_name,
+        certificate_issuer: certificate.issuer || null, certificate_valid_from: certificate.valid_from || null,
+        certificate_valid_until: certificate.valid_until || null, document_hash: payload.document_hash,
+        verification_status: verificationStatus, verification_details: verificationDetails,
+        otp_verified: false, ip_address: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+        user_agent: req.headers.get("user-agent") || null, is_valid: verificationStatus === "verified",
+      }).select().single();
+      if (sigError) return json(500, { error: "E-IMZO dalilini saqlab bo‘lmadi" });
+      await admin.from("contract_notifications").update({ payload: { ...payload, consumed: true } }).eq("id", challenge.id);
+      return json(200, { success: true, signature_id: sig.id, verification_status: verificationStatus });
     }
 
     // === SEND OTP ===
