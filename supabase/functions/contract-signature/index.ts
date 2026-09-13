@@ -111,15 +111,36 @@ Deno.serve(async (req) => {
           `📜 <b>MED1.UZ — Shartnoma imzolash kodi</b>\n\nShartnoma: <code>${contract.title_uz}</code>\nKod: <code>${otp}</code>\n\n⏱ 10 daqiqa amal qiladi.`,
         );
       } else {
-        // Email: enqueue via existing transactional email queue if available
+        // Email: real yuborish
+        const subject = "MED1.UZ — Shartnoma imzolash kodi";
+        const html = `
+          <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto">
+            <h2 style="color:#0A2540">MED1.UZ — Shartnoma imzolash</h2>
+            <p>Shartnoma: <b>${contract.title_uz}</b></p>
+            <p>Tasdiqlash kodi:</p>
+            <p style="font-size:30px;letter-spacing:6px;font-weight:700;color:#2F80ED">${otp}</p>
+            <p style="color:#64748B">Kod 10 daqiqa amal qiladi. Kodni hech kimga bermang.</p>
+          </div>`;
+        let emailSent = false;
+        try {
+          const res = await sendRawEmail({
+            to: destination,
+            subject,
+            html,
+            label: "contract_signature_otp",
+            idempotencyKey: `contract-otp-${contractId}-${otp}`,
+          });
+          emailSent = res.sent;
+        } catch (e) {
+          console.error("[contract-signature] email send failed", e);
+        }
         await admin.from("contract_notifications").insert({
           contract_id: contractId,
           user_id: user.id,
           channel: "email",
           kind: "otp_email",
-          payload: { otp, destination, subject: "Shartnoma imzolash kodi" },
+          payload: { destination, subject, sent: emailSent },
         }).catch(() => {});
-        console.log(`[contract-signature] OTP for ${destination}: ${otp}`);
       }
 
       return new Response(JSON.stringify({ success: true, channel, destination_masked: destination.replace(/(.{2}).*(.{2})/, "$1***$2") }), {
