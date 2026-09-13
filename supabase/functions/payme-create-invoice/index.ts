@@ -3,6 +3,7 @@
 // URL formati: https://checkout.paycom.uz/base64(m=MERCHANT;ac.order_id=UUID;a=AMOUNT_TIYIN;c=RETURN_URL)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildFiscalDetail } from "../_shared/payme.ts";
+import { requireSubscriptionContract } from "../_shared/subscription-contract.ts";
 
 
 const corsHeaders = {
@@ -55,6 +56,8 @@ Deno.serve(async (req) => {
     if (!merchantId) return json(500, { error: "Payme merchant sozlanmagan" });
 
     const admin = createClient(supabaseUrl, serviceKey);
+    const contractGate = await requireSubscriptionContract(admin, userId, purpose);
+    if (!contractGate.allowed) return json(403, { error: "Pullik obunadan oldin elektron shartnomani imzolash shart", code: "CONTRACT_REQUIRED", contract_slug: contractGate.slug });
     const { data: payment, error: payErr } = await admin
       .from("platform_payments")
       .insert({
@@ -64,7 +67,7 @@ Deno.serve(async (req) => {
         purpose,
         reference_id,
         status: "pending",
-        metadata: { return_url, environment },
+        metadata: { return_url, environment, contract_id: contractGate.contractId },
       })
       .select()
       .single();
