@@ -17914,6 +17914,27 @@ export type Database = {
         Returns: undefined
       }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      get_nearby_medical_services: {
+        Args: {
+          _lat: number
+          _limit?: number
+          _lng: number
+          _radius_km?: number
+        }
+        Returns: {
+          address: string
+          city: string
+          created_at: string
+          distance_km: number
+          id: string
+          latitude: number
+          logo_url: string
+          longitude: number
+          name: string
+          org_type: string
+          phone: string
+        }[]
+      }
       get_partner_organizations: {
         Args: { _limit?: number }
         Returns: {

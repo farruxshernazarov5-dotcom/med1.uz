@@ -486,6 +486,9 @@ const ClinicsPage = () => {
         ))}
       </div>
 
+      {/* Yangi ro'yxatdan o'tgan hamkorlar */}
+      <NewPartnerOrgs types={["clinic"]} title="Yangi qo'shilgan klinikalar" />
+
       {/* Add Clinic */}
       <AddClinicForm />
 

@@ -123,10 +123,9 @@ const Med1TopMyAdsPage = lazy(() => import("./pages/Med1TopMyAdsPage"));
 const SponsorProfilePage = lazy(() => import("./pages/SponsorProfilePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
-import FloatingAIPanel from "./components/FloatingAIPanel";
+import FloatingDock from "./components/FloatingDock";
 import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
 import { GeoPromoProvider } from "./components/geo/GeoPromoProvider";
-import FloatingServicesPanel from "./components/FloatingServicesPanel";
 import HambiReturnButton from "./components/partner/HambiReturnButton";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
@@ -160,8 +159,7 @@ const App = () => (
 
           <YandexAdsManager />
           <FloatingAISearch />
-          <FloatingAIPanel />
-          <FloatingServicesPanel />
+          <FloatingDock />
           <SmartMatchPanel />
           <GeoPromoProvider />
           <CookieConsent />
