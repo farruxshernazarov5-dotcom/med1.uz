@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Phone, Mail, MessageSquare, Send, Crown, CheckCircle2, CreditCard } from "lucide-react";
 import PaymentMethodPicker from "@/components/payments/PaymentMethodPicker";
+import ContractRequiredWidget from "@/components/legal/ContractRequiredWidget";
+import { contractSlugForCategory } from "@/lib/subscriptionContracts";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SubscriptionContactModalProps {
   open: boolean;
@@ -23,9 +26,12 @@ const SubscriptionContactModal = ({
   planPrice,
   category,
 }: SubscriptionContactModalProps) => {
+  const { user } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"contact" | "pay">("contact");
+  const [contractActive, setContractActive] = useState(false);
+  const contractSlug = contractSlugForCategory(category);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -35,6 +41,15 @@ const SubscriptionContactModal = ({
   });
 
   const numericPrice = Number((planPrice || "0").replace(/\s/g, "").replace(/,/g, "")) || 0;
+
+  useEffect(() => {
+    if (!open || !user || mode !== "pay") return;
+    let alive = true;
+    (supabase as any).from("contracts").select("id,status,contract_templates!inner(slug)")
+      .eq("owner_id", user.id).eq("status", "active").eq("contract_templates.slug", contractSlug)
+      .limit(1).maybeSingle().then(({ data }: any) => { if (alive) setContractActive(Boolean(data)); });
+    return () => { alive = false; };
+  }, [open, user, mode, contractSlug]);
 
   const handleSubmit = async () => {
     if (!form.name || !form.phone) {
@@ -131,13 +146,20 @@ const SubscriptionContactModal = ({
             )}
 
             {mode === "pay" && numericPrice > 0 ? (
-              <div className="mt-4">
-                <PaymentMethodPicker
-                  amount={numericPrice}
-                  purpose={`subscription:${category || "general"}:${planName || ""}`}
-                  referenceId={`SUB-${Date.now()}`}
-                  allowed={["click", "payme", "cash", "bank"]}
-                />
+              <div className="mt-4 space-y-4">
+                {!contractActive && (
+                  <ContractRequiredWidget templateSlug={contractSlug} moduleTitle="Pullik obuna shartnomasi" />
+                )}
+                {contractActive ? (
+                  <PaymentMethodPicker
+                    amount={numericPrice}
+                    purpose={`subscription:${category || "general"}:${planName || ""}`}
+                    referenceId={`SUB-${Date.now()}`}
+                    allowed={["click", "payme", "cash", "bank"]}
+                  />
+                ) : (
+                  <p className="text-sm text-center text-amber-700">To‘lov shartnoma imzolanib, tekshirilgandan keyin ochiladi.</p>
+                )}
               </div>
             ) : (
             <>

@@ -39,8 +39,9 @@ interface UnifiedClinic {
   longitude: number | null;
   logo_url: string | null;
   working_hours: any;
-  source: "registered" | "local" | "external";
+  source: "registered" | "local" | "external" | "google";
   linkTo: string;
+  rating?: number | null;
 }
 
 const PatientNearby = () => {
@@ -54,6 +55,8 @@ const PatientNearby = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
 
   const [nearbyOrgs, setNearbyOrgs] = useState<any[]>([]);
+  const [googlePlaces, setGooglePlaces] = useState<any[]>([]);
+  const [locationError, setLocationError] = useState("");
 
   useEffect(() => {
     supabase
@@ -85,18 +88,38 @@ const PatientNearby = () => {
     };
   }, [userLocation?.lat, userLocation?.lng]);
 
+  useEffect(() => {
+    if (!userLocation || !user) return;
+    let alive = true;
+    const type = filter === "diagnostic" ? "diagnostics" : filter === "lab" ? "laboratory" : filter;
+    supabase.functions.invoke("google-nearby-medical", {
+      body: { latitude: userLocation.lat, longitude: userLocation.lng, radius_meters: 15000, type },
+    }).then(({ data, error }) => {
+      if (!alive) return;
+      setGooglePlaces(error || data?.error ? [] : data?.places || []);
+    });
+    return () => { alive = false; };
+  }, [userLocation?.lat, userLocation?.lng, filter, user]);
+
   const getLocation = () => {
     setLocating(true);
+    setLocationError("");
+    if (!("geolocation" in navigator)) {
+      setLocationError("Qurilmangiz joylashuvni aniqlashni qo‘llamaydi");
+      setLocating(false);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocating(false);
       },
       () => {
-        setUserLocation({ lat: 41.2995, lng: 69.2401 });
+        setUserLocation(null);
+        setLocationError("Yaqin xizmatlarni ko‘rish uchun joylashuvga ruxsat bering");
         setLocating(false);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true, maximumAge: 30000, timeout: 15000 }
     );
   };
 
@@ -192,6 +215,16 @@ const PatientNearby = () => {
       });
     });
 
+    googlePlaces.forEach((place: any) => {
+      result.push({
+        id: place.id, name: place.name, address: place.address || "", phone: place.phone || null,
+        category: place.primary_type || "tibbiy xizmat", specialties: [],
+        latitude: place.latitude, longitude: place.longitude, logo_url: null,
+        working_hours: place.open_now === null ? null : { open_now: place.open_now },
+        source: "google", linkTo: place.maps_url || "#", rating: place.rating,
+      });
+    });
+
     // Deduplicate by name
     const seen = new Set<string>();
     return result.filter((c) => {
@@ -200,7 +233,7 @@ const PatientNearby = () => {
       seen.add(key);
       return true;
     });
-  }, [registeredClinics, nearbyOrgs]);
+  }, [registeredClinics, nearbyOrgs, googlePlaces]);
 
   // Collect unique specialties
   const allSpecialties = useMemo(() => {
@@ -226,11 +259,11 @@ const PatientNearby = () => {
       })
       .map((c) => ({
         ...c,
-        distance: userLocation && c.latitude && c.longitude
+        distance: userLocation && c.latitude != null && c.longitude != null
           ? calcDistance(userLocation.lat, userLocation.lng, c.latitude, c.longitude)
-          : 999,
+          : null,
       }))
-      .sort((a, b) => sortBy === "distance" ? a.distance - b.distance : a.name.localeCompare(b.name, "uz"));
+      .sort((a, b) => sortBy === "distance" ? (a.distance ?? Infinity) - (b.distance ?? Infinity) : a.name.localeCompare(b.name, "uz"));
   }, [allClinics, filter, selectedSpecialty, userLocation, sortBy]);
 
   const is24h = (wh: any) => {
@@ -247,6 +280,7 @@ const PatientNearby = () => {
           <Locate className="w-4 h-4 mr-1" /> {locating ? "Aniqlanmoqda..." : "Joylashuvni yangilash"}
         </Button>
       </div>
+      {locationError && <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-foreground">{locationError}</div>}
 
       {/* Map */}
       {userLocation && (
@@ -324,8 +358,8 @@ const PatientNearby = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
             { label: "Jami topildi", value: clinicsWithDistance.length + " ta", sub: "Faol muassasalar", icon: Building2 },
-            { label: "Yaqin atrofda", value: clinicsWithDistance.filter((c) => c.distance < 5).length + " ta", sub: "5 km ichida", icon: Navigation },
-            { label: "Eng yaqin", value: clinicsWithDistance[0]?.name?.slice(0, 18), sub: `${clinicsWithDistance[0]?.distance < 999 ? clinicsWithDistance[0]?.distance?.toFixed(1) + " km" : "—"}`, icon: MapPin },
+            { label: "Yaqin atrofda", value: clinicsWithDistance.filter((c) => c.distance != null && c.distance < 5).length + " ta", sub: "5 km ichida", icon: Navigation },
+            { label: "Eng yaqin", value: clinicsWithDistance.find((c) => c.distance != null)?.name?.slice(0, 18) || "—", sub: clinicsWithDistance.find((c) => c.distance != null)?.distance?.toFixed(1) ? `${clinicsWithDistance.find((c) => c.distance != null)?.distance?.toFixed(1)} km` : "—", icon: MapPin },
             { label: "24/7 xizmatlar", value: clinicsWithDistance.filter((c) => is24h(c.working_hours)).length + " ta", sub: "Doimo ochiq", icon: Clock },
           ].map((s) => (
             <div key={s.label} className="bg-card rounded-xl border border-border p-4 shadow-card">
@@ -351,6 +385,8 @@ const PatientNearby = () => {
             <Link
               key={c.id + c.source}
               to={c.linkTo}
+              target={c.source === "google" ? "_blank" : undefined}
+              rel={c.source === "google" ? "noopener noreferrer" : undefined}
               className="block bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-4">
@@ -370,6 +406,7 @@ const PatientNearby = () => {
                     {c.source === "registered" && (
                       <Badge className="bg-tech-purple/10 text-tech-purple text-[10px]">✓ Hamkor</Badge>
                     )}
+                    {c.source === "google" && <Badge variant="outline" className="text-[10px]">Google ma’lumoti</Badge>}
                   </div>
                   {c.address && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -388,7 +425,7 @@ const PatientNearby = () => {
                   )}
                 </div>
                 <div className="text-right shrink-0">
-                  {c.distance < 999 && (
+                  {c.distance != null && (
                     <p className="text-sm font-bold text-primary">{c.distance.toFixed(1)} km</p>
                   )}
                   {c.phone && (
