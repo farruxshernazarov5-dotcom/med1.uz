@@ -18,10 +18,13 @@ export async function requireSubscriptionContract(admin: SupabaseClient, userId:
   const category = purpose.split(":")[1]?.toLowerCase() || "general";
   const slug = CONTRACT_BY_CATEGORY[category] || CONTRACT_BY_CATEGORY.general;
   const { data, error } = await admin.from("contracts")
-    .select("id,status,contract_templates!inner(slug)")
+    .select("id,status,contract_templates!inner(slug),contract_signatures!inner(method,verification_status,is_valid)")
     .eq("owner_id", userId)
     .eq("status", "active")
     .eq("contract_templates.slug", slug)
+    .eq("contract_signatures.method", "eimzo")
+    .eq("contract_signatures.verification_status", "verified")
+    .eq("contract_signatures.is_valid", true)
     .limit(1)
     .maybeSingle();
   if (error) throw error;
