@@ -19,7 +19,7 @@ import {
   clinicMedicalTerms,
   type Clinic,
 } from "@/data/clinics";
-import { externalClinics } from "@/data/clinicsExternal";
+import NewPartnerOrgs from "@/components/org/NewPartnerOrgs";
 import ShareButton from "@/components/ShareButton";
 import clinicPrivateImg from "@/assets/clinic-private.webp";
 import clinicStateImg from "@/assets/clinic-state.webp";
