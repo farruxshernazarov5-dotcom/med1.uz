@@ -11,6 +11,7 @@ import {
   PAYME_TIMEOUT_MS,
   buildFiscalDetail,
   verifyPaymeAuth,
+  paymeAuthDebug,
 } from "../_shared/payme.ts";
 
 const admin = createClient(
