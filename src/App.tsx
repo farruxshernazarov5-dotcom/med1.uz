@@ -263,6 +263,7 @@ const App = () => (
                 <Route path="/admin/hambi-readiness" element={<HambiReadinessPage />} />
                 <Route path="/admin/payment-sandbox" element={<PaymentSandboxPage />} />
                 <Route path="/admin/payme" element={<PaymeAdminPage />} />
+                <Route path="/kassa/payme" element={<PaymeCashierPage />} />
                 <Route path="/admin/tax-reports" element={<TaxReportsPage />} />
                 <Route path="/admin/api-center" element={<APICenterPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
