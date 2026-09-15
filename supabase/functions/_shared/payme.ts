@@ -58,13 +58,47 @@ export function buildFiscalDetail(
   return { receipt_type: 0, items: [fiscal] };
 }
 
-/** Basic auth tekshiruvi: base64("Paycom:KEY"). Test va live kalitlar qo'llab-quvvatlanadi. */
-export function verifyPaymeAuth(authHeader: string | null): boolean {
-  if (!authHeader) return false;
-  const keys = [
+function paymeKeys(): string[] {
+  return [
     Deno.env.get("PAYME_SECRET_KEY"),
     Deno.env.get("PAYME_SECRET_KEY_TEST"),
     Deno.env.get("PAYME_TEST_KEY"),
-  ].filter((k): k is string => Boolean(k && k.trim()));
-  return keys.some((key) => authHeader === "Basic " + btoa(`Paycom:${key}`));
+  ]
+    // Sozlamalarda tasodifiy bo'sh joy/yangi qator bo'lsa ham ishlashi uchun tozalaymiz.
+    .map((k) => (k ?? "").trim())
+    .filter((k) => k.length > 0);
+}
+
+/**
+ * Basic auth tekshiruvi: base64("Paycom:KEY"). Test va live kalitlar qo'llab-quvvatlanadi.
+ * Paycom ba'zan login sifatida "Paycom" o'rniga merchant ID yuborishi mumkin,
+ * shuning uchun faqat parol (kalit) qismini solishtiramiz.
+ */
+export function verifyPaymeAuth(authHeader: string | null): boolean {
+  if (!authHeader) return false;
+  const match = /^basic\s+(.+)$/i.exec(authHeader.trim());
+  if (!match) return false;
+
+  let decoded = "";
+  try {
+    decoded = atob(match[1].trim());
+  } catch {
+    return false;
+  }
+
+  const sep = decoded.indexOf(":");
+  if (sep < 0) return false;
+  const password = decoded.slice(sep + 1).trim();
+  if (!password) return false;
+
+  return paymeKeys().some((key) => key === password);
+}
+
+/** Diagnostika uchun (maxfiy qiymatlarni oshkor qilmaydi). */
+export function paymeAuthDebug(authHeader: string | null) {
+  return {
+    auth_present: Boolean(authHeader),
+    auth_scheme: authHeader ? authHeader.trim().split(/\s+/)[0] : null,
+    keys_configured: paymeKeys().length,
+  };
 }

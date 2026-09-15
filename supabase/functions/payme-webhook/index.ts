@@ -11,6 +11,7 @@ import {
   PAYME_TIMEOUT_MS,
   buildFiscalDetail,
   verifyPaymeAuth,
+  paymeAuthDebug,
 } from "../_shared/payme.ts";
 
 const admin = createClient(
@@ -60,10 +61,16 @@ Deno.serve(async (req) => {
   }
 
   // 1) Autorizatsiya
-  if (!verifyPaymeAuth(req.headers.get("Authorization"))) {
+  const authHeader = req.headers.get("Authorization") ?? req.headers.get("authorization");
+  if (!verifyPaymeAuth(authHeader)) {
+    const dbg = paymeAuthDebug(authHeader);
     return await send(
       { jsonrpc: "2.0", id: null, error: ERR.INVALID_AUTH },
-      { method: "auth", status: "error", error_note: "invalid basic auth" },
+      {
+        method: "auth",
+        status: "error",
+        error_note: `invalid basic auth (present=${dbg.auth_present}, scheme=${dbg.auth_scheme}, keys=${dbg.keys_configured})`,
+      },
     );
   }
 
