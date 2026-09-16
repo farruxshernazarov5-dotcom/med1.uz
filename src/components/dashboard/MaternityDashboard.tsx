@@ -66,6 +66,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 ];
 
 const MaternityDashboard = () => {
+  const shellPlan = useSaasPlan("maternity");
   const { user } = useAuth();
   const [center, setCenter] = useState<any>(null);
   const [loading, setLoading] = useState(true);

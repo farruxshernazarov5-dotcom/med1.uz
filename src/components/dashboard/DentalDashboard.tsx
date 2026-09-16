@@ -16,6 +16,7 @@ import {
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import type { SidebarItem } from "./DashboardShell";
 import { writeAuditLog } from "@/utils/auditLog";
@@ -46,6 +47,7 @@ import DentalSettings from "@/components/dental/DentalSettings";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const DentalDashboard = () => {
+  const shellPlan = useSaasPlan("dental");
   const { user } = useAuth();
   const [clinic, setClinic] = useState<any>(null);
   const [patients, setPatients] = useState<any[]>([]);

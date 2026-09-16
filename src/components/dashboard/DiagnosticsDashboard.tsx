@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import type { SidebarItem } from "./DashboardShell";
 import DiagnosticsSubscription from "./DiagnosticsSubscription";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
@@ -41,6 +42,7 @@ import InsuranceModule from "@/components/insurance/InsuranceModule";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const DiagnosticsDashboard = () => {
+  const shellPlan = useSaasPlan("diagnostics");
   const { user } = useAuth();
   const [center, setCenter] = useState<any>(null);
   const [loading, setLoading] = useState(true);
