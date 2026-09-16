@@ -20,6 +20,7 @@ import {
   type DiagnosticType,
 } from "@/data/diagnostics";
 import RegisteredCentersSection from "@/components/diagnostics/RegisteredCentersSection";
+import NewPartnerOrgs from "@/components/org/NewPartnerOrgs";
 import { regions } from "@/data/clinics";
 import diagMrtImg from "@/assets/diag-mrt.webp";
 import diagUziImg from "@/assets/diag-uzi.webp";
@@ -484,6 +485,8 @@ const DiagnosticsPage = () => {
       subtitle="O'zbekistondagi barcha diagnostika markazlari va tekshiruv turlari"
       icon={<Activity className="w-7 h-7 text-primary-foreground" />}
     >
+      <NewPartnerOrgs types={["diagnostics"]} title="Yangi qo'shilgan diagnostika markazlari" />
+
       {/* Medical Terms */}
       <MedTermsBanner />
 

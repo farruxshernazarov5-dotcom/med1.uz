@@ -16,6 +16,7 @@ import {
   type MaternityHospital,
 } from "@/data/maternity";
 import { regions } from "@/data/clinics";
+import NewPartnerOrgs from "@/components/org/NewPartnerOrgs";
 import maternityHospitalImg from "@/assets/maternity-hospital.webp";
 import maternityNurseryImg from "@/assets/maternity-nursery.webp";
 import maternityUltrasoundImg from "@/assets/maternity-ultrasound.webp";
@@ -404,6 +405,8 @@ const MaternityPage = () => {
 
   return (
     <SectionLayout title="Tug'ruqxonalar" subtitle="O'zbekistondagi davlat va xususiy tug'ruqxonalar" icon={<Baby className="w-7 h-7 text-primary-foreground" />}>
+      <NewPartnerOrgs types={["maternity"]} title="Yangi qo'shilgan tug'ruqxonalar" />
+
       {/* Top Logo Ticker */}
       <LogoTicker />
 
