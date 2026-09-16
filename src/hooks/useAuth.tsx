@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from "react
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 import { getStoredReferralCode, getStoredReferralMeta, clearReferralCode } from "@/lib/referralCapture";
+import { getPendingRole, clearPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 
 interface AuthContextType {
   user: User | null;
