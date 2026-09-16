@@ -175,18 +175,18 @@ const DoctorDashboard = () => {
     { id: "patients", label: "Bemorlar", icon: Users },
     { id: "appointments", label: "Qabullar", icon: Calendar },
     { id: "records", label: "Tibbiy yozuvlar", icon: FileText },
-    { id: "lab", label: "Laboratoriya", icon: FlaskConical },
-    { id: "plans", label: "Davolash kurslari", icon: Activity },
+    { id: "lab", label: "Laboratoriya", icon: FlaskConical, requiredTier: "starter" },
+    { id: "plans", label: "Davolash kurslari", icon: Activity, requiredTier: "starter" },
     { id: "prescriptions", label: "Retseptlar", icon: Pill },
-    { id: "telemed", label: "Telemeditsina", icon: Video },
-    { id: "billing", label: "Billing / Moliya", icon: Wallet },
+    { id: "telemed", label: "Telemeditsina", icon: Video, requiredTier: "pro" },
+    { id: "billing", label: "Billing / Moliya", icon: Wallet, requiredTier: "starter" },
     { id: "files", label: "Fayllar / Imaging", icon: ImageIcon },
-    { id: "posts", label: "Postlar / Kontent", icon: Megaphone },
-    { id: "promos", label: "Aksiyalar", icon: Gift },
+    { id: "posts", label: "Postlar / Kontent", icon: Megaphone, requiredTier: "starter" },
+    { id: "promos", label: "Aksiyalar", icon: Gift, requiredTier: "pro" },
     { id: "leads", label: "Bemor xabarlari", icon: Inbox },
-    { id: "stats", label: "Statistika & AI", icon: Sparkles },
-    { id: "analytics", label: "Brend Analitika", icon: BarChart3 },
-    { id: "audit", label: "Audit Log & Xavfsizlik", icon: Shield },
+    { id: "stats", label: "Statistika & AI", icon: Sparkles, requiredTier: "pro" },
+    { id: "analytics", label: "Brend Analitika", icon: BarChart3, requiredTier: "pro" },
+    { id: "audit", label: "Audit Log & Xavfsizlik", icon: Shield, requiredTier: "enterprise" },
     { id: "profile", label: "Profil", icon: User },
     { id: "schedule", label: "Jadval", icon: Clock },
     { id: "reviews", label: "Sharhlar", icon: Star },
@@ -194,7 +194,7 @@ const DoctorDashboard = () => {
     { id: "subscription", label: "Obuna", icon: Crown },
     { id: "premium", label: "💎 Premium", icon: Crown },
     { id: "attendance", label: "Keldi-Ketdi", icon: ShieldCheck },
-    { id: "insurance", label: "Sug'urta", icon: Shield },
+    { id: "insurance", label: "Sug'urta", icon: Shield, requiredTier: "pro" },
     { id: "partner-referral", label: "🎁 Referral & Bonus", icon: Gift },
     { id: "legal", label: "⚖️ Yuridik markaz", icon: LegalIcon },
     { id: "social-media", label: "Ijtimoiy & Video", icon: Share2 },
@@ -213,6 +213,8 @@ const DoctorDashboard = () => {
       sidebarItems={sidebarItems}
       activeTab={tab}
       onTabChange={setTab}
+      onUpgradeClick={() => setTab("subscription")}
+      onLockedClick={() => setTab("subscription")}
     >
       {tab === "overview" && <DocOverview doctorId={doctor.id} />}
       {tab === "patients" && <DocPatients doctorId={doctor.id} />}
