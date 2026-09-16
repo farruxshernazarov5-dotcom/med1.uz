@@ -18,6 +18,7 @@ import InsuranceModule from "@/components/insurance/InsuranceModule";
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import type { SidebarItem } from "./DashboardShell";
 import CosmetologySubscription from "@/components/dashboard/CosmetologySubscription";
 import CosOverview from "@/components/cosmetology/hms/CosOverview";
@@ -34,6 +35,7 @@ import CosSettings from "@/components/cosmetology/hms/CosSettings";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const CosmetologyDashboard = () => {
+  const shellPlan = useSaasPlan("cosmetology");
   const { user, profile } = useAuth();
   const [center, setCenter] = useState<any>(null);
   const [loading, setLoading] = useState(true);

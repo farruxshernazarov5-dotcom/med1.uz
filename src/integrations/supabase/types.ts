@@ -17952,6 +17952,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      claim_initial_role: { Args: { _role: string }; Returns: string }
       click_fulfill_payment: { Args: { _payment_id: string }; Returns: Json }
       click_refund_payment: {
         Args: { _admin: string; _payment_id: string; _reason: string }

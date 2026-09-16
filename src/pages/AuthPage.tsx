@@ -12,6 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, Microscope, Package, Phone, Loader2, Send, MessageCircle, Baby, Sparkles, Stethoscope, Pill } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getDashboardPath } from "@/lib/dashboard";
+import { setPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -23,21 +24,10 @@ const roles = [
   { value: "cosmetology", label: "Kosmetologiya", icon: Sparkles, desc: "Kosmetologiya markazi" },
   { value: "pharmacy", label: "Dorixona", icon: Pill, desc: "Dorixona boshqarish" },
   { value: "dental", label: "Stomatologiya", icon: Stethoscope, desc: "Stomatologiya klinikasi" },
+  { value: "bloodbank", label: "Qon banki", icon: Heart, desc: "Qon markazi boshqaruvi" },
 ];
 
-const ROLE_REDIRECT: Record<string, string> = {
-  patient: "/dashboard/patient",
-  doctor: "/doctor-register",
-  clinic: "/clinic-register",
-  diagnostics: "/diagnostics-register",
-  vendor: "/vendor-register",
-  maternity: "/maternity-register",
-  cosmetology: "/cosmetology-register",
-  pharmacy: "/pharmacy-register",
-  dental: "/dental-register",
-  bloodbank: "/dashboard/bloodbank",
-  admin: "/dashboard/admin",
-};
+const ROLE_REDIRECT: Record<string, string> = ROLE_REGISTER_PATH;
 
 const PASSWORD_RULES = [
   { label: "Kamida 8 belgi", test: (p: string) => p.length >= 8 },
@@ -83,6 +73,7 @@ const AuthPage = () => {
 
   const handleGoogleSignIn = async () => {
     setSubmitting(true);
+    if (mode === "register") setPendingRole(role);
     const redirectUri = safeNext
       ? `${window.location.origin}${safeNext}`
       : window.location.origin;
@@ -245,6 +236,7 @@ const AuthPage = () => {
         return;
       }
       const verifiedPhone = regPhoneVerified ? regPhone.replace(/\s/g, "") : "";
+      setPendingRole(role);
       const { error } = await signUp(email, password, fullName, role, verifiedPhone);
       if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });

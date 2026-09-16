@@ -62,6 +62,7 @@ import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Gift } from "lucide-react";
 
 const ClinicDashboard = () => {
+  const shellPlan = useSaasPlan("clinic");
   const { user, profile } = useAuth();
   const plan = useSaasPlan("clinic");
   const [clinic, setClinic] = useState<any>(null);

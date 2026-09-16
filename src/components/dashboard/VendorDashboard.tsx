@@ -9,6 +9,7 @@ import ReferralPanel from "@/components/referral/ReferralPanel";
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import type { SidebarItem } from "./DashboardShell";
 import MTOverview from "@/components/medtech/MTOverview";
 import MTEquipment from "@/components/medtech/MTEquipment";
@@ -21,6 +22,7 @@ import MTTechnicians from "@/components/medtech/MTTechnicians";
 import MTFinance from "@/components/medtech/MTFinance";
 
 const VendorDashboard = () => {
+  const shellPlan = useSaasPlan("medtech");
   const { user } = useAuth();
   const [vendor, setVendor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,7 @@ const VendorDashboard = () => {
   ];
 
   return (
-    <DashboardShell title={vendor.company_name || "Medtexnika"} subtitle="Med texnika boshqaruv paneli" icon={Package} iconColor="text-secondary" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
+    <DashboardShell tier={shellPlan.tier} planStatus={shellPlan.status} title={vendor.company_name || "Medtexnika"} subtitle="Med texnika boshqaruv paneli" icon={Package} iconColor="text-secondary" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
       {tab === "overview" && <MTOverview vendorId={vendorId} />}
       {tab === "equipment" && <MTEquipment vendorId={vendorId} />}
       {tab === "maintenance" && <MTMaintenance vendorId={vendorId} />}

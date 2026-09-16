@@ -20,6 +20,7 @@ import OrgAttendance from "@/components/attendance/OrgAttendance";
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import type { SidebarItem } from "./DashboardShell";
 import PhOverview from "@/components/pharmacy/PhOverview";
 import PhInventory from "@/components/pharmacy/PhInventory";
@@ -34,6 +35,7 @@ import PhPromo from "@/components/pharmacy/PhPromo";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
 
 const PharmacyDashboard = () => {
+  const shellPlan = useSaasPlan("pharmacy");
   const { user, profile } = useAuth();
   const [pharmacy, setPharmacy] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);

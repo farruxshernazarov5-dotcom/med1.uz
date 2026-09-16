@@ -16,6 +16,7 @@ import ReferralPanel from "@/components/referral/ReferralPanel";
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell, { type SidebarItem } from "@/components/dashboard/DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import InsuranceModule from "@/components/insurance/InsuranceModule";
 import { MatOverview } from "@/components/maternity/MatOverview";
@@ -66,6 +67,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 ];
 
 const MaternityDashboard = () => {
+  const shellPlan = useSaasPlan("maternity");
   const { user } = useAuth();
   const [center, setCenter] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -101,6 +103,8 @@ const MaternityDashboard = () => {
 
   return (
     <DashboardShell
+      tier={shellPlan.tier}
+      planStatus={shellPlan.status}
       title={center.name}
       subtitle="Maternity HMS"
       icon={Baby}

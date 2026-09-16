@@ -22,6 +22,7 @@ import BloodBankSubscription from "@/components/dashboard/BloodBankSubscription"
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import type { SidebarItem } from "./DashboardShell";
 import OrgAttendance from "@/components/attendance/OrgAttendance";
 import PremiumPerksPanel from "@/components/premium/PremiumPerksPanel";
@@ -41,6 +42,7 @@ const BLOOD_TYPES = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
 const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
 
 const BloodBankDashboard = () => {
+  const shellPlan = useSaasPlan("bloodbank");
   const { user } = useAuth();
   const [bank, setBank] = useState<BloodBank | null>(null);
   const [donations, setDonations] = useState<Donation[]>([]);
@@ -144,7 +146,7 @@ const BloodBankDashboard = () => {
   ];
 
   return (
-    <DashboardShell title={bank.name} subtitle="Qon banki boshqaruv paneli" icon={Droplets} iconColor="text-destructive" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
+    <DashboardShell tier={shellPlan.tier} planStatus={shellPlan.status} title={bank.name} subtitle="Qon banki boshqaruv paneli" icon={Droplets} iconColor="text-destructive" sidebarItems={sidebarItems} activeTab={tab} onTabChange={setTab}>
       {/* Blood types */}
       {tab === "donations" && (
         <div className="space-y-4">

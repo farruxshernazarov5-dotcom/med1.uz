@@ -23,6 +23,7 @@ import {
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
+import { useSaasPlan } from "@/hooks/useSaasPlan";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import type { SidebarItem } from "./DashboardShell";
 import DoctorSubscription from "./DoctorSubscription";
@@ -62,6 +63,7 @@ const DAYS = [
 ];
 
 const DoctorDashboard = () => {
+  const shellPlan = useSaasPlan("doctor");
   const { user } = useAuth();
   const [doctor, setDoctor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -201,6 +203,8 @@ const DoctorDashboard = () => {
 
   return (
     <DashboardShell
+      tier={shellPlan.tier}
+      planStatus={shellPlan.status}
       title={doctor.full_name}
       subtitle={doctor.specialty}
       icon={Stethoscope}
