@@ -18,6 +18,7 @@ import CompareBar from "@/components/doctors/CompareBar";
 import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
 import SponsoredAds from "@/components/med1top/SponsoredAds";
+import NewPlatformDoctors from "@/components/doctors/NewPlatformDoctors";
 
 const SPECIALTIES = [
   "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
@@ -274,6 +275,8 @@ const DoctorsPage = () => {
 
       <section className="py-10">
         <div className="container mx-auto px-4 max-w-6xl">
+          <NewPlatformDoctors />
+
           {isBrowsing ? (
             <>
               <div className="flex items-center justify-between mb-6">

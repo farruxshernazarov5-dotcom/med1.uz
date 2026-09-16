@@ -19,6 +19,7 @@ import {
   type MedicineCategory,
 } from "@/data/pharmacies";
 import { regions } from "@/data/clinics";
+import NewPartnerOrgs from "@/components/org/NewPartnerOrgs";
 import pharmInteriorImg from "@/assets/pharm-interior.webp";
 import pharmPillsImg from "@/assets/pharm-pills.webp";
 import pharmConsultImg from "@/assets/pharm-consult.webp";
@@ -510,6 +511,8 @@ const PharmaciesPage = () => {
       subtitle="O'zbekistondagi barcha dorixonalar va 25,000+ dori vositalari"
       icon={<Pill className="w-7 h-7 text-primary-foreground" />}
     >
+      <NewPartnerOrgs types={["pharmacy"]} title="Yangi qo'shilgan dorixonalar" />
+
       {/* Medical Terms */}
       <MedTermsBanner />
 

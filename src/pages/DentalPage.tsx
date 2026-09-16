@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { dentalClinics, dentalCities, dentalTags } from "@/data/dentalClinics";
 import DoctorRecommendations from "@/components/DoctorRecommendations";
 import { DENTAL_DOCTOR_SPECIALTIES } from "@/data/dentalClinics";
+import NewPartnerOrgs from "@/components/org/NewPartnerOrgs";
 
 const PAGE_SIZE = 24;
 
@@ -48,6 +49,8 @@ const DentalPage = () => {
     >
       <Breadcrumb items={[{ label: "Stomatologiya" }]} />
       <ShareButton title="Stomatologiya klinikalari — Med1.uz" className="mb-6" />
+
+      <NewPartnerOrgs types={["dental"]} title="Yangi qo'shilgan stomatologiya klinikalari" />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

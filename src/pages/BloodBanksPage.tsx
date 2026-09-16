@@ -29,6 +29,7 @@ import bloodDonorImg from "@/assets/blood-donor.webp";
 import bloodMobileImg from "@/assets/blood-mobile.webp";
 import doctorMaleImg from "@/assets/doctor-male.webp";
 import doctorFemaleImg from "@/assets/doctor-female.webp";
+import NewPartnerOrgs from "@/components/org/NewPartnerOrgs";
 
 const getBankImage = (bank: BloodBank) => {
   if (bank.type === "mobil") return bloodMobileImg;
@@ -512,6 +513,8 @@ const BloodBanksPage = () => {
       subtitle="O'zbekistondagi barcha qon markazlari, donorlar va qon guruhlari"
       icon={<Droplets className="w-7 h-7 text-primary-foreground" />}
     >
+      <NewPartnerOrgs types={["bloodbank"]} title="Yangi qo'shilgan qon banklari" />
+
       {/* Medical Terms */}
       <MedTermsBanner />
 
