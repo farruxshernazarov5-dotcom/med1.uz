@@ -203,6 +203,8 @@ const DoctorDashboard = () => {
 
   return (
     <DashboardShell
+      tier={shellPlan.tier}
+      planStatus={shellPlan.status}
       title={doctor.full_name}
       subtitle={doctor.specialty}
       icon={Stethoscope}
