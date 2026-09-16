@@ -28,10 +28,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserData = async (userId: string) => {
     const [roleRes, profileRes] = await Promise.all([
-      supabase.from("user_roles").select("role").eq("user_id", userId).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", userId).limit(1).maybeSingle(),
       supabase.from("profiles").select("full_name, phone, avatar_url").eq("user_id", userId).maybeSingle(),
     ]);
-    setUserRole(roleRes.data?.role ?? null);
+    let role = roleRes.data?.role ?? null;
+
+    // Ro'yxatdan o'tishda tanlangan rolni biriktirish (ayniqsa Google orqali kirishda).
+    const pending = getPendingRole();
+    if (pending) {
+      if (pending !== "patient" && (!role || role === "patient")) {
+        const { data: claimed } = await supabase.rpc("claim_initial_role" as any, { _role: pending });
+        if (typeof claimed === "string") role = claimed as typeof role;
+      }
+      clearPendingRole();
+      const target = ROLE_REGISTER_PATH[role ?? "patient"];
+      if (role === pending && target && window.location.pathname !== target) {
+        window.location.replace(target);
+      }
+    }
+
+    setUserRole(role);
     setProfile(profileRes.data ?? null);
   };
 
