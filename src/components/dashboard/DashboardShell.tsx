@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FuturisticBackground } from "@/components/futuristic";
 import ReferralNotificationBell from "@/components/referral/ReferralNotificationBell";
 import OrgStatusBanner from "./OrgStatusBanner";
+import TierBadge, { TIER_THEME, tierSatisfies, type SaaSTier } from "@/components/saas/TierBadge";
 import {
   LogOut, Menu, X, ChevronLeft, ChevronRight, Lock, Sparkles,
 } from "lucide-react";
@@ -32,6 +33,10 @@ interface DashboardShellProps {
   children: ReactNode;
   headerActions?: ReactNode;
   onLockedClick?: (item: SidebarItem) => void;
+  /** Joriy SaaS tarifi — UI shu tarifga moslashadi */
+  tier?: string | null;
+  planStatus?: string | null;
+  onUpgradeClick?: () => void;
 }
 
 const DashboardShell = ({
@@ -46,6 +51,9 @@ const DashboardShell = ({
   children,
   headerActions,
   onLockedClick,
+  tier,
+  planStatus,
+  onUpgradeClick,
 }: DashboardShellProps) => {
   const { signOut } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
@@ -54,7 +62,14 @@ const DashboardShell = ({
   // Group items
   const groups: { label: string; items: SidebarItem[] }[] = [];
   const ungrouped: SidebarItem[] = [];
-  sidebarItems.forEach((item) => {
+  const tierKey: SaaSTier = (tier as SaaSTier) in TIER_THEME ? (tier as SaaSTier) : "free";
+  const theme = TIER_THEME[tierKey];
+  const resolvedItems: SidebarItem[] = sidebarItems.map((item) => ({
+    ...item,
+    locked: item.locked ?? (tier ? !tierSatisfies(tier, item.requiredTier) : false),
+  }));
+
+  resolvedItems.forEach((item) => {
     if (item.group) {
       const existing = groups.find((g) => g.label === item.group);
       if (existing) existing.items.push(item);
@@ -80,6 +95,7 @@ const DashboardShell = ({
             <div className="min-w-0">
               <h2 className="text-sm font-bold text-white truncate">{title}</h2>
               {subtitle && <p className="text-[10px] text-white/40 truncate">{subtitle}</p>}
+              {tier && <TierBadge tier={tier} status={planStatus} className="mt-1" />}
             </div>
           )}
         </div>
@@ -149,7 +165,8 @@ const DashboardShell = ({
       <aside
         className={cn(
           "hidden md:flex flex-col bg-[hsl(213,73%,15%)]/95 backdrop-blur-xl border-r border-white/10 transition-all duration-300 shrink-0",
-          collapsed ? "w-[68px]" : "w-[260px]"
+          collapsed ? "w-[68px]" : "w-[260px]",
+          tier && `ring-1 ring-inset ${theme.ring}`
         )}
       >
         {renderSidebarContent()}
@@ -187,6 +204,16 @@ const DashboardShell = ({
             <h1 className="text-lg font-bold text-foreground">{title}</h1>
           </div>
           <div className="flex-1" />
+          {tier && (
+            <div className="flex items-center gap-2">
+              <TierBadge tier={tier} status={planStatus} />
+              {(tierKey !== "enterprise" || planStatus === "expired") && onUpgradeClick && (
+                <Button size="sm" variant="outline" className="h-8 text-xs" onClick={onUpgradeClick}>
+                  Tarifni yangilash
+                </Button>
+              )}
+            </div>
+          )}
           <ReferralNotificationBell />
           {headerActions}
         </header>
