@@ -228,7 +228,8 @@ const PatientNearby = () => {
     // Deduplicate by name
     const seen = new Set<string>();
     return result.filter((c) => {
-      const key = c.name.toLowerCase().trim();
+      const key = String(c?.name || "").toLowerCase().trim();
+      if (!key) return false;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
