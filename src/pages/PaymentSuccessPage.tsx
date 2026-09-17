@@ -58,7 +58,7 @@ const PaymentSuccessPage = () => {
     const fetchOnce = async () => {
       const { data, error } = await supabase
         .from("platform_payments")
-        .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata")
+        .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata, fulfilled_at")
         .eq("id", paymentId)
         .maybeSingle();
 
@@ -69,7 +69,20 @@ const PaymentSuccessPage = () => {
       }
       setPayment(data as PaymentRow);
 
-      if (data.status === "paid") setStatus("paid");
+      const paidStatus = data.status === "paid" || data.status === "completed";
+
+      // To'lov o'tgan bo'lsa-yu xizmat berilmagan bo'lsa — darhol talab qilamiz
+      if (paidStatus && !(data as any).fulfilled_at) {
+        await supabase.rpc("claim_my_payment", { _payment_id: data.id }).catch(() => null);
+        const { data: fresh } = await supabase
+          .from("platform_payments")
+          .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata, fulfilled_at")
+          .eq("id", paymentId)
+          .maybeSingle();
+        if (!cancelled && fresh) setPayment(fresh as PaymentRow);
+      }
+
+      if (paidStatus) setStatus("paid");
       else if (data.status === "failed" || data.status === "cancelled") setStatus("failed");
       else {
         setStatus("pending");
