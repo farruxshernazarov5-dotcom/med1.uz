@@ -80,6 +80,7 @@ const PaymentMethodPicker = ({
           purpose,
           reference_id: referenceId,
           return_url: returnUrl || `${window.location.origin}/payment/success`,
+          ...extraBody,
         },
       });
       if (error) {
@@ -120,6 +121,7 @@ const PaymentMethodPicker = ({
           purpose,
           reference_id: referenceId,
           return_url: returnUrl || `${window.location.origin}/payment/success`,
+          ...extraBody,
         },
       });
       if (error) {
