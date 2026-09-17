@@ -26,6 +26,10 @@ interface PaymentMethodPickerProps {
   allowed?: PaymentMethod[];
   onBeforeConfirm?: (continuePayment: () => void) => void;
   className?: string;
+  /** Med Coin / obuna paketi kodi (coin_40, sub_standard, ...) */
+  packageCode?: string;
+  /** Med Coin muassasa hisobiga tushishi kerak bo'lsa */
+  org?: { id: string; type: string; name?: string; contractId?: string | null } | null;
 }
 
 const DEFAULT_BANK = {
@@ -47,10 +51,21 @@ const PaymentMethodPicker = ({
   allowed = ["click", "payme", "cash", "bank"],
   onBeforeConfirm,
   className = "",
+  packageCode,
+  org,
 }: PaymentMethodPickerProps) => {
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
   const [loading, setLoading] = useState(false);
   const [botLoading, setBotLoading] = useState(false);
+
+  const extraBody = {
+    package_code: packageCode,
+    org_id: org?.id,
+    org_type: org?.type,
+    org_name: org?.name,
+    contract_id: org?.contractId ?? undefined,
+  };
+
 
   const sendToBot = async () => {
     if (!amount || amount <= 0) {
@@ -65,6 +80,7 @@ const PaymentMethodPicker = ({
           purpose,
           reference_id: referenceId,
           return_url: returnUrl || `${window.location.origin}/payment/success`,
+          ...extraBody,
         },
       });
       if (error) {
@@ -105,6 +121,7 @@ const PaymentMethodPicker = ({
           purpose,
           reference_id: referenceId,
           return_url: returnUrl || `${window.location.origin}/payment/success`,
+          ...extraBody,
         },
       });
       if (error) {

@@ -13677,6 +13677,98 @@ export type Database = {
         }
         Relationships: []
       }
+      org_credit_accounts: {
+        Row: {
+          balance: number
+          contract_id: string | null
+          created_at: string
+          id: string
+          lifetime_coins: number
+          org_id: string | null
+          org_name: string | null
+          org_type: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          lifetime_coins?: number
+          org_id?: string | null
+          org_name?: string | null
+          org_type: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          contract_id?: string | null
+          created_at?: string
+          id?: string
+          lifetime_coins?: number
+          org_id?: string | null
+          org_name?: string | null
+          org_type?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      org_credit_ledger: {
+        Row: {
+          account_id: string
+          actor_id: string | null
+          amount: number
+          balance_after: number
+          balance_before: number
+          contract_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          owner_id: string
+          payment_id: string | null
+          type: string
+        }
+        Insert: {
+          account_id: string
+          actor_id?: string | null
+          amount: number
+          balance_after?: number
+          balance_before?: number
+          contract_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id: string
+          payment_id?: string | null
+          type: string
+        }
+        Update: {
+          account_id?: string
+          actor_id?: string | null
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          contract_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          owner_id?: string
+          payment_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_credit_ledger_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "org_credit_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       org_gallery_photos: {
         Row: {
           branch_name: string | null
@@ -18160,6 +18252,21 @@ export type Database = {
         Args: { _campaign_id: string; _event_type: string; _meta?: Json }
         Returns: undefined
       }
+      org_credit_apply: {
+        Args: {
+          _actor_id?: string
+          _amount: number
+          _contract_id?: string
+          _description: string
+          _org_id: string
+          _org_name: string
+          _org_type: string
+          _owner_id: string
+          _payment_id?: string
+          _type: string
+        }
+        Returns: Json
+      }
       purge_security_logs: { Args: { _days?: number }; Returns: number }
       refund_ai_credits: {
         Args: {
@@ -18169,6 +18276,10 @@ export type Database = {
           _user_id: string
         }
         Returns: number
+      }
+      refund_platform_payment: {
+        Args: { _payment_id: string; _reason?: string }
+        Returns: Json
       }
       release_held_referral_rewards: { Args: never; Returns: number }
       reschedule_doctor_ext_slot: {

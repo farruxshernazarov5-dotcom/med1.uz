@@ -1,7 +1,10 @@
 import { Crown, Sparkles, Star, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type SaaSTier = "free" | "starter" | "pro" | "enterprise";
+export type SaaSTier =
+  | "free" | "starter" | "pro" | "enterprise"
+  // Bemor (patsent) tariflari
+  | "lite" | "standard" | "premium";
 
 export const TIER_THEME: Record<SaaSTier, {
   label: string;
@@ -41,6 +44,30 @@ export const TIER_THEME: Record<SaaSTier, {
     chip: "bg-amber-500/15 text-amber-300 border-amber-400/30",
     ring: "ring-amber-400/30",
     accentText: "text-amber-300",
+    order: 3,
+  },
+  lite: {
+    label: "Lite",
+    icon: Star,
+    chip: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
+    ring: "ring-emerald-400/30",
+    accentText: "text-emerald-300",
+    order: 1,
+  },
+  standard: {
+    label: "Standard",
+    icon: Sparkles,
+    chip: "bg-sky-500/15 text-sky-300 border-sky-400/30",
+    ring: "ring-sky-400/30",
+    accentText: "text-sky-300",
+    order: 2,
+  },
+  premium: {
+    label: "Premium",
+    icon: Crown,
+    chip: "bg-violet-500/15 text-violet-300 border-violet-400/30",
+    ring: "ring-violet-400/30",
+    accentText: "text-violet-300",
     order: 3,
   },
 };

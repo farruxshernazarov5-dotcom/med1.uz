@@ -90,6 +90,7 @@ const sidebarSections = [
       { id: "appointments", label: "Qabullar", icon: Calendar },
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
       { id: "payments", label: "To'lov testi", icon: CreditCard, href: "/admin/payment-sandbox" },
+      { id: "med_coin_center", label: "🪙 Med Coin nazorati", icon: CreditCard, href: "/admin/med-coin" },
       { id: "sponsors", label: "Homiylar", icon: Gift },
       { id: "medical_ads", label: "📣 Medical Ads / Med1 TOP", icon: Rocket },
       { id: "tax_reports", label: "🧾 Soliq hisobotlari", icon: Receipt },

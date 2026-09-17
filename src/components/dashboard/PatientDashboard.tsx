@@ -163,7 +163,9 @@ const NAV_GROUPS: NavGroup[] = [
 
 const TIER_META: Record<string, { label: string; gradient: string; icon: any }> = {
   pro: { label: "Pro", gradient: "from-amber-500 to-orange-500", icon: Crown },
-  premium: { label: "Premium", gradient: "from-purple-500 to-fuchsia-500", icon: Sparkles },
+  premium: { label: "Premium", gradient: "from-violet-500 to-fuchsia-500", icon: Crown },
+  standard: { label: "Standard", gradient: "from-sky-500 to-cyan-500", icon: Sparkles },
+  lite: { label: "Lite", gradient: "from-emerald-500 to-teal-500", icon: Sparkles },
   free: { label: "Bepul", gradient: "from-slate-400 to-slate-500", icon: User },
 };
 
