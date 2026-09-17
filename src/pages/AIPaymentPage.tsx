@@ -45,6 +45,14 @@ const AIPaymentPage = () => {
   const amount = parseInt(searchParams.get("amount") || "0");
   const services = searchParams.get("services")?.split(",").filter(Boolean) || [];
 
+  // Tanlangan paket kodi (Med Coin yoki obuna) — to'lov yakunlanganda shu bo'yicha beriladi
+  const purchaseType = searchParams.get("type") || "subscription";
+  const packageParam = (searchParams.get("package") || plan || "").toLowerCase();
+  const COIN_CODES: Record<string, string> = { lite: "coin_40", standard: "coin_150", premium: "coin_350" };
+  const SUB_CODES: Record<string, string> = { lite: "sub_lite", standard: "sub_standard", premium: "sub_premium" };
+  const packageCode =
+    purchaseType === "credits" ? COIN_CODES[packageParam] : SUB_CODES[packageParam] || undefined;
+
   useEffect(() => {
     setInvoiceId(`MED1-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`);
   }, []);
