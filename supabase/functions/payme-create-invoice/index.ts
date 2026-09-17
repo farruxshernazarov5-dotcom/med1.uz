@@ -97,7 +97,15 @@ Deno.serve(async (req) => {
           reference_id,
           package_id: pkg?.id ?? null,
           status: "pending",
-          metadata: { return_url, environment, contract_id: contractGate.contractId },
+          metadata: {
+            return_url,
+            environment,
+            contract_id: body?.contract_id ? String(body.contract_id) : contractGate.contractId,
+            package_code: packageCode,
+            org_id: body?.org_id ? String(body.org_id) : undefined,
+            org_type: body?.org_type ? String(body.org_type) : undefined,
+            org_name: body?.org_name ? String(body.org_name) : undefined,
+          },
         })
         .select("id")
         .single();

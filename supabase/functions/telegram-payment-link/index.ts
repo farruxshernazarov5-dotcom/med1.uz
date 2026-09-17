@@ -64,7 +64,17 @@ serve(async (req) => {
       const res = await fetch(`${supabaseUrl}/functions/v1/${fn}`, {
         method: "POST",
         headers: { Authorization: authHeader, "Content-Type": "application/json", apikey: anonKey },
-        body: JSON.stringify({ amount, purpose, reference_id: referenceId, return_url: returnUrl }),
+        body: JSON.stringify({
+          amount,
+          purpose,
+          reference_id: referenceId,
+          return_url: returnUrl,
+          package_code: body?.package_code,
+          org_id: body?.org_id,
+          org_type: body?.org_type,
+          org_name: body?.org_name,
+          contract_id: body?.contract_id,
+        }),
       });
       const json = await res.json().catch(() => null);
       return res.ok && json?.checkout_url ? String(json.checkout_url) : null;
