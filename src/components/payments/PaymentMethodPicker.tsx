@@ -26,6 +26,10 @@ interface PaymentMethodPickerProps {
   allowed?: PaymentMethod[];
   onBeforeConfirm?: (continuePayment: () => void) => void;
   className?: string;
+  /** Med Coin / obuna paketi kodi (coin_40, sub_standard, ...) */
+  packageCode?: string;
+  /** Med Coin muassasa hisobiga tushishi kerak bo'lsa */
+  org?: { id: string; type: string; name?: string; contractId?: string | null } | null;
 }
 
 const DEFAULT_BANK = {
