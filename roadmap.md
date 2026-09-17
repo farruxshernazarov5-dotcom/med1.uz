@@ -1,4 +1,4 @@
-- [ ] 78 Med Coin bo‘lsa AI kunlik limit blokini tuzatish
-- [ ] Bemor tarif nomi va rangini haqiqiy obunaga mos ko‘rsatish
+- [x] 78 Med Coin bo‘lsa AI kunlik limit blokini tuzatish
+- [x] Bemor tarif nomi va rangini haqiqiy obunaga mos ko‘rsatish
 - [ ] Click to‘lovidagi yetkazib beruvchi ma’lumoti xatosini aniqlash va tuzatish
 - [ ] To‘lov, balans va AI foydalanishini tekshirish
