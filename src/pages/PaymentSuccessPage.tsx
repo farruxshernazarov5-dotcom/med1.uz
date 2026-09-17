@@ -73,7 +73,7 @@ const PaymentSuccessPage = () => {
 
       // To'lov o'tgan bo'lsa-yu xizmat berilmagan bo'lsa — darhol talab qilamiz
       if (paidStatus && !(data as any).fulfilled_at) {
-        await supabase.rpc("claim_my_payment", { _payment_id: data.id }).catch(() => null);
+        try { await supabase.rpc("claim_my_payment", { _payment_id: data.id }); } catch { /* ignore */ }
         const { data: fresh } = await supabase
           .from("platform_payments")
           .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata, fulfilled_at")
