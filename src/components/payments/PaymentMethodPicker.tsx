@@ -51,10 +51,21 @@ const PaymentMethodPicker = ({
   allowed = ["click", "payme", "cash", "bank"],
   onBeforeConfirm,
   className = "",
+  packageCode,
+  org,
 }: PaymentMethodPickerProps) => {
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
   const [loading, setLoading] = useState(false);
   const [botLoading, setBotLoading] = useState(false);
+
+  const extraBody = {
+    package_code: packageCode,
+    org_id: org?.id,
+    org_type: org?.type,
+    org_name: org?.name,
+    contract_id: org?.contractId ?? undefined,
+  };
+
 
   const sendToBot = async () => {
     if (!amount || amount <= 0) {
