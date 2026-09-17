@@ -238,7 +238,7 @@ export default function PaymeCashierPage() {
                   <tr className="border-b text-left text-xs text-muted-foreground">
                     <th className="py-2 pr-3">Sana</th>
                     <th className="py-2 pr-3">To'lov ID</th>
-                    <th className="py-2 pr-3">Maqsad</th>
+                    <th className="py-2 pr-3">Maqsad / paket</th>
                     <th className="py-2 pr-3">Summa</th>
                     <th className="py-2 pr-3">Holat</th>
                     <th className="py-2 pr-3">Payme tranzaksiya</th>
@@ -253,7 +253,21 @@ export default function PaymeCashierPage() {
                       <tr key={p.id} className="border-b last:border-0">
                         <td className="py-2 pr-3 whitespace-nowrap">{dt(p.created_at)}</td>
                         <td className="py-2 pr-3 font-mono text-xs">{p.id.slice(0, 8)}…</td>
-                        <td className="py-2 pr-3">{p.purpose || "—"}</td>
+                        <td className="py-2 pr-3">
+                          <div className="flex flex-col gap-0.5">
+                            <span>{String((p.metadata as any)?.product || p.purpose || "—")}</span>
+                            <span className="flex flex-wrap items-center gap-1 text-[10px] text-muted-foreground">
+                              {(p.metadata as any)?.package_kind === "subscription" && (
+                                <Badge className="bg-violet-600 hover:bg-violet-600 h-4 px-1 text-[10px]">Obuna</Badge>
+                              )}
+                              {Number((p.metadata as any)?.coins_granted || 0) > 0 && (
+                                <span className="text-amber-600 font-medium">+{Number((p.metadata as any).coins_granted)} 🪙</span>
+                              )}
+                              {(p.metadata as any)?.org_name && <span>· {String((p.metadata as any).org_name)}</span>}
+                              {(p.metadata as any)?.invoice_number && <span>· {String((p.metadata as any).invoice_number)}</span>}
+                            </span>
+                          </div>
+                        </td>
                         <td className="py-2 pr-3 whitespace-nowrap font-medium">{money(p.amount)}</td>
                         <td className="py-2 pr-3">{statusBadge(p.status)}</td>
                         <td className="py-2 pr-3 font-mono text-xs">
