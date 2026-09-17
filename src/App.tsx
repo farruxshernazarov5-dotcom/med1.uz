@@ -103,6 +103,7 @@ const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage")
 const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
 const PaymeAdminPage = lazy(() => import("./pages/admin/PaymeAdminPage"));
 const PaymeCashierPage = lazy(() => import("./pages/PaymeCashierPage"));
+const MedCoinAdminPage = lazy(() => import("./pages/admin/MedCoinAdminPage"));
 const TaxReportsPage = lazy(() => import("./pages/admin/TaxReportsPage"));
 const ApiDocsPage = lazy(() => import("./pages/ApiDocsPage"));
 const APICenterPage = lazy(() => import("./pages/admin/APICenterPage"));
@@ -265,6 +266,7 @@ const App = () => (
                 <Route path="/admin/payment-sandbox" element={<PaymentSandboxPage />} />
                 <Route path="/admin/payme" element={<PaymeAdminPage />} />
                 <Route path="/kassa/payme" element={<PaymeCashierPage />} />
+                <Route path="/admin/med-coin" element={<MedCoinAdminPage />} />
                 <Route path="/admin/tax-reports" element={<TaxReportsPage />} />
                 <Route path="/admin/api-center" element={<APICenterPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
