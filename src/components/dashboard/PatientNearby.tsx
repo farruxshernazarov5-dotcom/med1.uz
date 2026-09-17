@@ -239,7 +239,7 @@ const PatientNearby = () => {
   // Collect unique specialties
   const allSpecialties = useMemo(() => {
     const set = new Set<string>();
-    allClinics.forEach((c) => c.specialties.forEach((s) => set.add(s)));
+    allClinics.forEach((c) => (c.specialties || []).forEach((s) => s && set.add(s)));
     return Array.from(set).sort((a, b) => a.localeCompare(b, "uz"));
   }, [allClinics]);
 
@@ -247,7 +247,7 @@ const PatientNearby = () => {
     return allClinics
       .filter((c) => {
         if (filter === "all") return true;
-        const cat = (c.category || "").toLowerCase();
+        const cat = String(c?.category || "").toLowerCase();
         if (filter === "clinic") return cat.includes("klinika") || cat.includes("xususiy") || cat.includes("davlat") || !cat;
         if (filter === "pharmacy") return cat.includes("dorixona") || cat.includes("apteka");
         if (filter === "diagnostic") return cat.includes("diagnostika") || cat.includes("markaz");
@@ -256,7 +256,7 @@ const PatientNearby = () => {
       })
       .filter((c) => {
         if (!selectedSpecialty) return true;
-        return c.specialties.some((s) => s.toLowerCase().includes(selectedSpecialty.toLowerCase()));
+        return (c.specialties || []).some((s) => String(s || "").toLowerCase().includes(selectedSpecialty.toLowerCase()));
       })
       .map((c) => ({
         ...c,
