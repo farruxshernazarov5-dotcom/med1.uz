@@ -328,20 +328,24 @@ export async function enforceAiAccess(req: Request, serviceId: string): Promise<
       await admin.rpc("grant_monthly_free_coins", { _user_id: userId });
     } catch (_) { /* best-effort */ }
 
-    /* ─── Plan-based limits (STRICT) ─── */
+    /* ─── Plan metadata ───
+     * Every AI service has a fixed Med Coin price and the atomic deduction
+     * below is the source of truth. Daily/monthly plan quotas describe the
+     * bundled/free allowance; they must never block a user who has purchased
+     * enough Med Coin. This previously rejected a 78-coin balance at 2/2.
+     */
     try {
       const { data: accessRows } = await admin.rpc("get_user_ai_access", { _user_id: userId });
       const access = Array.isArray(accessRows) ? accessRows[0] : accessRows;
       if (access) {
         const allowed = (access.allowed_services as string[]) || [];
-        if (allowed.length > 0 && !allowed.includes(serviceId)) {
-          return { allowed: false, status: 403, error: `Bu xizmat sizning tarifingizda mavjud emas (${access.tier}). Tarifni yangilang.` };
-        }
-        if (typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) {
-          return { allowed: false, status: 429, error: `Bugungi limit tugadi (${access.used_today}/${access.daily_limit}).` };
-        }
-        if (typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit) {
-          return { allowed: false, status: 429, error: `Oylik limit tugadi (${access.used_month}/${access.monthly_limit}).` };
+        const quotaReached =
+          (typeof access.used_today === "number" && typeof access.daily_limit === "number" && access.used_today >= access.daily_limit) ||
+          (typeof access.used_month === "number" && typeof access.monthly_limit === "number" && access.used_month >= access.monthly_limit);
+        if ((allowed.length > 0 && !allowed.includes(serviceId)) || quotaReached) {
+          console.info("AI plan allowance exhausted; continuing with Med Coin", {
+            userId, serviceId, tier: access.tier, creditCost,
+          });
         }
       }
     } catch (planErr) {

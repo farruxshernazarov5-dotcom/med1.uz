@@ -17,7 +17,7 @@ interface AIAccessBannerProps {
  */
 const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   const { access, loading, isServiceAllowed, isLimitReached, remainingToday } = useAiAccess();
-  const { balance, loading: cLoading } = useCredits();
+  const { balance, packageTier, loading: cLoading } = useCredits();
   const { userRole } = useAuth();
 
   if (loading || cLoading || !access) return null;
@@ -35,10 +35,13 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   const cost = getServiceCreditCost(serviceId);
   const isFreeGrantEligible = cost === 1 && (!access.allowed_services.includes(serviceId) || noCredits);
 
-  const tierColor = access.tier === "pro" ? "bg-amber-100 text-amber-800 border-amber-200"
-    : access.tier === "premium" ? "bg-purple-100 text-purple-800 border-purple-200"
+  const displayTier = access.tier === "free" ? packageTier : access.tier;
+  const tierColor = displayTier === "pro" ? "bg-amber-100 text-amber-800 border-amber-200"
+    : displayTier === "premium" ? "bg-purple-100 text-purple-800 border-purple-200"
+    : displayTier === "standard" ? "bg-sky-100 text-sky-800 border-sky-200"
+    : displayTier === "lite" ? "bg-emerald-100 text-emerald-800 border-emerald-200"
     : "bg-slate-100 text-slate-700 border-slate-200";
-  const tierLabel = access.tier === "pro" ? "Pro" : access.tier === "premium" ? "Premium" : "Bepul";
+  const tierLabel = displayTier === "pro" ? "Pro" : displayTier === "premium" ? "Premium" : displayTier === "standard" ? "Standard" : displayTier === "lite" ? "Lite" : "Bepul";
 
   /* ─── Free monthly grant notice for 1-Med-Coin services ─── */
   if (isFreeGrantEligible) {
@@ -88,7 +91,7 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   }
 
   /* ─── Hard block: daily/monthly limit reached ─── */
-  if (limit.reached) {
+  if (limit.reached && balance < cost) {
     const isDaily = limit.type === "daily";
     return (
       <div className="rounded-xl border-2 border-dashed border-rose-300 bg-rose-50 p-5 mb-6">
