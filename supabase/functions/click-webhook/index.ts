@@ -295,6 +295,14 @@ Deno.serve(async (req) => {
         return resp;
       }
 
+      // Xizmatni yetkazish (Med Coin / obuna) — idempotent
+      try {
+        const { error: ffErr } = await admin.rpc("fulfill_platform_payment", { _payment_id: payment.id });
+        if (ffErr) console.error("click fulfill error", ffErr);
+      } catch (e) {
+        console.error("click fulfill exception", e);
+      }
+
       await notifyPaymentPaid(admin, {
         provider: "click",
         amount: paymentAmount,

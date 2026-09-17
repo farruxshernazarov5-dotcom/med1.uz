@@ -58,20 +58,55 @@ Deno.serve(async (req) => {
     const admin = createClient(supabaseUrl, serviceKey);
     const contractGate = await requireSubscriptionContract(admin, userId, purpose);
     if (!contractGate.allowed) return json(403, { error: "Pullik obunadan oldin elektron shartnomani imzolash shart", code: "CONTRACT_REQUIRED", contract_slug: contractGate.slug });
-    const { data: payment, error: payErr } = await admin
+    // Paket (Med Coin / obuna) — kod bo'yicha yoki summa bo'yicha aniqlanadi
+    const packageCode = body?.package_code ? String(body.package_code) : null;
+    const { data: pkg } = await admin
+      .from("payment_packages")
+      .select("id")
+      .eq("is_active", true)
+      .or(packageCode ? `code.eq.${packageCode}` : `price.eq.${amount}`)
+      .limit(1)
+      .maybeSingle();
+
+    // Takroriy buyurtmalarning oldini olish: oxirgi 30 daqiqada bir xil to'lanmagan
+    // buyurtma bo'lsa, yangisini yaratmay o'shani qayta ishlatamiz.
+    const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const { data: reuse } = await admin
       .from("platform_payments")
-      .insert({
-        user_id: userId,
-        provider: "payme",
-        amount,
-        purpose,
-        reference_id,
-        status: "pending",
-        metadata: { return_url, environment, contract_id: contractGate.contractId },
-      })
-      .select()
-      .single();
-    if (payErr) throw payErr;
+      .select("id")
+      .eq("user_id", userId)
+      .eq("provider", "payme")
+      .eq("purpose", purpose)
+      .eq("amount", amount)
+      .eq("status", "pending")
+      .is("provider_transaction_id", null)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let payment = reuse as { id: string } | null;
+    if (!payment) {
+      const { data: created, error: payErr } = await admin
+        .from("platform_payments")
+        .insert({
+          user_id: userId,
+          provider: "payme",
+          amount,
+          purpose,
+          reference_id,
+          package_id: pkg?.id ?? null,
+          status: "pending",
+          metadata: { return_url, environment, contract_id: contractGate.contractId },
+        })
+        .select("id")
+        .single();
+      if (payErr) throw payErr;
+      payment = created;
+    } else if (pkg?.id) {
+      await admin.from("platform_payments").update({ package_id: pkg.id }).eq("id", payment.id);
+    }
+    if (!payment) return json(500, { error: "To'lov buyurtmasi yaratilmadi" });
 
     const returnWithId = (() => {
       try {

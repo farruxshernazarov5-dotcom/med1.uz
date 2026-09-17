@@ -58,7 +58,7 @@ const PaymentSuccessPage = () => {
     const fetchOnce = async () => {
       const { data, error } = await supabase
         .from("platform_payments")
-        .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata")
+        .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata, fulfilled_at")
         .eq("id", paymentId)
         .maybeSingle();
 
@@ -69,7 +69,20 @@ const PaymentSuccessPage = () => {
       }
       setPayment(data as PaymentRow);
 
-      if (data.status === "paid") setStatus("paid");
+      const paidStatus = data.status === "paid" || data.status === "completed";
+
+      // To'lov o'tgan bo'lsa-yu xizmat berilmagan bo'lsa — darhol talab qilamiz
+      if (paidStatus && !(data as any).fulfilled_at) {
+        try { await supabase.rpc("claim_my_payment", { _payment_id: data.id }); } catch { /* ignore */ }
+        const { data: fresh } = await supabase
+          .from("platform_payments")
+          .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, metadata, fulfilled_at")
+          .eq("id", paymentId)
+          .maybeSingle();
+        if (!cancelled && fresh) setPayment(fresh as PaymentRow);
+      }
+
+      if (paidStatus) setStatus("paid");
       else if (data.status === "failed" || data.status === "cancelled") setStatus("failed");
       else {
         setStatus("pending");
@@ -187,6 +200,11 @@ const PaymentSuccessPage = () => {
                 <p className="text-muted-foreground text-sm mt-2">
                   Rahmat! {purposeLabel} faollashtirildi.
                 </p>
+                {Number(payment?.metadata?.coins_granted || 0) > 0 && (
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-amber-100 text-amber-800 px-4 py-1.5 text-sm font-bold">
+                    🪙 +{Number(payment?.metadata?.coins_granted)} Med Coin hisobingizga qo'shildi
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -233,6 +251,9 @@ const PaymentSuccessPage = () => {
                   label="To'langan vaqt"
                   value={new Date(payment.paid_at).toLocaleString("uz-UZ")}
                 />
+              )}
+              {payment.metadata?.invoice_number && (
+                <Row label="Chek raqami" value={<span className="font-mono text-xs">{payment.metadata.invoice_number}</span>} />
               )}
             </div>
           )}

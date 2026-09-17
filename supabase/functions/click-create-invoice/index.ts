@@ -79,21 +79,52 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: payment, error: payErr } = await admin
-      .from("platform_payments")
-      .insert({
-        user_id: userId,
-        provider: "click",
-        amount,
-        purpose,
-        reference_id,
-        status: "pending",
-        metadata: { return_url, contract_id: contractGate.contractId },
-      })
-      .select()
-      .single();
+    const packageCode = body?.package_code ? String(body.package_code) : null;
+    const { data: pkg } = await admin
+      .from("payment_packages")
+      .select("id")
+      .eq("is_active", true)
+      .or(packageCode ? `code.eq.${packageCode}` : `price.eq.${amount}`)
+      .limit(1)
+      .maybeSingle();
 
-    if (payErr) throw payErr;
+    const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const { data: reuse } = await admin
+      .from("platform_payments")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("provider", "click")
+      .eq("purpose", purpose)
+      .eq("amount", amount)
+      .eq("status", "pending")
+      .is("provider_transaction_id", null)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let payment = reuse as { id: string } | null;
+    if (!payment) {
+      const { data: created, error: payErr } = await admin
+        .from("platform_payments")
+        .insert({
+          user_id: userId,
+          provider: "click",
+          amount,
+          purpose,
+          reference_id,
+          package_id: pkg?.id ?? null,
+          status: "pending",
+          metadata: { return_url, contract_id: contractGate.contractId },
+        })
+        .select("id")
+        .single();
+      if (payErr) throw payErr;
+      payment = created;
+    } else if (pkg?.id) {
+      await admin.from("platform_payments").update({ package_id: pkg.id }).eq("id", payment.id);
+    }
+    if (!payment) throw new Error("payment_create_failed");
 
     // return_url ga payment_id qo'shamiz — success sahifasi polling qilishi uchun
     const returnWithId = (() => {

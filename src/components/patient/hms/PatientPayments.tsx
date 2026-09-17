@@ -15,6 +15,18 @@ const PatientPayments = () => {
   const [payDialog, setPayDialog] = useState<{ open: boolean; item: any | null }>({ open: false, item: null });
   const [legalOpen, setLegalOpen] = useState(false);
   const [pendingPayment, setPendingPayment] = useState<null | (() => void)>(null);
+  const [claiming, setClaiming] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const claimPayment = async (paymentId: string) => {
+    setClaiming(paymentId);
+    try {
+      await supabase.rpc("claim_my_payment", { _payment_id: paymentId });
+      setReloadKey(k => k + 1);
+    } finally {
+      setClaiming(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -30,11 +42,13 @@ const PatientPayments = () => {
         ...(online.data || []).map(p => ({
           ...p,
           _src: p.provider === "payme" ? "Payme" : p.provider === "click" ? "Click" : "Online",
-          _name: p.purpose,
+          _name: (p as any).metadata?.product || p.purpose,
           _amount: p.amount,
           _status: p.status,
           _date: p.created_at,
-          _invoice: String(p.id).slice(0, 8),
+          _invoice: (p as any).metadata?.invoice_number || String(p.id).slice(0, 8),
+          _coins: Number((p as any).metadata?.coins_granted || 0),
+          _unfulfilled: (p.status === "paid" || p.status === "completed") && !(p as any).fulfilled_at,
           _online: true,
         })),
       ].sort((a, b) => new Date(b._date).getTime() - new Date(a._date).getTime());
@@ -42,7 +56,7 @@ const PatientPayments = () => {
       setLoading(false);
     };
     fetchAll();
-  }, [user]);
+  }, [user, reloadKey]);
 
   const filtered = payments.filter(p => {
     if (filter === "paid") return p._status === "paid" || p._status === "completed";
@@ -112,6 +126,11 @@ const PatientPayments = () => {
                           {p._invoice && <span className="text-[10px] text-muted-foreground inline-flex items-center gap-0.5"><Receipt className="w-2.5 h-2.5" /> {p._invoice}</span>}
                         </div>
                         <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(p._date).toLocaleDateString("uz-UZ")} • {s.label}</p>
+                        {p._coins > 0 && (
+                          <span className="inline-block mt-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700">
+                            🪙 +{p._coins} Med Coin berildi
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="text-right shrink-0">
@@ -124,6 +143,17 @@ const PatientPayments = () => {
                           onClick={() => setPayDialog({ open: true, item: p })}
                         >
                           To'lash
+                        </Button>
+                      )}
+                      {p._unfulfilled && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={claiming === p.id}
+                          className="mt-2 h-7 text-xs px-2"
+                          onClick={() => claimPayment(p.id)}
+                        >
+                          {claiming === p.id ? "..." : "Xizmatni olish"}
                         </Button>
                       )}
                     </div>
