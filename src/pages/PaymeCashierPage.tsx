@@ -44,7 +44,8 @@ const STATUS_FILTERS = [
 ];
 
 const statusBadge = (s: string) => {
-  if (s === "paid" || s === "completed") return <Badge className="bg-emerald-600 hover:bg-emerald-600">To'langan</Badge>;
+  if (s === "completed") return <Badge className="bg-emerald-600 hover:bg-emerald-600">Yetkazildi</Badge>;
+  if (s === "paid") return <Badge className="bg-sky-600 hover:bg-sky-600">To'langan</Badge>;
   if (s === "pending") return <Badge variant="secondary">Kutilmoqda</Badge>;
   if (s === "refunded") return <Badge className="bg-amber-600 hover:bg-amber-600">Qaytarilgan</Badge>;
   if (s === "cancelled" || s === "canceled") return <Badge variant="destructive">Bekor qilingan</Badge>;
@@ -106,14 +107,27 @@ export default function PaymeCashierPage() {
     if (!cancelTarget) return;
     setCancelling(true);
     try {
+      const wasPaid = ["paid", "completed"].includes(cancelTarget.status);
       const { data, error } = await supabase.functions.invoke("payme-cashier", {
         body: { action: "cancel", payment_id: cancelTarget.id, note: cancelNote, reason: 5 },
       });
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
+
+      // To'lov qaytarilganda berilgan Med Coin va obuna ham bekor qilinadi
+      let reversed = 0;
+      if (wasPaid) {
+        const { data: rf } = await supabase.functions.invoke("medcoin-admin", {
+          body: { action: "refund", payment_id: cancelTarget.id, reason: cancelNote || "Kassada qaytarildi" },
+        });
+        reversed = Number(rf?.result?.coins_reversed || 0);
+      }
+
       toast.success(data?.remote?.attempted && !data?.remote?.ok
         ? "To'lov bazada bekor qilindi, Payme tomonida tasdiqlanmadi"
-        : "To'lov bekor qilindi");
+        : reversed > 0
+          ? `To'lov qaytarildi · ${reversed} Med Coin hisobdan yechildi`
+          : "To'lov bekor qilindi");
       setCancelTarget(null);
       setCancelNote("");
       load();
