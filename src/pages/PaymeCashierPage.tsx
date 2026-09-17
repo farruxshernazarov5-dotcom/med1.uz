@@ -38,6 +38,7 @@ const STATUS_FILTERS = [
   { value: "all", label: "Barchasi" },
   { value: "pending", label: "Kutilmoqda" },
   { value: "paid", label: "To'langan" },
+  { value: "completed", label: "Yetkazilgan" },
   { value: "cancelled", label: "Bekor qilingan" },
   { value: "refunded", label: "Qaytarilgan" },
 ];
