@@ -30,11 +30,13 @@ const PatientPayments = () => {
         ...(online.data || []).map(p => ({
           ...p,
           _src: p.provider === "payme" ? "Payme" : p.provider === "click" ? "Click" : "Online",
-          _name: p.purpose,
+          _name: (p as any).metadata?.product || p.purpose,
           _amount: p.amount,
           _status: p.status,
           _date: p.created_at,
-          _invoice: String(p.id).slice(0, 8),
+          _invoice: (p as any).metadata?.invoice_number || String(p.id).slice(0, 8),
+          _coins: Number((p as any).metadata?.coins_granted || 0),
+          _unfulfilled: (p.status === "paid" || p.status === "completed") && !(p as any).fulfilled_at,
           _online: true,
         })),
       ].sort((a, b) => new Date(b._date).getTime() - new Date(a._date).getTime());

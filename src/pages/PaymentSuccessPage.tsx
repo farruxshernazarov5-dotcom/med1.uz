@@ -252,6 +252,9 @@ const PaymentSuccessPage = () => {
                   value={new Date(payment.paid_at).toLocaleString("uz-UZ")}
                 />
               )}
+              {payment.metadata?.invoice_number && (
+                <Row label="Chek raqami" value={<span className="font-mono text-xs">{payment.metadata.invoice_number}</span>} />
+              )}
             </div>
           )}
 
