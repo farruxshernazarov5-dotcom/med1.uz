@@ -200,6 +200,11 @@ const PaymentSuccessPage = () => {
                 <p className="text-muted-foreground text-sm mt-2">
                   Rahmat! {purposeLabel} faollashtirildi.
                 </p>
+                {Number(payment?.metadata?.coins_granted || 0) > 0 && (
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-amber-100 text-amber-800 px-4 py-1.5 text-sm font-bold">
+                    🪙 +{Number(payment?.metadata?.coins_granted)} Med Coin hisobingizga qo'shildi
+                  </div>
+                )}
               </div>
             </>
           )}
