@@ -15,6 +15,18 @@ const PatientPayments = () => {
   const [payDialog, setPayDialog] = useState<{ open: boolean; item: any | null }>({ open: false, item: null });
   const [legalOpen, setLegalOpen] = useState(false);
   const [pendingPayment, setPendingPayment] = useState<null | (() => void)>(null);
+  const [claiming, setClaiming] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const claimPayment = async (paymentId: string) => {
+    setClaiming(paymentId);
+    try {
+      await supabase.rpc("claim_my_payment", { _payment_id: paymentId });
+      setReloadKey(k => k + 1);
+    } finally {
+      setClaiming(null);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
