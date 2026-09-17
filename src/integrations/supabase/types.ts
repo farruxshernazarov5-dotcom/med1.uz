@@ -17953,6 +17953,7 @@ export type Database = {
         }
       }
       claim_initial_role: { Args: { _role: string }; Returns: string }
+      claim_my_payment: { Args: { _payment_id: string }; Returns: Json }
       click_fulfill_payment: { Args: { _payment_id: string }; Returns: Json }
       click_refund_payment: {
         Args: { _admin: string; _payment_id: string; _reason: string }
@@ -17985,6 +17986,7 @@ export type Database = {
         Args: { _owner_id: string }
         Returns: undefined
       }
+      fulfill_platform_payment: { Args: { _payment_id: string }; Returns: Json }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
       get_nearby_medical_services: {
         Args: {
