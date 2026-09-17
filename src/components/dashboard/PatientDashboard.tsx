@@ -172,18 +172,21 @@ const TIER_META: Record<string, { label: string; gradient: string; icon: any }> 
 const PatientDashboard = () => {
   const { user, profile, signOut } = useAuth();
   const { access, remainingToday } = useAiAccess();
-  const { balance } = useCredits();
+  const { balance, packageTier } = useCredits();
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [lockedFeature, setLockedFeature] = useState<string>("");
 
-  const tier = access?.tier ?? "free";
+  const accessTier = access?.tier ?? "free";
+  const tier = ["lite", "standard", "premium", "pro"].includes(accessTier)
+    ? accessTier
+    : packageTier;
   const tierMeta = TIER_META[tier] || TIER_META.free;
   const TierIcon = tierMeta.icon;
 
-  const isPremiumUser = tier !== "free";
+  const isPremiumUser = tier !== "free" || balance > 0;
 
   const initials = (profile?.full_name || "")
     .split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();

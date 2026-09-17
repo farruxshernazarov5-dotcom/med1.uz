@@ -9,16 +9,19 @@ import { useCredits } from "@/hooks/useCredits";
  */
 const AIStatusWidget = () => {
   const { access, loading, remainingToday } = useAiAccess();
-  const { balance, loading: cLoading } = useCredits();
+  const { balance, packageTier, loading: cLoading } = useCredits();
 
   if (loading || cLoading || !access) return null;
 
   const tierColors: Record<string, string> = {
     pro: "from-amber-500 to-orange-500 text-white",
     premium: "from-purple-500 to-fuchsia-500 text-white",
+    standard: "from-sky-500 to-cyan-500 text-white",
+    lite: "from-emerald-500 to-teal-500 text-white",
     free: "from-slate-400 to-slate-500 text-white",
   };
-  const tierLabel: Record<string, string> = { pro: "Pro", premium: "Premium", free: "Bepul" };
+  const tierLabel: Record<string, string> = { pro: "Pro", premium: "Premium", standard: "Standard", lite: "Lite", free: "Bepul" };
+  const displayTier = access.tier === "free" ? packageTier : access.tier;
 
   const dailyPct = Math.min(100, Math.round((access.used_today / Math.max(1, access.daily_limit)) * 100));
 
@@ -26,8 +29,8 @@ const AIStatusWidget = () => {
     <div className="rounded-2xl border border-border bg-card p-4 space-y-3 shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tarifingiz</span>
-        <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-gradient-to-r ${tierColors[access.tier]}`}>
-          <Crown className="w-3 h-3 inline mr-1" />{tierLabel[access.tier]}
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-gradient-to-r ${tierColors[displayTier] ?? tierColors.free}`}>
+          <Crown className="w-3 h-3 inline mr-1" />{tierLabel[displayTier] ?? "Bepul"}
         </span>
       </div>
 

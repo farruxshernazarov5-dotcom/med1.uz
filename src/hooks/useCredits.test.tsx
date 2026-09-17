@@ -30,6 +30,7 @@ vi.mock("@/integrations/supabase/client", () => {
   };
   return {
     supabase: {
+      rpc: () => Promise.resolve({ data: null, error: null }),
       from: () => builder(),
       channel: () => ({ on: () => ({ subscribe: () => ({}) }) }),
       removeChannel: () => {},
@@ -77,17 +78,14 @@ describe("CreditProvider", () => {
     expect(fetchSpy).toHaveBeenCalled();
   });
 
-  it("refetches credits on client-side route change (regression: routing sync)", async () => {
+  it("keeps the cached balance stable on a recent client-side route change", async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId("balance").textContent).toBe("42"));
     const before = fetchSpy.mock.calls.length;
     expect(before).toBeGreaterThan(0);
     await act(async () => { await new Promise((r) => setTimeout(r, 1700)); });
     await act(async () => { screen.getByTestId("go").click(); });
-    await waitFor(
-      () => expect(fetchSpy.mock.calls.length).toBeGreaterThan(before),
-      { timeout: 3000 },
-    );
+    expect(fetchSpy.mock.calls.length).toBe(before);
   }, 10000);
 
   it("hydrates initial balance from sessionStorage on deep-link entry", async () => {

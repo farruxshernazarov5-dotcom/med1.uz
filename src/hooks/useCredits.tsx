@@ -8,6 +8,7 @@ import { toast } from "sonner";
 interface CreditInfo {
   balance: number;
   expiresAt: string | null;
+  packageTier: "free" | "lite" | "standard" | "premium";
   loading: boolean;
   refreshing: boolean;
   initialized: boolean;
@@ -22,6 +23,7 @@ interface Cached {
   userId: string;
   balance: number;
   expiresAt: string | null;
+  packageTier?: "free" | "lite" | "standard" | "premium";
   cachedAt: number;
 }
 
@@ -41,6 +43,7 @@ const writeCache = (c: Cached) => {
 const CreditContext = createContext<CreditInfo>({
   balance: 0,
   expiresAt: null,
+  packageTier: "free",
   loading: true,
   refreshing: false,
   initialized: false,
@@ -55,6 +58,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
   const initialCacheMatch = !!(cached && user && cached.userId === user.id);
   const [balance, setBalance] = useState<number>(initialCacheMatch ? cached!.balance : 0);
   const [expiresAt, setExpiresAt] = useState<string | null>(initialCacheMatch ? cached!.expiresAt : null);
+  const [packageTier, setPackageTier] = useState<CreditInfo["packageTier"]>(initialCacheMatch ? cached?.packageTier ?? "free" : "free");
   const [loading, setLoading] = useState<boolean>(!initialCacheMatch);
   const [refreshing, setRefreshing] = useState(false);
   const [initialized, setInitialized] = useState<boolean>(initialCacheMatch);
@@ -76,7 +80,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
   const fetchCredits = useCallback(async (force = false): Promise<void> => {
     if (!user) {
-      setBalance(0); setExpiresAt(null); setLoading(false); setRefreshing(false);
+      setBalance(0); setExpiresAt(null); setPackageTier("free"); setLoading(false); setRefreshing(false);
       setInitialized(true); initializedRef.current = true;
       try { sessionStorage.removeItem(CACHE_KEY); } catch { /* ignore */ }
       return;
@@ -98,7 +102,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
         const now = new Date().toISOString();
         const { data, error } = await supabase
           .from("user_credits")
-          .select("balance, expires_at")
+          .select("balance, expires_at, package_name")
           .eq("user_id", user.id)
           .gt("expires_at", now)
           .gt("balance", 0)
@@ -107,6 +111,14 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
         const total = (data || []).reduce((sum, c) => sum + (c.balance || 0), 0);
         const nearest = data?.[0]?.expires_at || null;
+        const packageNames = (data || []).map((c) => String(c.package_name || "").toLowerCase());
+        const detectedTier: CreditInfo["packageTier"] = packageNames.some((name) => name.includes("premium") || name.includes("350"))
+          ? "premium"
+          : packageNames.some((name) => name.includes("standard") || name.includes("150"))
+            ? "standard"
+            : packageNames.some((name) => name.includes("lite") || name.includes("40"))
+              ? "lite"
+              : "free";
         // Surface any balance change so users see every deduction (no silent drains).
         setBalance((prev) => {
           if (initializedRef.current && prev !== total) {
@@ -117,7 +129,8 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
           return total;
         });
         setExpiresAt(nearest);
-        writeCache({ userId: user.id, balance: total, expiresAt: nearest, cachedAt: Date.now() });
+        setPackageTier(detectedTier);
+        writeCache({ userId: user.id, balance: total, expiresAt: nearest, packageTier: detectedTier, cachedAt: Date.now() });
       } catch (e) {
         console.warn("[useCredits] fetch failed", e);
       } finally {
@@ -179,7 +192,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <CreditContext.Provider
-      value={{ balance, expiresAt, loading, refreshing, initialized, refetch: () => { void fetchCredits(true); } }}
+      value={{ balance, expiresAt, packageTier, loading, refreshing, initialized, refetch: () => { void fetchCredits(true); } }}
     >
       {children}
     </CreditContext.Provider>
