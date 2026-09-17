@@ -319,7 +319,8 @@ ${plan === "professional" || plan === "family" ? "âœ“ Barcha 13 ta AI xizmat\nâœ
               <div className="bg-card border border-border rounded-2xl p-6">
                 <PaymentMethodPicker
                   amount={amount}
-                  purpose={`ai_subscription:${plan}:${billing}`}
+                  purpose={purchaseType === "credits" ? `med_coin:${packageParam}` : `ai_subscription:${plan}:${billing}`}
+                  packageCode={packageCode}
                   referenceId={invoiceId}
                   returnUrl={`${window.location.origin}/ai-subscription?paid=1`}
                   onBeforeConfirm={guardWithLegal}
