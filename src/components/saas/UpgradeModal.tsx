@@ -28,7 +28,15 @@ const REASON_TEXT: Record<string, { title: string; desc: string }> = {
   no_subscription: { title: "✨ Faollashtirilmagan modul", desc: "Bu modul obunangizda faol emas. Tarifni tanlang." },
 };
 
-const TIER_RANK: Record<string, number> = { free: 0, starter: 1, pro: 2, enterprise: 3 };
+const TIER_RANK: Record<string, number> = {
+  free: 0,
+  lite: 1,
+  starter: 1,
+  standard: 2,
+  pro: 2,
+  premium: 3,
+  enterprise: 3,
+};
 const TIER_ORDER = ["free", "starter", "pro", "enterprise"];
 const TIER_LABEL_COLOR: Record<string, string> = {
   free: "bg-muted text-muted-foreground",
@@ -70,10 +78,10 @@ export const UpgradeModal = ({
   const [promoError, setPromoError] = useState<string | null>(null);
 
   // Resolve target tier: prop, or one step above currentTier
-  const cur = (currentTier || "free").toLowerCase();
-  const req = (requiredTier ||
-    TIER_ORDER[Math.min(TIER_RANK[cur] + 1, TIER_ORDER.length - 1)]
-  ).toLowerCase();
+  const cur = String(currentTier || "free").toLowerCase();
+  const currentRank = TIER_RANK[cur] ?? TIER_RANK.free;
+  const nextTier = TIER_ORDER[Math.min(currentRank + 1, TIER_ORDER.length - 1)] || "starter";
+  const req = String(requiredTier || nextTier).toLowerCase();
 
   useEffect(() => {
     if (!open) return;
