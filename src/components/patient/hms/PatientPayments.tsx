@@ -56,7 +56,7 @@ const PatientPayments = () => {
       setLoading(false);
     };
     fetchAll();
-  }, [user]);
+  }, [user, reloadKey]);
 
   const filtered = payments.filter(p => {
     if (filter === "paid") return p._status === "paid" || p._status === "completed";
