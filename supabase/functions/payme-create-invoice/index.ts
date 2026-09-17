@@ -106,6 +106,7 @@ Deno.serve(async (req) => {
     } else if (pkg?.id) {
       await admin.from("platform_payments").update({ package_id: pkg.id }).eq("id", payment.id);
     }
+    if (!payment) return json(500, { error: "To'lov buyurtmasi yaratilmadi" });
 
     const returnWithId = (() => {
       try {

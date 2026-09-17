@@ -124,6 +124,7 @@ Deno.serve(async (req) => {
     } else if (pkg?.id) {
       await admin.from("platform_payments").update({ package_id: pkg.id }).eq("id", payment.id);
     }
+    if (!payment) throw new Error("payment_create_failed");
 
     // return_url ga payment_id qo'shamiz — success sahifasi polling qilishi uchun
     const returnWithId = (() => {
