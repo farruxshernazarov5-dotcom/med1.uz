@@ -114,6 +114,11 @@ const PatientPayments = () => {
                           {p._invoice && <span className="text-[10px] text-muted-foreground inline-flex items-center gap-0.5"><Receipt className="w-2.5 h-2.5" /> {p._invoice}</span>}
                         </div>
                         <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(p._date).toLocaleDateString("uz-UZ")} • {s.label}</p>
+                        {p._coins > 0 && (
+                          <span className="inline-block mt-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700">
+                            🪙 +{p._coins} Med Coin berildi
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="text-right shrink-0">
@@ -126,6 +131,17 @@ const PatientPayments = () => {
                           onClick={() => setPayDialog({ open: true, item: p })}
                         >
                           To'lash
+                        </Button>
+                      )}
+                      {p._unfulfilled && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={claiming === p.id}
+                          className="mt-2 h-7 text-xs px-2"
+                          onClick={() => claimPayment(p.id)}
+                        >
+                          {claiming === p.id ? "..." : "Xizmatni olish"}
                         </Button>
                       )}
                     </div>
