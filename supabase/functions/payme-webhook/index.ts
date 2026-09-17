@@ -280,6 +280,14 @@ Deno.serve(async (req) => {
           .maybeSingle();
 
         if (p) {
+          // Xizmatni yetkazish (Med Coin / obuna) — idempotent, DB tomonda nazorat qilinadi
+          try {
+            const { data: ff, error: ffErr } = await admin.rpc("fulfill_platform_payment", { _payment_id: p.id });
+            if (ffErr) console.error("payme fulfill error", ffErr);
+            else console.log("payme fulfilled", JSON.stringify(ff));
+          } catch (e) {
+            console.error("payme fulfill exception", e);
+          }
           await notifyPaymentPaid(admin, {
             provider: "payme",
             amount: Number(p.amount),
