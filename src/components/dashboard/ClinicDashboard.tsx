@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import OrgLegalCenter from "@/components/legal/OrgLegalCenter";
+import OrgCoinCard from "@/components/org/OrgCoinCard";
 import { Scale as LegalIcon } from "lucide-react";
 import DashboardShell from "./DashboardShell";
 import type { SidebarItem } from "./DashboardShell";
@@ -308,7 +309,12 @@ const ClinicDashboard = () => {
       {tab === "hms-attendance" && <OrgAttendance ownerId={clinic.owner_id} orgType="clinic" orgName={clinic.name} />}
           {tab === "premium" && <PremiumPerksPanel moduleId="clinic" />}
           {tab === "partner-referral" && <ReferralPanel />}
-          {tab === "legal" && <OrgLegalCenter contractSlug="clinic-hms-agreement" moduleTitle="Klinika HMS shartnomasi" />}
+          {tab === "legal" && (
+            <div className="space-y-4">
+              <OrgCoinCard orgType="clinic" orgId={clinic.id} orgName={clinic.name} />
+              <OrgLegalCenter contractSlug="clinic-hms-agreement" moduleTitle="Klinika HMS shartnomasi" />
+            </div>
+          )}
 
       <UpgradeModal
         open={!!lockedItem}
