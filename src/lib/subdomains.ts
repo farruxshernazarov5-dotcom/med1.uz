@@ -14,16 +14,21 @@ export const ROOT_DOMAIN = "med1.uz";
 export const PRIMARY_HOST = `www.${ROOT_DOMAIN}`;
 
 /**
- * Subdomen marshrutizatsiyasi vaqtincha o'chirilgan.
- * clinic/doctors/ai/admin subdomenlari Lovable'ga ulangach `true` qiling.
+ * Subdomen marshrutizatsiyasi yoqilgan (clinic/doctors/ai/admin Lovable'ga ulangan).
  */
-export const SUBDOMAIN_ROUTING_ENABLED = false;
+export const SUBDOMAIN_ROUTING_ENABLED = true;
 
 /**
  * Only hosts already attached to Lovable may receive cross-domain navigation.
- * Add a service host here after its custom-domain status becomes Active.
  */
-const ACTIVE_HOSTS = new Set([ROOT_DOMAIN, PRIMARY_HOST]);
+const ACTIVE_HOSTS = new Set([
+  ROOT_DOMAIN,
+  PRIMARY_HOST,
+  `admin.${ROOT_DOMAIN}`,
+  `ai.${ROOT_DOMAIN}`,
+  `doctors.${ROOT_DOMAIN}`,
+  `clinic.${ROOT_DOMAIN}`,
+]);
 
 interface SubdomainConfig {
   key: SubdomainKey;
@@ -38,7 +43,7 @@ export const SUBDOMAINS: SubdomainConfig[] = [
     key: "admin",
     host: `admin.${ROOT_DOMAIN}`,
     home: "/admin",
-    prefixes: ["/admin"],
+    prefixes: ["/admin", "/kassa", "/partner"],
   },
   {
     key: "ai",
@@ -64,6 +69,9 @@ export const SUBDOMAINS: SubdomainConfig[] = [
       "/maternity",
       "/cosmetology",
       "/blood-banks",
+      "/blood-donor-register",
+      "/bloodbank-register",
+      "/dental-register",
       "/clinic-register",
       "/diagnostics-register",
       "/maternity-register",
@@ -73,12 +81,41 @@ export const SUBDOMAINS: SubdomainConfig[] = [
   },
 ];
 
+
 const WWW: SubdomainConfig = {
   key: "www",
   host: PRIMARY_HOST,
   home: "/",
   prefixes: [],
 };
+
+/**
+ * Har bir hostda ochilaveradigan umumiy sahifalar (sessiya har bir domenda alohida
+ * saqlanadi — shuning uchun kirish, to'lov, huquqiy va shaxsiy kabinet sahifalari
+ * foydalanuvchi turgan domenda qoladi).
+ */
+export const SHARED_PREFIXES = [
+  "/auth",
+  "/forgot-password",
+  "/reset-password",
+  "/dashboard",
+  "/payment",
+  "/legal",
+  "/terms",
+  "/privacy",
+  "/disclaimer",
+  "/saas-terms",
+  "/verify",
+  "/report",
+  "/check-in",
+  "/ai-subscription",
+  "/ai-payment",
+];
+
+export function isSharedPath(path: string): boolean {
+  const p = path.toLowerCase();
+  return SHARED_PREFIXES.some((pre) => p === pre || p.startsWith(`${pre}/`) || p.startsWith(pre));
+}
 
 /** Faqat haqiqiy med1.uz hostlarida subdomen mantiqini yoqamiz (preview/localhost — yo'q) */
 export function isProductionHost(host: string = window.location.hostname): boolean {
@@ -102,11 +139,13 @@ export function ownerOf(path: string): SubdomainConfig {
 /** Path uchun to'liq URL (kerak bo'lsa boshqa subdomenga) */
 export function urlForPath(path: string, host: string = window.location.hostname): string | null {
   if (!isProductionHost(host)) return null;
+  if (isSharedPath(path)) return null;
   const target = ownerOf(path);
   if (!ACTIVE_HOSTS.has(target.host)) return null;
   if (target.host === host) return null;
   return `https://${target.host}${path}`;
 }
+
 
 export function isActiveSubdomainHost(host: string): boolean {
   return ACTIVE_HOSTS.has(host);

@@ -5,6 +5,7 @@ import {
   currentSubdomain,
   isActiveSubdomainHost,
   isProductionHost,
+  isSharedPath,
   ownerOf,
   urlForPath,
 } from "@/lib/subdomains";
@@ -31,11 +32,14 @@ const SubdomainRouter = () => {
       return;
     }
 
+    if (isSharedPath(path)) return;
+
     const target = ownerOf(path);
     if (target.host !== host && isActiveSubdomainHost(target.host)) {
       window.location.replace(`https://${target.host}${path}${location.search}${location.hash}`);
     }
   }, [location.pathname, location.search, location.hash]);
+
 
   // 3: ichki havolalarni ushlab, kerakli subdomenga yuborish
   useEffect(() => {
