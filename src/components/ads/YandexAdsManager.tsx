@@ -62,6 +62,11 @@ const YandexAdsManager: React.FC = () => {
     };
 
     (window as any).yaContextCb.push(renderCallback);
+
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, loadScript));
+      timers.forEach((t) => window.clearTimeout(t));
+    };
   }, []);
 
   // Fullscreen ads render outside the document flow — no inline container needed.
