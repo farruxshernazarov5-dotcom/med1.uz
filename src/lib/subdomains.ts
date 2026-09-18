@@ -14,16 +14,21 @@ export const ROOT_DOMAIN = "med1.uz";
 export const PRIMARY_HOST = `www.${ROOT_DOMAIN}`;
 
 /**
- * Subdomen marshrutizatsiyasi vaqtincha o'chirilgan.
- * clinic/doctors/ai/admin subdomenlari Lovable'ga ulangach `true` qiling.
+ * Subdomen marshrutizatsiyasi yoqilgan (clinic/doctors/ai/admin Lovable'ga ulangan).
  */
-export const SUBDOMAIN_ROUTING_ENABLED = false;
+export const SUBDOMAIN_ROUTING_ENABLED = true;
 
 /**
  * Only hosts already attached to Lovable may receive cross-domain navigation.
- * Add a service host here after its custom-domain status becomes Active.
  */
-const ACTIVE_HOSTS = new Set([ROOT_DOMAIN, PRIMARY_HOST]);
+const ACTIVE_HOSTS = new Set([
+  ROOT_DOMAIN,
+  PRIMARY_HOST,
+  `admin.${ROOT_DOMAIN}`,
+  `ai.${ROOT_DOMAIN}`,
+  `doctors.${ROOT_DOMAIN}`,
+  `clinic.${ROOT_DOMAIN}`,
+]);
 
 interface SubdomainConfig {
   key: SubdomainKey;
@@ -38,7 +43,7 @@ export const SUBDOMAINS: SubdomainConfig[] = [
     key: "admin",
     host: `admin.${ROOT_DOMAIN}`,
     home: "/admin",
-    prefixes: ["/admin"],
+    prefixes: ["/admin", "/kassa", "/dashboard", "/partner"],
   },
   {
     key: "ai",
@@ -64,6 +69,9 @@ export const SUBDOMAINS: SubdomainConfig[] = [
       "/maternity",
       "/cosmetology",
       "/blood-banks",
+      "/blood-donor-register",
+      "/bloodbank-register",
+      "/dental-register",
       "/clinic-register",
       "/diagnostics-register",
       "/maternity-register",
@@ -72,6 +80,7 @@ export const SUBDOMAINS: SubdomainConfig[] = [
     ],
   },
 ];
+
 
 const WWW: SubdomainConfig = {
   key: "www",
