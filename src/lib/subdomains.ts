@@ -49,7 +49,8 @@ export const SUBDOMAINS: SubdomainConfig[] = [
     key: "ai",
     host: `ai.${ROOT_DOMAIN}`,
     home: "/ai-services",
-    prefixes: ["/ai-", "/symptom-checker", "/smart-search"],
+    // AI sahifalari DNS barqarorlashguncha asosiy domenda xizmat qiladi.
+    prefixes: [],
   },
   {
     key: "doctors",
@@ -88,6 +89,13 @@ const WWW: SubdomainConfig = {
   home: "/",
   prefixes: [],
 };
+
+const AI_PREFIXES = ["/ai-", "/symptom-checker", "/smart-search"];
+
+function isAiPath(path: string): boolean {
+  const p = path.toLowerCase();
+  return AI_PREFIXES.some((prefix) => p === prefix || p.startsWith(prefix));
+}
 
 /**
  * Har bir hostda ochilaveradigan umumiy sahifalar (sessiya har bir domenda alohida
@@ -128,6 +136,7 @@ export function currentSubdomain(host: string = window.location.hostname): Subdo
 /** Ushbu path qaysi subdomenga tegishli */
 export function ownerOf(path: string): SubdomainConfig {
   const p = path.toLowerCase();
+  if (isAiPath(p)) return WWW;
   for (const s of SUBDOMAINS) {
     if (s.prefixes.some((pre) => p === pre || p.startsWith(pre))) return s;
   }
@@ -156,6 +165,10 @@ export function redirectTargetForLocation(
   hash = "",
 ): string | null {
   const sub = currentSubdomain(host);
+  if (sub.key === "ai") {
+    const targetPath = path === "/" || path === "" ? "/ai-services" : path;
+    return `https://${PRIMARY_HOST}${targetPath}${search}${hash}`;
+  }
   if (sub.key === "www" || isSharedPath(path)) return null;
   const target = ownerOf(path);
   if (target.host === host || !isActiveSubdomainHost(target.host)) return null;

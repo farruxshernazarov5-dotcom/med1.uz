@@ -16,15 +16,15 @@ describe("subdomain routing", () => {
     expect(urlForPath("/pricing", "www.med1.uz")).toBeNull();
   });
 
-  it("routes section paths to their own subdomain", () => {
+  it("routes active section paths to their own subdomain", () => {
     expect(ownerOf("/clinics").host).toBe("clinic.med1.uz");
     expect(ownerOf("/doctors/123").host).toBe("doctors.med1.uz");
-    expect(ownerOf("/ai-diabetes").host).toBe("ai.med1.uz");
-    expect(ownerOf("/ai-subscription").host).toBe("ai.med1.uz");
-    expect(ownerOf("/ai-payment").host).toBe("ai.med1.uz");
+    expect(ownerOf("/ai-diabetes").host).toBe("www.med1.uz");
+    expect(ownerOf("/ai-subscription").host).toBe("www.med1.uz");
+    expect(ownerOf("/ai-payment").host).toBe("www.med1.uz");
     expect(ownerOf("/admin/med-coin").host).toBe("admin.med1.uz");
     expect(urlForPath("/clinics", "www.med1.uz")).toBe("https://clinic.med1.uz/clinics");
-    expect(urlForPath("/ai-services", "ai.med1.uz")).toBeNull();
+    expect(urlForPath("/ai-services", "clinic.med1.uz")).toBe("https://www.med1.uz/ai-services");
   });
 
   it("keeps shared pages on the current host", () => {
@@ -49,8 +49,12 @@ describe("subdomain routing", () => {
     expect(redirectTargetForLocation("/admin", "www.med1.uz")).toBeNull();
   });
 
-  it("moves a mismatched section between active subdomains", () => {
+  it("temporarily moves every AI request to the main domain", () => {
+    expect(redirectTargetForLocation("/", "ai.med1.uz"))
+      .toBe("https://www.med1.uz/ai-services");
     expect(redirectTargetForLocation("/ai-services", "clinic.med1.uz", "?lang=uz"))
-      .toBe("https://ai.med1.uz/ai-services?lang=uz");
+      .toBe("https://www.med1.uz/ai-services?lang=uz");
+    expect(redirectTargetForLocation("/ai-doctor-chat", "ai.med1.uz", "?lang=uz"))
+      .toBe("https://www.med1.uz/ai-doctor-chat?lang=uz");
   });
 });
