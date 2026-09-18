@@ -64,12 +64,18 @@ const Index = () => {
           <AISearchSection />
         </Suspense>
 
-        <LazySection minHeight={440}>
-          <Suspense fallback={<Fallback />}>
-            <section className="container mx-auto px-4 py-6">
-              <NearbyMap height={400} />
-            </section>
-          </Suspense>
+        <LazySection minHeight={300}>
+          <section className="container mx-auto px-4 py-6">
+            <ClickToLoad
+              label="Yaqin atrofdagi tibbiy xizmatlarni ko'rsatish"
+              hint="Xarita alohida yuklanadi — sahifa tezroq ochilishi uchun."
+              minHeight={260}
+            >
+              <Suspense fallback={<Fallback />}>
+                <NearbyMap height={400} />
+              </Suspense>
+            </ClickToLoad>
+          </section>
         </LazySection>
 
         <Suspense fallback={<Fallback />}>
