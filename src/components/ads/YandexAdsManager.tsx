@@ -10,14 +10,27 @@ import React, { useEffect } from 'react';
  */
 const YandexAdsManager: React.FC = () => {
   useEffect(() => {
-    const scriptId = 'yandex-context-script';
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = 'https://yandex.ru/ads/system/context.js';
-      script.async = true;
-      document.head.appendChild(script);
-    }
+    let done = false;
+    const timers: number[] = [];
+
+    const loadScript = () => {
+      if (done) return;
+      done = true;
+      const scriptId = 'yandex-context-script';
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = 'https://yandex.ru/ads/system/context.js';
+        script.async = true;
+        document.head.appendChild(script);
+      }
+    };
+
+    // Reklama skripti sahifa ochilishini sekinlashtirmasligi uchun —
+    // faqat birinchi harakatdan keyin yoki 8 soniyadan so'ng yuklanadi.
+    const events: (keyof WindowEventMap)[] = ['scroll', 'pointerdown', 'keydown', 'touchstart'];
+    events.forEach((e) => window.addEventListener(e, loadScript, { once: true, passive: true }));
+    timers.push(window.setTimeout(loadScript, 8000));
 
     (window as any).yaContextCb = (window as any).yaContextCb || [];
 
@@ -49,6 +62,11 @@ const YandexAdsManager: React.FC = () => {
     };
 
     (window as any).yaContextCb.push(renderCallback);
+
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, loadScript));
+      timers.forEach((t) => window.clearTimeout(t));
+    };
   }, []);
 
   // Fullscreen ads render outside the document flow — no inline container needed.

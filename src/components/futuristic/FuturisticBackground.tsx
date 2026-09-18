@@ -26,6 +26,17 @@ const FuturisticBackground = ({
 }: Props) => {
   const isDark = variant !== "subtle";
 
+  // Mobil qurilma yoki "kamroq animatsiya" rejimida og'ir effektlarni o'chiramiz —
+  // bu telefonda sahifa ochilishini sezilarli tezlashtiradi.
+  const isLite =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    (window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  const effectiveParticles = isLite ? 0 : particles;
+  const effectiveAurora = isLite ? false : aurora;
+
   return (
     <div
       className={cn(
@@ -57,7 +68,7 @@ const FuturisticBackground = ({
       />
 
       {/* Moving aurora inspired by premium AI interfaces */}
-      {variant === "dark" && aurora && <div className="aurora-gemini" />}
+      {variant === "dark" && effectiveAurora && <div className="aurora-gemini" />}
 
       {/* Glow blobs (smaller, no animation for perf) */}
       <div
@@ -70,9 +81,9 @@ const FuturisticBackground = ({
       />
 
       {/* Particles (CSS-only, capped) */}
-      {particles > 0 && (
+      {effectiveParticles > 0 && (
         <svg className={cn("absolute inset-0 w-full h-full", isDark ? "opacity-50" : "opacity-30")}>
-          {Array.from({ length: Math.min(particles, 10) }).map((_, i) => {
+          {Array.from({ length: Math.min(effectiveParticles, 10) }).map((_, i) => {
             const cx = (i * 137) % 100;
             const cy = (i * 53) % 100;
             const r = (i % 3) + 1;
