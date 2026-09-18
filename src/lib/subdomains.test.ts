@@ -5,6 +5,7 @@ import {
   isProductionHost,
   isSharedPath,
   ownerOf,
+  redirectTargetForLocation,
   urlForPath,
 } from "@/lib/subdomains";
 
@@ -39,5 +40,17 @@ describe("subdomain routing", () => {
     expect(isProductionHost("evil.med1.uz")).toBe(false);
     expect(isProductionHost("localhost")).toBe(false);
     expect(isActiveSubdomainHost("clinic.med1.uz")).toBe(true);
+  });
+
+  it("never creates a primary-domain redirect loop", () => {
+    expect(redirectTargetForLocation("/clinics", "www.med1.uz")).toBeNull();
+    expect(redirectTargetForLocation("/ai-services", "www.med1.uz")).toBeNull();
+    expect(redirectTargetForLocation("/doctors", "www.med1.uz")).toBeNull();
+    expect(redirectTargetForLocation("/admin", "www.med1.uz")).toBeNull();
+  });
+
+  it("moves a mismatched section between active subdomains", () => {
+    expect(redirectTargetForLocation("/ai-services", "clinic.med1.uz", "?lang=uz"))
+      .toBe("https://ai.med1.uz/ai-services?lang=uz");
   });
 });

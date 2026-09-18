@@ -7,6 +7,7 @@ import {
   isProductionHost,
   isSharedPath,
   ownerOf,
+  redirectTargetForLocation,
   urlForPath,
 } from "@/lib/subdomains";
 
@@ -34,14 +35,8 @@ const SubdomainRouter = () => {
 
     if (isSharedPath(path)) return;
 
-    const target = ownerOf(path);
-    // Lovable'da www hali Primary bo'lsa, bo'lim subdomeni server tomonidan yana
-    // www'ga qaytariladi. www'dan avtomatik qayta yuborish cheksiz aylanish
-    // hosil qiladi. Cross-domain o'tishni faqat haqiqiy bo'lim subdomenida
-    // noto'g'ri bo'lim ochilganda bajaramiz; www'dagi o'tishlar link handlerda.
-    if (sub.key !== "www" && target.host !== host && isActiveSubdomainHost(target.host)) {
-      window.location.replace(`https://${target.host}${path}${location.search}${location.hash}`);
-    }
+    const redirectTarget = redirectTargetForLocation(path, host, location.search, location.hash);
+    if (redirectTarget) window.location.replace(redirectTarget);
   }, [location.pathname, location.search, location.hash]);
 
 
