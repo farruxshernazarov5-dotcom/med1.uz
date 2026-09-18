@@ -3,10 +3,7 @@ import { useLocation } from "react-router-dom";
 import {
   SUBDOMAIN_ROUTING_ENABLED,
   currentSubdomain,
-  isActiveSubdomainHost,
   isProductionHost,
-  isSharedPath,
-  ownerOf,
   redirectTargetForLocation,
   urlForPath,
 } from "@/lib/subdomains";
