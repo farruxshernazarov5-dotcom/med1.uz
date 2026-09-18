@@ -26,6 +26,17 @@ const FuturisticBackground = ({
 }: Props) => {
   const isDark = variant !== "subtle";
 
+  // Mobil qurilma yoki "kamroq animatsiya" rejimida og'ir effektlarni o'chiramiz —
+  // bu telefonda sahifa ochilishini sezilarli tezlashtiradi.
+  const isLite =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    (window.matchMedia("(max-width: 768px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  const effectiveParticles = isLite ? 0 : particles;
+  const effectiveAurora = isLite ? false : aurora;
+
   return (
     <div
       className={cn(
