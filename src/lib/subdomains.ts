@@ -144,6 +144,24 @@ export function urlForPath(path: string, host: string = window.location.hostname
   return `https://${target.host}${path}`;
 }
 
+/**
+ * Joriy sahifani avtomatik boshqa domenga ko'chirish kerakmi.
+ * Asosiy www hostidan avtomatik chiqmaymiz: domen sozlamasidagi Primary redirect
+ * hali yoqilgan bo'lsa, aks holda www <-> subdomain cheksiz aylanishi yuz beradi.
+ */
+export function redirectTargetForLocation(
+  path: string,
+  host: string,
+  search = "",
+  hash = "",
+): string | null {
+  const sub = currentSubdomain(host);
+  if (sub.key === "www" || isSharedPath(path)) return null;
+  const target = ownerOf(path);
+  if (target.host === host || !isActiveSubdomainHost(target.host)) return null;
+  return `https://${target.host}${path}${search}${hash}`;
+}
+
 
 export function isActiveSubdomainHost(host: string): boolean {
   return ACTIVE_HOSTS.has(host);

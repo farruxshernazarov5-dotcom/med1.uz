@@ -3,10 +3,8 @@ import { useLocation } from "react-router-dom";
 import {
   SUBDOMAIN_ROUTING_ENABLED,
   currentSubdomain,
-  isActiveSubdomainHost,
   isProductionHost,
-  isSharedPath,
-  ownerOf,
+  redirectTargetForLocation,
   urlForPath,
 } from "@/lib/subdomains";
 
@@ -32,12 +30,8 @@ const SubdomainRouter = () => {
       return;
     }
 
-    if (isSharedPath(path)) return;
-
-    const target = ownerOf(path);
-    if (target.host !== host && isActiveSubdomainHost(target.host)) {
-      window.location.replace(`https://${target.host}${path}${location.search}${location.hash}`);
-    }
+    const redirectTarget = redirectTargetForLocation(path, host, location.search, location.hash);
+    if (redirectTarget) window.location.replace(redirectTarget);
   }, [location.pathname, location.search, location.hash]);
 
 
