@@ -108,8 +108,6 @@ export const SHARED_PREFIXES = [
   "/verify",
   "/report",
   "/check-in",
-  "/ai-subscription",
-  "/ai-payment",
 ];
 
 export function isSharedPath(path: string): boolean {

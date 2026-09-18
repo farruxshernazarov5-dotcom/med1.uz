@@ -19,6 +19,8 @@ describe("subdomain routing", () => {
     expect(ownerOf("/clinics").host).toBe("clinic.med1.uz");
     expect(ownerOf("/doctors/123").host).toBe("doctors.med1.uz");
     expect(ownerOf("/ai-diabetes").host).toBe("ai.med1.uz");
+    expect(ownerOf("/ai-subscription").host).toBe("ai.med1.uz");
+    expect(ownerOf("/ai-payment").host).toBe("ai.med1.uz");
     expect(ownerOf("/admin/med-coin").host).toBe("admin.med1.uz");
     expect(urlForPath("/clinics", "www.med1.uz")).toBe("https://clinic.med1.uz/clinics");
     expect(urlForPath("/ai-services", "ai.med1.uz")).toBeNull();
@@ -28,6 +30,7 @@ describe("subdomain routing", () => {
     expect(isSharedPath("/auth")).toBe(true);
     expect(isSharedPath("/dashboard/patient")).toBe(true);
     expect(urlForPath("/auth", "ai.med1.uz")).toBeNull();
+    expect(isSharedPath("/ai-subscription")).toBe(false);
   });
 
   it("only enables routing on known production hosts", () => {
