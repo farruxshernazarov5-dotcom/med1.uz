@@ -36,13 +36,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Ro'yxatdan o'tishda tanlangan rolni biriktirish (ayniqsa Google orqali kirishda).
     const pending = getPendingRole();
     if (pending) {
-      if (pending !== "patient" && (!role || role === "patient")) {
+      // Rol ilgari biriktirilganmi? Agar ha — bu qayta kirish, ro'yxatdan o'tishga yubormaymiz.
+      const alreadyHadRole = !!role && role !== "patient";
+      let justClaimed = false;
+      if (pending !== "patient" && !alreadyHadRole) {
         const { data: claimed } = await supabase.rpc("claim_initial_role" as any, { _role: pending });
-        if (typeof claimed === "string") role = claimed as typeof role;
+        if (typeof claimed === "string") {
+          justClaimed = claimed !== role;
+          role = claimed as typeof role;
+        }
       }
       clearPendingRole();
       const target = ROLE_REGISTER_PATH[role ?? "patient"];
-      if (role === pending && target && window.location.pathname !== target) {
+      if (justClaimed && role === pending && target && window.location.pathname !== target) {
         window.location.replace(target);
       }
     }
