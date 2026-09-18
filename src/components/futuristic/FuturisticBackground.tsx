@@ -83,7 +83,7 @@ const FuturisticBackground = ({
       {/* Particles (CSS-only, capped) */}
       {effectiveParticles > 0 && (
         <svg className={cn("absolute inset-0 w-full h-full", isDark ? "opacity-50" : "opacity-30")}>
-          {Array.from({ length: Math.min(particles, 10) }).map((_, i) => {
+          {Array.from({ length: Math.min(effectiveParticles, 10) }).map((_, i) => {
             const cx = (i * 137) % 100;
             const cy = (i * 53) % 100;
             const r = (i % 3) + 1;
