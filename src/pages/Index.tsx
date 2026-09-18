@@ -5,6 +5,7 @@ import SectionTicker from "@/components/SectionTicker";
 import HomeServicesMenu from "@/components/HomeServicesMenu";
 import { FuturisticBackground } from "@/components/futuristic";
 import LazySection from "@/components/perf/LazySection";
+import ClickToLoad from "@/components/perf/ClickToLoad";
 import { SEO } from "@/components/SEO";
 
 // Below-the-fold — lazy load to reduce initial bundle & LCP
