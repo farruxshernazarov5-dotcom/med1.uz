@@ -89,6 +89,34 @@ const WWW: SubdomainConfig = {
   prefixes: [],
 };
 
+/**
+ * Har bir hostda ochilaveradigan umumiy sahifalar (sessiya har bir domenda alohida
+ * saqlanadi — shuning uchun kirish, to'lov, huquqiy va shaxsiy kabinet sahifalari
+ * foydalanuvchi turgan domenda qoladi).
+ */
+export const SHARED_PREFIXES = [
+  "/auth",
+  "/forgot-password",
+  "/reset-password",
+  "/dashboard",
+  "/payment",
+  "/legal",
+  "/terms",
+  "/privacy",
+  "/disclaimer",
+  "/saas-terms",
+  "/verify",
+  "/report",
+  "/check-in",
+  "/ai-subscription",
+  "/ai-payment",
+];
+
+export function isSharedPath(path: string): boolean {
+  const p = path.toLowerCase();
+  return SHARED_PREFIXES.some((pre) => p === pre || p.startsWith(`${pre}/`) || p.startsWith(pre));
+}
+
 /** Faqat haqiqiy med1.uz hostlarida subdomen mantiqini yoqamiz (preview/localhost — yo'q) */
 export function isProductionHost(host: string = window.location.hostname): boolean {
   return host === ROOT_DOMAIN || host === PRIMARY_HOST || SUBDOMAINS.some((s) => s.host === host);
@@ -111,11 +139,13 @@ export function ownerOf(path: string): SubdomainConfig {
 /** Path uchun to'liq URL (kerak bo'lsa boshqa subdomenga) */
 export function urlForPath(path: string, host: string = window.location.hostname): string | null {
   if (!isProductionHost(host)) return null;
+  if (isSharedPath(path)) return null;
   const target = ownerOf(path);
   if (!ACTIVE_HOSTS.has(target.host)) return null;
   if (target.host === host) return null;
   return `https://${target.host}${path}`;
 }
+
 
 export function isActiveSubdomainHost(host: string): boolean {
   return ACTIVE_HOSTS.has(host);
