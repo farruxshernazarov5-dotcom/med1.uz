@@ -29,10 +29,14 @@ export const ROLE_REGISTER_PATH: Record<string, string> = {
   admin: "/dashboard/admin",
 };
 
+const TS_KEY = `${KEY}_at`;
+const MAX_AGE_MS = 30 * 60 * 1000; // 30 daqiqa
+
 export const setPendingRole = (role: string) => {
   try {
     if (!SELECTABLE_ROLES.includes(role as SelectableRole)) return;
     localStorage.setItem(KEY, role);
+    localStorage.setItem(TS_KEY, String(Date.now()));
   } catch {
     /* storage unavailable */
   }
@@ -41,7 +45,13 @@ export const setPendingRole = (role: string) => {
 export const getPendingRole = (): SelectableRole | null => {
   try {
     const v = localStorage.getItem(KEY);
-    return v && SELECTABLE_ROLES.includes(v as SelectableRole) ? (v as SelectableRole) : null;
+    if (!v || !SELECTABLE_ROLES.includes(v as SelectableRole)) return null;
+    const at = Number(localStorage.getItem(TS_KEY) || 0);
+    if (!at || Date.now() - at > MAX_AGE_MS) {
+      clearPendingRole();
+      return null;
+    }
+    return v as SelectableRole;
   } catch {
     return null;
   }
@@ -50,6 +60,7 @@ export const getPendingRole = (): SelectableRole | null => {
 export const clearPendingRole = () => {
   try {
     localStorage.removeItem(KEY);
+    localStorage.removeItem(TS_KEY);
   } catch {
     /* noop */
   }
