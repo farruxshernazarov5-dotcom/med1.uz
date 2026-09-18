@@ -60,6 +60,7 @@ export const getPendingRole = (): SelectableRole | null => {
 export const clearPendingRole = () => {
   try {
     localStorage.removeItem(KEY);
+    localStorage.removeItem(TS_KEY);
   } catch {
     /* noop */
   }
