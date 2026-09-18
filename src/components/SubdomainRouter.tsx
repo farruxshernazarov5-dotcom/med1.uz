@@ -30,8 +30,6 @@ const SubdomainRouter = () => {
       return;
     }
 
-    if (isSharedPath(path)) return;
-
     const redirectTarget = redirectTargetForLocation(path, host, location.search, location.hash);
     if (redirectTarget) window.location.replace(redirectTarget);
   }, [location.pathname, location.search, location.hash]);
