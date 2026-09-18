@@ -68,7 +68,7 @@ const FuturisticBackground = ({
       />
 
       {/* Moving aurora inspired by premium AI interfaces */}
-      {variant === "dark" && aurora && <div className="aurora-gemini" />}
+      {variant === "dark" && effectiveAurora && <div className="aurora-gemini" />}
 
       {/* Glow blobs (smaller, no animation for perf) */}
       <div
@@ -81,7 +81,7 @@ const FuturisticBackground = ({
       />
 
       {/* Particles (CSS-only, capped) */}
-      {particles > 0 && (
+      {effectiveParticles > 0 && (
         <svg className={cn("absolute inset-0 w-full h-full", isDark ? "opacity-50" : "opacity-30")}>
           {Array.from({ length: Math.min(particles, 10) }).map((_, i) => {
             const cx = (i * 137) % 100;
