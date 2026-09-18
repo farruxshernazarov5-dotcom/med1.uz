@@ -43,7 +43,7 @@ export const SUBDOMAINS: SubdomainConfig[] = [
     key: "admin",
     host: `admin.${ROOT_DOMAIN}`,
     home: "/admin",
-    prefixes: ["/admin", "/kassa", "/dashboard", "/partner"],
+    prefixes: ["/admin", "/kassa", "/partner"],
   },
   {
     key: "ai",
