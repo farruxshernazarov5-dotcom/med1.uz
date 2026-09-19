@@ -23,6 +23,7 @@ const ClinicsPage = lazy(() => import("./pages/ClinicsPage"));
 const ClinicDetailPage = lazy(() => import("./pages/ClinicDetailPage"));
 const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
 const UniversityPublicationsPage = lazy(() => import("./pages/UniversityPublicationsPage"));
+const PublicationVerificationPage = lazy(() => import("./pages/PublicationVerificationPage"));
 const MedTechPage = lazy(() => import("./pages/MedTechPage"));
 const MedTechDetailPage = lazy(() => import("./pages/MedTechDetailPage"));
 const NewsPage = lazy(() => import("./pages/NewsPage"));
@@ -233,6 +234,7 @@ const App = () => (
                 <Route path="/verify/hambi/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/verify/report/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/verify/contract/:hashId" element={<ContractVerifyPage />} />
+                <Route path="/verify/publication/:certificateId" element={<PublicationVerificationPage />} />
                 <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
                 <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
                 <Route path="/ai-baby-care" element={<AIBabyCarePage />} />

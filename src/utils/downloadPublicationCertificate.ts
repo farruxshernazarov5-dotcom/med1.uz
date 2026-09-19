@@ -25,6 +25,13 @@ export async function downloadPublicationCertificate(data: PublicationCertificat
     errorCorrectionLevel: "H",
     color: { dark: "#0A2540", light: "#FFFFFF" },
   });
+  const verificationUrl = `https://www.med1.uz/verify/publication/${encodeURIComponent(data.certificateId)}`;
+  const verificationQr = await QRCode.toDataURL(verificationUrl, {
+    width: 420,
+    margin: 1,
+    errorCorrectionLevel: "H",
+    color: { dark: "#0A2540", light: "#FFFFFF" },
+  });
 
   doc.setFillColor(248, 250, 252);
   doc.rect(0, 0, width, height, "F");
@@ -94,12 +101,15 @@ export async function downloadPublicationCertificate(data: PublicationCertificat
   const urlLines = doc.splitTextToSize(data.articleUrl, 48);
   doc.text(urlLines, 256, 110, { align: "center" });
 
-  doc.setFillColor(239, 246, 255);
-  doc.roundedRect(226, 139, 58, 34, 2, 2, "F");
+  doc.addImage(verificationQr, "PNG", 239, 132, 34, 34);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...PRIMARY);
+  doc.text("HUJJATNI VERIFIKATSIYA QILISH", 256, 172, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
   doc.setTextColor(...MUTED);
-  doc.setFontSize(8);
-  const notice = "Ushbu hujjat Med1.uz portalidagi nashr faktini tasdiqlaydi. U OTM KPI komissiyasining bahosi yoki davlat sertifikati emas.";
-  doc.text(doc.splitTextToSize(notice, 50), 230, 147);
+  doc.text(doc.splitTextToSize(verificationUrl, 52), 256, 177, { align: "center" });
 
   doc.setDrawColor(...BORDER);
   doc.line(26, height - 28, width - 26, height - 28);
