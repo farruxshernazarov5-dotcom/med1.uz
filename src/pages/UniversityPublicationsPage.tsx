@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Building2, Calendar, GraduationCap, UserRound } from "lucide-react";
+import { ArrowRight, BadgeCheck, BookOpen, Building2, Calendar, GraduationCap, UserRound } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import portraitAsset from "@/assets/yunusova-aziza-portrait.png.asset.json";
 import editorialAsset from "@/assets/yunusova-aziza-editorial.jpg.asset.json";
 import { YUNUSOVA_AFFILIATION, YUNUSOVA_AUTHOR, yunusovaPublications } from "@/data/yunusovaPublications";
+import creativePortrait from "@/assets/yunusova-aziza-creative.jfif.asset.json";
 
 const UniversityPublicationsPage = () => (
   <div className="min-h-screen bg-background">
@@ -32,12 +33,18 @@ const UniversityPublicationsPage = () => (
 
     <section className="border-b border-border bg-muted/40">
       <div className="container mx-auto grid gap-8 px-4 py-12 lg:grid-cols-[320px_1fr] lg:items-center">
-        <div className="overflow-hidden rounded-md border border-border bg-card shadow-card">
-          <img src={portraitAsset.url} alt="Yunusova Aziza" className="aspect-[4/5] w-full object-cover object-top" width={960} height={1200} />
+        <div className="grid grid-cols-2 gap-2 overflow-hidden rounded-md border border-border bg-card p-2 shadow-card">
+          <img src={portraitAsset.url} alt="Yunusova Aziza — haqiqiy portret" className="aspect-[4/5] w-full rounded-sm object-cover object-top" width={960} height={1200} />
+          <img src={creativePortrait.url} alt="Yunusova Aziza — Med1.uz ilmiy nashr portreti" className="aspect-[4/5] w-full rounded-sm object-cover object-top" width={944} height={1128} />
         </div>
         <div>
           <Badge variant="outline" className="mb-4 gap-2"><GraduationCap className="h-3.5 w-3.5" /> OTM ilmiy nashrlari</Badge>
-          <h1 className="font-heading text-3xl font-bold text-foreground md:text-5xl">Yunusova Aziza</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-heading text-3xl font-bold text-foreground md:text-5xl">Yunusova Aziza</h1>
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary" title="Muallif va nashr ma’lumotlari Med1.uz tomonidan tasdiqlangan">
+              <BadgeCheck className="h-4 w-4" /> Med1.uz tasdiqlagan
+            </span>
+          </div>
           <p className="mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">{YUNUSOVA_AFFILIATION}</p>
           <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" /> Samarqand davlat tibbiyot universiteti</span>

@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ShareButton from "@/components/ShareButton";
 import ArticleContent from "@/components/ArticleContent";
+import VerifiedAuthorProfile from "@/components/publications/VerifiedAuthorProfile";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { ArrowLeft, ArrowRight, User, Calendar, BookOpen, Newspaper, Stethoscope, ChevronRight, Building2, Download, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -109,6 +110,12 @@ const ArticleDetailPage = () => {
               <img src={article.image} alt={article.title} className="w-full h-64 object-cover" loading="lazy" />
             </div>
             <p className="text-muted-foreground italic mb-8 text-lg">{article.summary}</p>
+
+            {article.affiliation && (
+              <div className="mb-8">
+                <VerifiedAuthorProfile author={article.author} affiliation={article.affiliation} />
+              </div>
+            )}
 
             <ArticleContent content={article.content} images={{ preeclampsia: preeclampsiaImage, hpv: hpvImage }} />
 
