@@ -7,20 +7,21 @@ interface VerifiedAuthorProfileProps {
   affiliation: string;
   compact?: boolean;
   portrait?: "authentic" | "creative";
+  portraitUrl?: string;
 }
 
-const VerifiedAuthorProfile = ({ author, affiliation, compact = false, portrait = "authentic" }: VerifiedAuthorProfileProps) => {
-  const portraitAsset = portrait === "creative" ? creativePortrait : authenticPortrait;
+const VerifiedAuthorProfile = ({ author, affiliation, compact = false, portrait = "authentic", portraitUrl }: VerifiedAuthorProfileProps) => {
+  const selectedPortrait = portraitUrl ?? (portrait === "creative" ? creativePortrait.url : authenticPortrait.url);
 
   return (
     <section className={`overflow-hidden rounded-md border border-border bg-card shadow-card ${compact ? "p-4" : "p-5 md:p-6"}`} aria-label="Tasdiqlangan muallif">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         <img
-          src={portraitAsset.url}
+          src={selectedPortrait}
           alt={`${author} — Med1.uz tasdiqlagan muallif portreti`}
           className="aspect-[4/5] w-28 shrink-0 rounded-md border border-border object-cover object-top sm:w-32"
-          width={portrait === "creative" ? 944 : 961}
-          height={portrait === "creative" ? 1128 : 1147}
+          width={768}
+          height={768}
         />
 
         <div className="min-w-0">

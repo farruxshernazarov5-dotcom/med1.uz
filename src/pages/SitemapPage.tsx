@@ -66,6 +66,7 @@ const sitemapSections = [
       { label: "Onkologiya", href: "/articles/onkologiya" },
       { label: "Ginekologiya", href: "/articles/ginekologiya" },
       { label: "Yunusova Aziza — OTM nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza" },
+      { label: "Kamarova Ibodat — OTM nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/kamarova-ibodat" },
     ],
   },
   {

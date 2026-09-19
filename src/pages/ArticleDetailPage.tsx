@@ -14,6 +14,9 @@ import { Button } from "@/components/ui/button";
 import { downloadPublicationCertificate } from "@/utils/downloadPublicationCertificate";
 import preeclampsiaArticleImage from "@/assets/aziza-preeclampsia-monitoring.jpg";
 import hpvArticleImage from "@/assets/aziza-hpv-consultation.jpg";
+import kamarovaAuthorOne from "@/assets/kamarova-ibodat-author-1.png.asset.json";
+import kamarovaAuthorTwo from "@/assets/kamarova-ibodat-author-2.png.asset.json";
+import pcosMonitoringImage from "@/assets/kamarova-pcos-monitoring.jpg";
 
 const ArticleDetailPage = () => {
   const { categoryId, slug } = useParams();
@@ -35,6 +38,8 @@ const ArticleDetailPage = () => {
   const { category, article } = result;
   const relatedNews = newsItems.slice(0, 3);
   const articleUrl = `https://www.med1.uz/articles/${categoryId}/${slug}`;
+  const isKamarova = article.id.startsWith("kamarova-");
+  const kamarovaPortrait = article.id === "kamarova-pcos-2026" ? kamarovaAuthorTwo.url : kamarovaAuthorOne.url;
 
   // Get related articles from same category (excluding current)
   const categoryArticles = getAllArticlesForCategory(categoryId || "")
@@ -117,11 +122,12 @@ const ArticleDetailPage = () => {
                   author={article.author}
                   affiliation={article.affiliation}
                   portrait={article.id === "yunusova-hpv-2026" ? "creative" : "authentic"}
+                  portraitUrl={isKamarova ? kamarovaPortrait : undefined}
                 />
               </div>
             )}
 
-            <ArticleContent content={article.content} images={{ preeclampsia: preeclampsiaArticleImage, hpv: hpvArticleImage }} />
+            <ArticleContent content={article.content} images={{ preeclampsia: preeclampsiaArticleImage, hpv: hpvArticleImage, pcosMonitoring: pcosMonitoringImage }} />
 
             {article.certificateId && article.affiliation && (
               <div className="mt-8 rounded-md border border-primary/20 bg-primary/5 p-5">
@@ -131,14 +137,17 @@ const ArticleDetailPage = () => {
                     <p className="mt-1 text-sm text-muted-foreground">Hujjat raqami: {article.certificateId}. QR-kod ushbu doimiy maqola manziliga olib boradi.</p>
                   </div>
                   <Button
-                    onClick={() => downloadPublicationCertificate({
-                      certificateId: article.certificateId!,
-                      title: article.title,
-                      author: article.author,
-                      affiliation: article.affiliation!,
-                      publishedAt: article.date,
-                      articleUrl,
-                    })}
+                    onClick={() => {
+                      if (!article.certificateId || !article.affiliation) return;
+                      void downloadPublicationCertificate({
+                        certificateId: article.certificateId,
+                        title: article.title,
+                        author: article.author,
+                        affiliation: article.affiliation,
+                        publishedAt: article.date,
+                        articleUrl,
+                      });
+                    }}
                     className="shrink-0"
                   >
                     <Download /> Tasdiqnomani yuklash
