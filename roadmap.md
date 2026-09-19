@@ -7,3 +7,8 @@
 - [x] Samarqand davlat tibbiyot universiteti muallif/OTM sahifasi
 - [x] QR-kodli nashr tasdiqnomalari va tekshiruv havolalari
 - [x] Yangi sahifalar, sitemap va mobil ko‘rinishni tekshirish
+
+- [ ] Kamarova Ibodat uchun 2 ta ginekologik maqola va mavzuli rasmlar
+- [ ] Kamarova muallif profili, yangiliklar va Samarqand DTMU sahifasi
+- [ ] Kamarova nashr tasdiqnomalari va real verifikatsiya QR-kodlari
+- [ ] Kamarova sahifalari, PDF va QR havolalarini tekshirish
