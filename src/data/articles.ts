@@ -777,6 +777,7 @@ export const totalArticleCategories = articleCategories.length;
 import { ophthalmologyArticles } from "./ophthalmologyArticles";
 import { newArticles } from "./new_articles/allArticles";
 import { yunusovaPublications } from "./yunusovaPublications";
+import { kamarovaPublications } from "./kamarovaPublications";
 
 // Map new article category values to existing articleCategories IDs
 const categoryMap: Record<string, string> = {
@@ -819,7 +820,7 @@ export function getCategoryIdForArticle(article: Article): string {
 }
 
 export function getNewArticlesForCategory(categoryId: string): Article[] {
-  const catalogArticles = [...newArticles, ...yunusovaPublications];
+  const catalogArticles = [...newArticles, ...yunusovaPublications, ...kamarovaPublications];
   return catalogArticles.filter((a) => {
     const mapped = a.category ? categoryMap[a.category] : undefined;
     return mapped === categoryId;

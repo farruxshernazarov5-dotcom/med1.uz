@@ -5,11 +5,12 @@ import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { yunusovaPublications } from "@/data/yunusovaPublications";
+import { kamarovaPublications } from "@/data/kamarovaPublications";
 
 const PublicationVerificationPage = () => {
   const { certificateId = "" } = useParams();
   const normalizedId = decodeURIComponent(certificateId).trim().toUpperCase();
-  const article = yunusovaPublications.find(
+  const article = [...yunusovaPublications, ...kamarovaPublications].find(
     (item) => item.certificateId?.toUpperCase() === normalizedId,
   );
 

@@ -25,7 +25,8 @@ const infoLinks = [
   { label: "Qo'llanma", href: "/user-guide" },
   { label: "Developers / API", href: "/developers" },
   { label: "Sayt xaritasi", href: "/sitemap" },
-  { label: "OTM ilmiy nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza" },
+  { label: "Yunusova — OTM nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza" },
+  { label: "Kamarova — OTM nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/kamarova-ibodat" },
 ];
 
 const legalLinks = [

@@ -10,6 +10,8 @@ import newsGenetics from "@/assets/news-genetics.webp";
 import newsChildren from "@/assets/news-children.webp";
 import preeclampsiaImage from "@/assets/aziza-preeclampsia-clinical.jpg";
 import hpvImage from "@/assets/aziza-hpv-screening-clinical.jpg";
+import endometriosisImage from "@/assets/kamarova-endometriosis-clinical.jpg";
+import pcosImage from "@/assets/kamarova-pcos-clinical.jpg";
 
 export type NewsCategory = {
   id: string;
@@ -45,6 +47,38 @@ export const newsCategories: NewsCategory[] = [
 ];
 
 export const newsItems: NewsItem[] = [
+  {
+    id: "kamarova-endometrioz-2026",
+    categoryId: "research",
+    title: "Kamarova Ibodatning endometriozni erta aniqlash bo‘yicha maqolasi e’lon qilindi",
+    summary: "Samarqand davlat tibbiyot universiteti 3-son Akusherlik va ginekologiya kafedrasi assistentining endometrioz bo‘yicha ilmiy-amaliy maqolasi chop etildi.",
+    content: [
+      "Kamarova Ibodat Nuriddinovnaning “Endometriozni erta aniqlash va kompleks boshqarish: klinik belgidan individual reja sari” nomli maqolasi Med1.uz portalida e’lon qilindi.",
+      "Maqolada klinik gumon uyg‘otuvchi belgilar, differensial baholash, ultratovush va MRTning o‘rni, og‘riq nazorati, fertilitet masalalari hamda ko‘p tarmoqli kuzatuv keng yoritilgan.",
+      "Nashr ta’limiy maqsadda tayyorlangan bo‘lib, individual tashxis yoki davolash rejasini almashtirmaydi.",
+      "To‘liq maqola: /articles/ginekologiya/endometriozni-erta-aniqlash-kompleks-boshqarish"
+    ],
+    image: endometriosisImage,
+    source: "Med1.uz / Samarqand davlat tibbiyot universiteti",
+    date: "2026-09-19",
+    isFeatured: true
+  },
+  {
+    id: "kamarova-pcos-2026",
+    categoryId: "research",
+    title: "PCOSning reproduktiv va metabolik boshqaruvi bo‘yicha yangi maqola chop etildi",
+    summary: "Kamarova Ibodat Nuriddinovnaning PCOS tashxisi, fertilitet va uzoq muddatli metabolik kuzatuvni birlashtirgan maqolasi e’lon qilindi.",
+    content: [
+      "Kamarova Ibodat Nuriddinovnaning “Tuxumdonlar polikistoz sindromi: reproduktiv va metabolik salomatlikni birgalikda boshqarish” nomli ilmiy-amaliy maqolasi Med1.uz portalida chop etildi.",
+      "Material tashxis mezonlari, o‘xshash endokrin holatlarni istisno qilish, hayz sikli va endometriy himoyasi, giperandrogenizm, homiladorlik rejasi va metabolik xavfni yoritadi.",
+      "Maqola Samarqand davlat tibbiyot universiteti, 3-son Akusherlik va ginekologiya kafedrasi mansubligi bilan taqdim etilgan.",
+      "To‘liq maqola: /articles/ginekologiya/tuxumdonlar-polikistoz-sindromi-reproduktiv-metabolik-salomatlik"
+    ],
+    image: pcosImage,
+    source: "Med1.uz / Samarqand davlat tibbiyot universiteti",
+    date: "2026-09-19",
+    isFeatured: true
+  },
   {
     id: "yunusova-preeklampsiya-2026",
     categoryId: "research",

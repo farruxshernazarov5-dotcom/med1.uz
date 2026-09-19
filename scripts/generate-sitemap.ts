@@ -47,6 +47,7 @@ const staticEntries: Entry[] = [
   { path: "/dashboard",           changefreq: "weekly",  priority: "0.5" },
   { path: "/booking",             changefreq: "weekly",  priority: "0.5" },
   { path: "/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza", changefreq: "monthly", priority: "0.7" },
+  { path: "/otm/samarqand-davlat-tibbiyot-universiteti/kamarova-ibodat", changefreq: "monthly", priority: "0.7" },
   // Registration flows (previously missing from sitemap)
   { path: "/clinic-register",       changefreq: "monthly", priority: "0.4" },
   { path: "/vendor-register",       changefreq: "monthly", priority: "0.4" },
@@ -133,6 +134,20 @@ async function loadDynamic() {
       });
     }
   } catch (e) { console.warn("OTM publications load failed:", (e as Error).message); }
+
+  try {
+    const src = readFileSync(resolve("src/data/kamarovaPublications.ts"), "utf8");
+    const slugRe = /slug:\s*"([^"]+)"/g;
+    let sm: RegExpExecArray | null;
+    while ((sm = slugRe.exec(src)) !== null) {
+      dynamicEntries.push({
+        path: `/articles/ginekologiya/${sm[1]}`,
+        changefreq: "monthly",
+        priority: "0.7",
+        lastmod: "2026-09-19",
+      });
+    }
+  } catch (e) { console.warn("Kamarova publications load failed:", (e as Error).message); }
 
   // Medical terms: /medicine/term/:termId
   try {
