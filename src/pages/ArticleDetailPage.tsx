@@ -12,8 +12,8 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import { ArrowLeft, ArrowRight, User, Calendar, BookOpen, Newspaper, Stethoscope, ChevronRight, Building2, Download, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { downloadPublicationCertificate } from "@/utils/downloadPublicationCertificate";
-import preeclampsiaImage from "@/assets/aziza-preeclampsia-clinical.jpg";
-import hpvImage from "@/assets/aziza-hpv-screening-clinical.jpg";
+import preeclampsiaArticleImage from "@/assets/aziza-preeclampsia-monitoring.jpg";
+import hpvArticleImage from "@/assets/aziza-hpv-consultation.jpg";
 
 const ArticleDetailPage = () => {
   const { categoryId, slug } = useParams();
@@ -121,7 +121,7 @@ const ArticleDetailPage = () => {
               </div>
             )}
 
-            <ArticleContent content={article.content} images={{ preeclampsia: preeclampsiaImage, hpv: hpvImage }} />
+            <ArticleContent content={article.content} images={{ preeclampsia: preeclampsiaArticleImage, hpv: hpvArticleImage }} />
 
             {article.certificateId && article.affiliation && (
               <div className="mt-8 rounded-md border border-primary/20 bg-primary/5 p-5">
