@@ -8,7 +8,7 @@
 - [x] QR-kodli nashr tasdiqnomalari va tekshiruv havolalari
 - [x] Yangi sahifalar, sitemap va mobil ko‘rinishni tekshirish
 
-- [ ] Kamarova Ibodat uchun 2 ta ginekologik maqola va mavzuli rasmlar
-- [ ] Kamarova muallif profili, yangiliklar va Samarqand DTMU sahifasi
-- [ ] Kamarova nashr tasdiqnomalari va real verifikatsiya QR-kodlari
-- [ ] Kamarova sahifalari, PDF va QR havolalarini tekshirish
+- [x] Kamarova Ibodat uchun 2 ta ginekologik maqola va mavzuli rasmlar
+- [x] Kamarova muallif profili, yangiliklar va Samarqand DTMU sahifasi
+- [x] Kamarova nashr tasdiqnomalari va real verifikatsiya QR-kodlari
+- [x] Kamarova sahifalari, PDF va QR havolalarini tekshirish
