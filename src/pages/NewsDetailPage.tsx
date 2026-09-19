@@ -25,6 +25,17 @@ const NewsDetailPage = () => {
 
   const category = newsCategories.find((c) => c.id === item.categoryId);
   const related = newsItems.filter((n) => n.categoryId === item.categoryId && n.id !== item.id).slice(0, 3);
+  const renderParagraph = (paragraph: string, index: number) => {
+    const articlePath = paragraph.match(/^To‘liq maqola:\s*(\/articles\/\S+)$/)?.[1];
+    if (articlePath) {
+      return (
+        <Link key={index} to={articlePath} className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+          To‘liq maqolani o‘qish <ArrowRight className="h-4 w-4" />
+        </Link>
+      );
+    }
+    return <p key={index} className="text-foreground leading-relaxed">{paragraph}</p>;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,9 +89,7 @@ const NewsDetailPage = () => {
           </div>
           <p className="text-muted-foreground italic mb-8 text-lg">{item.summary}</p>
           <div className="space-y-5">
-            {item.content.map((paragraph, i) => (
-              <p key={i} className="text-foreground leading-relaxed">{paragraph}</p>
-            ))}
+            {item.content.map(renderParagraph)}
           </div>
 
           <ShareButton title={item.title} className="mt-8" />
