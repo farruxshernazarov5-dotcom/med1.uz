@@ -181,6 +181,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.med1.uz/otm/samarqand-davlat-tibbiyot-universiteti/kamarova-ibodat</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.med1.uz/clinic-register</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
@@ -2684,6 +2690,18 @@
   </url>
   <url>
     <loc>https://www.med1.uz/articles/ginekologiya/hpv-bachadon-boyni-saratoni-skrining-profilaktika</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.med1.uz/articles/ginekologiya/endometriozni-erta-aniqlash-kompleks-boshqarish</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.med1.uz/articles/ginekologiya/tuxumdonlar-polikistoz-sindromi-reproduktiv-metabolik-salomatlik</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -13964,6 +13982,18 @@
   </url>
   <url>
     <loc>https://www.med1.uz/news/pediatrics</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.med1.uz/news/kamarova-endometrioz-2026</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.med1.uz/news/kamarova-pcos-2026</loc>
     <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
