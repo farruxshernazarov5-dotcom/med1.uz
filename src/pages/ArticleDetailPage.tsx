@@ -8,7 +8,11 @@ import Footer from "@/components/Footer";
 import ShareButton from "@/components/ShareButton";
 import ArticleContent from "@/components/ArticleContent";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import { ArrowLeft, ArrowRight, User, Calendar, BookOpen, Newspaper, Stethoscope, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, User, Calendar, BookOpen, Newspaper, Stethoscope, ChevronRight, Building2, Download, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { downloadPublicationCertificate } from "@/utils/downloadPublicationCertificate";
+import preeclampsiaImage from "@/assets/aziza-preeclampsia-clinical.jpg";
+import hpvImage from "@/assets/aziza-hpv-screening-clinical.jpg";
 
 const ArticleDetailPage = () => {
   const { categoryId, slug } = useParams();
@@ -29,6 +33,7 @@ const ArticleDetailPage = () => {
 
   const { category, article } = result;
   const relatedNews = newsItems.slice(0, 3);
+  const articleUrl = `https://www.med1.uz/articles/${categoryId}/${slug}`;
 
   // Get related articles from same category (excluding current)
   const categoryArticles = getAllArticlesForCategory(categoryId || "")
@@ -63,7 +68,9 @@ const ArticleDetailPage = () => {
           datePublished: article.date,
           author: { "@type": "Person", name: article.author ?? "Med1.uz" },
           publisher: { "@type": "Organization", name: "Med1.uz", url: "https://med1.uz" },
-          mainEntityOfPage: `https://med1.uz/articles/${categoryId}/${slug}`,
+          mainEntityOfPage: articleUrl,
+          keywords: article.keywords?.join(", "),
+          ...(article.affiliation ? { author: { "@type": "Person", name: article.author, affiliation: { "@type": "CollegeOrUniversity", name: "Samarqand davlat tibbiyot universiteti" } } } : {}),
         }}
       />
       <Header />
@@ -90,6 +97,7 @@ const ArticleDetailPage = () => {
             <span className="flex items-center gap-1"><User className="w-4 h-4" /> {article.author}</span>
             <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {article.date}</span>
           </div>
+          {article.affiliation && <p className="mt-3 flex max-w-3xl items-start gap-2 text-sm text-primary-foreground/80"><Building2 className="mt-0.5 h-4 w-4 shrink-0" /> {article.affiliation}</p>}
         </div>
       </section>
 
@@ -102,7 +110,32 @@ const ArticleDetailPage = () => {
             </div>
             <p className="text-muted-foreground italic mb-8 text-lg">{article.summary}</p>
 
-            <ArticleContent content={article.content} />
+            <ArticleContent content={article.content} images={{ preeclampsia: preeclampsiaImage, hpv: hpvImage }} />
+
+            {article.certificateId && article.affiliation && (
+              <div className="mt-8 rounded-md border border-primary/20 bg-primary/5 p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="flex items-center gap-2 font-heading font-bold text-foreground"><ShieldCheck className="h-5 w-5 text-primary" /> Nashr tasdiqnomasi</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">Hujjat raqami: {article.certificateId}. QR-kod ushbu doimiy maqola manziliga olib boradi.</p>
+                  </div>
+                  <Button
+                    onClick={() => downloadPublicationCertificate({
+                      certificateId: article.certificateId!,
+                      title: article.title,
+                      author: article.author,
+                      affiliation: article.affiliation!,
+                      publishedAt: article.date,
+                      articleUrl,
+                    })}
+                    className="shrink-0"
+                  >
+                    <Download /> Tasdiqnomani yuklash
+                  </Button>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">Med1.uz elektron nashr tasdiqnomasi nashr faktini tasdiqlaydi; OTM KPI komissiyasi bahosi yoki davlat sertifikati o‘rnini bosmaydi.</p>
+              </div>
+            )}
 
             <ShareButton title={article.title} className="mt-8" />
 

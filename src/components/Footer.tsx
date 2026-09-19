@@ -25,6 +25,7 @@ const infoLinks = [
   { label: "Qo'llanma", href: "/user-guide" },
   { label: "Developers / API", href: "/developers" },
   { label: "Sayt xaritasi", href: "/sitemap" },
+  { label: "OTM ilmiy nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza" },
 ];
 
 const legalLinks = [

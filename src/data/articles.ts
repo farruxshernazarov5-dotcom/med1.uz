@@ -39,6 +39,9 @@ export type Article = {
   author: string;
   date: string;
   category?: string;
+  affiliation?: string;
+  certificateId?: string;
+  keywords?: string[];
 };
 
 export type ArticleCategory = {
@@ -773,6 +776,7 @@ export const totalArticleCategories = articleCategories.length;
 
 import { ophthalmologyArticles } from "./ophthalmologyArticles";
 import { newArticles } from "./new_articles/allArticles";
+import { yunusovaPublications } from "./yunusovaPublications";
 
 // Map new article category values to existing articleCategories IDs
 const categoryMap: Record<string, string> = {
@@ -815,7 +819,8 @@ export function getCategoryIdForArticle(article: Article): string {
 }
 
 export function getNewArticlesForCategory(categoryId: string): Article[] {
-  return newArticles.filter((a) => {
+  const catalogArticles = [...newArticles, ...yunusovaPublications];
+  return catalogArticles.filter((a) => {
     const mapped = a.category ? categoryMap[a.category] : undefined;
     return mapped === categoryId;
   });
