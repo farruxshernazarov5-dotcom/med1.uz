@@ -21,13 +21,48 @@ const renderInlineMarkdown = (text: string): React.ReactNode => {
 
 interface ArticleContentProps {
   content: string[];
+  images?: Record<string, string>;
 }
 
-const ArticleContent = ({ content }: ArticleContentProps) => {
+const ArticleContent = ({ content, images = {} }: ArticleContentProps) => {
   return (
     <div className="space-y-4">
       {content.map((paragraph, i) => {
         const trimmed = paragraph.trim();
+
+        if (trimmed.startsWith("::image::")) {
+          const [, , imageKey, caption = ""] = trimmed.split("::");
+          const src = images[imageKey];
+          if (!src) return null;
+          return (
+            <figure key={i} className="my-8 overflow-hidden rounded-md border border-border bg-card shadow-card">
+              <img src={src} alt={caption} className="aspect-[3/2] w-full object-cover" loading="lazy" />
+              {caption && <figcaption className="border-t border-border px-4 py-3 text-sm text-muted-foreground">{caption}</figcaption>}
+            </figure>
+          );
+        }
+
+        if (trimmed.startsWith("::table::")) {
+          const raw = trimmed.slice("::table::".length);
+          const rows = raw.split(";;").map((row) => row.split("|"));
+          const [headers, ...body] = rows;
+          return (
+            <div key={i} className="my-8 overflow-x-auto rounded-md border border-border">
+              <table className="w-full min-w-[620px] border-collapse text-left text-sm">
+                <thead className="bg-primary text-primary-foreground">
+                  <tr>{headers.map((header) => <th key={header} className="px-4 py-3 font-semibold">{header}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {body.map((row, rowIndex) => (
+                    <tr key={rowIndex} className="border-t border-border odd:bg-card even:bg-muted/40">
+                      {row.map((cell, cellIndex) => <td key={cellIndex} className="px-4 py-3 align-top text-muted-foreground">{renderInlineMarkdown(cell)}</td>)}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
 
         // ### Header
         if (trimmed.startsWith("### ")) {

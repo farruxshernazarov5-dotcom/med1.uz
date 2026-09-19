@@ -64,6 +64,8 @@ const sitemapSections = [
       { label: "Kardiologiya", href: "/articles/kardiologiya" },
       { label: "Oftalmologiya", href: "/articles/oftalmologiya" },
       { label: "Onkologiya", href: "/articles/onkologiya" },
+      { label: "Ginekologiya", href: "/articles/ginekologiya" },
+      { label: "Yunusova Aziza — OTM nashrlari", href: "/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza" },
     ],
   },
   {

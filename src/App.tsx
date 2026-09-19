@@ -22,6 +22,7 @@ const CategoryArticlesPage = lazy(() => import("./pages/CategoryArticlesPage"));
 const ClinicsPage = lazy(() => import("./pages/ClinicsPage"));
 const ClinicDetailPage = lazy(() => import("./pages/ClinicDetailPage"));
 const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
+const UniversityPublicationsPage = lazy(() => import("./pages/UniversityPublicationsPage"));
 const MedTechPage = lazy(() => import("./pages/MedTechPage"));
 const MedTechDetailPage = lazy(() => import("./pages/MedTechDetailPage"));
 const NewsPage = lazy(() => import("./pages/NewsPage"));
@@ -188,6 +189,7 @@ const App = () => (
                 <Route path="/med-tech/:equipmentId" element={<MedTechDetailPage />} />
                 <Route path="/news" element={<NewsPage />} />
                 <Route path="/news/:newsId" element={<NewsDetailPage />} />
+                <Route path="/otm/samarqand-davlat-tibbiyot-universiteti/yunusova-aziza" element={<UniversityPublicationsPage />} />
                 <Route path="/diagnostics" element={<DiagnosticsPage />} />
                 <Route path="/pharmacies" element={<PharmaciesPage />} />
                 <Route path="/blood-banks" element={<BloodBanksPage />} />

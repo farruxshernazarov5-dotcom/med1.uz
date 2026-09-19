@@ -8,6 +8,8 @@ import newsTransplant from "@/assets/news-transplant.webp";
 import newsMental from "@/assets/news-mental.webp";
 import newsGenetics from "@/assets/news-genetics.webp";
 import newsChildren from "@/assets/news-children.webp";
+import preeclampsiaImage from "@/assets/aziza-preeclampsia-clinical.jpg";
+import hpvImage from "@/assets/aziza-hpv-screening-clinical.jpg";
 
 export type NewsCategory = {
   id: string;
@@ -43,6 +45,38 @@ export const newsCategories: NewsCategory[] = [
 ];
 
 export const newsItems: NewsItem[] = [
+  {
+    id: "yunusova-preeklampsiya-2026",
+    categoryId: "research",
+    title: "Yunusova Azizaning preeklampsiyani erta aniqlash bo‘yicha maqolasi e’lon qilindi",
+    summary: "Samarqand davlat tibbiyot universiteti 3-son Akusherlik va ginekologiya kafedrasi assistentining yangi ilmiy-amaliy maqolasi Med1.uz portalida chop etildi.",
+    content: [
+      "Samarqand davlat tibbiyot universiteti 3-son Akusherlik va ginekologiya kafedrasi assistenti Yunusova Azizaning “Preeklampsiyani erta aniqlash: ona va homila xavfini kamaytiruvchi amaliy algoritm” nomli ilmiy-amaliy maqolasi Med1.uz portalida e’lon qilindi.",
+      "Maqolada xavf omillarini birinchi antenatal tashrifdayoq baholash, arterial bosimni standart o‘lchash, klinik va laborator belgilarni birgalikda tahlil qilish, homila holatini kuzatish hamda shoshilinch yo‘naltirish mezonlari keng yoritilgan.",
+      "Material sog‘liqni saqlash mutaxassislari va bemorlar uchun ta’limiy maqsadda tayyorlangan. Undagi ma’lumotlar individual tashxis yoki davolash rejasini almashtirmaydi.",
+      "To‘liq maqola: /articles/ginekologiya/preeklampsiyani-erta-aniqlash-amaliy-algoritm"
+    ],
+    image: preeclampsiaImage,
+    source: "Med1.uz / Samarqand davlat tibbiyot universiteti",
+    date: "2026-09-19",
+    isFeatured: true
+  },
+  {
+    id: "yunusova-hpv-2026",
+    categoryId: "research",
+    title: "HPV va bachadon bo‘yni saratoni skriningi bo‘yicha yangi maqola chop etildi",
+    summary: "Yunusova Azizaning HPV vaksinatsiyasi, skrining, PAP-test, kolposkopiya va kuzatuvni birlashtirgan ilmiy-amaliy maqolasi e’lon qilindi.",
+    content: [
+      "Yunusova Azizaning “HPV va bachadon bo‘yni saratoni: skriningdan profilaktikagacha zamonaviy yo‘l xaritasi” nomli maqolasi Med1.uz ilmiy-amaliy maqolalar bo‘limida chop etildi.",
+      "Nashr yuqori xavfli HPV infeksiyasi, birlamchi va ikkilamchi profilaktika, HPV testi, sitologiya, kolposkopiya, biopsiya hamda vaksinatsiyaning o‘rnini tushunarli yo‘l xaritasi asosida bayon qiladi.",
+      "Maqola Samarqand davlat tibbiyot universiteti, 3-son Akusherlik va ginekologiya kafedrasi mansubligi bilan taqdim etilgan.",
+      "To‘liq maqola: /articles/ginekologiya/hpv-bachadon-boyni-saratoni-skrining-profilaktika"
+    ],
+    image: hpvImage,
+    source: "Med1.uz / Samarqand davlat tibbiyot universiteti",
+    date: "2026-09-19",
+    isFeatured: true
+  },
   // Ilmiy kashfiyotlar
   {
     id: "r1",
