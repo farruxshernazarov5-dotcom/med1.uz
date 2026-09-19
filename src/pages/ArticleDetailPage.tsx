@@ -113,7 +113,11 @@ const ArticleDetailPage = () => {
 
             {article.affiliation && (
               <div className="mb-8">
-                <VerifiedAuthorProfile author={article.author} affiliation={article.affiliation} />
+                <VerifiedAuthorProfile
+                  author={article.author}
+                  affiliation={article.affiliation}
+                  portrait={article.id === "yunusova-hpv-2026" ? "creative" : "authentic"}
+                />
               </div>
             )}
 
