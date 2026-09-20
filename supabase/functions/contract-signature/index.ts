@@ -190,13 +190,18 @@ Deno.serve(async (req) => {
         } catch (e) {
           console.error("[contract-signature] email send failed", e);
         }
-        await admin.from("contract_notifications").insert({
-          contract_id: contractId,
-          user_id: user.id,
-          channel: "email",
-          kind: "otp_email",
-          payload: { destination, subject, sent: emailSent },
-        }).catch(() => {});
+        try {
+          await admin.from("contract_notifications").insert({
+            contract_id: contractId,
+            user_id: user.id,
+            type: "otp_email",
+            title: subject,
+            body: "Shartnoma imzolash uchun tasdiqlash kodi yuborildi",
+            data: { destination, sent: emailSent },
+          });
+        } catch (e) {
+          console.error("[contract-signature] notification log failed", e);
+        }
       }
 
       return new Response(JSON.stringify({ success: true, channel, destination_masked: destination.replace(/(.{2}).*(.{2})/, "$1***$2") }), {
@@ -306,13 +311,17 @@ Deno.serve(async (req) => {
         .update({ consumed_at: new Date().toISOString() })
         .eq("id", otpRow.id);
 
-      await admin.from("contract_access_log").insert({
-        contract_id: contractId,
-        user_id: user.id,
-        action: "signed",
-        ip_address: ip,
-        user_agent: ua,
-      }).catch(() => {});
+      try {
+        await admin.from("contract_access_log").insert({
+          contract_id: contractId,
+          user_id: user.id,
+          action: "signed",
+          ip_address: ip,
+          user_agent: ua,
+        });
+      } catch (e) {
+        console.error("[contract-signature] access log failed", e);
+      }
 
       return new Response(JSON.stringify({ success: true, signature: sig }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
