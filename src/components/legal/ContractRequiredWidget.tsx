@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileSignature, ShieldCheck, AlertTriangle, ExternalLink } from "lucide-react";
 import SignContractDialog from "./SignContractDialog";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface Props {
   /** Slug of contract_templates required for this module, e.g. "pharmacy-agreement" */
@@ -21,6 +22,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
   const [contract, setContract] = useState<any>(null);
   const [template, setTemplate] = useState<any>(null);
   const [signOpen, setSignOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   const refresh = async () => {
     if (!user) { setLoading(false); return; }
