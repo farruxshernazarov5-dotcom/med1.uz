@@ -54,7 +54,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
     try {
       const { data, error } = await (supabase as any).from("contracts").insert({
         template_id: template.id, owner_id: user.id,
-        template_version: template.current_version ?? 1,
+        template_version: String(template.current_version ?? "1"),
         title_uz: template.title_uz, title_ru: template.title_ru,
         body_uz: template.body_uz, body_ru: template.body_ru,
         language: "uz", status: "pending_signature", approval_status: "not_required",
