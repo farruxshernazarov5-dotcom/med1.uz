@@ -190,13 +190,17 @@ Deno.serve(async (req) => {
         } catch (e) {
           console.error("[contract-signature] email send failed", e);
         }
-        await admin.from("contract_notifications").insert({
-          contract_id: contractId,
-          user_id: user.id,
-          channel: "email",
-          kind: "otp_email",
-          payload: { destination, subject, sent: emailSent },
-        }).catch(() => {});
+        try {
+          await admin.from("contract_notifications").insert({
+            contract_id: contractId,
+            user_id: user.id,
+            channel: "email",
+            kind: "otp_email",
+            payload: { destination, subject, sent: emailSent },
+          });
+        } catch (e) {
+          console.error("[contract-signature] notification log failed", e);
+        }
       }
 
       return new Response(JSON.stringify({ success: true, channel, destination_masked: destination.replace(/(.{2}).*(.{2})/, "$1***$2") }), {
