@@ -33,6 +33,7 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
   const [sending, setSending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [destMasked, setDestMasked] = useState("");
+  const [telegramHelp, setTelegramHelp] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [downloading, setDownloading] = useState(false);
