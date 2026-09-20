@@ -154,7 +154,17 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
         body: { action: "send_otp", contract_id: contract.id, channel },
       });
       if (error) throw error;
+      if ((data as any)?.error === "no_destination") {
+        if (channel === "telegram") {
+          setTelegramHelp(true);
+          toast.error("Telegram hisobingiz ulanmagan. @Med1uzInfoBot orqali ulang yoki Email tanlang.");
+        } else {
+          toast.error("Email manzili topilmadi. Profilingizda emailni to'ldiring.");
+        }
+        return;
+      }
       if ((data as any)?.error) throw new Error((data as any).error);
+      setTelegramHelp(false);
       setDestMasked((data as any)?.destination_masked || "");
       setStep("sign");
       toast.success(`Kod yuborildi (${channel})`);
