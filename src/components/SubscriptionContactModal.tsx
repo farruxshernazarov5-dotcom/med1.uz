@@ -46,9 +46,9 @@ const SubscriptionContactModal = ({
   useEffect(() => {
     if (!open || !user || mode !== "pay") return;
     let alive = true;
-    (supabase as any).from("contracts").select("id,status,contract_templates!inner(slug),contract_signatures!inner(method,verification_status,is_valid)")
+    (supabase as any).from("contracts").select("id,status,contract_templates!inner(slug),contract_signatures!inner(is_valid)")
       .eq("owner_id", user.id).eq("status", "active").eq("contract_templates.slug", contractSlug)
-      .eq("contract_signatures.method", "eimzo").eq("contract_signatures.verification_status", "verified").eq("contract_signatures.is_valid", true)
+      .eq("contract_signatures.is_valid", true)
       .limit(1).maybeSingle().then(({ data }: any) => { if (alive) setContractActive(Boolean(data)); });
     return () => { alive = false; };
   }, [open, user, mode, contractSlug, contractRefreshKey]);

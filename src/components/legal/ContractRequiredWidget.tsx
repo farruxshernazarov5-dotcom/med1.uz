@@ -76,9 +76,9 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
 
   const steps = [
     "Shartnoma matnini o'qing",
-    "Muassasa ma'lumotlarini tasdiqlang",
-    "E-IMZO sertifikatini tanlang",
-    "PKCS#7 elektron imzoni yarating va yuboring",
+    "Tasdiqlash kodini email yoki Telegramga oling",
+    "Kodni kiriting va qo'l imzoingizni chizing",
+    "Yoki E-IMZO sertifikati bilan imzolang",
   ];
 
   return (
