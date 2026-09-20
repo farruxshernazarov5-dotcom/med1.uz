@@ -311,13 +311,17 @@ Deno.serve(async (req) => {
         .update({ consumed_at: new Date().toISOString() })
         .eq("id", otpRow.id);
 
-      await admin.from("contract_access_log").insert({
-        contract_id: contractId,
-        user_id: user.id,
-        action: "signed",
-        ip_address: ip,
-        user_agent: ua,
-      }).catch(() => {});
+      try {
+        await admin.from("contract_access_log").insert({
+          contract_id: contractId,
+          user_id: user.id,
+          action: "signed",
+          ip_address: ip,
+          user_agent: ua,
+        });
+      } catch (e) {
+        console.error("[contract-signature] access log failed", e);
+      }
 
       return new Response(JSON.stringify({ success: true, signature: sig }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
