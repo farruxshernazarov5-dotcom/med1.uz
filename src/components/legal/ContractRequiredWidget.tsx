@@ -8,6 +8,8 @@ import { FileSignature, ShieldCheck, AlertTriangle, ExternalLink } from "lucide-
 import SignContractDialog from "./SignContractDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { officialContractFor } from "@/data/officialContracts";
+import { fillContractBody, loadPartyInfo } from "@/lib/contractFill";
 
 interface Props {
   /** Slug of contract_templates required for this module, e.g. "pharmacy-agreement" */
@@ -17,7 +19,7 @@ interface Props {
 }
 
 export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Props) {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [loading, setLoading] = useState(true);
   const [contract, setContract] = useState<any>(null);
   const [template, setTemplate] = useState<any>(null);
@@ -52,11 +54,19 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
     if (!template) return toast.error("Shartnoma shabloni topilmadi");
     setCreating(true);
     try {
+      const official = officialContractFor(templateSlug);
+      const party = await loadPartyInfo(user.id, userRole);
+      const baseUz = official?.body_uz || template.body_uz || "";
+      const baseRu = official?.body_ru || template.body_ru || "";
       const { data, error } = await (supabase as any).from("contracts").insert({
         template_id: template.id, owner_id: user.id,
-        template_version: String(template.current_version ?? "1"),
-        title_uz: template.title_uz, title_ru: template.title_ru,
-        body_uz: template.body_uz, body_ru: template.body_ru,
+        template_version: String(official?.version ?? template.current_version ?? "1"),
+        title_uz: official?.title_uz || template.title_uz,
+        title_ru: official?.title_ru || template.title_ru,
+        body_uz: fillContractBody(baseUz, { party }),
+        body_ru: baseRu ? fillContractBody(baseRu, { party }) : baseRu,
+        counterparty_name: party.legal_name || party.name,
+        filled_data: party as any,
         language: "uz", status: "pending_signature", approval_status: "not_required",
       }).select().single();
       if (error) throw error;
