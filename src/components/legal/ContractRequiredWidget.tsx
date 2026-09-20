@@ -25,18 +25,20 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
   const refresh = async () => {
     if (!user) { setLoading(false); return; }
     setLoading(true);
-    const { data: tpl } = await (supabase as any)
+    const { data: tpl, error: tplError } = await (supabase as any)
       .from("contract_templates")
       .select("id,slug,title_uz,title_ru,summary_uz,body_uz,body_ru")
       .eq("slug", templateSlug).maybeSingle();
+    if (tplError) toast.error("Shartnoma shablonini yuklab bo'lmadi: " + tplError.message);
     setTemplate(tpl);
     if (!tpl) { setLoading(false); return; }
 
-    const { data: c } = await (supabase as any)
+    const { data: c, error: cError } = await (supabase as any)
       .from("contracts")
       .select("id,contract_number,status,approval_status,title_uz,body_uz,signed_at,template_id")
       .eq("owner_id", user.id).eq("template_id", tpl.id)
       .order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (cError) toast.error("Shartnoma holatini o'qib bo'lmadi: " + cError.message);
     setContract(c);
     setLoading(false);
   };
@@ -44,15 +46,24 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
   useEffect(() => { refresh(); }, [user, templateSlug]);
 
   const createAndOpen = async () => {
-    if (!user || !template) return;
-    const { data, error } = await (supabase as any).from("contracts").insert({
-      template_id: template.id, owner_id: user.id,
-      title_uz: template.title_uz, title_ru: template.title_ru,
-      body_uz: template.body_uz, body_ru: template.body_ru,
-      language: "uz", status: "draft", approval_status: "not_required",
-    }).select().single();
-    if (error) return;
-    setContract(data); setSignOpen(true);
+    if (!user) return toast.error("Avval tizimga kiring");
+    if (!template) return toast.error("Shartnoma shabloni topilmadi");
+    setCreating(true);
+    try {
+      const { data, error } = await (supabase as any).from("contracts").insert({
+        template_id: template.id, owner_id: user.id,
+        title_uz: template.title_uz, title_ru: template.title_ru,
+        body_uz: template.body_uz, body_ru: template.body_ru,
+        language: "uz", status: "draft", approval_status: "not_required",
+      }).select().single();
+      if (error) throw error;
+      setContract(data);
+      setSignOpen(true);
+    } catch (e: any) {
+      toast.error(e?.message || "Shartnomani yaratib bo'lmadi");
+    } finally {
+      setCreating(false);
+    }
   };
 
   if (loading || !template) return null;
