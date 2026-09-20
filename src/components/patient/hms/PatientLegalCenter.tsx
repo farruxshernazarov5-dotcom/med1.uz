@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Cookie, ExternalLink, FileText, Scale, Shield, UserCheck } from "lucide-react";
+import MyContractsPanel from "@/components/legal/MyContractsPanel";
 
 type CookiePrefs = { necessary: boolean; analytics: boolean; marketing: boolean };
 
@@ -82,6 +83,8 @@ const PatientLegalCenter = () => {
           );
         })}
       </div>
+
+      <MyContractsPanel />
 
       <div className="bg-card rounded-2xl border border-border p-5">
         <div className="flex items-center gap-2 mb-4">

@@ -33,6 +33,7 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
   const [sending, setSending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [destMasked, setDestMasked] = useState("");
+  const [telegramHelp, setTelegramHelp] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [downloading, setDownloading] = useState(false);
@@ -81,27 +82,77 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
 
   const blocked = contract.approval_status === "pending" || contract.approval_status === "rejected";
 
-  const startDraw = (e: React.PointerEvent) => {
-    drawing.current = true;
-    const c = canvasRef.current!;
+  useEffect(() => {
+    if (step !== "sign") return;
+    const id = requestAnimationFrame(() => setupCanvas());
+    window.addEventListener("resize", setupCanvas);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", setupCanvas); };
+  }, [step]);
+
+  // --- silliq (smooth) imzo chizish: DPR moslash + midpoint kvadratik egri ---
+  const lastPoint = useRef<{ x: number; y: number } | null>(null);
+
+  const setupCanvas = () => {
+    const c = canvasRef.current;
+    if (!c) return;
     const rect = c.getBoundingClientRect();
+    if (!rect.width) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (c.width === Math.round(rect.width * dpr) && c.height === Math.round(rect.height * dpr)) return;
+    c.width = Math.round(rect.width * dpr);
+    c.height = Math.round(rect.height * dpr);
     const ctx = c.getContext("2d")!;
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#0A2540";
   };
-  const moveDraw = (e: React.PointerEvent) => {
-    if (!drawing.current) return;
-    const c = canvasRef.current!;
-    const rect = c.getBoundingClientRect();
-    const ctx = c.getContext("2d")!;
-    ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#0A2540";
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+
+  const pointOf = (e: { clientX: number; clientY: number }) => {
+    const rect = canvasRef.current!.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const startDraw = (e: React.PointerEvent) => {
+    setupCanvas();
+    canvasRef.current?.setPointerCapture?.(e.pointerId);
+    drawing.current = true;
+    const p = pointOf(e);
+    lastPoint.current = p;
+    const ctx = canvasRef.current!.getContext("2d")!;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + 0.01, p.y);
     ctx.stroke();
   };
-  const endDraw = () => { drawing.current = false; };
+
+  const moveDraw = (e: React.PointerEvent) => {
+    if (!drawing.current) return;
+    const ctx = canvasRef.current!.getContext("2d")!;
+    const events: Array<{ clientX: number; clientY: number }> =
+      (e.nativeEvent as any).getCoalescedEvents?.() ?? [e.nativeEvent as any];
+    for (const ev of events) {
+      const p = pointOf(ev);
+      const prev = lastPoint.current || p;
+      const mid = { x: (prev.x + p.x) / 2, y: (prev.y + p.y) / 2 };
+      ctx.beginPath();
+      ctx.moveTo(prev.x, prev.y);
+      ctx.quadraticCurveTo(prev.x, prev.y, mid.x, mid.y);
+      ctx.stroke();
+      lastPoint.current = p;
+    }
+  };
+
+  const endDraw = () => { drawing.current = false; lastPoint.current = null; };
+
   const clearCanvas = () => {
     const c = canvasRef.current!;
-    c.getContext("2d")!.clearRect(0, 0, c.width, c.height);
+    const ctx = c.getContext("2d")!;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.restore();
   };
 
   const sendOtp = async () => {
@@ -111,7 +162,17 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
         body: { action: "send_otp", contract_id: contract.id, channel },
       });
       if (error) throw error;
+      if ((data as any)?.error === "no_destination") {
+        if (channel === "telegram") {
+          setTelegramHelp(true);
+          toast.error("Telegram hisobingiz ulanmagan. @Med1uzInfoBot orqali ulang yoki Email tanlang.");
+        } else {
+          toast.error("Email manzili topilmadi. Profilingizda emailni to'ldiring.");
+        }
+        return;
+      }
       if ((data as any)?.error) throw new Error((data as any).error);
+      setTelegramHelp(false);
       setDestMasked((data as any)?.destination_masked || "");
       setStep("sign");
       toast.success(`Kod yuborildi (${channel})`);
@@ -241,6 +302,11 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
                 {sending ? "Yuborilmoqda..." : "Tasdiqlash kodini olish"}
               </Button>
             </DialogFooter>
+            {telegramHelp && (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
+                Telegram hisobingiz ulanmagan. <a className="underline font-medium" href="https://t.me/Med1uzInfoBot" target="_blank" rel="noopener noreferrer">@Med1uzInfoBot</a> ni oching, <b>/start</b> bosing va telefon raqamingizni yuboring — so'ng qaytadan urinib ko'ring.
+              </div>
+            )}
             <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-3">
               <div className="flex gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span><b>E-IMZO (tavsiya etiladi).</b> Kompyuterda E-IMZO dasturi ishlayotgan bo‘lishi kerak. Sertifikat va PKCS#7 dalili serverda tekshiriladi.</span></div>
               {certificates.length === 0 ? (

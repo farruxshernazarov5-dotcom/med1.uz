@@ -5,6 +5,7 @@ import {
   BookOpen, ExternalLink, FileSignature, FileText, Scale, Shield, UserCheck,
 } from "lucide-react";
 import ContractRequiredWidget from "./ContractRequiredWidget";
+import MyContractsPanel from "./MyContractsPanel";
 
 const docLinks = [
   { title: "SaaS HMS shartlari", href: "/saas-terms", icon: Scale, badge: "Tarif" },
@@ -35,6 +36,8 @@ const OrgLegalCenter = ({ contractSlug, moduleTitle }: Props) => (
     {contractSlug && (
       <ContractRequiredWidget templateSlug={contractSlug} moduleTitle={moduleTitle} />
     )}
+
+    <MyContractsPanel />
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {docLinks.map((doc) => {
