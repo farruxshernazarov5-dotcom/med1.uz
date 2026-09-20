@@ -29,7 +29,7 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
     setLoading(true);
     const { data: tpl, error: tplError } = await (supabase as any)
       .from("contract_templates")
-      .select("id,slug,title_uz,title_ru,summary_uz,body_uz,body_ru")
+      .select("id,slug,title_uz,title_ru,summary_uz,body_uz,body_ru,current_version")
       .eq("slug", templateSlug).maybeSingle();
     if (tplError) toast.error("Shartnoma shablonini yuklab bo'lmadi: " + tplError.message);
     setTemplate(tpl);
@@ -54,9 +54,10 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
     try {
       const { data, error } = await (supabase as any).from("contracts").insert({
         template_id: template.id, owner_id: user.id,
+        template_version: template.current_version ?? 1,
         title_uz: template.title_uz, title_ru: template.title_ru,
         body_uz: template.body_uz, body_ru: template.body_ru,
-        language: "uz", status: "draft", approval_status: "not_required",
+        language: "uz", status: "pending_signature", approval_status: "not_required",
       }).select().single();
       if (error) throw error;
       setContract(data);
