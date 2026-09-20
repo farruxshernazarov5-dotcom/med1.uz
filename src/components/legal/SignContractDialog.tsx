@@ -82,6 +82,13 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
 
   const blocked = contract.approval_status === "pending" || contract.approval_status === "rejected";
 
+  useEffect(() => {
+    if (step !== "sign") return;
+    const id = requestAnimationFrame(() => setupCanvas());
+    window.addEventListener("resize", setupCanvas);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", setupCanvas); };
+  }, [step]);
+
   // --- silliq (smooth) imzo chizish: DPR moslash + midpoint kvadratik egri ---
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
 
