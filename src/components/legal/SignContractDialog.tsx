@@ -295,6 +295,11 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
                 {sending ? "Yuborilmoqda..." : "Tasdiqlash kodini olish"}
               </Button>
             </DialogFooter>
+            {telegramHelp && (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
+                Telegram hisobingiz ulanmagan. <a className="underline font-medium" href="https://t.me/Med1uzInfoBot" target="_blank" rel="noopener noreferrer">@Med1uzInfoBot</a> ni oching, <b>/start</b> bosing va telefon raqamingizni yuboring — so'ng qaytadan urinib ko'ring.
+              </div>
+            )}
             <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-3">
               <div className="flex gap-2 text-sm"><ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span><b>E-IMZO (tavsiya etiladi).</b> Kompyuterda E-IMZO dasturi ishlayotgan bo‘lishi kerak. Sertifikat va PKCS#7 dalili serverda tekshiriladi.</span></div>
               {certificates.length === 0 ? (
