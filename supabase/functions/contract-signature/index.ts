@@ -194,9 +194,10 @@ Deno.serve(async (req) => {
           await admin.from("contract_notifications").insert({
             contract_id: contractId,
             user_id: user.id,
-            channel: "email",
-            kind: "otp_email",
-            payload: { destination, subject, sent: emailSent },
+            type: "otp_email",
+            title: subject,
+            body: "Shartnoma imzolash uchun tasdiqlash kodi yuborildi",
+            data: { destination, sent: emailSent },
           });
         } catch (e) {
           console.error("[contract-signature] notification log failed", e);
