@@ -136,8 +136,8 @@ export default function ContractRequiredWidget({ templateSlug, moduleTitle }: Pr
                   </Button>
                 )
               ) : (
-                <Button size="sm" onClick={createAndOpen}>
-                  <FileSignature className="w-3 h-3 mr-1" /> Onlayn imzolash
+                <Button size="sm" onClick={createAndOpen} disabled={creating}>
+                  <FileSignature className="w-3 h-3 mr-1" /> {creating ? "Tayyorlanmoqda..." : "Onlayn imzolash"}
                 </Button>
               )}
               <Link to="/legal-center">
