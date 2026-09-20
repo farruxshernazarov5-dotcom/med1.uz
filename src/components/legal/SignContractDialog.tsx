@@ -81,27 +81,70 @@ export default function SignContractDialog({ open, onOpenChange, contract, onSig
 
   const blocked = contract.approval_status === "pending" || contract.approval_status === "rejected";
 
-  const startDraw = (e: React.PointerEvent) => {
-    drawing.current = true;
-    const c = canvasRef.current!;
+  // --- silliq (smooth) imzo chizish: DPR moslash + midpoint kvadratik egri ---
+  const lastPoint = useRef<{ x: number; y: number } | null>(null);
+
+  const setupCanvas = () => {
+    const c = canvasRef.current;
+    if (!c) return;
     const rect = c.getBoundingClientRect();
+    if (!rect.width) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (c.width === Math.round(rect.width * dpr) && c.height === Math.round(rect.height * dpr)) return;
+    c.width = Math.round(rect.width * dpr);
+    c.height = Math.round(rect.height * dpr);
     const ctx = c.getContext("2d")!;
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#0A2540";
   };
-  const moveDraw = (e: React.PointerEvent) => {
-    if (!drawing.current) return;
-    const c = canvasRef.current!;
-    const rect = c.getBoundingClientRect();
-    const ctx = c.getContext("2d")!;
-    ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#0A2540";
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+
+  const pointOf = (e: { clientX: number; clientY: number }) => {
+    const rect = canvasRef.current!.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const startDraw = (e: React.PointerEvent) => {
+    setupCanvas();
+    canvasRef.current?.setPointerCapture?.(e.pointerId);
+    drawing.current = true;
+    const p = pointOf(e);
+    lastPoint.current = p;
+    const ctx = canvasRef.current!.getContext("2d")!;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + 0.01, p.y);
     ctx.stroke();
   };
-  const endDraw = () => { drawing.current = false; };
+
+  const moveDraw = (e: React.PointerEvent) => {
+    if (!drawing.current) return;
+    const ctx = canvasRef.current!.getContext("2d")!;
+    const events: Array<{ clientX: number; clientY: number }> =
+      (e.nativeEvent as any).getCoalescedEvents?.() ?? [e.nativeEvent as any];
+    for (const ev of events) {
+      const p = pointOf(ev);
+      const prev = lastPoint.current || p;
+      const mid = { x: (prev.x + p.x) / 2, y: (prev.y + p.y) / 2 };
+      ctx.beginPath();
+      ctx.moveTo(prev.x, prev.y);
+      ctx.quadraticCurveTo(prev.x, prev.y, mid.x, mid.y);
+      ctx.stroke();
+      lastPoint.current = p;
+    }
+  };
+
+  const endDraw = () => { drawing.current = false; lastPoint.current = null; };
+
   const clearCanvas = () => {
     const c = canvasRef.current!;
-    c.getContext("2d")!.clearRect(0, 0, c.width, c.height);
+    const ctx = c.getContext("2d")!;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.restore();
   };
 
   const sendOtp = async () => {
