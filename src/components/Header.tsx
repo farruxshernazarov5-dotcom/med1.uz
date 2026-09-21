@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, Search, User, LogOut, Shield, Coins, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import GlobalSearch from "@/components/GlobalSearch";
+const GlobalSearch = lazy(() => import("@/components/GlobalSearch"));
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
@@ -184,7 +184,11 @@ const Header = () => {
         </div>
       </header>
 
-      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      {searchOpen && (
+        <Suspense fallback={null}>
+          <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+        </Suspense>
+      )}
     </>
   );
 };
