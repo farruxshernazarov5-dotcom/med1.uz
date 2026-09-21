@@ -1,16 +1,17 @@
+import { lazy, Suspense } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate, useParams } from "react-router-dom";
-import PatientDashboard from "@/components/dashboard/PatientDashboard";
-import ClinicDashboard from "@/components/dashboard/ClinicDashboard";
-import AdminDashboard from "@/components/dashboard/AdminDashboard";
-import VendorDashboard from "@/components/dashboard/VendorDashboard";
-import DiagnosticsDashboard from "@/components/dashboard/DiagnosticsDashboard";
-import MaternityDashboard from "@/components/dashboard/MaternityDashboard";
-import CosmetologyDashboard from "@/components/dashboard/CosmetologyDashboard";
-import DoctorDashboard from "@/components/dashboard/DoctorDashboard";
-import PharmacyDashboard from "@/components/dashboard/PharmacyDashboard";
-import BloodBankDashboard from "@/components/dashboard/BloodBankDashboard";
-import DentalDashboard from "@/components/dashboard/DentalDashboard";
+const PatientDashboard = lazy(() => import("@/components/dashboard/PatientDashboard"));
+const ClinicDashboard = lazy(() => import("@/components/dashboard/ClinicDashboard"));
+const AdminDashboard = lazy(() => import("@/components/dashboard/AdminDashboard"));
+const VendorDashboard = lazy(() => import("@/components/dashboard/VendorDashboard"));
+const DiagnosticsDashboard = lazy(() => import("@/components/dashboard/DiagnosticsDashboard"));
+const MaternityDashboard = lazy(() => import("@/components/dashboard/MaternityDashboard"));
+const CosmetologyDashboard = lazy(() => import("@/components/dashboard/CosmetologyDashboard"));
+const DoctorDashboard = lazy(() => import("@/components/dashboard/DoctorDashboard"));
+const PharmacyDashboard = lazy(() => import("@/components/dashboard/PharmacyDashboard"));
+const BloodBankDashboard = lazy(() => import("@/components/dashboard/BloodBankDashboard"));
+const DentalDashboard = lazy(() => import("@/components/dashboard/DentalDashboard"));
 import { getDashboardPath, normalizeDashboardRole } from "@/lib/dashboard";
 import PaymentSuccessBanner from "@/components/payments/PaymentSuccessBanner";
 
