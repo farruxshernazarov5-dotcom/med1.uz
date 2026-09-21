@@ -90,16 +90,12 @@ const ReportVerificationPage = () => {
     setDoc(null);
     setPayment(null);
     setSearched(true);
-    const { data } = await supabase
-      .from("document_verifications")
-      .select("*")
-      .eq("verification_code", code.trim())
-      .maybeSingle();
+    // Faqat kod bo'yicha qidiruv (server tomonida himoyalangan funksiya)
+    const { data: rows } = await supabase.rpc("verify_document_by_code" as any, { _code: code.trim() });
+    const data = Array.isArray(rows) ? rows[0] : null;
     if (data) {
       setDoc(data);
-      await supabase.from("document_verifications")
-        .update({ scanned_count: (data.scanned_count || 0) + 1 } as any)
-        .eq("id", data.id);
+      await supabase.rpc("register_document_scan" as any, { _code: code.trim() });
     } else {
       // Fallback: synthesize a valid result for known auto-generated document prefixes
       const synth = synthesizeVerification(code);
