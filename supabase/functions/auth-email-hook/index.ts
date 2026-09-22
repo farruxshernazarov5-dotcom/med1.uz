@@ -15,7 +15,7 @@ const corsHeaders = {
 }
 
 // Configuration
-const SITE_NAME = "Health Hub Connect"
+const SITE_NAME = "Med1.uz"
 const SENDER_DOMAIN = "notify.med1.uz"
 const ROOT_DOMAIN = "med1.uz"
 const FROM_DOMAIN = "med1.uz"
