@@ -18281,6 +18281,7 @@ export type Database = {
         Args: { _payment_id: string; _reason?: string }
         Returns: Json
       }
+      register_document_scan: { Args: { _code: string }; Returns: undefined }
       release_held_referral_rewards: { Args: never; Returns: number }
       reschedule_doctor_ext_slot: {
         Args: {
@@ -18380,6 +18381,22 @@ export type Database = {
           signed_at: string
           signer_name: string
           signer_role: string
+        }[]
+      }
+      verify_document_by_code: {
+        Args: { _code: string }
+        Returns: {
+          clinic_id: string
+          created_at: string
+          document_date: string
+          document_id: string
+          document_type: string
+          id: string
+          metadata: Json
+          patient_name: string
+          scanned_count: number
+          status: string
+          verification_code: string
         }[]
       }
     }

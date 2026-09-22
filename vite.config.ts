@@ -20,26 +20,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1200,
-    rollupOptions: {
-      output: {
-        // Katta ma'lumot bazalarini alohida bo'laklarga ajratamiz — ular
-        // faqat kerak bo'lgan sahifada yuklanadi, bosh sahifani sekinlashtirmaydi.
-        manualChunks(id: string) {
-          if (!id.includes("/src/data/")) return;
-          if (id.includes("clinics-external") || id.includes("clinicsExternal")) return "data-clinics-external";
-          if (id.includes("dental-clinics") || id.includes("dentalClinics")) return "data-dental";
-          if (id.includes("/new_articles/")) return "data-new-articles";
-          if (id.includes("/data/terms")) return "data-terms";
-          if (id.includes("medicalTerms")) return "data-medical-terms";
-          if (id.includes("diseases")) return "data-diseases";
-          if (id.includes("/data/articles") || id.includes("extraArticles")) return "data-articles";
-          if (id.includes("/officialContracts/") || id.includes("/data/legal")) return "data-legal";
-          if (id.includes("/data/news")) return "data-news";
-          if (id.includes("/data/clinics") || id.includes("pharmacies") || id.includes("bloodBanks")) return "data-directories";
-          if (id.includes("healthTips")) return "data-health-tips";
-        },
-      },
-    },
+    chunkSizeWarningLimit: 1600,
   },
 }));
