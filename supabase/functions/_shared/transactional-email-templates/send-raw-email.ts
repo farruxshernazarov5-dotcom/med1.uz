@@ -4,7 +4,7 @@ import { EmailAPIError, sendLovableEmail } from 'npm:@lovable.dev/email-js@0.1.0
 // Used by senders that compose their own subject/HTML at send time and
 // therefore cannot go through the registered-template helper.
 
-const SITE_NAME = 'Health Hub Connect'
+const SITE_NAME = 'Med1.uz'
 const SENDER_DOMAIN = 'notify.med1.uz'
 const FROM_DOMAIN = 'med1.uz'
 
