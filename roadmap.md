@@ -12,3 +12,6 @@
 - [x] Kamarova muallif profili, yangiliklar va Samarqand DTMU sahifasi
 - [x] Kamarova nashr tasdiqnomalari va real verifikatsiya QR-kodlari
 - [x] Kamarova sahifalari, PDF va QR havolalarini tekshirish
+- [x] Google va e-mail autentifikatsiyasida Med1.uz brendi va logotipini tekshirish
+- [x] Kirish va parol tiklash sahifalarida Med1.uz logotipini ko‘rsatish
+- [ ] Google rozilik oynasida Med1.uz nomini chiqarish — Google OAuth ilovasi tasdig‘i va shaxsiy Client ID/Secret ulanishini kutmoqda

@@ -13,6 +13,7 @@ import { Heart, Building2, User, Mail, Lock, Eye, EyeOff, CheckCircle, XCircle, 
 import { cn } from "@/lib/utils";
 import { getDashboardPath } from "@/lib/dashboard";
 import { setPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
+import logoImg from "@/assets/logo.webp";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -272,9 +273,12 @@ const AuthPage = () => {
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 max-w-md">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4 opacity-0 animate-fade-up" style={{ animationDelay: '0ms', animationFillMode: 'forwards' }}>
-              <Heart className="w-8 h-8 text-primary-foreground" />
-            </div>
+            <img
+              src={logoImg}
+              alt="Med1.uz logotipi"
+              className="w-16 h-16 rounded-2xl object-contain mx-auto mb-4 opacity-0 animate-fade-up"
+              style={{ animationDelay: '0ms', animationFillMode: 'forwards' }}
+            />
             <h1 className="font-heading text-3xl font-bold text-foreground opacity-0 animate-fade-up" style={{ animationDelay: '80ms', animationFillMode: 'forwards' }}>
               {mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}
             </h1>
