@@ -1,73 +1,31 @@
-# Welcome to your Lovable project
+# MED1.uz — Advanced Medical AI Ecosystem
 
-## Project info
+<p align="center">
+  <b>Onkologik va qandli diabet kasalliklarini erta aniqlash hamda klinikalarni raqamlashtirish uchun mo'ljallangan ilg'or tibbiy ekotizim.</b>
+</p>
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+---
 
-## How can I edit this code?
+## 🚀 Loyiha haqida
+**MED1.uz** — zamonaviy sun'iy intellekt texnologiyalari va 72 ta maxsus AI agentini o'z ichiga olgan innovatsion tibbiy platforma. Tizim kasalliklarni dastlabki bosqichlarda aniqlash, tibbiy tahlillarni chuqur tahlil qilish va klinikalar o'rtasida ma'lumot almashinuvini tezlashtirish imkonini beradi.
 
-There are several ways of editing your application.
+## 🧠 Asosiy imkoniyatlar
+- **72 ta AI Agent va 14 ta Sun'iy Intellekt Modeli:** Tibbiy diagnostika jarayonlarini avtomatlashtirish.
+- **Erta tashxis qo'yish:** Onkologiya, qandli diabet, pulmonologiya va boshqa yo'nalishlarda xavflarni oldindan aniqlash.
+- **Vizual tahlillar:** Miya, suyak skeleti, ko'krak qafasi, mammografiya va qorin bo'shlig'i tekshiruvlarini yuqori aniqlikda tahlil qilish.
+- **Smart Router & Arxiz:** AI orkestratori yordamida tibbiy oqimlarni aqlli boshqarish va xavfsiz arxiver tizimi.
 
-**Use Lovable**
+## 🛠 Texnologiyalar
+- **Frontend / Web:** React, TypeScript, Tailwind CSS, Shadcn UI
+- **Backend & Database:** Supabase
+- **Mobile:** Capacitor (Android / iOS)
+- **AI & Integrations:** Custom AI Agents & Models
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🌐 Havolalar
+- **Veb-sayt:** [https://med1.uz](https://med1.uz)
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
+---
+© 2026 MED-ALL AI SYSTEM MCHJ. Barcha huquqlar himoyalangan.
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
