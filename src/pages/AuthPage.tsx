@@ -186,6 +186,50 @@ const AuthPage = () => {
     setSubmitting(false);
   };
 
+  const handlePhoneSignup = async () => {
+    const cleanPhone = regPhone.replace(/\s/g, "");
+    if (!fullName.trim()) {
+      toast({ title: "Iltimos, ismingizni kiriting", variant: "destructive" });
+      return;
+    }
+    if (!legalAccepted) {
+      toast({ title: "Iltimos, foydalanish shartlarini qabul qiling", variant: "destructive" });
+      return;
+    }
+    if (regOtpCode.length < 6) {
+      toast({ title: "6 raqamli kodni kiriting", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-otp/phone-signup", {
+        body: { phone: cleanPhone, otp: regOtpCode, full_name: fullName.trim(), role },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Xatolik", description: data.error, variant: "destructive" });
+      } else if (data?.hashed_token) {
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          token_hash: data.hashed_token,
+          type: "magiclink",
+        });
+        if (verifyErr) {
+          toast({ title: "Xatolik", description: verifyErr.message, variant: "destructive" });
+        } else {
+          toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Xush kelibsiz!" });
+          const target = ROLE_REDIRECT[role] ?? "/dashboard";
+          setTimeout(() => navigate(target, { replace: true }), 300);
+        }
+      } else {
+        toast({ title: "Hisob yaratildi", description: "Endi telefon orqali kirishingiz mumkin." });
+        setMode("login");
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
   const handleRegPhoneVerifyOtp = async () => {
     setSubmitting(true);
     try {
