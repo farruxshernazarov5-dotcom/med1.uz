@@ -190,6 +190,84 @@ Deno.serve(async (req) => {
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Sign up with a verified phone number (no email required)
+    if (path === "phone-signup" && req.method === "POST") {
+      const body = await req.json();
+      const phone = String(body.phone || "").replace(/\s/g, "");
+      const otp = String(body.otp || "");
+      const fullName = String(body.full_name || "").trim();
+      const role = String(body.role || "patient");
+
+      if (!phone || !otp || !fullName) {
+        return new Response(JSON.stringify({ error: "Telefon, kod va ism talab qilinadi" }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: record } = await supabase
+        .from("telegram_otp").select("otp_code, otp_expires_at, is_verified").eq("phone", phone).maybeSingle();
+
+      const codeOk = record && (record.otp_code === otp || (record.is_verified && !record.otp_code));
+      if (!codeOk) {
+        return new Response(JSON.stringify({ error: "Noto'g'ri kod" }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (record.otp_code && record.otp_expires_at && new Date(record.otp_expires_at) < new Date()) {
+        return new Response(JSON.stringify({ error: "Kod muddati tugagan" }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Already registered with this phone?
+      const { data: existing } = await supabase
+        .from("profiles").select("user_id").eq("phone", phone).maybeSingle();
+      if (existing?.user_id) {
+        return new Response(JSON.stringify({ error: "Bu telefon raqam bilan hisob allaqachon mavjud. Kirish bo'limidan foydalaning." }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const syntheticEmail = `${phone.replace(/\D/g, "")}@phone.med1.uz`;
+      const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+        email: syntheticEmail,
+        phone,
+        email_confirm: true,
+        phone_confirm: true,
+        password: crypto.randomUUID(),
+        user_metadata: { full_name: fullName, role, phone, signup_method: "phone" },
+      });
+
+      if (createErr || !created?.user) {
+        console.error("phone-signup createUser error:", createErr);
+        return new Response(JSON.stringify({ error: createErr?.message || "Hisob yaratishda xatolik" }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      await supabase.from("telegram_otp").update({
+        is_verified: true, otp_code: null, updated_at: new Date().toISOString(),
+      }).eq("phone", phone);
+
+      const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+        type: "magiclink",
+        email: syntheticEmail,
+      });
+
+      if (linkError || !linkData) {
+        return new Response(JSON.stringify({ success: true, session: false, message: "Hisob yaratildi" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        session: true,
+        role,
+        hashed_token: linkData.properties.hashed_token,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     return new Response(JSON.stringify({ error: "Not found" }), {
       status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
