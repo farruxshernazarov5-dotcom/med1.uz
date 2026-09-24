@@ -186,6 +186,50 @@ const AuthPage = () => {
     setSubmitting(false);
   };
 
+  const handlePhoneSignup = async () => {
+    const cleanPhone = regPhone.replace(/\s/g, "");
+    if (!fullName.trim()) {
+      toast({ title: "Iltimos, ismingizni kiriting", variant: "destructive" });
+      return;
+    }
+    if (!legalAccepted) {
+      toast({ title: "Iltimos, foydalanish shartlarini qabul qiling", variant: "destructive" });
+      return;
+    }
+    if (regOtpCode.length < 6) {
+      toast({ title: "6 raqamli kodni kiriting", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("telegram-otp/phone-signup", {
+        body: { phone: cleanPhone, otp: regOtpCode, full_name: fullName.trim(), role },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast({ title: "Xatolik", description: data.error, variant: "destructive" });
+      } else if (data?.hashed_token) {
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          token_hash: data.hashed_token,
+          type: "magiclink",
+        });
+        if (verifyErr) {
+          toast({ title: "Xatolik", description: verifyErr.message, variant: "destructive" });
+        } else {
+          toast({ title: "✅ Ro'yxatdan o'tdingiz!", description: "Xush kelibsiz!" });
+          const target = ROLE_REDIRECT[role] ?? "/dashboard";
+          setTimeout(() => navigate(target, { replace: true }), 300);
+        }
+      } else {
+        toast({ title: "Hisob yaratildi", description: "Endi telefon orqali kirishingiz mumkin." });
+        setMode("login");
+      }
+    } catch (err: any) {
+      toast({ title: "Xatolik", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
   const handleRegPhoneVerifyOtp = async () => {
     setSubmitting(true);
     try {
@@ -346,31 +390,29 @@ const AuthPage = () => {
               <div className="flex-1 h-px bg-border" />
             </div>
 
-            {/* Auth method toggle (login only) */}
-            {mode === "login" && (
-              <div className="flex mb-4 bg-muted/50 rounded-lg p-1 gap-1">
-                <button
-                  type="button"
-                  onClick={() => { setAuthMethod("email"); setOtpSent(false); }}
-                  className={cn(
-                    "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
-                    authMethod === "email" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-                  )}
-                >
-                  <Mail className="w-3.5 h-3.5" /> Email
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setAuthMethod("phone"); setOtpSent(false); }}
-                  className={cn(
-                    "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
-                    authMethod === "phone" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-                  )}
-                >
-                  <MessageCircle className="w-3.5 h-3.5" /> Telegram
-                </button>
-              </div>
-            )}
+            {/* Auth method toggle */}
+            <div className="flex mb-4 bg-muted/50 rounded-lg p-1 gap-1">
+              <button
+                type="button"
+                onClick={() => { setAuthMethod("email"); setOtpSent(false); }}
+                className={cn(
+                  "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
+                  authMethod === "email" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                )}
+              >
+                <Mail className="w-3.5 h-3.5" /> Email
+              </button>
+              <button
+                type="button"
+                onClick={() => { setAuthMethod("phone"); setOtpSent(false); }}
+                className={cn(
+                  "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
+                  authMethod === "phone" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                )}
+              >
+                <Phone className="w-3.5 h-3.5" /> Telefon
+              </button>
+            </div>
 
             {/* Phone auth via Telegram (login only) */}
             {mode === "login" && authMethod === "phone" && (
@@ -492,8 +534,147 @@ const AuthPage = () => {
               </div>
             )}
 
+            {/* Phone registration */}
+            {mode === "register" && authMethod === "phone" && (
+              <div className="space-y-4">
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+                  <p className="text-xs font-bold text-foreground">Telefon raqam orqali ro'yxatdan o'tish</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Avval{" "}
+                    <a href="https://t.me/Med1uzOTP_Bot" target="_blank" rel="noopener" className="text-primary font-semibold hover:underline">
+                      @Med1uzOTP_Bot
+                    </a>{" "}
+                    ga <code className="bg-muted px-1 rounded">/start</code> bosib, raqamingizni yuboring. Keyin shu yerda kod oling.
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium mb-2 block">Rol tanlang</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-2">
+                    {roles.map((r) => {
+                      const isSelected = role === r.value;
+                      return (
+                        <button
+                          key={r.value}
+                          type="button"
+                          onClick={() => setRole(r.value)}
+                          className={cn(
+                            "group relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 text-center overflow-hidden",
+                            isSelected
+                              ? "border-primary bg-primary/5 shadow-md scale-[1.02]"
+                              : "border-border/60 hover:border-primary/40 hover:bg-accent/30 hover:shadow-sm"
+                          )}
+                        >
+                          {isSelected && (
+                            <div className="absolute top-1.5 right-1.5">
+                              <CheckCircle className="w-4 h-4 text-primary" />
+                            </div>
+                          )}
+                          <div className={cn(
+                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200",
+                            isSelected
+                              ? "bg-hero-gradient text-primary-foreground shadow-sm"
+                              : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+                          )}>
+                            <r.icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <span className={cn("text-xs font-bold block leading-tight", isSelected ? "text-primary" : "text-foreground")}>{r.label}</span>
+                            <span className="text-[10px] text-muted-foreground leading-tight mt-0.5 block">{r.desc}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="phoneFullName" className="text-xs">To'liq ism</Label>
+                  <div className="relative mt-1">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input id="phoneFullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Ismingiz" className="pl-10" />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-medium">Telefon raqam</Label>
+                  <div className="relative mt-1">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="tel"
+                      value={regPhone}
+                      onChange={(e) => setRegPhone(e.target.value)}
+                      placeholder="+998 90 123 45 67"
+                      className="pl-10"
+                      disabled={regOtpSent}
+                    />
+                  </div>
+                </div>
+
+                {regOtpSent && (
+                  <div>
+                    <Label className="text-xs font-medium">Tasdiqlash kodi</Label>
+                    <Input
+                      type="text"
+                      value={regOtpCode}
+                      onChange={(e) => setRegOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      placeholder="● ● ● ● ● ●"
+                      className="text-center text-xl tracking-[0.5em] font-mono h-12 mt-1"
+                      maxLength={6}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1 text-center">Kod 5 daqiqa ichida amal qiladi</p>
+                  </div>
+                )}
+
+                <label className="flex items-start gap-2 text-xs text-muted-foreground p-3 rounded-lg bg-muted/40 border border-border cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={legalAccepted}
+                    onChange={(e) => setLegalAccepted(e.target.checked)}
+                    className="mt-0.5 accent-primary"
+                  />
+                  <span>
+                    Men <Link to="/terms" target="_blank" className="text-primary hover:underline">Foydalanish shartlari</Link>,{" "}
+                    <Link to="/privacy" target="_blank" className="text-primary hover:underline">Maxfiylik siyosati</Link> va{" "}
+                    <Link to="/disclaimer" target="_blank" className="text-primary hover:underline">Tibbiy ogohlantirish</Link>ga roziman.
+                  </span>
+                </label>
+
+                <Button
+                  type="button"
+                  disabled={submitting || !legalAccepted}
+                  className="w-full bg-hero-gradient text-primary-foreground border-0 h-11 gap-2"
+                  onClick={regOtpSent ? handlePhoneSignup : handleRegPhoneSendOtp}
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : regOtpSent ? <CheckCircle className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+                  {submitting ? "Kutilmoqda..." : regOtpSent ? "Tasdiqlab ro'yxatdan o'tish" : "Telegram kod yuborish"}
+                </Button>
+
+                {regOtpSent && (
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setRegOtpSent(false); setRegOtpCode(""); }}
+                      className="text-xs text-muted-foreground font-medium hover:text-foreground transition-colors"
+                    >
+                      Raqamni o'zgartirish
+                    </button>
+                    <span className="text-muted-foreground/30">|</span>
+                    <button
+                      type="button"
+                      onClick={handleRegPhoneSendOtp}
+                      disabled={submitting}
+                      className="text-xs text-primary font-semibold hover:underline"
+                    >
+                      Qayta yuborish
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Email auth */}
-            {(mode === "register" || authMethod === "email") && !(mode === "login" && authMethod === "phone") && (
+            {authMethod === "email" && (
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 {mode === "register" && (
                   <>
