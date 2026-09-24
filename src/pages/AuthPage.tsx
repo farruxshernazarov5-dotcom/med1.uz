@@ -346,31 +346,29 @@ const AuthPage = () => {
               <div className="flex-1 h-px bg-border" />
             </div>
 
-            {/* Auth method toggle (login only) */}
-            {mode === "login" && (
-              <div className="flex mb-4 bg-muted/50 rounded-lg p-1 gap-1">
-                <button
-                  type="button"
-                  onClick={() => { setAuthMethod("email"); setOtpSent(false); }}
-                  className={cn(
-                    "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
-                    authMethod === "email" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-                  )}
-                >
-                  <Mail className="w-3.5 h-3.5" /> Email
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setAuthMethod("phone"); setOtpSent(false); }}
-                  className={cn(
-                    "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
-                    authMethod === "phone" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-                  )}
-                >
-                  <MessageCircle className="w-3.5 h-3.5" /> Telegram
-                </button>
-              </div>
-            )}
+            {/* Auth method toggle */}
+            <div className="flex mb-4 bg-muted/50 rounded-lg p-1 gap-1">
+              <button
+                type="button"
+                onClick={() => { setAuthMethod("email"); setOtpSent(false); }}
+                className={cn(
+                  "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
+                  authMethod === "email" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                )}
+              >
+                <Mail className="w-3.5 h-3.5" /> Email
+              </button>
+              <button
+                type="button"
+                onClick={() => { setAuthMethod("phone"); setOtpSent(false); }}
+                className={cn(
+                  "flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5",
+                  authMethod === "phone" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                )}
+              >
+                <Phone className="w-3.5 h-3.5" /> Telefon
+              </button>
+            </div>
 
             {/* Phone auth via Telegram (login only) */}
             {mode === "login" && authMethod === "phone" && (
