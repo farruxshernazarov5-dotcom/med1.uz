@@ -88,11 +88,11 @@ async function sendProfile(chatId: number) {
   }
   const [{ data: role }, { data: wallet }] = await Promise.all([
     db.from("user_roles").select("role").eq("user_id", p.user_id).limit(1).maybeSingle(),
-    db.from("user_credits").select("balance").eq("user_id", p.user_id).maybeSingle(),
+    db.from("user_credits").select("balance").eq("user_id", p.user_id).gt("expires_at", new Date().toISOString()),
   ]);
   await tg("sendMessage", {
     chat_id: chatId, parse_mode: "HTML",
-    text: `👤 <b>Shaxsiy kabinet</b>\n━━━━━━━━━━━━━━\n🧑 Ism: <b>${p.full_name || "—"}</b>\n📱 Telefon: ${p.phone || "—"}\n🎭 Rol: ${role?.role ?? "patient"}\n🪙 Med Coin: ${wallet?.balance ?? 0}\n━━━━━━━━━━━━━━`,
+    text: `👤 <b>Shaxsiy kabinet</b>\n━━━━━━━━━━━━━━\n🧑 Ism: <b>${p.full_name || "—"}</b>\n📱 Telefon: ${p.phone || "—"}\n🎭 Rol: ${role?.role ?? "patient"}\n🪙 Med Coin: ${(wallet ?? []).reduce((a: number, w: any) => a + Number(w.balance || 0), 0)}\n━━━━━━━━━━━━━━`,
     reply_markup: { inline_keyboard: [[app("🚀 Kabinetni ochish", "/dashboard")], [{ text: "⬅️ Asosiy menyu", callback_data: "menu" }]] },
   });
 }
