@@ -20,7 +20,13 @@ export function isInTelegram(): boolean {
 
 export function installTelegramWebApp() {
   const tg = getTelegramWebApp();
-  if (!tg) return;
+  if (!tg) {
+    if (!(window as any).__tgRetry) {
+      (window as any).__tgRetry = true;
+      window.addEventListener("load", () => installTelegramWebApp(), { once: true });
+    }
+    return;
+  }
   try {
     tg.ready();
     tg.expand();
