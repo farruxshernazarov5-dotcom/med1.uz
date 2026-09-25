@@ -72,3 +72,5 @@ project_id = "wiqcfyecdmararxqdmfk"
   [functions.hambi-sso]
     verify_jwt = false
 
+  [functions.emedinfo-bot]
+    verify_jwt = false
