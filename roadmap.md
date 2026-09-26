@@ -16,9 +16,10 @@
 - [x] Kirish va parol tiklash sahifalarida Med1.uz logotipini ko‘rsatish
 - [ ] Google rozilik oynasida Med1.uz nomini chiqarish — Google OAuth ilovasi tasdig‘i va shaxsiy Client ID/Secret ulanishini kutmoqda
 
-- [ ] @emedinfobot telefon ulanishining takrorlanish xatosini tuzatish
-- [ ] @emedinfobot uchun barcha asosiy sayt bo‘limlarini qamrab oluvchi kreativ menyu yaratish
-- [ ] Shaxsiy kabinetni foydalanuvchi roliga mos avtomatik ochish
-- [ ] Yangiliklar va boshqa dinamik ma’lumotlarni sayt bilan avtomatik sinxronlash
-- [ ] Bot logotipi, tavsifi va buyruqlarini Telegram profiliga o‘rnatish
-- [ ] Eski OTP/xavfsizlik/to‘lov botining mavjud funksiyalarini o‘zgartirmaslik
+- [x] @emedinfobot telefon ulanishining takrorlanish xatosini tuzatish
+- [x] @emedinfobot uchun barcha asosiy sayt bo‘limlarini qamrab oluvchi kreativ menyu yaratish
+- [x] Shaxsiy kabinetni foydalanuvchi roliga mos avtomatik ochish
+- [x] Yangiliklar va boshqa dinamik ma’lumotlarni botda sayt bilan avtomatik sinxronlash
+- [ ] Yangiliklarni Telegram kanaliga avtomatik yuborish — kanal identifikatori va botga admin huquqi berilishini kutmoqda
+- [x] Bot logotipi, tavsifi va buyruqlarini Telegram profiliga o‘rnatish
+- [x] Eski OTP/xavfsizlik/to‘lov botining mavjud funksiyalarini o‘zgartirmaslik
