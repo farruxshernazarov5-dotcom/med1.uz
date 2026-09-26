@@ -30,7 +30,7 @@ export function GeoConsentBanner({ onGrant }: Props) {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[380px] z-[60] bg-card border border-border rounded-2xl shadow-2xl p-4 animate-in slide-in-from-bottom-5">
+    <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[380px] z-[60] bg-card border border-border rounded-2xl shadow-2xl p-4 animate-in slide-in-from-bottom-5">
       <button onClick={decline} className="absolute top-2 right-2 w-7 h-7 rounded-lg hover:bg-muted flex items-center justify-center">
         <X className="w-4 h-4" />
       </button>
