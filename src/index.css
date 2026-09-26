@@ -607,3 +607,52 @@
   100% { transform: scale(2.2); opacity: 0; }
 }
 .animate-ping-once { animation: ping-once 0.9s ease-out 1; }
+
+/* ============================================================
+   MOBILE APP SHELL (Capacitor / native)
+   Safe areas, bottom navigation spacing, native touch feel.
+   ============================================================ */
+
+@layer utilities {
+  .app-safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .app-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Bottom navigation sits above the iOS home indicator */
+  .app-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -8px 24px -18px hsl(var(--foreground) / 0.45);
+  }
+
+  /* Reserve space so page content is never hidden behind the bottom bar */
+  .has-bottom-nav body {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width: 1024px) {
+    .has-bottom-nav body {
+      padding-bottom: 0;
+    }
+  }
+
+  /* Native feel: no text selection flashes, no tap highlight, smooth scroll */
+  .is-native-app {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .is-native-app body {
+    overscroll-behavior-y: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .is-native-app input,
+  .is-native-app textarea,
+  .is-native-app [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .is-native-app header.sticky {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
