@@ -23,3 +23,10 @@
 - [ ] Yangiliklarni Telegram kanaliga avtomatik yuborish — kanal identifikatori va botga admin huquqi berilishini kutmoqda
 - [x] Bot logotipi, tavsifi va buyruqlarini Telegram profiliga o‘rnatish
 - [x] Eski OTP/xavfsizlik/to‘lov botining mavjud funksiyalarini o‘zgartirmaslik
+
+## Bemorlar mobil ilovasi (Capacitor)
+- [x] Capacitor sozlamalari (ilova nomi, status bar, klaviatura, xavfsiz chekkalar)
+- [x] Pastki navigatsiya: Asosiy / AI / Yaqin / Salomatlik / Kabinet
+- [x] Telefon "orqaga" tugmasi, tebranish, internet uzilishi ogohlantirishi
+- [x] Pastdagi oynalar (cookie, geo, suzuvchi tugmalar) menyuni to'smaydi
+- [ ] Android/iOS to'plamini yig'ish: foydalanuvchi GitHub orqali `npx cap add android/ios` bajaradi
