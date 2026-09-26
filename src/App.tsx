@@ -138,6 +138,7 @@ import ReferralCapture from "./components/referral/ReferralCapture";
 import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
 import SubdomainRouter from "./components/SubdomainRouter";
+import MobileAppShell from "./components/mobile/MobileAppShell";
 
 
 const queryClient = new QueryClient();
