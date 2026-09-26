@@ -255,7 +255,7 @@ async function sendProfile(chatId: number) {
   const roleList = [...new Set(roles.map((row) => row.role))];
   const names = [...new Set(profiles.map((profile) => profile.full_name).filter(Boolean))].join(" / ");
   const phones = [...new Set(profiles.map((profile) => profile.phone).filter(Boolean))].join(" / ");
-  const buttons = roleList
+  const buttons: Array<Array<Record<string, unknown>>> = roleList
     .filter((role) => ROLE_PATH[role])
     .map((role) => [app(`${role === "patient" ? "👤" : "💼"} ${ROLE_LABEL[role] ?? role} kabineti`, ROLE_PATH[role])]);
   buttons.push([app("✍️ Shartnomalar", "/legal-center"), app("🪙 To‘lovlar", "/ai-subscription")]);
@@ -282,7 +282,7 @@ async function sendBusiness(chatId: number) {
     });
     return;
   }
-  const buttons = roles.map((role) => [app(`💼 ${ROLE_LABEL[role] ?? role} boshqaruvi`, ROLE_PATH[role])]);
+  const buttons: Array<Array<Record<string, unknown>>> = roles.map((role) => [app(`💼 ${ROLE_LABEL[role] ?? role} boshqaruvi`, ROLE_PATH[role])]);
   buttons.push([app("📊 Tahlil va moliya", ROLE_PATH[roles[0]]), app("📣 Marketing", "/med1-top/my")]);
   buttons.push([app("👥 Xodimlar", "/check-in"), app("✍️ Yuridik markaz", "/legal-center")]);
   buttons.push([callback("⬅️ Asosiy menyu", "menu")]);
@@ -346,6 +346,18 @@ async function setupBot() {
   };
 }
 
+async function authenticatedAdmin(req: Request) {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) return false;
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+  const authClient = createClient(SUPABASE_URL, anonKey, { global: { headers: { Authorization: authHeader } } });
+  const { data, error } = await authClient.auth.getClaims(authHeader.slice(7));
+  const userId = data?.claims?.sub;
+  if (error || !userId) return false;
+  const { data: isAdmin } = await db.rpc("has_role", { _user_id: userId, _role: "admin" });
+  return Boolean(isAdmin);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (!TOKEN || !SUPABASE_URL || !SERVICE_KEY) {
@@ -355,22 +367,13 @@ Deno.serve(async (req) => {
 
   try {
     if (url.pathname.endsWith("/setup")) {
-      const auth = req.headers.get("Authorization");
-      if (auth !== `Bearer ${SERVICE_KEY}`) return new Response("Unauthorized", { status: 401, headers: corsHeaders });
+      if (!(await authenticatedAdmin(req))) return new Response("Forbidden", { status: 403, headers: corsHeaders });
       return new Response(JSON.stringify(await setupBot()), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     if (url.pathname.endsWith("/publish")) {
       if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
-      const authHeader = req.headers.get("Authorization");
-      if (!authHeader?.startsWith("Bearer ")) return new Response("Unauthorized", { status: 401, headers: corsHeaders });
-      const authClient = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY") ?? "", { global: { headers: { Authorization: authHeader } } });
-      const token = authHeader.slice(7);
-      const { data: claims, error: claimsError } = await authClient.auth.getClaims(token);
-      const userId = claims?.claims?.sub;
-      if (claimsError || !userId) return new Response("Unauthorized", { status: 401, headers: corsHeaders });
-      const { data: isAdmin } = await db.rpc("has_role", { _user_id: userId, _role: "admin" });
-      if (!isAdmin) return new Response("Forbidden", { status: 403, headers: corsHeaders });
+      if (!(await authenticatedAdmin(req))) return new Response("Forbidden", { status: 403, headers: corsHeaders });
       if (!CHANNEL_ID) return new Response(JSON.stringify({ error: "Telegram kanal hali ulanmagan" }), { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       const body = await req.json();
       const title = String(body?.title ?? "").trim().slice(0, 240);
