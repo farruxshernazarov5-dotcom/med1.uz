@@ -162,6 +162,7 @@ const App = () => (
           <CreditProvider>
           <SubdomainRouter />
           <ReferralCapture />
+          <MobileAppShell />
 
           <YandexAdsManager />
           <FloatingAISearch />
