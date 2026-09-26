@@ -45,7 +45,7 @@ const FloatingDock = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-3 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-2 print:hidden">
+    <div className="fixed bottom-[4.75rem] right-3 lg:bottom-6 lg:right-6 z-50 flex flex-col items-end gap-2 print:hidden">
       {open && (
         <div className="w-[min(17rem,calc(100vw-1.5rem))] bg-card/95 backdrop-blur border border-border rounded-2xl shadow-2xl overflow-hidden animate-fade-up">
           <div className="bg-hero-gradient px-3 py-2 flex items-center justify-between">
