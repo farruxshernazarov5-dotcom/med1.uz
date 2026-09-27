@@ -101,6 +101,7 @@ const ReferralPage = lazy(() => import("./pages/ReferralPage"));
 const ReferralTermsPage = lazy(() => import("./pages/ReferralTermsPage"));
 const HambiPartnerAdminPage = lazy(() => import("./pages/admin/HambiPartnerAdminPage"));
 const AIAnalyticsPage = lazy(() => import("./pages/admin/AIAnalyticsPage"));
+const TelegramBotAdminPage = lazy(() => import("./pages/admin/TelegramBotAdminPage"));
 const HambiDashboardPage = lazy(() => import("./pages/admin/HambiDashboardPage"));
 const HambiReadinessPage = lazy(() => import("./pages/admin/HambiReadinessPage"));
 const PaymentSandboxPage = lazy(() => import("./pages/admin/PaymentSandboxPage"));
@@ -269,6 +270,7 @@ const App = () => (
                 <Route path="/admin/partners/:slug" element={<HambiPartnerAdminPage />} />
                 <Route path="/admin/partners" element={<HambiPartnerAdminPage />} />
                 <Route path="/admin/ai-analytics" element={<AIAnalyticsPage />} />
+                <Route path="/admin/telegram-bot" element={<TelegramBotAdminPage />} />
                 <Route path="/admin/hambi" element={<HambiDashboardPage />} />
                 <Route path="/admin/hambi-readiness" element={<HambiReadinessPage />} />
                 <Route path="/admin/payment-sandbox" element={<PaymentSandboxPage />} />
