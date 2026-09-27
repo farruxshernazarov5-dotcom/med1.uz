@@ -8055,6 +8055,81 @@ export type Database = {
         }
         Relationships: []
       }
+      emedinfo_bot_broadcasts: {
+        Row: {
+          button_path: string | null
+          button_text: string | null
+          created_at: string
+          created_by: string | null
+          failed_count: number
+          id: string
+          kind: string
+          message: string
+          sent_count: number
+        }
+        Insert: {
+          button_path?: string | null
+          button_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          failed_count?: number
+          id?: string
+          kind?: string
+          message: string
+          sent_count?: number
+        }
+        Update: {
+          button_path?: string | null
+          button_text?: string | null
+          created_at?: string
+          created_by?: string | null
+          failed_count?: number
+          id?: string
+          kind?: string
+          message?: string
+          sent_count?: number
+        }
+        Relationships: []
+      }
+      emedinfo_bot_users: {
+        Row: {
+          chat_id: number
+          daily_opt_out: boolean
+          first_name: string | null
+          is_blocked: boolean
+          language_code: string | null
+          last_daily_at: string | null
+          last_seen_at: string
+          messages_count: number
+          started_at: string
+          username: string | null
+        }
+        Insert: {
+          chat_id: number
+          daily_opt_out?: boolean
+          first_name?: string | null
+          is_blocked?: boolean
+          language_code?: string | null
+          last_daily_at?: string | null
+          last_seen_at?: string
+          messages_count?: number
+          started_at?: string
+          username?: string | null
+        }
+        Update: {
+          chat_id?: number
+          daily_opt_out?: boolean
+          first_name?: string | null
+          is_blocked?: boolean
+          language_code?: string | null
+          last_daily_at?: string | null
+          last_seen_at?: string
+          messages_count?: number
+          started_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       entity_media_links: {
         Row: {
           created_at: string
