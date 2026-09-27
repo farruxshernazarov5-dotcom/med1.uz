@@ -181,7 +181,7 @@ const DashboardShell = ({
 
       {/* Mobile sidebar overlay */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 above-bottom-nav z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
           <aside className="absolute left-0 top-0 bottom-0 w-[260px] bg-[hsl(213,73%,15%)]/95 backdrop-blur-xl shadow-2xl">
             {renderSidebarContent()}
