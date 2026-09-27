@@ -656,3 +656,15 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 }
+
+/* Mobile: keep fixed layers clear of the bottom navigation */
+.above-bottom-nav {
+  bottom: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+.fab-above-bottom-nav {
+  bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  .above-bottom-nav { bottom: 0 !important; }
+  .fab-above-bottom-nav { bottom: 1.5rem; }
+}

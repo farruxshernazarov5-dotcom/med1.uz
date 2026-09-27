@@ -339,7 +339,7 @@ const PatientDashboard = () => {
   );
 
   return (
-    <div className="fixed inset-0 flex bg-background z-10">
+    <div className="fixed inset-0 above-bottom-nav flex bg-background z-10">
       {/* Desktop sidebar — own column, full viewport height */}
       <aside className="hidden lg:flex w-[260px] shrink-0 h-full">
         <Sidebar />
@@ -347,7 +347,7 @@ const PatientDashboard = () => {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 above-bottom-nav z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
           <aside className="absolute left-0 top-0 bottom-0 w-[280px] shadow-2xl flex">
             <Sidebar />
