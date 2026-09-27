@@ -412,8 +412,8 @@ async function sendProfile(chatId: number) {
 async function sendBusiness(chatId: number) {
   const profiles = await findProfiles(chatId);
   if (!profiles.length) return sendProfile(chatId);
-  const roles = [...new Set((await getRoles(profiles)).map((row) => row.role))]
-    .filter((role) => role !== "patient" && ROLE_PATH[role]);
+  const roleRows = (await getRoles(profiles)).filter((row) => row.role !== "patient" && ROLE_PATH[row.role]);
+  const roles = [...new Set(roleRows.map((row) => row.role))];
   if (!roles.length) {
     await tg("sendMessage", {
       chat_id: chatId,
@@ -422,7 +422,11 @@ async function sendBusiness(chatId: number) {
     });
     return;
   }
-  const buttons: Array<Array<Record<string, unknown>>> = roles.map((role) => [app(`💼 ${ROLE_LABEL[role] ?? role} boshqaruvi`, ROLE_PATH[role])]);
+  const buttons: Array<Array<Record<string, unknown>>> = roleRows.map((row) => {
+    const owner = profiles.find((p) => p.user_id === row.user_id);
+    const label = profiles.length > 1 ? ` — ${(owner?.full_name ?? "Profil").slice(0, 18)}` : "";
+    return [callback(`💼 ${ROLE_LABEL[row.role] ?? row.role}${label}`, `go:${row.user_id}:${row.role}`)];
+  });
   buttons.push([app("📊 Tahlil va moliya", ROLE_PATH[roles[0]]), app("📣 Marketing", "/med1-top/my")]);
   buttons.push([app("👥 Xodimlar", "/check-in"), app("✍️ Yuridik markaz", "/legal-center")]);
   buttons.push([callback("⬅️ Asosiy menyu", "menu")]);
@@ -593,7 +597,7 @@ Deno.serve(async (req) => {
           chat_id: chatId,
           parse_mode: "HTML",
           text: `✅ <b>${linked.length > 1 ? `${linked.length} ta hisobingiz` : "Hisobingiz"} botga ulandi!</b>\nBildirishnomalar va tahlil natijalari shu yerga keladi.`,
-          reply_markup: { remove_keyboard: true },
+          reply_markup: replyKeyboard(true),
         });
         await sendProfile(chatId);
       } else {
