@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 // MED-ALL AI Enterprise API Gateway
 // Single entry point for all partner API calls. Authenticates via x-api-key,
 // enforces scopes, IP/domain restrictions, logs every request, and proxies
@@ -510,7 +511,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
       },
       body: JSON.stringify({
         model,
-        messages,
+        messages: sanitizeChatMessages(messages),
         temperature: typeof body?.temperature === "number" ? body.temperature : 0.7,
       }),
     });

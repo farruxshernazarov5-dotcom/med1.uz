@@ -150,7 +150,7 @@ serve(async (req) => {
           model: selectedModel,
           messages: [
             { role: "system", content: systemPrompt },
-            ...messages,
+            ...sanitizeChatMessages(messages),
           ],
           stream: stream !== false,
         }),
