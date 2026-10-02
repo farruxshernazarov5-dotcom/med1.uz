@@ -30,3 +30,7 @@
 - [x] Telefon "orqaga" tugmasi, tebranish, internet uzilishi ogohlantirishi
 - [x] Pastdagi oynalar (cookie, geo, suzuvchi tugmalar) menyuni to'smaydi
 - [ ] Android/iOS to'plamini yig'ish: foydalanuvchi GitHub orqali `npx cap add android/ios` bajaradi
+- [x] Pastki navigatsiyani Asosiy / Xizmatlar / Med1 AI / Ensiklopediya / Kabinet ko‘rinishiga yangilash
+- [x] Med1 AI pastki oynasi, tahlil jarayoni va tayyor natija holatlari
+- [x] Mobil xizmatlar ro‘yxati/xaritasi, filtrlar, muassasa oynalari va GPS tanlovi
+- [x] Mobil bo‘sh natija, shoshilinch xavf va oflayn/onlayn holatlari

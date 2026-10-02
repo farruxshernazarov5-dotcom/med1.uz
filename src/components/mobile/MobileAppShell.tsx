@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { WifiOff } from "lucide-react";
+import { CheckCircle2, WifiOff } from "lucide-react";
 import MobileBottomNav from "./MobileBottomNav";
+import { MobileAIHubSheet } from "./MobileAIHubSheet";
 import { initNativeChrome, isNativeApp, registerBackButton, watchNetwork } from "@/lib/nativeApp";
 
 /**
@@ -13,6 +14,7 @@ const MobileAppShell = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [online, setOnline] = useState(true);
+  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
     void initNativeChrome();
@@ -21,7 +23,19 @@ const MobileAppShell = () => {
     return () => document.documentElement.classList.remove("has-bottom-nav");
   }, []);
 
-  useEffect(() => watchNetwork(setOnline), []);
+  useEffect(() => {
+    let initialized = false;
+    return watchNetwork((nextOnline) => {
+      setOnline((wasOnline) => {
+        if (initialized && !wasOnline && nextOnline) {
+          setRestored(true);
+          window.setTimeout(() => setRestored(false), 3000);
+        }
+        initialized = true;
+        return nextOnline;
+      });
+    });
+  }, []);
 
   useEffect(() => {
     let dispose = () => {};
@@ -53,11 +67,17 @@ const MobileAppShell = () => {
   return (
     <>
       {!online && (
-        <div className="fixed top-0 inset-x-0 z-[60] flex items-center justify-center gap-2 bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground app-safe-top">
+        <div className="fixed top-0 inset-x-0 z-[60] flex items-center justify-center gap-2 bg-medical-orange px-3 py-1.5 text-xs font-medium text-primary-foreground app-safe-top">
           <WifiOff className="h-3.5 w-3.5" />
-          Internet aloqasi yo'q — qayta ulanish kutilmoqda
+          Oflayn rejim — saqlangan ma’lumotlar ko‘rsatilmoqda
         </div>
       )}
+      {restored && (
+        <div className="fixed top-0 inset-x-0 z-[60] flex items-center justify-center gap-2 bg-medical-green px-3 py-1.5 text-xs font-medium text-primary-foreground app-safe-top" role="status">
+          <CheckCircle2 className="h-3.5 w-3.5" /> Internet aloqasi tiklandi
+        </div>
+      )}
+      <MobileAIHubSheet />
       <MobileBottomNav />
     </>
   );
