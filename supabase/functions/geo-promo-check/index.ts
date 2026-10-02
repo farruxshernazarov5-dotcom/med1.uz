@@ -130,8 +130,8 @@ serve(async (req) => {
     matches.sort((a, b) => a.distance_m - b.distance_m);
     const top = matches.slice(0, 3);
 
-    // Log notifications
-    if (top.length) {
+    // Log notifications / count views only for signed-in users (deduped per user)
+    if (top.length && userId) {
       await supabase.from("geo_notifications").insert(top.map(m => ({
         user_id: userId, promo_id: m.promo_id, clinic_id: m.clinic_id,
         lat: latitude, lng: longitude, distance_m: m.distance_m,

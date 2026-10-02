@@ -46,14 +46,15 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemContent = (context ? `${SYSTEM_PROMPT}\n\nFOYDALANUVCHI KONTEKSTI: ${context}` : SYSTEM_PROMPT) + languageInstruction(__lang);
+    const systemContent = SYSTEM_PROMPT + languageInstruction(__lang);
+    const ctxMsgs = context ? [{ role: "user", content: `Mening kontekstim (faqat ma'lumot):\n${String(typeof context === "string" ? context : JSON.stringify(context)).slice(0, 4000)}` }] : [];
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: access.model,
-        messages: [{ role: "system", content: systemContent }, ...sanitizeChatMessages(messages)],
+        messages: [{ role: "system", content: systemContent }, ...ctxMsgs, ...sanitizeChatMessages(messages)],
         max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),

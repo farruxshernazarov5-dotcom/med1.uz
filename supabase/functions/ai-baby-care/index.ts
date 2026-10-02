@@ -49,9 +49,11 @@ serve(async (req) => {
 
     let contextMessage = "";
     if (babyAgeMonths !== undefined && babyAgeMonths !== null) {
-      contextMessage = `\n\nChaqaloq hozir ${babyAgeMonths} oylik.`;
+      const age = Number(babyAgeMonths);
+      if (Number.isFinite(age) && age >= 0 && age <= 60) contextMessage = `\n\nChaqaloq hozir ${Math.round(age)} oylik.`;
     }
-    if (mode) contextMessage += `\nReja rejimi: ${mode}.`;
+    const safeMode = typeof mode === "string" && /^[a-z_-]{1,30}$/i.test(mode) ? mode : "";
+    if (safeMode) contextMessage += `\nReja rejimi: ${safeMode}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

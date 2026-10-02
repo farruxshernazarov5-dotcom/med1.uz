@@ -56,12 +56,18 @@ Deno.serve(async (req) => {
     const ip_hash = await hash(ip);
 
     if (event === "visit") {
+      let visitUser: string | null = null;
+      const vtok = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+      if (vtok) {
+        const { data: vu } = await supabase.auth.getUser(vtok).catch(() => ({ data: null } as any));
+        visitUser = vu?.user?.id || null;
+      }
       const { data, error } = await supabase
         .from("partner_visits")
         .insert({
           source_slug,
           session_id: body.session_id ?? null,
-          user_id: body.user_id ?? null,
+          user_id: visitUser,
           landing_path: body.landing_path ?? null,
           referrer: body.referrer ?? null,
           user_agent: body.user_agent ?? null,
