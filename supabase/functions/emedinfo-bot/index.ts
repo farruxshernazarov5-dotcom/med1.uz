@@ -1,3 +1,4 @@
+import { isTrustedCaller } from "../_shared/trusted-caller.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -531,6 +532,8 @@ Deno.serve(async (req) => {
       try { return json(await broadcast(await req.json(), adminId)); } catch (e) { return json({ error: (e as Error).message }, 400); }
     }
     if (url.pathname.endsWith("/daily")) {
+      // Only the scheduler (service role) or an admin may trigger the daily send.
+      if (!(await isTrustedCaller(req))) return new Response("Forbidden", { status: 403, headers: corsHeaders });
       // Idempotent: each user receives at most one message per 20 hours.
       return json(await sendDaily());
     }
