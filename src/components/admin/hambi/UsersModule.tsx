@@ -188,7 +188,12 @@ const UsersModule = ({ slug, lang }: Props) => {
     const csv = [head.join(",")].concat(
       filtered.map((r) => [
         r.user_id, r.full_name, r.phone, r.email, r.region, r.organization, r.role, r.status, r.source, r.ai_credits, r.created_at,
-      ].map((v) => `"${(v ?? "").toString().replace(/"/g, '""')}"`).join(",")),
+      ].map((v) => {
+        let cell = (v ?? "").toString();
+        // Neutralise spreadsheet formulas (=, +, -, @, tab, CR) from user-controlled values.
+        if (/^[=+\-@\t\r]/.test(cell)) cell = `'${cell}`;
+        return `"${cell.replace(/"/g, '""')}"`;
+      }).join(",")),
     ).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
