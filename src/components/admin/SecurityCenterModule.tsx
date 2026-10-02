@@ -1,3 +1,4 @@
+import { esc } from "@/lib/htmlEscape";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -898,7 +899,7 @@ th{background:#F4F8FB;}
 </style></head><body>
 <h1>🛡️ Security Center — Kunlik Hisobot</h1>
 <p><b>Sana:</b> ${d}</p>
-<div class="score">${stats.score} / 100 — ${scoreLabel}</div>
+<div class="score">${esc(stats.score)} / 100 — ${esc(scoreLabel)}</div>
 <h2>Asosiy Ko'rsatkichlar</h2>
 <div>
 <span class="kpi">Faol: <b>${stats.active.length}</b></span>
@@ -913,9 +914,9 @@ th{background:#F4F8FB;}
 </div>
 <h2>JWT / API Kalit Monitoringi</h2>
 <table><thead><tr><th>Kalit</th><th>Hamkor</th><th>Muhit</th><th>Holat</th><th>Muddati</th><th>Oxirgi</th><th>24s</th><th>Xato</th><th>IP-lar</th><th>Qayta</th></tr></thead><tbody>
-${rows.map((r) => `<tr><td><b>${r.name}</b><br><code>${r.prefix}***</code></td><td>${r.partner}</td><td>${r.env}</td><td>${r.status}</td><td>${r.expires}</td><td>${r.lastUsed}</td><td>${r.calls}</td><td>${r.failed}</td><td>${r.distinctIps}</td><td>${r.reused ? "⚠️ HA" : "—"}</td></tr>`).join("")}
+${rows.map((r) => `<tr><td><b>${esc(r.name)}</b><br><code>${esc(r.prefix)}***</code></td><td>${esc(r.partner)}</td><td>${esc(r.env)}</td><td>${esc(r.status)}</td><td>${esc(r.expires)}</td><td>${esc(r.lastUsed)}</td><td>${esc(r.calls)}</td><td>${esc(r.failed)}</td><td>${esc(r.distinctIps)}</td><td>${r.reused ? "⚠️ HA" : "—"}</td></tr>`).join("")}
 </tbody></table>
-${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div class="alert"><b>[${a.level.toUpperCase()}]</b> ${a.title}<br><small>${a.detail}</small></div>`).join("")}` : ""}
+${stats.alerts.length ? `<h2>Faol Alertlar</h2>${stats.alerts.map((a) => `<div class="alert"><b>[${esc(a.level.toUpperCase())}]</b> ${esc(a.title)}<br><small>${esc(a.detail)}</small></div>`).join("")}` : ""}
 <button onclick="window.print()" style="margin-top:24px;padding:10px 20px;background:#2F80ED;color:#fff;border:none;border-radius:6px;cursor:pointer;">🖨️ Chop etish / PDF saqlash</button>
 </body></html>`;
     win.document.write(html);

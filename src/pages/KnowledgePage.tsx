@@ -45,7 +45,7 @@ const KnowledgePage = () => {
   const lang = (params.get("lang") as "uz" | "en") || "uz";
   const category = params.get("cat") || "all";
   const q = params.get("q") || "";
-  const letter = params.get("letter") || "";
+  const letter = (params.get("letter") || "").replace(/[^\p{L}\p{N}]/gu, "").slice(0, 2);
   const sort = params.get("sort") || (letter ? "az" : "popular");
   const [page, setPage] = useState(0);
 
