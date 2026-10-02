@@ -44,14 +44,33 @@ Deno.serve(async (req) => {
     // SECURITY: patient_id is ALWAYS the calling user — never trust client-supplied value
     const patient_id = claimsData.claims.sub as string;
 
-    if (!clinic_id || !amount) {
-      return new Response(JSON.stringify({ error: 'clinic_id, amount required' }), {
+    if (!clinic_id || !appointment_id) {
+      return new Response(JSON.stringify({ error: 'clinic_id, appointment_id required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    // Validate amount is a positive number
-    const numAmount = Number(amount);
+    // SECURITY: amount comes from the caller's own appointment, never from the request.
+    const { data: appt } = await supabase
+      .from('appointments')
+      .select('id, total_price, service_id, clinic_id, patient_id')
+      .eq('id', appointment_id)
+      .eq('patient_id', patient_id)
+      .eq('clinic_id', clinic_id)
+      .maybeSingle();
+    if (!appt) {
+      return new Response(JSON.stringify({ error: 'Appointment not found' }), {
+        status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    let serverAmount = Number(appt.total_price ?? 0);
+    if (!(serverAmount > 0) && appt.service_id) {
+      const { data: svc } = await supabase.from('clinic_services').select('price')
+        .eq('id', appt.service_id).eq('clinic_id', clinic_id).maybeSingle();
+      serverAmount = Number(svc?.price ?? 0);
+    }
+    void amount;
+    const numAmount = serverAmount;
     if (isNaN(numAmount) || numAmount <= 0 || numAmount > 100000000) {
       return new Response(JSON.stringify({ error: 'Invalid amount' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -78,7 +97,7 @@ Deno.serve(async (req) => {
       .from('clinic_payments')
       .insert({
         clinic_id,
-        appointment_id: appointment_id || null,
+        appointment_id,
         patient_id,
         amount: numAmount,
         provider: provider || 'cash',

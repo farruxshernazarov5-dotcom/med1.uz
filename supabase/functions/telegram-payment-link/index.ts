@@ -1,3 +1,4 @@
+import { resolvePackagePrice, safeReturnUrl } from "../_shared/payment-guard.ts";
 // To'lov havolasini (Click + Payme) foydalanuvchining Telegram botiga yuborish.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -36,17 +37,29 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const amount = Number(body?.amount ?? 0);
+    const rawAmount = Number(body?.amount ?? 0);
     const purpose = String(body?.purpose ?? "med1_payment");
     const referenceId = body?.reference_id ? String(body.reference_id) : undefined;
-    const returnUrl = typeof body?.return_url === "string" ? body.return_url : "https://med1.uz/payment/success";
-    if (!Number.isFinite(amount) || amount <= 0) {
+    const returnUrl = safeReturnUrl(body?.return_url);
+    if (!returnUrl) {
+      return new Response(JSON.stringify({ error: "Qaytish manzili ruxsat etilmagan" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!Number.isFinite(rawAmount) || rawAmount <= 0 || rawAmount > 100_000_000) {
       return new Response(JSON.stringify({ error: "Noto'g'ri summa" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const service = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const priced = await resolvePackagePrice(service, body?.package_code ? String(body.package_code) : null, rawAmount);
+    if (!priced.ok) {
+      return new Response(JSON.stringify({ error: priced.error }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const amount = priced.amount;
     const { data: profile } = await service
       .from("profiles")
       .select("telegram_chat_id, full_name")
