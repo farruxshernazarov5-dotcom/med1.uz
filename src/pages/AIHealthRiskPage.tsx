@@ -134,14 +134,20 @@ const AIHealthRiskPage = () => {
       return;
     }
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent("med1:ai-processing", { detail: { path: "/ai-health-risk" } }));
     try {
       const { data, error } = await supabase.functions.invoke("ai-health-risk", {
         body: withLang({ age, gender, weight, height, bloodPressure, smoking, alcohol, exercise, existingConditions, familyHistory, diet, sleepHours, stressLevel, medications, labResults, symptoms }),
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setResult(normalizeHealthRiskAnalysis(data) as HealthRiskResult);
+      const normalized = normalizeHealthRiskAnalysis(data) as HealthRiskResult;
+      setResult(normalized);
       setStep("results");
+      window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/ai-health-risk" } }));
+      if (normalized.overallHealth === "concerning" || normalized.risks.some((risk) => risk.riskLevel === "high" && risk.riskPercent >= 80)) {
+        window.dispatchEvent(new CustomEvent("med1:critical-triage"));
+      }
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });
     } finally {

@@ -61,6 +61,11 @@ const SymptomResults = ({ analysis, onReset }: Props) => {
     fetchRefs();
   }, [analysis.diseases]);
 
+  useEffect(() => {
+    if (!analysis.urgentAction) return;
+    window.dispatchEvent(new CustomEvent("med1:critical-triage"));
+  }, [analysis.urgentAction]);
+
   return (
     <div className="space-y-6">
       {/* Urgent action banner */}

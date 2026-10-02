@@ -123,6 +123,7 @@ const AIReportAnalysisPage = () => {
     if (inputMode === "file" && !uploadedFile) return;
     if (inputMode === "text" && !reportText.trim()) return;
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent("med1:ai-processing", { detail: { path: "/ai-report-analysis" } }));
 
     try {
       let body: any = withLang({ reportType, patientAge, patientGender });
@@ -158,6 +159,7 @@ const AIReportAnalysisPage = () => {
       const normalized = normalizeReportAnalysis(data) as ReportAnalysis;
       setAnalysis(normalized);
       setStep("results");
+      window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/ai-report-analysis" } }));
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });
     } finally {
