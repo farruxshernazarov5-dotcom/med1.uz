@@ -30,6 +30,7 @@ const SymptomCheckerPage = () => {
   const handleAnalyze = async (info: PatientInfo) => {
     setPatientInfo(info);
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent("med1:ai-processing", { detail: { path: "/symptom-checker" } }));
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
         body: withLang({
@@ -52,6 +53,7 @@ const SymptomCheckerPage = () => {
         setStep("followup");
       } else {
         setStep("results");
+        window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/symptom-checker" } }));
       }
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "AI xizmati bilan bog'lanishda xato", variant: "destructive" });
@@ -64,6 +66,7 @@ const SymptomCheckerPage = () => {
     setFollowUpAnswers(answers);
     if (!patientInfo) return;
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent("med1:ai-processing", { detail: { path: "/symptom-checker" } }));
     try {
       const { data, error } = await supabase.functions.invoke("symptom-checker", {
         body: withLang({
@@ -75,6 +78,7 @@ const SymptomCheckerPage = () => {
       if (data?.error) throw new Error(data.error);
       setAnalysis(normalizeSymptomAnalysis(data) as SymptomAnalysis);
       setStep("results");
+      window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/symptom-checker" } }));
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });
     } finally {

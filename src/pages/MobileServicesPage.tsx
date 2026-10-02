@@ -66,7 +66,9 @@ const markerIcon = L.divIcon({
 
 const Recenter = ({ center }: { center: [number, number] }) => {
   const map = useMap();
-  useEffect(() => map.setView(center, 13, { animate: true }), [center, map]);
+  useEffect(() => {
+    map.setView(center, 13, { animate: true });
+  }, [center, map]);
   return null;
 };
 

@@ -139,6 +139,7 @@ const AIRadiologyPage = () => {
   const handleAnalyze = async () => {
     if (!uploadedFile) return;
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent("med1:ai-processing", { detail: { path: "/ai-radiology" } }));
     try {
       const pdfPages = uploadedFile.type === "application/pdf"
         ? await pdfToImageBase64Pages(uploadedFile, 3).catch(() => [])
@@ -161,6 +162,10 @@ const AIRadiologyPage = () => {
       if (data?.error) throw new Error(data.error);
       setAnalysis(normalizeRadiologyAnalysis(data, scanType) as RadiologyAnalysis);
       setStep("results");
+      window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/ai-radiology" } }));
+      if ((normalizeRadiologyAnalysis(data, scanType) as RadiologyAnalysis).urgentAttention) {
+        window.dispatchEvent(new CustomEvent("med1:critical-triage"));
+      }
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });
     } finally {

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle2, WifiOff } from "lucide-react";
 import MobileBottomNav from "./MobileBottomNav";
 import { MobileAIHubSheet } from "./MobileAIHubSheet";
+import { CriticalTriageSheet } from "./CriticalTriageSheet";
 import { initNativeChrome, isNativeApp, registerBackButton, watchNetwork } from "@/lib/nativeApp";
 
 /**
@@ -78,6 +79,7 @@ const MobileAppShell = () => {
         </div>
       )}
       <MobileAIHubSheet />
+      <CriticalTriageSheet />
       <MobileBottomNav />
     </>
   );
