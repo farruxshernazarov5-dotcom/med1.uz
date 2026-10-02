@@ -60,11 +60,12 @@ Deno.serve(async (req) => {
     // Only dispatch for a real, recent, not-yet-notified log row. Caller-supplied
     // log content is never trusted (prevents forged alerts / replays).
     const entryId = typeof body?.entryId === "string" && /^[0-9a-f-]{36}$/i.test(body.entryId) ? body.entryId : null;
+    const token = typeof body?.token === "string" && /^[0-9a-f-]{36}$/i.test(body.token) ? body.token : null;
     let entry: any = null;
-    if (entryId) {
+    if (entryId && token) {
       const since = new Date(Date.now() - 10 * 60_000).toISOString();
       const { data } = await admin.from("security_debug_log").select("*")
-        .eq("id", entryId).eq("notified", false).gte("created_at", since).maybeSingle();
+        .eq("id", entryId).eq("notify_token", token).eq("notified", false).gte("created_at", since).maybeSingle();
       if (data && (data.level === "warn" || data.level === "error" || data.scope === "ai-token-cap")) entry = data;
     }
     if (!entry || !entry.level) {
