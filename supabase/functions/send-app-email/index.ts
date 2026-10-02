@@ -27,6 +27,26 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
+  // Only trusted server callers (service role) or platform admins may send.
+  const authz = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+  const srvKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+  let trusted = !!authz && !!srvKey && authz === srvKey
+  if (!trusted && authz) {
+    try {
+      const u = Deno.env.get('SUPABASE_URL')!
+      const userClient = createClient(u, Deno.env.get('SUPABASE_ANON_KEY')!, {
+        global: { headers: { Authorization: `Bearer ${authz}` } },
+      })
+      const { data: claims } = await userClient.auth.getClaims(authz)
+      const uid = claims?.claims?.sub
+      if (uid) {
+        const { data: isAdmin } = await userClient.rpc('has_role', { _user_id: uid, _role: 'admin' })
+        trusted = isAdmin === true
+      }
+    } catch { trusted = false }
+  }
+  if (!trusted) return json({ error: 'Forbidden' }, 403)
+
   let body: Record<string, any>
   try {
     body = await req.json()
