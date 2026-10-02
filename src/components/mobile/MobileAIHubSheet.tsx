@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Activity,
@@ -39,6 +39,7 @@ export const MobileAIHubSheet = () => {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<AnalysisStatus>("idle");
   const [resultPath, setResultPath] = useState<string | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const show = () => { setStatus("idle"); setOpen(true); };
@@ -75,7 +76,7 @@ export const MobileAIHubSheet = () => {
       setOpen(nextOpen);
       if (!nextOpen) window.setTimeout(() => document.getElementById("mobile-ai-trigger")?.focus(), 0);
     }} shouldScaleBackground={false}>
-      <DrawerContent className="lg:hidden max-h-[88dvh] rounded-t-3xl border-border bg-card" aria-describedby="mobile-ai-description">
+      <DrawerContent className="lg:hidden max-h-[88dvh] rounded-t-3xl border-border bg-card" aria-describedby="mobile-ai-description" onOpenAutoFocus={(event) => { event.preventDefault(); closeButtonRef.current?.focus(); }}>
         <DrawerHeader className="relative px-5 pb-3 text-left">
           <div className="flex items-center gap-3 pr-10">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ai-gradient text-accent-foreground shadow-glow-sm">
@@ -87,7 +88,7 @@ export const MobileAIHubSheet = () => {
             </div>
           </div>
           <DrawerClose asChild>
-            <Button variant="ghost" size="icon" className="absolute right-3 top-3" aria-label="AI oynasini yopish">
+            <Button ref={closeButtonRef} variant="ghost" size="icon" className="absolute right-3 top-3" aria-label="AI oynasini yopish">
               <X />
             </Button>
           </DrawerClose>

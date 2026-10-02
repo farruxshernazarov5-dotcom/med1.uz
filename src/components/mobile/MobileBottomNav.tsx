@@ -73,7 +73,7 @@ const MobileBottomNav = () => {
         visible ? "translate-y-0" : "translate-y-full",
       )}
     >
-      <ul className="grid grid-cols-5" role="tablist" aria-label="Mobil bo‘limlar">
+      <ul className="grid grid-cols-5">
         {items.slice(0, 2).map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
@@ -83,8 +83,6 @@ const MobileBottomNav = () => {
                 to={item.to}
                 onClick={() => void hapticTap()}
                 aria-current={active ? "page" : undefined}
-                 role="tab"
-                 aria-selected={active}
                 className={cn(
                   "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
                   active ? "text-primary" : "text-muted-foreground",
@@ -128,8 +126,6 @@ const MobileBottomNav = () => {
                 to={item.to}
                 onClick={() => void hapticTap()}
                 aria-current={active ? "page" : undefined}
-                 role="tab"
-                 aria-selected={active}
                 className={cn(
                   "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
                   active ? "text-primary" : "text-muted-foreground",
