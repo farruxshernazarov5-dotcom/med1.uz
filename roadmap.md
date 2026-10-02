@@ -40,3 +40,4 @@
 - [x] Muassasa kartalarida ish vaqti, telefon, xizmatlar va qabulga yozilish amallari
 - [x] Akkauntga bog‘langan klinika, shifokor va xizmat sevimlilari
 - [x] Mutaxassislik, klinika, sana va vaqt bo‘yicha mobil shifokor qidiruvi
+- [x] Med1 AI mobil oynasida 23 ta xizmat, toifalar, qidiruv va accessibility
