@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
@@ -51,7 +52,7 @@ serve(async (req) => {
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...sanitizeChatMessages(messages),
         ],
         max_tokens: 2048,
       }),

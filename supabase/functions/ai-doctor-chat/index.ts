@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess, refundAiCredits, recordAiUsageResult, CONCISE_DIRECTIVE, MAX_INPUT_TOKENS, estimateTokensFromMessages, computeCostUsd } from "../_shared/ai-access.ts";
 import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
@@ -110,7 +111,7 @@ serve(async (req) => {
         model: access.model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT + CONCISE_DIRECTIVE + docContext + languageInstruction(__lang) },
-          ...messages,
+          ...sanitizeChatMessages(messages),
         ],
         max_completion_tokens: access.maxTokens,
         stream: true,

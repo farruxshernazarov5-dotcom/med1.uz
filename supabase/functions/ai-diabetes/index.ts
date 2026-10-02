@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
@@ -91,7 +92,7 @@ serve(async (req) => {
         model: access.model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT + ctxStr + languageInstruction(__lang) },
-          ...messages,
+          ...sanitizeChatMessages(messages),
         ],
         max_completion_tokens: access.maxTokens ?? 3000,
         stream: true,
