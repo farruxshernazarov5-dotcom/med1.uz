@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Building2,
   AlertCircle,
@@ -87,9 +87,11 @@ const detailPath = (place: Place) => {
 };
 
 const MobileServicesPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const favorites = useMobileFavorites();
-  const [section, setSection] = useState<"services" | "favorites" | "doctors">("services");
+  const initialView = searchParams.get("view");
+  const [section, setSectionState] = useState<"services" | "favorites" | "doctors">(initialView === "favorites" || initialView === "doctors" ? initialView : "services");
   const [mode, setMode] = useState<"list" | "map">("list");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER);
@@ -177,6 +179,13 @@ const MobileServicesPage = () => {
       route: detailPath(place),
       metadata: { address: place.address, phone: place.phone, services: place.services ?? [] },
     });
+  };
+
+  const setSection = (next: "services" | "favorites" | "doctors") => {
+    setSectionState(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "services") params.delete("view"); else params.set("view", next);
+    setSearchParams(params, { replace: true });
   };
 
   return (
