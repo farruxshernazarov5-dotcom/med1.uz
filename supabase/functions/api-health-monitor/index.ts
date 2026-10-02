@@ -1,3 +1,4 @@
+import { isTrustedCaller } from "../_shared/trusted-caller.ts";
 // api-health-monitor — runs every 5 minutes via pg_cron.
 // Scans api_request_logs and triggers alerts (email + Telegram) when thresholds are breached.
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -35,6 +36,11 @@ const compare = (a: number, op: string, b: number) => {
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (!(await isTrustedCaller(req))) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
