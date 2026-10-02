@@ -73,6 +73,29 @@ export async function registerBackButton(onBack: () => boolean): Promise<() => v
   }
 }
 
+/** Receive med1.uz and custom-scheme links while the native app is already open. */
+export async function registerDeepLinks(onPath: (path: string) => void): Promise<() => void> {
+  if (!isNativeApp()) return () => {};
+  try {
+    const { App } = await import("@capacitor/app");
+    const handle = await App.addListener("appUrlOpen", ({ url }) => {
+      try {
+        const parsed = new URL(url);
+        const allowedWebHost = parsed.protocol === "https:" && ["med1.uz", "www.med1.uz"].includes(parsed.hostname);
+        const allowedScheme = parsed.protocol === "med1:";
+        if (!allowedWebHost && !allowedScheme) return;
+        const path = allowedScheme ? `/${parsed.hostname}${parsed.pathname}` : parsed.pathname;
+        if (/^\/[A-Za-z0-9/_-]*$/.test(path)) onPath(`${path}${parsed.search}${parsed.hash}`);
+      } catch {
+        /* malformed external URL */
+      }
+    });
+    return () => { void handle.remove(); };
+  } catch {
+    return () => {};
+  }
+}
+
 /** Subscribe to connectivity changes (native + browser fallback). */
 export function watchNetwork(cb: (online: boolean) => void): () => void {
   if (typeof window === "undefined") return () => {};

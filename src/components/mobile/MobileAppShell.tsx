@@ -4,7 +4,10 @@ import { CheckCircle2, WifiOff } from "lucide-react";
 import MobileBottomNav from "./MobileBottomNav";
 import { MobileAIHubSheet } from "./MobileAIHubSheet";
 import { CriticalTriageSheet } from "./CriticalTriageSheet";
-import { initNativeChrome, isNativeApp, registerBackButton, watchNetwork } from "@/lib/nativeApp";
+import { initNativeChrome, isNativeApp, registerBackButton, registerDeepLinks, watchNetwork } from "@/lib/nativeApp";
+
+const LAST_MOBILE_PATH = "med1_mobile_last_path_v1";
+const SAFE_RESTORE_PATH = /^\/(?:mobile-services|medicine|diseases|articles|knowledge|clinics|doctors|pharmacies|diagnostics|dental|dashboard\/patient|ai-[a-z-]+|symptom-checker)(?:\/[^?#]*)?(?:[?#].*)?$/;
 
 /**
  * Mobile/native shell: safe-area padding, bottom navigation, hardware back
@@ -59,6 +62,23 @@ const MobileAppShell = () => {
     });
     return () => dispose();
   }, [navigate]);
+
+  useEffect(() => {
+    let dispose = () => {};
+    void registerDeepLinks((path) => navigate(path)).then((nextDispose) => { dispose = nextDispose; });
+    return () => dispose();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!isNativeApp()) return;
+    const current = `${location.pathname}${location.search}${location.hash}`;
+    if (location.pathname === "/") {
+      const saved = localStorage.getItem(LAST_MOBILE_PATH);
+      if (saved && SAFE_RESTORE_PATH.test(saved)) navigate(saved, { replace: true });
+      return;
+    }
+    if (SAFE_RESTORE_PATH.test(current)) localStorage.setItem(LAST_MOBILE_PATH, current);
+  }, [location.hash, location.pathname, location.search, navigate]);
 
   // Scroll to top on route change — native apps never keep the old scroll.
   useEffect(() => {

@@ -41,7 +41,7 @@ export const MobileAIHubSheet = () => {
   const [resultPath, setResultPath] = useState<string | null>(null);
 
   useEffect(() => {
-    const show = () => setOpen(true);
+    const show = () => { setStatus("idle"); setOpen(true); };
     const processing = (event: Event) => {
       const detail = (event as CustomEvent<{ path?: string }>).detail;
       setStatus("processing");
@@ -71,8 +71,11 @@ export const MobileAIHubSheet = () => {
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
-      <DrawerContent className="lg:hidden max-h-[88dvh] rounded-t-3xl border-border bg-card">
+    <Drawer open={open} onOpenChange={(nextOpen) => {
+      setOpen(nextOpen);
+      if (!nextOpen) window.setTimeout(() => document.getElementById("mobile-ai-trigger")?.focus(), 0);
+    }} shouldScaleBackground={false}>
+      <DrawerContent className="lg:hidden max-h-[88dvh] rounded-t-3xl border-border bg-card" aria-describedby="mobile-ai-description">
         <DrawerHeader className="relative px-5 pb-3 text-left">
           <div className="flex items-center gap-3 pr-10">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ai-gradient text-accent-foreground shadow-glow-sm">
@@ -80,7 +83,7 @@ export const MobileAIHubSheet = () => {
             </span>
             <div>
               <DrawerTitle>Med1 AI markazi</DrawerTitle>
-              <DrawerDescription>Kerakli tahlil turini tanlang</DrawerDescription>
+              <DrawerDescription id="mobile-ai-description">Kerakli tahlil turini tanlang</DrawerDescription>
             </div>
           </div>
           <DrawerClose asChild>
@@ -92,7 +95,7 @@ export const MobileAIHubSheet = () => {
 
         <div className="overflow-y-auto px-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
           {status !== "idle" && (
-            <div className="mb-3 flex items-center gap-3 rounded-lg border border-border bg-muted/60 p-3" aria-live="polite">
+            <div className="mb-3 flex items-center gap-3 rounded-lg border border-border bg-muted/60 p-3" role="status" aria-live="polite" aria-atomic="true">
               {status === "processing" ? (
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
               ) : (
@@ -122,7 +125,7 @@ export const MobileAIHubSheet = () => {
                   className={`h-auto min-h-28 whitespace-normal p-3 text-left ${index === TOOLS.length - 1 ? "col-span-2" : ""}`}
                   onClick={() => openTool(tool.path)}
                 >
-                  <span className="flex w-full flex-col items-start gap-2">
+                  <span className="flex w-full flex-col items-start gap-2" aria-label={`${tool.title}. ${tool.description}`}>
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Icon className="h-4 w-4" />
                     </span>
