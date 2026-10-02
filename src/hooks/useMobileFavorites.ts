@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import type { Json } from "@/integrations/supabase/types";
 
 export type MobileFavorite = {
   id: string;
@@ -8,7 +9,7 @@ export type MobileFavorite = {
   entity_id: string;
   label: string;
   route: string;
-  metadata: Record<string, unknown>;
+  metadata: Json;
 };
 
 export function useMobileFavorites() {

@@ -8,7 +8,7 @@ import {
   FilterX,
   Heart,
   LocateFixed,
-  Map,
+  Map as MapIcon,
   MapPin,
   Navigation,
   Phone,
@@ -130,7 +130,7 @@ const MobileServicesPage = () => {
         const clinicDetails = clinicIds.length
           ? await supabase.from("registered_clinics_public").select("id, working_hours, specialties").in("id", clinicIds)
           : { data: [] };
-        const detailMap = new Map((clinicDetails.data ?? []).map((item) => [item.id, item]));
+        const detailMap = new globalThis.Map((clinicDetails.data ?? []).map((item) => [item.id, item]));
         const next = nearby.map((place) => {
           const detail = detailMap.get(place.id);
           const hours = detail?.working_hours;
@@ -205,7 +205,7 @@ const MobileServicesPage = () => {
             <Rows3 /> Ro‘yxat
           </Button>
           <Button variant={mode === "map" ? "default" : "ghost"} size="sm" onClick={() => setMode("map")}>
-            <Map /> Xarita
+            <MapIcon /> Xarita
           </Button>
         </div>
         <div className="mt-2 grid grid-cols-3 gap-1" role="tablist" aria-label="Xizmatlar bo‘limlari">
