@@ -1,3 +1,4 @@
+import { resolvePackagePrice, safeReturnUrl } from "../_shared/payment-guard.ts";
 // Payme (Paycom) checkout URL generator.
 // Foydalanuvchi uchun to'lov invoice yaratadi va Payme checkout URL qaytaradi.
 // URL formati: https://checkout.paycom.uz/base64(m=MERCHANT;ac.order_id=UUID;a=AMOUNT_TIYIN;c=RETURN_URL)
@@ -37,13 +38,14 @@ Deno.serve(async (req) => {
     const userId = claims.claims.sub as string;
 
     const body = await req.json().catch(() => ({}));
-    const amount = Number(body?.amount);
+    const rawAmount = Number(body?.amount);
     const purpose = String(body?.purpose || "ai_subscription");
     const reference_id = body?.reference_id ? String(body.reference_id) : null;
-    const return_url = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
+    const return_url = safeReturnUrl(body?.return_url);
+    if (!return_url) return json(400, { error: "Qaytish manzili ruxsat etilmagan" });
     const requestedEnv = body?.environment === "sandbox" ? "sandbox" : "live";
 
-    if (!amount || amount <= 0 || amount > 100_000_000) {
+    if (!rawAmount || rawAmount <= 0 || rawAmount > 100_000_000) {
       return json(400, { error: "Noto'g'ri summa" });
     }
 
@@ -60,13 +62,10 @@ Deno.serve(async (req) => {
     if (!contractGate.allowed) return json(403, { error: "Pullik obunadan oldin elektron shartnomani imzolash shart", code: "CONTRACT_REQUIRED", contract_slug: contractGate.slug });
     // Paket (Med Coin / obuna) — kod bo'yicha yoki summa bo'yicha aniqlanadi
     const packageCode = body?.package_code ? String(body.package_code) : null;
-    const { data: pkg } = await admin
-      .from("payment_packages")
-      .select("id")
-      .eq("is_active", true)
-      .or(packageCode ? `code.eq.${packageCode}` : `price.eq.${amount}`)
-      .limit(1)
-      .maybeSingle();
+    const priced = await resolvePackagePrice(admin, packageCode, rawAmount);
+    if (!priced.ok) return json(400, { error: priced.error });
+    const amount = priced.amount;
+    const pkg = priced.packageId ? { id: priced.packageId } : null;
 
     // Takroriy buyurtmalarning oldini olish: oxirgi 30 daqiqada bir xil to'lanmagan
     // buyurtma bo'lsa, yangisini yaratmay o'shani qayta ishlatamiz.

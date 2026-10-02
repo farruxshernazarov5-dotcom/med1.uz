@@ -23,7 +23,8 @@ const PACKAGE_CODE_RE = /^[A-Za-z0-9_.-]{1,64}$/;
 /**
  * Resolves the server-authoritative price.
  * - When package_code is supplied, it must be a real active package; its price wins.
- * - Otherwise the amount must match an active package price exactly.
+ * - Otherwise a package is linked only when the amount equals its price exactly;
+ *   purpose-specific flows (ads, appointments) validate their own amounts on fulfilment.
  */
 export async function resolvePackagePrice(
   admin: any,
@@ -50,6 +51,5 @@ export async function resolvePackagePrice(
     .eq("price", amount)
     .limit(1)
     .maybeSingle();
-  if (!pkg) return { ok: false, error: "Summa hech qaysi tarifga mos kelmaydi" };
-  return { ok: true, amount: Number(pkg.price), packageId: pkg.id };
+  return { ok: true, amount, packageId: pkg?.id ?? null };
 }

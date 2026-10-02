@@ -1,3 +1,4 @@
+import { resolvePackagePrice, safeReturnUrl } from "../_shared/payment-guard.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkoutUrl, clickEnv, validateClickConfig } from "../_shared/click.ts";
 import { requireSubscriptionContract } from "../_shared/subscription-contract.ts";
@@ -40,12 +41,12 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const amount = Number(body?.amount);
+    const rawAmount = Number(body?.amount);
     const purpose = String(body?.purpose || "ai_subscription");
     const reference_id = body?.reference_id ? String(body.reference_id) : null;
     const return_url = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
 
-    if (!amount || amount <= 0 || amount > 100000000) {
+    if (!rawAmount || rawAmount <= 0 || rawAmount > 100000000) {
       return new Response(JSON.stringify({ error: "Noto'g'ri summa" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -80,13 +81,14 @@ Deno.serve(async (req) => {
     }
 
     const packageCode = body?.package_code ? String(body.package_code) : null;
-    const { data: pkg } = await admin
-      .from("payment_packages")
-      .select("id")
-      .eq("is_active", true)
-      .or(packageCode ? `code.eq.${packageCode}` : `price.eq.${amount}`)
-      .limit(1)
-      .maybeSingle();
+    const priced = await resolvePackagePrice(admin, packageCode, rawAmount);
+    if (!priced.ok) {
+      return new Response(JSON.stringify({ error: priced.error }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const amount = priced.amount;
+    const pkg = priced.packageId ? { id: priced.packageId } : null;
 
     const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
     const { data: reuse } = await admin
