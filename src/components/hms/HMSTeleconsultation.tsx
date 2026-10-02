@@ -46,7 +46,7 @@ const HMSTeleconsultation = ({ clinicId }: Props) => {
     await supabase.from("hms_teleconsultations").insert({
       ...form, clinic_id: clinicId, doctor_id: form.doctor_id || null,
       consultation_fee: form.consultation_fee ? Number(form.consultation_fee) : null,
-    });
+    } as never);
     toast({ title: "✅ Konsultatsiya yaratildi" }); resetForm(); fetchData();
   };
 

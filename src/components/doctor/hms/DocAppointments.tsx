@@ -141,7 +141,7 @@ const DocAppointments = ({ doctorId }: Props) => {
     if (!labForm.tests.trim()) { toast({ title: "Tahlillar kiriting", variant: "destructive" }); return; }
     const pid = await findPatientId(activeAppt.patient_phone);
     if (!pid) { toast({ title: "Bemor topilmadi", variant: "destructive" }); return; }
-    const { error } = await supabase.from("doctor_lab_orders").insert({
+    const { error } = await (supabase.from("doctor_lab_orders") as any).insert({
       doctor_id: doctorId, patient_id: pid, patient_name: activeAppt.patient_name,
       tests: labForm.tests.split(",").map((t) => t.trim()).filter(Boolean),
       status: "pending", urgency: labForm.urgency,
