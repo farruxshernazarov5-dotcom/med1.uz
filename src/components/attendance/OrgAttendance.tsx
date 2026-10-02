@@ -389,7 +389,7 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
                 a.qr_token || "", a.lat ?? "", a.lng ?? "", a.distance_m ?? "",
                 (a.device_info || "").slice(0,60), a.ip_address || "",
               ]));
-              const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+              const csv = rows.map((r) => r.map((c) => { let v = String(c); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return `"${v.replace(/"/g,'""')}"`; }).join(",")).join("\n");
               const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
               const a = document.createElement("a"); a.href = url; a.download = `attendance-audit-${new Date().toISOString().slice(0,10)}.csv`; a.click();
             }}><Download className="w-4 h-4 mr-1" /> CSV eksport</Button>

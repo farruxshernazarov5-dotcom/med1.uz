@@ -156,12 +156,17 @@ Deno.serve(async (req) => {
         }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      const otp = generateOTP();
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-
-      await supabase.from("telegram_otp").update({
-        otp_code: otp, otp_expires_at: expiresAt, is_verified: false, updated_at: new Date().toISOString(),
-      }).eq("phone", phone);
+      // Reuse an unexpired code so a third party cannot invalidate/replace it.
+      const { data: cur } = await supabase.from("telegram_otp")
+        .select("otp_code, otp_expires_at").eq("phone", phone).maybeSingle();
+      const stillValid = !!(cur?.otp_code && cur.otp_expires_at && new Date(cur.otp_expires_at) > new Date());
+      const otp = stillValid ? String(cur!.otp_code) : generateOTP();
+      if (!stillValid) {
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+        await supabase.from("telegram_otp").update({
+          otp_code: otp, otp_expires_at: expiresAt, otp_attempts: 0, updated_at: new Date().toISOString(),
+        }).eq("phone", phone);
+      }
 
       await sendTelegramMessage(record.chat_id,
         `🔐 <b>Med1.uz kirish kodi:</b>\n\n<code>${otp}</code>\n\n⏱ Kod 5 daqiqa ichida amal qiladi.`
@@ -182,9 +187,15 @@ Deno.serve(async (req) => {
       }
 
       const { data: record } = await supabase
-        .from("telegram_otp").select("otp_code, otp_expires_at").eq("phone", phone).maybeSingle();
+        .from("telegram_otp").select("otp_code, otp_expires_at, otp_attempts").eq("phone", phone).maybeSingle();
 
-      if (!record || record.otp_code !== otp) {
+      if (record?.otp_code && record.otp_code !== otp) {
+        const attempts = (record.otp_attempts || 0) + 1;
+        await supabase.from("telegram_otp").update(
+          attempts >= 5 ? { otp_code: null, otp_attempts: 0 } : { otp_attempts: attempts },
+        ).eq("phone", phone);
+      }
+      if (!record || !record.otp_code || record.otp_code !== otp) {
         return new Response(JSON.stringify({ error: "Noto'g'ri kod" }), {
           status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -243,8 +254,14 @@ Deno.serve(async (req) => {
       }
 
       const { data: record } = await supabase
-        .from("telegram_otp").select("otp_code, otp_expires_at, is_verified").eq("phone", phone).maybeSingle();
+        .from("telegram_otp").select("otp_code, otp_expires_at, is_verified, otp_attempts").eq("phone", phone).maybeSingle();
 
+      if (record?.otp_code && record.otp_code !== otp) {
+        const attempts = (record.otp_attempts || 0) + 1;
+        await supabase.from("telegram_otp").update(
+          attempts >= 5 ? { otp_code: null, otp_attempts: 0 } : { otp_attempts: attempts },
+        ).eq("phone", phone);
+      }
       const codeOk = record && (record.otp_code === otp || (record.is_verified && !record.otp_code));
       if (!codeOk) {
         return new Response(JSON.stringify({ error: "Noto'g'ri kod" }), {

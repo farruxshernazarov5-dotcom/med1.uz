@@ -16995,6 +16995,7 @@ export type Database = {
           message: string
           metadata: Json | null
           notified: boolean | null
+          notify_token: string
           query_text: string | null
           scope: string
           user_id: string | null
@@ -17008,6 +17009,7 @@ export type Database = {
           message: string
           metadata?: Json | null
           notified?: boolean | null
+          notify_token?: string
           query_text?: string | null
           scope: string
           user_id?: string | null
@@ -17021,6 +17023,7 @@ export type Database = {
           message?: string
           metadata?: Json | null
           notified?: boolean | null
+          notify_token?: string
           query_text?: string | null
           scope?: string
           user_id?: string | null
@@ -17370,6 +17373,7 @@ export type Database = {
           created_at: string | null
           id: string
           is_verified: boolean | null
+          otp_attempts: number
           otp_code: string | null
           otp_expires_at: string | null
           phone: string
@@ -17380,6 +17384,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_verified?: boolean | null
+          otp_attempts?: number
           otp_code?: string | null
           otp_expires_at?: string | null
           phone: string
@@ -17390,6 +17395,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_verified?: boolean | null
+          otp_attempts?: number
           otp_code?: string | null
           otp_expires_at?: string | null
           phone?: string

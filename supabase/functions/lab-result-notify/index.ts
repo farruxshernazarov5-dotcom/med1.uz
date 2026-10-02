@@ -49,7 +49,23 @@ serve(async (req) => {
         .select("role")
         .eq("user_id", callerId);
       const allowedRoles = new Set(["admin", "clinic", "diagnostics", "doctor"]);
-      const isAllowed = (rolesRows || []).some((r: any) => allowedRoles.has(r.role));
+      const roleSet = new Set((rolesRows || []).map((r: any) => r.role));
+      let isAllowed = roleSet.has("admin");
+      if (!isAllowed && [...roleSet].some((r) => allowedRoles.has(r as string))) {
+        // Must have a real care relationship with this patient.
+        const [{ data: myClinics }, { data: myDoctors }] = await Promise.all([
+          supabase.from("registered_clinics").select("id").eq("owner_id", callerId),
+          supabase.from("doctors").select("id").eq("user_id", callerId),
+        ]);
+        const cIds = (myClinics || []).map((c: any) => c.id);
+        const dIds = (myDoctors || []).map((d: any) => d.id);
+        const ors = [cIds.length ? `clinic_id.in.(${cIds.join(",")})` : "", dIds.length ? `doctor_id.in.(${dIds.join(",")})` : ""].filter(Boolean).join(",");
+        if (ors) {
+          const { data: appt } = await supabase.from("appointments").select("id")
+            .eq("patient_id", patient_id).or(ors).limit(1);
+          isAllowed = (appt || []).length > 0;
+        }
+      }
       if (!isAllowed) {
         return new Response(JSON.stringify({ error: "Forbidden" }), {
           status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },

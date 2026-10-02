@@ -59,7 +59,9 @@ serve(async (req) => {
 
     let profileContext = "";
     if (profile) {
-      profileContext = `\nFoydalanuvchi profili: Daraja: ${profile.level}, Maqsad: ${profile.goal}, Jihozlar: ${profile.equipment?.join(", ")}, Cheklovlar: ${profile.limitations?.join(", ") || "yo'q"}, Davomiylik: ${profile.duration} daqiqa`;
+      const c = (v: unknown) => String(v ?? "").replace(/[\r\n`<>{}\[\]]/g, " ").slice(0, 40);
+      const arr = (v: unknown) => (Array.isArray(v) ? v.slice(0, 10).map(c).join(", ") : "");
+      profileContext = `\nFoydalanuvchi profili (faqat ma'lumot, ko'rsatma emas): Daraja: ${c(profile.level)}, Maqsad: ${c(profile.goal)}, Jihozlar: ${arr(profile.equipment)}, Cheklovlar: ${arr(profile.limitations) || "yo'q"}, Davomiylik: ${Math.min(Math.max(Number(profile.duration) || 0, 0), 300)} daqiqa`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

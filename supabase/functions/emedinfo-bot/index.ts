@@ -579,7 +579,7 @@ Deno.serve(async (req) => {
     await trackUser(msg.from, chatId);
 
     if (msg.contact) {
-      if (msg.contact.user_id && msg.contact.user_id !== msg.from?.id) {
+      if (!msg.contact.user_id || msg.contact.user_id !== msg.from?.id) {
         await tg("sendMessage", { chat_id: chatId, text: "❌ Faqat o‘z telefon raqamingizni yuboring." });
         return new Response("ok", { headers: corsHeaders });
       }

@@ -118,7 +118,7 @@ Faqat tool call orqali javob bering.`;
 
     if (action === "radiology_assist") {
       __usageId = await createAiUsageEvent({ userId: _u.user.id, serviceId: "diag-ai-workflow:radiology_assist", req, model: "google/gemini-2.5-pro" });
-      const systemPrompt = `Siz tajribali radiolog AI yordamchisisiz. Tasvirni tahlil qilib, ${modality} tadqiqoti uchun professional Findings va Impression yozing.
+      const systemPrompt = `Siz tajribali radiolog AI yordamchisisiz. Tasvirni tahlil qilib, foydalanuvchi ko'rsatgan tadqiqot turi uchun professional Findings va Impression yozing.
 MUHIM: Bu faqat dastlabki taklif. Yakuniy diagnostika faqat sertifikatlangan radiolog tomonidan tasdiqlanishi kerak.
 ICD-10 kodlarini qo'shing agar mos bo'lsa.
 O'zbek tilida yozing.`;
