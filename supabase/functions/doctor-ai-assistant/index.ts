@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
@@ -61,7 +62,7 @@ ${context ? JSON.stringify(context, null, 2) : "Ma'lumot yo'q"}`;
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...sanitizeChatMessages(messages),
         ],
         stream: true,
       }),

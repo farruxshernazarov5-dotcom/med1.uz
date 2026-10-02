@@ -12,7 +12,35 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return (100000 + (buf[0] % 900000)).toString();
+}
+
+const SELF_SIGNUP_ROLES = new Set([
+  "patient", "clinic", "vendor", "diagnostics", "maternity", "cosmetology",
+  "doctor", "pharmacy", "bloodbank", "dental",
+]);
+
+// Secret Telegram echoes back in X-Telegram-Bot-Api-Secret-Token; derived
+// from the bot token so no extra secret is required.
+async function webhookSecret(): Promise<string> {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("tg-otp-webhook:" + TELEGRAM_BOT_TOKEN));
+  return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 48);
+}
+
+const CONTACT_KEYBOARD = {
+  keyboard: [[{ text: "📱 Telefon raqamimni yuborish", request_contact: true }]],
+  resize_keyboard: true,
+  one_time_keyboard: true,
+};
+
+async function sendTelegramMessageKb(chatId: number, text: string) {
+  await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", reply_markup: CONTACT_KEYBOARD }),
+  });
 }
 
 async function sendTelegramMessage(chatId: number, text: string) {
@@ -43,51 +71,45 @@ Deno.serve(async (req) => {
       const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: webhookUrl }),
+        body: JSON.stringify({ url: webhookUrl, secret_token: await webhookSecret() }),
       });
       const data = await res.json();
-      return new Response(JSON.stringify(data), {
+      return new Response(JSON.stringify({ ok: !!data?.ok }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     // Telegram webhook handler
     if (path === "webhook" && req.method === "POST") {
+      if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== (await webhookSecret())) {
+        return new Response("forbidden", { status: 403 });
+      }
       const update = await req.json();
       const message = update.message;
-      if (!message?.text) return new Response("ok");
+      if (!message) return new Response("ok");
+      const chatIdC = message.chat?.id;
 
-      const chatId = message.chat.id;
-      const text = message.text.trim();
-
-      if (text.startsWith("/start")) {
-        // Try to link chat_id to profile by phone if already registered
-        await sendTelegramMessage(chatId,
-          "🏥 <b>Med1.uz - Telegram orqali kirish</b>\n\n" +
-          "Telefon raqamingizni quyidagi formatda yuboring:\n" +
-          "<code>+998901234567</code>\n\n" +
-          "Keyin saytda ko'rsatilgan kodni kiriting.\n\n" +
-          "📌 Telefon raqamingiz Med1.uz tizimida ro'yxatdan o'tgan bo'lsa, analiz natijalari shu bot orqali yuboriladi."
-        );
-        return new Response("ok");
-      }
-
-      if (text.startsWith("+998") && text.replace(/\s/g, "").length >= 13) {
-        const phone = text.replace(/\s/g, "");
+      // Phone is accepted ONLY from Telegram's verified contact share of the
+      // sender's own number — typed numbers are never trusted.
+      if (message.contact) {
+        const c = message.contact;
+        if (!c.user_id || c.user_id !== message.from?.id || !c.phone_number) {
+          await sendTelegramMessageKb(chatIdC, "❌ Faqat o'zingizning raqamingizni tugma orqali yuboring.");
+          return new Response("ok");
+        }
+        let phone = String(c.phone_number).replace(/[^\d+]/g, "");
+        if (!phone.startsWith("+")) phone = "+" + phone;
         const { error } = await supabase.from("telegram_otp").upsert(
-          { phone, chat_id: chatId, is_verified: false, updated_at: new Date().toISOString() },
+          { phone, chat_id: chatIdC, is_verified: false, updated_at: new Date().toISOString() },
           { onConflict: "phone" }
         );
-
-        // Also try to link chat_id to profile for lab notifications
         await supabase.from("profiles")
-          .update({ telegram_chat_id: String(chatId) } as any)
+          .update({ telegram_chat_id: String(chatIdC) } as any)
           .eq("phone", phone);
-
         if (error) {
-          await sendTelegramMessage(chatId, "❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
+          await sendTelegramMessage(chatIdC, "❌ Xatolik yuz berdi. Qayta urinib ko'ring.");
         } else {
-          await sendTelegramMessage(chatId,
+          await sendTelegramMessage(chatIdC,
             `✅ <b>Telefon raqam saqlandi:</b> ${phone}\n\n` +
             `📌 Endi analiz natijalari shu bot orqali yuboriladi.\n` +
             `Saytda "Telegram kod yuborish" tugmasini bosing.`
@@ -95,8 +117,23 @@ Deno.serve(async (req) => {
         }
         return new Response("ok");
       }
+      if (!message.text) return new Response("ok");
 
-      await sendTelegramMessage(chatId, "📱 Telefon raqamingizni yuboring:\n<code>+998901234567</code>");
+      const chatId = message.chat.id;
+      const text = message.text.trim();
+
+      if (text.startsWith("/start")) {
+        // Try to link chat_id to profile by phone if already registered
+        await sendTelegramMessageKb(chatId,
+          "🏥 <b>Med1.uz - Telegram orqali kirish</b>\n\n" +
+          "Pastdagi tugma orqali telefon raqamingizni yuboring.\n\n" +
+          "Keyin saytda ko'rsatilgan kodni kiriting.\n\n" +
+          "📌 Telefon raqamingiz Med1.uz tizimida ro'yxatdan o'tgan bo'lsa, analiz natijalari shu bot orqali yuboriladi."
+        );
+        return new Response("ok");
+      }
+
+      await sendTelegramMessageKb(chatId, "📱 Pastdagi tugma orqali telefon raqamingizni yuboring.");
       return new Response("ok");
     }
 
@@ -196,7 +233,8 @@ Deno.serve(async (req) => {
       const phone = String(body.phone || "").replace(/\s/g, "");
       const otp = String(body.otp || "");
       const fullName = String(body.full_name || "").trim();
-      const role = String(body.role || "patient");
+      const requestedRole = String(body.role || "patient");
+      const role = SELF_SIGNUP_ROLES.has(requestedRole) ? requestedRole : "patient";
 
       if (!phone || !otp || !fullName) {
         return new Response(JSON.stringify({ error: "Telefon, kod va ism talab qilinadi" }), {

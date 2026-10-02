@@ -1,3 +1,4 @@
+import { sanitizeFilterTerm } from "../_shared/filter-sanitize.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
@@ -166,16 +167,16 @@ serve(async (req) => {
 
     // Search by name or specialties
     const orFilters: string[] = [];
-    orFilters.push(`name.ilike.%${queryLower}%`);
-    orFilters.push(`address.ilike.%${queryLower}%`);
-    orFilters.push(`description.ilike.%${queryLower}%`);
-    orFilters.push(`category.ilike.%${queryLower}%`);
+    orFilters.push(`name.ilike.%${sanitizeFilterTerm(queryLower)}%`);
+    orFilters.push(`address.ilike.%${sanitizeFilterTerm(queryLower)}%`);
+    orFilters.push(`description.ilike.%${sanitizeFilterTerm(queryLower)}%`);
+    orFilters.push(`category.ilike.%${sanitizeFilterTerm(queryLower)}%`);
     
     if (searchTerms.length > 0) {
       for (const term of searchTerms) {
-        orFilters.push(`name.ilike.%${term}%`);
-        orFilters.push(`description.ilike.%${term}%`);
-        orFilters.push(`category.ilike.%${term}%`);
+        orFilters.push(`name.ilike.%${sanitizeFilterTerm(term)}%`);
+        orFilters.push(`description.ilike.%${sanitizeFilterTerm(term)}%`);
+        orFilters.push(`category.ilike.%${sanitizeFilterTerm(term)}%`);
       }
     }
 
@@ -187,12 +188,12 @@ serve(async (req) => {
       .limit(20);
 
     // Search doctors
-    const doctorOrFilters: string[] = [`full_name.ilike.%${queryLower}%`, `specialty.ilike.%${queryLower}%`];
+    const doctorOrFilters: string[] = [`full_name.ilike.%${sanitizeFilterTerm(queryLower)}%`, `specialty.ilike.%${sanitizeFilterTerm(queryLower)}%`];
     for (const spec of (aiAnalysis.matchedSpecialties || [])) {
-      doctorOrFilters.push(`specialty.ilike.%${spec}%`);
+      doctorOrFilters.push(`specialty.ilike.%${sanitizeFilterTerm(spec)}%`);
     }
     if (aiAnalysis.recommendedSpecialist) {
-      doctorOrFilters.push(`specialty.ilike.%${aiAnalysis.recommendedSpecialist}%`);
+      doctorOrFilters.push(`specialty.ilike.%${sanitizeFilterTerm(aiAnalysis.recommendedSpecialist)}%`);
     }
 
     const { data: doctors } = await supabase
@@ -207,7 +208,7 @@ serve(async (req) => {
       .from("diagnostics_services")
       .select("id, name, price, category, center_id, description")
       .eq("is_active", true)
-      .or(`name.ilike.%${queryLower}%,category.ilike.%${queryLower}%,description.ilike.%${queryLower}%`)
+      .or(`name.ilike.%${sanitizeFilterTerm(queryLower)}%,category.ilike.%${sanitizeFilterTerm(queryLower)}%,description.ilike.%${sanitizeFilterTerm(queryLower)}%`)
       .limit(10);
 
     // Search clinic services  
@@ -215,7 +216,7 @@ serve(async (req) => {
       .from("clinic_services")
       .select("id, name, price, clinic_id, description")
       .eq("is_active", true)
-      .or(`name.ilike.%${queryLower}%,description.ilike.%${queryLower}%`)
+      .or(`name.ilike.%${sanitizeFilterTerm(queryLower)}%,description.ilike.%${sanitizeFilterTerm(queryLower)}%`)
       .limit(10);
 
     // Calculate distance if coordinates provided

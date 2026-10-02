@@ -57,10 +57,15 @@ Deno.serve(async (req) => {
     const admin = createClient(url, srv);
 
     const body = await req.json().catch(() => ({}));
-    let entry: any = body;
-    if (body.entryId) {
-      const { data } = await admin.from("security_debug_log").select("*").eq("id", body.entryId).maybeSingle();
-      if (data) entry = data;
+    // Only dispatch for a real, recent, not-yet-notified log row. Caller-supplied
+    // log content is never trusted (prevents forged alerts / replays).
+    const entryId = typeof body?.entryId === "string" && /^[0-9a-f-]{36}$/i.test(body.entryId) ? body.entryId : null;
+    let entry: any = null;
+    if (entryId) {
+      const since = new Date(Date.now() - 10 * 60_000).toISOString();
+      const { data } = await admin.from("security_debug_log").select("*")
+        .eq("id", entryId).eq("notified", false).gte("created_at", since).maybeSingle();
+      if (data && (data.level === "warn" || data.level === "error" || data.scope === "ai-token-cap")) entry = data;
     }
     if (!entry || !entry.level) {
       return new Response(JSON.stringify({ skipped: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -154,11 +159,11 @@ Deno.serve(async (req) => {
       await admin.from("security_debug_log").update({ notified: true }).eq("id", entry.id);
     }
 
-    return new Response(JSON.stringify({ ok: true, emailSent, tgSent, recipients: recipients.length, deliveries: deliveries.length }), {
+    return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message || "server error" }), {
+    return new Response(JSON.stringify({ error: "server error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

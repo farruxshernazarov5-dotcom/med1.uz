@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
@@ -162,7 +163,7 @@ Teri sog'lig'i uchun foydali va zararli mahsulotlar
 Kundalik tartib tavsiyalari`;
     }
 
-    let formattedMessages = [...(messages || [])];
+    let formattedMessages: any[] = sanitizeChatMessages(messages);
     
     if (photoBase64 && formattedMessages.length > 0) {
       const lastMessage = formattedMessages[formattedMessages.length - 1];

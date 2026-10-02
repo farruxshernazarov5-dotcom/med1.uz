@@ -1,3 +1,4 @@
+import { sanitizeFilterTerm } from "../_shared/filter-sanitize.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -11,7 +12,9 @@ serve(async (req) => {
 
   try {
     const { query = "", lang = "uz", limit = 20 } = await req.json().catch(() => ({}));
-    const q = String(query).trim();
+    const q = sanitizeFilterTerm(query, 100);
+    const safeLang = ["uz", "ru", "en"].includes(String(lang)) ? String(lang) : "uz";
+    const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 50);
     if (q.length < 1) {
       return new Response(JSON.stringify({ results: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -28,11 +31,11 @@ serve(async (req) => {
       .from("icd10_codes")
       .select("code, name_uz, name_ru, name_en, category")
       .or(`code.ilike.${q}%,name_uz.ilike.%${q}%,name_ru.ilike.%${q}%,name_en.ilike.%${q}%`)
-      .limit(limit);
+      .limit(safeLimit);
 
     let results = (local || []).map((r: any) => ({
       code: r.code,
-      name: r[`name_${lang}`] || r.name_uz || r.name_en,
+      name: r[`name_${safeLang}`] || r.name_uz || r.name_en,
       category: r.category,
       source: "ICD-10 (local)",
     }));
@@ -40,7 +43,7 @@ serve(async (req) => {
     // 2) Fallback to NLM Clinical Tables (free, no auth) for ICD-10-CM if results sparse
     if (results.length < 5) {
       try {
-        const url = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&terms=${encodeURIComponent(q)}&maxList=${limit}`;
+        const url = `https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&terms=${encodeURIComponent(q)}&maxList=${safeLimit}`;
         const resp = await fetch(url);
         const data = await resp.json();
         // [total, codes, extra, [[code, name], ...]]

@@ -15,48 +15,40 @@ Deno.serve(async (req) => {
     const { data: u } = await userClient.auth.getUser();
     if (!u?.user) return j({ error: "unauthorized" }, 401);
 
-    const { query } = await req.json();
-    if (!query || typeof query !== "string" || query.trim().length < 3) return j({ error: "query > 3 belgi bo'lishi kerak" }, 400);
-    const q = query.trim();
-
     const admin = createClient(URL, SVC);
+
+    // Only organisation (business) accounts may link staff.
+    const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", u.user.id);
+    const business = new Set(["admin", "clinic", "diagnostics", "maternity", "cosmetology", "doctor", "pharmacy", "bloodbank", "dental", "vendor"]);
+    if (!(roles || []).some((r: any) => business.has(r.role))) return j({ error: "forbidden" }, 403);
+
+    const { query } = await req.json();
+    if (!query || typeof query !== "string") return j({ error: "Email yoki telefon kiriting" }, 400);
+    const q = query.trim().toLowerCase().slice(0, 200);
     const results: any[] = [];
 
-    // Search profiles by phone/full_name
-    const { data: byProfile } = await admin
-      .from("profiles")
-      .select("user_id, full_name, phone")
-      .or(`phone.ilike.%${q}%,full_name.ilike.%${q}%`)
-      .limit(10);
-    (byProfile || []).forEach((p: any) => results.push({ user_id: p.user_id, full_name: p.full_name, phone: p.phone, email: null }));
-
-    // Search auth.users by email via admin
-    if (q.includes("@") || /^[\w.+-]+@/.test(q)) {
-      const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 50 });
-      (list?.users || [])
-        .filter((au: any) => au.email && au.email.toLowerCase().includes(q.toLowerCase()))
-        .slice(0, 10)
-        .forEach((au: any) => {
-          if (!results.find((r) => r.user_id === au.id)) {
-            results.push({ user_id: au.id, full_name: au.user_metadata?.full_name || "", phone: au.phone || "", email: au.email });
-          }
-        });
+    // Exact match only (no partial directory search).
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q);
+    const phoneDigits = q.replace(/\D/g, "");
+    if (isEmail) {
+      for (let page = 1; page <= 20 && results.length === 0; page++) {
+        const { data: list } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+        const users = list?.users || [];
+        const hit = users.find((au: any) => (au.email || "").toLowerCase() === q);
+        if (hit) results.push({ user_id: hit.id, full_name: hit.user_metadata?.full_name || "", phone: null, email: hit.email });
+        if (users.length < 1000) break;
+      }
+    } else if (phoneDigits.length >= 9 && phoneDigits.length <= 15) {
+      const variants = Array.from(new Set([`+${phoneDigits}`, phoneDigits, `+998${phoneDigits.slice(-9)}`]));
+      const { data: prof } = await admin.from("profiles").select("user_id, full_name, phone").in("phone", variants).limit(1);
+      (prof || []).forEach((p: any) => results.push({ user_id: p.user_id, full_name: p.full_name, phone: p.phone, email: null }));
     } else {
-      // also try matching email containing
-      const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 100 });
-      (list?.users || [])
-        .filter((au: any) => (au.email && au.email.toLowerCase().includes(q.toLowerCase())) || (au.phone && au.phone.includes(q)))
-        .slice(0, 10)
-        .forEach((au: any) => {
-          if (!results.find((r) => r.user_id === au.id)) {
-            results.push({ user_id: au.id, full_name: au.user_metadata?.full_name || "", phone: au.phone || "", email: au.email });
-          }
-        });
+      return j({ error: "To'liq email yoki telefon raqam kiriting" }, 400);
     }
 
-    return j({ results: results.slice(0, 15) });
+    return j({ results });
   } catch (e: any) {
-    return j({ error: e?.message || "error" }, 500);
+    return j({ error: "error" }, 500);
   }
 });
 function j(b: any, s = 200) { return new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } }); }

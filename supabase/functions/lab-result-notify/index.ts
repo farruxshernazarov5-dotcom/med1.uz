@@ -110,12 +110,21 @@ serve(async (req) => {
     }
 
     // === EMAIL via transactional email system ===
-    if (activeChannels.includes("email") && email_data?.recipient_email) {
+    // SECURITY: recipient is always the patient's own account email (server-resolved),
+    // never a caller-supplied address.
+    let patientEmail: string | null = null;
+    if (activeChannels.includes("email") && email_data) {
+      const targetId = patient_id || callerId;
+      const { data: target } = await supabase.auth.admin.getUserById(targetId);
+      const em = target?.user?.email || "";
+      if (em && !em.endsWith("@phone.med1.uz")) patientEmail = em;
+    }
+    if (activeChannels.includes("email") && patientEmail) {
       try {
         const { error } = await supabase.functions.invoke("send-app-email", {
           body: {
             templateName: "lab-result-notification",
-            recipientEmail: email_data.recipient_email,
+            recipientEmail: patientEmail,
             idempotencyKey: `lab-result-${lab_result_id}-${Date.now()}`,
             templateData: {
               patientName: email_data.patient_name,

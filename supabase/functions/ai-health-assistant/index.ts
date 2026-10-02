@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { enforceAiAccess } from "../_shared/ai-access.ts";
 import { instrumentStream, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
@@ -63,7 +64,7 @@ serve(async (req) => {
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: access.model,
-        messages: [{ role: "system", content: systemContent }, ...messages],
+        messages: [{ role: "system", content: systemContent }, ...sanitizeChatMessages(messages)],
         max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),

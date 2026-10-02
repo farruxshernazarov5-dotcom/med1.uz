@@ -1,3 +1,4 @@
+import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
@@ -149,7 +150,7 @@ serve(async (req) => {
           model: selectedModel,
           messages: [
             { role: "system", content: systemPrompt },
-            ...messages,
+            ...sanitizeChatMessages(messages),
           ],
           stream: stream !== false,
         }),
@@ -164,11 +165,11 @@ serve(async (req) => {
       }
 
       if (stream !== false) {
-        return new Response(instrumentStream(aiResponse.body!, usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...messages])), { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
+        return new Response(instrumentStream(aiResponse.body!, usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...sanitizeChatMessages(messages)])), { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
       }
 
       const result = await aiResponse.json();
-      await instrumentJson(result, usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...messages]), result.choices?.[0]?.message?.content || "");
+      await instrumentJson(result, usageId, __start, estimateTokensFromMessages([{ role: "system", content: systemPrompt }, ...sanitizeChatMessages(messages)]), result.choices?.[0]?.message?.content || "");
       return new Response(JSON.stringify({
         success: true,
         service,

@@ -1,3 +1,4 @@
+import { sanitizeFilterTerm } from "../_shared/filter-sanitize.ts";
 // Med Coin nazorat markazi — faqat super admin uchun.
 // Payme/Click admin funksiyalariga tegmaydi.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -183,7 +184,7 @@ Deno.serve(async (req) => {
 
     // ---------- Foydalanuvchi hisobi ----------
     if (action === "user_lookup") {
-      const search = String(body?.search ?? "").trim();
+      const search = sanitizeFilterTerm(body?.search, 100);
       if (!search) return json({ error: "Qidiruv matni kerak" }, 400);
       const isUuid = /^[0-9a-f-]{20,}$/i.test(search);
       const { data: profiles } = isUuid
