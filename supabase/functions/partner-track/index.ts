@@ -1,3 +1,4 @@
+import { isTrustedCaller } from "../_shared/trusted-caller.ts";
 /**
  * partner-track — logs HAMBI/UNITEL Web-View visits and conversions.
  *
@@ -77,6 +78,24 @@ Deno.serve(async (req) => {
     }
 
     if (event === "conversion") {
+      // SECURITY: identity comes from the caller's session; only trusted server
+      // callers (service role) may record monetary amounts or other users.
+      const trusted = await isTrustedCaller(req);
+      let callerId: string | null = null;
+      const tok = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+      if (tok) {
+        const { data: claims } = await supabase.auth.getClaims(tok).catch(() => ({ data: null } as any));
+        callerId = (claims?.claims?.sub as string) || null;
+      }
+      if (!trusted && !callerId) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (!trusted) {
+        body.user_id = callerId;
+        body.amount = 0;
+      }
       // Find latest visit by session for attribution
       let visit_id: string | null = null;
       if (body.session_id) {
