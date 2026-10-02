@@ -96,7 +96,7 @@ const HMSPatient360 = ({ clinicId, patient, onBack }: Props) => {
 
   const exportPatientPdf = () => {
     const html = `
-      <html><head><meta charset="utf-8"><title>EMR — ${patient.full_name}</title>
+      <html><head><meta charset="utf-8"><title>EMR — ${esc(patient.full_name)}</title>
       <style>body{font-family:Arial;padding:24px;color:#0A2540}h1{color:#2F80ED}h2{border-bottom:2px solid #2F80ED;padding-bottom:4px;margin-top:24px}table{width:100%;border-collapse:collapse;margin:8px 0}td,th{border:1px solid #ddd;padding:6px;font-size:12px;text-align:left}</style>
       </head><body>
       <h1>📋 Elektron tibbiy karta (EMR)</h1>
