@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Building2,
+  AlertCircle,
   Clock3,
   Cross,
   FilterX,
+  Heart,
   LocateFixed,
-  Map,
+  Map as MapIcon,
   MapPin,
   Navigation,
   Phone,
   Plus,
   Rows3,
+  RotateCw,
   Stethoscope,
   X,
 } from "lucide-react";
@@ -19,10 +22,14 @@ import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { supabase } from "@/integrations/supabase/client";
 import { hapticTap } from "@/lib/nativeApp";
 import { cn } from "@/lib/utils";
+import { useMobileFavorites } from "@/hooks/useMobileFavorites";
+import { useAuth } from "@/hooks/useAuth";
+import { MobileDoctorSearch } from "@/components/mobile/MobileDoctorSearch";
 
 type Place = {
   id: string;
@@ -35,6 +42,7 @@ type Place = {
   longitude: number;
   distance_km: number;
   working_hours?: string | null;
+  services?: string[];
 };
 
 const DEFAULT_CENTER: [number, number] = [41.3111, 69.2797];
@@ -79,6 +87,11 @@ const detailPath = (place: Place) => {
 };
 
 const MobileServicesPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { user } = useAuth();
+  const favorites = useMobileFavorites();
+  const initialView = searchParams.get("view");
+  const [section, setSectionState] = useState<"services" | "favorites" | "doctors">(initialView === "favorites" || initialView === "doctors" ? initialView : "services");
   const [mode, setMode] = useState<"list" | "map">("list");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER);
@@ -86,6 +99,9 @@ const MobileServicesPage = () => {
   const [radius, setRadius] = useState(10);
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [usingCache, setUsingCache] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [locationOpen, setLocationOpen] = useState(false);
   const [selected, setSelected] = useState<Place | null>(null);
   const [placeOpen, setPlaceOpen] = useState(false);
@@ -94,7 +110,7 @@ const MobileServicesPage = () => {
     let active = true;
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
-      try { setPlaces(JSON.parse(cached) as Place[]); } catch { localStorage.removeItem(CACHE_KEY); }
+      try { setPlaces(JSON.parse(cached) as Place[]); setUsingCache(true); } catch { localStorage.removeItem(CACHE_KEY); }
     }
     navigator.geolocation?.getCurrentPosition(
       (position) => setCenter([position.coords.latitude, position.coords.longitude]),
@@ -102,19 +118,38 @@ const MobileServicesPage = () => {
       { enableHighAccuracy: true, maximumAge: 30_000, timeout: 8_000 },
     );
     (async () => {
+      setLoading(true);
+      setError(null);
       const { data, error } = await (supabase as any).rpc("get_nearby_medical_services", {
         _lat: center[0], _lng: center[1], _radius_km: radius, _limit: 150,
       });
       if (!active) return;
       if (!error && data) {
-        const next = (data as Place[]).filter((place) => place.latitude && place.longitude);
+        const nearby = (data as Place[]).filter((place) => place.latitude && place.longitude);
+        const clinicIds = nearby.filter((place) => place.org_type === "clinic").map((place) => place.id);
+        const clinicDetails = clinicIds.length
+          ? await supabase.from("registered_clinics_public").select("id, working_hours, specialties").in("id", clinicIds)
+          : { data: [] };
+        const detailMap = new globalThis.Map((clinicDetails.data ?? []).map((item) => [item.id, item]));
+        const next = nearby.map((place) => {
+          const detail = detailMap.get(place.id);
+          const hours = detail?.working_hours;
+          return {
+            ...place,
+            working_hours: typeof hours === "string" ? hours : hours && typeof hours === "object" ? Object.values(hours).filter(Boolean).slice(0, 2).join(" • ") : null,
+            services: detail?.specialties ?? [],
+          };
+        });
         setPlaces(next);
         localStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        setUsingCache(false);
+      } else if (error) {
+        setError(cached ? "Yangi ma’lumotlarni olib bo‘lmadi. Saqlangan ro‘yxat ko‘rsatilmoqda." : "Xizmatlarni yuklab bo‘lmadi. Internetni tekshirib qayta urinib ko‘ring.");
       }
       setLoading(false);
     })();
     return () => { active = false; };
-  }, [center[0], center[1], radius]);
+  }, [center[0], center[1], radius, reloadKey]);
 
   const visible = useMemo(() => {
     const config = FILTERS.find((item) => item.id === filter);
@@ -131,6 +166,27 @@ const MobileServicesPage = () => {
   };
 
   const resetFilters = () => setFilter("all");
+
+  const toggleFavorite = async (place: Place) => {
+    if (!user) {
+      window.location.assign(`/auth?returnTo=${encodeURIComponent("/mobile-services?view=favorites")}`);
+      return;
+    }
+    await favorites.toggle({
+      entity_type: place.org_type === "doctor" ? "doctor" : "clinic",
+      entity_id: place.id,
+      label: place.name,
+      route: detailPath(place),
+      metadata: { address: place.address, phone: place.phone, services: place.services ?? [] },
+    });
+  };
+
+  const setSection = (next: "services" | "favorites" | "doctors") => {
+    setSectionState(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "services") params.delete("view"); else params.set("view", next);
+    setSearchParams(params, { replace: true });
+  };
 
   return (
     <main className="min-h-screen bg-background pb-24 lg:hidden">
@@ -149,11 +205,25 @@ const MobileServicesPage = () => {
             <Rows3 /> Ro‘yxat
           </Button>
           <Button variant={mode === "map" ? "default" : "ghost"} size="sm" onClick={() => setMode("map")}>
-            <Map /> Xarita
+            <MapIcon /> Xarita
           </Button>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1" role="tablist" aria-label="Xizmatlar bo‘limlari">
+          {([['services', 'Xizmatlar'], ['doctors', 'Shifokor'], ['favorites', `Sevimli (${favorites.items.length})`]] as const).map(([id, label]) => (
+            <Button key={id} role="tab" aria-selected={section === id} variant={section === id ? "secondary" : "ghost"} size="sm" className="px-1 text-xs" onClick={() => setSection(id)}>{label}</Button>
+          ))}
         </div>
       </header>
 
+      {section === "doctors" ? <MobileDoctorSearch /> : section === "favorites" ? (
+        <section className="space-y-3 px-4 py-4" aria-labelledby="favorites-title">
+          <h2 id="favorites-title" className="text-lg font-bold text-foreground">Sevimlilar</h2>
+          {!user ? <div className="py-12 text-center"><Heart className="mx-auto h-10 w-10 text-muted-foreground" /><p className="mt-2 text-sm text-muted-foreground">Sevimlilar barcha qurilmalarda saqlanishi uchun kiring.</p><Button className="mt-4" asChild><Link to="/auth?returnTo=%2Fmobile-services%3Fview%3Dfavorites">Kirish</Link></Button></div>
+          : favorites.loading ? <div className="space-y-2">{[0, 1, 2].map((item) => <Skeleton key={item} className="h-20 w-full" />)}</div>
+          : favorites.items.length ? favorites.items.map((item) => <article key={item.id} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"><Heart className="h-5 w-5 fill-current text-destructive" /><Link to={item.route} className="min-w-0 flex-1 font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{item.label}</Link><Button variant="ghost" size="icon" aria-label={`${item.label}ni sevimlilardan olib tashlash`} onClick={() => void favorites.toggle({ entity_type: item.entity_type, entity_id: item.entity_id, label: item.label, route: item.route, metadata: item.metadata })}><X /></Button></article>)
+          : <div className="py-12 text-center"><Heart className="mx-auto h-10 w-10 text-muted-foreground" /><p className="mt-2 font-semibold">Sevimlilar hali yo‘q</p><Button variant="outline" className="mt-4" onClick={() => setSection("services")}>Xizmatlarni ko‘rish</Button></div>}
+        </section>
+      ) : <>
       <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 py-3">
         {FILTERS.map((item) => (
           <Button
@@ -167,6 +237,9 @@ const MobileServicesPage = () => {
           </Button>
         ))}
       </div>
+
+      {error && <div className="mx-4 mb-3 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive" role="alert"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /><span className="flex-1">{error}</span><Button variant="outline" size="sm" onClick={() => setReloadKey((value) => value + 1)}><RotateCw /> Qayta</Button></div>}
+      {usingCache && !error && <p className="mx-4 mb-3 text-xs text-muted-foreground" role="status">Saqlangan xizmatlar ko‘rsatilmoqda, yangilanmoqda…</p>}
 
       {mode === "map" && (
         <section className="relative h-[calc(100dvh-13.5rem)] min-h-[420px] border-y border-border" aria-label="Tibbiy xizmatlar xaritasi">
@@ -182,6 +255,8 @@ const MobileServicesPage = () => {
           }}>
             <LocateFixed />
           </Button>
+          {loading && <div className="absolute inset-x-4 top-4 z-[400] rounded-lg border border-border bg-card/95 p-3 text-center text-sm text-muted-foreground" role="status">Xarita natijalari yuklanmoqda…</div>}
+          {!loading && !error && visible.length === 0 && <div className="absolute inset-x-4 top-4 z-[400] rounded-lg border border-border bg-card/95 p-3 text-center"><p className="font-semibold">Bu hududda natija topilmadi</p><div className="mt-2 flex justify-center gap-2"><Button size="sm" onClick={() => setRadius((value) => value + 10)}>Radius +10 km</Button><Button size="sm" variant="outline" onClick={resetFilters}>Tozalash</Button></div></div>}
         </section>
       )}
 
@@ -191,7 +266,8 @@ const MobileServicesPage = () => {
             <span>{loading ? "Xizmatlar yuklanmoqda…" : `${visible.length} ta xizmat • ${radius} km`}</span>
             {filter !== "all" && <Button variant="ghost" size="sm" onClick={resetFilters}><FilterX /> Tozalash</Button>}
           </div>
-          {visible.map((place) => (
+          {loading && places.length === 0 && [0, 1, 2, 3].map((item) => <Skeleton key={item} className="h-44 w-full" />)}
+          {!loading && visible.map((place) => (
             <article key={`${place.org_type}-${place.id}`} className="rounded-lg border border-border bg-card p-4 shadow-card">
               <div className="flex items-start gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -200,10 +276,14 @@ const MobileServicesPage = () => {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <h2 className="text-sm font-bold text-foreground">{place.name}</h2>
+                    <Button variant="ghost" size="icon" className="-mr-2 -mt-2" aria-label={favorites.has(place.org_type === "doctor" ? "doctor" : "clinic", place.id) ? `${place.name}ni sevimlilardan olib tashlash` : `${place.name}ni sevimlilarga qo‘shish`} onClick={() => void toggleFavorite(place)}><Heart className={favorites.has(place.org_type === "doctor" ? "doctor" : "clinic", place.id) ? "fill-current text-destructive" : ""} /></Button>
                     <span className={cn("shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold", isAlwaysOpen(place) ? "bg-medical-green/10 text-medical-green" : "bg-muted text-muted-foreground")}>{isAlwaysOpen(place) ? "24/7" : "Jadval bo‘yicha"}</span>
                   </div>
                   <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{place.address ?? place.city ?? city}</p>
                   <p className="mt-1 text-xs font-medium text-primary">{place.distance_km.toFixed(1)} km</p>
+                  <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="h-3 w-3" />{place.working_hours || (isAlwaysOpen(place) ? "24/7" : "Ish vaqti profilida")}</p>
+                  {place.phone && <a className="mt-1 flex items-center gap-1 text-xs text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" href={`tel:${place.phone}`}><Phone className="h-3 w-3" />{place.phone}</a>}
+                  {!!place.services?.length && <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{place.services.slice(0, 3).join(" • ")}</p>}
                 </div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
@@ -225,6 +305,7 @@ const MobileServicesPage = () => {
           )}
         </section>
       )}
+      </>}
 
       <Drawer open={locationOpen} onOpenChange={setLocationOpen} shouldScaleBackground={false}>
         <DrawerContent className="lg:hidden rounded-t-3xl bg-card">
@@ -258,6 +339,8 @@ const MobileServicesPage = () => {
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary">{selected.distance_km.toFixed(1)} km</span>
                   <span className={cn("rounded-full px-2.5 py-1 font-medium", isAlwaysOpen(selected) ? "bg-medical-green/10 text-medical-green" : "bg-muted text-muted-foreground")}><Clock3 className="mr-1 inline h-3 w-3" />{isAlwaysOpen(selected) ? "24/7 shoshilinch" : "Hozir yopiq bo‘lishi mumkin"}</span>
                 </div>
+                <div><h3 className="text-sm font-semibold text-foreground">Ish vaqti</h3><p className="mt-1 text-sm text-muted-foreground">{selected.working_hours || (isAlwaysOpen(selected) ? "24/7" : "Aniq jadval profil sahifasida")}</p></div>
+                {!!selected.services?.length && <div><h3 className="text-sm font-semibold text-foreground">Xizmatlar</h3><div className="mt-2 flex flex-wrap gap-1.5">{selected.services.map((service) => <Button key={service} variant="secondary" size="sm" onClick={() => { void favorites.toggle({ entity_type: "service", entity_id: `${selected.id}:${service}`, label: service, route: `${detailPath(selected)}?service=${encodeURIComponent(service)}`, metadata: { clinic: selected.name } }); }}>{service}{favorites.has("service", `${selected.id}:${service}`) && <Heart className="ml-1 h-3 w-3 fill-current text-destructive" />}</Button>)}</div></div>}
                 {selected.phone && <Button variant="outline" className="w-full" asChild><a href={`tel:${selected.phone}`}><Phone /> {selected.phone}</a></Button>}
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="outline" asChild><a href={`https://www.google.com/maps/dir/?api=1&destination=${selected.latitude},${selected.longitude}`} target="_blank" rel="noreferrer"><Navigation /> Marshrut</a></Button>

@@ -34,3 +34,9 @@
 - [x] Med1 AI pastki oynasi, tahlil jarayoni va tayyor natija holatlari
 - [x] Mobil xizmatlar ro‘yxati/xaritasi, filtrlar, muassasa oynalari va GPS tanlovi
 - [x] Mobil bo‘sh natija, shoshilinch xavf va oflayn/onlayn holatlari
+- [x] Mobil deep linklar va ilova qayta ochilganda oxirgi xavfsiz sahifani tiklash
+- [x] Pastki navigatsiya va Med1 AI oynasini ekran o‘quvchi, klaviatura va fokus boshqaruviga moslash
+- [x] Xizmatlar xaritasi uchun yuklanish, bo‘sh natija, kesh va xatolik holatlari
+- [x] Muassasa kartalarida ish vaqti, telefon, xizmatlar va qabulga yozilish amallari
+- [x] Akkauntga bog‘langan klinika, shifokor va xizmat sevimlilari
+- [x] Mutaxassislik, klinika, sana va vaqt bo‘yicha mobil shifokor qidiruvi

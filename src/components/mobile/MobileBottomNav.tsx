@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
 import { hapticTap } from "@/lib/nativeApp";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type Item = {
   label: string;
@@ -83,7 +84,7 @@ const MobileBottomNav = () => {
                 onClick={() => void hapticTap()}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors active:scale-95",
+                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >
@@ -101,18 +102,20 @@ const MobileBottomNav = () => {
           );
         })}
         <li className="relative flex justify-center">
-          <button
-            type="button"
+          <Button
+            id="mobile-ai-trigger"
+            variant="ghost"
             onClick={() => {
               void hapticTap();
               window.dispatchEvent(new CustomEvent("med1:open-mobile-ai"));
             }}
-            className="-mt-5 flex h-[4.75rem] w-[4.75rem] flex-col items-center justify-center gap-1 rounded-full border-4 border-card bg-ai-gradient text-accent-foreground shadow-glow transition-transform active:scale-95"
+            className="-mt-5 flex h-[4.75rem] w-[4.75rem] flex-col items-center justify-center gap-1 rounded-full border-4 border-card bg-ai-gradient p-0 text-accent-foreground shadow-glow transition-transform active:scale-95 focus-visible:ring-4 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label="Med1 AI markazini ochish"
+            aria-haspopup="dialog"
           >
             <Sparkles className="h-6 w-6" />
             <span className="text-[10px] font-bold leading-none">Med1 AI</span>
-          </button>
+          </Button>
         </li>
         {items.slice(2).map((item) => {
           const active = item.match(pathname);
@@ -124,7 +127,7 @@ const MobileBottomNav = () => {
                 onClick={() => void hapticTap()}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors active:scale-95",
+                  "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >
