@@ -84,8 +84,8 @@ Deno.serve(async (req) => {
       let callerId: string | null = null;
       const tok = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
       if (tok) {
-        const { data: claims } = await supabase.auth.getClaims(tok).catch(() => ({ data: null } as any));
-        callerId = (claims?.claims?.sub as string) || null;
+        const { data: u } = await supabase.auth.getUser(tok).catch(() => ({ data: null } as any));
+        callerId = u?.user?.id || null;
       }
       if (!trusted && !callerId) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
