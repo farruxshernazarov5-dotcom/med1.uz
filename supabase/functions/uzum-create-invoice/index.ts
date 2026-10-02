@@ -1,3 +1,4 @@
+import { resolvePackagePrice, safeReturnUrl } from "../_shared/payment-guard.ts";
 // Uzum Bank (Apelsin / Uzum Pay) checkout invoice generator.
 // Foydalanuvchi uchun invoice yaratadi va Uzum checkout URL qaytaradi.
 // Docs: https://developer.uzumbank.uz/docs/checkout
@@ -29,13 +30,14 @@ Deno.serve(async (req) => {
     const userId = claims.claims.sub as string;
 
     const body = await req.json().catch(() => ({}));
-    const amount = Number(body?.amount);
+    const rawAmount = Number(body?.amount);
     const purpose = String(body?.purpose || "ai_subscription");
     const reference_id = body?.reference_id ? String(body.reference_id) : null;
-    const return_url = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
+    const return_url = safeReturnUrl(body?.return_url);
+    if (!return_url) return json(400, { error: "Qaytish manzili ruxsat etilmagan" });
     const environment = body?.environment === "sandbox" ? "sandbox" : "live";
 
-    if (!amount || amount <= 0 || amount > 100_000_000) return json(400, { error: "Noto'g'ri summa" });
+    if (!rawAmount || rawAmount <= 0 || rawAmount > 100_000_000) return json(400, { error: "Noto'g'ri summa" });
 
     const merchantId = environment === "sandbox"
       ? Deno.env.get("UZUM_MERCHANT_ID_SANDBOX") || Deno.env.get("UZUM_MERCHANT_ID")
@@ -46,14 +48,19 @@ Deno.serve(async (req) => {
     if (!merchantId || !serviceId) return json(500, { error: "Uzum merchant sozlanmagan" });
 
     const admin = createClient(supabaseUrl, serviceKey);
+    const packageCode = body?.package_code ? String(body.package_code) : null;
+    const priced = await resolvePackagePrice(admin, packageCode, rawAmount);
+    if (!priced.ok) return json(400, { error: priced.error });
+    const amount = priced.amount;
     const { data: payment, error: payErr } = await admin.from("platform_payments").insert({
       user_id: userId,
       provider: "uzum",
       amount,
       purpose,
       reference_id,
+      package_id: priced.packageId,
       status: "pending",
-      metadata: { return_url, environment },
+      metadata: { return_url, environment, package_code: packageCode },
     }).select().single();
     if (payErr) throw payErr;
 
@@ -76,6 +83,6 @@ Deno.serve(async (req) => {
     return json(200, { ok: true, payment, checkout_url, environment });
   } catch (err) {
     console.error("uzum-create-invoice error:", err);
-    return json(500, { error: err instanceof Error ? err.message : "Server xatolik" });
+    return json(500, { error: "Server xatolik" });
   }
 });
