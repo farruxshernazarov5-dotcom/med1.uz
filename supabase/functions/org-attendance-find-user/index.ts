@@ -31,8 +31,13 @@ Deno.serve(async (req) => {
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q);
     const phoneDigits = q.replace(/\D/g, "");
     if (isEmail) {
-      const { data: prof } = await admin.from("profiles").select("user_id, full_name, phone, email").ilike("email", q).limit(1);
-      (prof || []).forEach((p: any) => results.push({ user_id: p.user_id, full_name: p.full_name, phone: null, email: p.email }));
+      for (let page = 1; page <= 20 && results.length === 0; page++) {
+        const { data: list } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+        const users = list?.users || [];
+        const hit = users.find((au: any) => (au.email || "").toLowerCase() === q);
+        if (hit) results.push({ user_id: hit.id, full_name: hit.user_metadata?.full_name || "", phone: null, email: hit.email });
+        if (users.length < 1000) break;
+      }
     } else if (phoneDigits.length >= 9 && phoneDigits.length <= 15) {
       const variants = Array.from(new Set([`+${phoneDigits}`, phoneDigits, `+998${phoneDigits.slice(-9)}`]));
       const { data: prof } = await admin.from("profiles").select("user_id, full_name, phone").in("phone", variants).limit(1);
