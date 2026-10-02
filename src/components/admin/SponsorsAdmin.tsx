@@ -68,7 +68,7 @@ const SponsorsAdmin = () => {
     if (status === "approved" && !row.slug && !row.is_anonymous) {
       patch.slug = `${slugify(row.display_name || row.full_name)}-${row.id.slice(0, 6)}`;
     }
-    const { error } = await supabase.from("sponsor_contributions").update(patch).eq("id", row.id);
+    const { error } = await supabase.from("sponsor_contributions").update(patch as never).eq("id", row.id);
     setBusy(null);
     if (error) { toast({ title: "Xato", description: error.message, variant: "destructive" }); return; }
     toast({ title: status === "approved" ? "Tasdiqlandi" : "Rad etildi" });

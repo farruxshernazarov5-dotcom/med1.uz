@@ -85,7 +85,7 @@ const MedicalAdsModule = () => {
       patch.end_date = new Date(Date.now() + (ad.duration_days || 30) * 86400000).toISOString();
       patch.paid_amount = Number(ad.paid_amount || 0) || Number(ad.bid_amount || 0);
     }
-    const { error } = await supabase.from("med1_ad_campaigns").update(patch).eq("id", ad.id);
+    const { error } = await supabase.from("med1_ad_campaigns").update(patch as never).eq("id", ad.id);
     if (error) {
       toast({ title: "Xato", description: error.message, variant: "destructive" });
     } else {
