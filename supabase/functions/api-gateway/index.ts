@@ -634,14 +634,14 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
 
   // ==================== USER ====================
   if (path === "/v1/user/profile" && req.method === "GET") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     const { data, error } = await supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle();
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
     return json(200, data || {}, requestId);
   }
   if (path === "/v1/user/profile" && req.method === "PATCH") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     let body: any = {}; try { body = await req.json(); } catch {}
     const allowed = ["full_name", "phone", "avatar_url", "language", "region", "district"];
@@ -652,7 +652,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     return json(200, data, requestId);
   }
   if (path === "/v1/user/settings" && req.method === "PATCH") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     let body: any = {}; try { body = await req.json(); } catch {}
     const patch: any = {};
@@ -698,7 +698,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
 
   // ==================== EMR (patient-scoped reads) ====================
   if (path.startsWith("/v1/emr/") && req.method === "GET") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     let table = "";
     if (path === "/v1/emr/records") table = "medical_records";
@@ -713,14 +713,14 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
 
   // ==================== PAYMENTS ====================
   if (path === "/v1/payments/history" && req.method === "GET") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     const { data, error } = await supabase.from("ai_payments").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(limit);
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
     return json(200, { items: data ?? [] }, requestId);
   }
   if (path === "/v1/subscriptions" && req.method === "GET") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     const { data, error } = await supabase.from("user_ai_subscriptions").select("*").eq("user_id", uid);
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
@@ -759,6 +759,11 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     return json(r.ok ? 200 : r.status, parsed, requestId);
   }
   if (path === "/v1/notifications/email" && req.method === "POST") {
+    // Partner-triggered email delivery is disabled: it allowed sending
+    // arbitrary branded emails from the platform domain.
+    return json(403, { code: "forbidden", message: "Email notifications are not available via the partner API" }, requestId);
+  }
+  if (false) {
     let body: any = {}; try { body = await req.json(); } catch {}
     const supaUrl = Deno.env.get("SUPABASE_URL")!;
     const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -801,7 +806,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
   // ==================== APPOINTMENTS ====================
   if ((path === "/v1/bookings" || path === "/v1/appointments") && req.method === "POST") {
     let body: any = {}; try { body = await req.json(); } catch {}
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     const { data, error } = await supabase.from("appointments").insert({
       user_id: uid,
       clinic_id: body.clinic_id,
@@ -818,7 +823,7 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     return json(201, data, requestId);
   }
   if (path === "/v1/appointments/history" && req.method === "GET") {
-    const uid = req.headers.get("x-user-id") || partnerOwnerId;
+    const uid = partnerOwnerId;
     if (!uid) return json(401, { code: "no_user", message: "x-user-id header required" }, requestId);
     const { data, error } = await supabase.from("appointments").select("*").eq("user_id", uid).order("appointment_date", { ascending: false }).limit(limit);
     if (error) return json(500, { code: "db_error", message: error.message }, requestId);
@@ -826,13 +831,13 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
   }
   const apptDelMatch = path.match(/^\/v1\/appointments\/([^/]+)$/);
   if (apptDelMatch && req.method === "DELETE") {
-    const { error } = await supabase.from("appointments").update({ status: "cancelled" }).eq("id", apptDelMatch[1]);
+    const { error } = await supabase.from("appointments").update({ status: "cancelled" }).eq("id", apptDelMatch[1]).eq("user_id", partnerOwnerId ?? "00000000-0000-0000-0000-000000000000");
     if (error) return json(400, { code: "cancel_failed", message: error.message }, requestId);
     return json(200, { cancelled: true, id: apptDelMatch[1] }, requestId);
   }
   const checkinMatch = path.match(/^\/v1\/appointments\/([^/]+)\/checkin$/);
   if (checkinMatch && req.method === "POST") {
-    const { data, error } = await supabase.from("appointments").update({ status: "checked_in", checked_in_at: new Date().toISOString() }).eq("id", checkinMatch[1]).select().maybeSingle();
+    const { data, error } = await supabase.from("appointments").update({ status: "checked_in", checked_in_at: new Date().toISOString() }).eq("id", checkinMatch[1]).eq("user_id", partnerOwnerId ?? "00000000-0000-0000-0000-000000000000").select().maybeSingle();
     if (error) return json(400, { code: "checkin_failed", message: error.message }, requestId);
     return json(200, data, requestId);
   }
