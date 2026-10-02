@@ -14,7 +14,13 @@ const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
 function genOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return (100000 + (buf[0] % 900000)).toString();
+}
+
+function escHtml(v: unknown) {
+  return String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 async function sha256(text: string) {
@@ -134,9 +140,10 @@ Deno.serve(async (req) => {
     // === SEND OTP ===
     if (action === "send_otp") {
       const channel = (body.channel as string) || "email";
-      let destination = body.destination as string | undefined;
+      // SECURITY: destination is always the signer's own email / linked Telegram chat.
+      let destination: string | undefined;
 
-      if (!destination) {
+      {
         if (channel === "email") {
           destination = user.email || "";
         } else if (channel === "telegram") {
@@ -164,7 +171,7 @@ Deno.serve(async (req) => {
       if (channel === "telegram") {
         await sendTelegram(
           destination,
-          `📜 <b>MED1.UZ — Shartnoma imzolash kodi</b>\n\nShartnoma: <code>${contract.title_uz}</code>\nKod: <code>${otp}</code>\n\n⏱ 10 daqiqa amal qiladi.`,
+          `📜 <b>MED1.UZ — Shartnoma imzolash kodi</b>\n\nShartnoma: <code>${escHtml(contract.title_uz)}</code>\nKod: <code>${otp}</code>\n\n⏱ 10 daqiqa amal qiladi.`,
         );
       } else {
         // Email: real yuborish
@@ -172,7 +179,7 @@ Deno.serve(async (req) => {
         const html = `
           <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto">
             <h2 style="color:#0A2540">MED1.UZ — Shartnoma imzolash</h2>
-            <p>Shartnoma: <b>${contract.title_uz}</b></p>
+            <p>Shartnoma: <b>${escHtml(contract.title_uz)}</b></p>
             <p>Tasdiqlash kodi:</p>
             <p style="font-size:30px;letter-spacing:6px;font-weight:700;color:#2F80ED">${otp}</p>
             <p style="color:#64748B">Kod 10 daqiqa amal qiladi. Kodni hech kimga bermang.</p>
@@ -268,8 +275,11 @@ Deno.serve(async (req) => {
       let signature_image_url: string | null = null;
       if (signature_image_base64 && typeof signature_image_base64 === "string") {
         try {
-          const base64 = signature_image_base64.replace(/^data:image\/\w+;base64,/, "");
+          const base64 = signature_image_base64.replace(/^data:image\/png;base64,/, "");
+          if (base64.length > 700_000) throw new Error("signature image too large");
           const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+          const isPng = bytes.length > 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+          if (!isPng || bytes.length > 512_000) throw new Error("invalid signature image");
           const path = `${user.id}/${contractId}/${crypto.randomUUID()}.png`;
           const { error: upErr } = await admin.storage
             .from("legal-contracts")
