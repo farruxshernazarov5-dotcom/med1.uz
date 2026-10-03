@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   Building2,
   AlertCircle,
+  CircleHelp,
   Clock3,
   Cross,
   FilterX,
@@ -15,7 +16,6 @@ import {
   Plus,
   Rows3,
   RotateCw,
-  Search,
   Stethoscope,
   X,
 } from "lucide-react";
@@ -201,9 +201,10 @@ const MobileServicesPage = () => {
             <p className="text-xs font-medium text-primary">Med1.uz</p>
             <h1 className="text-xl font-bold text-foreground">Xizmatlar</h1>
           </div>
-          <Button variant="outline" size="sm" onClick={() => setLocationOpen(true)}>
-            <MapPin className="h-4 w-4" /> {city}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => window.dispatchEvent(new CustomEvent("med1:open-mobile-guide"))} aria-label="Mobil ilova yo‘riqnomasini ochish"><CircleHelp /></Button>
+            {section === "services" && <Button variant="outline" size="sm" onClick={() => setLocationOpen(true)}><MapPin className="h-4 w-4" /> {city}</Button>}
+          </div>
         </div>
         {section === "services" && <div className="mt-3 grid grid-cols-2 rounded-lg bg-muted p-1" aria-label="Ko‘rinish turi">
           <Button variant={mode === "list" ? "default" : "ghost"} size="sm" onClick={() => setMode("list")}>

@@ -1,7 +1,7 @@
 import {
   Activity, Apple, Baby, BadgeCheck, Bone, Bot, Brain, BriefcaseBusiness,
-  Building2, CircleDot, Cross, Droplets, Dumbbell, FileCheck2, FileScan,
-  FlaskConical, GraduationCap, HeartHandshake, HeartPulse, Megaphone,
+  Building2, CircleDot, Droplets, Dumbbell, FileCheck2, FileScan,
+  GraduationCap, HeartHandshake, HeartPulse, Megaphone,
   Microscope, Newspaper, Pill, Ribbon, Salad, ScanLine, ShieldCheck,
   Smile, Sparkles, Stethoscope, UserRoundPlus, UsersRound, Wind, Wrench,
   type LucideIcon,
