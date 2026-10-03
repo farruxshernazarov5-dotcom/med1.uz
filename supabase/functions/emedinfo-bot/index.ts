@@ -286,9 +286,73 @@ async function botStats() {
     new7d: await count((q) => q.gte("started_at", week)),
     blocked: await count((q) => q.eq("is_blocked", true)),
     dailyOptOut: await count((q) => q.eq("daily_opt_out", true)),
+    termsAccepted: await count((q) => q.not("terms_accepted_at", "is", null)),
+    channelMembers: await count((q) => q.eq("channel_member", true)),
+    fullAccess: await count((q) => q.eq("channel_member", true).not("terms_accepted_at", "is", null)),
     linkedProfiles: linked ?? 0,
     broadcasts: broadcasts ?? [],
   };
+}
+
+// ---------- Access gate: @Med1uz channel + terms/privacy ----------
+const GATE_CHANNEL = "@Med1uz";
+const GATE_CHANNEL_URL = "https://t.me/Med1uz";
+
+async function isChannelMember(userId: number) {
+  const res = await tg("getChatMember", { chat_id: GATE_CHANNEL, user_id: userId });
+  if (!res?.ok) { console.error("getChatMember failed", res); return false; }
+  return ["creator", "administrator", "member"].includes(res.result?.status) || (res.result?.status === "restricted" && res.result?.is_member);
+}
+
+async function sendGate(chatId: number, needTerms: boolean, needChannel: boolean) {
+  const steps = [
+    needChannel ? "1️⃣ <b>@Med1uz</b> kanaliga a’zo bo‘ling" : "✅ Kanalga a’zo bo‘lgansiz",
+    needTerms ? "2️⃣ Foydalanish shartlari va Maxfiylik siyosatini qabul qiling" : "✅ Shartlar qabul qilingan",
+  ];
+  const rows: unknown[][] = [];
+  if (needChannel) rows.push([{ text: "📢 Kanalga a’zo bo‘lish", url: GATE_CHANNEL_URL }]);
+  rows.push([app("📜 Foydalanish shartlari", "/terms"), app("🔒 Maxfiylik siyosati", "/privacy")]);
+  rows.push([callback(needTerms ? "✅ Qabul qilaman va tekshirish" : "🔄 A’zolikni tekshirish", "gate_accept")]);
+  return tg("sendMessage", {
+    chat_id: chatId,
+    parse_mode: "HTML",
+    text: `🔐 <b>Botdan foydalanish uchun:</b>\n\n${steps.join("\n")}\n\nSo‘ng pastdagi tugmani bosing.`,
+    reply_markup: { inline_keyboard: rows },
+  });
+}
+
+/** Returns true if user may use the bot; otherwise sends gate message. */
+async function checkAccess(chatId: number, userId: number, acceptNow = false): Promise<boolean> {
+  const { data: row } = await db.from("emedinfo_bot_users").select("terms_accepted_at").eq("chat_id", chatId).maybeSingle();
+  let termsAt = row?.terms_accepted_at ?? null;
+  if (acceptNow && !termsAt) {
+    termsAt = new Date().toISOString();
+  }
+  const member = await isChannelMember(userId);
+  await db.from("emedinfo_bot_users").update({ terms_accepted_at: termsAt, channel_member: member, channel_checked_at: new Date().toISOString() }).eq("chat_id", chatId);
+  if (termsAt && member) return true;
+  await sendGate(chatId, !termsAt, !member);
+  return false;
+}
+
+async function isBotAdmin(chatId: number) {
+  const profiles = await findProfiles(chatId);
+  for (const p of profiles) {
+    const { data } = await db.rpc("has_role", { _user_id: p.user_id, _role: "admin" });
+    if (data) return true;
+  }
+  return false;
+}
+
+async function sendStatsMessage(chatId: number) {
+  if (!(await isBotAdmin(chatId))) return tg("sendMessage", { chat_id: chatId, text: "⛔ Statistika faqat administratorlar uchun." });
+  const s = await botStats();
+  return tg("sendMessage", {
+    chat_id: chatId,
+    parse_mode: "HTML",
+    text: `📊 <b>@eMedInfobot statistikasi</b>\n\n👥 Jami start: <b>${s.total}</b>\n🟢 Faol 24 soat: <b>${s.active24h}</b>\n📅 Faol 7 kun: <b>${s.active7d}</b>\n🆕 Yangi 7 kun: <b>${s.new7d}</b>\n\n📢 Kanal a’zolari: <b>${s.channelMembers}</b>\n📜 Shartlarni qabul qilgan: <b>${s.termsAccepted}</b>\n🔓 To‘liq ruxsat: <b>${s.fullAccess}</b>\n\n🔗 Ulangan profillar: <b>${s.linkedProfiles}</b>\n🚫 Bloklagan: <b>${s.blocked}</b>\n🔕 Kunlik xabar o‘chirilgan: <b>${s.dailyOptOut}</b>`,
+    reply_markup: { inline_keyboard: [[callback("🔄 Yangilash", "admin_stats")], [app("📈 To‘liq panel", "/admin/telegram-bot")]] },
+  });
 }
 
 const CONTACT_KB = {
@@ -567,16 +631,30 @@ Deno.serve(async (req) => {
     if (update.callback_query) {
       const query = update.callback_query;
       const chatId = query.message?.chat?.id;
+      const data = String(query.data ?? "menu");
       await tg("answerCallbackQuery", { callback_query_id: query.id });
-      if (chatId) await trackUser(query.from, Number(chatId));
-      if (chatId) await handleCallback(chatId, String(query.data ?? "menu"));
+      if (chatId) {
+        await trackUser(query.from, Number(chatId));
+        if (data === "admin_stats") { await sendStatsMessage(Number(chatId)); return new Response("ok", { headers: corsHeaders }); }
+        const ok = await checkAccess(Number(chatId), Number(query.from?.id), data === "gate_accept");
+        if (ok) {
+          if (data === "gate_accept") {
+            await tg("sendMessage", { chat_id: chatId, text: "✅ Rahmat! Endi botdan to‘liq foydalanishingiz mumkin.", reply_markup: replyKeyboard((await findProfiles(Number(chatId))).length > 0) });
+            await sendMenu(Number(chatId));
+          } else await handleCallback(chatId, data);
+        }
+      }
       return new Response("ok", { headers: corsHeaders });
     }
 
     const msg = update.message;
     if (!msg?.chat?.id) return new Response("ok", { headers: corsHeaders });
+    if (msg.chat.type && msg.chat.type !== "private") return new Response("ok", { headers: corsHeaders });
     const chatId = Number(msg.chat.id);
     await trackUser(msg.from, chatId);
+    const firstWord = String(msg.text ?? "").trim().split(/[\s@]/)[0].toLowerCase();
+    if (firstWord === "/stats") { await sendStatsMessage(chatId); return new Response("ok", { headers: corsHeaders }); }
+    if (!(await checkAccess(chatId, Number(msg.from?.id)))) return new Response("ok", { headers: corsHeaders });
 
     if (msg.contact) {
       if (!msg.contact.user_id || msg.contact.user_id !== msg.from?.id) {

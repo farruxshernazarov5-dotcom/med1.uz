@@ -12,6 +12,7 @@ type Broadcast = { id: string; kind: string; message: string; sent_count: number
 type Stats = {
   total: number; active24h: number; active7d: number; new7d: number; blocked: number;
   dailyOptOut: number; linkedProfiles: number; broadcasts: Broadcast[];
+  termsAccepted?: number; channelMembers?: number; fullAccess?: number;
 };
 
 const FN_URL = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/emedinfo-bot`;
@@ -69,6 +70,9 @@ const TelegramBotAdminPage = () => {
     { label: "Faol (24 soat)", value: stats.active24h, icon: Activity },
     { label: "Faol (7 kun)", value: stats.active7d, icon: Activity },
     { label: "Yangi (7 kun)", value: stats.new7d, icon: UserPlus },
+    { label: "@Med1uz kanal a’zolari", value: stats.channelMembers ?? 0, icon: Users },
+    { label: "Shartlarni qabul qilgan", value: stats.termsAccepted ?? 0, icon: Link2 },
+    { label: "To‘liq ruxsat olgan", value: stats.fullAccess ?? 0, icon: UserPlus },
     { label: "Ulangan profillar", value: stats.linkedProfiles, icon: Link2 },
     { label: "Botni bloklagan", value: stats.blocked, icon: Ban },
     { label: "Kunlik xabarni o‘chirgan", value: stats.dailyOptOut, icon: BellOff },
