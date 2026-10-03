@@ -244,7 +244,7 @@ export const MobileAIHubSheet = () => {
           )}
 
           <p className="mb-2 text-xs font-medium text-muted-foreground" role="status" aria-live="polite">
-            {normalizedQuery ? `Qidiruv bo‘yicha ${visibleTools.length} ta natija` : `${CATEGORY_LABELS[category]} · ${visibleTools.length} ta xizmat`}
+            {isSearching ? "Qidirilmoqda..." : normalizedQuery ? `Qidiruv bo‘yicha ${visibleTools.length} ta natija` : `${CATEGORY_LABELS[category]} · ${visibleTools.length} ta xizmat`}
           </p>
 
           {searchError && (
