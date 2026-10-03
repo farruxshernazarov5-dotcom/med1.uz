@@ -4,6 +4,7 @@ import { CheckCircle2, WifiOff } from "lucide-react";
 import MobileBottomNav from "./MobileBottomNav";
 import { MobileAIHubSheet } from "./MobileAIHubSheet";
 import { CriticalTriageSheet } from "./CriticalTriageSheet";
+import { MobileOnboarding } from "./MobileOnboarding";
 import { initNativeChrome, isNativeApp, registerBackButton, registerDeepLinks, watchNetwork } from "@/lib/nativeApp";
 
 const LAST_MOBILE_PATH = "med1_mobile_last_path_v1";
@@ -100,6 +101,7 @@ const MobileAppShell = () => {
       )}
       <MobileAIHubSheet />
       <CriticalTriageSheet />
+      <MobileOnboarding />
       <MobileBottomNav />
     </>
   );
