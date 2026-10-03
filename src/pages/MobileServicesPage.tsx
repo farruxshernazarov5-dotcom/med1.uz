@@ -112,6 +112,7 @@ const MobileServicesPage = () => {
   const [placeOpen, setPlaceOpen] = useState(false);
 
   useEffect(() => {
+    if (section !== "services") return;
     let active = true;
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
@@ -154,7 +155,7 @@ const MobileServicesPage = () => {
       setLoading(false);
     })();
     return () => { active = false; };
-  }, [center[0], center[1], radius, reloadKey]);
+  }, [center[0], center[1], radius, reloadKey, section]);
 
   const visible = useMemo(() => {
     const config = FILTERS.find((item) => item.id === filter);
