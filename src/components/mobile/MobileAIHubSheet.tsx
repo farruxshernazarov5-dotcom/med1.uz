@@ -147,6 +147,7 @@ export const MobileAIHubSheet = () => {
         setRecentPaths(recentPathsMemory);
       }
       setSearchError(null);
+      setQuery("");
       setOpen(false);
       navigate(path);
     } catch {
