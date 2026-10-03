@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Home, MapPin, Sparkles, User } from "lucide-react";
+import { BookOpen, Grid2X2, Home, Sparkles, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getDashboardPath } from "@/lib/dashboard";
 import { hapticTap } from "@/lib/nativeApp";
@@ -40,7 +40,7 @@ const MobileBottomNav = () => {
       {
         label: "Xizmatlar",
         to: "/mobile-services",
-        icon: MapPin,
+        icon: Grid2X2,
         match: (p) =>
           ["/mobile-services", "/clinics", "/doctors", "/pharmacies", "/diagnostics", "/dental", "/maternity", "/blood-banks", "/cosmetology"].some(
             (r) => p.startsWith(r),
