@@ -8093,6 +8093,8 @@ export type Database = {
       }
       emedinfo_bot_users: {
         Row: {
+          channel_checked_at: string | null
+          channel_member: boolean
           chat_id: number
           daily_opt_out: boolean
           first_name: string | null
@@ -8102,9 +8104,12 @@ export type Database = {
           last_seen_at: string
           messages_count: number
           started_at: string
+          terms_accepted_at: string | null
           username: string | null
         }
         Insert: {
+          channel_checked_at?: string | null
+          channel_member?: boolean
           chat_id: number
           daily_opt_out?: boolean
           first_name?: string | null
@@ -8114,9 +8119,12 @@ export type Database = {
           last_seen_at?: string
           messages_count?: number
           started_at?: string
+          terms_accepted_at?: string | null
           username?: string | null
         }
         Update: {
+          channel_checked_at?: string | null
+          channel_member?: boolean
           chat_id?: number
           daily_opt_out?: boolean
           first_name?: string | null
@@ -8126,6 +8134,7 @@ export type Database = {
           last_seen_at?: string
           messages_count?: number
           started_at?: string
+          terms_accepted_at?: string | null
           username?: string | null
         }
         Relationships: []
