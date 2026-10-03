@@ -88,6 +88,11 @@ const CATEGORY_LABELS: Record<ToolCategory, string> = {
   special: "Maxsus AI",
 };
 
+const VALID_PATHS = new Set(AI_TOOLS.map((tool) => tool.path));
+const SEARCH_HINTS = ["rentgen", "diabet", "bola", "dori", "puls"];
+// Recently used AI tools are kept in memory only (never persisted), since tool usage can reveal health information.
+let recentPathsMemory: string[] = [];
+
 export const MobileAIHubSheet = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -95,7 +100,15 @@ export const MobileAIHubSheet = () => {
   const [resultPath, setResultPath] = useState<string | null>(null);
   const [category, setCategory] = useState<ToolCategory>("popular");
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [recentPaths, setRecentPaths] = useState<string[]>(recentPathsMemory);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setDebouncedQuery(query), 250);
+    return () => window.clearTimeout(id);
+  }, [query]);
 
   useEffect(() => {
     const show = () => { setStatus("idle"); setOpen(true); };
@@ -123,17 +136,36 @@ export const MobileAIHubSheet = () => {
 
   const openTool = (path: string) => {
     void hapticTap();
-    setOpen(false);
-    navigate(path);
+    const toolPath = path.split(/[?#]/)[0];
+    if (!VALID_PATHS.has(toolPath) && !path.startsWith("/")) {
+      setSearchError("Bu xizmat sahifasi topilmadi. Boshqa xizmatni tanlang.");
+      return;
+    }
+    try {
+      if (VALID_PATHS.has(toolPath)) {
+        recentPathsMemory = [toolPath, ...recentPathsMemory.filter((p) => p !== toolPath)].slice(0, 4);
+        setRecentPaths(recentPathsMemory);
+      }
+      setSearchError(null);
+      setOpen(false);
+      navigate(path);
+    } catch {
+      setSearchError("Xizmatni ochib bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.");
+    }
   };
 
-  const normalizedQuery = query.trim().toLocaleLowerCase("uz");
+  const isSearching = query.trim() !== debouncedQuery.trim();
+  const normalizedQuery = debouncedQuery.trim().toLocaleLowerCase("uz");
   const visibleTools = AI_TOOLS.filter((tool) => {
     if (normalizedQuery) {
-      return `${tool.title} ${tool.description}`.toLocaleLowerCase("uz").includes(normalizedQuery);
+      return `${tool.title} ${tool.description} ${tool.path}`.toLocaleLowerCase("uz").includes(normalizedQuery);
     }
     return category === "popular" ? tool.popular : tool.category === category;
   });
+  const recentTools = recentPaths
+    .map((p) => AI_TOOLS.find((tool) => tool.path === p))
+    .filter((tool): tool is AITool => Boolean(tool));
+  const suggestedTools = AI_TOOLS.filter((tool) => tool.popular).slice(0, 3);
 
   return (
     <Drawer open={open} onOpenChange={(nextOpen) => {
