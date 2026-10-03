@@ -15,6 +15,7 @@ import {
   Plus,
   Rows3,
   RotateCw,
+  Search,
   Stethoscope,
   X,
 } from "lucide-react";
@@ -30,6 +31,8 @@ import { cn } from "@/lib/utils";
 import { useMobileFavorites } from "@/hooks/useMobileFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { MobileDoctorSearch } from "@/components/mobile/MobileDoctorSearch";
+import { MobileServiceCatalog } from "@/components/mobile/MobileServiceCatalog";
+import { getDashboardPath } from "@/lib/dashboard";
 
 type Place = {
   id: string;
@@ -88,10 +91,12 @@ const detailPath = (place: Place) => {
 
 const MobileServicesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const favorites = useMobileFavorites();
   const initialView = searchParams.get("view");
-  const [section, setSectionState] = useState<"services" | "favorites" | "doctors">(initialView === "favorites" || initialView === "doctors" ? initialView : "services");
+  const [section, setSectionState] = useState<"catalog" | "services" | "favorites" | "doctors">(
+    initialView === "favorites" || initialView === "doctors" || initialView === "nearby" ? (initialView === "nearby" ? "services" : initialView) : "catalog",
+  );
   const [mode, setMode] = useState<"list" | "map">("list");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const [center, setCenter] = useState<[number, number]>(DEFAULT_CENTER);
@@ -181,10 +186,10 @@ const MobileServicesPage = () => {
     });
   };
 
-  const setSection = (next: "services" | "favorites" | "doctors") => {
+  const setSection = (next: "catalog" | "services" | "favorites" | "doctors") => {
     setSectionState(next);
     const params = new URLSearchParams(searchParams);
-    if (next === "services") params.delete("view"); else params.set("view", next);
+    if (next === "catalog") params.delete("view"); else params.set("view", next === "services" ? "nearby" : next);
     setSearchParams(params, { replace: true });
   };
 
@@ -200,28 +205,35 @@ const MobileServicesPage = () => {
             <MapPin className="h-4 w-4" /> {city}
           </Button>
         </div>
-        <div className="mt-3 grid grid-cols-2 rounded-lg bg-muted p-1" aria-label="Ko‘rinish turi">
+        {section === "services" && <div className="mt-3 grid grid-cols-2 rounded-lg bg-muted p-1" aria-label="Ko‘rinish turi">
           <Button variant={mode === "list" ? "default" : "ghost"} size="sm" onClick={() => setMode("list")}>
             <Rows3 /> Ro‘yxat
           </Button>
           <Button variant={mode === "map" ? "default" : "ghost"} size="sm" onClick={() => setMode("map")}>
             <MapIcon /> Xarita
           </Button>
-        </div>
-        <div className="mt-2 grid grid-cols-3 gap-1" role="tablist" aria-label="Xizmatlar bo‘limlari">
-          {([['services', 'Xizmatlar'], ['doctors', 'Shifokor'], ['favorites', `Sevimli (${favorites.items.length})`]] as const).map(([id, label]) => (
+        </div>}
+        <div className="mt-2 grid grid-cols-4 gap-1" role="tablist" aria-label="Xizmatlar bo‘limlari">
+          {([['catalog', 'Katalog'], ['services', 'Yaqin'], ['doctors', 'Shifokor'], ['favorites', `Sevimli (${favorites.items.length})`]] as const).map(([id, label]) => (
             <Button key={id} role="tab" aria-selected={section === id} variant={section === id ? "secondary" : "ghost"} size="sm" className="px-1 text-xs" onClick={() => setSection(id)}>{label}</Button>
           ))}
         </div>
       </header>
 
-      {section === "doctors" ? <MobileDoctorSearch /> : section === "favorites" ? (
+      {section === "catalog" ? (
+        <MobileServiceCatalog
+          dashboardPath={user ? getDashboardPath(userRole) : "/auth?returnTo=%2Fdashboard"}
+          onOpenNearby={() => setSection("services")}
+          onOpenDoctors={() => setSection("doctors")}
+          onOpenFavorites={() => setSection("favorites")}
+        />
+      ) : section === "doctors" ? <MobileDoctorSearch /> : section === "favorites" ? (
         <section className="space-y-3 px-4 py-4" aria-labelledby="favorites-title">
           <h2 id="favorites-title" className="text-lg font-bold text-foreground">Sevimlilar</h2>
           {!user ? <div className="py-12 text-center"><Heart className="mx-auto h-10 w-10 text-muted-foreground" /><p className="mt-2 text-sm text-muted-foreground">Sevimlilar barcha qurilmalarda saqlanishi uchun kiring.</p><Button className="mt-4" asChild><Link to="/auth?returnTo=%2Fmobile-services%3Fview%3Dfavorites">Kirish</Link></Button></div>
           : favorites.loading ? <div className="space-y-2">{[0, 1, 2].map((item) => <Skeleton key={item} className="h-20 w-full" />)}</div>
           : favorites.items.length ? favorites.items.map((item) => <article key={item.id} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"><Heart className="h-5 w-5 fill-current text-destructive" /><Link to={item.route} className="min-w-0 flex-1 font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{item.label}</Link><Button variant="ghost" size="icon" aria-label={`${item.label}ni sevimlilardan olib tashlash`} onClick={() => void favorites.toggle({ entity_type: item.entity_type, entity_id: item.entity_id, label: item.label, route: item.route, metadata: item.metadata })}><X /></Button></article>)
-          : <div className="py-12 text-center"><Heart className="mx-auto h-10 w-10 text-muted-foreground" /><p className="mt-2 font-semibold">Sevimlilar hali yo‘q</p><Button variant="outline" className="mt-4" onClick={() => setSection("services")}>Xizmatlarni ko‘rish</Button></div>}
+          : <div className="py-12 text-center"><Heart className="mx-auto h-10 w-10 text-muted-foreground" /><p className="mt-2 font-semibold">Sevimlilar hali yo‘q</p><Button variant="outline" className="mt-4" onClick={() => setSection("catalog")}>Xizmatlarni ko‘rish</Button></div>}
         </section>
       ) : <>
       <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 py-3">
