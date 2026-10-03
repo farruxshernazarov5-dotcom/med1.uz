@@ -41,3 +41,7 @@
 - [x] Akkauntga bog‘langan klinika, shifokor va xizmat sevimlilari
 - [x] Mutaxassislik, klinika, sana va vaqt bo‘yicha mobil shifokor qidiruvi
 - [x] Med1 AI mobil oynasida 23 ta xizmat, toifalar, qidiruv va accessibility
+- [ ] Mobil “Barcha xizmatlar” katalogiga barcha sayt xizmatlarini toifalar va qidiruv bilan joylashtirish
+- [ ] Mobil bosh sahifaga 7 ta eng kerakli xizmat tezkor bloklari va katalog havolasini qo‘shish
+- [ ] Mobil asosiy menyu va xizmat guruhlari uchun birinchi tashrif onboardingini qo‘shish
+- [ ] Mobil katalog havolalari, qidiruv, onboarding va 384px/1280px ko‘rinishlarni tekshirish
