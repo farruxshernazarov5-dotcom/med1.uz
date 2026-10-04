@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { takePendingCapture } from "@/lib/pendingCapture";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -99,6 +100,12 @@ const AIReportAnalysisPage = () => {
       setFilePreview(null);
     }
   }, []);
+
+  useEffect(() => {
+    const captured = takePendingCapture();
+    if (captured) { setInputMode("file"); handleFile(captured); }
+  }, [handleFile]);
+
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
