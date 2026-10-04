@@ -16,7 +16,7 @@ const AIStatusWidget = () => {
   const tierColors: Record<string, string> = {
     pro: "from-amber-500 to-orange-500 text-white",
     premium: "from-purple-500 to-fuchsia-500 text-white",
-    standard: "from-sky-500 to-cyan-500 text-white",
+    standard: "from-amber-500 via-orange-500 to-rose-500 text-white",
     lite: "from-emerald-500 to-teal-500 text-white",
     free: "from-slate-400 to-slate-500 text-white",
   };
