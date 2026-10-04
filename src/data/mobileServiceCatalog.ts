@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { MOBILE_SERVICE_IMAGES } from "@/data/mobileServiceImages";
+import { MOBILE_SERVICE_STORIES, type MobileServiceStory } from "@/data/mobileServiceStories";
 
 export type MobileServiceCategory = "care" | "ai" | "knowledge" | "publications" | "business" | "cabinet";
 export type MobileServiceBadge = "Ommabop" | "Yangi" | "24/7";
@@ -19,6 +20,7 @@ export type MobileServiceItem = {
   category: MobileServiceCategory;
   icon: LucideIcon;
   image?: string;
+  story?: MobileServiceStory;
   tone: string;
   badge?: MobileServiceBadge;
   featured?: boolean;
@@ -102,6 +104,7 @@ const cabinets: MobileServiceItem[] = [
 const withServiceImages = (services: MobileServiceItem[]) => services.map((service) => ({
   ...service,
   image: MOBILE_SERVICE_IMAGES[service.id],
+  story: MOBILE_SERVICE_STORIES[service.id],
 }));
 
 export const MOBILE_SERVICE_CATALOG = withServiceImages([...care, ...MOBILE_AI_SERVICES, ...knowledge, ...publications, ...business, ...cabinets]);
