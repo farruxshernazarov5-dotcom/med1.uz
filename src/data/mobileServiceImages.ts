@@ -44,7 +44,7 @@ import patientEcosystem from "@/assets/showcase-patient-ecosystem.webp";
 import hmsDashboard from "@/assets/hms-dashboard.webp";
 import clinicReception from "@/assets/clinic-reception.webp";
 import hmsFinance from "@/assets/hms-finance.webp";
-import yunusovaPortrait from "@/assets/yunusova-aziza-portrait.png.asset.json";
+import yunusovaPublication from "@/assets/aziza-preeclampsia-clinical.jpg";
 
 export const MOBILE_SERVICE_IMAGES: Record<string, string> = {
   doctors: doctorMale,
@@ -82,7 +82,7 @@ export const MOBILE_SERVICE_IMAGES: Record<string, string> = {
   medicine: medicinePills,
   knowledge: medicineHero,
   articles: research,
-  "publications-yunusova": yunusovaPortrait.url,
+  "publications-yunusova": yunusovaPublication,
   verify: medallStamp,
   "legal-center": aboutMission,
   "doctor-register": doctorProfile,

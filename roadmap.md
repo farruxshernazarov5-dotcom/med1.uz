@@ -47,4 +47,4 @@
 - [x] Mobil katalog havolalari, qidiruv, onboarding va 384px/1280px ko‘rinishlarni tekshirish
 
 - [x] Mobil katalog, tezkor bloklar va AI menyusiga saytdagi mos fotolavhalarni integratsiya qilish
-- [ ] Mobil foto kartalarini 384px va desktop ko‘rinishda tekshirish
+- [x] Mobil foto kartalarini 384px va desktop ko‘rinishda tekshirish
