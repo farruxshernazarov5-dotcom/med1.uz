@@ -57,9 +57,9 @@ export const TIER_THEME: Record<SaaSTier, {
   standard: {
     label: "Standard",
     icon: Sparkles,
-    chip: "bg-sky-500/15 text-sky-300 border-sky-400/30",
-    ring: "ring-sky-400/30",
-    accentText: "text-sky-300",
+    chip: "bg-orange-500/15 text-orange-300 border-orange-400/30",
+    ring: "ring-orange-400/30",
+    accentText: "text-orange-300",
     order: 2,
   },
   premium: {
