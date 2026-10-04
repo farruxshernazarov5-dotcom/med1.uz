@@ -48,3 +48,5 @@
 
 - [x] Mobil katalog, tezkor bloklar va AI menyusiga saytdagi mos fotolavhalarni integratsiya qilish
 - [x] Mobil foto kartalarini 384px va desktop ko‘rinishda tekshirish
+- [x] Mobil tanishtiruvni to‘liq ekranli, animatsiyali foto hikoyaga aylantirish
+- [x] Har bir xizmat kartasiga ko‘p kadrli batafsil taqdimot va aniq kirish amalini qo‘shish

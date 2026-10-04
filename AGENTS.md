@@ -6,6 +6,7 @@
 - The patient mobile shell owns global navigation, AI sheets, connectivity feedback, and the mobile services hub so shared web pages remain unchanged.
 - Mobile service navigation uses `src/data/mobileServiceCatalog.ts` as the single route inventory shared by the catalogue, home shortcuts, and AI hub, preventing link drift.
 - Mobile service photography is assigned through `src/data/mobileServiceImages.ts` and consumed from the shared catalogue, so every mobile surface uses the same existing site image.
+- Mobile service education is presented through the shared catalogue detail overlay, so every service keeps one visual explanation and canonical destination.
 - Native deep links and last-screen restoration accept only allowlisted internal Med1 routes, so external input cannot become an open redirect.
 - Mobile directory favorites are account-backed in `mobile_favorites`; never cache authenticated favorites or patient data in local storage.
 - Fixed bottom-anchored overlays (cookie/geo banners, floating dock) must clear the mobile bottom navigation by using `bottom-16`/`bottom-20` with an `lg:` reset.
