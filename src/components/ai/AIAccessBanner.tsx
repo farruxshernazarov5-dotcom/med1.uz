@@ -38,7 +38,7 @@ const AIAccessBanner = ({ serviceId, serviceName }: AIAccessBannerProps) => {
   const displayTier = access.tier === "free" ? packageTier : access.tier;
   const tierColor = displayTier === "pro" ? "bg-amber-100 text-amber-800 border-amber-200"
     : displayTier === "premium" ? "bg-purple-100 text-purple-800 border-purple-200"
-    : displayTier === "standard" ? "bg-sky-100 text-sky-800 border-sky-200"
+    : displayTier === "standard" ? "bg-orange-100 text-orange-800 border-orange-200"
     : displayTier === "lite" ? "bg-emerald-100 text-emerald-800 border-emerald-200"
     : "bg-slate-100 text-slate-700 border-slate-200";
   const tierLabel = displayTier === "pro" ? "Pro" : displayTier === "premium" ? "Premium" : displayTier === "standard" ? "Standard" : displayTier === "lite" ? "Lite" : "Bepul";

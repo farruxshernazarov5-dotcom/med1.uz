@@ -163,12 +163,13 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-const TIER_META: Record<string, { label: string; gradient: string; icon: any }> = {
-  pro: { label: "Pro", gradient: "from-amber-500 to-orange-500", icon: Crown },
-  premium: { label: "Premium", gradient: "from-violet-500 to-fuchsia-500", icon: Crown },
-  standard: { label: "Standard", gradient: "from-sky-500 to-cyan-500", icon: Sparkles },
-  lite: { label: "Lite", gradient: "from-emerald-500 to-teal-500", icon: Sparkles },
-  free: { label: "Bepul", gradient: "from-slate-400 to-slate-500", icon: User },
+// Colours come from [data-tier] tokens in index.css (same palette as /ai-subscription cards)
+const TIER_META: Record<string, { label: string; icon: any }> = {
+  pro: { label: "Pro", icon: Crown },
+  premium: { label: "Premium", icon: Crown },
+  standard: { label: "Standard", icon: Sparkles },
+  lite: { label: "Lite", icon: Sparkles },
+  free: { label: "Bepul", icon: User },
 };
 
 const PatientDashboard = () => {
@@ -189,6 +190,8 @@ const PatientDashboard = () => {
   const TierIcon = tierMeta.icon;
 
   const isPremiumUser = tier !== "free" || balance > 0;
+  const tierKey = TIER_META[tier] ? tier : "free";
+  const isPaidTier = tierKey !== "free";
 
   const initials = (profile?.full_name || "")
     .split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -248,9 +251,9 @@ const PatientDashboard = () => {
       {/* User / Tier card */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3 mb-3">
-          <Avatar className="w-11 h-11 border-2 border-primary/20">
+          <Avatar className={cn("w-11 h-11 border-2", isPaidTier ? "border-transparent tier-ring" : "border-primary/20")}>
             <AvatarImage src={profile?.avatar_url || ""} />
-            <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+            <AvatarFallback className={cn("font-bold text-sm", isPaidTier ? "tier-soft tier-text" : "bg-primary/10 text-primary")}>
               {initials || <User className="w-5 h-5" />}
             </AvatarFallback>
           </Avatar>
@@ -261,7 +264,7 @@ const PatientDashboard = () => {
             <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
           </div>
         </div>
-        <div className={cn("rounded-xl p-2.5 bg-gradient-to-r text-white shadow-sm", tierMeta.gradient)}>
+        <div className="rounded-xl p-2.5 tier-gradient tier-glow">
           <div className="flex items-center justify-between mb-1.5">
             <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide">
               <TierIcon className="w-3.5 h-3.5" /> {tierMeta.label}
@@ -301,7 +304,9 @@ const PatientDashboard = () => {
                     className={cn(
                       "flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all group",
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
+                        ? isPaidTier
+                          ? "tier-gradient tier-glow"
+                          : "bg-primary text-primary-foreground shadow-sm"
                         : "text-foreground/70 hover:text-foreground hover:bg-muted",
                       isLocked && !isActive && "opacity-60"
                     )}
@@ -328,7 +333,7 @@ const PatientDashboard = () => {
           to="/ai-subscription"
           className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-foreground/70 hover:text-foreground hover:bg-muted transition"
         >
-          <Sparkles className="w-4 h-4 text-amber-500" /> Tariflar
+          <Sparkles className={cn("w-4 h-4", isPaidTier ? "tier-text" : "text-amber-500")} /> Tariflar
         </Link>
         <button
           onClick={signOut}
@@ -341,7 +346,7 @@ const PatientDashboard = () => {
   );
 
   return (
-    <div className="fixed inset-0 above-bottom-nav flex bg-background z-10">
+    <div data-tier={tierKey} className="fixed inset-0 above-bottom-nav flex bg-background z-10">
       {/* Desktop sidebar — own column, full viewport height */}
       <aside className="hidden lg:flex w-[260px] shrink-0 h-full">
         <Sidebar />
@@ -393,10 +398,7 @@ const PatientDashboard = () => {
             >
               <Sparkles className="w-3.5 h-3.5" /> {balance}
             </Link>
-            <span className={cn(
-              "hidden md:flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-gradient-to-r text-white",
-              tierMeta.gradient
-            )}>
+            <span className="hidden md:flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-lg tier-gradient">
               <TierIcon className="w-3 h-3" /> {tierMeta.label}
             </span>
           </div>
@@ -405,6 +407,7 @@ const PatientDashboard = () => {
             <Link to="/clinics"><Plus className="w-4 h-4 mr-1" /> Qabul</Link>
           </Button>
         </header>
+        {isPaidTier && <div className="tier-strip shrink-0" aria-hidden="true" />}
 
         {/* Quick actions strip */}
         <div className="shrink-0 px-4 py-3 border-b border-border bg-muted/30 overflow-x-auto">
@@ -412,7 +415,7 @@ const PatientDashboard = () => {
             <QuickAction icon={Plus} label="Qabulga yozilish" to="/clinics" />
             <QuickAction icon={Search} label="Shifokor topish" to="/doctors" />
             <QuickAction icon={FlaskConical} label="Analiz topshirish" onClick={() => setActiveTab("workflow")} />
-            <QuickAction icon={Brain} label="AI xizmatlari" onClick={() => setActiveTab("ai-services")} highlight />
+            <QuickAction icon={Brain} label="AI xizmatlari" onClick={() => setActiveTab("ai-services")} highlight tierStyled={isPaidTier} />
             <QuickAction icon={Headphones} label="Jonli yordam" onClick={() => setActiveTab("support")} />
             <QuickAction icon={Pill} label="Dorixonalar" to="/pharmacies" />
             <QuickAction icon={MapPin} label="Yaqin atrofda" onClick={() => setActiveTab("nearby")} />
@@ -461,11 +464,13 @@ const PatientDashboard = () => {
 };
 
 const QuickAction = ({
-  icon: Icon, label, to, onClick, highlight,
-}: { icon: any; label: string; to?: string; onClick?: () => void; highlight?: boolean }) => {
+  icon: Icon, label, to, onClick, highlight, tierStyled,
+}: { icon: any; label: string; to?: string; onClick?: () => void; highlight?: boolean; tierStyled?: boolean }) => {
   const cls = cn(
     "flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition border",
-    highlight
+    highlight && tierStyled
+      ? "tier-gradient tier-glow border-transparent"
+      : highlight
       ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground border-transparent shadow-sm hover:shadow-md"
       : "bg-card text-foreground/80 border-border hover:bg-muted hover:text-foreground"
   );
