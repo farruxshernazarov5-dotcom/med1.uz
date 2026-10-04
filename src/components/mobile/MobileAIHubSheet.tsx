@@ -27,12 +27,14 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hapticTap } from "@/lib/nativeApp";
 import { MOBILE_AI_SERVICES_WITH_IMAGES } from "@/data/mobileServiceCatalog";
+import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 
 type AnalysisStatus = "idle" | "processing" | "ready";
 type ToolCategory = "popular" | "main" | "radiology" | "special";
 type ToolBadge = "Ommabop" | "Yangi";
 
 type AITool = {
+  id: string;
   title: string;
   description: string;
   path: string;
@@ -45,6 +47,7 @@ type AITool = {
 };
 
 const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES_WITH_IMAGES.map((tool) => ({
+  id: tool.id.startsWith("radiology-") ? `ai-${tool.id}` : tool.id,
   title: tool.title,
   description: tool.description,
   path: tool.path,
@@ -298,14 +301,14 @@ export const MobileAIHubSheet = () => {
             {visibleTools.map((tool) => {
               const Icon = tool.icon;
               return (
-                <Button
-                  key={tool.path}
-                  variant="outline"
-                  className="h-auto min-h-20 justify-start whitespace-normal rounded-lg p-3 text-left focus-visible:ring-2 focus-visible:ring-ring"
-                  onClick={() => openTool(tool.path)}
-                  aria-label={`${tool.title}. ${tool.description}${tool.badge ? `. ${tool.badge}` : ""}`}
-                >
-                  <span className="flex w-full items-center gap-3">
+                <div key={tool.path} className="rounded-lg border border-border bg-card p-2 focus-within:ring-2 focus-within:ring-ring">
+                  <Button
+                    variant="ghost"
+                    className="h-auto min-h-16 w-full justify-start whitespace-normal rounded-md p-1 text-left"
+                    onClick={() => openTool(tool.path)}
+                    aria-label={`${tool.title} xizmatini ochish. ${tool.description}${tool.badge ? `. ${tool.badge}` : ""}`}
+                  >
+                    <span className="flex w-full items-center gap-3">
                     <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-muted" aria-hidden="true">
                       {tool.image && <img src={tool.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />}
                       <span className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
@@ -318,8 +321,13 @@ export const MobileAIHubSheet = () => {
                       </span>
                       <span className="mt-0.5 block text-xs font-normal text-muted-foreground">{tool.description}</span>
                     </span>
-                  </span>
-                </Button>
+                    </span>
+                  </Button>
+                  <div className="flex items-center justify-between border-t border-border pt-1">
+                    <AIServiceInfoButton serviceId={tool.id} />
+                    <span className="pr-2 text-[10px] font-medium text-muted-foreground">Funksiyalar va misol</span>
+                  </div>
+                </div>
               );
             })}
           </div>

@@ -52,7 +52,7 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
           {frames.map((image, index) => (
             <img key={image} src={image} alt="" width={768} height={1280} loading={index === 0 ? "eager" : "lazy"} decoding="async" className={`mobile-visual-frame absolute inset-0 h-full w-full object-cover ${frame === index ? "is-active" : ""}`} />
           ))}
-          <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-transparent to-foreground/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-transparent to-primary/80" />
           <div className="absolute inset-0 bg-grid-tech opacity-10" />
         </div>
 
@@ -65,7 +65,7 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
             <Button variant="secondary" size="icon" className="bg-background/85 text-foreground shadow-card" onClick={() => onOpenChange(false)} aria-label="Xizmat ma’lumotini yopish"><X /></Button>
           </div>
 
-          <div className="mt-auto animate-fade-up rounded-lg border border-background/20 bg-foreground/55 p-4 shadow-elegant backdrop-blur-xl">
+          <div className="mt-auto animate-fade-up rounded-lg border border-primary-foreground/25 bg-primary/55 p-4 shadow-elegant backdrop-blur-sm">
             <div className="mb-3 flex items-center gap-3">
               <span className={`flex h-11 w-11 items-center justify-center rounded-lg border border-background/30 shadow-card ${service.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
@@ -76,8 +76,21 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
             <DialogTitle className="max-w-[19rem] text-3xl font-extrabold leading-tight text-primary-foreground">{service.title}</DialogTitle>
             <DialogDescription id="service-detail-description" className="mt-2 max-w-md text-sm font-medium leading-relaxed text-primary-foreground">{description}</DialogDescription>
 
-            <div className="mt-4 space-y-2" aria-label="Xizmat imkoniyatlari">
-              {benefits.map((benefit) => <div key={benefit} className="flex items-center gap-3 rounded-lg border border-background/15 bg-background/10 px-3 py-2 backdrop-blur-md"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary"><Check className="h-3.5 w-3.5 text-primary-foreground" /></span><span className="text-sm font-semibold text-primary-foreground">{benefit}</span></div>)}
+            <div className="mt-3 grid grid-cols-2 gap-2" aria-label="Med1.uz ko‘rsatkichlari">
+              {service.story?.proof && (
+                <div className="rounded-lg border border-primary-foreground/20 bg-primary/35 px-3 py-2">
+                  <p className="text-xl font-extrabold leading-none text-primary-foreground">{service.story.proof.value}</p>
+                  <p className="mt-1 text-[11px] font-medium text-primary-foreground/80">{service.story.proof.label}</p>
+                </div>
+              )}
+              <div className={`rounded-lg border border-primary-foreground/20 bg-primary/35 px-3 py-2 ${service.story?.proof ? "" : "col-span-2"}`}>
+                <p className="text-xl font-extrabold leading-none text-primary-foreground">50K+</p>
+                <p className="mt-1 text-[11px] font-medium text-primary-foreground/80">oylik foydalanuvchi</p>
+              </div>
+            </div>
+
+            <div className="mt-3 space-y-1.5" aria-label="Xizmat imkoniyatlari">
+              {benefits.map((benefit) => <div key={benefit} className="flex items-center gap-3 rounded-lg border border-primary-foreground/15 bg-primary/25 px-3 py-2"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary"><Check className="h-3.5 w-3.5 text-secondary-foreground" /></span><span className="text-sm font-semibold text-primary-foreground">{benefit}</span></div>)}
             </div>
 
             <div className="mt-4 grid grid-cols-[auto_1fr_auto] gap-2">
