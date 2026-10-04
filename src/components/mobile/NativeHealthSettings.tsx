@@ -13,6 +13,7 @@ import {
   listReminders, scheduleMedication, setBiometricLockEnabled, syncAppointmentReminders,
   verifyBiometric, type PendingReminder,
 } from "@/lib/nativeHealth";
+import { PermissionDeniedDialog, type PermissionKind } from "@/components/mobile/PermissionDeniedDialog";
 
 /** Medication + appointment push reminders and biometric lock — native app only. */
 export const NativeHealthSettings = () => {
@@ -23,7 +24,14 @@ export const NativeHealthSettings = () => {
   const [times, setTimes] = useState<string[]>(["08:00"]);
   const [bio, setBio] = useState({ ok: false, label: "" });
   const [bioOn, setBioOn] = useState(isBiometricLockEnabled());
+  const [denied, setDenied] = useState<PermissionKind | null>(null);
+  const [retryAction, setRetryAction] = useState<(() => void) | null>(null);
   const native = isNativeApp();
+
+  const askPermission = (kind: PermissionKind, retry: () => void) => {
+    setDenied(kind);
+    setRetryAction(() => retry);
+  };
 
   const refresh = async () => setReminders(await listReminders());
   useEffect(() => { if (native) { void refresh(); void biometricAvailable().then(setBio); } }, [native]);
@@ -38,7 +46,7 @@ export const NativeHealthSettings = () => {
 
   const addMed = async () => {
     if (!name.trim() || times.length === 0) return;
-    if (!(await ensureNotificationPermission())) { toast({ title: "Bildirishnomaga ruxsat berilmadi", description: "Telefon sozlamalaridan ruxsat bering.", variant: "destructive" }); return; }
+    if (!(await ensureNotificationPermission())) { askPermission("notifications", () => void addMed()); return; }
     const n = await scheduleMedication(name.trim(), dose.trim(), times);
     toast({ title: "Eslatma qo‘shildi", description: `Har kuni ${n} marta eslatiladi` });
     setName(""); setDose(""); setTimes(["08:00"]); void refresh();
@@ -46,7 +54,7 @@ export const NativeHealthSettings = () => {
 
   const syncAppts = async () => {
     if (!user) return;
-    if (!(await ensureNotificationPermission())) { toast({ title: "Bildirishnomaga ruxsat berilmadi", variant: "destructive" }); return; }
+    if (!(await ensureNotificationPermission())) { askPermission("notifications", () => void syncAppts()); return; }
     const today = new Date().toISOString().slice(0, 10);
     const { data, error } = await supabase.from("appointments")
       .select("id, appointment_date, appointment_time, status")
@@ -60,12 +68,13 @@ export const NativeHealthSettings = () => {
   };
 
   const toggleBio = async (on: boolean) => {
-    if (on && !(await verifyBiometric())) return;
+    if (on && !(await verifyBiometric())) { askPermission("biometric", () => void toggleBio(true)); return; }
     setBiometricLockEnabled(on); setBioOn(on);
   };
 
   return (
     <div className="space-y-4">
+      <PermissionDeniedDialog kind={denied} onClose={() => setDenied(null)} onRetry={() => retryAction?.()} />
       <Card>
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Fingerprint className="h-5 w-5 text-primary" /> Tibbiy kartaga xavfsiz kirish</CardTitle></CardHeader>
         <CardContent className="flex items-center justify-between gap-3">
