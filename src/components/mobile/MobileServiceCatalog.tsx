@@ -96,14 +96,18 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
                 {grouped[group].map((service) => {
                   const Icon = service.icon;
                   return (
-                    <Link key={service.id} to={service.path} onClick={() => void hapticTap()} className="group flex min-h-32 flex-col rounded-lg border border-border bg-card p-3 shadow-card transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                      <div className="flex items-start justify-between gap-2">
-                        <span className={`flex h-10 w-10 items-center justify-center rounded-lg ${service.tone}`}><Icon className="h-5 w-5" /></span>
-                        {service.badge && <span className="rounded-full bg-muted px-2 py-0.5 text-[9px] font-semibold text-muted-foreground">{service.badge}</span>}
+                    <Link key={service.id} to={service.path} onClick={() => void hapticTap()} className="group flex min-h-56 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                        {service.image && <img src={service.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105" />}
+                        <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent" aria-hidden="true" />
+                        <span className={`absolute bottom-2 left-2 flex h-9 w-9 items-center justify-center rounded-lg border border-background/20 shadow-card ${service.tone}`}><Icon className="h-4 w-4" /></span>
+                        {service.badge && <span className="absolute right-2 top-2 rounded-full bg-card/90 px-2 py-0.5 text-[9px] font-semibold text-card-foreground backdrop-blur-sm">{service.badge}</span>}
                       </div>
-                      <span className="mt-3 text-sm font-bold leading-tight text-foreground">{service.title}</span>
-                      <span className="mt-1 text-[11px] leading-snug text-muted-foreground">{service.description}</span>
-                      <ArrowRight className="mt-auto h-4 w-4 self-end text-primary" />
+                      <span className="flex flex-1 flex-col p-3">
+                        <span className="text-sm font-bold leading-tight text-foreground">{service.title}</span>
+                        <span className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted-foreground">{service.description}</span>
+                        <ArrowRight className="mt-auto h-4 w-4 self-end text-primary" />
+                      </span>
                     </Link>
                   );
                 })}

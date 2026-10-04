@@ -6,6 +6,7 @@ import {
   Smile, Sparkles, Stethoscope, UserRoundPlus, UsersRound, Wind, Wrench,
   type LucideIcon,
 } from "lucide-react";
+import { MOBILE_SERVICE_IMAGES } from "@/data/mobileServiceImages";
 
 export type MobileServiceCategory = "care" | "ai" | "knowledge" | "publications" | "business" | "cabinet";
 export type MobileServiceBadge = "Ommabop" | "Yangi" | "24/7";
@@ -17,6 +18,7 @@ export type MobileServiceItem = {
   path: string;
   category: MobileServiceCategory;
   icon: LucideIcon;
+  image?: string;
   tone: string;
   badge?: MobileServiceBadge;
   featured?: boolean;
@@ -97,5 +99,11 @@ const cabinets: MobileServiceItem[] = [
   { id: "business-cabinet", title: "Biznes kabineti", description: "Hamkorlik va xizmatlarni boshqarish", path: "/dashboard/vendor", category: "cabinet", icon: BriefcaseBusiness, tone: "bg-ai-purple/10 text-ai-purple" },
 ];
 
-export const MOBILE_SERVICE_CATALOG = [...care, ...MOBILE_AI_SERVICES, ...knowledge, ...publications, ...business, ...cabinets];
-export const MOBILE_QUICK_SERVICES = care.filter((service) => service.featured);
+const withServiceImages = (services: MobileServiceItem[]) => services.map((service) => ({
+  ...service,
+  image: MOBILE_SERVICE_IMAGES[service.id],
+}));
+
+export const MOBILE_SERVICE_CATALOG = withServiceImages([...care, ...MOBILE_AI_SERVICES, ...knowledge, ...publications, ...business, ...cabinets]);
+export const MOBILE_AI_SERVICES_WITH_IMAGES = MOBILE_SERVICE_CATALOG.filter((service) => service.category === "ai");
+export const MOBILE_QUICK_SERVICES = MOBILE_SERVICE_CATALOG.filter((service) => service.category === "care" && service.featured);

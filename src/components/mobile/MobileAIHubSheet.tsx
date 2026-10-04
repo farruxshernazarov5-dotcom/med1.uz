@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hapticTap } from "@/lib/nativeApp";
-import { MOBILE_AI_SERVICES } from "@/data/mobileServiceCatalog";
+import { MOBILE_AI_SERVICES_WITH_IMAGES } from "@/data/mobileServiceCatalog";
 
 type AnalysisStatus = "idle" | "processing" | "ready";
 type ToolCategory = "popular" | "main" | "radiology" | "special";
@@ -37,9 +37,10 @@ type AITool = {
   badge?: ToolBadge;
   popular?: boolean;
   tone: string;
+  image?: string;
 };
 
-const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES.map((tool) => ({
+const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES_WITH_IMAGES.map((tool) => ({
   title: tool.title,
   description: tool.description,
   path: tool.path,
@@ -48,6 +49,7 @@ const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES.map((tool) => ({
   badge: tool.badge === "Ommabop" || tool.badge === "Yangi" ? tool.badge : undefined,
   popular: tool.featured,
   tone: tool.tone,
+  image: tool.image,
 }));
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
@@ -266,8 +268,10 @@ export const MobileAIHubSheet = () => {
                   aria-label={`${tool.title}. ${tool.description}${tool.badge ? `. ${tool.badge}` : ""}`}
                 >
                   <span className="flex w-full items-center gap-3">
-                    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${tool.tone}`} aria-hidden="true">
-                      <Icon className="h-5 w-5" />
+                    <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-muted" aria-hidden="true">
+                      {tool.image && <img src={tool.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />}
+                      <span className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
+                      <span className={`absolute bottom-1 left-1 flex h-7 w-7 items-center justify-center rounded-md ${tool.tone}`}><Icon className="h-3.5 w-3.5" /></span>
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-start justify-between gap-2">

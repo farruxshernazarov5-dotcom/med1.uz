@@ -21,9 +21,13 @@ export const MobileHomeQuickServices = () => (
         {MOBILE_QUICK_SERVICES.map((service) => {
           const Icon = service.icon;
           return (
-            <Link key={service.id} to={service.path} onClick={() => void hapticTap()} className="group flex min-w-0 flex-col items-center gap-2 rounded-lg border border-border bg-background/90 px-1 py-3 text-center shadow-card transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <span className={`flex h-11 w-11 items-center justify-center rounded-lg ${service.tone}`}><Icon className="h-5 w-5" /></span>
-              <span className="w-full text-[11px] font-semibold leading-tight text-foreground">{service.title}</span>
+            <Link key={service.id} to={service.path} onClick={() => void hapticTap()} className="group relative flex aspect-[4/5] min-w-0 items-end overflow-hidden rounded-lg border border-border bg-muted p-2 text-left shadow-card transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              {service.image && <img src={service.image} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105" />}
+              <span className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/25 to-transparent" aria-hidden="true" />
+              <span className="relative w-full">
+                <span className={`mb-1.5 flex h-8 w-8 items-center justify-center rounded-lg ${service.tone}`}><Icon className="h-4 w-4" /></span>
+                <span className="block w-full text-[10px] font-bold leading-tight text-primary-foreground">{service.title}</span>
+              </span>
             </Link>
           );
         })}
