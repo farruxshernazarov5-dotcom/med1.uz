@@ -96,7 +96,7 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
               <Button size="lg" className="h-12 bg-background text-foreground hover:bg-background/90" onClick={openService}>Xizmatni ochish <ArrowRight /></Button>
               <Button variant="secondary" size="icon" onClick={() => { void hapticTap(); setFrame((current) => (current + 1) % frames.length); }} aria-label="Keyingi surat"><ChevronRight /></Button>
             </div>
-            <p className="mt-3 text-center text-[11px] text-primary-foreground/65">AI xizmatlari shifokor tashxisini almashtirmaydi.</p>
+            <p className="mt-3 text-center text-[11px] text-primary-foreground/65">{service.category === "ai" ? "AI xulosasi shifokor tashxisini almashtirmaydi." : "Batafsil ma’lumot xizmatning asosiy sahifasida ko‘rsatiladi."}</p>
           </div>
         </div>
       </DialogContent>
