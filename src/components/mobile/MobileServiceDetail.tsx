@@ -4,20 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import type { MobileServiceItem } from "@/data/mobileServiceCatalog";
-import guideCare from "@/assets/mobile-guide-care.jpg";
-import guideNearby from "@/assets/mobile-guide-nearby.jpg";
-import guideAI from "@/assets/mobile-guide-ai.jpg";
-import guideKnowledge from "@/assets/mobile-guide-knowledge.jpg";
 import { hapticTap } from "@/lib/nativeApp";
-
-const CATEGORY_VISUALS = {
-  care: [guideCare, guideNearby],
-  ai: [guideAI, guideCare],
-  knowledge: [guideKnowledge, guideAI],
-  publications: [guideKnowledge, guideCare],
-  business: [guideCare, guideKnowledge],
-  cabinet: [guideKnowledge, guideCare],
-} as const;
 
 const CATEGORY_BENEFITS = {
   care: ["Mos muassasa yoki mutaxassisni toping", "Manzil, xizmat va ish vaqtini solishtiring", "Qabulga to‘g‘ridan-to‘g‘ri yoziling"],
@@ -37,7 +24,7 @@ type Props = {
 export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
   const navigate = useNavigate();
   const [frame, setFrame] = useState(0);
-  const frames = useMemo(() => service ? [service.image, ...CATEGORY_VISUALS[service.category]].filter((image): image is string => Boolean(image)) : [], [service]);
+  const frames = useMemo(() => service?.story?.frames.length ? service.story.frames : [service?.image].filter((image): image is string => Boolean(image)), [service]);
 
   useEffect(() => {
     if (!open) return;
@@ -49,7 +36,9 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
 
   if (!service) return null;
   const Icon = service.icon;
-  const benefits = CATEGORY_BENEFITS[service.category];
+  const benefits = service.story?.benefits ?? CATEGORY_BENEFITS[service.category];
+  const eyebrow = service.story?.eyebrow ?? "Med1.uz xizmati";
+  const description = service.story?.hook ?? `${service.description}. Xizmat imkoniyatlarini ko‘ring va kerakli amalni shu yerdan boshlang.`;
   const openService = () => {
     void hapticTap();
     onOpenChange(false);
@@ -63,7 +52,7 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
           {frames.map((image, index) => (
             <img key={image} src={image} alt="" width={768} height={1280} loading={index === 0 ? "eager" : "lazy"} decoding="async" className={`mobile-visual-frame absolute inset-0 h-full w-full object-cover ${frame === index ? "is-active" : ""}`} />
           ))}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/45 via-primary/10 to-primary" />
+          <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-transparent to-foreground/90" />
           <div className="absolute inset-0 bg-grid-tech opacity-10" />
         </div>
 
@@ -76,22 +65,22 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
             <Button variant="secondary" size="icon" className="bg-background/85 text-foreground shadow-card" onClick={() => onOpenChange(false)} aria-label="Xizmat ma’lumotini yopish"><X /></Button>
           </div>
 
-          <div className="mt-auto animate-fade-up">
-            <div className="mb-4 flex items-center gap-3">
-              <span className={`flex h-12 w-12 items-center justify-center rounded-lg border border-background/25 shadow-card ${service.tone}`}><Icon className="h-6 w-6" /></span>
+          <div className="mt-auto animate-fade-up rounded-lg border border-background/20 bg-foreground/55 p-4 shadow-elegant backdrop-blur-xl">
+            <div className="mb-3 flex items-center gap-3">
+              <span className={`flex h-11 w-11 items-center justify-center rounded-lg border border-background/30 shadow-card ${service.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
-                <p className="text-xs font-semibold uppercase text-primary-foreground/75">Med1.uz xizmati</p>
-                {service.badge && <span className="text-xs font-semibold text-primary-foreground">{service.badge}</span>}
+                <p className="text-xs font-bold uppercase text-primary-foreground">{eyebrow}</p>
+                <p className="text-[11px] text-primary-foreground/75">Med1.uz xizmati{service.badge ? ` · ${service.badge}` : ""}</p>
               </div>
             </div>
             <DialogTitle className="max-w-[19rem] text-3xl font-extrabold leading-tight text-primary-foreground">{service.title}</DialogTitle>
-            <DialogDescription id="service-detail-description" className="mt-3 max-w-md text-base leading-relaxed text-primary-foreground/85">{service.description}. Xizmat imkoniyatlarini ko‘ring va kerakli amalni shu yerdan boshlang.</DialogDescription>
+            <DialogDescription id="service-detail-description" className="mt-2 max-w-md text-sm font-medium leading-relaxed text-primary-foreground">{description}</DialogDescription>
 
-            <div className="mt-5 space-y-2.5" aria-label="Xizmat imkoniyatlari">
-              {benefits.map((benefit) => <div key={benefit} className="flex items-center gap-3 rounded-lg border border-background/15 bg-primary/55 px-3 py-2.5 backdrop-blur-md"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background/15"><Check className="h-3.5 w-3.5" /></span><span className="text-sm font-medium">{benefit}</span></div>)}
+            <div className="mt-4 space-y-2" aria-label="Xizmat imkoniyatlari">
+              {benefits.map((benefit) => <div key={benefit} className="flex items-center gap-3 rounded-lg border border-background/15 bg-background/10 px-3 py-2 backdrop-blur-md"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary"><Check className="h-3.5 w-3.5 text-primary-foreground" /></span><span className="text-sm font-semibold text-primary-foreground">{benefit}</span></div>)}
             </div>
 
-            <div className="mt-5 grid grid-cols-[auto_1fr_auto] gap-2">
+            <div className="mt-4 grid grid-cols-[auto_1fr_auto] gap-2">
               <Button variant="secondary" size="icon" onClick={() => { void hapticTap(); setFrame((current) => (current - 1 + frames.length) % frames.length); }} aria-label="Oldingi surat"><ChevronLeft /></Button>
               <Button size="lg" className="h-12 bg-background text-foreground hover:bg-background/90" onClick={openService}>Xizmatni ochish <ArrowRight /></Button>
               <Button variant="secondary" size="icon" onClick={() => { void hapticTap(); setFrame((current) => (current + 1) % frames.length); }} aria-label="Keyingi surat"><ChevronRight /></Button>

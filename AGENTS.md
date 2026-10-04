@@ -5,7 +5,7 @@
 - Mobile (Capacitor) support lives in `src/lib/nativeApp.ts` + `src/components/mobile/*`; every native plugin call is dynamically imported and no-ops on web, so the deployed website keeps working without native APIs.
 - The patient mobile shell owns global navigation, AI sheets, connectivity feedback, and the mobile services hub so shared web pages remain unchanged.
 - Mobile service navigation uses `src/data/mobileServiceCatalog.ts` as the single route inventory shared by the catalogue, home shortcuts, and AI hub, preventing link drift.
-- Mobile service photography is assigned through `src/data/mobileServiceImages.ts` and consumed from the shared catalogue, so every mobile surface uses the same existing site image.
+- Mobile service cards use `mobileServiceImages.ts`, while each educational detail uses four service-specific generated frames and copy from `mobileServiceStories.ts`, preventing generic visual reuse.
 - Mobile service education is presented through the shared catalogue detail overlay, so every service keeps one visual explanation and canonical destination.
 - Native deep links and last-screen restoration accept only allowlisted internal Med1 routes, so external input cannot become an open redirect.
 - Mobile directory favorites are account-backed in `mobile_favorites`; never cache authenticated favorites or patient data in local storage.

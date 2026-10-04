@@ -50,4 +50,4 @@
 - [x] Mobil foto kartalarini 384px va desktop ko‘rinishda tekshirish
 - [x] Mobil tanishtiruvni to‘liq ekranli, animatsiyali foto hikoyaga aylantirish
 - [x] Har bir xizmat kartasiga ko‘p kadrli batafsil taqdimot va aniq kirish amalini qo‘shish
-- [ ] 47 xizmatning har biri uchun 4 tadan takrorlanmas, xizmatga mos animatsion fon va kreativ sharh yaratish
+- [x] 47 xizmatning har biri uchun 4 tadan takrorlanmas, xizmatga mos animatsion fon va kreativ sharh yaratish
