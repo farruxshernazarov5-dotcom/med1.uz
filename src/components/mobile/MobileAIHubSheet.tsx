@@ -188,7 +188,7 @@ export const MobileAIHubSheet = () => {
             </Button>
             <Button type="button" variant="outline" className={`h-12 justify-start gap-2 ${listening ? "border-destructive text-destructive animate-pulse" : ""}`} onClick={toggleVoice} aria-pressed={listening}>
               {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5 text-primary" />}
-              <span className="text-left text-xs leading-tight">{listening ? "Tinglanmoqda…\nto‘xtatish" : "Ovozli\nqidiruv"}</span>
+              <span className="whitespace-pre-line text-left text-xs leading-tight">{listening ? "Tinglanmoqda…\nto‘xtatish" : "Ovozli\nqidiruv"}</span>
             </Button>
             <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" aria-label="Kamera orqali suratga olish" onChange={(event) => {
               const file = event.target.files?.[0];
