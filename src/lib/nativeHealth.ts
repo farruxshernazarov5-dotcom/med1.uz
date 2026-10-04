@@ -26,6 +26,20 @@ export async function ensureNotificationPermission(): Promise<boolean> {
   } catch { return false; }
 }
 
+/** Opens the phone's app settings screen so the user can re-enable a denied permission. */
+export async function openAppSettings(): Promise<void> {
+  if (!isNativeApp()) return;
+  try {
+    const { NativeSettings, AndroidSettings, IOSSettings } = await import("capacitor-native-settings");
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.getPlatform() === "ios") {
+      await NativeSettings.openIOS({ option: IOSSettings.App });
+    } else {
+      await NativeSettings.openAndroid({ option: AndroidSettings.ApplicationDetails });
+    }
+  } catch { /* settings screen unavailable — user can open it manually */ }
+}
+
 /** Daily repeating medication reminder at HH:MM. */
 export async function scheduleMedication(name: string, dose: string, times: string[]): Promise<number> {
   const LN = await ln();
