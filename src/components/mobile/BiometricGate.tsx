@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Fingerprint, Lock } from "lucide-react";
+import { Fingerprint, Lock, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { isBiometricLockEnabled, isUnlocked, verifyBiometric } from "@/lib/nativeHealth";
+import { isBiometricLockEnabled, isUnlocked, openAppSettings, verifyBiometric } from "@/lib/nativeHealth";
 
 /** Hides medical-card content behind Face ID / fingerprint in the native app when enabled. */
 export const BiometricGate = ({ children }: { children: ReactNode }) => {
@@ -24,9 +24,20 @@ export const BiometricGate = ({ children }: { children: ReactNode }) => {
       <div>
         <h3 className="font-semibold">Tibbiy karta himoyalangan</h3>
         <p className="text-sm text-muted-foreground">Ochish uchun Face ID yoki barmoq izidan foydalaning.</p>
-        {failed && <p className="mt-2 text-sm text-destructive" role="alert">Tasdiqlanmadi. Qayta urinib ko‘ring.</p>}
+        {failed && (
+          <p className="mt-2 text-sm text-destructive" role="alert">
+            Tasdiqlanmadi. Qayta urinib ko‘ring yoki telefon sozlamalarida Face ID / barmoq izi yoqilganini tekshiring.
+          </p>
+        )}
       </div>
-      <Button onClick={unlock} className="gap-2"><Fingerprint className="h-4 w-4" /> Ochish</Button>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button onClick={unlock} className="gap-2"><Fingerprint className="h-4 w-4" /> Qayta urinish</Button>
+        {failed && (
+          <Button variant="outline" className="gap-2" onClick={() => void openAppSettings()}>
+            <Settings className="h-4 w-4" /> Sozlamalarni ochish
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
