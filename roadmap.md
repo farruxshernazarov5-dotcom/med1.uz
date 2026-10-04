@@ -45,3 +45,6 @@
 - [x] Mobil bosh sahifaga 7 ta eng kerakli xizmat tezkor bloklari va katalog havolasini qo‘shish
 - [x] Mobil asosiy menyu va xizmat guruhlari uchun birinchi tashrif onboardingini qo‘shish
 - [x] Mobil katalog havolalari, qidiruv, onboarding va 384px/1280px ko‘rinishlarni tekshirish
+
+- [ ] Mobil katalog, tezkor bloklar va AI menyusiga saytdagi mos fotolavhalarni integratsiya qilish
+- [ ] Mobil foto kartalarini 384px va desktop ko‘rinishda tekshirish
