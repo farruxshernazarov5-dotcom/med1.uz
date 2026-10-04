@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setPendingCapture, startVoiceInput } from "@/lib/pendingCapture";
 import {
+  Camera,
+  Mic,
+  MicOff,
   CheckCircle2,
   Loader2,
   Microscope,
@@ -73,6 +77,9 @@ export const MobileAIHubSheet = () => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const stopVoiceRef = useRef<(() => void) | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [recentPaths, setRecentPaths] = useState<string[]>(recentPathsMemory);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -126,6 +133,18 @@ export const MobileAIHubSheet = () => {
     }
   };
 
+  const toggleVoice = () => {
+    void hapticTap();
+    if (listening) { stopVoiceRef.current?.(); return; }
+    const stop = startVoiceInput({
+      onText: (text) => setQuery(text),
+      onEnd: () => { setListening(false); stopVoiceRef.current = null; },
+    });
+    if (!stop) { setSearchError("Qurilmangiz ovozli kiritishni qo‘llab-quvvatlamaydi. Matn bilan yozing."); return; }
+    stopVoiceRef.current = stop;
+    setListening(true);
+  };
+
   const isSearching = query.trim() !== debouncedQuery.trim();
   const normalizedQuery = debouncedQuery.trim().toLocaleLowerCase("uz");
   const visibleTools = AI_TOOLS.filter((tool) => {
@@ -163,6 +182,22 @@ export const MobileAIHubSheet = () => {
         </DrawerHeader>
 
         <div className="shrink-0 space-y-2.5 border-b border-border px-4 pb-3">
+          <div className="grid grid-cols-2 gap-2">
+            <Button type="button" variant="outline" className="h-12 justify-start gap-2" onClick={() => { void hapticTap(); cameraInputRef.current?.click(); }}>
+              <Camera className="h-5 w-5 text-medical-green" /> <span className="text-left text-xs leading-tight">Tahlil / retseptni<br />suratga olish</span>
+            </Button>
+            <Button type="button" variant="outline" className={`h-12 justify-start gap-2 ${listening ? "border-destructive text-destructive animate-pulse" : ""}`} onClick={toggleVoice} aria-pressed={listening}>
+              {listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5 text-primary" />}
+              <span className="text-left text-xs leading-tight">{listening ? "Tinglanmoqda…\nto‘xtatish" : "Ovozli\nqidiruv"}</span>
+            </Button>
+            <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" aria-label="Kamera orqali suratga olish" onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (!file) return;
+              setPendingCapture(file);
+              openTool("/ai-report-analysis");
+            }} />
+          </div>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -171,7 +206,8 @@ export const MobileAIHubSheet = () => {
               inputMode="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="AI xizmatini qidiring..."
+              onKeyDown={(event) => { if (event.key === "Enter" && query.trim() && visibleTools.length === 0) { setOpen(false); navigate(`/smart-search?q=${encodeURIComponent(query.trim())}`); } }}
+              placeholder="AI xizmatini qidiring yoki gapiring..."
               aria-label="AI xizmatlarini qidirish"
               className="h-11 pl-9 pr-9"
             />
@@ -181,6 +217,8 @@ export const MobileAIHubSheet = () => {
               </Button>
             )}
           </div>
+          <p className="sr-only" role="status" aria-live="polite">{listening ? "Ovoz tinglanmoqda" : ""}</p>
+
 
           <Tabs value={category} onValueChange={(value) => { setCategory(value as ToolCategory); setQuery(""); void hapticTap(); }}>
             <TabsList className="flex h-auto w-full justify-start gap-1 overflow-x-auto bg-transparent p-0 pb-1" aria-label="AI xizmatlari toifalari">
