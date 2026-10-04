@@ -3,6 +3,10 @@ export type MobileServiceStory = {
   hook: string;
   benefits: readonly [string, string, string];
   frames: readonly string[];
+  proof?: {
+    value: string;
+    label: string;
+  };
 };
 
 const frameModules = import.meta.glob("../assets/mobile-service-stories/*.webp", {
@@ -21,12 +25,14 @@ export const MOBILE_SERVICE_STORIES: Record<string, MobileServiceStory> = {
     hook: "Kerakli mutaxassisni toping, ma’lumotlarini solishtiring va qabul vaqtini tanlang.",
     benefits: ["Mutaxassislik bo‘yicha qulay qidiruv", "Shifokor profili va xizmatlari", "Mavjud qabul vaqtini tanlash"],
     frames: framesFor("doctors"),
+    proof: { value: "4 800+", label: "shifokor biz bilan" },
   },
   "clinics": {
     eyebrow: "Tibbiyot markazlari",
     hook: "Klinikalar manzili, aloqa ma’lumoti va xizmatlarini bir joyda solishtiring.",
     benefits: ["Manzil va yo‘nalishni ko‘rish", "Xizmatlar ro‘yxatini solishtirish", "Klinika bilan bog‘lanish"],
     frames: framesFor("clinics"),
+    proof: { value: "1 300+", label: "klinika sizga yaqin" },
   },
   "diagnostics": {
     eyebrow: "To‘g‘ri tashxis",
