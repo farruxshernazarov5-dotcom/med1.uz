@@ -9,3 +9,4 @@
 - Native deep links and last-screen restoration accept only allowlisted internal Med1 routes, so external input cannot become an open redirect.
 - Mobile directory favorites are account-backed in `mobile_favorites`; never cache authenticated favorites or patient data in local storage.
 - Fixed bottom-anchored overlays (cookie/geo banners, floating dock) must clear the mobile bottom navigation by using `bottom-16`/`bottom-20` with an `lg:` reset.
+- Native medication/appointment reminders and biometric medical-card lock live in `src/lib/nativeHealth.ts`; reminders are OS local notifications only (no web storage of patient data), and the biometric preference is just an on/off flag.
