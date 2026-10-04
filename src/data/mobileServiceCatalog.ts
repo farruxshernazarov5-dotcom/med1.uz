@@ -18,7 +18,7 @@ export type MobileServiceItem = {
   path: string;
   category: MobileServiceCategory;
   icon: LucideIcon;
-  image: string;
+  image?: string;
   tone: string;
   badge?: MobileServiceBadge;
   featured?: boolean;
@@ -106,4 +106,4 @@ const withServiceImages = (services: MobileServiceItem[]) => services.map((servi
 
 export const MOBILE_SERVICE_CATALOG = withServiceImages([...care, ...MOBILE_AI_SERVICES, ...knowledge, ...publications, ...business, ...cabinets]);
 export const MOBILE_AI_SERVICES_WITH_IMAGES = MOBILE_SERVICE_CATALOG.filter((service) => service.category === "ai");
-export const MOBILE_QUICK_SERVICES = care.filter((service) => service.featured);
+export const MOBILE_QUICK_SERVICES = MOBILE_SERVICE_CATALOG.filter((service) => service.category === "care" && service.featured);
