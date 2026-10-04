@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { ArrowRight, Grid2X2, Heart, MapPin, Search, Sparkles, Stethoscope, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,7 @@ import {
   type MobileServiceItem,
 } from "@/data/mobileServiceCatalog";
 import { hapticTap } from "@/lib/nativeApp";
+import { MobileServiceDetail } from "@/components/mobile/MobileServiceDetail";
 
 type CategoryFilter = "all" | MobileServiceCategory;
 
@@ -24,6 +24,7 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [selectedService, setSelectedService] = useState<MobileServiceItem | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query), 180);
@@ -96,7 +97,7 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
                 {grouped[group].map((service) => {
                   const Icon = service.icon;
                   return (
-                    <Link key={service.id} to={service.path} onClick={() => void hapticTap()} className="group flex min-h-56 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-card transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                    <Button key={service.id} variant="ghost" onClick={() => { void hapticTap(); setSelectedService(service); }} className="group flex h-auto min-h-56 min-w-0 flex-col items-stretch justify-start overflow-hidden rounded-lg border border-border bg-card p-0 text-left shadow-card transition-transform active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring" aria-label={`${service.title} haqida batafsil ma’lumot`}>
                       <div className="relative aspect-[16/9] overflow-hidden bg-muted">
                         {service.image && <img src={service.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105" />}
                         <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent" aria-hidden="true" />
@@ -108,7 +109,7 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
                         <span className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted-foreground">{service.description}</span>
                         <ArrowRight className="mt-auto h-4 w-4 self-end text-primary" />
                       </span>
-                    </Link>
+                    </Button>
                   );
                 })}
               </div>
@@ -123,6 +124,7 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
           <Button className="mt-4" variant="outline" onClick={() => { setQuery(""); setCategory("all"); }}>Barcha xizmatlarni ko‘rish</Button>
         </div>
       )}
+      <MobileServiceDetail service={selectedService} open={Boolean(selectedService)} onOpenChange={(next) => { if (!next) setSelectedService(null); }} />
     </section>
   );
 };
