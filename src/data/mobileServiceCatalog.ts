@@ -95,6 +95,7 @@ const business: MobileServiceItem[] = [
 ];
 
 const cabinets: MobileServiceItem[] = [
+  { id: "appointments", title: "Qabullar", description: "Qabullar, tahlillar va AI xulosalari", path: "/mobile-appointments", category: "cabinet", icon: CalendarCheck, tone: "bg-primary/10 text-primary", featured: true },
   { id: "patient-cabinet", title: "Bemor kabineti", description: "Qabullar, tahlillar va salomatlik tarixi", path: "/dashboard/patient", category: "cabinet", icon: UsersRound, tone: "bg-primary/10 text-primary" },
   { id: "doctor-cabinet", title: "Shifokor kabineti", description: "Qabul va bemorlar boshqaruvi", path: "/dashboard/doctor", category: "cabinet", icon: Stethoscope, tone: "bg-secondary/10 text-secondary" },
   { id: "clinic-cabinet", title: "Klinika kabineti", description: "Klinika ish jarayonlari", path: "/dashboard/clinic", category: "cabinet", icon: Building2, tone: "bg-medical-green/10 text-medical-green" },

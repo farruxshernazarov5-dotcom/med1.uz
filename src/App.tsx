@@ -129,6 +129,7 @@ const Med1TopGuidePage = lazy(() => import("./pages/Med1TopGuidePage"));
 const Med1TopMyAdsPage = lazy(() => import("./pages/Med1TopMyAdsPage"));
 const SponsorProfilePage = lazy(() => import("./pages/SponsorProfilePage"));
 const MobileServicesPage = lazy(() => import("./pages/MobileServicesPage"));
+const MobileAppointmentsPage = lazy(() => import("./pages/MobileAppointmentsPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingDock from "./components/FloatingDock";
@@ -223,6 +224,7 @@ const App = () => (
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/mobile-services" element={<MobileServicesPage />} />
+                <Route path="/mobile-appointments" element={<MobileAppointmentsPage />} />
                 <Route path="/user-guide" element={<UserGuidePage />} />
                 <Route path="/sitemap" element={<SitemapPage />} />
                 <Route path="/symptom-checker" element={<SymptomCheckerPage />} />

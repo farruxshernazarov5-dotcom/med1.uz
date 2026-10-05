@@ -9,7 +9,7 @@ import { registerNotificationTaps, lockNow } from "@/lib/nativeHealth";
 import { initNativeChrome, isNativeApp, registerBackButton, registerDeepLinks, watchNetwork } from "@/lib/nativeApp";
 
 const LAST_MOBILE_PATH = "med1_mobile_last_path_v1";
-const SAFE_RESTORE_PATH = /^\/(?:mobile-services|medicine|diseases|articles|knowledge|clinics|doctors|pharmacies|diagnostics|dental|blood-banks|maternity|med-tech|verify|legal-center|med1-top|partnership|otm|dashboard\/[a-z-]+|ai-[a-z-]+|symptom-checker)(?:\/[^?#]*)?(?:[?#].*)?$/;
+const SAFE_RESTORE_PATH = /^\/(?:mobile-services|mobile-appointments|medicine|diseases|articles|knowledge|clinics|doctors|pharmacies|diagnostics|dental|blood-banks|maternity|med-tech|verify|legal-center|med1-top|partnership|otm|dashboard\/[a-z-]+|ai-[a-z-]+|symptom-checker)(?:\/[^?#]*)?(?:[?#].*)?$/;
 
 /**
  * Mobile/native shell: safe-area padding, bottom navigation, hardware back
