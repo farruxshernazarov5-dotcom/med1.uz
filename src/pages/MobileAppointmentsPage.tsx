@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { hapticTap } from "@/lib/nativeApp";
+import { MOBILE_AI_SERVICES } from "@/data/mobileServiceCatalog";
 import { cn } from "@/lib/utils";
 import f1 from "@/assets/mobile-service-stories/doctors-2.webp";
 import f2 from "@/assets/mobile-service-stories/diagnostics-3.webp";
@@ -71,6 +72,16 @@ const MobileAppointmentsPage = () => {
   const list = panel === "upcoming" ? upcoming : panel === "past" ? past : null;
   const aiList = panel === "labs" ? labs : panel === "ai" ? ai : null;
 
+  const aiPath = (serviceId: string) => MOBILE_AI_SERVICES.find((s) => s.id === serviceId)?.path ?? "/ai-services";
+
+  const EMPTY: Record<string, { title: string; hint: string; cta: string; to: string }> = {
+    upcoming: { title: "Kelgusi qabul yo‘q", hint: "Shifokor yoki klinikani tanlab, qulay vaqtga yoziling — qabul shu yerda ko‘rinadi.", cta: "Shifokor tanlash", to: "/doctors" },
+    past: { title: "Qabullar tarixi bo‘sh", hint: "Birinchi qabulga yozilgach, o‘tgan tashriflaringiz shu yerda saqlanadi.", cta: "Qabulga yozilish", to: "/doctors" },
+    labs: { title: "Tahlil natijalari yo‘q", hint: "Tahlil varag‘ini suratga oling yoki yuklang — AI uni o‘qib, xulosani shu yerda saqlaydi.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
+    ai: { title: "AI xulosalari hali yo‘q", hint: "Istalgan Med1 AI xizmatidan foydalaning — bergan javoblari avtomatik shu yerda saqlanadi.", cta: "AI xizmatlarini ochish", to: "/ai-services" },
+  };
+  const empty = panel ? EMPTY[panel] : null;
+
   return (
     <div className="min-h-screen bg-background pb-28">
       <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-card/90 px-3 py-2 backdrop-blur-xl app-safe-top">
@@ -124,19 +135,31 @@ const MobileAppointmentsPage = () => {
           <DialogDescription>Faqat sizga ko‘rinadi.</DialogDescription>
           <div className="space-y-2">
             {list?.map((a) => (
-              <div key={a.id} className="flex items-center gap-3 rounded-lg border border-border p-3">
+              <Link key={a.id} to="/dashboard/patient" onClick={() => setPanel(null)} className="flex items-center gap-3 rounded-lg border border-border p-3 transition active:scale-[0.98]">
                 <CalendarCheck className="h-5 w-5 text-primary" />
                 <div className="flex-1"><p className="text-sm font-semibold">{a.appointment_date} {a.appointment_time?.slice(0, 5)}</p>{a.notes && <p className="text-xs text-muted-foreground line-clamp-2">{a.notes}</p>}</div>
                 <span className="rounded-full bg-muted px-2 py-0.5 text-[10px]">{STATUS[a.status ?? ""] ?? a.status}</span>
-              </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </Link>
             ))}
             {aiList?.map((r) => (
               <details key={r.id} className="rounded-lg border border-border p-3">
                 <summary className="cursor-pointer text-sm font-semibold">{r.service_id} · {new Date(r.created_at).toLocaleDateString("uz-UZ")}</summary>
                 <p className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground">{r.content.slice(0, 3000)}</p>
+                <Button asChild variant="outline" size="sm" className="mt-3 w-full" onClick={() => setPanel(null)}>
+                  <Link to={aiPath(r.service_id)}>Xizmatni ochish</Link>
+                </Button>
               </details>
             ))}
-            {(list?.length === 0 || aiList?.length === 0) && <p className="py-6 text-center text-sm text-muted-foreground">Hozircha yozuv yo‘q.</p>}
+            {empty && (list?.length === 0 || aiList?.length === 0) && (
+              <div className="rounded-xl border border-dashed border-border bg-muted/40 p-5 text-center">
+                <p className="font-semibold text-foreground">{empty.title}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{empty.hint}</p>
+                <Button asChild size="sm" className="mt-3" onClick={() => setPanel(null)}>
+                  <Link to={empty.to}>{empty.cta}</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
