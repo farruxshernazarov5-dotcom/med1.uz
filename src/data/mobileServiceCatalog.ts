@@ -5,6 +5,7 @@ import {
   Microscope, Newspaper, Pill, Ribbon, Salad, ScanLine, ShieldCheck,
   Smile, Sparkles, Stethoscope, UserRoundPlus, UsersRound, Wind, Wrench,
   type LucideIcon,
+  CalendarCheck,
 } from "lucide-react";
 import { MOBILE_SERVICE_IMAGES } from "@/data/mobileServiceImages";
 import { MOBILE_SERVICE_STORIES, type MobileServiceStory } from "@/data/mobileServiceStories";
