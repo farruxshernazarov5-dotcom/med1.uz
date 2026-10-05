@@ -53,3 +53,4 @@
 - [x] 47 xizmatning har biri uchun 4 tadan takrorlanmas, xizmatga mos animatsion fon va kreativ sharh yaratish
 - [x] Mobil xizmat tafsilotida fon ko‘rinishini kuchaytirish va 4 800+ shifokor, 1 300+ klinika, 50K+ oylik foydalanuvchi ko‘rsatkichlarini chiqarish
 - [x] Mobil AI menyusidagi har bir xizmatga saytdagi funksiyalar va misollarni ko‘rsatuvchi “Batafsil” oynasini ulash
+- [x] Mobil Qabullar bo‘limi: onboarding, qabul/tahlil/AI xulosa kartalari
