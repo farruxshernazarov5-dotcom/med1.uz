@@ -51,7 +51,7 @@ export async function scheduleMedication(name: string, dose: string, times: stri
       title: `💊 Dori vaqti: ${name}`,
       body: dose ? `${dose} — ichishni unutmang` : "Dorini ichishni unutmang",
       schedule: { on: { hour, minute }, allowWhileIdle: true },
-      extra: { kind: "med", route: "/dashboard/patient" },
+      extra: { kind: "med", route: "/mobile-appointments?panel=reminders" },
     };
   });
   await LN.schedule({ notifications });
@@ -78,7 +78,7 @@ export async function syncAppointmentReminders(items: { id: string; when: Date; 
         title: "🩺 Shifokor qabuli",
         body: `${o.text}: ${a.label} — ${a.when.toLocaleString("uz-UZ", { dateStyle: "short", timeStyle: "short" })}`,
         schedule: { at, allowWhileIdle: true },
-        extra: { kind: "appt", route: "/dashboard/patient" },
+        extra: { kind: "appt", route: "/mobile-appointments?panel=upcoming" },
       });
     });
   });
@@ -104,6 +104,31 @@ export async function cancelReminder(id: number) {
   await LN.cancel({ notifications: [{ id }] });
 }
 
+/** Checks (never prompts) whether notifications are already allowed. */
+export async function hasNotificationPermission(): Promise<boolean> {
+  if (!isNativeApp()) return false;
+  try { return (await (await ln()).checkPermissions()).display === "granted"; } catch { return false; }
+}
+
+const LAB_BASE = 900000;
+/** Fires an immediate local notification (e.g. lab result is ready). */
+export async function notifyNow(title: string, body: string, route: string): Promise<void> {
+  const LN = await ln();
+  await LN.schedule({ notifications: [{
+    id: LAB_BASE + Math.floor(Math.random() * 90000), title, body,
+    schedule: { at: new Date(Date.now() + 1000), allowWhileIdle: true },
+    extra: { kind: "lab", route },
+  }] });
+}
+
+// Only an on/off flag and a "last checked" timestamp — no medical data.
+const LAB_ALERT_PREF = "med1_lab_alerts_v1";
+const LAB_SEEN = "med1_lab_alert_seen_v1";
+export const isLabAlertsEnabled = () => localStorage.getItem(LAB_ALERT_PREF) !== "0";
+export const setLabAlertsEnabled = (on: boolean) => localStorage.setItem(LAB_ALERT_PREF, on ? "1" : "0");
+export const getLabSeenAt = () => localStorage.getItem(LAB_SEEN) ?? new Date(Date.now() - 3 * 864e5).toISOString();
+export const setLabSeenAt = (iso: string) => localStorage.setItem(LAB_SEEN, iso);
+
 /** Opens the in-app route attached to a tapped notification. */
 export async function registerNotificationTaps(go: (path: string) => void): Promise<() => void> {
   if (!isNativeApp()) return () => {};
@@ -111,7 +136,7 @@ export async function registerNotificationTaps(go: (path: string) => void): Prom
     const LN = await ln();
     const h = await LN.addListener("localNotificationActionPerformed", (e) => {
       const route = e.notification.extra?.route;
-      if (typeof route === "string" && route.startsWith("/dashboard")) go(route);
+      if (typeof route === "string" && /^\/(dashboard|mobile-appointments)(?:[/?]|$)/.test(route)) go(route);
     });
     return () => void h.remove();
   } catch { return () => {}; }

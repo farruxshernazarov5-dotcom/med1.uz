@@ -1,21 +1,34 @@
 import { useEffect, useState } from "react";
-import { Bell, CalendarClock, Fingerprint, Pill, Plus, Trash2, X } from "lucide-react";
+import { Bell, CalendarClock, FlaskConical, Fingerprint, Pill, Plus, Smartphone, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { isNativeApp } from "@/lib/nativeApp";
 import {
-  biometricAvailable, cancelReminder, ensureNotificationPermission, isBiometricLockEnabled,
-  listReminders, scheduleMedication, setBiometricLockEnabled, syncAppointmentReminders,
+  biometricAvailable, cancelReminder, ensureNotificationPermission, isBiometricLockEnabled, isLabAlertsEnabled,
+  listReminders, scheduleMedication, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
   verifyBiometric, type PendingReminder,
 } from "@/lib/nativeHealth";
+import { fetchPatientVisits, isVisitOpen, visitDate } from "@/lib/patientRecords";
 import { PermissionDeniedDialog, type PermissionKind } from "@/components/mobile/PermissionDeniedDialog";
 
-/** Medication + appointment push reminders and biometric lock — native app only. */
+const LabAlertsCard = () => {
+  const [on, setOn] = useState(isLabAlertsEnabled());
+  return (
+    <Card>
+      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><FlaskConical className="h-5 w-5 text-medical-green" /> Tahlil natijasi tayyor bo‘lganda</CardTitle></CardHeader>
+      <CardContent className="flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">Klinika yoki diagnostika markazi natijani kiritgan zahoti xabar beramiz.</p>
+        <Switch checked={on} onCheckedChange={(v) => { setLabAlertsEnabled(v); setOn(v); }} aria-label="Tahlil natijasi bildirishnomasi" />
+      </CardContent>
+    </Card>
+  );
+};
+
+/** Medication + appointment push reminders, lab-ready alerts and biometric lock. */
 export const NativeHealthSettings = () => {
   const { user } = useAuth();
   const [reminders, setReminders] = useState<PendingReminder[]>([]);
@@ -38,9 +51,13 @@ export const NativeHealthSettings = () => {
 
   if (!native) {
     return (
-      <Card><CardContent className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
-        <Bell className="h-5 w-5 text-primary" /> Dori va qabul eslatmalari hamda Face ID / barmoq izi bilan kirish Med1.uz mobil ilovasida mavjud.
-      </CardContent></Card>
+      <div className="space-y-4">
+        <Card><CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
+          <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+          <span>Telefonga keladigan dori va qabul eslatmalari hamda Face ID / barmoq izi bilan kirish <b className="text-foreground">Med1.uz mobil ilovasida</b> ishlaydi. Saytda esa qabul yaqinlashganda va tahlil tayyor bo‘lganda shu sahifada ogohlantirish chiqadi.</span>
+        </CardContent></Card>
+        <LabAlertsCard />
+      </div>
     );
   }
 
@@ -55,15 +72,11 @@ export const NativeHealthSettings = () => {
   const syncAppts = async () => {
     if (!user) return;
     if (!(await ensureNotificationPermission())) { askPermission("notifications", () => void syncAppts()); return; }
-    const today = new Date().toISOString().slice(0, 10);
-    const { data, error } = await supabase.from("appointments")
-      .select("id, appointment_date, appointment_time, status")
-      .eq("patient_id", user.id).gte("appointment_date", today)
-      .not("status", "in", "(cancelled,completed)").limit(30);
-    if (error) { toast({ title: "Qabullarni yuklab bo‘lmadi", variant: "destructive" }); return; }
-    const items = (data ?? []).map((a) => ({ id: a.id, when: new Date(`${a.appointment_date}T${a.appointment_time}`), label: "Klinikadagi qabul" }));
+    const { visits, failed } = await fetchPatientVisits(user.id);
+    if (failed && !visits.length) { toast({ title: "Qabullarni yuklab bo‘lmadi", variant: "destructive" }); return; }
+    const items = visits.filter((v) => isVisitOpen(v) && visitDate(v).getTime() > Date.now()).map((v) => ({ id: v.id, when: visitDate(v), label: v.title }));
     const n = await syncAppointmentReminders(items);
-    toast({ title: "Qabul eslatmalari yangilandi", description: `${items.length} ta qabul, ${n} ta eslatma` });
+    toast({ title: "Qabul eslatmalari yangilandi", description: items.length ? `${items.length} ta qabul, ${n} ta eslatma` : "Kelgusi qabul topilmadi" });
     void refresh();
   };
 
@@ -75,14 +88,6 @@ export const NativeHealthSettings = () => {
   return (
     <div className="space-y-4">
       <PermissionDeniedDialog kind={denied} onClose={() => setDenied(null)} onRetry={() => retryAction?.()} />
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Fingerprint className="h-5 w-5 text-primary" /> Tibbiy kartaga xavfsiz kirish</CardTitle></CardHeader>
-        <CardContent className="flex items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">{bio.ok ? `Tahlillar, retseptlar va tarixni ${bio.label} bilan himoyalash` : "Qurilmada Face ID yoki barmoq izi sozlanmagan"}</p>
-          <Switch checked={bioOn} disabled={!bio.ok} onCheckedChange={toggleBio} aria-label="Biometrik himoya" />
-        </CardContent>
-      </Card>
-
       <Card>
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Pill className="h-5 w-5 text-medical-green" /> Dori ichish eslatmasi</CardTitle></CardHeader>
         <CardContent className="space-y-2">
@@ -104,24 +109,33 @@ export const NativeHealthSettings = () => {
       <Card>
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><CalendarClock className="h-5 w-5 text-primary" /> Shifokor qabuli eslatmasi</CardTitle></CardHeader>
         <CardContent className="space-y-2">
-          <p className="text-sm text-muted-foreground">Qabuldan 1 kun va 1 soat oldin bildirishnoma keladi.</p>
-          <Button variant="outline" className="w-full" onClick={syncAppts}>Qabullarimni sinxronlash</Button>
+          <p className="text-sm text-muted-foreground">Qabuldan 1 kun va 1 soat oldin bildirishnoma keladi. Ilova ochilganda avtomatik yangilanadi.</p>
+          <Button variant="outline" className="w-full" onClick={syncAppts}>Qabullarimni hozir sinxronlash</Button>
         </CardContent>
       </Card>
 
-      {reminders.length > 0 && (
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base">Faol eslatmalar ({reminders.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {reminders.map((r) => (
-              <div key={r.id} className="flex items-center justify-between gap-2 rounded-lg border border-border p-2 text-sm">
-                <div className="min-w-0"><p className="truncate font-medium">{r.title}</p><p className="truncate text-xs text-muted-foreground">{r.body}</p></div>
-                <Button size="icon" variant="ghost" aria-label="Eslatmani o‘chirish" onClick={async () => { await cancelReminder(r.id); void refresh(); }}><Trash2 className="h-4 w-4" /></Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+      <LabAlertsCard />
+
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Fingerprint className="h-5 w-5 text-primary" /> Tibbiy kartaga xavfsiz kirish</CardTitle></CardHeader>
+        <CardContent className="flex items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">{bio.ok ? `Tahlillar, retseptlar va tarixni ${bio.label} bilan himoyalash` : "Qurilmada Face ID yoki barmoq izi sozlanmagan"}</p>
+          <Switch checked={bioOn} disabled={!bio.ok} onCheckedChange={toggleBio} aria-label="Biometrik himoya" />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Bell className="h-5 w-5 text-medical-orange" /> Faol eslatmalar ({reminders.length})</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {reminders.length === 0 && <p className="text-sm text-muted-foreground">Hozircha faol eslatma yo‘q. Yuqorida dori qo‘shing yoki qabullarni sinxronlang.</p>}
+          {reminders.map((r) => (
+            <div key={r.id} className="flex items-center justify-between gap-2 rounded-lg border border-border p-2 text-sm">
+              <div className="min-w-0"><p className="truncate font-medium">{r.title}</p><p className="truncate text-xs text-muted-foreground">{r.body}</p></div>
+              <Button size="icon" variant="ghost" aria-label="Eslatmani o‘chirish" onClick={async () => { await cancelReminder(r.id); void refresh(); }}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 };

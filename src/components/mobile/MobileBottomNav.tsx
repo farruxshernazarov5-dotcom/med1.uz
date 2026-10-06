@@ -50,7 +50,7 @@ const MobileBottomNav = () => {
         label: "Qabullar",
         to: "/mobile-appointments",
         icon: CalendarCheck,
-        match: (p) => p.startsWith("/mobile-appointments") || p.startsWith("/booking"),
+        match: (p) => p.startsWith("/mobile-appointments") || p.startsWith("/mobile-tips") || p.startsWith("/booking"),
       },
       {
         label: user ? "Kabinet" : "Kirish",

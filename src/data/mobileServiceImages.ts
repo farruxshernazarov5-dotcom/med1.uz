@@ -1,4 +1,5 @@
 import doctorMale from "@/assets/doctor-male.webp";
+import tipsCover from "@/assets/mobile-tips/health-1.webp";
 import clinicPrivate from "@/assets/clinic-private.webp";
 import diagCenter from "@/assets/diag-center.webp";
 import pharmInterior from "@/assets/pharm-interior.webp";
@@ -91,6 +92,7 @@ export const MOBILE_SERVICE_IMAGES: Record<string, string> = {
   "med1-top-new": adBanner,
   partnership,
   "patient-cabinet": patientEcosystem,
+  tips: tipsCover,
   "doctor-cabinet": hmsDashboard,
   "clinic-cabinet": clinicReception,
   "business-cabinet": hmsFinance,

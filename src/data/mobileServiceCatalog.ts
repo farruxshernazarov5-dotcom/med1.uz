@@ -79,6 +79,7 @@ const knowledge: MobileServiceItem[] = [
   { id: "medicine", title: "Dori vositalari", description: "Dorilar va tibbiy atamalar bazasi", path: "/medicine", category: "knowledge", icon: Pill, tone: "bg-medical-green/10 text-medical-green" },
   { id: "knowledge", title: "Tibbiy ensiklopediya", description: "Ishonchli tibbiy bilimlar kutubxonasi", path: "/knowledge", category: "knowledge", icon: GraduationCap, tone: "bg-primary/10 text-primary" },
   { id: "articles", title: "Tibbiy maqolalar", description: "Mutaxassislar tayyorlagan maqolalar", path: "/articles", category: "knowledge", icon: Newspaper, tone: "bg-secondary/10 text-secondary" },
+  { id: "tips", title: "Foydali maslahatlar", description: "Kasalliklar, ensiklopediya, maqolalar, yangiliklar va tavsiyalar", path: "/mobile-tips", category: "knowledge", icon: Newspaper, tone: "bg-medical-orange/10 text-medical-orange", badge: "Yangi" },
 ];
 
 const publications: MobileServiceItem[] = [

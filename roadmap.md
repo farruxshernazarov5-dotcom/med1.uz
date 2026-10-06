@@ -54,3 +54,7 @@
 - [x] Mobil xizmat tafsilotida fon ko‘rinishini kuchaytirish va 4 800+ shifokor, 1 300+ klinika, 50K+ oylik foydalanuvchi ko‘rsatkichlarini chiqarish
 - [x] Mobil AI menyusidagi har bir xizmatga saytdagi funksiyalar va misollarni ko‘rsatuvchi “Batafsil” oynasini ulash
 - [x] Mobil Qabullar bo‘limi: onboarding, qabul/tahlil/AI xulosa kartalari
+- [x] Qabul yaqinlashganda va tahlil tayyor bo‘lganda bildirishnoma (ilovada telefon, saytda ekranda)
+- [x] AI xulosalarini sana va xizmat turi bo‘yicha saralash, to‘liq natijani ochish
+- [x] Qabul tarixi barcha bo‘limlardan (klinika, shifokor, diagnostika, stomatologiya va boshqalar) va eslatmalar oynasini tuzatish
+- [x] "Foydali maslahatlar" bo‘limi: 8 menyu, yangi fotolar, animatsion taqdimot, "?" yo‘riqnoma
