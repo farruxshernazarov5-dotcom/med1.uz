@@ -11,7 +11,7 @@ import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { useAiAccess } from "@/hooks/useAiAccess";
 import { useCredits } from "@/hooks/useCredits";
@@ -177,7 +177,8 @@ const PatientDashboard = () => {
   const { access, remainingToday } = useAiAccess();
   const { balance, packageTier } = useCredits();
   const { theme, setTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TabId>(() => (searchParams.get("tab") as TabId) || "overview");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [lockedFeature, setLockedFeature] = useState<string>("");

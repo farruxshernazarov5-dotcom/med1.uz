@@ -11,3 +11,5 @@
 - Mobile directory favorites are account-backed in `mobile_favorites`; never cache authenticated favorites or patient data in local storage.
 - Fixed bottom-anchored overlays (cookie/geo banners, floating dock) must clear the mobile bottom navigation by using `bottom-16`/`bottom-20` with an `lg:` reset.
 - Native medication/appointment reminders and biometric medical-card lock live in `src/lib/nativeHealth.ts`; reminders are OS local notifications only (no web storage of patient data), and the biometric preference is just an on/off flag.
+- Patient visits and lab orders are aggregated across every booking module only via `src/lib/patientRecords.ts`, so mobile screens, reminders and alerts never disagree about what a patient has booked.
+- The mobile "Foydali maslahatlar" hub reads its menus, frames and phrases only from `src/data/mobileTipsCatalog.ts`, keeping cards, stories and onboarding in sync.
