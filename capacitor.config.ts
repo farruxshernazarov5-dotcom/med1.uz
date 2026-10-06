@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.89a5c0ffa25e4201b8e856f5f02a2027',
+  appId: 'uz.medall.app',
   appName: 'Med ALL',
   webDir: 'dist',
   server: {
