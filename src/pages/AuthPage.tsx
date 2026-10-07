@@ -41,7 +41,8 @@ const PASSWORD_RULES = [
 type AuthMethod = "email" | "phone";
 
 const AuthPage = () => {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState<"login" | "register">(() => searchParams.get("mode") === "register" ? "register" : "login");
   const [authMethod, setAuthMethod] = useState<AuthMethod>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,7 +65,6 @@ const AuthPage = () => {
 
   const { signIn, signUp, signInWithPhone, verifyPhoneOtp, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   // Sanitize ?next= to a same-origin relative path so OAuth-consent redirects survive login.
   const rawNext = searchParams.get("next");
@@ -75,9 +75,8 @@ const AuthPage = () => {
   const handleOAuthSignIn = async (provider: "google" | "microsoft") => {
     setSubmitting(true);
     if (mode === "register") setPendingRole(role);
-    const redirectUri = safeNext
-      ? `${window.location.origin}${safeNext}`
-      : window.location.origin;
+    // OAuth must return to a public page; ?next survives the sign-in round trip.
+    const redirectUri = `${window.location.origin}/auth${safeNext ? `?next=${encodeURIComponent(safeNext)}` : ""}`;
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: redirectUri,
     });
@@ -139,7 +138,7 @@ const AuthPage = () => {
           toast({ title: "Xatolik", description: verifyErr.message, variant: "destructive" });
         } else {
           toast({ title: "Xush kelibsiz!" });
-          navigate("/dashboard");
+           navigate(safeNext ?? "/dashboard");
         }
       } else {
         toast({
