@@ -5,7 +5,6 @@ const config: CapacitorConfig = {
   appName: 'Med ALL',
   webDir: 'dist',
   server: {
-    url: 'https://med1.uz',
     cleartext: false
   },
   ios: {
