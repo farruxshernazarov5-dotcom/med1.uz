@@ -60,8 +60,9 @@
 - [x] "Foydali maslahatlar" bo‘limi: 8 menyu, yangi fotolar, animatsion taqdimot, "?" yo‘riqnoma
 
 ## Mobil Profil
-- [ ] Kabinet tugmasini Profil markaziga almashtirish, mavjud shaxsiy xizmatlarni ulash
-- [ ] Kun/tun, til, Med Coin, oila, hujjatlar, xavfsizlik va yordam amallarini ishlatish
-- [ ] Kirish va ro‘yxatdan o‘tish kanallarining mobil oqimini tekshirish
-- [ ] Har bir profil menyusiga 3 ta yangi foto, animatsion tushuntirish va qayta ochiladigan yordam
-- [ ] Profilning kirgan/kirmagan holatlari va havolalarini tekshirish
+- [x] Kabinet tugmasini Profil markaziga almashtirish, mavjud shaxsiy xizmatlarni ulash
+- [x] Kun/tun, til, Med Coin, oila, hujjatlar, xavfsizlik va yordam amallarini ishlatish
+- [x] Email, Google va Microsoft yoqilganini tekshirish; mavjud Telegram OTP kirishi, ro‘yxatdan o‘tish havolasi va kirgandan profilga qaytishni ulash
+- [ ] Google/Microsoft va Telegram kirishini APK/iOS qurilmada oxirigacha sinash — native papkalar va haqiqiy qurilma mavjud emas; WebView OAuth qaytishi hali tasdiqlanmagan
+- [x] Har bir profil menyusiga 3 ta yangi foto, animatsion tushuntirish va qayta ochiladigan yordam
+- [x] Profilning kirgan/kirmagan holatlari, 12 ichki bo‘lim, til, kun/tun, yordam tugmasi va fotosuratlar yuklanishini brauzerda tekshirish
