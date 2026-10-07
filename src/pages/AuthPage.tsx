@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isNativeApp } from "@/lib/nativeApp";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
