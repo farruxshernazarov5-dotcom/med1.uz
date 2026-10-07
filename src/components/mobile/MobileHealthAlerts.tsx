@@ -24,6 +24,8 @@ export const MobileHealthAlerts = () => {
   useEffect(() => {
     if (!user) return;
     let alive = true;
+    apptWarned.current.clear();
+    synced.current = false;
 
     const run = async () => {
       if (!alive || document.visibilityState === "hidden") return;
@@ -33,7 +35,9 @@ export const MobileHealthAlerts = () => {
       // 1. Lab results that became ready since the last check.
       if (isLabAlertsEnabled()) {
         const seen = getLabSeenAt();
-        const labs = await fetchLabOrders(user.id).catch(() => []);
+        const labs = await fetchLabOrders(user.id).catch(() => null);
+        if (!alive) return;
+        if (labs) {
         const fresh = labs.filter((l) => l.ready && (l.completedAt ?? "") > seen);
         setLabSeenAt(new Date().toISOString());
         if (fresh.length) {
@@ -42,14 +46,14 @@ export const MobileHealthAlerts = () => {
           if (allowed) await notifyNow(title, body, "/mobile-appointments?panel=labs").catch(() => {});
           else toast(title, { description: body, action: { label: "Ko‘rish", onClick: () => navigate("/mobile-appointments?panel=labs") } });
         }
+        }
       }
 
       // 2. Upcoming visits.
       const { visits } = await fetchPatientVisits(user.id).catch(() => ({ visits: [] }));
       const upcoming = visits.filter((v) => isVisitOpen(v) && visitDate(v).getTime() > Date.now());
       if (allowed && !synced.current) {
-        synced.current = true;
-        await syncAppointmentReminders(upcoming.map((v) => ({ id: v.id, when: visitDate(v), label: v.title }))).catch(() => {});
+        await syncAppointmentReminders(upcoming.map((v) => ({ id: v.id, when: visitDate(v), label: v.title }))).then(()=>{ synced.current = true; }).catch(() => {});
       }
       upcoming
         .filter((v) => visitDate(v).getTime() - Date.now() < 24 * 3600e3 && !apptWarned.current.has(v.id))
