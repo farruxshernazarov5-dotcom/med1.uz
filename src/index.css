@@ -740,3 +740,13 @@
   height: 3px;
   background-image: linear-gradient(90deg, hsl(var(--tier-from)), hsl(var(--tier-via)), hsl(var(--tier-to)));
 }
+
+/* Profile photo education stays legible in both themes. */
+:root { --profile-story-ink: 0 0% 100%; --profile-story-shade: 213 73% 8%; }
+.profile-story { color: hsl(var(--profile-story-ink)); background: hsl(var(--profile-story-shade)); }
+.profile-story-copy { color: hsl(var(--profile-story-ink) / .92); }
+.profile-story-progress { background: hsl(var(--profile-story-ink)); }
+.profile-story-scrim { background: linear-gradient(180deg, hsl(var(--profile-story-shade) / .15), transparent 30%, hsl(var(--profile-story-shade) / .75) 70%, hsl(var(--profile-story-shade) / .96)); }
+.profile-story-photo { opacity: 0; transform: scale(1.025); transition: opacity 1s ease, transform 6s ease; }
+.profile-story-photo.is-active { opacity: 1; transform: scale(1); }
+@media (prefers-reduced-motion: reduce) { .profile-story-photo { transition: none; transform: none; } }

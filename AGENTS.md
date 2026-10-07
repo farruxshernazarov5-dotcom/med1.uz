@@ -13,3 +13,5 @@
 - Native medication/appointment reminders and biometric medical-card lock live in `src/lib/nativeHealth.ts`; reminders are OS local notifications only (no web storage of patient data), and the biometric preference is just an on/off flag.
 - Patient visits and lab orders are aggregated across every booking module only via `src/lib/patientRecords.ts`, so mobile screens, reminders and alerts never disagree about what a patient has booked.
 - The mobile "Foydali maslahatlar" hub reads its menus, frames and phrases only from `src/data/mobileTipsCatalog.ts`, keeping cards, stories and onboarding in sync.
+- Mobile Profile uses `mobileProfileCatalog.ts` for menu identity and three generated photo frames; reuse existing account-backed patient components in profile sections rather than duplicating medical or payment logic.
+- Mobile Profile security exposes real Auth password updates and other-session sign-out; never present mock devices or mock login history as account security records.
