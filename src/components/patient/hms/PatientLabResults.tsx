@@ -19,7 +19,7 @@ const PatientLabResults = () => {
     const [hms, diag, mat] = await Promise.all([
       sb.from("hms_lab_results").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
       sb.from("diagnostics_lab_results").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
-      sb.from("maternity_lab_results").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
+      sb.from("maternity_lab_results").select("*").eq("patient_id", user.id).order("created_at", { ascending: false }).limit(50),
     ]);
     const combined = [
       ...(hms.data || []).map((r: any) => ({ ...r, _src: "HMS" })),
@@ -36,6 +36,7 @@ const PatientLabResults = () => {
     const ch = supabase.channel(`user:${user.id}:patient-labs`)
       .on("postgres_changes", { event: "*", schema: "public", table: "hms_lab_results", filter: `patient_id=eq.${user.id}` }, () => load())
       .on("postgres_changes", { event: "*", schema: "public", table: "diagnostics_lab_results", filter: `patient_id=eq.${user.id}` }, () => load())
+       .on("postgres_changes", { event: "*", schema: "public", table: "maternity_lab_results", filter: `patient_id=eq.${user.id}` }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user?.id]);

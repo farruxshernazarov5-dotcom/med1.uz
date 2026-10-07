@@ -60,6 +60,11 @@
 - [x] "Foydali maslahatlar" bo‘limi: 8 menyu, yangi fotolar, animatsion taqdimot, "?" yo‘riqnoma
 
 ## Mobil Profil
+- [x] Google/Microsoft jonli kirish boshlanishi 302 javobi, ichki qaytish manzili va Telegram kod kiritish holatlarini tekshirish/tuzatish; telefondagi yakuniy OAuth/OTP tekshiruvi alohida ochiq
+- [x] So‘rovchi hisobida xavfsizlik, til va Med Coin sahifalarini brauzerda ochish — parol/sessiyalar o‘zgartirilmadi
+- [x] Qabul eslatmasidan kirishdan keyin bemor qabul oynasiga qaytish va kabinet tabini saqlashni brauzerda tekshirish
+- [ ] Telefon uchun Med ALL yig‘ish va haqiqiy qurilmada kirishni tekshirish — qurilma va Android/iOS loyihasi kerak
+- [ ] Tashqi klinika bemori va tahlillarini rozilik bilan ulash — klinika dasturi nomi, ulanish hujjatlari va ruxsatlari kerak
 - [x] Kabinet tugmasini Profil markaziga almashtirish, mavjud shaxsiy xizmatlarni ulash
 - [x] Kun/tun, til, Med Coin, oila, hujjatlar, xavfsizlik va yordam amallarini ishlatish
 - [x] Email, Google va Microsoft yoqilganini tekshirish; mavjud Telegram OTP kirishi, ro‘yxatdan o‘tish havolasi va kirgandan profilga qaytishni ulash

@@ -14,9 +14,10 @@ import { hapticTap } from "@/lib/nativeApp";
 import { MarkdownView } from "@/lib/markdownRender";
 import { MOBILE_AI_SERVICES } from "@/data/mobileServiceCatalog";
 import { MOBILE_TIP_MENUS } from "@/data/mobileTipsCatalog";
-import { fetchLabOrders, fetchPatientVisits, isVisitOpen, visitDate, VISIT_STATUS, type LabOrder, type PatientVisit } from "@/lib/patientRecords";
+import { fetchLabOrdersResult, fetchPatientVisits, isVisitOpen, visitDate, VISIT_STATUS, type LabOrder, type PatientVisit } from "@/lib/patientRecords";
 import { NativeHealthSettings } from "@/components/mobile/NativeHealthSettings";
 import { cn } from "@/lib/utils";
+import { signInDestination } from "@/lib/authDestination";
 import f1 from "@/assets/mobile-service-stories/doctors-2.webp";
 import f2 from "@/assets/mobile-service-stories/diagnostics-3.webp";
 import f3 from "@/assets/mobile-service-stories/ai-report-analysis-2.webp";
@@ -25,7 +26,7 @@ import f4 from "@/assets/mobile-service-stories/ai-doctor-chat-3.webp";
 const GUIDE_KEY = "med1_appointments_guide_seen_v1";
 const GUIDE = [
   { image: f1, eyebrow: "1-qadam", title: "Qabulga bir necha bosishda yoziling", text: "Shifokor yoki klinikani tanlang, qulay vaqtni belgilang — qabul shu yerda paydo bo‘ladi." },
-  { image: f2, eyebrow: "2-qadam", title: "Tahlil tayyor bo‘lsa — darhol xabar", text: "Laboratoriya natijasi kiritilishi bilan telefoningizga bildirishnoma keladi." },
+  { image: f2, eyebrow: "2-qadam", title: "Tahlil natijasidan xabardor bo‘ling", text: "Med1 bilan ulangan laboratoriya natijalari shu yerda ko‘rinadi. Ilova ochiq paytda tayyor natijalarni tekshirib, xabar beramiz." },
   { image: f3, eyebrow: "3-qadam", title: "AI xulosalari saqlanadi", text: "Har bir xulosani sana va xizmat turi bo‘yicha topib, to‘liq o‘qishingiz mumkin." },
   { image: f4, eyebrow: "4-qadam", title: "Eslatmalar va foydali maslahatlar", text: "Qabul va dori eslatmalarini yoqing, “Foydali maslahatlar”dan bilim oling." },
 ];
@@ -50,7 +51,7 @@ const fmtDay = (key: string) => {
 const EMPTY: Record<Panel, { title: string; hint: string; cta: string; to: string }> = {
   upcoming: { title: "Kelgusi qabul yo‘q", hint: "Shifokor yoki klinikani tanlab, qulay vaqtga yoziling — qabul shu yerda ko‘rinadi va eslatma keladi.", cta: "Shifokor tanlash", to: "/doctors" },
   past: { title: "Qabullar tarixi bo‘sh", hint: "Klinika, shifokor, diagnostika va stomatologiyadagi barcha tashriflaringiz shu yerda yig‘iladi.", cta: "Qabulga yozilish", to: "/doctors" },
-  labs: { title: "Tahlil natijalari yo‘q", hint: "Klinikada tahlil topshirsangiz, natija tayyor bo‘lishi bilan xabar beramiz. Tahlil varag‘ini AI bilan ham tekshirishingiz mumkin.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
+  labs: { title: "Tahlil natijalari yo‘q", hint: "Med1 hisobingizga bog‘langan laboratoriya natijalari shu yerda chiqadi. Boshqa klinika dasturi alohida ulanishi kerak. Tahlil varag‘ini AI bilan ham tekshirishingiz mumkin.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
   ai: { title: "AI xulosalari hali yo‘q", hint: "Istalgan Med1 AI xizmatidan foydalaning — bergan javoblari avtomatik shu yerda saqlanadi.", cta: "AI xizmatlarini ochish", to: "/ai-services" },
   reminders: { title: "", hint: "", cta: "", to: "/" },
 };
@@ -96,12 +97,12 @@ const MobileAppointmentsPage = () => {
     setLoading(true);
     const [v, labs, h] = await Promise.all([
       fetchPatientVisits(user.id),
-      fetchLabOrders(user.id).catch(() => []),
+       fetchLabOrdersResult(user.id).catch(() => ({ orders: [], failed: 4 })),
       supabase.from("ai_chat_history" as any).select("id, service_id, content, created_at").eq("user_id", user.id).eq("role", "assistant").order("created_at", { ascending: false }).limit(200),
     ]);
     setVisits(v.visits);
-    setLoadError(v.failed > 0 && v.visits.length === 0 && !!h.error);
-    setLabOrders(labs);
+    setLoadError(v.failed > 0 || labs.failed > 0 || !!h.error);
+    setLabOrders(labs.orders);
     setAi(((h.data as unknown) as AiRow[]) ?? []);
     setLoading(false);
   };
@@ -183,7 +184,7 @@ const MobileAppointmentsPage = () => {
       {!user ? (
         <div className="m-4 rounded-xl border border-border bg-card p-5 text-center">
           <p className="font-semibold text-foreground">Ma’lumotlaringizni ko‘rish uchun tizimga kiring</p>
-          <Button asChild className="mt-3"><Link to="/auth">Kirish</Link></Button>
+           <Button asChild className="mt-3"><Link to={signInDestination(`/mobile-appointments${params.size ? `?${params.toString()}` : ''}`)}>Kirish</Link></Button>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 p-4">
@@ -230,6 +231,7 @@ const MobileAppointmentsPage = () => {
         <DialogContent className="max-h-[88dvh] overflow-y-auto">
           <DialogTitle>{panel ? TITLES[panel] : ""}</DialogTitle>
           <DialogDescription>Faqat sizga ko‘rinadi.</DialogDescription>
+           {loadError && panel !== 'reminders' && <div role="alert" className="rounded-lg border border-destructive/30 p-3 text-sm text-destructive">Ayrim manbalar yuklanmadi. Ko‘rsatilgan ro‘yxat to‘liq bo‘lmasligi mumkin.<Button variant="outline" size="sm" className="mt-2" onClick={()=>void load()}>Qayta urinish</Button></div>}
 
           {loading && panel !== "reminders" && <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>}
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { getDashboardPath } from "@/lib/dashboard";
 import { setPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 import logoImg from "@/assets/logo.webp";
+import { safeAuthDestination } from "@/lib/authDestination";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -56,6 +57,7 @@ const AuthPage = () => {
   const [phone, setPhone] = useState("+998");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const otpInput = useRef<HTMLInputElement>(null);
 
   // Phone verification during registration
   const [regPhone, setRegPhone] = useState("+998");
@@ -68,7 +70,7 @@ const AuthPage = () => {
 
   // Sanitize ?next= to a same-origin relative path so OAuth-consent redirects survive login.
   const rawNext = searchParams.get("next");
-  const safeNext = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+  const safeNext = safeAuthDestination(rawNext);
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -137,6 +139,8 @@ const AuthPage = () => {
       });
       if (error) throw error;
       if (data?.error) {
+        setOtpCode("");
+        otpInput.current?.focus();
         toast({ title: "Xatolik", description: data.error, variant: "destructive" });
       } else if (data?.has_account && data?.hashed_token) {
         const { error: verifyErr } = await supabase.auth.verifyOtp({
@@ -493,6 +497,9 @@ const AuthPage = () => {
                     <Label className="text-xs font-medium">Tasdiqlash kodi</Label>
                     <Input
                       type="text"
+                       ref={otpInput}
+                       inputMode="numeric"
+                       autoComplete="one-time-code"
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder="● ● ● ● ● ●"

@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Med ALL',
   webDir: 'dist',
   server: {
-    url: 'https://89a5c0ff-a25e-4201-b8e8-56f5f02a2027.lovableproject.com?forceHideBadge=true',
-    cleartext: true
+    url: 'https://med1.uz',
+    cleartext: false
   },
   ios: {
     contentInset: 'always',
