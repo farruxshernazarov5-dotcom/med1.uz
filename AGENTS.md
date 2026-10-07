@@ -15,3 +15,5 @@
 - The mobile "Foydali maslahatlar" hub reads its menus, frames and phrases only from `src/data/mobileTipsCatalog.ts`, keeping cards, stories and onboarding in sync.
 - Mobile Profile uses `mobileProfileCatalog.ts` for menu identity and three generated photo frames; reuse existing account-backed patient components in profile sections rather than duplicating medical or payment logic.
 - Mobile Profile security exposes real Auth password updates and other-session sign-out; never present mock devices or mock login history as account security records.
+- Auth return paths use `authDestination.ts` to retain internal appointment/dashboard queries and reject external redirects and sign-in loops.
+- Lab aggregation exposes source failures separately from empty results; readiness alerts must not advance their checkpoint after a failed read.

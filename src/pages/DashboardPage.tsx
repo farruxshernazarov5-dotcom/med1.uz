@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
+import { signInDestination } from "@/lib/authDestination";
 const PatientDashboard = lazy(() => import("@/components/dashboard/PatientDashboard"));
 const ClinicDashboard = lazy(() => import("@/components/dashboard/ClinicDashboard"));
 const AdminDashboard = lazy(() => import("@/components/dashboard/AdminDashboard"));
@@ -32,6 +33,7 @@ const DASHBOARD_MAP: Record<string, React.ComponentType> = {
 const DashboardPage = () => {
   const { user, loading, userRole } = useAuth();
   const { type } = useParams<{ type?: string }>();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -44,13 +46,13 @@ const DashboardPage = () => {
     );
   }
 
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user) return <Navigate to={signInDestination(`${location.pathname}${location.search}${location.hash}`)} replace />;
 
   // Foydalanuvchining haqiqiy roliga mos dashboard yo'li
   const userDashboardPath = getDashboardPath(userRole);
 
   // Agar URL'da type yo'q bo'lsa — o'z dashboardiga yuborish
-  if (!type) return <Navigate to={userDashboardPath} replace />;
+  if (!type) return <Navigate to={`${userDashboardPath}${location.search}${location.hash}`} replace />;
 
   const dashboardType = type.toLowerCase();
   const DashboardComponent = DASHBOARD_MAP[dashboardType];

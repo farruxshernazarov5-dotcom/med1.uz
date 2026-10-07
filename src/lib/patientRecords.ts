@@ -80,7 +80,7 @@ export const visitDate = (v: PatientVisit) => new Date(`${v.date}T${(v.time ?? "
 
 const READY = new Set(["completed", "ready", "approved", "done", "delivered"]);
 
-export async function fetchLabOrders(userId: string): Promise<LabOrder[]> {
+export async function fetchLabOrdersResult(userId: string): Promise<{ orders: LabOrder[]; failed: number }> {
   const [hms, diag] = await Promise.all([
     sb.from("hms_lab_orders").select("id, test_name, status, ordered_at, completed_at").eq("patient_id", userId).order("ordered_at", { ascending: false }).limit(50),
     sb.from("diagnostics_lab_orders").select("id, test_name, status, created_at, completed_at").eq("patient_id", userId).order("created_at", { ascending: false }).limit(50),
@@ -89,7 +89,13 @@ export async function fetchLabOrders(userId: string): Promise<LabOrder[]> {
     ...((hms.data ?? []) as any[]).map((r) => ({ id: r.id, source: "Klinika", testName: r.test_name || "Tahlil", status: r.status, orderedAt: r.ordered_at, completedAt: r.completed_at, ready: READY.has((r.status ?? "").toLowerCase()) || !!r.completed_at })),
     ...((diag.data ?? []) as any[]).map((r) => ({ id: r.id, source: "Diagnostika", testName: r.test_name || "Tahlil", status: r.status, orderedAt: r.created_at, completedAt: r.completed_at, ready: READY.has((r.status ?? "").toLowerCase()) || !!r.completed_at })),
   ];
-  return rows.sort((a, b) => (b.completedAt ?? b.orderedAt).localeCompare(a.completedAt ?? a.orderedAt));
+  return { orders: rows.sort((a, b) => (b.completedAt ?? b.orderedAt).localeCompare(a.completedAt ?? a.orderedAt)), failed: Number(!!hms.error) + Number(!!diag.error) };
+}
+
+export async function fetchLabOrders(userId: string): Promise<LabOrder[]> {
+  const result = await fetchLabOrdersResult(userId);
+  if (result.failed) throw new Error('Tahlil manbalarini yuklab bo‘lmadi');
+  return result.orders;
 }
 
 export const VISIT_STATUS: Record<string, string> = {

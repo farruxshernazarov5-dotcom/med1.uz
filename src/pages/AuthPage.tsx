@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { getDashboardPath } from "@/lib/dashboard";
 import { setPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 import logoImg from "@/assets/logo.webp";
+import { safeAuthDestination } from "@/lib/authDestination";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -68,7 +69,7 @@ const AuthPage = () => {
 
   // Sanitize ?next= to a same-origin relative path so OAuth-consent redirects survive login.
   const rawNext = searchParams.get("next");
-  const safeNext = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+  const safeNext = safeAuthDestination(rawNext);
 
   useEffect(() => {
     if (authLoading || !user) return;
