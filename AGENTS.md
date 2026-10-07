@@ -17,4 +17,4 @@
 - Mobile Profile security exposes real Auth password updates and other-session sign-out; never present mock devices or mock login history as account security records.
 - Auth return paths use `authDestination.ts` to retain internal appointment/dashboard queries and reject external redirects and sign-in loops.
 - Lab aggregation exposes source failures separately from empty results; readiness alerts must not advance their checkpoint after a failed read.
-- The native live-site wrapper loads canonical HTTPS `med1.uz`, not a sandbox preview; hosted changes require publication and native OAuth must not use fabricated callback schemes.
+- The native app loads bundled `dist` files (no `server.url`), so app changes require a rebuild + `npx cap sync`; native OAuth must not use fabricated callback schemes.
