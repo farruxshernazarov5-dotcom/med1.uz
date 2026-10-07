@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { isNativeApp } from "@/lib/nativeApp";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
@@ -361,8 +362,13 @@ const AuthPage = () => {
               ))}
             </div>
 
-            {/* Google & Microsoft Sign In */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+            {/* Google & Microsoft Sign In (web only: the OAuth broker is not bundled in the native app) */}
+            {isNativeApp() && (
+              <p className="mb-4 rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
+                Ilovada Telegram kodi yoki email orqali kiring. Google/Microsoft kirishi med1.uz saytida ishlaydi.
+              </p>
+            )}
+            <div className={`${isNativeApp() ? "hidden" : "grid"} grid-cols-1 sm:grid-cols-2 gap-2 mb-4`}>
               <Button
                 type="button"
                 variant="outline"
