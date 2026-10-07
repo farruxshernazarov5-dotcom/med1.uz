@@ -58,3 +58,10 @@
 - [x] AI xulosalarini sana va xizmat turi bo‘yicha saralash, to‘liq natijani ochish
 - [x] Qabul tarixi barcha bo‘limlardan (klinika, shifokor, diagnostika, stomatologiya va boshqalar) va eslatmalar oynasini tuzatish
 - [x] "Foydali maslahatlar" bo‘limi: 8 menyu, yangi fotolar, animatsion taqdimot, "?" yo‘riqnoma
+
+## Mobil Profil
+- [ ] Kabinet tugmasini Profil markaziga almashtirish, mavjud shaxsiy xizmatlarni ulash
+- [ ] Kun/tun, til, Med Coin, oila, hujjatlar, xavfsizlik va yordam amallarini ishlatish
+- [ ] Kirish va ro‘yxatdan o‘tish kanallarining mobil oqimini tekshirish
+- [ ] Har bir profil menyusiga 3 ta yangi foto, animatsion tushuntirish va qayta ochiladigan yordam
+- [ ] Profilning kirgan/kirmagan holatlari va havolalarini tekshirish
