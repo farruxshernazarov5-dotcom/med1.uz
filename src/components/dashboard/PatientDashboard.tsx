@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
   LayoutDashboard, LogOut, User, Calendar, Heart, Star, Bell, Activity, MapPin,
@@ -179,6 +179,12 @@ const PatientDashboard = () => {
   const { theme, setTheme } = useTheme();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabId>(() => (searchParams.get("tab") as TabId) || "overview");
+  useEffect(() => {
+    const requested = searchParams.get("tab");
+    if (requested && NAV_GROUPS.some(group => group.items.some(item => item.id === requested))) {
+      setActiveTab(requested as TabId);
+    }
+  }, [searchParams]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [lockedFeature, setLockedFeature] = useState<string>("");

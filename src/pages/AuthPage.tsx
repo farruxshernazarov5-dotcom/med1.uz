@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
@@ -41,7 +41,8 @@ const PASSWORD_RULES = [
 type AuthMethod = "email" | "phone";
 
 const AuthPage = () => {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState<"login" | "register">(() => searchParams.get("mode") === "register" ? "register" : "login");
   const [authMethod, setAuthMethod] = useState<AuthMethod>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,22 +63,29 @@ const AuthPage = () => {
   const [regOtpCode, setRegOtpCode] = useState("");
   const [regPhoneVerified, setRegPhoneVerified] = useState(false);
 
-  const { signIn, signUp, signInWithPhone, verifyPhoneOtp, userRole: currentUserRole } = useAuth();
+  const { signIn, signUp, signInWithPhone, verifyPhoneOtp, user, loading: authLoading, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   // Sanitize ?next= to a same-origin relative path so OAuth-consent redirects survive login.
   const rawNext = searchParams.get("next");
   const safeNext = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    let active = true;
+    void supabase.auth.getUser().then(({ data, error }) => {
+      if (active && !error && data.user) navigate(safeNext ?? "/dashboard", { replace: true });
+    });
+    return () => { active = false; };
+  }, [authLoading, user, safeNext, navigate]);
 
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleOAuthSignIn = async (provider: "google" | "microsoft") => {
     setSubmitting(true);
     if (mode === "register") setPendingRole(role);
-    const redirectUri = safeNext
-      ? `${window.location.origin}${safeNext}`
-      : window.location.origin;
+    // OAuth must return to a public page; ?next survives the sign-in round trip.
+    const redirectUri = `${window.location.origin}/auth${safeNext ? `?next=${encodeURIComponent(safeNext)}` : ""}`;
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: redirectUri,
     });
@@ -139,7 +147,7 @@ const AuthPage = () => {
           toast({ title: "Xatolik", description: verifyErr.message, variant: "destructive" });
         } else {
           toast({ title: "Xush kelibsiz!" });
-          navigate("/dashboard");
+           navigate(safeNext ?? "/dashboard");
         }
       } else {
         toast({

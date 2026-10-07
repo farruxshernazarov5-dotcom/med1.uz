@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CalendarCheck, Grid2X2, Home, Sparkles, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { getDashboardPath } from "@/lib/dashboard";
+import { useLanguage } from "@/hooks/useLanguage";
 import { hapticTap } from "@/lib/nativeApp";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,7 @@ type Item = {
 
 const MobileBottomNav = () => {
   const { pathname } = useLocation();
-  const { user, userRole } = useAuth();
-  const dashboardPath = getDashboardPath(userRole);
+  const { lang } = useLanguage();
   const [visible, setVisible] = useState(true);
   const lastY = useRef(0);
 
@@ -36,9 +35,9 @@ const MobileBottomNav = () => {
 
   const items = useMemo<Item[]>(
     () => [
-      { label: "Asosiy", to: "/", icon: Home, match: (p) => p === "/" },
+      { label: lang === "ru" ? "Главная" : lang === "en" ? "Home" : "Asosiy", to: "/", icon: Home, match: (p) => p === "/" },
       {
-        label: "Xizmatlar",
+        label: lang === "ru" ? "Услуги" : lang === "en" ? "Services" : "Xizmatlar",
         to: "/mobile-services",
         icon: Grid2X2,
         match: (p) =>
@@ -47,19 +46,19 @@ const MobileBottomNav = () => {
           ),
       },
       {
-        label: "Qabullar",
+        label: lang === "ru" ? "Приёмы" : lang === "en" ? "Visits" : "Qabullar",
         to: "/mobile-appointments",
         icon: CalendarCheck,
         match: (p) => p.startsWith("/mobile-appointments") || p.startsWith("/mobile-tips") || p.startsWith("/booking"),
       },
       {
-        label: user ? "Kabinet" : "Kirish",
-        to: user ? "/dashboard/patient" : "/auth",
+        label: lang === "ru" ? "Профиль" : lang === "en" ? "Profile" : "Profil",
+        to: "/mobile-profile",
         icon: User,
-        match: (p) => p.startsWith("/auth") || p.startsWith("/dashboard/patient"),
+        match: (p) => p.startsWith("/mobile-profile") || p.startsWith("/auth") || p.startsWith("/dashboard"),
       },
     ],
-    [user, dashboardPath],
+    [lang],
   );
 
   const hiddenOn = ["/auth", "/reset-password", "/forgot-password"];
