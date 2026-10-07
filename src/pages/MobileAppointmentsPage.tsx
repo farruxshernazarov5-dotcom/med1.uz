@@ -97,7 +97,7 @@ const MobileAppointmentsPage = () => {
     setLoading(true);
     const [v, labs, h] = await Promise.all([
       fetchPatientVisits(user.id),
-       fetchLabOrdersResult(user.id).catch(() => ({ orders: [], failed: 2 })),
+       fetchLabOrdersResult(user.id).catch(() => ({ orders: [], failed: 4 })),
       supabase.from("ai_chat_history" as any).select("id, service_id, content, created_at").eq("user_id", user.id).eq("role", "assistant").order("created_at", { ascending: false }).limit(200),
     ]);
     setVisits(v.visits);

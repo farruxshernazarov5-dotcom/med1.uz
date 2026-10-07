@@ -81,15 +81,19 @@ export const visitDate = (v: PatientVisit) => new Date(`${v.date}T${(v.time ?? "
 const READY = new Set(["completed", "ready", "approved", "done", "delivered"]);
 
 export async function fetchLabOrdersResult(userId: string): Promise<{ orders: LabOrder[]; failed: number }> {
-  const [hms, diag] = await Promise.all([
+  const [hms, diag, doctor, maternity] = await Promise.all([
     sb.from("hms_lab_orders").select("id, test_name, status, ordered_at, completed_at").eq("patient_id", userId).order("ordered_at", { ascending: false }).limit(50),
     sb.from("diagnostics_lab_orders").select("id, test_name, status, created_at, completed_at").eq("patient_id", userId).order("created_at", { ascending: false }).limit(50),
+    sb.from("doctor_lab_orders").select("id, test_types, status, ordered_at, completed_at").eq("patient_id", userId).order("ordered_at", { ascending: false }).limit(50),
+    sb.from("maternity_lab_results").select("id, test_name, test_date, created_at").eq("patient_id", userId).order("created_at", { ascending: false }).limit(50),
   ]);
   const rows: LabOrder[] = [
     ...((hms.data ?? []) as any[]).map((r) => ({ id: r.id, source: "Klinika", testName: r.test_name || "Tahlil", status: r.status, orderedAt: r.ordered_at, completedAt: r.completed_at, ready: READY.has((r.status ?? "").toLowerCase()) || !!r.completed_at })),
     ...((diag.data ?? []) as any[]).map((r) => ({ id: r.id, source: "Diagnostika", testName: r.test_name || "Tahlil", status: r.status, orderedAt: r.created_at, completedAt: r.completed_at, ready: READY.has((r.status ?? "").toLowerCase()) || !!r.completed_at })),
+    ...((doctor.data ?? []) as any[]).map((r) => ({ id: r.id, source: "Shifokor", testName: Array.isArray(r.test_types) ? r.test_types.join(', ') : String(r.test_types || 'Tahlil'), status: r.status, orderedAt: r.ordered_at, completedAt: r.completed_at, ready: READY.has((r.status ?? '').toLowerCase()) || !!r.completed_at })),
+    ...((maternity.data ?? []) as any[]).map((r) => ({ id: r.id, source: "Tug‘ruqxona", testName: r.test_name || 'Tahlil', status: 'completed', orderedAt: r.test_date || r.created_at, completedAt: r.created_at, ready: true })),
   ];
-  return { orders: rows.sort((a, b) => (b.completedAt ?? b.orderedAt).localeCompare(a.completedAt ?? a.orderedAt)), failed: Number(!!hms.error) + Number(!!diag.error) };
+  return { orders: rows.sort((a, b) => (b.completedAt ?? b.orderedAt).localeCompare(a.completedAt ?? a.orderedAt)), failed: [hms, diag, doctor, maternity].filter(r=>r.error).length };
 }
 
 export async function fetchLabOrders(userId: string): Promise<LabOrder[]> {
