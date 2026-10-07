@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
@@ -63,12 +63,21 @@ const AuthPage = () => {
   const [regOtpCode, setRegOtpCode] = useState("");
   const [regPhoneVerified, setRegPhoneVerified] = useState(false);
 
-  const { signIn, signUp, signInWithPhone, verifyPhoneOtp, userRole: currentUserRole } = useAuth();
+  const { signIn, signUp, signInWithPhone, verifyPhoneOtp, user, loading: authLoading, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
 
   // Sanitize ?next= to a same-origin relative path so OAuth-consent redirects survive login.
   const rawNext = searchParams.get("next");
   const safeNext = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    let active = true;
+    void supabase.auth.getUser().then(({ data, error }) => {
+      if (active && !error && data.user) navigate(safeNext ?? "/dashboard", { replace: true });
+    });
+    return () => { active = false; };
+  }, [authLoading, user, safeNext, navigate]);
 
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
