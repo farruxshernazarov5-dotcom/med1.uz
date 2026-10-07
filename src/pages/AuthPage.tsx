@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
@@ -57,6 +57,7 @@ const AuthPage = () => {
   const [phone, setPhone] = useState("+998");
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const otpInput = useRef<HTMLInputElement>(null);
 
   // Phone verification during registration
   const [regPhone, setRegPhone] = useState("+998");
@@ -138,6 +139,8 @@ const AuthPage = () => {
       });
       if (error) throw error;
       if (data?.error) {
+        setOtpCode("");
+        otpInput.current?.focus();
         toast({ title: "Xatolik", description: data.error, variant: "destructive" });
       } else if (data?.has_account && data?.hashed_token) {
         const { error: verifyErr } = await supabase.auth.verifyOtp({
@@ -494,6 +497,9 @@ const AuthPage = () => {
                     <Label className="text-xs font-medium">Tasdiqlash kodi</Label>
                     <Input
                       type="text"
+                       ref={otpInput}
+                       inputMode="numeric"
+                       autoComplete="one-time-code"
                       value={otpCode}
                       onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder="● ● ● ● ● ●"

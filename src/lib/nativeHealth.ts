@@ -62,7 +62,7 @@ export async function scheduleMedication(name: string, dose: string, times: stri
 export async function syncAppointmentReminders(items: { id: string; when: Date; label: string }[]): Promise<number> {
   const LN = await ln();
   const pending = await LN.getPending();
-  const old = pending.notifications.filter((n) => n.id >= APPT_BASE).map((n) => ({ id: n.id }));
+  const old = pending.notifications.filter((n) => n.id >= APPT_BASE && n.id < LAB_BASE).map((n) => ({ id: n.id }));
   if (old.length) await LN.cancel({ notifications: old });
   const now = Date.now();
   const notifications: Parameters<Awaited<ReturnType<typeof ln>>["schedule"]>[0]["notifications"] = [];
