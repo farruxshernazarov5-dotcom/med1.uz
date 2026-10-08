@@ -51,13 +51,13 @@ export const ReferralPanel = ({ compact = false }: Props) => {
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-white/5 border border-white/10">
-          <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-1.5" />Umumiy</TabsTrigger>
-          <TabsTrigger value="code"><Ticket className="w-4 h-4 mr-1.5" />Kod / Link</TabsTrigger>
-          <TabsTrigger value="invited"><Users className="w-4 h-4 mr-1.5" />Taklif qilinganlar ({referrals.length})</TabsTrigger>
-          <TabsTrigger value="wallet"><Wallet className="w-4 h-4 mr-1.5" />Hamyon</TabsTrigger>
-          <TabsTrigger value="leaderboard"><Trophy className="w-4 h-4 mr-1.5" />Reyting</TabsTrigger>
-          <TabsTrigger value="guide"><BookOpen className="w-4 h-4 mr-1.5" />Qo'llanma</TabsTrigger>
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 border border-border bg-muted p-1 sm:grid-cols-3 lg:grid-cols-6">
+          <TabsTrigger className="h-10 whitespace-normal text-xs" value="overview"><LayoutDashboard className="w-4 h-4 mr-1.5" />Umumiy</TabsTrigger>
+          <TabsTrigger className="h-10 whitespace-normal text-xs" value="code"><Ticket className="w-4 h-4 mr-1.5" />Kod / Link</TabsTrigger>
+          <TabsTrigger className="h-10 whitespace-normal text-xs" value="invited"><Users className="w-4 h-4 mr-1.5" />Takliflar ({referrals.length})</TabsTrigger>
+          <TabsTrigger className="h-10 whitespace-normal text-xs" value="wallet"><Wallet className="w-4 h-4 mr-1.5" />Hamyon</TabsTrigger>
+          <TabsTrigger className="h-10 whitespace-normal text-xs" value="leaderboard"><Trophy className="w-4 h-4 mr-1.5" />Reyting</TabsTrigger>
+          <TabsTrigger className="h-10 whitespace-normal text-xs" value="guide"><BookOpen className="w-4 h-4 mr-1.5" />Qoidalar</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4 mt-4">

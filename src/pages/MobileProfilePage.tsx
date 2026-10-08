@@ -25,6 +25,8 @@ const Files = lazy(()=>import('@/components/patient/hms/PatientFiles'));
 const Legal = lazy(()=>import('@/components/patient/hms/PatientLegalCenter'));
 const Wallet = lazy(()=>import('@/components/patient/wallet/MedCoinWallet'));
 const Payments = lazy(()=>import('@/components/patient/hms/PatientPayments'));
+const Referral = lazy(()=>import('@/components/referral/ReferralPanel'));
+const CashWallet = lazy(()=>import('@/components/mobile/CashWalletPanel'));
 const Support = lazy(()=>import('@/components/support/SupportChat'));
 const Sponsors = lazy(()=>import('@/components/SponsorsLeaderboard'));
 const Reminders = lazy(()=>import('@/components/mobile/NativeHealthSettings').then(m=>({default:m.NativeHealthSettings})));
@@ -56,6 +58,8 @@ export default function MobileProfilePage() {
  case 'health':return <><div className="mb-5 flex flex-wrap gap-2">{sub(tr('BMI / Bosim','ИМТ / Давление','BMI / Pressure'),'health')}{sub(tr('Monitoring','Мониторинг','Tracking'),'tracking')}{sub(tr('Tavsiyalar','Рекомендации','Recommendations'),'recommendations')}</div><Biometric>{detail==='tracking'?<Tracking/>:detail==='recommendations'?<Recommendations/>:<Health/>}</Biometric></>;
  case 'family':return <Biometric><Family/></Biometric>;
  case 'coins':return <><Wallet/><div className="mt-4">{link(tr('Tariflar va Med Coin','Тарифы и Med Coin','Plans and Med Coin'),'/ai-subscription')}</div></>;
+ case 'referral':return <Referral/>;
+ case 'cash_wallet':return <CashWallet/>;
  case 'payments':return <Payments/>;
  case 'notifications':return <Reminders/>;
  case 'favorites':return link(tr('Sevimli klinika, shifokor va xizmatlar','Избранные клиники, врачи и услуги','Favourite clinics, doctors and services'),'/mobile-services?view=favorites');

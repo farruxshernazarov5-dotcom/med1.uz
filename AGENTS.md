@@ -18,3 +18,6 @@
 - Auth return paths use `authDestination.ts` to retain internal appointment/dashboard queries and reject external redirects and sign-in loops.
 - Lab aggregation exposes source failures separately from empty results; readiness alerts must not advance their checkpoint after a failed read.
 - The native app loads bundled `dist` files (no `server.url`), so app changes require a rebuild + `npx cap sync`; native OAuth must not use fabricated callback schemes.
+- Mobile cash balances are server-owned in `cash_wallets` with an immutable ledger; only confirmed provider payments or guarded RPCs may change them, preventing client-side balance forgery.
+- Mobile classifieds use one moderated catalogue and keep paid Med1 TOP placements separate from organic listings, preserving the platform's sponsored-content rule.
+- Mobile role education reads one role catalogue and generated triptych per role, so registration choices, destinations, plans, and help stories cannot drift.

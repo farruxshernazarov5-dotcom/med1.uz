@@ -132,6 +132,7 @@ const MobileServicesPage = lazy(() => import("./pages/MobileServicesPage"));
 const MobileAppointmentsPage = lazy(() => import("./pages/MobileAppointmentsPage"));
 const MobileTipsPage = lazy(() => import("./pages/MobileTipsPage"));
 const MobileProfilePage = lazy(() => import("./pages/MobileProfilePage"));
+const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingDock from "./components/FloatingDock";
@@ -229,6 +230,7 @@ const App = () => (
                 <Route path="/mobile-appointments" element={<MobileAppointmentsPage />} />
                 <Route path="/mobile-tips" element={<MobileTipsPage />} />
                 <Route path="/mobile-profile" element={<MobileProfilePage />} />
+                <Route path="/mobile-classifieds" element={<MobileClassifiedsPage />} />
                 <Route path="/user-guide" element={<UserGuidePage />} />
                 <Route path="/sitemap" element={<SitemapPage />} />
                 <Route path="/symptom-checker" element={<SymptomCheckerPage />} />

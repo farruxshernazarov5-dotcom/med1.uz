@@ -8,6 +8,8 @@ import LazySection from "@/components/perf/LazySection";
 import ClickToLoad from "@/components/perf/ClickToLoad";
 import { SEO } from "@/components/SEO";
 import { MobileHomeQuickServices } from "@/components/mobile/MobileHomeQuickServices";
+import { MobileHomeHubs } from "@/components/mobile/MobileHomeHubs";
+import { MobileRoleCenter } from "@/components/mobile/MobileRoleCenter";
 
 // Below-the-fold — lazy load to reduce initial bundle & LCP
 const Footer = lazy(() => import("@/components/Footer"));
@@ -55,6 +57,8 @@ const Index = () => {
 
       <div className="no-cinematic relative z-10">
         <MobileHomeQuickServices />
+        <MobileHomeHubs />
+        <MobileRoleCenter />
       </div>
 
       <Suspense fallback={<Fallback />}>
