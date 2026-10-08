@@ -8,6 +8,13 @@
       "when": 1791468521695,
       "tag": "0000_mobile_wallet_and_classifieds",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791468739441,
+      "tag": "0001_lock_cash_wallet_client_mutations",
+      "breakpoints": true
     }
   ]
 }
