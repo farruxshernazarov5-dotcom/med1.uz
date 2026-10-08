@@ -77,8 +77,8 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
         </div>
       )}
 
-      <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-3" aria-label="Xizmat toifalari">
-        {FILTERS.map((filter) => <Button key={filter.id} size="sm" variant={category === filter.id ? "default" : "outline"} className="shrink-0 rounded-full" onClick={() => { void hapticTap(); setCategory(filter.id); }}>{filter.label}</Button>)}
+      <div className="grid grid-cols-2 gap-2 px-4 pb-3 sm:grid-cols-3" aria-label="Xizmat toifalari">
+        {FILTERS.map((filter) => <Button key={filter.id} size="sm" variant={category === filter.id ? "default" : "outline"} className="h-auto min-h-10 whitespace-normal rounded-lg px-2 text-xs" onClick={() => { void hapticTap(); setCategory(filter.id); }}>{filter.label}</Button>)}
       </div>
 
       <p className="px-4 pb-2 text-xs text-muted-foreground" role="status" aria-live="polite">{isSearching ? "Qidirilmoqda…" : `${services.length} ta xizmat topildi`}</p>

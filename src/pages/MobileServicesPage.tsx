@@ -238,13 +238,13 @@ const MobileServicesPage = () => {
           : <div className="py-12 text-center"><Heart className="mx-auto h-10 w-10 text-muted-foreground" /><p className="mt-2 font-semibold">Sevimlilar hali yo‘q</p><Button variant="outline" className="mt-4" onClick={() => setSection("catalog")}>Xizmatlarni ko‘rish</Button></div>}
         </section>
       ) : <>
-      <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 py-3">
+      <div className="grid grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-4">
         {FILTERS.map((item) => (
           <Button
             key={item.id}
             variant={filter === item.id ? "default" : "outline"}
             size="sm"
-            className="shrink-0 rounded-full"
+            className="h-auto min-h-10 whitespace-normal rounded-lg px-2 text-xs"
             onClick={() => setFilter(item.id)}
           >
             {item.label}
