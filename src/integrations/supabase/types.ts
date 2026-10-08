@@ -1363,6 +1363,84 @@ export type Database = {
         }
         Relationships: []
       }
+      cash_wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at: string
+          description: string
+          id: string
+          idempotency_key: string
+          kind: string
+          metadata: Json
+          payment_id: string | null
+          provider: string | null
+          service_reference: string | null
+          service_type: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          created_at?: string
+          description?: string
+          id?: string
+          idempotency_key: string
+          kind: string
+          metadata?: Json
+          payment_id?: string | null
+          provider?: string | null
+          service_reference?: string | null
+          service_type?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          created_at?: string
+          description?: string
+          id?: string
+          idempotency_key?: string
+          kind?: string
+          metadata?: Json
+          payment_id?: string | null
+          provider?: string | null
+          service_reference?: string | null
+          service_type?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cash_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       click_fiscal_receipts: {
         Row: {
           click_trans_id: string | null
@@ -13463,6 +13541,54 @@ export type Database = {
         }
         Relationships: []
       }
+      mobile_classifieds: {
+        Row: {
+          category: string
+          contact_phone: string | null
+          created_at: string
+          description: string
+          destination_url: string | null
+          expires_at: string | null
+          id: string
+          moderation_note: string | null
+          owner_id: string
+          region: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          contact_phone?: string | null
+          created_at?: string
+          description: string
+          destination_url?: string | null
+          expires_at?: string | null
+          id?: string
+          moderation_note?: string | null
+          owner_id: string
+          region: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          contact_phone?: string | null
+          created_at?: string
+          description?: string
+          destination_url?: string | null
+          expires_at?: string | null
+          id?: string
+          moderation_note?: string | null
+          owner_id?: string
+          region?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mobile_favorites: {
         Row: {
           created_at: string
@@ -18169,6 +18295,24 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      cash_wallet_refund: {
+        Args: {
+          _description?: string
+          _idempotency_key: string
+          _original_transaction_id: string
+        }
+        Returns: Json
+      }
+      cash_wallet_spend: {
+        Args: {
+          _amount: number
+          _description?: string
+          _idempotency_key: string
+          _service_reference: string
+          _service_type: string
+        }
+        Returns: Json
       }
       claim_initial_role: { Args: { _role: string }; Returns: string }
       claim_my_payment: { Args: { _payment_id: string }; Returns: Json }
