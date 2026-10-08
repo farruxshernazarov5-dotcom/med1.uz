@@ -1420,6 +1420,7 @@ export type Database = {
       cash_wallets: {
         Row: {
           balance: number
+          card_number: string
           created_at: string
           currency: string
           updated_at: string
@@ -1427,6 +1428,7 @@ export type Database = {
         }
         Insert: {
           balance?: number
+          card_number?: string
           created_at?: string
           currency?: string
           updated_at?: string
@@ -1434,6 +1436,7 @@ export type Database = {
         }
         Update: {
           balance?: number
+          card_number?: string
           created_at?: string
           currency?: string
           updated_at?: string
@@ -18340,6 +18343,13 @@ export type Database = {
         Args: { _event: string; _payload: Json }
         Returns: number
       }
+      ensure_my_cash_wallet: {
+        Args: never
+        Returns: {
+          balance: number
+          card_number: string
+        }[]
+      }
       ensure_referral_code: {
         Args: { _kind?: string; _org_role?: string; _owner_id: string }
         Returns: string
@@ -18350,6 +18360,7 @@ export type Database = {
       }
       fulfill_platform_payment: { Args: { _payment_id: string }; Returns: Json }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
+      generate_wallet_card_number: { Args: never; Returns: string }
       get_nearby_medical_services: {
         Args: {
           _lat: number
