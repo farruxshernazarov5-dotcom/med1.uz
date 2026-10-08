@@ -71,3 +71,11 @@
 - [ ] Google/Microsoft va Telegram kirishini APK/iOS qurilmada oxirigacha sinash — native papkalar va haqiqiy qurilma mavjud emas; WebView OAuth qaytishi hali tasdiqlanmagan
 - [x] Har bir profil menyusiga 3 ta yangi foto, animatsion tushuntirish va qayta ochiladigan yordam
 - [x] Profilning kirgan/kirmagan holatlari, 12 ichki bo‘lim, til, kun/tun, yordam tugmasi va fotosuratlar yuklanishini brauzerda tekshirish
+
+## Mobil referral, avans hamyon va rollar
+- [ ] Profilga real referral paneli, qoidalar va 3–4 kadrli yordam hikoyasini qo‘shish
+- [ ] So‘m avans hamyoni: Click/Payme/QR to‘ldirish, serverdagi balans, kirim-chiqim, xizmat uchun yechish va qaytarish
+- [ ] Tibbiy e’lonlar hamda ish/hamkorlik e’lonlarini alohida filtrlar va Reklama belgisi bilan qurish
+- [ ] 10 ta rol tanlovi, tariflar va har rol uchun 3–4 kreativ animatsion foto yo‘riqnomani qo‘shish
+- [ ] Xizmatlar va e’lonlar filtrlarini mobil panjara/yig‘iladigan oynaga moslash
+- [ ] Mobil oqimlarni kirgan/kirmagan holatda, tor ekran va to‘lov xavfsizligi bilan tekshirish
