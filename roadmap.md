@@ -73,9 +73,9 @@
 - [x] Profilning kirgan/kirmagan holatlari, 12 ichki bo‘lim, til, kun/tun, yordam tugmasi va fotosuratlar yuklanishini brauzerda tekshirish
 
 ## Mobil referral, avans hamyon va rollar
-- [ ] Profilga real referral paneli, qoidalar va 3–4 kadrli yordam hikoyasini qo‘shish
-- [ ] So‘m avans hamyoni: Click/Payme/QR to‘ldirish, serverdagi balans, kirim-chiqim, xizmat uchun yechish va qaytarish
-- [ ] Tibbiy e’lonlar hamda ish/hamkorlik e’lonlarini alohida filtrlar va Reklama belgisi bilan qurish
-- [ ] 10 ta rol tanlovi, tariflar va har rol uchun 3–4 kreativ animatsion foto yo‘riqnomani qo‘shish
-- [ ] Xizmatlar va e’lonlar filtrlarini mobil panjara/yig‘iladigan oynaga moslash
+- [x] Profilga real referral paneli, qoidalar va 3 kadrli yordam hikoyasini qo‘shish
+- [x] So‘m avans hamyoni: Click/Payme to‘ldirish, serverdagi balans va kirim-chiqim (xizmat yechimi faqat server tasdiqlagan invoyslar uchun bloklangan)
+- [x] Tibbiy e’lonlar hamda ish/uskuna/hamkorlik e’lonlarini alohida, moderatsiyali oqimlarda qurish
+- [x] 10 ta rol tanlovi, tariflar va har rol uchun 3 kadrli kreativ animatsion foto yo‘riqnomani qo‘shish
+- [x] Xizmatlar va e’lonlar filtrlarini mobil panjaraga moslash
 - [ ] Mobil oqimlarni kirgan/kirmagan holatda, tor ekran va to‘lov xavfsizligi bilan tekshirish
