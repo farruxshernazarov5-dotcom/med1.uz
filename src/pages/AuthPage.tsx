@@ -16,6 +16,9 @@ import { getDashboardPath } from "@/lib/dashboard";
 import { setPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 import logoImg from "@/assets/logo.webp";
 import { safeAuthDestination } from "@/lib/authDestination";
+import { startNativeOAuth } from "@/lib/nativeOAuth";
+import { canSaveLogin, hasSavedLogin, loadSavedLogin, saveLogin } from "@/lib/nativeCredentials";
+import { Fingerprint } from "lucide-react";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -53,6 +56,10 @@ const AuthPage = () => {
   const [showPass, setShowPass] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [legalAccepted, setLegalAccepted] = useState(false);
+  const [remember, setRemember] = useState(true);
+  const [canRemember, setCanRemember] = useState(false);
+  const [savedLogin, setSavedLogin] = useState(false);
+  useEffect(() => { setSavedLogin(hasSavedLogin()); void canSaveLogin().then(setCanRemember); }, []);
 
   // Phone auth state (login)
   const [phone, setPhone] = useState("+998");
@@ -87,6 +94,12 @@ const AuthPage = () => {
   const handleOAuthSignIn = async (provider: "google" | "microsoft") => {
     setSubmitting(true);
     if (mode === "register") setPendingRole(role);
+    if (isNativeApp()) {
+      // Google blocks sign-in inside app WebViews: continue in the phone's browser.
+      startNativeOAuth(provider, safeNext);
+      setSubmitting(false);
+      return;
+    }
     // OAuth must return to a public page; ?next survives the sign-in round trip.
     const redirectUri = `${window.location.origin}/auth${safeNext ? `?next=${encodeURIComponent(safeNext)}` : ""}`;
     const result = await lovable.auth.signInWithOAuth(provider, {
@@ -263,12 +276,26 @@ const AuthPage = () => {
     setSubmitting(false);
   };
 
+  const quickLogin = async () => {
+    const creds = await loadSavedLogin();
+    if (!creds) { toast({ title: "Tasdiqlanmadi", description: "Email va parol bilan kiring.", variant: "destructive" }); return; }
+    setSubmitting(true);
+    const { error } = await signIn(creds.email, creds.password);
+    setSubmitting(false);
+    if (error) { toast({ title: "Saqlangan parol eskirgan", description: "Email va parolni qayta kiriting.", variant: "destructive" }); return; }
+    toast({ title: "Xush kelibsiz!" });
+    setTimeout(() => navigate(safeNext ?? "/dashboard", { replace: true }), 300);
+  };
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
     if (mode === "login") {
       const { error } = await signIn(email, password);
+      if (!error && canRemember && remember) {
+        if (await saveLogin(email, password)) setSavedLogin(true);
+      }
       if (error) {
         const msg = error.message === "Email not confirmed" ? "Email tasdiqlanmagan. Iltimos, emailingizni tekshiring." : error.message;
         toast({ title: "Xatolik", description: msg, variant: "destructive" });
@@ -363,12 +390,12 @@ const AuthPage = () => {
             </div>
 
             {/* Google & Microsoft Sign In (web only: the OAuth broker is not bundled in the native app) */}
-            {isNativeApp() && (
-              <p className="mb-4 rounded-lg border border-border bg-muted/50 p-3 text-xs text-muted-foreground">
-                Ilovada Telegram kodi yoki email orqali kiring. Google/Microsoft kirishi med1.uz saytida ishlaydi.
-              </p>
+            {mode === "login" && savedLogin && (
+              <Button type="button" className="mb-3 h-12 w-full gap-2" onClick={() => void quickLogin()} disabled={submitting}>
+                <Fingerprint className="h-5 w-5" /> Barmoq izi / Face ID bilan kirish
+              </Button>
             )}
-            <div className={`${isNativeApp() ? "hidden" : "grid"} grid-cols-1 sm:grid-cols-2 gap-2 mb-4`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
               <Button
                 type="button"
                 variant="outline"
@@ -755,7 +782,7 @@ const AuthPage = () => {
                   <Label htmlFor="email" className="text-xs">Email</Label>
                   <div className="relative mt-1">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" className="pl-10" required />
+                    <Input id="email" name="email" type="email" autoComplete={mode === "login" ? "username" : "email"} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" className="pl-10" required />
                   </div>
                 </div>
 
@@ -765,6 +792,8 @@ const AuthPage = () => {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="password"
+                      name="password"
+                      autoComplete={mode === "login" ? "current-password" : "new-password"}
                       type={showPass ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -919,6 +948,12 @@ const AuthPage = () => {
                   </label>
                 )}
 
+                {mode === "login" && canRemember && (
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="h-4 w-4 accent-primary" />
+                    Login va parolni eslab qolish (barmoq izi bilan himoyalangan)
+                  </label>
+                )}
                 <Button
                   type="submit"
                   disabled={submitting || (mode === "register" && (!passwordStrong || !legalAccepted))}
