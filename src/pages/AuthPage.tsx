@@ -389,7 +389,7 @@ const AuthPage = () => {
               ))}
             </div>
 
-            {/* Google & Microsoft Sign In (web only: the OAuth broker is not bundled in the native app) */}
+            {/* Google & Microsoft: in the native app the flow continues in the system browser (/app-bridge) */}
             {mode === "login" && savedLogin && (
               <Button type="button" className="mb-3 h-12 w-full gap-2" onClick={() => void quickLogin()} disabled={submitting}>
                 <Fingerprint className="h-5 w-5" /> Barmoq izi / Face ID bilan kirish
