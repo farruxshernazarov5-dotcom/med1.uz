@@ -133,6 +133,7 @@ const MobileAppointmentsPage = lazy(() => import("./pages/MobileAppointmentsPage
 const MobileTipsPage = lazy(() => import("./pages/MobileTipsPage"));
 const MobileProfilePage = lazy(() => import("./pages/MobileProfilePage"));
 const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage"));
+const AppBridgePage = lazy(() => import("./pages/AppBridgePage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingDock from "./components/FloatingDock";
@@ -145,6 +146,7 @@ import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
 import SubdomainRouter from "./components/SubdomainRouter";
 import MobileAppShell from "./components/mobile/MobileAppShell";
+import { BusinessEdgeTab } from "./components/mobile/BusinessEdgeTab";
 
 
 const queryClient = new QueryClient();
@@ -170,6 +172,7 @@ const App = () => (
           <SubdomainRouter />
           <ReferralCapture />
           <MobileAppShell />
+          <BusinessEdgeTab />
 
           <YandexAdsManager />
           <FloatingAISearch />
@@ -209,6 +212,7 @@ const App = () => (
                 <Route path="/dental" element={<DentalPage />} />
                 <Route path="/dental/:slug" element={<DentalDetailPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/app-bridge" element={<AppBridgePage />} />
                 <Route path="/check-in" element={<StaffCheckInPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/dashboard/:type" element={<DashboardPage />} />

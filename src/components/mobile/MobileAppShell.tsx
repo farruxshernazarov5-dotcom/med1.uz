@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle2, WifiOff } from "lucide-react";
 import MobileBottomNav from "./MobileBottomNav";
@@ -6,8 +6,10 @@ import { MobileAIHubSheet } from "./MobileAIHubSheet";
 import { CriticalTriageSheet } from "./CriticalTriageSheet";
 import { MobileOnboarding } from "./MobileOnboarding";
 import { MobileHealthAlerts } from "./MobileHealthAlerts";
-import { registerNotificationTaps, lockNow } from "@/lib/nativeHealth";
+import { registerNotificationTaps, lockNow, registerForegroundReminderSound } from "@/lib/nativeHealth";
 import { initNativeChrome, isNativeApp, registerBackButton, registerDeepLinks, watchNetwork } from "@/lib/nativeApp";
+import { goBackSafe } from "@/lib/safeBack";
+import { completeNativeOAuth, consumeLaunchAuthUrl } from "@/lib/nativeOAuth";
 
 const LAST_MOBILE_PATH = "med1_mobile_last_path_v1";
 const SAFE_RESTORE_PATH = /^\/(?:mobile-profile|mobile-services|mobile-appointments|mobile-tips|mobile-classifieds|news|health|medicine|diseases|articles|knowledge|clinics|doctors|pharmacies|diagnostics|dental|blood-banks|maternity|med-tech|verify|legal-center|med1-top|partnership|otm|dashboard\/[a-z-]+|ai-[a-z-]+|symptom-checker)(?:\/[^?#]*)?(?:[?#].*)?$/;
@@ -53,9 +55,9 @@ const MobileAppShell = () => {
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
         return true;
       }
-      // 2. Go back inside the app.
+      // 2. Go back inside the app (or to Home when there is no in-app history).
       if (window.location.pathname !== "/") {
-        navigate(-1);
+        goBackSafe(navigate);
         return true;
       }
       // 3. On the home screen let the system exit the app.
@@ -68,28 +70,42 @@ const MobileAppShell = () => {
 
   useEffect(() => {
     let dispose = () => {};
-    void registerDeepLinks((path) => navigate(path)).then((nextDispose) => { dispose = nextDispose; });
+    const finishAuth = async (url: string) => {
+      const next = await completeNativeOAuth(url);
+      if (next) navigate(next, { replace: true });
+    };
+    void registerDeepLinks((path) => navigate(path), (url) => void finishAuth(url)).then((nextDispose) => { dispose = nextDispose; });
+    void consumeLaunchAuthUrl().then((url) => { if (url) void finishAuth(url); });
     return () => dispose();
   }, [navigate]);
 
   useEffect(() => {
     let dispose = () => {};
+    let disposeSound = () => {};
     void registerNotificationTaps((path) => navigate(path)).then((d) => { dispose = d; });
+    void registerForegroundReminderSound().then((d) => { disposeSound = d; });
     // Re-lock the medical card whenever the app goes to background.
     const onHide = () => { if (document.visibilityState === "hidden") lockNow(); };
     document.addEventListener("visibilitychange", onHide);
-    return () => { dispose(); document.removeEventListener("visibilitychange", onHide); };
+    return () => { dispose(); disposeSound(); document.removeEventListener("visibilitychange", onHide); };
   }, [navigate]);
 
+  // Restore the last screen only once, at cold start. Restoring on every visit
+  // to "/" made the Home tab and the back button bounce away from the home screen.
+  const restoreChecked = useRef(false);
   useEffect(() => {
     if (!isNativeApp()) return;
     const current = `${location.pathname}${location.search}${location.hash}`;
-    if (location.pathname === "/") {
-      const saved = localStorage.getItem(LAST_MOBILE_PATH);
-      if (saved && SAFE_RESTORE_PATH.test(saved)) navigate(saved, { replace: true });
-      return;
+    if (!restoreChecked.current) {
+      restoreChecked.current = true;
+      if (location.pathname === "/") {
+        const saved = localStorage.getItem(LAST_MOBILE_PATH);
+        if (saved && SAFE_RESTORE_PATH.test(saved)) navigate(saved);
+        return;
+      }
     }
-    if (SAFE_RESTORE_PATH.test(current)) localStorage.setItem(LAST_MOBILE_PATH, current);
+    if (location.pathname === "/") localStorage.removeItem(LAST_MOBILE_PATH);
+    else if (SAFE_RESTORE_PATH.test(current)) localStorage.setItem(LAST_MOBILE_PATH, current);
   }, [location.hash, location.pathname, location.search, navigate]);
 
   // Scroll to top on route change — native apps never keep the old scroll.

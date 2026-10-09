@@ -21,4 +21,15 @@
     <!-- Mikrofon (ovozli matn kiritish) -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!--
+      Google orqali kirish uchun: quyidagi <intent-filter> ni
+      <activity android:name=".MainActivity" ...> tegining ICHIGA qo‘ying.
+      <intent-filter>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="uz.medall.app" android:host="app-auth" />
+      </intent-filter>
+    -->
+
 </manifest>

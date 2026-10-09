@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { isNativeApp } from "@/lib/nativeApp";
 import {
   biometricAvailable, cancelReminder, ensureNotificationPermission, isBiometricLockEnabled, isLabAlertsEnabled,
-  listReminders, scheduleMedication, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
+  listReminders, scheduleMedication, scheduleTestReminder, ensureExactAlarms, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
   verifyBiometric, type PendingReminder,
 } from "@/lib/nativeHealth";
 import { fetchPatientVisits, isVisitOpen, visitDate } from "@/lib/patientRecords";
@@ -80,6 +80,13 @@ export const NativeHealthSettings = () => {
     void refresh();
   };
 
+  const testReminder = async () => {
+    if (!(await ensureNotificationPermission())) { askPermission("notifications", () => void testReminder()); return; }
+    const exact = await ensureExactAlarms();
+    await scheduleTestReminder();
+    toast({ title: "Sinov eslatmasi 10 soniyadan keyin keladi", description: exact ? "Ilovani yopib ham kutib ko‘rishingiz mumkin." : "Sozlamalarda “Signal va eslatmalar” ruxsatini yoqing, aks holda eslatmalar kechikadi." });
+  };
+
   const toggleBio = async (on: boolean) => {
     if (on && !(await verifyBiometric())) { askPermission("biometric", () => void toggleBio(true)); return; }
     setBiometricLockEnabled(on); setBioOn(on);
@@ -88,6 +95,13 @@ export const NativeHealthSettings = () => {
   return (
     <div className="space-y-4">
       <PermissionDeniedDialog kind={denied} onClose={() => setDenied(null)} onRetry={() => retryAction?.()} />
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="space-y-2 p-4">
+          <p className="flex items-center gap-2 text-sm font-semibold"><Bell className="h-4 w-4 text-primary" /> Eslatmalar ovoz bilan keladi</p>
+          <p className="text-xs text-muted-foreground">Xiaomi, Samsung va boshqa telefonlarda Sozlamalar → Ilovalar → Med ALL → Batareya bo‘limida “Cheklovsiz” ni tanlang, aks holda tizim eslatmani to‘xtatishi mumkin.</p>
+          <Button variant="outline" className="w-full" onClick={testReminder}>Sinov eslatmasini yuborish (10 soniya)</Button>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Pill className="h-5 w-5 text-medical-green" /> Dori ichish eslatmasi</CardTitle></CardHeader>
         <CardContent className="space-y-2">

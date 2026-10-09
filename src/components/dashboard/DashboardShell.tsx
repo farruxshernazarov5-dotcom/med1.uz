@@ -189,15 +189,28 @@ const DashboardShell = ({
         </div>
       )}
 
+      {/* Thumb-reachable cabinet menu button (mobile) */}
+      {!mobileOpen && (
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Kabinet menyusini ochish"
+          className="fixed bottom-24 left-4 z-40 flex h-14 items-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground shadow-lg active:scale-95 md:hidden"
+        >
+          <Menu className="h-5 w-5" /> Menyu
+        </button>
+      )}
+
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header className="h-16 border-b border-white/10 bg-white/95 dark:bg-[hsl(213,60%,18%)]/95 backdrop-blur-xl flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-white/10 transition-colors"
+            className="md:hidden flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/60 text-foreground transition-colors active:scale-95"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? "Menyuni yopish" : "Kabinet menyusini ochish"}
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <div className="hidden md:flex items-center gap-2">
             <TitleIcon className={cn("w-5 h-5", iconColor)} />

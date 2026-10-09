@@ -73,14 +73,19 @@ export async function registerBackButton(onBack: () => boolean): Promise<() => v
   }
 }
 
+/** Custom scheme registered in AndroidManifest/Info.plist for the Google sign-in hand-off. */
+export const NATIVE_AUTH_SCHEME = "uz.medall.app";
+
 /** Receive med1.uz and custom-scheme links while the native app is already open. */
-export async function registerDeepLinks(onPath: (path: string) => void): Promise<() => void> {
+export async function registerDeepLinks(onPath: (path: string) => void, onAuth?: (url: string) => void): Promise<() => void> {
   if (!isNativeApp()) return () => {};
   try {
     const { App } = await import("@capacitor/app");
     const handle = await App.addListener("appUrlOpen", ({ url }) => {
       try {
         const parsed = new URL(url);
+        // Sign-in hand-off: never routed through history (it carries session tokens).
+        if (parsed.protocol === `${NATIVE_AUTH_SCHEME}:` && parsed.hostname === "app-auth") { onAuth?.(url); return; }
         const allowedWebHost = parsed.protocol === "https:" && ["med1.uz", "www.med1.uz"].includes(parsed.hostname);
         const allowedScheme = parsed.protocol === "med1:";
         if (!allowedWebHost && !allowedScheme) return;
