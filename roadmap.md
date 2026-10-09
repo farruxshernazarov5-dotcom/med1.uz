@@ -79,3 +79,11 @@
 - [x] 10 ta rol tanlovi, tariflar va har rol uchun 3 kadrli kreativ animatsion foto yo‘riqnomani qo‘shish
 - [x] Xizmatlar va e’lonlar filtrlarini mobil panjaraga moslash
 - [ ] Mobil oqimlarni kirgan/kirmagan holatda, tor ekran va to‘lov xavfsizligi bilan tekshirish
+
+## APK tuzatishlari (9-oktabr)
+- [ ] Foto yo‘q bo‘limlar (Qabullar, rol kartalari, e’lon kartalari) — foto qo‘shish
+- [ ] Orqaga tugmasi va “Asosiy” tugmasi (oxirgi sahifani tiklash xatosi)
+- [ ] Eslatmalar: ovozli kanal, aniq vaqt ruxsati, sinov eslatmasi, ilova ochiqligida kuy
+- [ ] Kabinet menyu (uch chiziq) tugmasini kattalashtirish va pastga qulay tugma
+- [ ] Click Business uslubidagi chekka “Med ALL Business” yorlig‘i: 10 rol + e’lonlar doskasi (sayt va ilova)
+- [ ] Ilovada Google orqali kirish (tizim brauzeri orqali) va login/parolni barmoq izi bilan eslab qolish
