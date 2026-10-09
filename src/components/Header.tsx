@@ -136,7 +136,7 @@ const Header = () => {
                 </Button>
               )}
 
-              <button aria-label={isOpen ? "Menyuni yopish" : "Menyuni ochish"} aria-expanded={isOpen} className="lg:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
+              <button aria-label={isOpen ? "Menyuni yopish" : "Menyuni ochish"} aria-expanded={isOpen} className="lg:hidden flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/60 text-foreground active:scale-95" onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>

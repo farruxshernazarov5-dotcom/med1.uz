@@ -26,7 +26,7 @@ export function BusinessEdgeTab() {
       >
         <span className="h-2 w-2 rounded-full bg-primary" />
         <span className="text-primary">Med ALL</span>
-        <span className="text-accent">Business</span>
+        <span className="text-foreground">Business</span>
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
