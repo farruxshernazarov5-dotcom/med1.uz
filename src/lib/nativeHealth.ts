@@ -20,10 +20,90 @@ export async function ensureNotificationPermission(): Promise<boolean> {
   try {
     const LN = await ln();
     const cur = await LN.checkPermissions();
-    if (cur.display === "granted") return true;
-    const req = await LN.requestPermissions();
-    return req.display === "granted";
+    const granted = cur.display === "granted" || (await LN.requestPermissions()).display === "granted";
+    if (granted) { await ensureReminderChannel(); await ensureExactAlarms(); }
+    return granted;
   } catch { return false; }
+}
+
+/** Android 8+: a high-importance channel with sound + vibration (otherwise reminders arrive silently or not at all). */
+export const REMINDER_CHANNEL = "med1_reminders";
+let channelReady = false;
+export async function ensureReminderChannel(): Promise<void> {
+  if (channelReady || !isNativeApp()) return;
+  try {
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.getPlatform() !== "android") { channelReady = true; return; }
+    const LN = await ln();
+    await LN.createChannel({
+      id: REMINDER_CHANNEL,
+      name: "Med ALL eslatmalari",
+      description: "Dori, qabul va tahlil eslatmalari (ovoz va tebranish bilan)",
+      importance: 5,
+      visibility: 1,
+      vibration: true,
+      lights: true,
+      lightColor: "#2F80ED",
+    });
+    channelReady = true;
+  } catch { /* older plugin/OS — default channel is used */ }
+}
+
+/** Android 12+: "Signal va eslatmalar" ruxsati — without it the OS delays or drops timed reminders. */
+export async function ensureExactAlarms(): Promise<boolean> {
+  if (!isNativeApp()) return false;
+  try {
+    const { Capacitor } = await import("@capacitor/core");
+    if (Capacitor.getPlatform() !== "android") return true;
+    const LN = await ln();
+    const cur = await LN.checkExactNotificationSetting();
+    if (cur.exact_alarm === "granted") return true;
+    const next = await LN.changeExactNotificationSetting();
+    return next.exact_alarm === "granted";
+  } catch { return true; }
+}
+
+/** Fires a reminder 10 seconds from now so the user can confirm sound and delivery. */
+export async function scheduleTestReminder(): Promise<void> {
+  const LN = await ln();
+  await ensureReminderChannel();
+  await LN.schedule({ notifications: [{
+    id: LAB_BASE + 99999, title: "🔔 Med ALL sinov eslatmasi", body: "Eslatmalar ovoz bilan ishlayapti.",
+    channelId: REMINDER_CHANNEL, schedule: { at: new Date(Date.now() + 10_000), allowWhileIdle: true },
+    extra: { kind: "test", route: "/mobile-appointments?panel=reminders" },
+  }] });
+}
+
+/** Short melody played when a reminder arrives while the app is open (the OS stays silent in foreground). */
+export function playReminderChime(): void {
+  try {
+    const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    [659.25, 783.99, 1046.5, 783.99, 1046.5].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const t = ctx.currentTime + i * 0.22;
+      osc.type = "sine"; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.35, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t); osc.stop(t + 0.21);
+    });
+    window.setTimeout(() => void ctx.close(), 1600);
+    if ("vibrate" in navigator) navigator.vibrate?.([200, 100, 200]);
+  } catch { /* audio unavailable */ }
+}
+
+export async function registerForegroundReminderSound(): Promise<() => void> {
+  if (!isNativeApp()) return () => {};
+  try {
+    const LN = await ln();
+    await ensureReminderChannel();
+    const h = await LN.addListener("localNotificationReceived", () => playReminderChime());
+    return () => void h.remove();
+  } catch { return () => {}; }
 }
 
 /** Opens the phone's app settings screen so the user can re-enable a denied permission. */
@@ -43,6 +123,7 @@ export async function openAppSettings(): Promise<void> {
 /** Daily repeating medication reminder at HH:MM. */
 export async function scheduleMedication(name: string, dose: string, times: string[]): Promise<number> {
   const LN = await ln();
+  await ensureReminderChannel();
   const base = MED_BASE + Math.floor(Math.random() * 300000);
   const notifications = times.map((t, i) => {
     const [hour, minute] = t.split(":").map(Number);
@@ -50,6 +131,7 @@ export async function scheduleMedication(name: string, dose: string, times: stri
       id: base + i,
       title: `💊 Dori vaqti: ${name}`,
       body: dose ? `${dose} — ichishni unutmang` : "Dorini ichishni unutmang",
+      channelId: REMINDER_CHANNEL,
       schedule: { on: { hour, minute }, allowWhileIdle: true },
       extra: { kind: "med", route: "/mobile-appointments?panel=reminders" },
     };
@@ -77,6 +159,7 @@ export async function syncAppointmentReminders(items: { id: string; when: Date; 
         id: APPT_BASE + idx * 2 + j,
         title: "🩺 Shifokor qabuli",
         body: `${o.text}: ${a.label} — ${a.when.toLocaleString("uz-UZ", { dateStyle: "short", timeStyle: "short" })}`,
+        channelId: REMINDER_CHANNEL,
         schedule: { at, allowWhileIdle: true },
         extra: { kind: "appt", route: "/mobile-appointments?panel=upcoming" },
       });
@@ -115,7 +198,7 @@ const LAB_BASE = 900000;
 export async function notifyNow(title: string, body: string, route: string): Promise<void> {
   const LN = await ln();
   await LN.schedule({ notifications: [{
-    id: LAB_BASE + Math.floor(Math.random() * 90000), title, body,
+    id: LAB_BASE + Math.floor(Math.random() * 90000), title, body, channelId: REMINDER_CHANNEL,
     schedule: { at: new Date(Date.now() + 1000), allowWhileIdle: true },
     extra: { kind: "lab", route },
   }] });
