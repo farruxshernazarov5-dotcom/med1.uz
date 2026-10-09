@@ -70,17 +70,24 @@ const MobileAppShell = () => {
 
   useEffect(() => {
     let dispose = () => {};
-    void registerDeepLinks((path) => navigate(path)).then((nextDispose) => { dispose = nextDispose; });
+    const finishAuth = async (url: string) => {
+      const next = await completeNativeOAuth(url);
+      if (next) navigate(next, { replace: true });
+    };
+    void registerDeepLinks((path) => navigate(path), (url) => void finishAuth(url)).then((nextDispose) => { dispose = nextDispose; });
+    void consumeLaunchAuthUrl().then((url) => { if (url) void finishAuth(url); });
     return () => dispose();
   }, [navigate]);
 
   useEffect(() => {
     let dispose = () => {};
+    let disposeSound = () => {};
     void registerNotificationTaps((path) => navigate(path)).then((d) => { dispose = d; });
+    void registerForegroundReminderSound().then((d) => { disposeSound = d; });
     // Re-lock the medical card whenever the app goes to background.
     const onHide = () => { if (document.visibilityState === "hidden") lockNow(); };
     document.addEventListener("visibilitychange", onHide);
-    return () => { dispose(); document.removeEventListener("visibilitychange", onHide); };
+    return () => { dispose(); disposeSound(); document.removeEventListener("visibilitychange", onHide); };
   }, [navigate]);
 
   // Restore the last screen only once, at cold start. Restoring on every visit
