@@ -21,6 +21,9 @@ const config: CapacitorConfig = {
     },
     Keyboard: {
       resize: 'native'
+    },
+    LocalNotifications: {
+      iconColor: '#2F80ED'
     }
   }
 };

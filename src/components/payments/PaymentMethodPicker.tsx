@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Send } from "lucide-react";
@@ -79,7 +80,7 @@ const PaymentMethodPicker = ({
           amount,
           purpose,
           reference_id: referenceId,
-          return_url: returnUrl || `${window.location.origin}/payment/success`,
+          return_url: returnUrl || `${publicOrigin()}/payment/success`,
           ...extraBody,
         },
       });
@@ -120,7 +121,7 @@ const PaymentMethodPicker = ({
           amount,
           purpose,
           reference_id: referenceId,
-          return_url: returnUrl || `${window.location.origin}/payment/success`,
+          return_url: returnUrl || `${publicOrigin()}/payment/success`,
           ...extraBody,
         },
       });

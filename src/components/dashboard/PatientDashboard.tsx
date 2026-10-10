@@ -373,13 +373,13 @@ const PatientDashboard = () => {
       <div className="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
         <HambiMobileBanner />
         {/* Top bar */}
-        <header className="shrink-0 bg-card border-b border-border h-14 flex items-center px-4 gap-3">
+        <header className="shrink-0 bg-card border-b border-border flex items-center px-4 gap-3 min-h-[4.75rem] pt-[calc(env(safe-area-inset-top,0px)+1rem)] pb-2 lg:min-h-0 lg:h-14 lg:py-0">
           <button
-            className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted"
+            className="lg:hidden flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-border bg-muted/60 text-foreground active:scale-95"
             onClick={() => setMobileOpen(true)}
-            aria-label="Menyu"
+            aria-label="Kabinet menyusini ochish"
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-6 h-6" />
           </button>
           <div className="flex-1 min-w-0">
             <h1 className="font-bold text-foreground text-base truncate">

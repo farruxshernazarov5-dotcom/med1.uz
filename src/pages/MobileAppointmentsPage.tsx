@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, Bell, Brain, CalendarCheck, CalendarClock, CalendarPlus, ChevronRight, CircleHelp, Clock, Copy, FlaskConical,
+  ArrowLeft, Bell, BellRing, Brain, CalendarCheck, CalendarClock, CalendarPlus, ChevronRight, CircleHelp, Clock, Copy, FlaskConical,
   History, Lightbulb, Loader2, MapPin, Phone, X, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -16,6 +16,8 @@ import { MOBILE_AI_SERVICES } from "@/data/mobileServiceCatalog";
 import { MOBILE_TIP_MENUS } from "@/data/mobileTipsCatalog";
 import { fetchLabOrdersResult, fetchPatientVisits, isVisitOpen, visitDate, VISIT_STATUS, type LabOrder, type PatientVisit } from "@/lib/patientRecords";
 import { NativeHealthSettings } from "@/components/mobile/NativeHealthSettings";
+import { NotificationsFeed } from "@/components/mobile/NotificationsFeed";
+import { subscribeFeed } from "@/lib/notificationsFeed";
 import { cn } from "@/lib/utils";
 import { signInDestination } from "@/lib/authDestination";
 import f1 from "@/assets/mobile-service-stories/doctors-2.webp";
@@ -32,8 +34,8 @@ const GUIDE = [
 ];
 
 type AiRow = { id: string; service_id: string; content: string; created_at: string };
-type Panel = "upcoming" | "past" | "labs" | "ai" | "reminders";
-const PANELS: Panel[] = ["upcoming", "past", "labs", "ai", "reminders"];
+type Panel = "upcoming" | "past" | "labs" | "ai" | "reminders" | "notifications";
+const PANELS: Panel[] = ["upcoming", "past", "labs", "ai", "reminders", "notifications"];
 type DateRange = "all" | "today" | "7" | "30" | "custom";
 
 const serviceName = (id: string) => MOBILE_AI_SERVICES.find((s) => s.id === id)?.title ?? id.replace(/[-_]/g, " ");
@@ -54,9 +56,10 @@ const EMPTY: Record<Panel, { title: string; hint: string; cta: string; to: strin
   labs: { title: "Tahlil natijalari yo‘q", hint: "Med1 hisobingizga bog‘langan laboratoriya natijalari shu yerda chiqadi. Boshqa klinika dasturi alohida ulanishi kerak. Tahlil varag‘ini AI bilan ham tekshirishingiz mumkin.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
   ai: { title: "AI xulosalari hali yo‘q", hint: "Istalgan Med1 AI xizmatidan foydalaning — bergan javoblari avtomatik shu yerda saqlanadi.", cta: "AI xizmatlarini ochish", to: "/ai-services" },
   reminders: { title: "", hint: "", cta: "", to: "/" },
+  notifications: { title: "", hint: "", cta: "", to: "/" },
 };
 
-const TITLES: Record<Panel, string> = { upcoming: "Kelgusi qabullar", past: "Qabullar tarixi", labs: "Tahlillar", ai: "AI xulosalari", reminders: "Qabul va dori eslatmalari" };
+const TITLES: Record<Panel, string> = { upcoming: "Kelgusi qabullar", past: "Qabullar tarixi", labs: "Tahlillar", ai: "AI xulosalari", reminders: "Qabul va dori eslatmalari", notifications: "Bildirishnomalar" };
 
 const EmptyState = ({ panel, onGo }: { panel: Panel; onGo: () => void }) => (
   <div className="rounded-xl border border-dashed border-border bg-muted/40 p-5 text-center">
@@ -68,6 +71,13 @@ const EmptyState = ({ panel, onGo }: { panel: Panel; onGo: () => void }) => (
 
 const MobileAppointmentsPage = () => {
   const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    const count = () => void supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false).then(({ count: c }) => setUnreadCount(c ?? 0));
+    count();
+    return subscribeFeed(user.id, () => count());
+  }, [user]);
   const [params, setParams] = useSearchParams();
   const [guideOpen, setGuideOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -208,6 +218,12 @@ const MobileAppointmentsPage = () => {
             <span className="flex-1"><span className="block font-bold">Yangi qabulga yozilish</span><span className="text-xs opacity-80">Shifokor yoki klinikani tanlang</span></span>
             <ChevronRight />
           </Link>
+          <button onClick={() => open("notifications")} className="col-span-2 flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-left active:scale-[0.98]">
+            <BellRing className="h-5 w-5 text-primary" />
+            <span className="flex-1"><span className="block text-sm font-semibold text-foreground">Bildirishnomalar</span><span className="text-xs text-muted-foreground">Barcha xabarlar, ovozli signal va holat tekshiruvi</span></span>
+            {unreadCount > 0 && <span className="rounded-full bg-destructive px-2 py-0.5 text-xs font-bold text-destructive-foreground">{unreadCount}</span>}
+            <ChevronRight className="text-muted-foreground" />
+          </button>
           <button onClick={() => open("reminders")} className="col-span-2 flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-left active:scale-[0.98]">
             <Bell className="h-5 w-5 text-medical-orange" />
             <span className="flex-1"><span className="block text-sm font-semibold text-foreground">Qabul va dori eslatmalari</span><span className="text-xs text-muted-foreground">Qabul yaqinlashganda va tahlil tayyor bo‘lganda xabar</span></span>
@@ -231,9 +247,9 @@ const MobileAppointmentsPage = () => {
         <DialogContent className="max-h-[88dvh] overflow-y-auto">
           <DialogTitle>{panel ? TITLES[panel] : ""}</DialogTitle>
           <DialogDescription>Faqat sizga ko‘rinadi.</DialogDescription>
-           {loadError && panel !== 'reminders' && <div role="alert" className="rounded-lg border border-destructive/30 p-3 text-sm text-destructive">Ayrim manbalar yuklanmadi. Ko‘rsatilgan ro‘yxat to‘liq bo‘lmasligi mumkin.<Button variant="outline" size="sm" className="mt-2" onClick={()=>void load()}>Qayta urinish</Button></div>}
+           {loadError && panel !== 'reminders' && panel !== 'notifications' && <div role="alert" className="rounded-lg border border-destructive/30 p-3 text-sm text-destructive">Ayrim manbalar yuklanmadi. Ko‘rsatilgan ro‘yxat to‘liq bo‘lmasligi mumkin.<Button variant="outline" size="sm" className="mt-2" onClick={()=>void load()}>Qayta urinish</Button></div>}
 
-          {loading && panel !== "reminders" && <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>}
+          {loading && panel !== "reminders" && panel !== "notifications" && <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>}
 
           {!loading && visitList && (
             <div className="space-y-2">
@@ -323,6 +339,7 @@ const MobileAppointmentsPage = () => {
           )}
 
           {panel === "reminders" && <NativeHealthSettings />}
+          {panel === "notifications" && <NotificationsFeed />}
         </DialogContent>
       </Dialog>
 

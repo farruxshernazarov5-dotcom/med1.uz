@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Globe, Loader2, ShieldCheck, Sparkles, Wallet } from "lucide-react";
@@ -35,13 +36,13 @@ const Med1TopCreatePage = () => {
 
   const [auction, setAuction] = useState<AuctionState[]>([]);
   const [placementCode, setPlacementCode] = useState(params.get("placement") || "top3");
-  const [entityType, setEntityType] = useState<string>("clinic");
-  const [title, setTitle] = useState("");
+  const [entityType, setEntityType] = useState<string>(params.get("from") === "classifieds" ? "service" : "clinic");
+  const [title, setTitle] = useState(params.get("title")?.slice(0, 120) ?? "");
   const [brandUrl, setBrandUrl] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [brandName, setBrandName] = useState("");
-  const [description, setDescription] = useState("");
-  const [phone, setPhone] = useState("");
+  const [description, setDescription] = useState(params.get("description")?.slice(0, 1000) ?? "");
+  const [phone, setPhone] = useState(params.get("phone")?.slice(0, 20) ?? "");
   const [address, setAddress] = useState("");
   const [region, setRegion] = useState("Toshkent");
   const [specialty, setSpecialty] = useState("");
@@ -182,7 +183,7 @@ const Med1TopCreatePage = () => {
           amount: bid,
           purpose: `med1_ad:${placement.code}`,
           reference_id: campaign.id,
-          return_url: `${window.location.origin}/med1-top/my`,
+          return_url: `${publicOrigin()}/med1-top/my`,
         },
       });
       if (payErr) throw payErr;

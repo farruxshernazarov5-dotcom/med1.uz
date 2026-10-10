@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard } from "lucide-react";
@@ -45,7 +46,7 @@ const ClickPayButton = ({
           amount,
           purpose,
           reference_id: referenceId,
-          return_url: returnUrl || `${window.location.origin}/payment/success`,
+          return_url: returnUrl || `${publicOrigin()}/payment/success`,
         },
       });
       if (error) {

@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { QrCode, Smartphone, CheckCircle2, Loader2, Copy, ExternalLink, RefreshCw } from "lucide-react";
@@ -76,7 +77,7 @@ const QRPayButton = ({
           purpose,
           reference_id: referenceId,
           lang: "uz",
-          return_url: returnUrl || `${window.location.origin}/payment/success`,
+          return_url: returnUrl || `${publicOrigin()}/payment/success`,
         },
       });
       if (error) {

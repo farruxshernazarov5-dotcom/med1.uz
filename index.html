@@ -37,6 +37,9 @@
     <!-- AdSense — load on first user interaction to save ~600KiB blocking JS -->
     <script>
       (function(){
+        // The Med ALL phone app shows no third-party ads (faster start, less battery).
+        var cap = window.Capacitor;
+        if (cap && cap.isNativePlatform && cap.isNativePlatform()) return;
         var loaded = false;
         function loadAds(){
           if (loaded) return; loaded = true;

@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { BarChart3, Eye, MousePointerClick, Loader2, Plus, RefreshCw, Trash2, Wallet } from "lucide-react";
@@ -62,7 +63,7 @@ const Med1TopMyAdsPage = () => {
             amount: Number(ad.bid_amount),
             purpose: "med1_ad",
             reference_id: ad.id,
-            return_url: `${window.location.origin}/med1-top/my`,
+            return_url: `${publicOrigin()}/med1-top/my`,
           },
         },
       );
