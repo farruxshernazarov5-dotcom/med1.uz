@@ -23,8 +23,7 @@ const config: CapacitorConfig = {
       resize: 'native'
     },
     LocalNotifications: {
-      iconColor: '#2F80ED',
-      sound: 'default'
+      iconColor: '#2F80ED'
     },
     SocialLogin: {
       providers: {
