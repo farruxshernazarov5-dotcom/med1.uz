@@ -10,7 +10,7 @@ import { isNativeApp } from "./nativeApp";
 /** Public Google web client ID (the same one the website uses). */
 export const GOOGLE_WEB_CLIENT_ID = "1077119160828-h010v8vdalbbamldvgobrggvnpgk5dr6.apps.googleusercontent.com";
 
-export type NativeGoogleResult = { ok: true } | { ok: false; reason: "cancelled" | "unavailable" | "failed"; message: string };
+export type NativeGoogleResult = { ok: boolean; reason?: "cancelled" | "unavailable" | "failed"; message?: string };
 
 let initialized = false;
 
