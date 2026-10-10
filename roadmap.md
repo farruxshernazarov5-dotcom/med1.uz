@@ -106,4 +106,4 @@
 - [x] Saytda yo‘q klinikani ulash sahifasi (dastur nomi + bemor roziligi)
 - [x] Yangilanishdan keyingi “Failed to fetch dynamically imported module” xatosi — avtomatik yangilash
 - [ ] Eslatma/bildirishnomalarni haqiqiy telefonda sinash — qurilma kerak
-- [ ] Saytni publish qilish
+- [x] Saytni publish qilish (so‘ralgan)
