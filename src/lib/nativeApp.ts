@@ -14,6 +14,21 @@ export function isNativeApp(): boolean {
   return cachedNative;
 }
 
+/** Public website used in links that leave the device (referrals, payment returns, emails). */
+export const PUBLIC_SITE = "https://med1.uz";
+
+/**
+ * Origin for shareable or externally-opened links. Inside the phone app the
+ * page origin is `https://localhost`, and in the editor it is a preview host,
+ * so both are replaced with the real website.
+ */
+export function publicOrigin(): string {
+  if (typeof window === "undefined" || isNativeApp()) return PUBLIC_SITE;
+  const { origin, hostname } = window.location;
+  if (hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".lovableproject.com") || hostname.startsWith("id-preview--")) return PUBLIC_SITE;
+  return origin;
+}
+
 export function nativePlatform(): "ios" | "android" | "web" {
   if (typeof window === "undefined") return "web";
   const cap = (window as unknown as { Capacitor?: { getPlatform?: () => string } }).Capacitor;

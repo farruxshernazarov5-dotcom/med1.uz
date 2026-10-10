@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -156,7 +157,7 @@ export const useReferral = () => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
   };
 
-  const referralLink = code ? `${window.location.origin}/auth?ref=${code.code}` : "";
+  const referralLink = code ? `${publicOrigin()}/auth?ref=${code.code}` : "";
 
   return { loading, code, stats, wallet, referrals, leaderboard, notifications, referralLink, reload, markNotifRead };
 };

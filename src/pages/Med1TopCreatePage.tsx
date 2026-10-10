@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/nativeApp";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Globe, Loader2, ShieldCheck, Sparkles, Wallet } from "lucide-react";
@@ -182,7 +183,7 @@ const Med1TopCreatePage = () => {
           amount: bid,
           purpose: `med1_ad:${placement.code}`,
           reference_id: campaign.id,
-          return_url: `${window.location.origin}/med1-top/my`,
+          return_url: `${publicOrigin()}/med1-top/my`,
         },
       });
       if (payErr) throw payErr;
