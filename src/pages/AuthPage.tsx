@@ -17,6 +17,7 @@ import { setPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 import logoImg from "@/assets/logo.webp";
 import { safeAuthDestination } from "@/lib/authDestination";
 import { startNativeOAuth } from "@/lib/nativeOAuth";
+import { nativeGoogleSignIn } from "@/lib/nativeGoogle";
 import { canSaveLogin, hasSavedLogin, loadSavedLogin, saveLogin } from "@/lib/nativeCredentials";
 import { Fingerprint } from "lucide-react";
 
@@ -95,7 +96,18 @@ const AuthPage = () => {
     setSubmitting(true);
     if (mode === "register") setPendingRole(role);
     if (isNativeApp()) {
-      // Google blocks sign-in inside app WebViews: continue in the phone's browser.
+      if (provider === "google") {
+        // In-app Google account picker — no browser tab.
+        const r = await nativeGoogleSignIn();
+        setSubmitting(false);
+        if (r.ok) { navigate(safeNext ?? "/dashboard", { replace: true }); return; }
+        if (r.reason === "cancelled") return;
+        if (r.reason === "failed") {
+          toast({ title: "Google orqali kirib bo‘lmadi", description: r.message, variant: "destructive" });
+          return;
+        }
+        // Older APK without the native module: fall back to the browser bridge.
+      }
       startNativeOAuth(provider, safeNext);
       setSubmitting(false);
       return;
