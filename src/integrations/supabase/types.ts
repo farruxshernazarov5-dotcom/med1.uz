@@ -8274,6 +8274,60 @@ export type Database = {
         }
         Relationships: []
       }
+      external_clinic_link_requests: {
+        Row: {
+          admin_note: string | null
+          clinic_name: string
+          clinic_phone: string | null
+          clinic_region: string | null
+          consent_at: string
+          consent_given: boolean
+          consent_version: string
+          created_at: string
+          data_scopes: string[]
+          id: string
+          patient_card_number: string | null
+          software_name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          clinic_name: string
+          clinic_phone?: string | null
+          clinic_region?: string | null
+          consent_at?: string
+          consent_given: boolean
+          consent_version?: string
+          created_at?: string
+          data_scopes?: string[]
+          id?: string
+          patient_card_number?: string | null
+          software_name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          clinic_name?: string
+          clinic_phone?: string | null
+          clinic_region?: string | null
+          consent_at?: string
+          consent_given?: boolean
+          consent_version?: string
+          created_at?: string
+          data_scopes?: string[]
+          id?: string
+          patient_card_number?: string | null
+          software_name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       family_members: {
         Row: {
           allergies: string | null
@@ -16184,6 +16238,7 @@ export type Database = {
           block_self_referral: boolean
           cancel_on_refund: boolean
           cancel_on_unsubscribe_days: number
+          credit_to_uzs: number
           id: number
           max_referrals_per_ip_24h: number
           min_subscription_amount: number
@@ -16200,6 +16255,7 @@ export type Database = {
           block_self_referral?: boolean
           cancel_on_refund?: boolean
           cancel_on_unsubscribe_days?: number
+          credit_to_uzs?: number
           id?: number
           max_referrals_per_ip_24h?: number
           min_subscription_amount?: number
@@ -16216,6 +16272,7 @@ export type Database = {
           block_self_referral?: boolean
           cancel_on_refund?: boolean
           cancel_on_unsubscribe_days?: number
+          credit_to_uzs?: number
           id?: number
           max_referrals_per_ip_24h?: number
           min_subscription_amount?: number
@@ -18324,6 +18381,10 @@ export type Database = {
         Args: { _admin: string; _payment_id: string; _reason: string }
         Returns: Json
       }
+      convert_referral_credits_to_cash: {
+        Args: { _credits: number; _idempotency_key: string }
+        Returns: Json
+      }
       deduct_ai_credits: {
         Args: {
           _channel?: string
@@ -18361,6 +18422,7 @@ export type Database = {
       fulfill_platform_payment: { Args: { _payment_id: string }; Returns: Json }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
       generate_wallet_card_number: { Args: never; Returns: string }
+      get_credit_to_uzs_rate: { Args: never; Returns: number }
       get_nearby_medical_services: {
         Args: {
           _lat: number
@@ -18604,6 +18666,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      revoke_my_clinic_link: { Args: { _id: string }; Returns: undefined }
       revoke_referral_reward: {
         Args: { _reason?: string; _referral_id: string }
         Returns: undefined
