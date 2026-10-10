@@ -27,7 +27,9 @@ export async function ensureNotificationPermission(): Promise<boolean> {
 }
 
 /** Android 8+: a high-importance channel with sound + vibration (otherwise reminders arrive silently or not at all). */
-export const REMINDER_CHANNEL = "med1_reminders";
+// v2: Android never raises the importance of an existing channel, so phones that
+// created the first (quiet) channel kept getting silent reminders. A new id fixes it.
+export const REMINDER_CHANNEL = "med1_alerts_v2";
 let channelReady = false;
 export async function ensureReminderChannel(): Promise<void> {
   if (channelReady || !isNativeApp()) return;
@@ -35,9 +37,10 @@ export async function ensureReminderChannel(): Promise<void> {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.getPlatform() !== "android") { channelReady = true; return; }
     const LN = await ln();
+    await LN.deleteChannel({ id: "med1_reminders" }).catch(() => {});
     await LN.createChannel({
       id: REMINDER_CHANNEL,
-      name: "Med ALL eslatmalari",
+      name: "Med ALL eslatmalari (ovozli)",
       description: "Dori, qabul va tahlil eslatmalari (ovoz va tebranish bilan)",
       importance: 5,
       visibility: 1,
@@ -259,4 +262,18 @@ export async function verifyBiometric(): Promise<boolean> {
     unlockedThisSession = true;
     return true;
   } catch { return false; }
+}
+
+export type NotifyStatus = { native: boolean; permission: boolean; exact: boolean; pending: number };
+/** Read-only health check shown in the reminders panel (never prompts). */
+export async function notificationStatus(): Promise<NotifyStatus> {
+  if (!isNativeApp()) return { native: false, permission: false, exact: false, pending: 0 };
+  try {
+    const LN = await ln();
+    const permission = (await LN.checkPermissions()).display === "granted";
+    let exact = true;
+    try { exact = (await LN.checkExactNotificationSetting()).exact_alarm === "granted"; } catch { /* iOS */ }
+    const pending = (await LN.getPending()).notifications.length;
+    return { native: true, permission, exact, pending };
+  } catch { return { native: true, permission: false, exact: false, pending: 0 }; }
 }
