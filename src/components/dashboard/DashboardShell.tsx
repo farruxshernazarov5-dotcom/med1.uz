@@ -204,7 +204,7 @@ const DashboardShell = ({
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="app-safe-top min-h-[4.75rem] pt-4 pb-2 md:min-h-0 md:h-16 md:py-0 border-b border-white/10 bg-white/95 dark:bg-[hsl(213,60%,18%)]/95 backdrop-blur-xl flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
+        <header className="min-h-[4.75rem] pt-[calc(env(safe-area-inset-top,0px)+1rem)] pb-2 md:min-h-0 md:h-16 md:py-0 border-b border-white/10 bg-white/95 dark:bg-[hsl(213,60%,18%)]/95 backdrop-blur-xl flex items-center px-4 md:px-6 gap-3 sticky top-0 z-30">
           <button
             className="md:hidden flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-muted/60 text-foreground transition-colors active:scale-95"
             onClick={() => setMobileOpen(!mobileOpen)}
