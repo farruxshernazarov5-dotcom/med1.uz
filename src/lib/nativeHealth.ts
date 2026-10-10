@@ -146,6 +146,7 @@ export async function scheduleMedication(name: string, dose: string, times: stri
 /** Replace all appointment reminders: 1 day and 1 hour before each visit. */
 export async function syncAppointmentReminders(items: { id: string; when: Date; label: string }[]): Promise<number> {
   const LN = await ln();
+  await ensureReminderChannel();
   const pending = await LN.getPending();
   const old = pending.notifications.filter((n) => n.id >= APPT_BASE && n.id < LAB_BASE).map((n) => ({ id: n.id }));
   if (old.length) await LN.cancel({ notifications: old });
@@ -200,6 +201,7 @@ const LAB_BASE = 900000;
 /** Fires an immediate local notification (e.g. lab result is ready). */
 export async function notifyNow(title: string, body: string, route: string): Promise<void> {
   const LN = await ln();
+  await ensureReminderChannel();
   await LN.schedule({ notifications: [{
     id: LAB_BASE + Math.floor(Math.random() * 90000), title, body, channelId: REMINDER_CHANNEL,
     schedule: { at: new Date(Date.now() + 1000), allowWhileIdle: true },
@@ -222,7 +224,7 @@ export async function registerNotificationTaps(go: (path: string) => void): Prom
     const LN = await ln();
     const h = await LN.addListener("localNotificationActionPerformed", (e) => {
       const route = e.notification.extra?.route;
-      if (typeof route === "string" && /^\/(dashboard|mobile-appointments)(?:[/?]|$)/.test(route)) go(route);
+      if (typeof route === "string" && /^\/(dashboard|mobile-appointments|mobile-profile|med1-top)(?:[/?]|$)/.test(route)) go(route);
     });
     return () => void h.remove();
   } catch { return () => {}; }
