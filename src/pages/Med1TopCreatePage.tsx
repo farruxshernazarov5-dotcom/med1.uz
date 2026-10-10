@@ -1,4 +1,4 @@
-import { publicOrigin } from "@/lib/nativeApp";
+import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Globe, Loader2, ShieldCheck, Sparkles, Wallet } from "lucide-react";
@@ -189,7 +189,7 @@ const Med1TopCreatePage = () => {
       if (payErr) throw payErr;
 
       if (pay?.checkout_url) {
-        window.location.href = pay.checkout_url as string;
+        await openCheckout(pay.checkout_url as string, () => navigate("/med1-top/my"));
       } else {
         toast({ title: "Reklama saqlandi", description: "To'lovni 'Reklamalarim' bo'limidan yakunlang" });
         navigate("/med1-top/my");

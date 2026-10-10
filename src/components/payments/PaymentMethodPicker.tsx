@@ -1,4 +1,4 @@
-import { publicOrigin } from "@/lib/nativeApp";
+import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Send } from "lucide-react";
@@ -131,7 +131,8 @@ const PaymentMethodPicker = ({
         throw new Error(payload?.error || (context?.status === 401 ? "To'lov uchun tizimga qayta kiring" : error.message));
       }
       if (!data?.checkout_url) throw new Error("Checkout URL olinmadi");
-      window.location.href = data.checkout_url;
+      await openCheckout(data.checkout_url);
+      setLoading(false);
     } catch (err: any) {
       toast({
         title: "To'lov xatoligi",
