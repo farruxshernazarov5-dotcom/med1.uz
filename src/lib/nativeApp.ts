@@ -147,3 +147,27 @@ export function watchNetwork(cb: (online: boolean) => void): () => void {
     removeNative?.();
   };
 }
+
+/**
+ * Opens a Click/Payme checkout. In the phone app it opens inside the app
+ * (an in-app browser sheet over Med ALL) and calls `onClosed` when the user
+ * returns, so balances can refresh. On the website it navigates normally.
+ */
+export async function openCheckout(url: string, onClosed?: () => void): Promise<void> {
+  if (!/^https:\/\//i.test(url)) throw new Error("Noto‘g‘ri to‘lov havolasi");
+  if (!isNativeApp()) {
+    window.location.href = url;
+    return;
+  }
+  try {
+    const { Browser } = await import("@capacitor/browser");
+    const handle = await Browser.addListener("browserFinished", () => {
+      void handle.remove();
+      window.dispatchEvent(new CustomEvent("med1:checkout-closed"));
+      onClosed?.();
+    });
+    await Browser.open({ url, presentationStyle: "popover", toolbarColor: "#0A2540" });
+  } catch {
+    window.location.href = url;
+  }
+}
