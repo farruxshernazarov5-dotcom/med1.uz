@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:sdk": "tsx scripts/verify-sdk-links.ts"
+    "verify:sdk": "tsx scripts/verify-sdk-links.ts",
+    "android:update": "npm run build && npx cap sync android && node scripts/patch-android.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.2",
