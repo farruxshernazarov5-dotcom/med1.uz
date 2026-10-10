@@ -90,11 +90,11 @@
 - [ ] Google kirish va ovozli eslatmalarni haqiqiy telefonda sinash — yangi APK va AndroidManifest qo‘shimchasi kerak
 
 ## 10-oktabr so‘rovlari
-- [ ] Referral havolasi ilovada localhost emas, https://med1.uz bo‘lishi (to‘lov qaytish va email havolalari ham)
-- [ ] E’lonlar doskasini Med1 TOP auksioniga ulash (Click/Payme orqali TOPga chiqarish, homiylik bloki alohida)
+- [x] Referral havolasi ilovada localhost emas, https://med1.uz bo‘lishi (to‘lov qaytish va email havolalari ham)
+- [x] E’lonlar doskasini Med1 TOP auksioniga ulash (Click/Payme orqali TOPga chiqarish, homiylik bloki alohida)
 - [ ] Google orqali kirish (sayt + ilova) — Google kalitida qaytish manzillari ro‘yxatdan o‘tmagan (foydalanuvchi qarori kerak)
-- [ ] Bildirishnomalar: yangi ovozli kanal, ilova ichida signal, Qabullar menyusida bildirishnomalar lentasi, holat tekshiruvi
-- [ ] Xavfsizlik: barmoq izi, PIN-kod, grafik kalit, avto-qulflash vaqti
-- [ ] Cookie oynasi faqat bir marta so‘ralsin
-- [ ] Ilova tezligini optimallashtirish
-- [ ] Kabinetdagi uch chiziq tugmasini pastroq va qulay joyga ko‘chirish
+- [x] Bildirishnomalar: yangi ovozli kanal, ilova ichida signal, Qabullar menyusida bildirishnomalar lentasi, holat tekshiruvi
+- [x] Xavfsizlik: barmoq izi, PIN-kod, grafik kalit, avto-qulflash vaqti
+- [x] Cookie oynasi faqat bir marta so‘ralsin
+- [x] Ilova tezligini optimallashtirish
+- [x] Kabinetdagi uch chiziq tugmasini pastroq va qulay joyga ko‘chirish
