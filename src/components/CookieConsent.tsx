@@ -4,10 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/hooks/useLanguage";
 import { getDocs } from "@/i18n/docs";
+import { isNativeApp } from "@/lib/nativeApp";
 
 interface CookiePrefs { necessary: boolean; analytics: boolean; marketing: boolean }
 
 const STORAGE_KEY = "med1-cookie-consent";
+const COOKIE = "med1_cc";
+
+/** Remembers the answer across med1.uz subdomains and Telegram/in-app browsers, not only one origin. */
+const hasAnswered = () => {
+  try { if (localStorage.getItem(STORAGE_KEY)) return true; } catch { /* storage blocked */ }
+  return document.cookie.split("; ").some((c) => c.startsWith(`${COOKIE}=`));
+};
+const remember = (prefs: CookiePrefs) => {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch { /* storage blocked */ }
+  const domain = /(^|\.)med1\.uz$/.test(location.hostname) ? "; domain=.med1.uz" : "";
+  document.cookie = `${COOKIE}=${prefs.analytics ? "a" : "n"}${prefs.marketing ? "m" : ""}; max-age=31536000; path=/; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}${domain}`;
+};
 
 const CookieConsent = () => {
   const { lang } = useLanguage();
@@ -17,8 +30,9 @@ const CookieConsent = () => {
   const [prefs, setPrefs] = useState<CookiePrefs>({ necessary: true, analytics: false, marketing: false });
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
+    // The phone app has no third-party cookies, so it never asks.
+    if (isNativeApp() || hasAnswered()) return;
+    {
       const timer = setTimeout(() => setVisible(true), 1500);
       return () => clearTimeout(timer);
     }
@@ -26,12 +40,12 @@ const CookieConsent = () => {
 
   const accept = (all: boolean) => {
     const final: CookiePrefs = all ? { necessary: true, analytics: true, marketing: true } : prefs;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(final));
+    remember(final);
     setVisible(false);
   };
 
   const reject = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ necessary: true, analytics: false, marketing: false }));
+    remember({ necessary: true, analytics: false, marketing: false });
     setVisible(false);
   };
 
