@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 // Lazy-loaded pages for code splitting
 const MedicinePage = lazy(() => import("./pages/MedicinePage"));
 const HealthPage = lazy(() => import("./pages/HealthPage"));
+const ClinicLinkPage = lazy(() => import("./pages/ClinicLinkPage"));
 const DiseasesPage = lazy(() => import("./pages/DiseasesPage"));
 const DiseaseDetailPage = lazy(() => import("./pages/DiseaseDetailPage"));
 const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
@@ -234,6 +235,7 @@ const App = () => (
                 <Route path="/mobile-appointments" element={<MobileAppointmentsPage />} />
                 <Route path="/mobile-tips" element={<MobileTipsPage />} />
                 <Route path="/mobile-profile" element={<MobileProfilePage />} />
+                <Route path="/clinic-link" element={<ClinicLinkPage />} />
                 <Route path="/mobile-classifieds" element={<MobileClassifiedsPage />} />
                 <Route path="/user-guide" element={<UserGuidePage />} />
                 <Route path="/sitemap" element={<SitemapPage />} />
