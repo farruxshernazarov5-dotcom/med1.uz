@@ -88,3 +88,13 @@
 - [x] Click Business uslubidagi chekka “Med ALL Business” yorlig‘i: 10 rol + e’lonlar doskasi (sayt va ilova)
 - [x] Ilovada Google orqali kirish (tizim brauzeri orqali) va login/parolni barmoq izi bilan eslab qolish
 - [ ] Google kirish va ovozli eslatmalarni haqiqiy telefonda sinash — yangi APK va AndroidManifest qo‘shimchasi kerak
+
+## 10-oktabr so‘rovlari
+- [ ] Referral havolasi ilovada localhost emas, https://med1.uz bo‘lishi (to‘lov qaytish va email havolalari ham)
+- [ ] E’lonlar doskasini Med1 TOP auksioniga ulash (Click/Payme orqali TOPga chiqarish, homiylik bloki alohida)
+- [ ] Google orqali kirish (sayt + ilova) — Google kalitida qaytish manzillari ro‘yxatdan o‘tmagan (foydalanuvchi qarori kerak)
+- [ ] Bildirishnomalar: yangi ovozli kanal, ilova ichida signal, Qabullar menyusida bildirishnomalar lentasi, holat tekshiruvi
+- [ ] Xavfsizlik: barmoq izi, PIN-kod, grafik kalit, avto-qulflash vaqti
+- [ ] Cookie oynasi faqat bir marta so‘ralsin
+- [ ] Ilova tezligini optimallashtirish
+- [ ] Kabinetdagi uch chiziq tugmasini pastroq va qulay joyga ko‘chirish
