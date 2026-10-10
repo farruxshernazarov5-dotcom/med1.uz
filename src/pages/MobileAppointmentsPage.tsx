@@ -71,6 +71,13 @@ const EmptyState = ({ panel, onGo }: { panel: Panel; onGo: () => void }) => (
 
 const MobileAppointmentsPage = () => {
   const { user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    const count = () => void supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false).then(({ count: c }) => setUnreadCount(c ?? 0));
+    count();
+    return subscribeFeed(user.id, () => count());
+  }, [user]);
   const [params, setParams] = useSearchParams();
   const [guideOpen, setGuideOpen] = useState(false);
   const [step, setStep] = useState(0);
