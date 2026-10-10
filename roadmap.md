@@ -92,9 +92,18 @@
 ## 10-oktabr so‘rovlari
 - [x] Referral havolasi ilovada localhost emas, https://med1.uz bo‘lishi (to‘lov qaytish va email havolalari ham)
 - [x] E’lonlar doskasini Med1 TOP auksioniga ulash (Click/Payme orqali TOPga chiqarish, homiylik bloki alohida)
-- [ ] Google orqali kirish (sayt + ilova) — Google kalitida qaytish manzillari ro‘yxatdan o‘tmagan (foydalanuvchi qarori kerak)
+- [x] Google orqali kirish saytda — Google kalitida qaytish manzili qo‘shildi
 - [x] Bildirishnomalar: yangi ovozli kanal, ilova ichida signal, Qabullar menyusida bildirishnomalar lentasi, holat tekshiruvi
 - [x] Xavfsizlik: barmoq izi, PIN-kod, grafik kalit, avto-qulflash vaqti
 - [x] Cookie oynasi faqat bir marta so‘ralsin
 - [x] Ilova tezligini optimallashtirish
 - [x] Kabinetdagi uch chiziq tugmasini pastroq va qulay joyga ko‘chirish
+
+## 10-oktabr (2)
+- [x] Ilovada Google kirish brauzersiz (telefon akkaunt tanlovi) — haqiqiy telefonda sinov va Android OAuth klienti (SHA-1) kerak
+- [x] Click/Payme ilova ichida ochilishi, yopilganda balans yangilanishi
+- [x] Avans kartada referral bonusni so‘mga aylantirish (kurs: admin sozlamasi)
+- [x] Saytda yo‘q klinikani ulash sahifasi (dastur nomi + bemor roziligi)
+- [x] Yangilanishdan keyingi “Failed to fetch dynamically imported module” xatosi — avtomatik yangilash
+- [ ] Eslatma/bildirishnomalarni haqiqiy telefonda sinash — qurilma kerak
+- [x] Saytni publish qilish (so‘ralgan)

@@ -25,3 +25,7 @@
 - Saved native logins live only in the OS keystore via `src/lib/nativeCredentials.ts` behind a biometric check; web storage keeps just an on/off flag.
 - The Med ALL Business edge tab (`BusinessEdgeTab`) is the single global entry to the 10 roles and the classifieds board on web and app, reusing `RoleGrid`/`RoleStoryDialog`.
 - Native back and the restored last screen go through `goBackSafe` and a once-per-launch restore, so Home and back never bounce to a saved screen.
+
+- Native Google sign-in uses the OS account picker via `src/lib/nativeGoogle.ts` (ID token + hashed nonce → signInWithIdToken); the `/app-bridge` browser flow is only a fallback for old APKs, because browser hand-off left users stranded in Chrome.
+- Native Click/Payme checkouts open through `openCheckout()` in `nativeApp.ts` (in-app browser, emits `med1:checkout-closed`), so payments never leave the app and balances refresh on return.
+- Referral credit → so‘m conversion runs only in the `convert_referral_credits_to_cash` RPC using the admin-set `referral_settings.credit_to_uzs` rate, so the client can never choose the rate.

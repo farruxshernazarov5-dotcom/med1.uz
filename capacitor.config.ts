@@ -24,6 +24,15 @@ const config: CapacitorConfig = {
     },
     LocalNotifications: {
       iconColor: '#2F80ED'
+    },
+    SocialLogin: {
+      providers: {
+        google: true,
+        apple: false,
+        facebook: false,
+        twitter: false
+      },
+      logLevel: 1
     }
   }
 };

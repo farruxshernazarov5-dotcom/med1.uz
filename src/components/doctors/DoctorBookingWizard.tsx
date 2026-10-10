@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
+import { isNativeApp, openCheckout } from "@/lib/nativeApp";
 import { formatUzs } from "@/data/doctorServiceTemplates";
 import {
   Calendar, Clock, CreditCard, CheckCircle2, Loader2, ChevronRight, ChevronLeft,
@@ -160,7 +161,8 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     setPaymentId(json.payment?.id ?? null);
     setCheckoutUrl(json.checkout_url);
     setPayState("awaiting");
-    window.open(json.checkout_url, "_blank", "noopener");
+    if (isNativeApp()) void openCheckout(json.checkout_url);
+    else window.open(json.checkout_url, "_blank", "noopener");
   };
 
   const submit = async () => {

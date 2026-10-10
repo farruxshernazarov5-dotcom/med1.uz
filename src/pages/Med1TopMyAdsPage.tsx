@@ -1,4 +1,4 @@
-import { publicOrigin } from "@/lib/nativeApp";
+import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { BarChart3, Eye, MousePointerClick, Loader2, Plus, RefreshCw, Trash2, Wallet } from "lucide-react";
@@ -68,7 +68,7 @@ const Med1TopMyAdsPage = () => {
         },
       );
       if (error) throw error;
-      if (data?.checkout_url) window.location.href = data.checkout_url as string;
+      if (data?.checkout_url) await openCheckout(data.checkout_url as string);
     } catch (e) {
       toast({ title: "To'lov xatoligi", description: e instanceof Error ? e.message : "Xatolik", variant: "destructive" });
     } finally {

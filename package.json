@@ -19,6 +19,7 @@
   "dependencies": {
     "@capacitor/android": "^8.5.2",
     "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8",
     "@capacitor/core": "^8.5.2",
     "@capacitor/haptics": "^8.0.2",
     "@capacitor/ios": "^8.5.2",
@@ -27,6 +28,7 @@
     "@capacitor/network": "^8.0.1",
     "@capacitor/status-bar": "^8.0.3",
     "@capgo/capacitor-native-biometric": "^8",
+    "@capgo/capacitor-social-login": "^8",
     "@hookform/resolvers": "^3.10.0",
     "@lovable.dev/cloud-auth-js": "^1.2.1",
     "@lovable.dev/mcp-js": "^3.0.4",

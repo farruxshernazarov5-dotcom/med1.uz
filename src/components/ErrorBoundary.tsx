@@ -18,7 +18,13 @@ class ErrorBoundary extends Component<Props, State> {
     errorTracker.capture(error, { componentStack: info.componentStack?.slice(0, 1500) });
   }
 
-  handleReset = () => this.setState({ hasError: false, error: undefined });
+  isChunkError = () => /dynamically imported module|Importing a module script failed|Loading chunk/i.test(this.state.error?.message ?? "");
+
+  handleReset = () => {
+    // A failed page download stays cached by React; only a full reload fetches the new version.
+    if (this.isChunkError()) { window.location.reload(); return; }
+    this.setState({ hasError: false, error: undefined });
+  };
 
   render() {
     if (this.state.hasError) {
@@ -30,10 +36,12 @@ class ErrorBoundary extends Component<Props, State> {
           </div>
           <h3 className="font-heading font-semibold text-foreground mb-2">Xatolik yuz berdi</h3>
           <p className="text-sm text-muted-foreground mb-4 max-w-md">
-            {this.state.error?.message || "Kutilmagan xatolik. Sahifani yangilang."}
+            {this.isChunkError()
+              ? "Ilovaning yangi versiyasi chiqdi. Davom etish uchun sahifani yangilang."
+              : this.state.error?.message || "Kutilmagan xatolik. Sahifani yangilang."}
           </p>
           <Button variant="outline" size="sm" onClick={this.handleReset}>
-            <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Qayta urinish
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> {this.isChunkError() ? "Yangilash" : "Qayta urinish"}
           </Button>
         </div>
       );
