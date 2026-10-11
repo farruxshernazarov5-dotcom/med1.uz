@@ -16,6 +16,7 @@ import {
   Plus,
   Rows3,
   RotateCw,
+  Search,
   Stethoscope,
   X,
 } from "lucide-react";
@@ -27,6 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { supabase } from "@/integrations/supabase/client";
 import { hapticTap } from "@/lib/nativeApp";
+import { openSmartSearch } from "@/components/mobile/MobileSmartSearch";
 import { cn } from "@/lib/utils";
 import { useMobileFavorites } from "@/hooks/useMobileFavorites";
 import { useAuth } from "@/hooks/useAuth";
@@ -203,6 +205,7 @@ const MobileServicesPage = () => {
             <h1 className="text-xl font-bold text-foreground">Xizmatlar</h1>
           </div>
           <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => openSmartSearch()} aria-label="Aqlli qidiruv"><Search /></Button>
             <Button variant="ghost" size="icon" onClick={() => window.dispatchEvent(new CustomEvent("med1:open-mobile-guide"))} aria-label="Mobil ilova yo‘riqnomasini ochish"><CircleHelp /></Button>
             {section === "services" && <Button variant="outline" size="sm" onClick={() => setLocationOpen(true)}><MapPin className="h-4 w-4" /> {city}</Button>}
           </div>

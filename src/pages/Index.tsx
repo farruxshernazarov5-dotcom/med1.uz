@@ -9,6 +9,7 @@ import ClickToLoad from "@/components/perf/ClickToLoad";
 import { SEO } from "@/components/SEO";
 import { MobileHomeQuickServices } from "@/components/mobile/MobileHomeQuickServices";
 import { MobileHomeHubs } from "@/components/mobile/MobileHomeHubs";
+import { MobileSearchBar } from "@/components/mobile/MobileSmartSearch";
 import { MobileRoleCenter } from "@/components/mobile/MobileRoleCenter";
 
 // Below-the-fold — lazy load to reduce initial bundle & LCP
@@ -56,6 +57,7 @@ const Index = () => {
       </div>
 
       <div className="no-cinematic relative z-10">
+        <div className="px-4 pt-4 lg:hidden"><MobileSearchBar /></div>
         <MobileHomeQuickServices />
         <MobileHomeHubs />
         <MobileRoleCenter />

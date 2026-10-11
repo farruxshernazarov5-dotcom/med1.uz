@@ -35,7 +35,7 @@ const PatientNotifications = () => {
     // Realtime subscription
     if (!user) return;
     const channel = supabase
-      .channel("user-notifications")
+      .channel(`user-notifications-${Math.random().toString(36).slice(2, 8)}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, (payload) => {
         setNotifications((prev) => [payload.new as any, ...prev]);
       })

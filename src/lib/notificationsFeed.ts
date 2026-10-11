@@ -9,13 +9,34 @@ export type FeedItem = { id: string; title: string; message: string; type: strin
 const SAFE_LINK = /^\/(dashboard|mobile-appointments|mobile-profile|med1-top|mobile-classifieds)(?:[/?#]|$)/;
 export const safeFeedLink = (link: string | null) => (link && SAFE_LINK.test(link) ? link : null);
 
+export type FeedKind = "appointment" | "lab" | "classified" | "payment" | "security" | "other";
+export const FEED_FILTERS: { id: FeedKind | "all"; label: string; emoji: string }[] = [
+  { id: "all", label: "Hammasi", emoji: "🔔" },
+  { id: "appointment", label: "Qabullar", emoji: "🩺" },
+  { id: "lab", label: "Tahlillar", emoji: "🧪" },
+  { id: "classified", label: "E’lon va reklama", emoji: "📢" },
+  { id: "payment", label: "To‘lovlar", emoji: "💳" },
+  { id: "security", label: "Xavfsizlik", emoji: "🛡️" },
+  { id: "other", label: "Boshqa", emoji: "✉️" },
+];
+/** Maps the free-form `type` column onto the filter chips. */
+export function feedKind(type: string | null): FeedKind {
+  const t = (type ?? "").toLowerCase();
+  if (/appoint|visit|remind|booking|qabul/.test(t)) return "appointment";
+  if (/lab|result|analysis/.test(t)) return "lab";
+  if (/classified|^ad$|^ad_|med1_top|sponsor|promo/.test(t)) return "classified";
+  if (/pay|wallet|coin|invoice|referral|subscription|credit/.test(t)) return "payment";
+  if (/security|login|device|password/.test(t)) return "security";
+  return "other";
+}
+
 export async function fetchFeed(userId: string): Promise<FeedItem[]> {
   const { data, error } = await supabase
     .from("notifications")
     .select("id,title,message,type,link,is_read,created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .limit(60);
+    .limit(200);
   if (error) throw error;
   return (data ?? []) as FeedItem[];
 }
@@ -36,9 +57,14 @@ export async function markFeedRead(userId: string, ids?: string[]): Promise<void
 }
 
 /** Live updates for the signed-in user's feed. */
+let feedSeq = 0;
 export function subscribeFeed(userId: string, onInsert: (item: FeedItem) => void): () => void {
+  // Each subscriber gets its own channel name: reusing one name returns the
+  // already-subscribed channel and Realtime throws "cannot add postgres_changes
+  // callbacks after subscribe()" (the bell, the feed and the alerter all listen).
+  feedSeq += 1;
   const ch = supabase
-    .channel(`feed-${userId}`)
+    .channel(`feed-${userId}-${feedSeq}-${Math.random().toString(36).slice(2, 8)}`)
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` }, (p) => onInsert(p.new as FeedItem))
     .subscribe();
   return () => { void supabase.removeChannel(ch); };

@@ -15798,6 +15798,7 @@ export type Database = {
         Row: {
           address: string | null
           avatar_url: string | null
+          cover_url: string | null
           created_at: string
           date_of_birth: string | null
           full_name: string
@@ -15815,6 +15816,7 @@ export type Database = {
         Insert: {
           address?: string | null
           avatar_url?: string | null
+          cover_url?: string | null
           created_at?: string
           date_of_birth?: string | null
           full_name?: string
@@ -15832,6 +15834,7 @@ export type Database = {
         Update: {
           address?: string | null
           avatar_url?: string | null
+          cover_url?: string | null
           created_at?: string
           date_of_birth?: string | null
           full_name?: string
@@ -17860,6 +17863,39 @@ export type Database = {
           package_name?: string | null
           purchased_at?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_devices: {
+        Row: {
+          device_key: string
+          first_seen_at: string
+          id: string
+          label: string
+          last_seen_at: string
+          platform: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          device_key: string
+          first_seen_at?: string
+          id?: string
+          label?: string
+          last_seen_at?: string
+          platform?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          device_key?: string
+          first_seen_at?: string
+          id?: string
+          label?: string
+          last_seen_at?: string
+          platform?: string
+          user_agent?: string | null
           user_id?: string
         }
         Relationships: []

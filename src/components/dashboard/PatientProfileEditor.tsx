@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { User, Camera, Save, Mail, Phone, MapPin, Calendar as CalendarIcon, Navigation } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { saveProfileField, uploadProfileImage } from "@/lib/profileMedia";
 
 const PatientProfileEditor = () => {
-  const { user, profile } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -52,15 +53,10 @@ const PatientProfileEditor = () => {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
-    const ext = file.name.split(".").pop();
-    const path = `avatars/${user.id}.${ext}`;
-    const { error } = await supabase.storage.from("clinic-photos").upload(path, file, { upsert: true });
-    if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
-      return;
-    }
-    const { data: urlData } = supabase.storage.from("clinic-photos").getPublicUrl(path);
-    setForm((f) => ({ ...f, avatar_url: urlData.publicUrl }));
+    let url: string;
+    try { url = await uploadProfileImage(user.id, file, "avatar"); await saveProfileField(user.id, "avatar_url", url); await refreshProfile(); }
+    catch (err) { toast({ title: "Xatolik", description: err instanceof Error ? err.message : "Rasm yuklanmadi", variant: "destructive" }); return; }
+    setForm((f) => ({ ...f, avatar_url: url }));
     toast({ title: "Rasm yuklandi" });
   };
 

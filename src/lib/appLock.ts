@@ -41,19 +41,19 @@ async function hash(secret: string, saltHex: string): Promise<string> {
 }
 
 async function bio() {
-  return (await import("@capgo/capacitor-native-biometric")).NativeBiometric;
+  return { p: (await import("@capgo/capacitor-native-biometric")).NativeBiometric };
 }
 
 async function storeSecret(value: string): Promise<void> {
   if (isNativeApp()) {
-    try { await (await bio()).setCredentials({ username: "lock", password: value, server: KEYSTORE_SERVER }); return; } catch { /* fall back */ }
+    try { await (await bio()).p.setCredentials({ username: "lock", password: value, server: KEYSTORE_SERVER }); return; } catch { /* fall back */ }
   }
   localStorage.setItem(WEB_SECRET_KEY, value);
 }
 
 async function readSecret(): Promise<string | null> {
   if (isNativeApp()) {
-    try { const c = await (await bio()).getCredentials({ server: KEYSTORE_SERVER }); if (c.password) return c.password; } catch { /* fall back */ }
+    try { const c = await (await bio()).p.getCredentials({ server: KEYSTORE_SERVER }); if (c.password) return c.password; } catch { /* fall back */ }
   }
   return localStorage.getItem(WEB_SECRET_KEY);
 }
@@ -69,7 +69,7 @@ export async function setLockSecret(method: Exclude<LockMethod, "none">, secret:
 export async function disableLock(): Promise<void> {
   saveLockSettings({ ...getLockSettings(), method: "none", biometric: false });
   localStorage.removeItem(WEB_SECRET_KEY);
-  if (isNativeApp()) { try { await (await bio()).deleteCredentials({ server: KEYSTORE_SERVER }); } catch { /* none */ } }
+  if (isNativeApp()) { try { await (await bio()).p.deleteCredentials({ server: KEYSTORE_SERVER }); } catch { /* none */ } }
   clearFails();
 }
 
@@ -98,7 +98,7 @@ export const remainingAttempts = () => MAX_FAILS - getFails().count;
 export async function unlockWithBiometric(): Promise<boolean> {
   if (!isNativeApp()) return false;
   try {
-    await (await bio()).verifyIdentity({ reason: "Med ALL ilovasini ochish", title: "Med ALL", subtitle: "Barmoq izi yoki Face ID", useFallback: false });
+    await (await bio()).p.verifyIdentity({ reason: "Med ALL ilovasini ochish", title: "Med ALL", subtitle: "Barmoq izi yoki Face ID", useFallback: false });
     clearFails();
     return true;
   } catch { return false; }
