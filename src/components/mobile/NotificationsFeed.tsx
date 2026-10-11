@@ -101,12 +101,12 @@ export const NotificationsFeed = () => {
         {unread > 0 && user && <Button size="sm" variant="ghost" onClick={() => { void markFeedRead(user.id); setItems((p) => p.map((i) => ({ ...i, is_read: true }))); }}><CheckCheck /> Hammasi o‘qildi</Button>}
       </div>
 
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+      <div className="-mx-1 flex flex-wrap gap-1.5 px-1 pb-1">
         {FEED_FILTERS.map((f) => {
           const count = f.id === "all" ? items.length : items.filter((i) => feedKind(i.type) === f.id).length;
           return (
             <button key={f.id} type="button" onClick={() => setKind(f.id)} aria-pressed={kind === f.id}
-              className={cn("flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium", kind === f.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card")}>
+              className={cn("flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium", kind === f.id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card")}>
               <span aria-hidden>{f.emoji}</span>{f.label}<span className="opacity-70">{count}</span>
             </button>
           );
