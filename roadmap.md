@@ -107,3 +107,14 @@
 - [x] Yangilanishdan keyingi “Failed to fetch dynamically imported module” xatosi — avtomatik yangilash
 - [ ] Eslatma/bildirishnomalarni haqiqiy telefonda sinash — qurilma kerak
 - [x] Saytni publish qilish (so‘ralgan)
+
+## 11-oktabr so‘rovlari
+- [x] “cannot add postgres_changes callbacks after subscribe()” xatosi (Qabullar, Profil) — har obunaga alohida kanal
+- [x] “LocalNotifications/NativeBiometric .then() is not implemented on android” xatosi
+- [x] Med ALL Business paneli mobil ekranni to‘liq qoplasin
+- [x] Profilga rasm yuklash + fon/manzara tanlash (6 ta tavsiya foni + o‘z rasmi)
+- [x] E’lonlar doskasida “Mening e’lonlarim” kabineti + Med1 TOP reklama kabineti
+- [x] Xavfsizlik: kirilgan qurilmalar ro‘yxati, yangi qurilma kirsa ogohlantirish
+- [x] Bildirishnomalar: e’lon/reklama/xavfsizlik xabarlari ulandi, filtr, saralash, sanalar bo‘yicha guruh
+- [x] Mobil aqlli qidiruv (xizmatlar, ensiklopediya, Med1 AI, ovoz)
+- [ ] Yangi APK’da haqiqiy telefonda sinash — qurilma kerak

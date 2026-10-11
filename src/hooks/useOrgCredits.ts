@@ -65,7 +65,7 @@ export const useOrgCredits = (orgType?: string) => {
   useEffect(() => {
     if (!user) return;
     const ch = supabase
-      .channel(`org_credits:${user.id}`)
+      .channel(`org_credits:${user.id}:${Math.random().toString(36).slice(2, 8)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "org_credit_accounts", filter: `owner_id=eq.${user.id}` }, () => void load())
       .subscribe();
     return () => { supabase.removeChannel(ch); };

@@ -9,19 +9,19 @@ const SERVER = "uz.medall.app";
 const FLAG = "med1_saved_login_v1";
 
 async function bio() {
-  return (await import("@capgo/capacitor-native-biometric")).NativeBiometric;
+  return { p: (await import("@capgo/capacitor-native-biometric")).NativeBiometric };
 }
 
 export async function canSaveLogin(): Promise<boolean> {
   if (!isNativeApp()) return false;
-  try { return (await (await bio()).isAvailable()).isAvailable; } catch { return false; }
+  try { return (await (await bio()).p.isAvailable()).isAvailable; } catch { return false; }
 }
 
 export const hasSavedLogin = () => isNativeApp() && localStorage.getItem(FLAG) === "1";
 
 export async function saveLogin(email: string, password: string): Promise<boolean> {
   try {
-    await (await bio()).setCredentials({ username: email, password, server: SERVER });
+    await (await bio()).p.setCredentials({ username: email, password, server: SERVER });
     localStorage.setItem(FLAG, "1");
     return true;
   } catch { return false; }
@@ -29,7 +29,7 @@ export async function saveLogin(email: string, password: string): Promise<boolea
 
 export async function loadSavedLogin(): Promise<{ email: string; password: string } | null> {
   try {
-    const nb = await bio();
+    const nb = (await bio()).p;
     await nb.verifyIdentity({ reason: "Med ALL hisobingizga kirish", title: "Med ALL — tez kirish", subtitle: "Barmoq izi yoki Face ID", useFallback: true });
     const c = await nb.getCredentials({ server: SERVER });
     return c.username && c.password ? { email: c.username, password: c.password } : null;
@@ -38,5 +38,5 @@ export async function loadSavedLogin(): Promise<{ email: string; password: strin
 
 export async function forgetLogin(): Promise<void> {
   localStorage.removeItem(FLAG);
-  try { await (await bio()).deleteCredentials({ server: SERVER }); } catch { /* nothing saved */ }
+  try { await (await bio()).p.deleteCredentials({ server: SERVER }); } catch { /* nothing saved */ }
 }

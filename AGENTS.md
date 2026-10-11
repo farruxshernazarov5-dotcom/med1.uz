@@ -29,3 +29,6 @@
 - Native Google sign-in uses the OS account picker via `src/lib/nativeGoogle.ts` (ID token + hashed nonce → signInWithIdToken); the `/app-bridge` browser flow is only a fallback for old APKs, because browser hand-off left users stranded in Chrome.
 - Native Click/Payme checkouts open through `openCheckout()` in `nativeApp.ts` (in-app browser, emits `med1:checkout-closed`), so payments never leave the app and balances refresh on return.
 - Referral credit → so‘m conversion runs only in the `convert_referral_credits_to_cash` RPC using the admin-set `referral_settings.credit_to_uzs` rate, so the client can never choose the rate.
+- Realtime channel names must be unique per subscriber (append a random suffix), because Supabase returns an already-subscribed channel for a reused name and throws "cannot add postgres_changes callbacks after subscribe()".
+- Never return a Capacitor plugin proxy from an async function (wrap it as `{ p: Plugin }`), because Promise resolution probes `.then` on the proxy and Android throws "Plugin.then() is not implemented".
+- Account devices live in `user_devices` (random per-install key, `src/lib/userDevices.ts`); new-device, classified and Med1 TOP status alerts are written to `notifications` by database triggers so every feed and alerter sees them.

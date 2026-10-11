@@ -142,7 +142,7 @@ export const useReferral = () => {
   useEffect(() => {
     if (!user) return;
     const channel = supabase
-      .channel(`referral-${user.id}`)
+      .channel(`referral-${user.id}-${Math.random().toString(36).slice(2, 8)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "referrals", filter: `referrer_id=eq.${user.id}` }, () => reload())
       .on("postgres_changes", { event: "*", schema: "public", table: "referral_notifications", filter: `user_id=eq.${user.id}` }, () => reload())
       .on("postgres_changes", { event: "*", schema: "public", table: "referral_wallet", filter: `owner_id=eq.${user.id}` }, () => reload())

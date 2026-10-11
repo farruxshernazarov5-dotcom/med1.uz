@@ -30,7 +30,7 @@ export function BusinessEdgeTab() {
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-[92vw] max-w-md overflow-y-auto p-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
+        <SheetContent side="left" className="h-[100dvh] w-screen max-w-none overflow-y-auto p-4 sm:w-[28rem] sm:max-w-md pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
           <SheetHeader className="text-left">
             <SheetTitle>Med ALL Business</SheetTitle>
             <SheetDescription>E’lonlar doskasi va 10 ta yo‘nalish bo‘yicha ro‘yxatdan o‘tish.</SheetDescription>

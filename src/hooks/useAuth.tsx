@@ -10,12 +10,13 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   userRole: string | null;
-  profile: { full_name: string; phone: string; avatar_url: string } | null;
+  profile: { full_name: string; phone: string; avatar_url: string; cover_url?: string | null } | null;
   signUp: (email: string, password: string, fullName: string, role?: string, phone?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   verifyPhoneOtp: (phone: string, token: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,12 +26,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [profile, setProfile] = useState<{ full_name: string; phone: string; avatar_url: string } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string; phone: string; avatar_url: string; cover_url?: string | null } | null>(null);
 
   const fetchUserData = async (userId: string) => {
     const [roleRes, profileRes] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId).limit(1).maybeSingle(),
-      supabase.from("profiles").select("full_name, phone, avatar_url").eq("user_id", userId).maybeSingle(),
+      supabase.from("profiles").select("full_name, phone, avatar_url, cover_url").eq("user_id", userId).maybeSingle(),
     ]);
     let role = roleRes.data?.role ?? null;
 
@@ -56,6 +57,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setUserRole(role);
     setProfile(profileRes.data ?? null);
+    void import("@/lib/userDevices").then((m) => m.registerThisDevice(userId)).catch(() => {});
+  };
+
+  const refreshProfile = async () => {
+    if (!user) return;
+    const { data } = await supabase.from("profiles").select("full_name, phone, avatar_url, cover_url").eq("user_id", user.id).maybeSingle();
+    setProfile(data ?? null);
   };
 
   useEffect(() => {
@@ -138,7 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, userRole, profile, signUp, signIn, signInWithPhone, verifyPhoneOtp, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, userRole, profile, signUp, signIn, signInWithPhone, verifyPhoneOtp, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

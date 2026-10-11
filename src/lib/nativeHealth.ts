@@ -10,15 +10,20 @@ export type PendingReminder = { id: number; title: string; body: string; at?: st
 const MED_BASE = 100000;
 const APPT_BASE = 500000;
 
-async function ln() {
-  const { LocalNotifications } = await import("@capacitor/local-notifications");
-  return LocalNotifications;
+// Capacitor plugin proxies must never be returned from an async function: the
+// Promise machinery probes `.then` on them, which throws "LocalNotifications.then()
+// is not implemented". The module is cached and the proxy is used synchronously.
+let lnMod: typeof import("@capacitor/local-notifications") | null = null;
+async function loadLn() { lnMod ??= await import("@capacitor/local-notifications"); }
+async function ln(): Promise<{ p: typeof import("@capacitor/local-notifications").LocalNotifications }> {
+  await loadLn();
+  return { p: lnMod!.LocalNotifications };
 }
 
 export async function ensureNotificationPermission(): Promise<boolean> {
   if (!isNativeApp()) return false;
   try {
-    const LN = await ln();
+    const LN = (await ln()).p;
     const cur = await LN.checkPermissions();
     const granted = cur.display === "granted" || (await LN.requestPermissions()).display === "granted";
     if (granted) { await ensureReminderChannel(); await ensureExactAlarms(); }
@@ -36,7 +41,7 @@ export async function ensureReminderChannel(): Promise<void> {
   try {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.getPlatform() !== "android") { channelReady = true; return; }
-    const LN = await ln();
+    const LN = (await ln()).p;
     await LN.deleteChannel({ id: "med1_reminders" }).catch(() => {});
     await LN.createChannel({
       id: REMINDER_CHANNEL,
@@ -58,7 +63,7 @@ export async function ensureExactAlarms(): Promise<boolean> {
   try {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.getPlatform() !== "android") return true;
-    const LN = await ln();
+    const LN = (await ln()).p;
     const cur = await LN.checkExactNotificationSetting();
     if (cur.exact_alarm === "granted") return true;
     const next = await LN.changeExactNotificationSetting();
@@ -68,7 +73,7 @@ export async function ensureExactAlarms(): Promise<boolean> {
 
 /** Fires a reminder 10 seconds from now so the user can confirm sound and delivery. */
 export async function scheduleTestReminder(): Promise<void> {
-  const LN = await ln();
+  const LN = (await ln()).p;
   await ensureReminderChannel();
   await LN.schedule({ notifications: [{
     id: LAB_BASE + 99999, title: "🔔 Med ALL sinov eslatmasi", body: "Eslatmalar ovoz bilan ishlayapti.",
@@ -102,7 +107,7 @@ export function playReminderChime(): void {
 export async function registerForegroundReminderSound(): Promise<() => void> {
   if (!isNativeApp()) return () => {};
   try {
-    const LN = await ln();
+    const LN = (await ln()).p;
     await ensureReminderChannel();
     const h = await LN.addListener("localNotificationReceived", () => playReminderChime());
     return () => void h.remove();
@@ -125,7 +130,7 @@ export async function openAppSettings(): Promise<void> {
 
 /** Daily repeating medication reminder at HH:MM. */
 export async function scheduleMedication(name: string, dose: string, times: string[]): Promise<number> {
-  const LN = await ln();
+  const LN = (await ln()).p;
   await ensureReminderChannel();
   const base = MED_BASE + Math.floor(Math.random() * 300000);
   const notifications = times.map((t, i) => {
@@ -145,13 +150,13 @@ export async function scheduleMedication(name: string, dose: string, times: stri
 
 /** Replace all appointment reminders: 1 day and 1 hour before each visit. */
 export async function syncAppointmentReminders(items: { id: string; when: Date; label: string }[]): Promise<number> {
-  const LN = await ln();
+  const LN = (await ln()).p;
   await ensureReminderChannel();
   const pending = await LN.getPending();
   const old = pending.notifications.filter((n) => n.id >= APPT_BASE && n.id < LAB_BASE).map((n) => ({ id: n.id }));
   if (old.length) await LN.cancel({ notifications: old });
   const now = Date.now();
-  const notifications: Parameters<Awaited<ReturnType<typeof ln>>["schedule"]>[0]["notifications"] = [];
+  const notifications: Parameters<Awaited<ReturnType<typeof ln>>["p"]["schedule"]>[0]["notifications"] = [];
   items.forEach((a, idx) => {
     [
       { offset: 24 * 3600e3, text: "Ertaga" },
@@ -176,7 +181,7 @@ export async function syncAppointmentReminders(items: { id: string; when: Date; 
 export async function listReminders(): Promise<PendingReminder[]> {
   if (!isNativeApp()) return [];
   try {
-    const LN = await ln();
+    const LN = (await ln()).p;
     const { notifications } = await LN.getPending();
     return notifications.map((n) => ({
       id: n.id, title: n.title, body: n.body,
@@ -187,20 +192,20 @@ export async function listReminders(): Promise<PendingReminder[]> {
 }
 
 export async function cancelReminder(id: number) {
-  const LN = await ln();
+  const LN = (await ln()).p;
   await LN.cancel({ notifications: [{ id }] });
 }
 
 /** Checks (never prompts) whether notifications are already allowed. */
 export async function hasNotificationPermission(): Promise<boolean> {
   if (!isNativeApp()) return false;
-  try { return (await (await ln()).checkPermissions()).display === "granted"; } catch { return false; }
+  try { return (await (await ln()).p.checkPermissions()).display === "granted"; } catch { return false; }
 }
 
 const LAB_BASE = 900000;
 /** Fires an immediate local notification (e.g. lab result is ready). */
 export async function notifyNow(title: string, body: string, route: string): Promise<void> {
-  const LN = await ln();
+  const LN = (await ln()).p;
   await ensureReminderChannel();
   await LN.schedule({ notifications: [{
     id: LAB_BASE + Math.floor(Math.random() * 90000), title, body, channelId: REMINDER_CHANNEL,
@@ -221,7 +226,7 @@ export const setLabSeenAt = (iso: string) => localStorage.setItem(LAB_SEEN, iso)
 export async function registerNotificationTaps(go: (path: string) => void): Promise<() => void> {
   if (!isNativeApp()) return () => {};
   try {
-    const LN = await ln();
+    const LN = (await ln()).p;
     const h = await LN.addListener("localNotificationActionPerformed", (e) => {
       const route = e.notification.extra?.route;
       if (typeof route === "string" && /^\/(dashboard|mobile-appointments|mobile-profile|med1-top)(?:[/?]|$)/.test(route)) go(route);
@@ -271,7 +276,7 @@ export type NotifyStatus = { native: boolean; permission: boolean; exact: boolea
 export async function notificationStatus(): Promise<NotifyStatus> {
   if (!isNativeApp()) return { native: false, permission: false, exact: false, pending: 0 };
   try {
-    const LN = await ln();
+    const LN = (await ln()).p;
     const permission = (await LN.checkPermissions()).display === "granted";
     let exact = true;
     try { exact = (await LN.checkExactNotificationSetting()).exact_alarm === "granted"; } catch { /* iOS */ }
