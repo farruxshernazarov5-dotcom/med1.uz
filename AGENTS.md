@@ -32,3 +32,5 @@
 - Realtime channel names must be unique per subscriber (append a random suffix), because Supabase returns an already-subscribed channel for a reused name and throws "cannot add postgres_changes callbacks after subscribe()".
 - Never return a Capacitor plugin proxy from an async function (wrap it as `{ p: Plugin }`), because Promise resolution probes `.then` on the proxy and Android throws "Plugin.then() is not implemented".
 - Account devices live in `user_devices` (random per-install key, `src/lib/userDevices.ts`); new-device, classified and Med1 TOP status alerts are written to `notifications` by database triggers so every feed and alerter sees them.
+- Screenshot blocking goes through `useSecureScreen()` in `src/lib/secureScreen.ts` (ref-counted, native only), so sensitive screens opt in without touching the website.
+- Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.

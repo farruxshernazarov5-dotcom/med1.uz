@@ -1,12 +1,14 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Fingerprint, Lock, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSecureScreen } from "@/lib/secureScreen";
 import { isBiometricLockEnabled, isUnlocked, openAppSettings, verifyBiometric } from "@/lib/nativeHealth";
 
 /** Hides medical-card content behind Face ID / fingerprint in the native app when enabled. */
 export const BiometricGate = ({ children }: { children: ReactNode }) => {
   const [ok, setOk] = useState(() => !isBiometricLockEnabled() || isUnlocked());
   const [failed, setFailed] = useState(false);
+  useSecureScreen();
 
   const unlock = async () => {
     setFailed(false);
