@@ -464,7 +464,12 @@ const PatientDashboard = () => {
       />
 
       {/* Med Coin onboarding — shown once per browser session on dashboard entry */}
-      <MedCoinOnboarding autoOpen storage="session" storageKey="medcoin-onboarding-dashboard-session" />
+      <MedCoinOnboarding autoOpen storageKey="medcoin-onboarding-dashboard-v2" />
+      <MedCoinOnboarding autoOpen={false} open={guideOpen} onClose={() => setGuideOpen(false)} storageKey="medcoin-onboarding-dashboard-v2" />
+      <button type="button" onClick={() => setGuideOpen(true)} aria-label="Kabinet bo‘yicha yordam"
+        className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg lg:bottom-6">
+        <CircleHelp className="h-5 w-5" />
+      </button>
       <MedCoinExpiryReminder />
     </div>
   );

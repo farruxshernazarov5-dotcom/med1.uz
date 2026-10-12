@@ -8,9 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { isNativeApp } from "@/lib/nativeApp";
 import { biometricAvailable } from "@/lib/nativeHealth";
 import {
-  TIMEOUT_OPTIONS, disableLock, getLockSettings, saveLockSettings, setLockSecret, unlockWithBiometric, type LockMethod,
+  TIMEOUT_OPTIONS, PIN_LENGTH, pinWeakness, disableLock, getLockSettings, saveLockSettings, setLockSecret, unlockWithBiometric, type LockMethod,
 } from "@/lib/appLock";
 import { PatternPad, PinPad } from "./LockPads";
+import { PinHelpDialog } from "./PinHelpDialog";
 
 const timeoutLabel = (m: number) => (m === 0 ? "Darhol" : m < 60 ? `${m} daqiqa` : "1 soat");
 
@@ -34,7 +35,11 @@ export const AppLockSettings = () => {
   const onEntry = async (v: string) => {
     if (!setup) return;
     if (!v) { setErr("Kamida 4 nuqtani ulang"); return; }
-    if (!first) { setFirst(v); setErr(""); return; }
+    if (!first) {
+      const weak = setup === "pin" ? pinWeakness(v) : null;
+      if (weak) { setErr(weak); return; }
+      setFirst(v); setErr(""); return;
+    }
     if (v !== first) { setFirst(""); setErr("Mos kelmadi. Qaytadan boshlang."); return; }
     await setLockSecret(setup, v);
     setSetup(null);
@@ -48,9 +53,9 @@ export const AppLockSettings = () => {
 
   return (
     <Card>
-      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-5 w-5 text-primary" /> Ilova qulfi</CardTitle></CardHeader>
+      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-5 w-5 text-primary" /> Ilova qulfi<PinHelpDialog className="ml-auto h-8 w-8" /></CardTitle></CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">Ilovani ochishda PIN-kod yoki grafik kalit so‘raladi. 5 marta xato kiritilsa, 10 daqiqaga bloklanadi.</p>
+        <p className="text-sm text-muted-foreground">Ilovani ochishda 5 xonali PIN-kod yoki grafik kalit so‘raladi. 5 marta xato kiritilsa, 10 daqiqaga bloklanadi.</p>
         <div className="grid grid-cols-3 gap-2">
           <Button variant={s.method === "none" ? "default" : "outline"} className="h-auto flex-col gap-1 py-3" onClick={() => void disableLock()}><ShieldCheck className="h-5 w-5" /><span className="text-xs">O‘chiq</span></Button>
           <Button variant={s.method === "pin" ? "default" : "outline"} className="h-auto flex-col gap-1 py-3" onClick={() => start("pin")}><KeyRound className="h-5 w-5" /><span className="text-xs">PIN-kod</span></Button>
@@ -80,11 +85,11 @@ export const AppLockSettings = () => {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>{setup === "pin" ? "Yangi PIN-kod" : "Yangi grafik kalit"}</DialogTitle>
-            <DialogDescription>{first ? "Tasdiqlash uchun yana bir marta kiriting" : setup === "pin" ? "4 xonali kod kiriting" : "Kamida 4 nuqtani ulang"}</DialogDescription>
+            <DialogDescription>{first ? "Tasdiqlash uchun yana bir marta kiriting" : setup === "pin" ? "5 xonali kod kiriting (11111, 12345 kabi oson kodlar mumkin emas)" : "Kamida 4 nuqtani ulang"}</DialogDescription>
           </DialogHeader>
           {err && <p role="alert" className="text-center text-sm text-destructive">{err}</p>}
           <div className="flex justify-center py-2">
-            {setup === "pin" ? <PinPad key={first ? "b" : "a"} onComplete={(v) => void onEntry(v)} /> : <PatternPad key={first ? "b" : "a"} onComplete={(v) => void onEntry(v)} error={!!err} />}
+            {setup === "pin" ? <PinPad length={PIN_LENGTH} key={first ? "b" : "a"} onComplete={(v) => void onEntry(v)} /> : <PatternPad key={first ? "b" : "a"} onComplete={(v) => void onEntry(v)} error={!!err} />}
           </div>
         </DialogContent>
       </Dialog>
