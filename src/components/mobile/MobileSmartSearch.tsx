@@ -17,7 +17,7 @@ const norm = (v: string) => v.toLowerCase().replace(/[‘’ʻʼ`']/g, "'").trim
 
 type Article = { id: string; title: string; excerpt: string | null; slug: string; language: string };
 
-/** Full-screen smart search for the app: instant service matches, encyclopedia articles and Med1 AI search. */
+/** Full-screen smart search for the app: instant service matches, encyclopedia articles and Med AI search. */
 export function MobileSmartSearch() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -95,7 +95,7 @@ export function MobileSmartSearch() {
           {q.trim().length >= 2 && (
             <button type="button" onClick={askAi} className="mb-4 flex w-full items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3 text-left active:scale-[0.99]">
               <Sparkles className="h-6 w-6 shrink-0 text-primary" />
-              <span className="flex-1"><span className="block text-sm font-semibold">Med1 AI bilan qidirish: “{q.trim()}”</span><span className="text-xs text-muted-foreground">Yaqin klinika, shifokor va xizmatlarni AI tanlab beradi</span></span>
+              <span className="flex-1"><span className="block text-sm font-semibold">Med AI bilan qidirish: “{q.trim()}”</span><span className="text-xs text-muted-foreground">Yaqin klinika, shifokor va xizmatlarni AI tanlab beradi</span></span>
             </button>
           )}
 

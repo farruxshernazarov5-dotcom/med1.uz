@@ -173,7 +173,7 @@ export const MobileAIHubSheet = () => {
               <Sparkles className="h-5 w-5" />
             </span>
             <div>
-              <DrawerTitle>Med1 AI markazi</DrawerTitle>
+              <DrawerTitle>Med AI markazi</DrawerTitle>
               <DrawerDescription id="mobile-ai-description">23 ta AI xizmatidan keraklisini tanlang</DrawerDescription>
             </div>
           </div>

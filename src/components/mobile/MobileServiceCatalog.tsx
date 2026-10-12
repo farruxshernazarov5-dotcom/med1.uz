@@ -49,7 +49,7 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
     { label: "Yaqin joylar", icon: MapPin, action: onOpenNearby },
     { label: "Shifokor topish", icon: Stethoscope, action: onOpenDoctors },
     { label: "Sevimlilar", icon: Heart, action: onOpenFavorites },
-    { label: "Med1 AI", icon: Sparkles, action: () => window.dispatchEvent(new CustomEvent("med1:open-mobile-ai")) },
+    { label: "Med AI", icon: Sparkles, action: () => window.dispatchEvent(new CustomEvent("med1:open-mobile-ai")) },
   ];
 
   return (

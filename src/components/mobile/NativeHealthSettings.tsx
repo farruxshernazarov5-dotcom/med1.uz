@@ -10,8 +10,24 @@ import { isNativeApp } from "@/lib/nativeApp";
 import {
   biometricAvailable, cancelReminder, ensureNotificationPermission, isBiometricLockEnabled, isLabAlertsEnabled,
   listReminders, scheduleMedication, scheduleTestReminder, ensureExactAlarms, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
-  verifyBiometric, type PendingReminder,
+  verifyBiometric, type PendingReminder, REMINDER_SOUNDS, getReminderSound, setReminderSound, previewReminderSound, ensureReminderChannel, type ReminderSoundId,
 } from "@/lib/nativeHealth";
+
+const SoundPicker = () => {
+  const [cur, setCur] = useState<ReminderSoundId>(getReminderSound());
+  const pick = async (id: ReminderSoundId) => { setCur(id); setReminderSound(id); previewReminderSound(id); await ensureReminderChannel(); };
+  return (
+    <Card>
+      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Bell className="h-5 w-5 text-primary" /> Eslatma ovozi</CardTitle></CardHeader>
+      <CardContent className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {REMINDER_SOUNDS.map((s) => (
+          <Button key={s.id} variant={cur === s.id ? "default" : "outline"} className="justify-start" aria-pressed={cur === s.id} onClick={() => void pick(s.id)}>{s.label}</Button>
+        ))}
+        <p className="text-xs text-muted-foreground sm:col-span-2">Tanlangan ovoz yangi eslatmalarga qo‘llanadi. Tanlaganda namunasi chalinadi.</p>
+      </CardContent>
+    </Card>
+  );
+};
 import { fetchPatientVisits, isVisitOpen, visitDate } from "@/lib/patientRecords";
 import { PermissionDeniedDialog, type PermissionKind } from "@/components/mobile/PermissionDeniedDialog";
 
@@ -102,6 +118,7 @@ export const NativeHealthSettings = () => {
           <Button variant="outline" className="w-full" onClick={testReminder}>Sinov eslatmasini yuborish (10 soniya)</Button>
         </CardContent>
       </Card>
+      <SoundPicker />
       <Card>
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Pill className="h-5 w-5 text-medical-green" /> Dori ichish eslatmasi</CardTitle></CardHeader>
         <CardContent className="space-y-2">

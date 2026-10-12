@@ -54,7 +54,7 @@ const EMPTY: Record<Panel, { title: string; hint: string; cta: string; to: strin
   upcoming: { title: "Kelgusi qabul yo‘q", hint: "Shifokor yoki klinikani tanlab, qulay vaqtga yoziling — qabul shu yerda ko‘rinadi va eslatma keladi.", cta: "Shifokor tanlash", to: "/doctors" },
   past: { title: "Qabullar tarixi bo‘sh", hint: "Klinika, shifokor, diagnostika va stomatologiyadagi barcha tashriflaringiz shu yerda yig‘iladi.", cta: "Qabulga yozilish", to: "/doctors" },
   labs: { title: "Tahlil natijalari yo‘q", hint: "Med1 hisobingizga bog‘langan laboratoriya natijalari shu yerda chiqadi. Boshqa klinika dasturi alohida ulanishi kerak. Tahlil varag‘ini AI bilan ham tekshirishingiz mumkin.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
-  ai: { title: "AI xulosalari hali yo‘q", hint: "Istalgan Med1 AI xizmatidan foydalaning — bergan javoblari avtomatik shu yerda saqlanadi.", cta: "AI xizmatlarini ochish", to: "/ai-services" },
+  ai: { title: "AI xulosalari hali yo‘q", hint: "Istalgan Med AI xizmatidan foydalaning — bergan javoblari avtomatik shu yerda saqlanadi.", cta: "AI xizmatlarini ochish", to: "/ai-services" },
   reminders: { title: "", hint: "", cta: "", to: "/" },
   notifications: { title: "", hint: "", cta: "", to: "/" },
 };
