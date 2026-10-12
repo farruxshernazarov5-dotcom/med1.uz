@@ -6,7 +6,19 @@
 import { isNativeApp } from "./nativeApp";
 
 export type LockMethod = "none" | "pin" | "pattern";
-export type LockSettings = { method: LockMethod; biometric: boolean; timeoutMin: number };
+export type LockSettings = { method: LockMethod; biometric: boolean; timeoutMin: number; pinLength?: number };
+export const PIN_LENGTH = 5;
+
+/** Rejects weak PINs: all-same digits (11111) and straight runs (12345, 54321). */
+export function pinWeakness(pin: string): string | null {
+  if (!/^\d{5}$/.test(pin)) return "PIN 5 ta raqamdan iborat bo‘lishi kerak";
+  if (/^(\d)\1+$/.test(pin)) return "Bir xil raqamlar (masalan 11111) mumkin emas";
+  const d = pin.split("").map(Number);
+  const step = d[1] - d[0];
+  if ((step === 1 || step === -1) && d.every((v, i) => i === 0 || v - d[i - 1] === step)) return "Ketma-ket raqamlar (12345, 54321) mumkin emas";
+  if (/^(\d\d)\1/.test(pin) || pin === pin.split("").reverse().join("") && new Set(d).size <= 2) return "Juda oson takrorlanuvchi PIN — boshqasini tanlang";
+  return null;
+}
 
 const SETTINGS_KEY = "med1_app_lock_v1";
 const WEB_SECRET_KEY = "med1_app_lock_secret_v1";
@@ -62,7 +74,7 @@ async function readSecret(): Promise<string | null> {
 export async function setLockSecret(method: Exclude<LockMethod, "none">, secret: string): Promise<void> {
   const salt = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
   await storeSecret(`${method}:${salt}:${await hash(secret, salt)}`);
-  saveLockSettings({ ...getLockSettings(), method });
+  saveLockSettings({ ...getLockSettings(), method, pinLength: method === "pin" ? secret.length : undefined });
   clearFails();
 }
 
