@@ -6,6 +6,7 @@ import {
   Users, Bot, LineChart, CreditCard, Tag, Settings, Sparkles, Home, Stethoscope,
   ClipboardList, Receipt, Lock, Crown, ChevronRight, Menu, Plus, Search,
   Sun, Moon, Gift, Coins, Scale, Headphones,
+  CircleHelp,
 } from "lucide-react";
 import ReferralPanel from "@/components/referral/ReferralPanel";
 import { Button } from "@/components/ui/button";
@@ -187,6 +188,7 @@ const PatientDashboard = () => {
   }, [searchParams]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const [lockedFeature, setLockedFeature] = useState<string>("");
 
   const accessTier = access?.tier ?? "free";
