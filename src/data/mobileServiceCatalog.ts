@@ -30,7 +30,7 @@ export type MobileServiceItem = {
 
 export const MOBILE_CATEGORY_LABELS: Record<MobileServiceCategory, string> = {
   care: "Tibbiy xizmatlar",
-  ai: "Med1 AI",
+  ai: "Med AI",
   knowledge: "Bilim va dorilar",
   publications: "Nashr va tekshiruv",
   business: "Biznes va reklama",

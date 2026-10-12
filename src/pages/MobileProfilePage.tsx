@@ -28,6 +28,7 @@ const Payments = lazy(()=>import('@/components/patient/hms/PatientPayments'));
 const Referral = lazy(()=>import('@/components/referral/ReferralPanel'));
 const CashWallet = lazy(()=>import('@/components/mobile/CashWalletPanel'));
 const Support = lazy(()=>import('@/components/support/SupportChat'));
+const Feedback = lazy(()=>import('@/components/mobile/FeedbackPanel'));
 const Sponsors = lazy(()=>import('@/components/SponsorsLeaderboard'));
 const Reminders = lazy(()=>import('@/components/mobile/NativeHealthSettings').then(m=>({default:m.NativeHealthSettings})));
 const Biometric = lazy(()=>import('@/components/mobile/BiometricGate').then(m=>({default:m.BiometricGate})));
@@ -64,8 +65,9 @@ export default function MobileProfilePage() {
  case 'notifications':return <Reminders/>;
  case 'favorites':return link(tr('Sevimli klinika, shifokor va xizmatlar','Избранные клиники, врачи и услуги','Favourite clinics, doctors and services'),'/mobile-services?view=favorites');
  case 'support':return user?<Support/>:link(tr('Biz bilan bog‘lanish','Связаться с нами','Contact us'),'/contact');
+ case 'feedback':return <Feedback/>;
  case 'sponsors':return <Sponsors/>;
- case 'help':return <div className="space-y-3">{link(tr('Foydalanish qo‘llanmasi','Руководство','User guide'),'/user-guide')}{link(tr('Foydali maslahatlar','Полезные советы','Useful tips'),'/mobile-tips')}{link(tr('Jonli yordam','Поддержка','Live support'),'/mobile-profile?section=support')}{link(tr('Bog‘lanish','Контакты','Contact'),'/contact')}</div>;
+ case 'help':return <div className="space-y-3">{link(tr('Foydalanish qo‘llanmasi','Руководство','User guide'),'/user-guide')}{link(tr('Foydali maslahatlar','Полезные советы','Useful tips'),'/mobile-tips')}{link(tr('Taklif va shikoyat','Предложения и жалобы','Suggestions & complaints'),'/mobile-profile?section=feedback')}{link(tr('Jonli yordam','Поддержка','Live support'),'/mobile-profile?section=support')}{link(tr('Bog‘lanish','Контакты','Contact'),'/contact')}</div>;
  case 'about':return <div className="space-y-3"><h2 className="text-2xl font-bold">Med ALL</h2><p className="text-sm text-muted-foreground">Med1.uz</p>{link(tr('Loyiha haqida','О проекте','About the project'),'/about')}{link(tr('Foydalanish shartlari','Условия использования','Terms'),'/terms')}{link(tr('Maxfiylik siyosati','Конфиденциальность','Privacy'),'/privacy')}{link(tr('Tibbiy ogohlantirish','Медицинское предупреждение','Medical disclaimer'),'/disclaimer')}</div>;
  default:return null;
  }};

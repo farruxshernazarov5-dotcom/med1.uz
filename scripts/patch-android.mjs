@@ -1,6 +1,6 @@
 // Adds the permissions and the Google sign-in return link to the Android app.
 // Run after `npx cap sync android` (npm run android:update does all steps).
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const file = "android/app/src/main/AndroidManifest.xml";
 if (!existsSync(file)) {
@@ -44,3 +44,9 @@ xml = xml.replace(/android:launchMode="[^"]*"/, 'android:launchMode="singleTask"
 
 writeFileSync(file, xml);
 console.log(`✓ AndroidManifest yangilandi (${missing.length} ta ruxsat qo‘shildi, Google qaytish havolasi tayyor).`);
+
+// Custom reminder sounds (Android reads them from res/raw by file name).
+const rawDir = "android/app/src/main/res/raw";
+mkdirSync(rawDir, { recursive: true });
+for (const f of readdirSync("resources/android/raw")) copyFileSync(`resources/android/raw/${f}`, `${rawDir}/${f}`);
+console.log("✓ Eslatma ovozlari qo‘shildi.");

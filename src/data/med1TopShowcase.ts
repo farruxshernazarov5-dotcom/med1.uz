@@ -282,7 +282,7 @@ export const SHOWCASE_BRANDS: ShowcaseBrand[] = [
     category: "Dietologiya",
     name: "Dietologiya va nutritsiologiya",
     tagline: "Individual ovqatlanish rejasi va vazn nazorati",
-    about: "Natijaviy va'da bermang — jarayonni tushuntiring. Med1 AI dietolog bilan bog'lanishi mumkin.",
+    about: "Natijaviy va'da bermang — jarayonni tushuntiring. Med AI dietolog bilan bog'lanishi mumkin.",
     audience: "Ortiqcha vazn, diabet va sportchilar",
     benefits: ["Individual reja", "Tana tarkibi tahlili", "Onlayn kuzatuv", "Oylik obuna"],
     keywords: ["dietolog", "vazn yo'qotish", "nutritsiolog"],

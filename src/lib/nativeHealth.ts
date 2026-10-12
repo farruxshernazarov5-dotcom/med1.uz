@@ -34,7 +34,30 @@ export async function ensureNotificationPermission(): Promise<boolean> {
 /** Android 8+: a high-importance channel with sound + vibration (otherwise reminders arrive silently or not at all). */
 // v2: Android never raises the importance of an existing channel, so phones that
 // created the first (quiet) channel kept getting silent reminders. A new id fixes it.
-export const REMINDER_CHANNEL = "med1_alerts_v2";
+export const REMINDER_SOUNDS = [
+  { id: "default", label: "Standart (telefon ovozi)", file: "" },
+  { id: "chime", label: "Qo‘ng‘iroqcha", file: "med1_chime" },
+  { id: "bell", label: "Qo‘ng‘iroq", file: "med1_bell" },
+  { id: "soft", label: "Yumshoq kuy", file: "med1_soft" },
+  { id: "alert", label: "Signal (baland)", file: "med1_alert" },
+] as const;
+export type ReminderSoundId = (typeof REMINDER_SOUNDS)[number]["id"];
+const SOUND_KEY = "med1_reminder_sound_v1";
+export const getReminderSound = (): ReminderSoundId => (localStorage.getItem(SOUND_KEY) as ReminderSoundId) || "default";
+/** Android fixes a channel's sound at creation, so each sound has its own channel id. */
+const channelFor = (id: ReminderSoundId) => (id === "default" ? "med1_alerts_v2" : `med1_alerts_${id}`);
+export let REMINDER_CHANNEL = channelFor(getReminderSound());
+export function setReminderSound(id: ReminderSoundId): void {
+  localStorage.setItem(SOUND_KEY, id);
+  REMINDER_CHANNEL = channelFor(id);
+  channelReady = false;
+}
+/** Preview in the browser/app WebView (same files are bundled into the Android app). */
+export function previewReminderSound(id: ReminderSoundId): void {
+  const s = REMINDER_SOUNDS.find((x) => x.id === id);
+  if (!s?.file) { playReminderChime(); return; }
+  try { void new Audio(`/sounds/${s.file}.wav`).play(); } catch { /* ignore */ }
+}
 let channelReady = false;
 export async function ensureReminderChannel(): Promise<void> {
   if (channelReady || !isNativeApp()) return;
@@ -45,7 +68,8 @@ export async function ensureReminderChannel(): Promise<void> {
     await LN.deleteChannel({ id: "med1_reminders" }).catch(() => {});
     await LN.createChannel({
       id: REMINDER_CHANNEL,
-      name: "Med ALL eslatmalari (ovozli)",
+      name: `Med ALL eslatmalari — ${REMINDER_SOUNDS.find((x) => x.id === getReminderSound())?.label ?? "ovozli"}`,
+      ...(REMINDER_SOUNDS.find((x) => x.id === getReminderSound())?.file ? { sound: `${REMINDER_SOUNDS.find((x) => x.id === getReminderSound())!.file}.wav` } : {}),
       description: "Dori, qabul va tahlil eslatmalari (ovoz va tebranish bilan)",
       importance: 5,
       visibility: 1,

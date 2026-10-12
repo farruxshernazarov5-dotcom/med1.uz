@@ -3,32 +3,22 @@
 - Keep `EMEDINFO_BOT_TOKEN` (interactive Med1.uz patient/business bot) isolated from `TELEGRAM_BOT_TOKEN` (legacy OTP, security and payment notifications), because existing authentication and alert delivery must not regress.
 - Telegram menus open the canonical `https://med1.uz` routes as Mini App pages instead of duplicating website business logic, so web and bot always use the same features and data.
 - Mobile (Capacitor) support lives in `src/lib/nativeApp.ts` + `src/components/mobile/*`; every native plugin call is dynamically imported and no-ops on web, so the deployed website keeps working without native APIs.
-- The patient mobile shell owns global navigation, AI sheets, connectivity feedback, and the mobile services hub so shared web pages remain unchanged.
-- Mobile service navigation uses `src/data/mobileServiceCatalog.ts` as the single route inventory shared by the catalogue, home shortcuts, and AI hub, preventing link drift.
-- Mobile service cards use `mobileServiceImages.ts`, while each educational detail uses four service-specific generated frames and copy from `mobileServiceStories.ts`, preventing generic visual reuse.
-- Mobile service education is presented through the shared catalogue detail overlay, so every service keeps one visual explanation and canonical destination.
 - Native deep links and last-screen restoration accept only allowlisted internal Med1 routes, so external input cannot become an open redirect.
 - Mobile directory favorites are account-backed in `mobile_favorites`; never cache authenticated favorites or patient data in local storage.
-- Fixed bottom-anchored overlays (cookie/geo banners, floating dock) must clear the mobile bottom navigation by using `bottom-16`/`bottom-20` with an `lg:` reset.
 - Native medication/appointment reminders and biometric medical-card lock live in `src/lib/nativeHealth.ts`; reminders are OS local notifications only (no web storage of patient data), and the biometric preference is just an on/off flag.
 - Patient visits and lab orders are aggregated across every booking module only via `src/lib/patientRecords.ts`, so mobile screens, reminders and alerts never disagree about what a patient has booked.
-- The mobile "Foydali maslahatlar" hub reads its menus, frames and phrases only from `src/data/mobileTipsCatalog.ts`, keeping cards, stories and onboarding in sync.
-- Mobile Profile uses `mobileProfileCatalog.ts` for menu identity and three generated photo frames; reuse existing account-backed patient components in profile sections rather than duplicating medical or payment logic.
-- Mobile Profile security exposes real Auth password updates and other-session sign-out; never present mock devices or mock login history as account security records.
 - Auth return paths use `authDestination.ts` to retain internal appointment/dashboard queries and reject external redirects and sign-in loops.
 - Lab aggregation exposes source failures separately from empty results; readiness alerts must not advance their checkpoint after a failed read.
 - The native app loads bundled `dist` files (no `server.url`), so app changes require a rebuild + `npx cap sync`; native Google/Microsoft sign-in runs in the system browser via `/app-bridge` and returns only through the manifest-registered, package-pinned `uz.medall.app://app-auth` link with a one-time state nonce (`src/lib/nativeOAuth.ts`), because providers block WebView OAuth.
 - Mobile cash balances are server-owned in `cash_wallets` with an immutable ledger; only confirmed provider payments or guarded RPCs may change them, preventing client-side balance forgery.
 - Mobile classifieds use one moderated catalogue and keep paid Med1 TOP placements separate from organic listings, preserving the platform's sponsored-content rule.
-- Mobile role education reads one role catalogue and generated triptych per role, so registration choices, destinations, plans, and help stories cannot drift.
-
 - Saved native logins live only in the OS keystore via `src/lib/nativeCredentials.ts` behind a biometric check; web storage keeps just an on/off flag.
-- The Med ALL Business edge tab (`BusinessEdgeTab`) is the single global entry to the 10 roles and the classifieds board on web and app, reusing `RoleGrid`/`RoleStoryDialog`.
-- Native back and the restored last screen go through `goBackSafe` and a once-per-launch restore, so Home and back never bounce to a saved screen.
-
 - Native Google sign-in uses the OS account picker via `src/lib/nativeGoogle.ts` (ID token + hashed nonce → signInWithIdToken); the `/app-bridge` browser flow is only a fallback for old APKs, because browser hand-off left users stranded in Chrome.
 - Native Click/Payme checkouts open through `openCheckout()` in `nativeApp.ts` (in-app browser, emits `med1:checkout-closed`), so payments never leave the app and balances refresh on return.
 - Referral credit → so‘m conversion runs only in the `convert_referral_credits_to_cash` RPC using the admin-set `referral_settings.credit_to_uzs` rate, so the client can never choose the rate.
 - Realtime channel names must be unique per subscriber (append a random suffix), because Supabase returns an already-subscribed channel for a reused name and throws "cannot add postgres_changes callbacks after subscribe()".
 - Never return a Capacitor plugin proxy from an async function (wrap it as `{ p: Plugin }`), because Promise resolution probes `.then` on the proxy and Android throws "Plugin.then() is not implemented".
 - Account devices live in `user_devices` (random per-install key, `src/lib/userDevices.ts`); new-device, classified and Med1 TOP status alerts are written to `notifications` by database triggers so every feed and alerter sees them.
+- Screenshot blocking goes through `useSecureScreen()` in `src/lib/secureScreen.ts` (ref-counted, native only), so sensitive screens opt in without touching the website.
+- Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.
+- `src/components/mobile/` has its own `AGENTS.md`; read it before changing mobile UI.
