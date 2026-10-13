@@ -22,3 +22,4 @@
 - Screenshot blocking goes through `useSecureScreen()` in `src/lib/secureScreen.ts` (ref-counted, native only), so sensitive screens opt in without touching the website.
 - Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.
 - `src/components/mobile/` has its own `AGENTS.md`; read it before changing mobile UI.
+- Vital AI signal processing lives in `src/lib/vitals/` (pure DSP in `dsp.ts`, camera 3A/torch in `camera.ts`, BLE + `Med1Health` native bridge in `wearables.ts`); sensors only report results, so finger, face and watch sources share one analysis and AI path.
