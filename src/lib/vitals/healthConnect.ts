@@ -91,7 +91,7 @@ export async function syncHealthData(userId: string): Promise<SyncResult> {
   const sl = await p.readSamples({ dataType: "sleep", startDate: slFrom.toISOString(), endDate: end, limit: 60, ascending: true });
   for (const s of sl.samples ?? []) {
     const minutes = Math.round((new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000);
-    const asleep = (s as any).sleepStages?.filter((x: any) => x.stage !== "awake" && x.stage !== "inBed")
+    const asleep = s.stages?.filter((x: any) => x.stage !== "awake" && x.stage !== "inBed")
       .reduce((a: number, x: any) => a + x.durationMinutes, 0);
     const hours = Math.round(((asleep || minutes) / 60) * 10) / 10;
     if (hours < 0.5) continue;

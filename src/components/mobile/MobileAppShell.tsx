@@ -6,6 +6,7 @@ import { MobileAIHubSheet } from "./MobileAIHubSheet";
 import { CriticalTriageSheet } from "./CriticalTriageSheet";
 import { MobileOnboarding } from "./MobileOnboarding";
 import { MobileHealthAlerts } from "./MobileHealthAlerts";
+import { HealthAutoSync } from "./HealthAutoSync";
 import { AppLockScreen } from "./AppLockScreen";
 import { MobileSmartSearch } from "./MobileSmartSearch";
 import { registerNotificationTaps, lockNow, registerForegroundReminderSound } from "@/lib/nativeHealth";
@@ -132,6 +133,7 @@ const MobileAppShell = () => {
       <CriticalTriageSheet />
       <MobileOnboarding />
       <MobileHealthAlerts />
+      <HealthAutoSync />
       <AppLockScreen />
       <MobileSmartSearch />
       <MobileBottomNav />

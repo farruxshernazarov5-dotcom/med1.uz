@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAuthSafe } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { isAutoSyncOn, syncHealthData } from "@/lib/vitals/healthConnect";
 
 const MIN_GAP = 30 * 60 * 1000;
@@ -7,7 +7,7 @@ let lastRun = 0;
 
 /** Background Health Connect import on launch and on return to the app (max every 30 min). */
 export const HealthAutoSync = () => {
-  const auth = useAuthSafe();
+  const auth = useAuth();
   const userId = auth?.user?.id;
   useEffect(() => {
     if (!userId) return;
