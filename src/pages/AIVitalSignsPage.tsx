@@ -366,9 +366,9 @@ const AIVitalSignsPage = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7B61FF] to-[#2F80ED] flex items-center justify-center">
                 <Activity className="w-4 h-4 text-white" />
               </div>
-              <h3 className="font-bold text-foreground">AI Tahlil natijasi</h3>
+              <h3 className="font-bold text-foreground">Med AI xulosasi</h3>
             </div>
-            <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm text-foreground/90">{aiResult}</div>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-foreground/90"><ReactMarkdown>{aiResult}</ReactMarkdown></div>
             <MedicalDisclaimer compact className="mt-4" />
           </div>
         )}
