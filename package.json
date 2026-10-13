@@ -28,6 +28,7 @@
     "@capacitor/local-notifications": "^8",
     "@capacitor/network": "^8.0.1",
     "@capacitor/status-bar": "^8.0.3",
+    "@capgo/capacitor-health": "^8",
     "@capgo/capacitor-native-biometric": "^8",
     "@capgo/capacitor-social-login": "^8",
     "@hookform/resolvers": "^3.10.0",

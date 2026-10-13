@@ -16,6 +16,7 @@
         "@capacitor/local-notifications": "^8",
         "@capacitor/network": "^8.0.1",
         "@capacitor/status-bar": "^8.0.3",
+        "@capgo/capacitor-health": "^8",
         "@capgo/capacitor-native-biometric": "^8",
         "@capgo/capacitor-social-login": "^8",
         "@hookform/resolvers": "^3.10.0",
@@ -169,6 +170,8 @@
     "@capacitor/network": ["@capacitor/network@8.0.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/network/-/network-8.0.1.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-9xK/FHFmzKGanB6BdoSZOzXk8vF0OFVQSQ4PAsIrzAzLuXHryO317qy8dcHVpgxYeuZq2noI0My9z1DvVDi/9w=="],
 
     "@capacitor/status-bar": ["@capacitor/status-bar@8.0.3", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/status-bar/-/status-bar-8.0.3.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-csSpfNeN49Hx9JaQBSJEIiEbOLtXg3kcc2IpScq2fu5L520h3AWEvsxoH8Srk1jxfRKepaJ4S4sqSC3foI4AgA=="],
+
+    "@capgo/capacitor-health": ["@capgo/capacitor-health@8.11.11", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-7PRwU6H+zg4LHfGeLwvhchDbYHWAW60Hmj4VbJ4wU5QqVM/Jbi1LTiAZZzPxhkKADh8ZwW7iw7BsvwowAf2+Nw=="],
 
     "@capgo/capacitor-native-biometric": ["@capgo/capacitor-native-biometric@8.7.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capgo/capacitor-native-biometric/-/capacitor-native-biometric-8.7.0.tgz", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-zEczRhtnY3XuMJfwgDbapGTZ35+5ApfRKNT7WGQ7jXzr7W2zfsi1yhIp1yksKggwGA91ZIO4CDIVIka+onvxhg=="],
 

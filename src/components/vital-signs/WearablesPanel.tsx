@@ -2,19 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Bluetooth, Watch, HeartPulse, RefreshCw, Unplug, Info } from "lucide-react";
-import { connectBleHeartRate, bleSupported, readHealthStore, healthBridgePlatform } from "@/lib/vitals/wearables";
+import { connectBleHeartRate } from "@/lib/vitals/wearables";
+import { healthStatus, healthStoreName, healthSupportedPlatform, isAutoSyncOn, requestHealthAccess, setAutoSync, syncHealthData } from "@/lib/vitals/healthConnect";
+import { useAuth } from "@/hooks/useAuth";
 import type { VitalReading } from "./types";
 import { std } from "@/lib/vitals/dsp";
 
 const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) => {
+  const { user } = useAuth();
   const [ble, setBle] = useState<{ name: string; disconnect: () => void } | null>(null);
   const [liveBpm, setLiveBpm] = useState<number | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [manual, setManual] = useState({ bpm: "", spo2: "", sleep: "", steps: "" });
+  const [syncing, setSyncing] = useState(false);
+  const [auto, setAuto] = useState(isAutoSyncOn());
   const rr = useRef<number[]>([]);
   const bpms = useRef<number[]>([]);
-  const platform = healthBridgePlatform();
+  const platform = healthStoreName();
+  const native = healthSupportedPlatform();
 
   useEffect(() => () => ble?.disconnect(), [ble]);
 
@@ -45,12 +52,24 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
 
   const sync = async () => {
     setMsg(null);
+    if (!user) { setMsg("Import uchun avval tizimga kiring."); return; }
+    const status = await healthStatus();
+    if (status === "unsupported") { setMsg("Health Connect / Apple Health faqat Med ALL mobil ilovasida ishlaydi. Hozircha qo‘lda kiriting."); return; }
+    if (status === "not_installed") { setMsg("Telefoningizda Health Connect o‘rnatilmagan. Play Market’dan “Health Connect by Android” ni o‘rnating, so‘ng qayta urinib ko‘ring."); return; }
+    setSyncing(true);
     try {
-      const d = await readHealthStore();
-      if (!d) { setMsg(platform ? `${platform} ko‘prigi ilovaning keyingi yangilanishida faollashadi. Hozircha ko‘rsatkichlarni soatingizdan qo‘lda kiriting.` : "Health Connect / Apple Health faqat Med ALL mobil ilovasida ishlaydi. Hozircha qo‘lda kiriting."); return; }
-      setManual({ bpm: String(d.bpm ?? ""), spo2: String(d.spo2 ?? ""), sleep: String(d.sleepHours ?? ""), steps: String(d.steps ?? "") });
-    } catch { setMsg("Ma’lumotni o‘qishga ruxsat berilmadi."); }
+      const granted = await requestHealthAccess();
+      if (!granted.length) { setMsg("Ruxsat berilmadi. Health Connect sozlamalarida Med ALL uchun ruxsatlarni yoqing."); return; }
+      const r = await syncHealthData(user.id);
+      setAutoSync(true); setAuto(true);
+      const l = r.latest;
+      setManual({ bpm: String(l.bpm ?? ""), spo2: String(l.spo2 ?? ""), sleep: String(l.sleepHours ?? ""), steps: String(l.steps ?? "") });
+      setMsg(`${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.`);
+    } catch { setMsg("Ma’lumotni o‘qib bo‘lmadi. Internet va ruxsatlarni tekshiring."); }
+    finally { setSyncing(false); }
   };
+
+  const toggleAuto = (on: boolean) => { setAutoSync(on); setAuto(on); };
 
   const saveManual = () => {
     const bpm = parseInt(manual.bpm);
@@ -75,9 +94,16 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
       </div>
 
       <div className="rounded-2xl border border-border p-4 space-y-3">
-        <div className="flex items-center gap-2"><Watch className="w-5 h-5 text-primary" /><h4 className="font-semibold text-foreground">Aqlli soat (Health Connect / Apple Health)</h4></div>
-        <p className="text-xs text-muted-foreground">Apple Watch, Galaxy Watch, Mi Band: yurak urishi, SpO2, uyqu va qadamlar.</p>
-        <Button size="sm" variant="outline" onClick={sync}><RefreshCw className="w-4 h-4 mr-1" /> {platform ?? "Health"} dan olish</Button>
+        <div className="flex items-center gap-2"><Watch className="w-5 h-5 text-primary" /><h4 className="font-semibold text-foreground">Aqlli soat ({platform})</h4></div>
+        <p className="text-xs text-muted-foreground">Galaxy Watch, Mi Band, Fitbit va boshqalar {platform}ga yozgan puls, SpO2, uyqu va qadamlar sizning ruxsatingiz bilan Med1 tarixiga import qilinadi. Faqat o‘qiladi, hech narsa yozilmaydi.</p>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="sm" variant="outline" onClick={sync} disabled={syncing}><RefreshCw className={`w-4 h-4 mr-1 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Import qilinmoqda…" : `${platform}dan import`}</Button>
+          {native && (
+            <label className="flex items-center gap-2 text-xs text-foreground">
+              <Switch checked={auto} onCheckedChange={toggleAuto} aria-label="Avtomatik import" /> Avtomatik import
+            </label>
+          )}
+        </div>
         <div className="grid grid-cols-2 gap-2">
           {([["bpm", "Puls (bpm)"], ["spo2", "SpO2 (%)"], ["sleep", "Uyqu (soat)"], ["steps", "Qadamlar"]] as const).map(([k, l]) => (
             <div key={k}><Label className="text-xs text-muted-foreground">{l}</Label>

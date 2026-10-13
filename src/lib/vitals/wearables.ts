@@ -1,6 +1,4 @@
-// Wearable data sources: BLE heart-rate straps (Web Bluetooth) and a
-// Health Connect / Apple Health bridge that no-ops until the native plugin ships.
-import { Capacitor, registerPlugin } from "@capacitor/core";
+// BLE heart-rate straps via Web Bluetooth. Health Connect lives in healthConnect.ts.
 
 export type WearableSummary = { bpm?: number | null; spo2?: number | null; sleepHours?: number | null; steps?: number | null; source: string };
 
@@ -30,23 +28,3 @@ export async function connectBleHeartRate(onBeat: (bpm: number, rr: number[]) =>
 
 export const bleSupported = () => !!(navigator as any).bluetooth;
 
-type HealthPlugin = {
-  isAvailable(): Promise<{ available: boolean }>;
-  requestAuthorization(o: { read: string[] }): Promise<void>;
-  readLatest(o: { types: string[] }): Promise<Record<string, number | null>>;
-};
-const Health = registerPlugin<HealthPlugin>("Med1Health");
-
-export const healthBridgePlatform = () =>
-  Capacitor.getPlatform() === "ios" ? "Apple Health" : Capacitor.getPlatform() === "android" ? "Health Connect" : null;
-
-/** Reads the latest watch metrics through the native bridge. Returns null when the bridge isn't installed. */
-export async function readHealthStore(): Promise<WearableSummary | null> {
-  if (!Capacitor.isNativePlatform() || !Capacitor.isPluginAvailable("Med1Health")) return null;
-  const { available } = await Health.isAvailable();
-  if (!available) return null;
-  const types = ["heart_rate", "spo2", "sleep", "steps"];
-  await Health.requestAuthorization({ read: types });
-  const d = await Health.readLatest({ types });
-  return { bpm: d.heart_rate, spo2: d.spo2, sleepHours: d.sleep, steps: d.steps, source: healthBridgePlatform() ?? "Health" };
-}
