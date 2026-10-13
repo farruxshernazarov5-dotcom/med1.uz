@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
-import CameraPPGSensor from "@/components/vital-signs/CameraPPGSensor";
+import VitalMeasureCard from "@/components/vital-signs/VitalMeasureCard";
+import type { VitalReading } from "@/components/vital-signs/types";
+import { consumeAiStream } from "@/lib/aiStream";
+import ReactMarkdown from "react-markdown";
 import BMICalculator from "@/components/vital-signs/BMICalculator";
 import HealthScoreCard from "@/components/vital-signs/HealthScoreCard";
 import useVoiceGuidance from "@/hooks/useVoiceGuidance";
@@ -59,19 +62,18 @@ const AIVitalSignsPage = () => {
     return () => clearInterval(iv);
   }, []);
 
-  const handleCameraResult = useCallback((bpm: number) => {
-    setPulse(String(bpm));
-    if (bpm >= 60 && bpm <= 100) voice.speakKey("result_normal");
+  const [reading, setReading] = useState<VitalReading | null>(null);
+  const handleCameraResult = useCallback((r: VitalReading) => {
+    setReading(r);
+    setPulse(String(r.bpm));
+    if (r.spo2) setSpo2(String(r.spo2));
+    if (r.bpm >= 60 && r.bpm <= 100) voice.speakKey("result_normal");
     else voice.speakKey("result_warning");
-    toast({ title: `Puls aniqlandi: ${bpm} bpm ✅` });
+    toast({ title: `Puls aniqlandi: ${r.bpm} bpm` });
   }, [voice]);
 
-  const handleCameraStatus = useCallback((msg: string) => {
-    if (msg.includes("tayyorlanmoqda")) voice.speakKey("start");
-    else if (msg.includes("kameraga qo'ying")) voice.speakKey("finger_place");
-    else if (msg.includes("o'lchanmoqda")) voice.speakKey("measuring");
-    else if (msg.includes("aniqlanmadi")) voice.speakKey("signal_weak");
-    else if (msg.includes("ruxsati")) voice.speakKey("camera_error");
+  const handleCameraStatus = useCallback((key: string) => {
+    if (key === "measuring" || key === "start" || key === "finger_place" || key === "signal_weak" || key === "camera_error") voice.speakKey(key as any);
   }, [voice]);
 
   useEffect(() => {
@@ -108,13 +110,40 @@ const AIVitalSignsPage = () => {
     setAiLoading(true);
     setAiResult(null);
     voice.speakKey("health_score");
+    const r = reading;
+    const srcName = r?.source === "finger" ? "barmoq PPG (orqa kamera)" : r?.source === "face" ? "yuz rPPG (old kamera)" : r?.source === "watch" ? `aqlli soat${r.device ? ` (${r.device})` : ""}` : "qo'lda kiritilgan";
+    const lines = [
+      pulse && `Yurak urishi: ${pulse} bpm (manba: ${srcName}${r ? `, signal ishonchliligi ${r.confidence}%` : ""})`,
+      r?.rmssd && `HRV RMSSD: ${r.rmssd} ms, SDNN: ${r.sdnn ?? "—"} ms, stress darajasi: ${r.stress}`,
+      r?.respRate && `Nafas olish chastotasi: ${r.respRate} /daqiqa`,
+      systolic && diastolic && `Qon bosimi: ${systolic}/${diastolic} mmHg`,
+      spo2 && `SpO2: ${spo2}%`,
+      r?.sleepHours && `Uyqu: ${r.sleepHours} soat`,
+      r?.steps && `Qadamlar: ${r.steps}`,
+      bmiValue && `BMI: ${bmiValue}`,
+    ].filter(Boolean).join("\n");
+    const message = `Foydalanuvchi vital ko'rsatkichlari:\n${lines}\n\nO'zbek tilida, oddiy va tushunarli qilib bering:\n1. Har bir ko'rsatkich holati va izohi\n2. Xavf darajasi (past/o'rta/yuqori)\n3. Amaliy maslahatlar (stress, uyqu, faollik)\n4. Qaysi shifokorga va qachon murojaat qilish kerak\n5. Umumiy sog'liq bahosi\nKamera o'lchovlari taxminiy ekanini hisobga ol.`;
     try {
-      const message = `Foydalanuvchi vital ko'rsatkichlari:\n${pulse ? `Yurak urishi: ${pulse} bpm\n` : ""}${systolic && diastolic ? `Qon bosimi: ${systolic}/${diastolic} mmHg\n` : ""}${spo2 ? `SpO2: ${spo2}%\n` : ""}${bmiValue ? `BMI: ${bmiValue}\n` : ""}\nIltimos quyidagilarni bering:\n1. Har bir ko'rsatkichning holati va izohi\n2. Xavf darajasi\n3. Qisqa tavsiyalar\n4. Qaysi shifokorga murojaat qilish kerakligi\n5. Umumiy sog'liq bahosi\n\nJavobni o'zbek tilida bering.`;
-      const { data, error } = await supabase.functions.invoke("ai-health-assistant", { body: withLang({ message }) });
-      if (error) throw error;
-      setAiResult(data?.response || data?.text || "Javob olinmadi");
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-health-assistant`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify(withLang({ messages: [{ role: "user", content: message }], mode: "advice" })),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setAiResult(err.error || "Med AI xizmatiga ulanishda xatolik yuz berdi.");
+      } else {
+        let acc = "";
+        await consumeAiStream(res, (d) => { acc += d; setAiResult(acc); });
+        if (!acc) setAiResult("Javob olinmadi.");
+      }
     } catch {
-      setAiResult("AI xizmatiga ulanishda xatolik yuz berdi.");
+      setAiResult("Med AI xizmatiga ulanishda xatolik yuz berdi.");
     }
     setAiLoading(false);
   };
@@ -196,9 +225,10 @@ const AIVitalSignsPage = () => {
           />
         </div>
 
-        {/* Camera PPG Sensor */}
+        {/* Measurement: finger PPG / face rPPG / wearables */}
         <div className="mb-8">
-          <CameraPPGSensor onResult={handleCameraResult} onStatusChange={handleCameraStatus} />
+          <VitalMeasureCard onResult={handleCameraResult} onStatus={handleCameraStatus} />
+          <MedicalDisclaimer compact className="mt-3" />
         </div>
 
         {/* Input Cards */}
@@ -336,9 +366,9 @@ const AIVitalSignsPage = () => {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7B61FF] to-[#2F80ED] flex items-center justify-center">
                 <Activity className="w-4 h-4 text-white" />
               </div>
-              <h3 className="font-bold text-foreground">AI Tahlil natijasi</h3>
+              <h3 className="font-bold text-foreground">Med AI xulosasi</h3>
             </div>
-            <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm text-foreground/90">{aiResult}</div>
+            <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-foreground/90"><ReactMarkdown>{aiResult}</ReactMarkdown></div>
             <MedicalDisclaimer compact className="mt-4" />
           </div>
         )}
