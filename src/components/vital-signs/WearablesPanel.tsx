@@ -71,7 +71,7 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
               <Button size="sm" variant="outline" onClick={() => { ble.disconnect(); setBle(null); }} aria-label="Uzish"><Unplug className="w-4 h-4" /></Button>
             </div>
           </div>
-        ) : <Button size="sm" variant="outline" onClick={connect} disabled={!bleSupported() && false}><Bluetooth className="w-4 h-4 mr-1" /> Qurilmani ulash</Button>}
+        ) : <Button size="sm" variant="outline" onClick={connect}><Bluetooth className="w-4 h-4 mr-1" /> Qurilmani ulash</Button>}
       </div>
 
       <div className="rounded-2xl border border-border p-4 space-y-3">
