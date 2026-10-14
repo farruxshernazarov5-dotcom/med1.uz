@@ -142,7 +142,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       }
       const good = tone === "ok" && sqiRef.current >= MIN_SQI;
       if (tone !== "bad") goodMs.current += good ? dt : dt * 0.5;
-      else if (tone === "ok" && samples.current.length > FS * 8) { tone = "warn"; text = "Signal kuchsiz — yuzni yorug‘likka qarating"; }
+      if (!good && tone === "ok" && samples.current.length > FS * 8) { tone = "warn"; text = "Signal kuchsiz — yuzni yorug‘likka qarating"; }
       setHint({ text, tone });
       const sec = Math.min(DURATION, goodMs.current / 1000);
       setElapsed(sec);
