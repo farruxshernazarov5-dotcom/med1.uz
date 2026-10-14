@@ -129,13 +129,15 @@ export function analyzePulse(raw: number[], fs: number, invert = true): PulseAna
   const sqi = Math.round(Math.min(100, (spec.ratio * 0.6 + regularity * 0.4) * 100 * (agree ? 1.1 : 0.85)));
 
   let rmssd: number | null = null, sdnn: number | null = null;
-  if (rr.length >= 8) {
+  if (rr.length >= 5) {
     let s = 0;
     for (let i = 1; i < rr.length; i++) s += (rr[i] - rr[i - 1]) ** 2;
     rmssd = Math.round(Math.sqrt(s / (rr.length - 1)));
     sdnn = Math.round(std(rr));
   }
-  const stress = rmssd === null ? null : rmssd < 20 ? "yuqori" : rmssd < 45 ? "o'rta" : "past";
+  // HRV-based stress; when too few clean beats, fall back to resting heart rate.
+  const stress = rmssd !== null ? (rmssd < 20 ? "yuqori" : rmssd < 45 ? "o'rta" : "past")
+    : bpm > 95 ? "yuqori" : bpm > 78 ? "o'rta" : bpm >= 40 ? "past" : null;
   if (bpm < 40 || bpm > 200) return null;
   return { bpm, rr, rmssd, sdnn, stress, sqi, filtered };
 }
@@ -167,4 +169,17 @@ export function posSignal(rgb: { r: number; g: number; b: number }[], fs: number
     for (let i = 0; i < win; i++) h[s + i] += p[i] - pm;
   }
   return h;
+}
+
+/** Camera SpO2 estimate (ratio-of-ratios, red vs blue under the torch). Approximate, not a medical oximeter. */
+export function estimateSpo2(red: number[], blue: number[], fs: number): number | null {
+  if (red.length < fs * 8 || blue.length !== red.length) return null;
+  const dc = (x: number[]) => x.reduce((a, b) => a + b, 0) / x.length;
+  const dr = dc(red), db = dc(blue);
+  if (dr < 5 || db < 1) return null;
+  const ar = std(bandpass(red, fs, 0.7, 3.5)), ab = std(bandpass(blue, fs, 0.7, 3.5));
+  if (!ar || !ab) return null;
+  const R = (ar / dr) / (ab / db);
+  if (!isFinite(R)) return null;
+  return Math.round(Math.max(88, Math.min(100, 104 - 6 * R)));
 }

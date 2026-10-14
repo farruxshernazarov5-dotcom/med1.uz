@@ -17,6 +17,10 @@ async function nativeSay(texts: Partial<Record<VoiceLang, string>>, order: Voice
     try { onState(true); await t.speak({ text, lang: code, rate: 0.95, pitch: 1, volume: 1, category: "playback" }); onState(false); return; }
     catch { onState(false); }
   }
+  // No matching language engine installed — still speak with the phone's default voice.
+  const l = order.find((x) => texts[x]) ;
+  if (!l) return;
+  try { onState(true); await t.speak({ text: texts[l]!, rate: 0.95, pitch: 1, volume: 1, category: "playback" }); } catch { /* no engine */ } finally { onState(false); }
 }
 const nativeStop = async () => { try { await (await tts()).p.stop(); } catch { /* idle */ } };
 
@@ -27,6 +31,16 @@ const MESSAGES: Record<string, Record<VoiceLang, string>> = {
     uz: "Tekshiruv boshlanmoqda. Iltimos barmog'ingizni kameraga qo'ying.",
     ru: "Измерение начинается. Пожалуйста, приложите палец к камере.",
     en: "Measurement is starting. Please place your finger on the camera.",
+  },
+  press_light: {
+    uz: "Qattiq bosmang. Barmog'ingizni yengil tegizib turing.",
+    ru: "Не давите сильно. Слегка прижмите палец.",
+    en: "Do not press too hard. Rest your finger lightly.",
+  },
+  face_place: {
+    uz: "Yuzingizni ramka ichiga joylang, yorug' joyda qimirlamay turing.",
+    ru: "Расположите лицо в рамке, в хорошо освещённом месте, не двигайтесь.",
+    en: "Place your face in the frame in good light and stay still.",
   },
   measuring: {
     uz: "Signal tekshirilmoqda. Iltimos harakatlanmang.",

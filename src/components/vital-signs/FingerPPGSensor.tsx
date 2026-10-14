@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import LiveWaveform from "./LiveWaveform";
 import VitalResultScreen from "./VitalResultScreen";
 import { openCamera, lock3A, setTorch, stopStream } from "@/lib/vitals/camera";
-import { analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
+import { estimateSpo2, analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
 import type { VitalReading } from "./types";
 
 const DURATION = 20; // seconds with the finger on the lens
@@ -22,6 +22,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const streamRef = useRef<MediaStream | null>(null);
   const red = useRef<Sample[]>([]);
   const green = useRef<Sample[]>([]);
+  const blue = useRef<Sample[]>([]);
+  const lastSpoken = useRef("");
   const wave = useRef<number[]>([]);
   const goodMs = useRef(0);
   const lastT = useRef(0);
@@ -39,7 +41,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const [paused, setPaused] = useState(false);
   const [cover, setCover] = useState(0);
   const coverAvg = useRef(0);
-  const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null } | null>(null);
+  const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null; spo2?: number | null } | null>(null);
 
   const stop = useCallback(() => {
     running.current = false;
@@ -66,10 +68,11 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     }
     const resp = respiratoryRate(resample(red.current, FS), FS);
     setBpm(best.bpm);
+    const spo2 = estimateSpo2(resample(red.current, FS), resample(blue.current, FS), FS);
     const respRate = resp && resp.ratio > 0.3 ? resp.rate : null;
-    setResult({ bpm: best.bpm, signal: Math.round(coverAvg.current * 100), accuracy: Math.min(100, Math.round(best.sqi * 1.6)), stress: best.stress, resp: respRate });
+    setResult({ bpm: best.bpm, signal: Math.round(coverAvg.current * 100), accuracy: Math.min(100, Math.round(best.sqi * 1.6)), stress: best.stress, resp: respRate, spo2 });
     setHint({ text: "O‘lchov yakunlandi", tone: "ok" });
-    onResult({ source: "finger", bpm: best.bpm, confidence: best.sqi, rmssd: best.rmssd, sdnn: best.sdnn, stress: best.stress, respRate: resp && resp.ratio > 0.3 ? resp.rate : null });
+    onResult({ source: "finger", bpm: best.bpm, confidence: best.sqi, rmssd: best.rmssd, sdnn: best.sdnn, stress: best.stress, respRate: resp && resp.ratio > 0.3 ? resp.rate : null, spo2 });
   }, [onResult, onStatus, stop]);
 
   const loop = useCallback(() => {
@@ -101,9 +104,9 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       else h = { text: "Qimirlamang, o‘lchanmoqda…", tone: "ok" };
 
       if (coverage >= COVER) {
-        red.current.push({ t: now, v: r }); green.current.push({ t: now, v: g });
-        if (red.current.length > FS * 45) { red.current.shift(); green.current.shift(); }
-      } else { red.current = []; green.current = []; }
+        red.current.push({ t: now, v: r }); green.current.push({ t: now, v: g }); blue.current.push({ t: now, v: b });
+        if (red.current.length > FS * 45) { red.current.shift(); green.current.shift(); blue.current.shift(); }
+      } else { red.current = []; green.current = []; blue.current = []; }
 
       // Live analysis every ~15 frames on the last 8 s.
       if (red.current.length > FS * 6 && red.current.length % 15 === 0) {
@@ -124,16 +127,19 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       if (onLens && !good && h.tone === "ok" && red.current.length > FS * 6) h = { text: "Signal kuchsiz — qimirlamay, yengil bosib turing", tone: "warn" };
       setPaused(!good);
       setHint(h);
+      // Spoken guidance: say each new instruction once.
+      const key = h.text.startsWith("Barmog") ? "finger_place" : h.text.startsWith("Qattiq") ? "press_light" : h.text.startsWith("Signal") ? "signal_weak" : "measuring";
+      if (key !== lastSpoken.current) { lastSpoken.current = key; onStatus?.(key); }
       const sec = Math.min(DURATION, goodMs.current / 1000);
       setElapsed(sec);
       if (sec >= DURATION) { finish(); return; }
     }
     requestAnimationFrame(loop);
-  }, [finish]);
+  }, [finish, onStatus]);
 
   const start = async () => {
     try {
-      red.current = []; green.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0;
+      red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0;
       setBpm(null); setSqi(0); setElapsed(0); setResult(null); coverAvg.current = 0;
       onStatus?.("start");
       const stream = await openCamera("environment");

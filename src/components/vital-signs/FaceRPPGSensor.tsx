@@ -155,7 +155,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
     try {
       samples.current = []; lum.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; prevMean.current = null;
       setBpm(null); setResp(null); setSqi(0); setElapsed(0); setResult(null);
-      onStatus?.("start");
+      onStatus?.("face_place");
       const stream = await openCamera("user", 640, 480);
       streamRef.current = stream;
       videoRef.current!.srcObject = stream; await videoRef.current!.play();
