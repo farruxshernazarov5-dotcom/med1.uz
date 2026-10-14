@@ -161,7 +161,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
 
   const remaining = Math.ceil(DURATION - elapsed);
 
-  if (result && !active) return <VitalResultScreen {...result} onRetry={() => { setResult(null); void start(); }} />;
+  if (result && !active) return <VitalResultScreen {...result} onRetry={() => setResult(null)} />;
 
   return (
     <div className="space-y-4">

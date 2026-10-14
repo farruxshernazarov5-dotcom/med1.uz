@@ -6,6 +6,7 @@ import { languageInstruction, resolveResponseLang } from "../_shared/lang.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
+  "Access-Control-Expose-Headers": "x-med1-credits, x-med1-balance",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-med1-channel, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
@@ -37,7 +38,9 @@ serve(async (req) => {
   let __usageId: string | null = null;
 
   try {
-    const access = await enforceAiAccess(req, "ai-health-assistant");
+    // Vital AI shares this assistant but is billed at its own Med Coin price.
+    const __svc = new URL(req.url).searchParams.get("service") === "ai-vital-signs" ? "ai-vital-signs" : "ai-health-assistant";
+    const access = await enforceAiAccess(req, __svc);
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
         status: access.status,
