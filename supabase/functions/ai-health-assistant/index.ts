@@ -83,7 +83,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "AI xizmati xatosi" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    return new Response(instrumentStream(response.body!, __usageId, __start, 0), { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
+    return new Response(instrumentStream(response.body!, __usageId, __start, 0), { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "x-med1-credits": String(access.creditsDeducted ?? 0), "x-med1-balance": String(access.balanceAfter ?? "") } });
   } catch (e) {
     console.error("ai-health-assistant error:", e);
     await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : "unknown" });
