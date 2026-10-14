@@ -6,7 +6,7 @@
       "name": "vite_react_shadcn_ts",
       "dependencies": {
         "@capacitor-community/privacy-screen": "8",
-        "@capacitor-community/text-to-speech": "^6",
+        "@capacitor-community/text-to-speech": "^8",
         "@capacitor/android": "^8.5.2",
         "@capacitor/app": "^8.1.1",
         "@capacitor/browser": "^8",
@@ -154,7 +154,7 @@
 
     "@capacitor-community/privacy-screen": ["@capacitor-community/privacy-screen@8.0.0", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-XcBTgQ13BdH8xB7arJ2io5rP3aEXcndgDVl/GdFRNwc8TatnV+1U6rGROLtepYLA4Rl0GP7k4zAeykcG+a//3w=="],
 
-    "@capacitor-community/text-to-speech": ["@capacitor-community/text-to-speech@6.1.0", "", { "peerDependencies": { "@capacitor/core": ">=7.0.0" } }, "sha512-K9kbQm7BEkUGhZQYMrPaLfHTbOjQPtXZyQTtZxR+lNJyl1pbSFWwRmK3PCIa5C5M2HLf3iPgj/vTaMvMxlk1Ag=="],
+    "@capacitor-community/text-to-speech": ["@capacitor-community/text-to-speech@8.0.2", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-SbpBMzcmzdTiN8jQDme/yUYHEJISZA+IiaRn5zT14k3UKpjaA7eYBnSm9h76rJHRV/y6DVZVhT1J0SaK5JTKtA=="],
 
     "@capacitor/android": ["@capacitor/android@8.5.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@capacitor/android/-/android-8.5.2.tgz", { "peerDependencies": { "@capacitor/core": "^8.5.0" } }, "sha512-rtiaz78egCcS+vs29wkWCL3C+RhazKMSygXcjutwWP8NmO6r5UBxOvGf3Wjz5+ahobyQ723tn9gCePwRwcNDZQ=="],
 
