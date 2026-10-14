@@ -85,13 +85,18 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       const px = ctx.getImageData(0, 0, 40, 30).data;
       let r = 0, g = 0, b = 0, covered = 0, clipped = 0;
       const n = px.length / 4;
+      // Per-quadrant coverage: the lens counts as fully covered only when every quarter is red,
+      // so a half-placed finger (ambient light leaking at one edge) is rejected.
+      const qc = [0, 0, 0, 0], qn = n / 4;
       for (let i = 0; i < px.length; i += 4) {
         r += px[i]; g += px[i + 1]; b += px[i + 2];
-        if (px[i] > 70 && px[i] > px[i + 1] * 1.3 && px[i] > px[i + 2] * 1.3) covered++;
+        const p = i / 4, x = p % 40, y = Math.floor(p / 40);
+        if (px[i] > 70 && px[i] > px[i + 1] * 1.3 && px[i] > px[i + 2] * 1.3) { covered++; qc[(y < 15 ? 0 : 2) + (x < 20 ? 0 : 1)]++; }
         if (px[i] >= 250 && px[i + 1] >= 200) clipped++;
       }
       r /= n; g /= n; b /= n;
-      const coverage = covered / n;
+      const minQuad = Math.min(...qc) / qn;
+      const coverage = minQuad < 0.45 ? Math.min(covered / n, minQuad) : covered / n;
       coverAvg.current = coverAvg.current * 0.9 + coverage * 0.1;
       if (frameN.current++ % 6 === 0) setCover(Math.round(coverAvg.current * 100));
       const now = performance.now();
