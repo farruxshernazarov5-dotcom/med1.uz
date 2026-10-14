@@ -1,4 +1,24 @@
 import { useCallback, useRef, useState, useEffect } from "react";
+import { isNativeApp } from "@/lib/nativeApp";
+
+const NATIVE_LANG: Record<VoiceLang, string> = { uz: "uz-UZ", ru: "ru-RU", en: "en-US" };
+async function tts() { return { p: (await import("@capacitor-community/text-to-speech")).TextToSpeech }; }
+/** Android WebView has no speechSynthesis — speak through the OS TTS engine. Uzbek falls back to Russian, then English. */
+async function nativeSay(texts: Partial<Record<VoiceLang, string>>, order: VoiceLang[], onState: (b: boolean) => void) {
+  const t = (await tts()).p;
+  try { await t.stop(); } catch { /* idle */ }
+  let supported: string[] = [];
+  try { supported = (await t.getSupportedLanguages()).languages.map((l) => l.toLowerCase()); } catch { /* unknown */ }
+  for (const l of order) {
+    const text = texts[l];
+    if (!text) continue;
+    const code = NATIVE_LANG[l];
+    if (supported.length && !supported.some((s) => s.startsWith(l))) continue;
+    try { onState(true); await t.speak({ text, lang: code, rate: 0.95, pitch: 1, volume: 1, category: "playback" }); onState(false); return; }
+    catch { onState(false); }
+  }
+}
+const nativeStop = async () => { try { await (await tts()).p.stop(); } catch { /* idle */ } };
 
 export type VoiceLang = "uz" | "ru" | "en";
 
@@ -155,7 +175,9 @@ const useVoiceGuidance = () => {
   }, [lang]);
 
   const speak = useCallback((text: string, forceLang?: VoiceLang) => {
-    if (!enabled || !("speechSynthesis" in window)) return;
+    if (!enabled) return;
+    if (isNativeApp()) { const l = forceLang || lang; void nativeSay({ [l]: text }, [l], setSpeaking); return; }
+    if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
 
     const utter = new SpeechSynthesisUtterance(text);
@@ -179,7 +201,9 @@ const useVoiceGuidance = () => {
 
   /** KEY FIX: speakKey now uses the text matching the ACTUAL voice language, not the selected UI language */
   const speakKey = useCallback((key: string) => {
-    if (!enabled || !("speechSynthesis" in window)) return;
+    if (!enabled) return;
+    if (isNativeApp()) { if (MESSAGES[key]) void nativeSay(MESSAGES[key], [lang, ...FALLBACK_CHAIN[lang]], setSpeaking); return; }
+    if (!("speechSynthesis" in window)) return;
     const { voice, effectiveLang } = resolveVoiceLang();
     
     // Use the message text that matches the voice's actual language
@@ -198,16 +222,16 @@ const useVoiceGuidance = () => {
     utter.onend = () => setSpeaking(false);
     utter.onerror = () => setSpeaking(false);
     window.speechSynthesis.speak(utter);
-  }, [enabled, resolveVoiceLang]);
+  }, [enabled, lang, resolveVoiceLang]);
 
   const stop = useCallback(() => {
-    window.speechSynthesis.cancel();
+    if (isNativeApp()) void nativeStop(); else if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     setSpeaking(false);
   }, []);
 
   const toggle = useCallback(() => {
     setEnabled(p => {
-      if (p) window.speechSynthesis.cancel();
+      if (p) { if (isNativeApp()) void nativeStop(); else if ("speechSynthesis" in window) window.speechSynthesis.cancel(); }
       return !p;
     });
   }, []);

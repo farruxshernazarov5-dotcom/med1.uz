@@ -23,6 +23,10 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
+import { logAiChat } from "@/lib/aiChatHistory";
+import { useCredits } from "@/hooks/useCredits";
+import { downloadVitalReport } from "@/lib/vitals/report";
+import { Download } from "lucide-react";
 
 /* ── helpers ── */
 const getPulseStatus = (v: number) => {
@@ -56,6 +60,8 @@ const AIVitalSignsPage = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [animPulse, setAnimPulse] = useState(false);
   const voice = useVoiceGuidance();
+  const { refetch: refetchCredits } = useCredits();
+  const [lastSummary, setLastSummary] = useState("");
 
   useEffect(() => {
     const iv = setInterval(() => setAnimPulse(p => !p), 800);
@@ -125,7 +131,7 @@ const AIVitalSignsPage = () => {
     const message = `Foydalanuvchi vital ko'rsatkichlari:\n${lines}\n\nO'zbek tilida, oddiy va tushunarli qilib bering:\n1. Har bir ko'rsatkich holati va izohi\n2. Xavf darajasi (past/o'rta/yuqori)\n3. Amaliy maslahatlar (stress, uyqu, faollik)\n4. Qaysi shifokorga va qachon murojaat qilish kerak\n5. Umumiy sog'liq bahosi\nKamera o'lchovlari taxminiy ekanini hisobga ol.`;
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-health-assistant`, {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-health-assistant?service=ai-vital-signs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,6 +147,15 @@ const AIVitalSignsPage = () => {
         let acc = "";
         await consumeAiStream(res, (d) => { acc += d; setAiResult(acc); });
         if (!acc) setAiResult("Javob olinmadi.");
+        else {
+          setLastSummary(lines);
+          voice.speak(acc.replace(/[#*_>|`-]/g, " ").slice(0, 600));
+          void logAiChat({ serviceId: "ai-vital-signs", role: "user", content: lines });
+          void logAiChat({ serviceId: "ai-vital-signs", role: "assistant", content: acc, metadata: { source: r?.source ?? "manual" } });
+        }
+        const spent = Number(res.headers.get("x-med1-credits") ?? 0);
+        if (spent > 0) toast({ title: `${spent} Med Coin yechildi`, description: "Xulosa Qabullar → AI xulosalari bo‘limiga saqlandi." });
+        refetchCredits();
       }
     } catch {
       setAiResult("Med AI xizmatiga ulanishda xatolik yuz berdi.");
@@ -369,6 +384,11 @@ const AIVitalSignsPage = () => {
               <h3 className="font-bold text-foreground">Med AI xulosasi</h3>
             </div>
             <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-foreground/90"><ReactMarkdown>{aiResult}</ReactMarkdown></div>
+            {!aiLoading && (
+              <Button variant="outline" className="mt-4 w-full sm:w-auto" onClick={() => void downloadVitalReport({ summary: lastSummary, conclusion: aiResult, name: user?.email ?? "" })}>
+                <Download className="mr-2 h-4 w-4" /> Xulosani yuklab olish (PDF)
+              </Button>
+            )}
             <MedicalDisclaimer compact className="mt-4" />
           </div>
         )}

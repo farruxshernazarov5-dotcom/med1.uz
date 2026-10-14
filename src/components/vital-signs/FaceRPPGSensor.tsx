@@ -4,13 +4,14 @@ import { Progress } from "@/components/ui/progress";
 import { ScanFace, StopCircle, Heart, Wind, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LiveWaveform from "./LiveWaveform";
-import { openCamera, lock3A, stopStream } from "@/lib/vitals/camera";
+import { openCamera, stopStream } from "@/lib/vitals/camera";
+import VitalResultScreen from "./VitalResultScreen";
 import { analyzePulse, bandpass, posSignal, resample, respiratoryRate } from "@/lib/vitals/dsp";
 import type { VitalReading } from "./types";
 
-const DURATION = 30;
+const DURATION = 25;
 const FS = 30;
-const MIN_SQI = 40;
+const MIN_SQI = 12;
 type RGB = { t: number; r: number; g: number; b: number };
 type Box = { x: number; y: number; w: number; h: number };
 
@@ -38,6 +39,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
   const sqiRef = useRef(0);
   const running = useRef(false);
   const frame = useRef(0);
+  const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; resp?: number | null; stress?: string | null } | null>(null);
 
   const [active, setActive] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -58,15 +60,18 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
     const res = analyzePulse(bandpass(posSignal(rgb, FS), FS, 0.7, 3.5), FS, false);
     const rr = respiratoryRate(resample(lum.current, FS), FS);
     stop();
-    if (!res || res.sqi < MIN_SQI) {
+    const live = analyzePulse(bandpass(posSignal(resampleRGB(samples.current.slice(-FS * 12)), FS), FS, 0.7, 3.5), FS, false);
+    const best = [res, live].filter(Boolean).sort((x, y) => y!.sqi - x!.sqi)[0] ?? null;
+    if (!best || best.sqi < MIN_SQI) {
       setHint({ text: "Ishonchli natija olinmadi. Yorug‘ joyda, qimirlamay qayta urinib ko‘ring.", tone: "bad" });
       onStatus?.("signal_weak");
       return;
     }
     const respRate = rr && rr.ratio > 0.25 ? rr.rate : null;
-    setBpm(res.bpm); setResp(respRate);
+    setBpm(best.bpm); setResp(respRate);
+    setResult({ bpm: best.bpm, signal: Math.round(sqiRef.current), accuracy: Math.min(100, Math.round(best.sqi * 1.6)), resp: respRate, stress: best.stress });
     setHint({ text: "Skanerlash yakunlandi", tone: "ok" });
-    onResult({ source: "face", bpm: res.bpm, confidence: res.sqi, rmssd: res.rmssd, sdnn: res.sdnn, stress: res.stress, respRate });
+    onResult({ source: "face", bpm: best.bpm, confidence: Math.min(100, Math.round(best.sqi * 1.6)), rmssd: best.rmssd, sdnn: best.sdnn, stress: best.stress, respRate });
   }, [onResult, onStatus, stop]);
 
   const loop = useCallback(async () => {
@@ -97,7 +102,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
         const d = ctx.getImageData(roi.x | 0, roi.y | 0, Math.max(1, roi.w | 0), Math.max(1, roi.h | 0)).data;
         for (let i = 0; i < d.length; i += 16) {
           // Skin-tone gate drops hair/eyebrows/background pixels.
-          if (d[i] > 60 && d[i] > d[i + 2] && d[i] - d[i + 1] > 5) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+          if (d[i] > 35 && d[i] >= d[i + 2] && d[i] - d[i + 1] > 2) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
         }
       }
       const now = performance.now();
@@ -111,13 +116,13 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       for (const roi of rois) ox.strokeRect(o.width - (roi.x + roi.w) * sx, roi.y * sy, roi.w * sx, roi.h * sy);
 
       let tone: "ok" | "warn" | "bad" = "ok", text = "Qimirlamang, skanerlanmoqda…";
-      if (n < 30) { tone = "bad"; text = "Yuz aniqlanmadi — yuzingizni ramka markaziga keltiring"; }
+      if (n < 15) { tone = "bad"; text = "Yuz aniqlanmadi — yuzingizni ramka markaziga keltiring"; }
       else {
         r /= n; g /= n; b /= n;
         const mean = (r + g + b) / 3;
-        if (mean < 60) { tone = "bad"; text = "Yorug‘lik yetarli emas — yorug‘roq joyga o‘ting"; }
+        if (mean < 30) { tone = "bad"; text = "Yorug‘lik yetarli emas — yorug‘roq joyga o‘ting"; }
         else if (mean > 235) { tone = "warn"; text = "Juda yorug‘ — to‘g‘ridan tushayotgan nurdan qoching"; }
-        else if (prevMean.current !== null && Math.abs(mean - prevMean.current) > 6) { tone = "warn"; text = "Harakat aniqlandi — boshingizni qimirlatmang"; }
+        else if (prevMean.current !== null && Math.abs(mean - prevMean.current) > 12) { tone = "warn"; text = "Harakat aniqlandi — boshingizni qimirlatmang"; }
         prevMean.current = mean;
         if (tone !== "bad") {
           samples.current.push({ t: now, r, g, b });
@@ -136,8 +141,8 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
         if (res && res.sqi >= MIN_SQI) setBpm(res.bpm);
       }
       const good = tone === "ok" && sqiRef.current >= MIN_SQI;
-      if (good) goodMs.current += dt;
-      else if (tone === "ok" && samples.current.length > FS * 8) { tone = "warn"; text = "Signal kuchsiz — yuzni yorug‘likka qarating"; }
+      if (tone !== "bad") goodMs.current += good ? dt : dt * 0.5;
+      if (!good && tone === "ok" && samples.current.length > FS * 8) { tone = "warn"; text = "Signal kuchsiz — yuzni yorug‘likka qarating"; }
       setHint({ text, tone });
       const sec = Math.min(DURATION, goodMs.current / 1000);
       setElapsed(sec);
@@ -149,7 +154,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
   const start = async () => {
     try {
       samples.current = []; lum.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; prevMean.current = null;
-      setBpm(null); setResp(null); setSqi(0); setElapsed(0);
+      setBpm(null); setResp(null); setSqi(0); setElapsed(0); setResult(null);
       onStatus?.("start");
       const stream = await openCamera("user", 640, 480);
       streamRef.current = stream;
@@ -157,7 +162,8 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       const FD = (window as any).FaceDetector;
       detector.current = FD ? new FD({ fastMode: true, maxDetectedFaces: 1 }) : null;
       const track = stream.getVideoTracks()[0];
-      window.setTimeout(() => { if (running.current) lock3A(track); }, 2000);
+      // Front cameras darken when exposure is frozen, so keep auto-exposure on and compensate in software.
+      void track;
       running.current = true; setActive(true);
       requestAnimationFrame(loop);
     } catch {
@@ -165,6 +171,8 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       onStatus?.("camera_error");
     }
   };
+
+  if (result && !active) return <VitalResultScreen {...result} onRetry={() => setResult(null)} />;
 
   return (
     <div className="space-y-4">

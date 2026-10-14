@@ -4,13 +4,15 @@ import { Progress } from "@/components/ui/progress";
 import { Fingerprint, StopCircle, Heart, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LiveWaveform from "./LiveWaveform";
+import VitalResultScreen from "./VitalResultScreen";
 import { openCamera, lock3A, setTorch, stopStream } from "@/lib/vitals/camera";
 import { analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
 import type { VitalReading } from "./types";
 
-const DURATION = 30; // seconds of good signal required
+const DURATION = 20; // seconds with the finger on the lens
 const FS = 30;
-const MIN_SQI = 45;
+const MIN_SQI = 12;
+const COVER = 0.6;
 
 type Hint = { text: string; tone: "ok" | "warn" | "bad" };
 
@@ -26,6 +28,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const sqiRef = useRef(0);
   const running = useRef(false);
   const torchTimer = useRef<number>();
+  const frameN = useRef(0);
 
   const [active, setActive] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -34,6 +37,9 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const [hint, setHint] = useState<Hint>({ text: "Boshlash tugmasini bosing", tone: "ok" });
   const [locked, setLocked] = useState<string[]>([]);
   const [paused, setPaused] = useState(false);
+  const [cover, setCover] = useState(0);
+  const coverAvg = useRef(0);
+  const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null } | null>(null);
 
   const stop = useCallback(() => {
     running.current = false;
@@ -50,7 +56,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const finish = useCallback(() => {
     const pick = (s: Sample[]) => analyzePulse(resample(s, FS), FS, true);
     const a = pick(red.current), b = pick(green.current);
-    const best = [a, b].filter(Boolean).sort((x, y) => y!.sqi - x!.sqi)[0];
+    const live = analyzePulse(resample(red.current.slice(-FS * 12), FS), FS, true);
+    const best = [a, b, live].filter(Boolean).sort((x, y) => y!.sqi - x!.sqi)[0];
     stop();
     if (!best || best.sqi < MIN_SQI) {
       setHint({ text: "Signal sifati yetarli emas. Barmoqni yengil qo‘yib, qayta urinib ko‘ring.", tone: "bad" });
@@ -59,6 +66,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     }
     const resp = respiratoryRate(resample(red.current, FS), FS);
     setBpm(best.bpm);
+    const respRate = resp && resp.ratio > 0.3 ? resp.rate : null;
+    setResult({ bpm: best.bpm, signal: Math.round(coverAvg.current * 100), accuracy: Math.min(100, Math.round(best.sqi * 1.6)), stress: best.stress, resp: respRate });
     setHint({ text: "O‘lchov yakunlandi", tone: "ok" });
     onResult({ source: "finger", bpm: best.bpm, confidence: best.sqi, rmssd: best.rmssd, sdnn: best.sdnn, stress: best.stress, respRate: resp && resp.ratio > 0.3 ? resp.rate : null });
   }, [onResult, onStatus, stop]);
@@ -75,21 +84,23 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       const n = px.length / 4;
       for (let i = 0; i < px.length; i += 4) {
         r += px[i]; g += px[i + 1]; b += px[i + 2];
-        if (px[i] > 90 && px[i] > px[i + 1] * 1.6 && px[i] > px[i + 2] * 1.6) covered++;
+        if (px[i] > 70 && px[i] > px[i + 1] * 1.3 && px[i] > px[i + 2] * 1.3) covered++;
         if (px[i] >= 250 && px[i + 1] >= 200) clipped++;
       }
       r /= n; g /= n; b /= n;
       const coverage = covered / n;
+      coverAvg.current = coverAvg.current * 0.9 + coverage * 0.1;
+      if (frameN.current++ % 6 === 0) setCover(Math.round(coverAvg.current * 100));
       const now = performance.now();
       const dt = lastT.current ? now - lastT.current : 0;
       lastT.current = now;
 
       let h: Hint;
-      if (coverage < 0.85) h = { text: "Barmog‘ingizni kamera va fonarga to‘liq qo‘ying", tone: "bad" };
+      if (coverage < COVER) h = { text: "Barmog‘ingizni kamera va fonarga to‘liq qo‘ying", tone: "bad" };
       else if (clipped / n > 0.35 || g < 2) h = { text: "Qattiq bosmang — barmoqni yengil tegizing", tone: "warn" };
       else h = { text: "Qimirlamang, o‘lchanmoqda…", tone: "ok" };
 
-      if (coverage >= 0.85) {
+      if (coverage >= COVER) {
         red.current.push({ t: now, v: r }); green.current.push({ t: now, v: g });
         if (red.current.length > FS * 45) { red.current.shift(); green.current.shift(); }
       } else { red.current = []; green.current = []; }
@@ -106,9 +117,11 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       const recent = red.current.slice(-FS * 6);
       if (recent.length > FS * 2) wave.current = bandpass(resample(recent, FS).map((x) => -x), FS, 0.7, 3.5);
 
-      const good = h.tone === "ok" && sqiRef.current >= MIN_SQI;
-      if (good) goodMs.current += dt;
-      else if (h.tone === "ok") h = { text: "Signal kuchsizlanmoqda — qimirlamay turing", tone: "warn" };
+      // Time runs whenever the finger covers the lens; weak signal only slows it down.
+      const onLens = coverage >= COVER;
+      const good = onLens && sqiRef.current >= MIN_SQI;
+      if (onLens) goodMs.current += good ? dt : dt * 0.5;
+      if (onLens && !good && h.tone === "ok" && red.current.length > FS * 6) h = { text: "Signal kuchsiz — qimirlamay, yengil bosib turing", tone: "warn" };
       setPaused(!good);
       setHint(h);
       const sec = Math.min(DURATION, goodMs.current / 1000);
@@ -121,7 +134,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const start = async () => {
     try {
       red.current = []; green.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0;
-      setBpm(null); setSqi(0); setElapsed(0);
+      setBpm(null); setSqi(0); setElapsed(0); setResult(null); coverAvg.current = 0;
       onStatus?.("start");
       const stream = await openCamera("environment");
       streamRef.current = stream;
@@ -148,8 +161,19 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
 
   const remaining = Math.ceil(DURATION - elapsed);
 
+  if (result && !active) return <VitalResultScreen {...result} onRetry={() => setResult(null)} />;
+
   return (
     <div className="space-y-4">
+      {active && (
+        <div className={cn("relative rounded-2xl bg-gradient-to-br p-6 text-center text-white transition-colors", cover >= COVER * 100 ? "from-red-600 to-rose-600" : "from-zinc-700 to-zinc-800")}>
+          <span className="absolute left-3 top-3 flex items-center gap-1 text-sm"><span className={cn("h-2 w-2 rounded-full", cover >= COVER * 100 ? "bg-green-400" : "bg-amber-400")} />{cover >= COVER * 100 ? "Barmoq ✓" : "Barmoq yo‘q"}</span>
+          <span className="absolute right-3 top-3 rounded-full bg-black/30 px-2 py-0.5 text-sm tabular-nums">{remaining}s</span>
+          <span className="mx-auto inline-block rounded-full bg-black/25 px-3 py-1 text-sm">Aniqlik: {Math.min(100, Math.round(sqi * 1.6))}%</span>
+          <Heart className="mx-auto mt-2 h-14 w-14 animate-pulse opacity-80" fill="currentColor" />
+          <p className="text-5xl font-bold tabular-nums">{bpm ?? "—"} <span className="text-base font-normal">bpm</span></p>
+        </div>
+      )}
       <video ref={videoRef} playsInline muted className="hidden" />
       <canvas ref={canvasRef} className="hidden" />
 
@@ -178,9 +202,9 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
 
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Signal sifati (SQI)</span><span className="tabular-nums">{sqi}%</span>
+          <span>Signal kuchi</span><span className="tabular-nums">{cover < 40 ? "Past" : cover < 75 ? "O‘rta" : "Yaxshi"} ({cover}%)</span>
         </div>
-        <Progress value={sqi} className="h-2" />
+        <Progress value={cover} className="h-2" />
         <Progress value={(elapsed / DURATION) * 100} className="h-1 opacity-60" aria-label="O‘lchov jarayoni" />
       </div>
 
