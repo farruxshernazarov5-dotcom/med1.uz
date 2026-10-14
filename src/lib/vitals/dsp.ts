@@ -38,15 +38,43 @@ function run(x: number[], f: Biquad): number[] {
   return y;
 }
 
-/** Zero-phase 4th-order Butterworth-style bandpass (forward + backward). */
+/** Removes a straight-line trend (slow torch/exposure drift). */
+export function detrend(x: number[]): number[] {
+  const n = x.length;
+  if (n < 3) return x.slice();
+  const mx = (n - 1) / 2, my = x.reduce((a, b) => a + b, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) { num += (i - mx) * (x[i] - my); den += (i - mx) ** 2; }
+  const k = den ? num / den : 0;
+  return x.map((v, i) => v - my - k * (i - mx));
+}
+
+/** Light compensation: divides by a moving DC level so torch/ambient changes cancel (AC/DC). */
+export function normalizeDC(x: number[], fs: number, winSec = 1.5): number[] {
+  const w = Math.max(3, Math.round(winSec * fs)), half = Math.floor(w / 2);
+  const pre = [0];
+  for (const v of x) pre.push(pre[pre.length - 1] + v);
+  return x.map((v, i) => {
+    const a = Math.max(0, i - half), b = Math.min(x.length, i + half + 1);
+    const dc = (pre[b] - pre[a]) / (b - a);
+    return dc ? v / dc - 1 : 0;
+  });
+}
+
+// 4th-order Butterworth = two cascaded biquads with these Q values.
+const BW4_Q = [0.5412, 1.3066];
+
+/** Zero-phase bandpass: detrend, reflect padding, 4th-order Butterworth HP+LP, forward + backward (8th effective). */
 export function bandpass(x: number[], fs: number, lo: number, hi: number): number[] {
   if (x.length < 8) return x.slice();
-  const mean = x.reduce((a, b) => a + b, 0) / x.length;
-  let y = x.map((v) => v - mean);
-  const hp = design("hp", lo, fs), lp = design("lp", hi, fs);
-  y = run(run(y, hp), lp);
-  y = run(run(y.reverse(), hp), lp).reverse();
-  return y;
+  const d = detrend(x);
+  const pad = Math.min(d.length - 1, Math.round(fs * 2));
+  const padded = [...d.slice(1, pad + 1).reverse().map((v) => 2 * d[0] - v), ...d, ...d.slice(-pad - 1, -1).reverse().map((v) => 2 * d[d.length - 1] - v)];
+  const stages = BW4_Q.flatMap((q) => [design("hp", lo, fs, q), design("lp", hi, fs, q)]);
+  const pass = (y: number[]) => stages.reduce((acc, f) => run(acc, f), y);
+  let y = pass(padded);
+  y = pass(y.reverse()).reverse();
+  return y.slice(pad, pad + d.length);
 }
 
 export const std = (x: number[]) => {
