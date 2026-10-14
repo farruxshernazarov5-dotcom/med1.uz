@@ -11,9 +11,9 @@ export function pulseZone(bpm: number) {
   return { label: "Yuqori puls (taxikardiya)", cls: "from-red-600 to-rose-500", advice: "Tinch holatda takrorlansa, shifokorga murojaat qiling. Ko‘krak og‘rig‘i bo‘lsa — 103." };
 }
 
-type Props = { bpm: number; signal: number; accuracy: number; resp?: number | null; stress?: string | null; onRetry: () => void };
+type Props = { bpm: number; signal: number; accuracy: number; resp?: number | null; stress?: string | null; spo2?: number | null; onRetry: () => void };
 
-const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, onRetry }: Props) => {
+const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, spo2, onRetry }: Props) => {
   const z = pulseZone(bpm);
   return (
     <div className="space-y-3 animate-fade-in">
@@ -26,6 +26,7 @@ const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, onRetry }: Pro
           <span>Signal: {signal}%</span>
           <span>Aniqlik: {accuracy}%</span>
           {resp ? <span className="inline-flex items-center gap-1"><Wind className="h-4 w-4" />{resp}/daq</span> : null}
+          {spo2 ? <span>SpO₂: {spo2}% (taxminiy)</span> : null}
           {stress ? <span className="inline-flex items-center gap-1"><Activity className="h-4 w-4" />Stress: {stress}</span> : null}
         </div>
       </div>

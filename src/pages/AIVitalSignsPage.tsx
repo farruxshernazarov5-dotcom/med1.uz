@@ -79,7 +79,7 @@ const AIVitalSignsPage = () => {
   }, [voice]);
 
   const handleCameraStatus = useCallback((key: string) => {
-    if (key === "measuring" || key === "start" || key === "finger_place" || key === "signal_weak" || key === "camera_error") voice.speakKey(key as any);
+    voice.speakKey(key);
   }, [voice]);
 
   useEffect(() => {
