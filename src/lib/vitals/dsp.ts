@@ -139,7 +139,8 @@ export type PulseAnalysis = {
 export function analyzePulse(raw: number[], fs: number, invert = true): PulseAnalysis | null {
   if (raw.length < fs * 6) return null;
   // Blood volume rises → absorbance rises → brightness falls, so invert for finger PPG.
-  const src = invert ? raw.map((v) => -v) : raw;
+  // Finger: light-compensate (AC/DC) so torch/exposure drift doesn't masquerade as pulse.
+  const src = invert ? normalizeDC(raw, fs).map((v) => -v) : raw;
   const filtered = clipArtifacts(bandpass(src, fs, 0.7, 3.5));
   const spec = spectralPeak(filtered, fs, 0.7, 3.5);
   const peaks = findPeaks(filtered, fs);
