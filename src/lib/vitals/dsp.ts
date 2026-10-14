@@ -199,15 +199,31 @@ export function posSignal(rgb: { r: number; g: number; b: number }[], fs: number
   return h;
 }
 
-/** Camera SpO2 estimate (ratio-of-ratios, red vs blue under the torch). Approximate, not a medical oximeter. */
+/**
+ * Camera SpO2 estimate (ratio-of-ratios, red vs blue under the torch). Approximate, not a medical oximeter.
+ * Uses 4 s windows; each window is light-compensated (AC/DC) and kept only when the red and blue
+ * pulses agree (correlation), then the median ratio is mapped to SpO2.
+ */
 export function estimateSpo2(red: number[], blue: number[], fs: number): number | null {
   if (red.length < fs * 8 || blue.length !== red.length) return null;
-  const dc = (x: number[]) => x.reduce((a, b) => a + b, 0) / x.length;
-  const dr = dc(red), db = dc(blue);
-  if (dr < 5 || db < 1) return null;
-  const ar = std(bandpass(red, fs, 0.7, 3.5)), ab = std(bandpass(blue, fs, 0.7, 3.5));
-  if (!ar || !ab) return null;
-  const R = (ar / dr) / (ab / db);
-  if (!isFinite(R)) return null;
+  const mean = (x: number[]) => x.reduce((a, b) => a + b, 0) / x.length;
+  if (mean(red) < 5 || mean(blue) < 1) return null;
+  const ar = bandpass(normalizeDC(red, fs), fs, 0.7, 3.5);
+  const ab = bandpass(normalizeDC(blue, fs), fs, 0.7, 3.5);
+  const win = Math.round(fs * 4), step = Math.round(fs);
+  const ratios: number[] = [];
+  for (let s = 0; s + win <= ar.length; s += step) {
+    const r = ar.slice(s, s + win), b = ab.slice(s, s + win);
+    const sr = std(r), sb = std(b);
+    if (!sr || !sb) continue;
+    let c = 0;
+    for (let i = 0; i < win; i++) c += r[i] * b[i];
+    const corr = c / (win * sr * sb);
+    if (Math.abs(corr) < 0.6) continue; // motion or ambient light: channels disagree
+    ratios.push(sr / sb);
+  }
+  if (ratios.length < 3) return null;
+  const R = median(ratios);
+  if (!isFinite(R) || R <= 0) return null;
   return Math.round(Math.max(88, Math.min(100, 104 - 6 * R)));
 }
