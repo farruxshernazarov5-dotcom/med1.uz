@@ -38,15 +38,43 @@ function run(x: number[], f: Biquad): number[] {
   return y;
 }
 
-/** Zero-phase 4th-order Butterworth-style bandpass (forward + backward). */
+/** Removes a straight-line trend (slow torch/exposure drift). */
+export function detrend(x: number[]): number[] {
+  const n = x.length;
+  if (n < 3) return x.slice();
+  const mx = (n - 1) / 2, my = x.reduce((a, b) => a + b, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) { num += (i - mx) * (x[i] - my); den += (i - mx) ** 2; }
+  const k = den ? num / den : 0;
+  return x.map((v, i) => v - my - k * (i - mx));
+}
+
+/** Light compensation: divides by a moving DC level so torch/ambient changes cancel (AC/DC). */
+export function normalizeDC(x: number[], fs: number, winSec = 1.5): number[] {
+  const w = Math.max(3, Math.round(winSec * fs)), half = Math.floor(w / 2);
+  const pre = [0];
+  for (const v of x) pre.push(pre[pre.length - 1] + v);
+  return x.map((v, i) => {
+    const a = Math.max(0, i - half), b = Math.min(x.length, i + half + 1);
+    const dc = (pre[b] - pre[a]) / (b - a);
+    return dc ? v / dc - 1 : 0;
+  });
+}
+
+// 4th-order Butterworth = two cascaded biquads with these Q values.
+const BW4_Q = [0.5412, 1.3066];
+
+/** Zero-phase bandpass: detrend, reflect padding, 4th-order Butterworth HP+LP, forward + backward (8th effective). */
 export function bandpass(x: number[], fs: number, lo: number, hi: number): number[] {
   if (x.length < 8) return x.slice();
-  const mean = x.reduce((a, b) => a + b, 0) / x.length;
-  let y = x.map((v) => v - mean);
-  const hp = design("hp", lo, fs), lp = design("lp", hi, fs);
-  y = run(run(y, hp), lp);
-  y = run(run(y.reverse(), hp), lp).reverse();
-  return y;
+  const d = detrend(x);
+  const pad = Math.min(d.length - 1, Math.round(fs * 2));
+  const padded = [...d.slice(1, pad + 1).reverse().map((v) => 2 * d[0] - v), ...d, ...d.slice(-pad - 1, -1).reverse().map((v) => 2 * d[d.length - 1] - v)];
+  const stages = BW4_Q.flatMap((q) => [design("hp", lo, fs, q), design("lp", hi, fs, q)]);
+  const pass = (y: number[]) => stages.reduce((acc, f) => run(acc, f), y);
+  let y = pass(padded);
+  y = pass(y.reverse()).reverse();
+  return y.slice(pad, pad + d.length);
 }
 
 export const std = (x: number[]) => {
@@ -111,7 +139,8 @@ export type PulseAnalysis = {
 export function analyzePulse(raw: number[], fs: number, invert = true): PulseAnalysis | null {
   if (raw.length < fs * 6) return null;
   // Blood volume rises → absorbance rises → brightness falls, so invert for finger PPG.
-  const src = invert ? raw.map((v) => -v) : raw;
+  // Finger: light-compensate (AC/DC) so torch/exposure drift doesn't masquerade as pulse.
+  const src = invert ? normalizeDC(raw, fs).map((v) => -v) : raw;
   const filtered = clipArtifacts(bandpass(src, fs, 0.7, 3.5));
   const spec = spectralPeak(filtered, fs, 0.7, 3.5);
   const peaks = findPeaks(filtered, fs);
@@ -171,15 +200,31 @@ export function posSignal(rgb: { r: number; g: number; b: number }[], fs: number
   return h;
 }
 
-/** Camera SpO2 estimate (ratio-of-ratios, red vs blue under the torch). Approximate, not a medical oximeter. */
+/**
+ * Camera SpO2 estimate (ratio-of-ratios, red vs blue under the torch). Approximate, not a medical oximeter.
+ * Uses 4 s windows; each window is light-compensated (AC/DC) and kept only when the red and blue
+ * pulses agree (correlation), then the median ratio is mapped to SpO2.
+ */
 export function estimateSpo2(red: number[], blue: number[], fs: number): number | null {
   if (red.length < fs * 8 || blue.length !== red.length) return null;
-  const dc = (x: number[]) => x.reduce((a, b) => a + b, 0) / x.length;
-  const dr = dc(red), db = dc(blue);
-  if (dr < 5 || db < 1) return null;
-  const ar = std(bandpass(red, fs, 0.7, 3.5)), ab = std(bandpass(blue, fs, 0.7, 3.5));
-  if (!ar || !ab) return null;
-  const R = (ar / dr) / (ab / db);
-  if (!isFinite(R)) return null;
+  const mean = (x: number[]) => x.reduce((a, b) => a + b, 0) / x.length;
+  if (mean(red) < 5 || mean(blue) < 1) return null;
+  const ar = bandpass(normalizeDC(red, fs), fs, 0.7, 3.5);
+  const ab = bandpass(normalizeDC(blue, fs), fs, 0.7, 3.5);
+  const win = Math.round(fs * 4), step = Math.round(fs);
+  const ratios: number[] = [];
+  for (let s = 0; s + win <= ar.length; s += step) {
+    const r = ar.slice(s, s + win), b = ab.slice(s, s + win);
+    const sr = std(r), sb = std(b);
+    if (!sr || !sb) continue;
+    let c = 0;
+    for (let i = 0; i < win; i++) c += r[i] * b[i];
+    const corr = c / (win * sr * sb);
+    if (Math.abs(corr) < 0.6) continue; // motion or ambient light: channels disagree
+    ratios.push(sr / sb);
+  }
+  if (ratios.length < 3) return null;
+  const R = median(ratios);
+  if (!isFinite(R) || R <= 0) return null;
   return Math.round(Math.max(88, Math.min(100, 104 - 6 * R)));
 }

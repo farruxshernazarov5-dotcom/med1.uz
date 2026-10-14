@@ -23,3 +23,4 @@
 - Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.
 - `src/components/mobile/` has its own `AGENTS.md`; read it before changing mobile UI.
 - Vital AI signal processing lives in `src/lib/vitals/` (pure DSP in `dsp.ts`, camera 3A/torch in `camera.ts`, BLE in `wearables.ts`, Health Connect/Apple Health import via `@capgo/capacitor-health` in `healthConnect.ts` (new-since-last-import rows into `health_records`, only an on/off flag locally)); sensors only report results, so finger, face and watch sources share one analysis and AI path.
+- Vital AI PDF reports are registered in `vital_reports` (code + SHA-256 only) and verified publicly via the `verify_vital_report` RPC at `/verify/vital/:code`, so QR checks never expose patient health data.

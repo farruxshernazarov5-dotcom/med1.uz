@@ -26,6 +26,7 @@ const NewsDetailPage = lazy(() => import("./pages/NewsDetailPage"));
 const UniversityPublicationsPage = lazy(() => import("./pages/UniversityPublicationsPage"));
 const KamarovaPublicationsPage = lazy(() => import("./pages/KamarovaPublicationsPage"));
 const PublicationVerificationPage = lazy(() => import("./pages/PublicationVerificationPage"));
+const VitalReportVerifyPage = lazy(() => import("./pages/VitalReportVerifyPage"));
 const MedTechPage = lazy(() => import("./pages/MedTechPage"));
 const MedTechDetailPage = lazy(() => import("./pages/MedTechDetailPage"));
 const NewsPage = lazy(() => import("./pages/NewsPage"));
@@ -258,6 +259,7 @@ const App = () => (
                 <Route path="/verify/report/:reportId" element={<ReportVerificationPage />} />
                 <Route path="/verify/contract/:hashId" element={<ContractVerifyPage />} />
                 <Route path="/verify/publication/:certificateId" element={<PublicationVerificationPage />} />
+                <Route path="/verify/vital/:code" element={<VitalReportVerifyPage />} />
                 <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
                 <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
                 <Route path="/ai-baby-care" element={<AIBabyCarePage />} />

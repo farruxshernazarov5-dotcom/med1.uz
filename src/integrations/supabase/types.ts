@@ -18040,6 +18040,30 @@ export type Database = {
           },
         ]
       }
+      vital_reports: {
+        Row: {
+          code: string
+          content_hash: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          content_hash: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          content_hash?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       referral_leaderboard: {
@@ -18777,6 +18801,14 @@ export type Database = {
           scanned_count: number
           status: string
           verification_code: string
+        }[]
+      }
+      verify_vital_report: {
+        Args: { _code: string }
+        Returns: {
+          code: string
+          content_hash: string
+          created_at: string
         }[]
       }
     }
