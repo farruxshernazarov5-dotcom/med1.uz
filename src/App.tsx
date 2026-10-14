@@ -147,6 +147,7 @@ import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
 import SubdomainRouter from "./components/SubdomainRouter";
 import MobileAppShell from "./components/mobile/MobileAppShell";
+import AIServiceHelpButton from "./components/AIServiceHelpButton";
 import { BusinessEdgeTab } from "./components/mobile/BusinessEdgeTab";
 
 
@@ -174,6 +175,7 @@ const App = () => (
           <ReferralCapture />
           <MobileAppShell />
           <BusinessEdgeTab />
+          <AIServiceHelpButton />
 
           <YandexAdsManager />
           <FloatingAISearch />
