@@ -64,7 +64,8 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
       setAutoSync(true); setAuto(true);
       const l = r.latest;
       setManual({ bpm: String(l.bpm ?? ""), spo2: String(l.spo2 ?? ""), sleep: String(l.sleepHours ?? ""), steps: String(l.steps ?? "") });
-      setMsg(`${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.`);
+      setMsg(`${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.${l.bpm ? " Natija Med AI tahliliga uzatildi." : ""}`);
+      if (l.bpm) onResult({ source: "watch", bpm: l.bpm, confidence: 95, spo2: l.spo2 ?? null, sleepHours: l.sleepHours ?? null, steps: l.steps ?? null, device: platform });
     } catch { setMsg("Ma’lumotni o‘qib bo‘lmadi. Internet va ruxsatlarni tekshiring."); }
     finally { setSyncing(false); }
   };
@@ -112,6 +113,36 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
         </div>
         <Button size="sm" onClick={saveManual}>Qo‘llash</Button>
       </div>
+
+      {(() => {
+        const b = +manual.bpm, o = +manual.spo2, sl = +manual.sleep, st = +manual.steps;
+        if (!b && !o && !sl && !st) return null;
+        let score = 100;
+        if (b) score -= b < 50 || b > 100 ? 25 : b > 85 ? 10 : 0;
+        if (o) score -= o < 92 ? 30 : o < 95 ? 12 : 0;
+        if (sl) score -= sl < 5 ? 25 : sl < 7 ? 10 : 0;
+        if (st) score -= st < 3000 ? 15 : st < 7000 ? 5 : 0;
+        score = Math.max(0, score);
+        const tiles: [string, string, boolean | null][] = [
+          ["Puls", b ? `${b} bpm` : "—", b ? b >= 50 && b <= 100 : null],
+          ["SpO2", o ? `${o}%` : "—", o ? o >= 95 : null],
+          ["Uyqu", sl ? `${sl} soat` : "—", sl ? sl >= 7 : null],
+          ["Qadam", st ? st.toLocaleString() : "—", st ? st >= 7000 : null],
+        ];
+        return (
+          <div className="rounded-2xl border border-border p-4 space-y-3">
+            <div className="flex items-center justify-between"><h4 className="font-semibold text-foreground">Kunlik tayyorlik bahosi</h4><span className={`text-2xl font-bold ${score >= 75 ? "text-primary" : score >= 50 ? "text-foreground" : "text-destructive"}`}>{score}/100</span></div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {tiles.map(([k, v, ok]) => (
+                <div key={k} className={`rounded-xl p-2 text-center border ${ok === null ? "border-border bg-muted/50" : ok ? "border-primary/30 bg-primary/5" : "border-destructive/30 bg-destructive/5"}`}>
+                  <p className="text-[10px] text-muted-foreground">{k}</p><p className="text-sm font-bold text-foreground">{v}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground">Baho puls, SpO2, uyqu va faollikdan taxminan hisoblanadi. Bu tashxis emas.</p>
+          </div>
+        );
+      })()}
 
       {msg && <p className="flex items-start gap-2 rounded-xl bg-muted p-3 text-xs text-foreground"><Info className="w-4 h-4 shrink-0 text-primary" />{msg}</p>}
     </div>
