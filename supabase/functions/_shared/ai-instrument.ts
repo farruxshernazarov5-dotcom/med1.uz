@@ -85,7 +85,7 @@ export async function instrumentJson(
     costUsd: computeCostUsd(promptT, completionT),
   });
   const c = data?.choices?.[0]?.message?.content;
-  await saveAssistantHistory(usageId, typeof c === "string" ? c : (fallbackContent ?? (c ? JSON.stringify(c) : "")));
+  await saveAssistantHistory(usageId, fallbackContent ?? (typeof c === "string" ? c : c ? JSON.stringify(c) : ""));
 }
 
 /** Record an error/blocked result. */
