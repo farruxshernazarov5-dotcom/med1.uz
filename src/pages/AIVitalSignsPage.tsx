@@ -25,7 +25,20 @@ import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
 import { logAiChat } from "@/lib/aiChatHistory";
 import { useCredits } from "@/hooks/useCredits";
-import { downloadVitalReport } from "@/lib/vitals/report";
+import { downloadVitalReport, type ReportMetric } from "@/lib/vitals/report";
+
+function vitalMetrics({ pulse, systolic, diastolic, spo2, reading }: { pulse: string; systolic: string; diastolic: string; spo2: string; reading: VitalReading | null }): ReportMetric[] {
+  const m: ReportMetric[] = [];
+  const p = Number(pulse), s = Number(systolic), d = Number(diastolic), o = Number(spo2);
+  if (p) m.push({ label: "Puls", value: `${p} bpm`, norm: "60-100 bpm", ok: p >= 60 && p <= 100 });
+  if (s && d) m.push({ label: "Qon bosimi", value: `${s}/${d} mmHg`, norm: "90-129 / 60-84", ok: s >= 90 && s < 130 && d >= 60 && d < 85 });
+  if (o) m.push({ label: "SpO2 (taxminiy)", value: `${o}%`, norm: "95-100%", ok: o >= 95 });
+  if (reading?.rmssd) m.push({ label: "HRV (RMSSD)", value: `${reading.rmssd} ms`, norm: "20-100 ms", ok: reading.rmssd >= 20 });
+  if (reading?.respRate) m.push({ label: "Nafas soni", value: `${reading.respRate}/daq`, norm: "12-20/daq", ok: reading.respRate >= 12 && reading.respRate <= 20 });
+  if (reading?.stress) m.push({ label: "Stress", value: reading.stress, norm: "past", ok: reading.stress === "past" });
+  if (reading) m.push({ label: "Manba / ishonch", value: `${reading.source} / ${reading.confidence}%`, norm: ">= 60%", ok: null });
+  return m;
+}
 import { Download } from "lucide-react";
 
 /* ── helpers ── */
@@ -151,7 +164,6 @@ const AIVitalSignsPage = () => {
           setLastSummary(lines);
           voice.speak(acc.replace(/[#*_>|`-]/g, " ").slice(0, 600));
           void logAiChat({ serviceId: "ai-vital-signs", role: "user", content: lines });
-          void logAiChat({ serviceId: "ai-vital-signs", role: "assistant", content: acc, metadata: { source: r?.source ?? "manual" } });
         }
         const spent = Number(res.headers.get("x-med1-credits") ?? 0);
         if (spent > 0) toast({ title: `${spent} Med Coin yechildi`, description: "Xulosa Qabullar → AI xulosalari bo‘limiga saqlandi." });
@@ -385,7 +397,7 @@ const AIVitalSignsPage = () => {
             </div>
             <div className="prose prose-sm dark:prose-invert max-w-none text-sm text-foreground/90"><ReactMarkdown>{aiResult}</ReactMarkdown></div>
             {!aiLoading && (
-              <Button variant="outline" className="mt-4 w-full sm:w-auto" onClick={() => void downloadVitalReport({ summary: lastSummary, conclusion: aiResult, name: user?.email ?? "" })}>
+              <Button variant="outline" className="mt-4 w-full sm:w-auto" onClick={() => void downloadVitalReport({ summary: lastSummary, conclusion: aiResult, name: user?.email ?? "", metrics: vitalMetrics({ pulse, systolic, diastolic, spo2, reading }) })}>
                 <Download className="mr-2 h-4 w-4" /> Xulosani yuklab olish (PDF)
               </Button>
             )}

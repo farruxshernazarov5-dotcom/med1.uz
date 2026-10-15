@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Fingerprint, StopCircle, Heart, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Fingerprint, StopCircle, SwitchCamera, Heart, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LiveWaveform from "./LiveWaveform";
 import VitalResultScreen from "./VitalResultScreen";
-import { openCamera, lock3A, setTorch, stopStream } from "@/lib/vitals/camera";
+import { openCamera, lock3A, setTorch, stopStream, rearCameras } from "@/lib/vitals/camera";
 import { estimateSpo2, analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
 import type { VitalReading } from "./types";
 
@@ -41,6 +41,10 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const [paused, setPaused] = useState(false);
   const [cover, setCover] = useState(0);
   const coverAvg = useRef(0);
+  const [lenses, setLenses] = useState<MediaDeviceInfo[]>([]);
+  const [lens, setLens] = useState<string | undefined>(() => localStorage.getItem("med1_ppg_lens") ?? undefined);
+  const [torchOk, setTorchOk] = useState(true);
+  const noFingerSince = useRef(0);
   const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null; spo2?: number | null } | null>(null);
 
   const stop = useCallback(() => {
@@ -91,7 +95,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       for (let i = 0; i < px.length; i += 4) {
         r += px[i]; g += px[i + 1]; b += px[i + 2];
         const p = i / 4, x = p % 40, y = Math.floor(p / 40);
-        if (px[i] > 70 && px[i] > px[i + 1] * 1.3 && px[i] > px[i + 2] * 1.3) { covered++; qc[(y < 15 ? 0 : 2) + (x < 20 ? 0 : 1)]++; }
+        if (px[i] > 45 && px[i] > px[i + 1] * 1.25 && px[i] > px[i + 2] * 1.2) { covered++; qc[(y < 15 ? 0 : 2) + (x < 20 ? 0 : 1)]++; }
         if (px[i] >= 250 && px[i + 1] >= 200) clipped++;
       }
       r /= n; g /= n; b /= n;
@@ -104,7 +108,13 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       lastT.current = now;
 
       let h: Hint;
-      if (coverage < COVER) h = { text: "Barmog‘ingizni kamera va fonarga to‘liq qo‘ying", tone: "bad" };
+      if (coverage < COVER) {
+        if (!noFingerSince.current) noFingerSince.current = now;
+        h = now - noFingerSince.current > 7000
+          ? { text: "Signal yo‘q — fonar yonidagi kamerani tanlang (Kamerani almashtirish) yoki barmoqni ikkalasiga birga yoping", tone: "bad" }
+          : { text: "Barmog‘ingizni kamera va fonarga to‘liq qo‘ying", tone: "bad" };
+      } else noFingerSince.current = 0;
+      if (coverage < COVER) { /* hint set above */ }
       else if (clipped / n > 0.35 || g < 2) h = { text: "Qattiq bosmang — barmoqni yengil tegizing", tone: "warn" };
       else h = { text: "Qimirlamang, o‘lchanmoqda…", tone: "ok" };
 
@@ -133,7 +143,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       setPaused(!good);
       setHint(h);
       // Spoken guidance: say each new instruction once.
-      const key = h.text.startsWith("Barmog") ? "finger_place" : h.text.startsWith("Qattiq") ? "press_light" : h.text.startsWith("Signal") ? "signal_weak" : "measuring";
+      const key = h.text.startsWith("Signal yo") ? "lens_switch" : h.text.startsWith("Barmog") ? "finger_place" : h.text.startsWith("Qattiq") ? "press_light" : h.text.startsWith("Signal") ? "signal_weak" : "measuring";
       if (key !== lastSpoken.current) { lastSpoken.current = key; onStatus?.(key); }
       const sec = Math.min(DURATION, goodMs.current / 1000);
       setElapsed(sec);
@@ -142,17 +152,19 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     requestAnimationFrame(loop);
   }, [finish, onStatus]);
 
-  const start = async () => {
+  const start = async (deviceId = lens) => {
     try {
+      stopStream(streamRef.current); window.clearInterval(torchTimer.current); noFingerSince.current = 0;
       red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0;
       setBpm(null); setSqi(0); setElapsed(0); setResult(null); coverAvg.current = 0;
       onStatus?.("start");
-      const stream = await openCamera("environment");
+      const stream = await openCamera("environment", 320, 240, deviceId).catch(() => openCamera("environment"));
       streamRef.current = stream;
       const v = videoRef.current!;
       v.srcObject = stream; await v.play();
       const track = stream.getVideoTracks()[0];
-      await setTorch(track, true);
+      setTorchOk(await setTorch(track, true));
+      rearCameras().then(setLenses).catch(() => {});
       setHint({ text: "Barmog‘ingizni orqa kameraga qo‘ying", tone: "warn" });
       onStatus?.("finger_place");
       // Let auto-exposure settle on the finger, then freeze it so brightness changes = blood volume only.
@@ -168,6 +180,15 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       setHint({ text: "Kamera ruxsati berilmadi. Sozlamalardan kameraga ruxsat bering.", tone: "bad" });
       onStatus?.("camera_error");
     }
+  };
+
+  const switchLens = () => {
+    if (lenses.length < 2) return;
+    const cur = streamRef.current?.getVideoTracks()[0]?.getSettings?.().deviceId;
+    const i = lenses.findIndex((d) => d.deviceId === cur);
+    const next = lenses[(i + 1) % lenses.length].deviceId;
+    setLens(next); localStorage.setItem("med1_ppg_lens", next);
+    void start(next);
   };
 
   const remaining = Math.ceil(DURATION - elapsed);
@@ -205,7 +226,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
         {active ? (
           <Button variant="destructive" onClick={stop}><StopCircle className="w-4 h-4 mr-1" /> To‘xtatish</Button>
         ) : (
-          <Button onClick={start}><Fingerprint className="w-4 h-4 mr-1" /> Boshlash</Button>
+          <Button onClick={() => void start()}><Fingerprint className="w-4 h-4 mr-1" /> Boshlash</Button>
         )}
       </div>
 
@@ -226,6 +247,13 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
         <span>{hint.text}{active && paused ? " (hisoblash to‘xtatildi)" : ""}</span>
       </div>
 
+      {active && (
+        <div className="flex flex-wrap items-center gap-2">
+          {lenses.length > 1 && <Button size="sm" variant="outline" onClick={switchLens}><SwitchCamera className="mr-1 h-4 w-4" /> Kamerani almashtirish ({lenses.length})</Button>}
+          {!torchOk && <span className="text-xs text-muted-foreground">Fonar yoqilmadi — yorug‘ joyda yoki chiroq oldida o‘lchang.</span>}
+        </div>
+      )}
+      {!active && <p className="text-xs text-muted-foreground">Ko‘p kamerali telefonlarda (masalan Redmi Note 14) barmoq bilan fonar va unga eng yaqin kamerani birga yoping. Signal kelmasa “Kamerani almashtirish” tugmasini bosing — tanlangan kamera eslab qolinadi.</p>}
       {active && locked.length > 0 && (
         <p className="text-[11px] text-muted-foreground flex items-center gap-1"><Lock className="w-3 h-3" /> Qulflandi: {locked.join(", ")}</p>
       )}

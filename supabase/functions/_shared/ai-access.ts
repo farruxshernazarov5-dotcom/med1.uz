@@ -27,6 +27,20 @@ export function computeCostUsd(promptTokens: number, completionTokens: number): 
   return Number((p + c).toFixed(6));
 }
 
+/** Best-effort: saves an assistant answer into the patient's AI history (Qabullar → AI xulosalari). */
+export async function saveAssistantHistory(usageId: string | null | undefined, content: string): Promise<void> {
+  if (!usageId || !content?.trim()) return;
+  try {
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: u } = await admin.from("ai_usage").select("user_id, service_id, model").eq("id", usageId).maybeSingle();
+    if (!u?.user_id) return;
+    await admin.from("ai_chat_history").insert({
+      user_id: u.user_id, service_id: u.service_id, role: "assistant",
+      content: content.slice(0, 20000), model: u.model ?? null, metadata: { usage_id: usageId, source: "server" },
+    });
+  } catch (e) { console.warn("saveAssistantHistory failed", e); }
+}
+
 /** Best-effort: update the ai_usage row created by deduct_ai_credits with final result fields. */
 export async function recordAiUsageResult(usageId: string | null | undefined, params: {
   status?: "success" | "error" | "timeout" | "rate_limited" | "blocked";

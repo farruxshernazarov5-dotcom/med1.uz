@@ -16,6 +16,7 @@ const AI_FUNCTIONS = new Set([
   "ai-psixolog",
   "ai-farmatsevt",
   "ai-fitness",
+  "ai-food-scan",
   "ai-vital-signs",
   "ai-smart-search",
   "smart-match",

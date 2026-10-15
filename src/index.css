@@ -750,3 +750,5 @@
 .profile-story-photo { opacity: 0; transform: scale(1.025); transition: opacity 1s ease, transform 6s ease; }
 .profile-story-photo.is-active { opacity: 1; transform: scale(1); }
 @media (prefers-reduced-motion: reduce) { .profile-story-photo { transition: none; transform: none; } }
+
+@keyframes scan { 0%,100% { top: 0 } 50% { top: calc(100% - 4px) } }

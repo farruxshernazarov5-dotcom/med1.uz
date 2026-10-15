@@ -37,6 +37,8 @@ project_id = "wiqcfyecdmararxqdmfk"
     verify_jwt = false
   [functions.ai-farmatsevt]
     verify_jwt = false
+  [functions.ai-food-scan]
+    verify_jwt = false
   [functions.ai-fitness]
     verify_jwt = false
   [functions.telegram-notify]

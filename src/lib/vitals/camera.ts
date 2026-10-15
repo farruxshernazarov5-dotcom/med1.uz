@@ -1,10 +1,19 @@
 // Camera helpers for PPG: open stream, keep torch on, lock 3A (exposure/focus/white balance).
 
-export async function openCamera(facing: "environment" | "user", width = 320, height = 240) {
+export async function openCamera(facing: "environment" | "user", width = 320, height = 240, deviceId?: string) {
   return navigator.mediaDevices.getUserMedia({
     audio: false,
-    video: { facingMode: { ideal: facing }, width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: 30, min: 20 } },
+    video: deviceId
+      ? { deviceId: { exact: deviceId }, width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: 30 } }
+      : { facingMode: { ideal: facing }, width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: 30, min: 20 } },
   });
+}
+
+/** Rear lenses (multi-camera phones put the flash next to only one of them). */
+export async function rearCameras() {
+  const all = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "videoinput");
+  const rear = all.filter((d) => !/front|user|old|selfie/i.test(d.label));
+  return rear.length ? rear : all;
 }
 
 async function tryApply(track: MediaStreamTrack, c: Record<string, unknown>) {

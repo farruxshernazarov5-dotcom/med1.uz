@@ -39,6 +39,14 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
   const sqiRef = useRef(0);
   const running = useRef(false);
   const frame = useRef(0);
+  const spoken = useRef({ key: "", at: 0 });
+  const weakSince = useRef(0);
+  const say = (key: string) => {
+    const now = performance.now();
+    if (key === spoken.current.key && now - spoken.current.at < 9000) return;
+    if (now - spoken.current.at < 3500) return;
+    spoken.current = { key, at: now }; onStatus?.(key);
+  };
   const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; resp?: number | null; stress?: string | null } | null>(null);
 
   const [active, setActive] = useState(false);
@@ -108,21 +116,43 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       const now = performance.now();
       const dt = lastT.current ? now - lastT.current : 0; lastT.current = now;
 
-      // Overlay (mirrored like a selfie).
+      // Futuristic scanner overlay (mirrored like a selfie): grid, sweeping beam, corner brackets, ROI boxes.
       o.width = o.clientWidth; o.height = o.clientHeight;
       const ox = o.getContext("2d")!; const sx = o.width / W, sy = o.height / H;
-      const accent = `hsl(${getComputedStyle(o).getPropertyValue("--primary").trim()})`;
-      ox.strokeStyle = accent; ox.lineWidth = 2;
+      const hsl = getComputedStyle(o).getPropertyValue("--primary").trim();
+      const col = (a: number) => `hsl(${hsl} / ${a})`;
+      const fx = o.width - (f.x + f.w) * sx, fy = f.y * sy, fw = f.w * sx, fh = f.h * sy;
+      ox.strokeStyle = col(0.18); ox.lineWidth = 1;
+      for (let gx = fx; gx <= fx + fw; gx += 14) { ox.beginPath(); ox.moveTo(gx, fy); ox.lineTo(gx, fy + fh); ox.stroke(); }
+      for (let gy = fy; gy <= fy + fh; gy += 14) { ox.beginPath(); ox.moveTo(fx, gy); ox.lineTo(fx + fw, gy); ox.stroke(); }
+      const ph = (now / 1600) % 1, by = fy + fh * (ph < 0.5 ? ph * 2 : 2 - ph * 2);
+      const grad = ox.createLinearGradient(0, by - 26, 0, by + 4);
+      grad.addColorStop(0, col(0)); grad.addColorStop(1, col(0.55));
+      ox.fillStyle = grad; ox.fillRect(fx, by - 26, fw, 30);
+      ox.strokeStyle = col(1); ox.lineWidth = 2; ox.shadowColor = col(1); ox.shadowBlur = 12;
+      ox.beginPath(); ox.moveTo(fx, by); ox.lineTo(fx + fw, by); ox.stroke();
+      const L = Math.min(fw, fh) * 0.18; ox.lineWidth = 3;
+      for (const [cx, cy, dx, dy] of [[fx, fy, 1, 1], [fx + fw, fy, -1, 1], [fx, fy + fh, 1, -1], [fx + fw, fy + fh, -1, -1]]) {
+        ox.beginPath(); ox.moveTo(cx, cy + dy * L); ox.lineTo(cx, cy); ox.lineTo(cx + dx * L, cy); ox.stroke();
+      }
+      ox.shadowBlur = 0; ox.lineWidth = 1.5; ox.strokeStyle = col(0.9);
       for (const roi of rois) ox.strokeRect(o.width - (roi.x + roi.w) * sx, roi.y * sy, roi.w * sx, roi.h * sy);
+      ox.fillStyle = col(1); ox.font = "10px monospace";
+      ox.fillText(`SCAN ${Math.round(sqiRef.current)}%  ROI:3  ${face.current ? "LOCK" : "SEARCH"}`, fx + 4, fy - 6);
 
-      let tone: "ok" | "warn" | "bad" = "ok", text = "Qimirlamang, skanerlanmoqda…";
-      if (n < 15) { tone = "bad"; text = "Yuz aniqlanmadi — yuzingizni ramka markaziga keltiring"; }
+      let tone: "ok" | "warn" | "bad" = "ok", text = "Qimirlamang, skanerlanmoqda…", key = "face_measuring";
+      const rel = face.current ? face.current.w / W : 0.4;
+      const cxRel = face.current ? (face.current.x + face.current.w / 2) / W : 0.5;
+      if (n < 15) { tone = "bad"; text = "Yuz aniqlanmadi — yuzingizni ramka markaziga keltiring"; key = "face_center"; }
+      else if (face.current && rel < 0.22) { tone = "warn"; text = "Kameraga yaqinroq keling"; key = "face_closer"; }
+      else if (face.current && rel > 0.7) { tone = "warn"; text = "Kameradan biroz uzoqlashing"; key = "face_farther"; }
+      else if (face.current && Math.abs(cxRel - 0.5) > 0.22) { tone = "warn"; text = "Yuzingizni markazga keltiring"; key = "face_center"; }
       else {
         r /= n; g /= n; b /= n;
         const mean = (r + g + b) / 3;
-        if (mean < 30) { tone = "bad"; text = "Yorug‘lik yetarli emas — yorug‘roq joyga o‘ting"; }
-        else if (mean > 235) { tone = "warn"; text = "Juda yorug‘ — to‘g‘ridan tushayotgan nurdan qoching"; }
-        else if (prevMean.current !== null && Math.abs(mean - prevMean.current) > 12) { tone = "warn"; text = "Harakat aniqlandi — boshingizni qimirlatmang"; }
+        if (mean < 30) { tone = "bad"; text = "Yorug‘lik yetarli emas — yorug‘ xonaga o‘ting"; key = "face_light"; }
+        else if (mean > 235) { tone = "warn"; text = "Juda yorug‘ — to‘g‘ridan tushayotgan nurdan qoching"; key = "face_bright"; }
+        else if (prevMean.current !== null && Math.abs(mean - prevMean.current) > 12) { tone = "warn"; text = "Harakat aniqlandi — boshingizni qimirlatmang"; key = "face_move"; }
         prevMean.current = mean;
         if (tone !== "bad") {
           samples.current.push({ t: now, r, g, b });
@@ -142,8 +172,14 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       }
       const good = tone === "ok" && sqiRef.current >= MIN_SQI;
       if (tone !== "bad") goodMs.current += good ? dt : dt * 0.5;
-      if (!good && tone === "ok" && samples.current.length > FS * 8) { tone = "warn"; text = "Signal kuchsiz — yuzni yorug‘likka qarating"; }
+      if (!good && tone === "ok" && samples.current.length > FS * 8) {
+        if (!weakSince.current) weakSince.current = now;
+        const long = now - weakSince.current > 6000;
+        tone = "warn"; text = long ? "Signal kuchsiz — ko‘zoynak bo‘lsa yeching, yorug‘ xonaga o‘ting" : "Signal kuchsiz — yuzni yorug‘likka qarating";
+        key = long ? "face_glasses" : "face_light";
+      } else if (good) weakSince.current = 0;
       setHint({ text, tone });
+      say(key);
       const sec = Math.min(DURATION, goodMs.current / 1000);
       setElapsed(sec);
       if (sec >= DURATION) { finish(); return; }
@@ -155,7 +191,8 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
     try {
       samples.current = []; lum.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; prevMean.current = null;
       setBpm(null); setResp(null); setSqi(0); setElapsed(0); setResult(null);
-      onStatus?.("face_place");
+      spoken.current = { key: "face_start", at: performance.now() }; weakSince.current = 0;
+      onStatus?.("face_start");
       const stream = await openCamera("user", 640, 480);
       streamRef.current = stream;
       videoRef.current!.srcObject = stream; await videoRef.current!.play();
@@ -179,7 +216,8 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       <div className="relative mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden rounded-2xl bg-muted">
         <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-cover -scale-x-100" />
         <canvas ref={overlayRef} className="absolute inset-0 h-full w-full pointer-events-none" />
-        {!face.current && active && <div className="absolute left-[30%] top-[18%] h-[60%] w-[40%] rounded-[50%] border-2 border-dashed border-primary/70 pointer-events-none" />}
+        {!face.current && active && <div className="absolute left-[30%] top-[18%] h-[60%] w-[40%] rounded-[50%] border-2 border-dashed border-primary/70 pointer-events-none animate-pulse" />}
+        {active && <span className="absolute left-2 top-2 rounded bg-background/70 px-2 py-0.5 font-mono text-[10px] tracking-widest text-primary">● MED AI FACE SCAN</span>}
         {!active && <div className="absolute inset-0 flex items-center justify-center"><ScanFace className="w-16 h-16 text-muted-foreground/40" /></div>}
         {active && <span className="absolute top-2 right-2 rounded-full bg-background/80 px-2 py-0.5 text-sm font-bold tabular-nums text-foreground">{Math.ceil(DURATION - elapsed)} s</span>}
       </div>

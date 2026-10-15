@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
+import FoodScanner from "@/components/fitness/FoodScanner";
 
 interface Message {
   role: "user" | "assistant";
@@ -172,6 +173,8 @@ const AIFitnessPage = () => {
               {t("aiPages.ai-fitness.description")}
             </p>
           </div>
+
+          <FoodScanner goal={profile.goal} />
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Profile Settings */}

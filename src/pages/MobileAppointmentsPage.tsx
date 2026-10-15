@@ -1,7 +1,8 @@
+import { downloadAiReport } from "@/lib/vitals/report";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, Bell, BellRing, Brain, CalendarCheck, CalendarClock, CalendarPlus, ChevronRight, CircleHelp, Clock, Copy, FlaskConical,
+  ArrowLeft, Bell, BellRing, Brain, CalendarCheck, CalendarClock, CalendarPlus, ChevronRight, CircleHelp, Clock, Copy, Download, FlaskConical,
   History, Lightbulb, Loader2, MapPin, Phone, X, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -378,6 +379,7 @@ const MobileAppointmentsPage = () => {
               <DialogDescription>{new Date(aiOpen.created_at).toLocaleString("uz-UZ", { dateStyle: "full", timeStyle: "short" })}</DialogDescription>
               <MarkdownView source={aiOpen.content} className="text-sm" />
               <p className="text-[11px] text-muted-foreground">AI xulosasi shifokor tashxisini almashtirmaydi.</p>
+              <Button className="w-full" onClick={() => void downloadAiReport({ title: `Med AI - ${serviceName(aiOpen.service_id)}`, conclusion: aiOpen.content, name: user?.email ?? "", date: aiOpen.created_at }).catch(() => toast.error("PDF yaratilmadi"))}><Download /> PDF xulosani yuklab olish</Button>
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={() => { void navigator.clipboard?.writeText(aiOpen.content).then(() => toast.success("Nusxa olindi")); }}><Copy /> Nusxa olish</Button>
                 <Button asChild onClick={() => setAiOpen(null)}><Link to={aiPath(aiOpen.service_id)}>Xizmatni ochish</Link></Button>
