@@ -2,7 +2,7 @@ import { downloadAiReport } from "@/lib/vitals/report";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, Bell, BellRing, Brain, CalendarCheck, CalendarClock, CalendarPlus, ChevronRight, CircleHelp, Clock, Copy, FlaskConical,
+  ArrowLeft, Bell, BellRing, Brain, CalendarCheck, CalendarClock, CalendarPlus, ChevronRight, CircleHelp, Clock, Copy, Download, FlaskConical,
   History, Lightbulb, Loader2, MapPin, Phone, X, XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
