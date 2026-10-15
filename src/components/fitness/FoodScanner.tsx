@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuthSafe } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 type Macro = { kcal: number; protein: number; fat: number; carbs: number };
@@ -45,8 +45,7 @@ const Ring = ({ value, max }: { value: number; max: number }) => {
 };
 
 const FoodScanner = ({ goal }: { goal: string }) => {
-  const auth = useAuthSafe();
-  const user = auth?.user;
+  const { user } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const camRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
