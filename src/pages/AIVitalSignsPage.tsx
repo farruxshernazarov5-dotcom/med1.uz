@@ -151,7 +151,6 @@ const AIVitalSignsPage = () => {
           setLastSummary(lines);
           voice.speak(acc.replace(/[#*_>|`-]/g, " ").slice(0, 600));
           void logAiChat({ serviceId: "ai-vital-signs", role: "user", content: lines });
-          void logAiChat({ serviceId: "ai-vital-signs", role: "assistant", content: acc, metadata: { source: r?.source ?? "manual" } });
         }
         const spent = Number(res.headers.get("x-med1-credits") ?? 0);
         if (spent > 0) toast({ title: `${spent} Med Coin yechildi`, description: "Xulosa Qabullar → AI xulosalari bo‘limiga saqlandi." });

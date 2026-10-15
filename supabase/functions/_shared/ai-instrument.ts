@@ -3,7 +3,7 @@
  * Wraps streaming/non-streaming AI gateway responses so latency, token usage,
  * cost, and status are persisted to ai_usage via recordAiUsageResult().
  */
-import { recordAiUsageResult, computeCostUsd } from "./ai-access.ts";
+import { recordAiUsageResult, computeCostUsd, saveAssistantHistory } from "./ai-access.ts";
 
 /**
  * Tee a streaming SSE response body. Returns a new stream to forward to the client
@@ -23,6 +23,7 @@ export function instrumentStream(
       const decoder = new TextDecoder();
       let buf = "";
       let chars = 0;
+      let text = "";
       let pT: number | null = null;
       let cT: number | null = null;
       while (true) {
@@ -39,7 +40,7 @@ export function instrumentStream(
           try {
             const j = JSON.parse(p);
             const d = j?.choices?.[0]?.delta?.content;
-            if (typeof d === "string") chars += d.length;
+            if (typeof d === "string") { chars += d.length; text += d; }
             if (j?.usage) {
               pT = j.usage.prompt_tokens ?? pT;
               cT = j.usage.completion_tokens ?? cT;
@@ -56,6 +57,7 @@ export function instrumentStream(
         completionTokens: completion,
         costUsd: computeCostUsd(prompt, completion),
       });
+      await saveAssistantHistory(usageId, text);
     } catch (e) {
       console.warn("instrumentStream monitor failed", e);
     }
@@ -82,6 +84,8 @@ export async function instrumentJson(
     completionTokens: completionT,
     costUsd: computeCostUsd(promptT, completionT),
   });
+  const c = data?.choices?.[0]?.message?.content;
+  await saveAssistantHistory(usageId, typeof c === "string" ? c : (fallbackContent ?? (c ? JSON.stringify(c) : "")));
 }
 
 /** Record an error/blocked result. */
