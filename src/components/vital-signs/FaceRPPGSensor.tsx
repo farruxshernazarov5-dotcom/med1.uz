@@ -11,7 +11,7 @@ import type { VitalReading } from "./types";
 
 const DURATION = 25;
 const FS = 30;
-const MIN_SQI = 12;
+const MIN_SQI = 18;
 type RGB = { t: number; r: number; g: number; b: number };
 type Box = { x: number; y: number; w: number; h: number };
 
@@ -34,6 +34,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
   const face = useRef<Box | null>(null);
   const detector = useRef<any>(null);
   const goodMs = useRef(0);
+  const faceSeen = useRef(0);
   const lastT = useRef(0);
   const prevMean = useRef<number | null>(null);
   const sqiRef = useRef(0);
@@ -105,14 +106,23 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       const c = work.current; c.width = W; c.height = H;
       const ctx = c.getContext("2d", { willReadFrequently: true })!;
       ctx.drawImage(v, 0, 0, W, H);
-      let r = 0, g = 0, b = 0, n = 0;
+      let r = 0, g = 0, b = 0, n = 0, tot = 0;
       for (const roi of rois) {
         const d = ctx.getImageData(roi.x | 0, roi.y | 0, Math.max(1, roi.w | 0), Math.max(1, roi.h | 0)).data;
         for (let i = 0; i < d.length; i += 16) {
-          // Skin-tone gate drops hair/eyebrows/background pixels.
-          if (d[i] > 35 && d[i] >= d[i + 2] && d[i] - d[i + 1] > 2) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+          tot++;
+          // YCbCr skin gate: walls, furniture and background fail it.
+          const R = d[i], G = d[i + 1], B = d[i + 2];
+          const cb = 128 - 0.1687 * R - 0.3313 * G + 0.5 * B, cr = 128 + 0.5 * R - 0.4187 * G - 0.0813 * B;
+          if (R > 45 && R > G && R > B && R - Math.min(G, B) > 12 && cb >= 77 && cb <= 127 && cr >= 137 && cr <= 173) { r += R; g += G; b += B; n++; }
         }
       }
+      const lumOf = (bx: Box) => { const d = ctx.getImageData(bx.x | 0, bx.y | 0, Math.max(1, bx.w | 0), Math.max(1, bx.h | 0)).data; let s = 0, c = 0; for (let i = 0; i < d.length; i += 16) { s += d[i] * 0.3 + d[i + 1] * 0.59 + d[i + 2] * 0.11; c++; } return c ? s / c : 0; };
+      const eyes = lumOf({ x: f.x + f.w * 0.18, y: f.y + f.h * 0.3, w: f.w * 0.64, h: f.h * 0.1 });
+      const skinLum = (lumOf(rois[0]) + lumOf(rois[1]) + lumOf(rois[2])) / 3;
+      const structured = eyes < skinLum * 0.93; // eyes/brows are darker than skin; a flat wall is not
+      faceSeen.current = faceSeen.current * 0.85 + (n / Math.max(1, tot) > 0.55 && (face.current || structured) ? 1 : 0) * 0.15;
+      const isFace = !!face.current || faceSeen.current > 0.6;
       const now = performance.now();
       const dt = lastT.current ? now - lastT.current : 0; lastT.current = now;
 
@@ -122,28 +132,47 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       const hsl = getComputedStyle(o).getPropertyValue("--primary").trim();
       const col = (a: number) => `hsl(${hsl} / ${a})`;
       const fx = o.width - (f.x + f.w) * sx, fy = f.y * sy, fw = f.w * sx, fh = f.h * sy;
-      ox.strokeStyle = col(0.18); ox.lineWidth = 1;
-      for (let gx = fx; gx <= fx + fw; gx += 14) { ox.beginPath(); ox.moveTo(gx, fy); ox.lineTo(gx, fy + fh); ox.stroke(); }
-      for (let gy = fy; gy <= fy + fh; gy += 14) { ox.beginPath(); ox.moveTo(fx, gy); ox.lineTo(fx + fw, gy); ox.stroke(); }
-      const ph = (now / 1600) % 1, by = fy + fh * (ph < 0.5 ? ph * 2 : 2 - ph * 2);
-      const grad = ox.createLinearGradient(0, by - 26, 0, by + 4);
-      grad.addColorStop(0, col(0)); grad.addColorStop(1, col(0.55));
-      ox.fillStyle = grad; ox.fillRect(fx, by - 26, fw, 30);
-      ox.strokeStyle = col(1); ox.lineWidth = 2; ox.shadowColor = col(1); ox.shadowBlur = 12;
-      ox.beginPath(); ox.moveTo(fx, by); ox.lineTo(fx + fw, by); ox.stroke();
-      const L = Math.min(fw, fh) * 0.18; ox.lineWidth = 3;
-      for (const [cx, cy, dx, dy] of [[fx, fy, 1, 1], [fx + fw, fy, -1, 1], [fx, fy + fh, 1, -1], [fx + fw, fy + fh, -1, -1]]) {
-        ox.beginPath(); ox.moveTo(cx, cy + dy * L); ox.lineTo(cx, cy); ox.lineTo(cx + dx * L, cy); ox.stroke();
+      // Spider-web mesh: concentric ellipses + radial threads over the face, a rotating radar beam and pulsing nodes.
+      const cxo = fx + fw / 2, cyo = fy + fh / 2, rx = fw / 2, ry = fh / 2, spokes = 16, rings = 6;
+      const rot = (now / 2400) % (Math.PI * 2);
+      ox.lineWidth = 1; ox.strokeStyle = col(0.35); ox.shadowColor = col(1); ox.shadowBlur = 6;
+      for (let k = 1; k <= rings; k++) {
+        ox.beginPath();
+        for (let s2 = 0; s2 <= spokes; s2++) {
+          const a2 = (s2 / spokes) * Math.PI * 2, sag = s2 % 1 === 0 ? 0.94 : 1;
+          const am = ((s2 - 0.5) / spokes) * Math.PI * 2;
+          const px2 = cxo + Math.cos(a2) * rx * k / rings, py2 = cyo + Math.sin(a2) * ry * k / rings;
+          if (s2 === 0) ox.moveTo(px2, py2);
+          else ox.quadraticCurveTo(cxo + Math.cos(am) * rx * k / rings * sag, cyo + Math.sin(am) * ry * k / rings * sag, px2, py2);
+        }
+        ox.stroke();
+      }
+      for (let s2 = 0; s2 < spokes; s2++) {
+        const a2 = (s2 / spokes) * Math.PI * 2;
+        ox.beginPath(); ox.moveTo(cxo, cyo); ox.lineTo(cxo + Math.cos(a2) * rx, cyo + Math.sin(a2) * ry); ox.stroke();
+      }
+      const sweep = ox.createConicGradient ? ox.createConicGradient(rot, cxo, cyo) : null;
+      if (sweep) {
+        sweep.addColorStop(0, col(0.5)); sweep.addColorStop(0.08, col(0.12)); sweep.addColorStop(0.2, col(0)); sweep.addColorStop(1, col(0));
+        ox.fillStyle = sweep; ox.beginPath(); ox.ellipse(cxo, cyo, rx, ry, 0, 0, Math.PI * 2); ox.fill();
+      }
+      ox.strokeStyle = col(1); ox.lineWidth = 2; ox.shadowBlur = 14;
+      ox.beginPath(); ox.moveTo(cxo, cyo); ox.lineTo(cxo + Math.cos(rot) * rx, cyo + Math.sin(rot) * ry); ox.stroke();
+      ox.beginPath(); ox.ellipse(cxo, cyo, rx, ry, 0, 0, Math.PI * 2); ox.stroke();
+      ox.fillStyle = col(1);
+      for (let k = 2; k <= rings; k += 2) for (let s2 = 0; s2 < spokes; s2 += 2) {
+        const a2 = (s2 / spokes) * Math.PI * 2, pulse = 1 + Math.sin(now / 300 + s2 + k) * 0.8;
+        ox.beginPath(); ox.arc(cxo + Math.cos(a2) * rx * k / rings, cyo + Math.sin(a2) * ry * k / rings, pulse, 0, Math.PI * 2); ox.fill();
       }
       ox.shadowBlur = 0; ox.lineWidth = 1.5; ox.strokeStyle = col(0.9);
       for (const roi of rois) ox.strokeRect(o.width - (roi.x + roi.w) * sx, roi.y * sy, roi.w * sx, roi.h * sy);
       ox.fillStyle = col(1); ox.font = "10px monospace";
-      ox.fillText(`SCAN ${Math.round(sqiRef.current)}%  ROI:3  ${face.current ? "LOCK" : "SEARCH"}`, fx + 4, fy - 6);
+      ox.fillText(`SCAN ${Math.round(sqiRef.current)}%  ROI:3  ${isFace ? "FACE LOCK" : "YUZ QIDIRILMOQDA"}`, fx + 4, fy - 6);
 
       let tone: "ok" | "warn" | "bad" = "ok", text = "Qimirlamang, skanerlanmoqda…", key = "face_measuring";
       const rel = face.current ? face.current.w / W : 0.4;
       const cxRel = face.current ? (face.current.x + face.current.w / 2) / W : 0.5;
-      if (n < 15) { tone = "bad"; text = "Yuz aniqlanmadi — yuzingizni ramka markaziga keltiring"; key = "face_center"; }
+      if (n < 15 || !isFace) { tone = "bad"; text = "Yuz aniqlanmadi — yuzingizni ramka markaziga keltiring"; key = "face_center"; samples.current = []; lum.current = []; goodMs.current = 0; }
       else if (face.current && rel < 0.22) { tone = "warn"; text = "Kameraga yaqinroq keling"; key = "face_closer"; }
       else if (face.current && rel > 0.7) { tone = "warn"; text = "Kameradan biroz uzoqlashing"; key = "face_farther"; }
       else if (face.current && Math.abs(cxRel - 0.5) > 0.22) { tone = "warn"; text = "Yuzingizni markazga keltiring"; key = "face_center"; }
@@ -189,7 +218,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
 
   const start = async () => {
     try {
-      samples.current = []; lum.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; prevMean.current = null;
+      samples.current = []; lum.current = []; wave.current = []; goodMs.current = 0; faceSeen.current = 0; lastT.current = 0; sqiRef.current = 0; prevMean.current = null;
       setBpm(null); setResp(null); setSqi(0); setElapsed(0); setResult(null);
       spoken.current = { key: "face_start", at: performance.now() }; weakSince.current = 0;
       onStatus?.("face_start");
@@ -216,8 +245,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       <div className="relative mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden rounded-2xl bg-muted">
         <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-cover -scale-x-100" />
         <canvas ref={overlayRef} className="absolute inset-0 h-full w-full pointer-events-none" />
-        {!face.current && active && <div className="absolute left-[30%] top-[18%] h-[60%] w-[40%] rounded-[50%] border-2 border-dashed border-primary/70 pointer-events-none animate-pulse" />}
-        {active && <span className="absolute left-2 top-2 rounded bg-background/70 px-2 py-0.5 font-mono text-[10px] tracking-widest text-primary">● MED AI FACE SCAN</span>}
+                {active && <span className="absolute left-2 top-2 rounded bg-background/70 px-2 py-0.5 font-mono text-[10px] tracking-widest text-primary">● MED AI FACE SCAN</span>}
         {!active && <div className="absolute inset-0 flex items-center justify-center"><ScanFace className="w-16 h-16 text-muted-foreground/40" /></div>}
         {active && <span className="absolute top-2 right-2 rounded-full bg-background/80 px-2 py-0.5 text-sm font-bold tabular-nums text-foreground">{Math.ceil(DURATION - elapsed)} s</span>}
       </div>
