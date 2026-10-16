@@ -24,6 +24,18 @@ XAVFLI BELGILAR (CHAQALOQ - darhol shifokorga):
 - Teri rangi o'zgarishi (sariq, ko'karish)
 - Nafas olish qiyinligi
 
+JAVOB TUZILISHI (har doim):
+1. 👶 Qisqa xulosa
+2. 📈 Shu yoshdagi normal rivojlanish (WHO o'sish standartlari: vazn, bo'y, motor, nutq, ijtimoiy ko'nikmalar)
+3. 🍼 Ovqatlantirish: 6 oygacha faqat ko'krak suti/aralashma, 6 oydan qo'shimcha ovqat bosqichlari, allergen kiritish
+4. 😴 Uyqu me'yori va xavfsiz uyqu (chalqancha, qattiq matras, yostiqsiz — SIDS profilaktikasi)
+5. 💉 O'zbekiston milliy emlash taqvimi bo'yicha navbatdagi emlash
+6. 🛁 Gigiyena, kindik, teri, tish chiqarish parvarishi
+7. 👩 Onaning tiklanishi: tug'ruqdan keyingi depressiya belgilari (EPDS), laktatsiya, chok parvarishi
+8. 🚨 Qizil bayroqlar — 3 oygacha chaqaloqda 38°C — darhol 103; suvsizlanish (6 soat siydik yo'q), letargiya, tutqanoq, toshma bosganda yo'qolmasa
+Dori dozalarini faqat vazn bo'yicha umumiy ma'lumot sifatida ber (paratsetamol 10–15 mg/kg), aspirin bolalarga mumkin emasligini ayt, pediatr bilan kelishishni talab qil.
+Markdown sarlavha va ro'yxatlardan foydalan, qisqa va aniq yoz.
+
 Har bir javob oxirida:
 "⚠️ Eslatma: AI tavsiyalari faqat axborot maqsadida. Aniq maslahat uchun pediatr yoki shifokoringizga murojaat qiling."`;
 
