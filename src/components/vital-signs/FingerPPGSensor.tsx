@@ -12,7 +12,7 @@ import type { VitalReading } from "./types";
 const DURATION = 20; // seconds with the finger on the lens
 const FS = 30;
 const MIN_SQI = 12;
-const COVER = 0.6;
+const COVER = 0.45;
 
 type Hint = { text: string; tone: "ok" | "warn" | "bad" };
 
@@ -95,12 +95,12 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       for (let i = 0; i < px.length; i += 4) {
         r += px[i]; g += px[i + 1]; b += px[i + 2];
         const p = i / 4, x = p % 40, y = Math.floor(p / 40);
-        if (px[i] > 45 && px[i] > px[i + 1] * 1.25 && px[i] > px[i + 2] * 1.2) { covered++; qc[(y < 15 ? 0 : 2) + (x < 20 ? 0 : 1)]++; }
+        if ((px[i] > 40 && px[i] > px[i + 1] * 1.08 && px[i] > px[i + 2] * 1.05) || (px[i] >= 245 && px[i + 1] < 235)) { covered++; qc[(y < 15 ? 0 : 2) + (x < 20 ? 0 : 1)]++; }
         if (px[i] >= 250 && px[i + 1] >= 200) clipped++;
       }
       r /= n; g /= n; b /= n;
       const minQuad = Math.min(...qc) / qn;
-      const coverage = minQuad < 0.45 ? Math.min(covered / n, minQuad) : covered / n;
+      const coverage = minQuad < 0.25 ? Math.min(covered / n, minQuad) : covered / n;
       coverAvg.current = coverAvg.current * 0.9 + coverage * 0.1;
       if (frameN.current++ % 6 === 0) setCover(Math.round(coverAvg.current * 100));
       const now = performance.now();
@@ -121,12 +121,13 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       if (coverage >= COVER) {
         red.current.push({ t: now, v: r }); green.current.push({ t: now, v: g }); blue.current.push({ t: now, v: b });
         if (red.current.length > FS * 45) { red.current.shift(); green.current.shift(); blue.current.shift(); }
-      } else { red.current = []; green.current = []; blue.current = []; }
+      } else if (noFingerSince.current && now - noFingerSince.current > 1500) { red.current = []; green.current = []; blue.current = []; }
 
       // Live analysis every ~15 frames on the last 8 s.
       if (red.current.length > FS * 6 && red.current.length % 15 === 0) {
-        const win = red.current.slice(-FS * 8);
-        const res = analyzePulse(resample(win, FS), FS, true);
+        const rr = analyzePulse(resample(red.current.slice(-FS * 8), FS), FS, true);
+        const gg = analyzePulse(resample(green.current.slice(-FS * 8), FS), FS, true);
+        const res = (gg && (!rr || gg.sqi > rr.sqi)) ? gg : rr;
         const q = res?.sqi ?? 0;
         sqiRef.current = sqiRef.current * 0.6 + q * 0.4;
         setSqi(Math.round(sqiRef.current));
