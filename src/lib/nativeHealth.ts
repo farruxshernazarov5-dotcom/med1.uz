@@ -288,7 +288,7 @@ export async function registerNotificationTaps(go: (path: string) => void): Prom
     const LN = (await ln()).p;
     const h = await LN.addListener("localNotificationActionPerformed", (e) => {
       const route = e.notification.extra?.route;
-      if (typeof route === "string" && /^\/(dashboard|mobile-appointments|mobile-profile|med1-top)(?:[/?]|$)/.test(route)) go(route);
+      if (typeof route === "string" && /^\/(dashboard|mobile-appointments|mobile-profile|med1-top|ai-pregnancy)(?:[/?]|$)/.test(route)) go(route);
     });
     return () => void h.remove();
   } catch { return () => {}; }
