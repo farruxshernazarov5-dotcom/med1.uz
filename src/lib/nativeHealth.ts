@@ -227,6 +227,41 @@ export async function hasNotificationPermission(): Promise<boolean> {
 }
 
 const LAB_BASE = 900000;
+const PREG_BASE = 450000; // 450000–499999: kept clear of appointment sync range
+
+/** Replace all pregnancy reminders: evening before (20:00) + morning of (09:00); vitamins repeat daily at 09:00; optional daily kick count at 20:00. */
+export async function syncPregnancyReminders(
+  items: { title: string; date: string; type: string }[],
+  dailyKicks: boolean,
+): Promise<number> {
+  if (!isNativeApp()) return 0;
+  const LN = (await ln()).p;
+  await ensureReminderChannel();
+  const pending = await LN.getPending();
+  const old = pending.notifications.filter((n) => n.id >= PREG_BASE && n.id < APPT_BASE).map((n) => ({ id: n.id }));
+  if (old.length) await LN.cancel({ notifications: old });
+  const now = Date.now();
+  const route = "/ai-pregnancy";
+  const notifications: Parameters<Awaited<ReturnType<typeof ln>>["p"]["schedule"]>[0]["notifications"] = [];
+  let i = 0;
+  for (const r of items.slice(0, 200)) {
+    if (r.type === "vitamin") {
+      notifications.push({ id: PREG_BASE + i++, title: `💊 ${r.title}`, body: "Vitamin ichish vaqti", channelId: REMINDER_CHANNEL,
+        schedule: { on: { hour: 9, minute: 0 }, allowWhileIdle: true }, extra: { kind: "preg", route } });
+      continue;
+    }
+    const [y, m, d] = r.date.split("-").map(Number);
+    if (!y) continue;
+    const morning = new Date(y, m - 1, d, 9, 0);
+    const eve = new Date(y, m - 1, d - 1, 20, 0);
+    if (eve.getTime() > now) notifications.push({ id: PREG_BASE + i++, title: `🤰 Ertaga: ${r.title}`, body: "Homiladorlik eslatmasi — tayyorlaning", channelId: REMINDER_CHANNEL, schedule: { at: eve, allowWhileIdle: true }, extra: { kind: "preg", route } });
+    if (morning.getTime() > now) notifications.push({ id: PREG_BASE + i++, title: `🤰 Bugun: ${r.title}`, body: "Homiladorlik eslatmasi", channelId: REMINDER_CHANNEL, schedule: { at: morning, allowWhileIdle: true }, extra: { kind: "preg", route } });
+  }
+  if (dailyKicks) notifications.push({ id: PREG_BASE + 49999, title: "👶 Homila harakatlarini sanang", body: "2 soat ichida 10 ta harakatni belgilang", channelId: REMINDER_CHANNEL,
+    schedule: { on: { hour: 20, minute: 0 }, allowWhileIdle: true }, extra: { kind: "preg", route: "/ai-pregnancy?tab=kicks" } });
+  if (notifications.length) await LN.schedule({ notifications });
+  return notifications.length;
+}
 /** Fires an immediate local notification (e.g. lab result is ready). */
 export async function notifyNow(title: string, body: string, route: string): Promise<void> {
   const LN = (await ln()).p;
@@ -253,7 +288,7 @@ export async function registerNotificationTaps(go: (path: string) => void): Prom
     const LN = (await ln()).p;
     const h = await LN.addListener("localNotificationActionPerformed", (e) => {
       const route = e.notification.extra?.route;
-      if (typeof route === "string" && /^\/(dashboard|mobile-appointments|mobile-profile|med1-top)(?:[/?]|$)/.test(route)) go(route);
+      if (typeof route === "string" && /^\/(dashboard|mobile-appointments|mobile-profile|med1-top|ai-pregnancy)(?:[/?]|$)/.test(route)) go(route);
     });
     return () => void h.remove();
   } catch { return () => {}; }

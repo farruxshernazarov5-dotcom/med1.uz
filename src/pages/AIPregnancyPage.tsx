@@ -23,6 +23,10 @@ import aiPregnancyImg from "@/assets/ai-pregnancy.webp";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { responseLangForText } from "@/lib/aiLang";
+import { isNativeApp } from "@/lib/nativeApp";
+import { ensureNotificationPermission, playReminderChime, scheduleTestReminder, syncPregnancyReminders } from "@/lib/nativeHealth";
+
+const KICKS_PREF = "med1_preg_daily_kicks";
 
 /* ——— Helpers ——— */
 const addDays = (d: Date, n: number) => {
@@ -101,6 +105,8 @@ const AIPregnancyPage = () => {
   // Reminders
   const [reminders, setReminders] = useState<any[]>([]);
   const [newReminder, setNewReminder] = useState({ title: "", date: "", type: "checkup" });
+  const [dailyKicks, setDailyKicks] = useState(() => localStorage.getItem(KICKS_PREF) === "1");
+  useEffect(() => { const q = new URLSearchParams(window.location.search).get("tab"); if (q === "kicks" || q === "reminders") setTab(q); }, []);
 
   // Logs
   const [logs, setLogs] = useState<any[]>([]);
@@ -236,6 +242,53 @@ const AIPregnancyPage = () => {
     await supabase.from("pregnancy_reminders").update({ is_completed: !completed } as any).eq("id", id);
     fetchData();
   };
+
+  /** Standard antenatal schedule computed from the last period date. */
+  const addRecommended = async () => {
+    if (!pregnancy || !user) return;
+    const lmp = new Date(pregnancy.lmp_date);
+    const plan: [number, string, string][] = [
+      [12, "1-skrining UZI (11–14 hafta)", "uzi"],
+      [20, "2-skrining UZI (18–22 hafta)", "uzi"],
+      [24, "Glyukoza testi (24–28 hafta)", "lab"],
+      [28, "Gemoglobin va qon bosimi nazorati", "checkup"],
+      [32, "3-skrining UZI (30–34 hafta)", "uzi"],
+      [36, "Tug'ruqqa tayyorgarlik ko'rigi", "checkup"],
+    ];
+    const today = new Date().toISOString().split("T")[0];
+    const have = new Set(reminders.map(r => r.title));
+    const rows = plan
+      .map(([w, title, type]) => ({ user_id: user.id, pregnancy_id: pregnancy.id, title, reminder_type: type, reminder_date: addDays(lmp, w * 7).toISOString().split("T")[0] }))
+      .filter(r => r.reminder_date >= today && !have.has(r.title));
+    if (!rows.length) { toast({ title: "Barcha tavsiya etilgan tekshiruvlar allaqachon qo'shilgan" }); return; }
+    await supabase.from("pregnancy_reminders").insert(rows as any);
+    toast({ title: `✅ ${rows.length} ta tekshiruv eslatmasi qo'shildi` });
+    fetchData();
+  };
+
+  const toggleDailyKicks = () => {
+    const next = !dailyKicks;
+    localStorage.setItem(KICKS_PREF, next ? "1" : "0");
+    setDailyKicks(next);
+  };
+
+  // Schedule OS alarms whenever the list changes (native), or chime for today's items (web).
+  useEffect(() => {
+    if (!pregnancy) return;
+    const open = reminders.filter(r => !r.is_completed).map(r => ({ title: r.title, date: r.reminder_date, type: r.reminder_type }));
+    if (isNativeApp()) {
+      (async () => { if (await ensureNotificationPermission()) await syncPregnancyReminders(open, dailyKicks).catch(() => 0); })();
+    } else {
+      const today = new Date().toISOString().split("T")[0];
+      const due = open.filter(r => r.date === today && r.type !== "vitamin");
+      const key = `med1_preg_chimed_${today}`;
+      if (due.length && sessionStorage.getItem(key) !== "1") {
+        sessionStorage.setItem(key, "1");
+        playReminderChime();
+        toast({ title: "🤰 Bugungi eslatma", description: due.map(d => d.title).join(", ") });
+      }
+    }
+  }, [reminders, dailyKicks, pregnancy]);
 
   /* ——— RENDER ——— */
   if (loading) return <div className="min-h-screen bg-background"><Header /><div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div></div>;
@@ -554,6 +607,23 @@ const AIPregnancyPage = () => {
         {/* ———— REMINDERS ———— */}
         {tab === "reminders" && (
           <div className="space-y-4">
+            <Card className="border-primary/20">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <Bell className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground">
+                    {isNativeApp()
+                      ? "Telefon eslatmalari: kechqurun 20:00 da (bir kun oldin) va o'sha kuni 09:00 da ovozli signal chaladi. Vitaminlar har kuni 09:00 da."
+                      : "Ovozli signal Med ALL mobil ilovasida chaladi. Saytda eslatma kuni sahifani ochsangiz ovoz bilan ogohlantiriladi."}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" onClick={addRecommended}><Sparkles className="w-4 h-4 mr-1" /> Tavsiya etilgan tekshiruvlarni qo'shish</Button>
+                  <Button size="sm" variant={dailyKicks ? "default" : "outline"} onClick={toggleDailyKicks}><Baby className="w-4 h-4 mr-1" /> Har kuni 20:00 harakat sanash {dailyKicks ? "✓" : ""}</Button>
+                  {isNativeApp() && <Button size="sm" variant="ghost" onClick={async () => { await ensureNotificationPermission(); await scheduleTestReminder(); toast({ title: "10 soniyadan keyin sinov signali chaladi" }); }}><Bell className="w-4 h-4 mr-1" /> Ovozni sinash</Button>}
+                </div>
+              </CardContent>
+            </Card>
             <Card className="border-primary/20">
               <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Plus className="w-4 h-4" /> Yangi eslatma</CardTitle></CardHeader>
               <CardContent className="space-y-3">
