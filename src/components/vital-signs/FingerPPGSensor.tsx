@@ -202,7 +202,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   if (result && !active) return <VitalResultScreen {...result} onRetry={() => setResult(null)} />;
 
   return (
-    <div className="space-y-4">
+    <div className="relative space-y-4">
       {active && (
         <div className={cn("relative rounded-2xl bg-gradient-to-br p-6 text-center text-white transition-colors", cover >= COVER * 100 ? "from-red-600 to-rose-600" : "from-zinc-700 to-zinc-800")}>
           <span className="absolute left-3 top-3 flex items-center gap-1 text-sm"><span className={cn("h-2 w-2 rounded-full", cover >= COVER * 100 ? "bg-green-400" : "bg-amber-400")} />{cover >= COVER * 100 ? "Barmoq ✓" : "Barmoq yo‘q"}</span>

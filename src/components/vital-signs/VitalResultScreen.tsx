@@ -31,7 +31,7 @@ const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, spo2, rhythm, 
           {stress ? <span className="inline-flex items-center gap-1"><Activity className="h-4 w-4" />Stress: {stress}</span> : null}
         </div>
       </div>
-      <p className="rounded-xl border border-border bg-muted/50 p-3 text-sm text-foreground">{z.advice}{accuracy < 50 ? " Aniqlik past — natijani qayta o‘lchab tasdiqlang." : ""}</p>
+      <p className="rounded-xl border border-border bg-muted/50 p-3 text-sm text-foreground">{z.advice}{accuracy < 50 ? " Aniqlik past — natijani qayta o‘lchab tasdiqlang." : ""}{rhythm ? " Ritm baholash kamera/soat pulsiga asoslangan, EKG emas — yurak urishi notekis tuyulsa, EKG qildiring." : ""}</p>
       <Button onClick={onRetry} className="h-12 w-full"><RotateCcw className="mr-2 h-4 w-4" /> Qayta o‘lchash</Button>
     </div>
   );
