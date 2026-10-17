@@ -12,4 +12,5 @@ export type VitalReading = {
   sleepHours?: number | null;
   steps?: number | null;
   device?: string;
+  rhythm?: string | null;      // PPG rhythm hint (not an ECG diagnosis)
 };
