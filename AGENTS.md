@@ -21,8 +21,5 @@
 - Account devices live in `user_devices` (random per-install key, `src/lib/userDevices.ts`); new-device, classified and Med1 TOP status alerts are written to `notifications` by database triggers so every feed and alerter sees them.
 - Screenshot blocking goes through `useSecureScreen()` in `src/lib/secureScreen.ts` (ref-counted, native only), so sensitive screens opt in without touching the website.
 - Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.
-- `src/components/mobile/` has its own `AGENTS.md`; read it before changing mobile UI.
-- Vital AI signal processing lives in `src/lib/vitals/` (pure DSP in `dsp.ts`, camera 3A/torch in `camera.ts`, BLE in `wearables.ts`, Health Connect/Apple Health import via `@capgo/capacitor-health` in `healthConnect.ts` (new-since-last-import rows into `health_records`, only an on/off flag locally)); sensors only report results, so finger, face and watch sources share one analysis and AI path.
+- `src/components/mobile/` and `src/lib/vitals/` have their own `AGENTS.md`; read them before changing files there.
 - Vital AI PDF reports are registered in `vital_reports` (code + SHA-256 only) and verified publicly via the `verify_vital_report` RPC at `/verify/vital/:code`, so QR checks never expose patient health data.
-- Face tracking for Vital AI rPPG and Psixolog AI expression scans runs only on-device via `src/lib/vitals/faceMesh.ts` (MediaPipe Face Landmarker); images never leave the phone and only numeric scores are sent to AI, because face images are sensitive biometric data.
-- Camera `<video>` elements used for analysis must stay visible on screen, because Android Chrome/WebView pauses hidden muted videos and the measurement freezes.
