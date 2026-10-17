@@ -54,13 +54,24 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const moodContext = mood ? `\nFoydalanuvchining hozirgi kayfiyati: ${mood}/10` : "";
+    // On-device facial-expression scores (numbers only, no images). Validate strictly.
+    const fa = __body?.faceAnalysis;
+    const num = (v: unknown, max = 100) => (typeof v === "number" && isFinite(v) ? Math.max(0, Math.min(max, Math.round(v))) : null);
+    let faceContext = "";
+    if (fa && typeof fa === "object" && fa.emotions && typeof fa.emotions === "object") {
+      const keys = ["neytral", "xursand", "gamgin", "hayrat", "asabiy", "xavotir"];
+      const em = keys.map((k) => `${k} ${num(fa.emotions[k]) ?? 0}%`).join(", ");
+      const dom = keys.includes(fa.dominant) ? fa.dominant : "neytral";
+      const fat = ["past", "o'rta", "yuqori"].includes(fa.fatigue) ? fa.fatigue : "noma'lum";
+      faceContext = `\nYUZ MIMIKASI TAHLILI (qurilmada, taxminiy, tashxis emas): asosiy ifoda — ${dom}; ${em}; mushak tarangligi ${num(fa.tension) ?? 0}/100; ko'z ochiqligi ${num(fa.eyeOpenness) ?? 0}%; ko'z qisish ${num(fa.blinkRate, 120) ?? 0}/daq; charchoq — ${fat}. Bu ma'lumotni ehtiyotkorlik bilan, faqat suhbat uchun kontekst sifatida ishlat: foydalanuvchining o'z so'zlari ustun; mimikadan ruhiy kasallik tashxisini qo'yma. Javob oxirida qisqa "Yuz ifodasi bo'yicha kuzatuv" bandini yoz.`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: access.model,
-        messages: [{ role: "system", content: SYSTEM_PROMPT + moodContext + languageInstruction(__lang) }, ...sanitizeChatMessages(messages)],
+        messages: [{ role: "system", content: SYSTEM_PROMPT + moodContext + faceContext + languageInstruction(__lang) }, ...sanitizeChatMessages(messages)],
         max_completion_tokens: access.maxTokens ?? 600,
         stream: true,
       }),

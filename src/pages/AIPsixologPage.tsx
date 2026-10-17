@@ -8,7 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
-import { Send, Bot, User, Brain, Heart, Smile, Frown, Meh, Loader2, Phone } from "lucide-react";
+import { Send, Bot, User, Brain, Heart, Loader2, Phone, ScanFace, FileDown } from "lucide-react";
+import EmotionFaceScanner from "@/components/ai/EmotionFaceScanner";
+import { EMOTION_LABEL, type FaceAnalysis } from "@/lib/vitals/faceMesh";
+import { downloadAiReport } from "@/lib/vitals/report";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -35,6 +38,8 @@ const AIPsixologPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mood, setMood] = useState(5);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [face, setFace] = useState<FaceAnalysis | null>(null);
+  const [showScan, setShowScan] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,10 +52,11 @@ const AIPsixologPage = () => {
     return closest;
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+  const sendMessage = async (override?: string) => {
+    const text = (override ?? input).trim();
+    if (!text || isLoading) return;
 
-    const userMessage: Message = { role: "user", content: input };
+    const userMessage: Message = { role: "user", content: text };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -68,6 +74,7 @@ const AIPsixologPage = () => {
           body: JSON.stringify({
             messages: [...messages, userMessage],
             mood,
+            faceAnalysis: face ?? undefined,
             lang: responseLangForText(userMessage.content),
           }),
         }
@@ -100,6 +107,23 @@ const AIPsixologPage = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const faceSummary = (f: FaceAnalysis) =>
+    `Yuz ifodasi tahlili (${f.seconds} s, taxminiy): asosiy holat — ${EMOTION_LABEL[f.dominant]}; ` +
+    (Object.keys(EMOTION_LABEL) as (keyof typeof EMOTION_LABEL)[]).map((k) => `${EMOTION_LABEL[k]} ${f.emotions[k]}%`).join(", ") +
+    `; mushak taranglik indeksi ${f.tension}/100; ko‘z ochiqligi ${f.eyeOpenness}%; ko‘z qisish ${f.blinkRate}/daq; charchoq belgisi — ${f.fatigue}.`;
+
+  const lastAnswer = [...messages].reverse().find((m) => m.role === "assistant")?.content;
+  const downloadPdf = async () => {
+    if (!lastAnswer) return;
+    const { data } = await supabase.auth.getUser();
+    await downloadAiReport({
+      title: "Med AI - Psixolog xulosasi",
+      conclusion: lastAnswer,
+      name: (data.user?.user_metadata?.full_name as string) || data.user?.email || "",
+      summary: [face ? faceSummary(face) : null, `Kayfiyat (o‘zi baholagan): ${mood}/10`].filter(Boolean).join("\n"),
+    });
   };
 
   return (
@@ -160,6 +184,35 @@ const AIPsixologPage = () => {
                 <span>🙂</span>
                 <span>😊</span>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Face expression scanner */}
+          <Card className="mb-6">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-base"><ScanFace className="h-5 w-5 text-primary" />Yuz ifodasi (mimika) tahlili</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {!showScan && !face && (
+                <div className="text-center">
+                  <p className="mb-3 text-sm text-muted-foreground">12 soniya kameraga qarab turing — Med AI yuz mimikasidan kayfiyat, taranglik va charchoq belgilarini aniqlaydi va suhbatda hisobga oladi.</p>
+                  <Button variant="outline" onClick={() => setShowScan(true)}><ScanFace className="mr-1 h-4 w-4" />Skanerni ochish</Button>
+                </div>
+              )}
+              {showScan && <EmotionFaceScanner onDone={(f) => { setFace(f); setShowScan(false); }} />}
+              {face && !showScan && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
+                    {[["Asosiy holat", EMOTION_LABEL[face.dominant]], ["Taranglik", `${face.tension}/100`], ["Ko‘z qisish", `${face.blinkRate}/daq`], ["Charchoq", face.fatigue]].map(([k, v]) => (
+                      <div key={k} className="rounded-xl bg-muted/60 p-2"><p className="text-[10px] text-muted-foreground">{k}</p><p className="text-sm font-bold capitalize text-foreground">{v}</p></div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Button onClick={() => sendMessage(`Yuz ifodam tahlil qilindi. ${faceSummary(face)} Shu holatimni tushuntirib, menga yordam bering.`)} disabled={isLoading}><Brain className="mr-1 h-4 w-4" />Med AI psixologga tahlil qildirish</Button>
+                    <Button variant="outline" onClick={() => { setFace(null); setShowScan(true); }}>Qayta skanerlash</Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -237,11 +290,14 @@ const AIPsixologPage = () => {
                   disabled={isLoading}
                   className="flex-1"
                 />
-                <Button onClick={sendMessage} disabled={isLoading || !input.trim()}>
+                <Button onClick={() => sendMessage()} disabled={isLoading || !input.trim()}>
                   {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 </Button>
               </div>
 
+              {lastAnswer && !isLoading && (
+                <Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => void downloadPdf()}><FileDown className="mr-1 h-4 w-4" />PDF xulosani yuklab olish</Button>
+              )}
               <p className="text-xs text-muted-foreground mt-4 text-center">
                 {t("aiForms.psixolog.disclaimer")}
               </p>

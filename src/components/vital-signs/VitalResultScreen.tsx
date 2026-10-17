@@ -11,9 +11,9 @@ export function pulseZone(bpm: number) {
   return { label: "Yuqori puls (taxikardiya)", cls: "from-red-600 to-rose-500", advice: "Tinch holatda takrorlansa, shifokorga murojaat qiling. Ko‘krak og‘rig‘i bo‘lsa — 103." };
 }
 
-type Props = { bpm: number; signal: number; accuracy: number; resp?: number | null; stress?: string | null; spo2?: number | null; onRetry: () => void };
+type Props = { bpm: number; signal: number; accuracy: number; resp?: number | null; stress?: string | null; spo2?: number | null; rhythm?: string | null; onRetry: () => void };
 
-const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, spo2, onRetry }: Props) => {
+const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, spo2, rhythm, onRetry }: Props) => {
   const z = pulseZone(bpm);
   return (
     <div className="space-y-3 animate-fade-in">
@@ -22,6 +22,7 @@ const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, spo2, onRetry 
         <p className="mt-2 text-6xl font-bold tabular-nums">{bpm}</p>
         <p className="text-sm opacity-90">bpm</p>
         <p className="mt-2 text-lg font-semibold">{z.label}</p>
+        {rhythm && <p className="mx-auto mt-2 inline-block rounded-md bg-black/25 px-3 py-1 font-mono text-xs">RITM: {rhythm}</p>}
         <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm opacity-95">
           <span>Signal: {signal}%</span>
           <span>Aniqlik: {accuracy}%</span>
@@ -30,7 +31,7 @@ const VitalResultScreen = ({ bpm, signal, accuracy, resp, stress, spo2, onRetry 
           {stress ? <span className="inline-flex items-center gap-1"><Activity className="h-4 w-4" />Stress: {stress}</span> : null}
         </div>
       </div>
-      <p className="rounded-xl border border-border bg-muted/50 p-3 text-sm text-foreground">{z.advice}{accuracy < 50 ? " Aniqlik past — natijani qayta o‘lchab tasdiqlang." : ""}</p>
+      <p className="rounded-xl border border-border bg-muted/50 p-3 text-sm text-foreground">{z.advice}{accuracy < 50 ? " Aniqlik past — natijani qayta o‘lchab tasdiqlang." : ""}{rhythm ? " Ritm baholash kamera/soat pulsiga asoslangan, EKG emas — yurak urishi notekis tuyulsa, EKG qildiring." : ""}</p>
       <Button onClick={onRetry} className="h-12 w-full"><RotateCcw className="mr-2 h-4 w-4" /> Qayta o‘lchash</Button>
     </div>
   );

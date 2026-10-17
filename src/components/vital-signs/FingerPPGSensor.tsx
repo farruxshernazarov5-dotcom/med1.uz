@@ -7,6 +7,7 @@ import LiveWaveform from "./LiveWaveform";
 import VitalResultScreen from "./VitalResultScreen";
 import { openCamera, lock3A, setTorch, stopStream, rearCameras } from "@/lib/vitals/camera";
 import { estimateSpo2, analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
+import { classifyRhythm } from "@/lib/vitals/rhythm";
 import type { VitalReading } from "./types";
 
 const DURATION = 20; // seconds with the finger on the lens
@@ -45,7 +46,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const [lens, setLens] = useState<string | undefined>(() => localStorage.getItem("med1_ppg_lens") ?? undefined);
   const [torchOk, setTorchOk] = useState(true);
   const noFingerSince = useRef(0);
-  const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null; spo2?: number | null } | null>(null);
+  const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null; spo2?: number | null; rhythm?: string | null } | null>(null);
+  const bpmRef = useRef<number | null>(null);
 
   const stop = useCallback(() => {
     running.current = false;
@@ -74,9 +76,12 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     setBpm(best.bpm);
     const spo2 = estimateSpo2(resample(red.current, FS), resample(blue.current, FS), FS);
     const respRate = resp && resp.ratio > 0.3 ? resp.rate : null;
-    setResult({ bpm: best.bpm, signal: Math.round(coverAvg.current * 100), accuracy: Math.min(100, Math.round(best.sqi * 1.6)), stress: best.stress, resp: respRate, spo2 });
+    const accuracy = Math.min(100, Math.round(best.sqi * 1.6));
+    const rh = classifyRhythm(best.rr, best.bpm, accuracy);
+    const rhythm = rh.key === "unknown" ? null : rh.label;
+    setResult({ bpm: best.bpm, signal: Math.round(coverAvg.current * 100), accuracy, stress: best.stress, resp: respRate, spo2, rhythm });
     setHint({ text: "O‘lchov yakunlandi", tone: "ok" });
-    onResult({ source: "finger", bpm: best.bpm, confidence: best.sqi, rmssd: best.rmssd, sdnn: best.sdnn, stress: best.stress, respRate: resp && resp.ratio > 0.3 ? resp.rate : null, spo2 });
+    onResult({ source: "finger", bpm: best.bpm, confidence: accuracy, rmssd: best.rmssd, sdnn: best.sdnn, stress: best.stress, respRate, spo2, rhythm });
   }, [onResult, onStatus, stop]);
 
   const loop = useCallback(() => {
@@ -102,7 +107,9 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       const minQuad = Math.min(...qc) / qn;
       const coverage = minQuad < 0.25 ? Math.min(covered / n, minQuad) : covered / n;
       coverAvg.current = coverAvg.current * 0.9 + coverage * 0.1;
-      if (frameN.current++ % 6 === 0) setCover(Math.round(coverAvg.current * 100));
+      const tick = frameN.current++;
+      const ui = tick % 5 === 0; // React state at ~6 Hz keeps slow phones responsive
+      if (ui) setCover(Math.round(coverAvg.current * 100));
       const now = performance.now();
       const dt = lastT.current ? now - lastT.current : 0;
       lastT.current = now;
@@ -124,14 +131,13 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       } else if (noFingerSince.current && now - noFingerSince.current > 1500) { red.current = []; green.current = []; blue.current = []; }
 
       // Live analysis every ~15 frames on the last 8 s.
-      if (red.current.length > FS * 6 && red.current.length % 15 === 0) {
+      if (red.current.length > FS * 6 && tick % 15 === 0) {
         const rr = analyzePulse(resample(red.current.slice(-FS * 8), FS), FS, true);
         const gg = analyzePulse(resample(green.current.slice(-FS * 8), FS), FS, true);
         const res = (gg && (!rr || gg.sqi > rr.sqi)) ? gg : rr;
         const q = res?.sqi ?? 0;
         sqiRef.current = sqiRef.current * 0.6 + q * 0.4;
-        setSqi(Math.round(sqiRef.current));
-        if (res && q >= MIN_SQI) setBpm(res.bpm);
+        if (res && q >= MIN_SQI) bpmRef.current = res.bpm;
       }
       const recent = red.current.slice(-FS * 6);
       if (recent.length > FS * 2) wave.current = bandpass(resample(recent, FS).map((x) => -x), FS, 0.7, 3.5);
@@ -141,13 +147,12 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       const good = onLens && sqiRef.current >= MIN_SQI;
       if (onLens) goodMs.current += good ? dt : dt * 0.5;
       if (onLens && !good && h.tone === "ok" && red.current.length > FS * 6) h = { text: "Signal kuchsiz — qimirlamay, yengil bosib turing", tone: "warn" };
-      setPaused(!good);
-      setHint(h);
+      if (ui) { setPaused(!good); setHint(h); setSqi(Math.round(sqiRef.current)); setBpm(bpmRef.current); }
       // Spoken guidance: say each new instruction once.
       const key = h.text.startsWith("Signal yo") ? "lens_switch" : h.text.startsWith("Barmog") ? "finger_place" : h.text.startsWith("Qattiq") ? "press_light" : h.text.startsWith("Signal") ? "signal_weak" : "measuring";
       if (key !== lastSpoken.current) { lastSpoken.current = key; onStatus?.(key); }
       const sec = Math.min(DURATION, goodMs.current / 1000);
-      setElapsed(sec);
+      if (ui) setElapsed(sec);
       if (sec >= DURATION) { finish(); return; }
     }
     requestAnimationFrame(loop);
@@ -156,7 +161,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const start = async (deviceId = lens) => {
     try {
       stopStream(streamRef.current); window.clearInterval(torchTimer.current); noFingerSince.current = 0;
-      red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0;
+      red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; bpmRef.current = null; frameN.current = 0;
       setBpm(null); setSqi(0); setElapsed(0); setResult(null); coverAvg.current = 0;
       onStatus?.("start");
       const stream = await openCamera("environment", 320, 240, deviceId).catch(() => openCamera("environment"));
@@ -197,7 +202,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   if (result && !active) return <VitalResultScreen {...result} onRetry={() => setResult(null)} />;
 
   return (
-    <div className="space-y-4">
+    <div className="relative space-y-4">
       {active && (
         <div className={cn("relative rounded-2xl bg-gradient-to-br p-6 text-center text-white transition-colors", cover >= COVER * 100 ? "from-red-600 to-rose-600" : "from-zinc-700 to-zinc-800")}>
           <span className="absolute left-3 top-3 flex items-center gap-1 text-sm"><span className={cn("h-2 w-2 rounded-full", cover >= COVER * 100 ? "bg-green-400" : "bg-amber-400")} />{cover >= COVER * 100 ? "Barmoq ✓" : "Barmoq yo‘q"}</span>
@@ -207,7 +212,11 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
           <p className="text-5xl font-bold tabular-nums">{bpm ?? "—"} <span className="text-base font-normal">bpm</span></p>
         </div>
       )}
-      <video ref={videoRef} playsInline muted className="hidden" />
+      {/* Video must stay visible: Android Chrome/WebView pauses hidden muted videos, which froze the measurement. */}
+      <div className={cn("flex items-center gap-3", !active && "pointer-events-none absolute h-px w-px overflow-hidden opacity-0")}>
+        <video ref={videoRef} playsInline muted autoPlay className="h-14 w-14 shrink-0 rounded-full border-2 border-primary object-cover" />
+        {active && <p className="text-xs text-muted-foreground">Kamera ko‘rinishi: to‘liq qizil bo‘lsa — barmoq to‘g‘ri turibdi.</p>}
+      </div>
       <canvas ref={canvasRef} className="hidden" />
 
       <div className="flex items-center justify-between gap-4">
