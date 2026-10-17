@@ -24,3 +24,5 @@
 - `src/components/mobile/` has its own `AGENTS.md`; read it before changing mobile UI.
 - Vital AI signal processing lives in `src/lib/vitals/` (pure DSP in `dsp.ts`, camera 3A/torch in `camera.ts`, BLE in `wearables.ts`, Health Connect/Apple Health import via `@capgo/capacitor-health` in `healthConnect.ts` (new-since-last-import rows into `health_records`, only an on/off flag locally)); sensors only report results, so finger, face and watch sources share one analysis and AI path.
 - Vital AI PDF reports are registered in `vital_reports` (code + SHA-256 only) and verified publicly via the `verify_vital_report` RPC at `/verify/vital/:code`, so QR checks never expose patient health data.
+- Face tracking for Vital AI rPPG and Psixolog AI expression scans runs only on-device via `src/lib/vitals/faceMesh.ts` (MediaPipe Face Landmarker); images never leave the phone and only numeric scores are sent to AI, because face images are sensitive biometric data.
+- Camera `<video>` elements used for analysis must stay visible on screen, because Android Chrome/WebView pauses hidden muted videos and the measurement freezes.

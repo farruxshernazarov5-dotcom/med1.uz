@@ -118,3 +118,11 @@
 - [x] Bildirishnomalar: e’lon/reklama/xavfsizlik xabarlari ulandi, filtr, saralash, sanalar bo‘yicha guruh
 - [x] Mobil aqlli qidiruv (xizmatlar, ensiklopediya, Med1 AI, ovoz)
 - [ ] Yangi APK’da haqiqiy telefonda sinash — qurilma kerak
+
+## Vital AI va Psixolog AI yuz skaneri (2026-10-17)
+- [x] Barmoq tekshiruvining qotib qolishini tuzatish (yashirin video to'xtab qolardi)
+- [x] Yuz tekshiruvini haqiqiy yuz modeliga o'tkazish (devor/fon rad etiladi), yuz to'ri va PULS yorlig'i
+- [x] Puls ritmi bahosi (normal / taxikardiya / bradikardiya / notekis)
+- [x] Psixolog AI uchun yuz mimikasi tahlili, AI ga uzatish va PDF xulosa (Qabullarda ham)
+- [ ] Yuz orqali kirish — foydalanuvchi qarorini kutmoqda (telefonning o'z Face Unlock'i tavsiya etilgan)
+- [ ] Haqiqiy telefonda sinov — foydalanuvchi yangi APK yig'ishi kerak
