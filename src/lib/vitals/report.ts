@@ -1,4 +1,5 @@
 import { isNativeApp } from "@/lib/nativeApp";
+import { sendPdfToTelegram } from "@/lib/telegramBotLink";
 import { supabase } from "@/integrations/supabase/client";
 
 /** jsPDF core fonts lack Uzbek apostrophes and emoji; normalise to plain Latin. */
@@ -128,8 +129,10 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   }
 
   const file = `med-ai-${new Date().toISOString().slice(0, 10)}.pdf`;
-  if (!isNativeApp()) { doc.save(file); return; }
   const data = doc.output("datauristring").split(",")[1];
+  // Also deliver to the user's linked Telegram bot (silently skipped when not linked).
+  void sendPdfToTelegram(data, title, file);
+  if (!isNativeApp()) { doc.save(file); return; }
   const { Filesystem, Directory } = await import("@capacitor/filesystem");
   const saved = await Filesystem.writeFile({ path: file, data, directory: Directory.Cache });
   const { Share } = await import("@capacitor/share");
