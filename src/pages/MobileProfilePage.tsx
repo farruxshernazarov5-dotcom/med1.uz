@@ -14,6 +14,7 @@ import { getDashboardPath } from '@/lib/dashboard';
 import { hapticTap } from '@/lib/nativeApp';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import TelegramBotLinkCard from '@/components/TelegramBotLinkCard';
 const Security = lazy(()=>import('@/components/mobile/MobileProfileSecurity'));
 const ProfileEditor = lazy(()=>import('@/components/dashboard/PatientProfileEditor'));
 const Family = lazy(()=>import('@/components/patient/hms/PatientFamily'));
@@ -62,7 +63,7 @@ export default function MobileProfilePage() {
  case 'referral':return <Referral/>;
  case 'cash_wallet':return <CashWallet/>;
  case 'payments':return <Payments/>;
- case 'notifications':return <Reminders/>;
+ case 'notifications':return <div className="space-y-4">{user&&<TelegramBotLinkCard/>}<Reminders/></div>;
  case 'favorites':return link(tr('Sevimli klinika, shifokor va xizmatlar','Избранные клиники, врачи и услуги','Favourite clinics, doctors and services'),'/mobile-services?view=favorites');
  case 'support':return user?<Support/>:link(tr('Biz bilan bog‘lanish','Связаться с нами','Contact us'),'/contact');
  case 'feedback':return <Feedback/>;
