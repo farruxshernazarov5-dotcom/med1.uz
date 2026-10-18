@@ -50,6 +50,13 @@
       "when": 1792337808243,
       "tag": "0006_doctor_photo_map_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792338037794,
+      "tag": "0007_telegram_link_and_daily_job",
+      "breakpoints": true
     }
   ]
 }

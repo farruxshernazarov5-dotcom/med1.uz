@@ -11189,6 +11189,21 @@ export type Database = {
           },
         ]
       }
+      internal_job_secrets: {
+        Row: {
+          name: string
+          secret: string
+        }
+        Insert: {
+          name: string
+          secret?: string
+        }
+        Update: {
+          name?: string
+          secret?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount: number
@@ -17598,6 +17613,27 @@ export type Database = {
           tax_amount?: number
           user_id?: string | null
           year?: number
+        }
+        Relationships: []
+      }
+      telegram_link_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          token?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          token?: string
+          user_id?: string
         }
         Relationships: []
       }
