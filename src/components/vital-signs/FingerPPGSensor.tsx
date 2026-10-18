@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Fingerprint, StopCircle, SwitchCamera, Heart, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import LiveWaveform from "./LiveWaveform";
+import VitalLiveMonitor from "./VitalLiveMonitor";
 import VitalResultScreen from "./VitalResultScreen";
 import { openCamera, lock3A, setTorch, stopStream, rearCameras } from "@/lib/vitals/camera";
 import { estimateSpo2, analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
@@ -48,6 +48,10 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const noFingerSince = useRef(0);
   const [result, setResult] = useState<{ bpm: number; signal: number; accuracy: number; stress?: string | null; resp?: number | null; spo2?: number | null; rhythm?: string | null } | null>(null);
   const bpmRef = useRef<number | null>(null);
+  const [liveResp, setLiveResp] = useState<number | null>(null);
+  const [liveStress, setLiveStress] = useState<string | null>(null);
+  const stressRef = useRef<string | null>(null);
+  const respRef = useRef<number | null>(null);
 
   const stop = useCallback(() => {
     running.current = false;
@@ -137,17 +141,21 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
         const res = (gg && (!rr || gg.sqi > rr.sqi)) ? gg : rr;
         const q = res?.sqi ?? 0;
         sqiRef.current = sqiRef.current * 0.6 + q * 0.4;
-        if (res && q >= MIN_SQI) bpmRef.current = res.bpm;
+        if (res && q >= MIN_SQI) { bpmRef.current = res.bpm; if (res.stress) stressRef.current = res.stress; }
+        if (red.current.length > FS * 12 && tick % 30 === 0) {
+          const rp = respiratoryRate(resample(red.current.slice(-FS * 20), FS), FS);
+          if (rp && rp.ratio > 0.25) respRef.current = rp.rate;
+        }
       }
       const recent = red.current.slice(-FS * 6);
-      if (recent.length > FS * 2) wave.current = bandpass(resample(recent, FS).map((x) => -x), FS, 0.7, 3.5);
+      if (recent.length > FS) wave.current = bandpass(resample(recent, FS).map((x) => -x), FS, 0.7, 3.5);
 
       // Time runs whenever the finger covers the lens; weak signal only slows it down.
       const onLens = coverage >= COVER;
       const good = onLens && sqiRef.current >= MIN_SQI;
       if (onLens) goodMs.current += good ? dt : dt * 0.5;
       if (onLens && !good && h.tone === "ok" && red.current.length > FS * 6) h = { text: "Signal kuchsiz — qimirlamay, yengil bosib turing", tone: "warn" };
-      if (ui) { setPaused(!good); setHint(h); setSqi(Math.round(sqiRef.current)); setBpm(bpmRef.current); }
+      if (ui) { setPaused(!good); setHint(h); setSqi(Math.round(sqiRef.current)); setBpm(bpmRef.current); setLiveResp(respRef.current); setLiveStress(stressRef.current); }
       // Spoken guidance: say each new instruction once.
       const key = h.text.startsWith("Signal yo") ? "lens_switch" : h.text.startsWith("Barmog") ? "finger_place" : h.text.startsWith("Qattiq") ? "press_light" : h.text.startsWith("Signal") ? "signal_weak" : "measuring";
       if (key !== lastSpoken.current) { lastSpoken.current = key; onStatus?.(key); }
@@ -161,16 +169,23 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const start = async (deviceId = lens) => {
     try {
       stopStream(streamRef.current); window.clearInterval(torchTimer.current); noFingerSince.current = 0;
-      red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; bpmRef.current = null; frameN.current = 0;
+      red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; bpmRef.current = null; frameN.current = 0; stressRef.current = null; respRef.current = null; setLiveResp(null); setLiveStress(null);
       setBpm(null); setSqi(0); setElapsed(0); setResult(null); coverAvg.current = 0;
       onStatus?.("start");
+      if (!deviceId) deviceId = await findTorchLens();
       const stream = await openCamera("environment", 320, 240, deviceId).catch(() => openCamera("environment"));
       streamRef.current = stream;
       const v = videoRef.current!;
       v.srcObject = stream; await v.play();
       const track = stream.getVideoTracks()[0];
-      setTorchOk(await setTorch(track, true));
-      rearCameras().then(setLenses).catch(() => {});
+      const torchOn = await setTorch(track, true);
+      setTorchOk(torchOn);
+      const curId = track.getSettings?.().deviceId;
+      if (torchOn && curId) { setLens(curId); localStorage.setItem("med1_ppg_lens", curId); }
+      navigator.mediaDevices.enumerateDevices().then(async (all) => {
+        const rear = await rearCameras();
+        setLenses(rear.length > 1 ? rear : all.filter((d) => d.kind === "videoinput"));
+      }).catch(() => {});
       setHint({ text: "Barmog‘ingizni orqa kameraga qo‘ying", tone: "warn" });
       onStatus?.("finger_place");
       // Let auto-exposure settle on the finger, then freeze it so brightness changes = blood volume only.
@@ -186,6 +201,23 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       setHint({ text: "Kamera ruxsati berilmadi. Sozlamalardan kameraga ruxsat bering.", tone: "bad" });
       onStatus?.("camera_error");
     }
+  };
+
+  /** Multi-lens phones put the flash next to one lens only: probe rear lenses and pick the one that controls the torch. */
+  const findTorchLens = async (): Promise<string | undefined> => {
+    try {
+      const tmp = await openCamera("environment", 320, 240); stopStream(tmp);
+      const list = await rearCameras();
+      setLenses(list);
+      for (const d of list) {
+        const s = await openCamera("environment", 320, 240, d.deviceId).catch(() => null);
+        if (!s) continue;
+        const caps = (s.getVideoTracks()[0].getCapabilities?.() ?? {}) as any;
+        stopStream(s);
+        if (caps.torch) { setLens(d.deviceId); localStorage.setItem("med1_ppg_lens", d.deviceId); return d.deviceId; }
+      }
+    } catch { /* fall back to default rear camera */ }
+    return undefined;
   };
 
   const switchLens = () => {
@@ -240,7 +272,7 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
         )}
       </div>
 
-      <LiveWaveform data={wave} active={active} />
+      <VitalLiveMonitor data={wave} active={active} bpm={bpm} resp={liveResp} stress={liveStress} />
 
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">

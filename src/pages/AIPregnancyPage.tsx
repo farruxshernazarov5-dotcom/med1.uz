@@ -15,9 +15,10 @@ import {
   Baby, Heart, Calendar, MessageSquare, Send, Loader2,
   Activity, Apple, Pill, AlertTriangle, CheckCircle, Clock,
   Plus, ChevronRight, Scale, Ruler, Brain, Eye, Hand,
-  Stethoscope, Bell, Trash2, Shield, Sparkles
+  Stethoscope, Bell, Trash2, Shield, Sparkles, Briefcase
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
+import HospitalBag from "@/components/pregnancy/HospitalBag";
 import SEO from "@/components/SEO";
 import aiPregnancyImg from "@/assets/ai-pregnancy.webp";
 import { cn } from "@/lib/utils";
@@ -75,7 +76,7 @@ const WEEKLY_DATA: Record<number, { size: string; weight: string; fruit: string;
 };
 
 type Msg = { role: "user" | "assistant"; content: string };
-type TabId = "overview" | "weekly" | "chat" | "kicks" | "reminders";
+type TabId = "overview" | "weekly" | "chat" | "kicks" | "bag" | "reminders";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-pregnancy`;
 
@@ -331,6 +332,7 @@ const AIPregnancyPage = () => {
     { id: "weekly" as TabId, label: "Haftalik", icon: Calendar },
     { id: "chat" as TabId, label: "AI Chat", icon: MessageSquare },
     { id: "kicks" as TabId, label: "Harakatlar", icon: Activity },
+    { id: "bag" as TabId, label: "Tug'ruq sumkasi", icon: Briefcase },
     { id: "reminders" as TabId, label: "Eslatmalar", icon: Bell },
   ];
 
@@ -603,6 +605,8 @@ const AIPregnancyPage = () => {
             )}
           </div>
         )}
+
+        {tab === "bag" && user && <HospitalBag userId={user.id} week={currentWeek} />}
 
         {/* ———— REMINDERS ———— */}
         {tab === "reminders" && (

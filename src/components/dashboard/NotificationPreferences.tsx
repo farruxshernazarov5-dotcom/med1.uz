@@ -1,3 +1,4 @@
+import TelegramBotLinkCard from "@/components/TelegramBotLinkCard";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,6 +93,7 @@ const NotificationPreferences = () => {
   ];
 
   return (
+    <div className="space-y-4"><TelegramBotLinkCard />
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
@@ -152,7 +154,7 @@ const NotificationPreferences = () => {
           {saving ? "Saqlanmoqda..." : "Saqlash"}
         </Button>
       </CardContent>
-    </Card>
+    </Card></div>
   );
 };
 

@@ -11189,6 +11189,21 @@ export type Database = {
           },
         ]
       }
+      internal_job_secrets: {
+        Row: {
+          name: string
+          secret: string
+        }
+        Insert: {
+          name: string
+          secret?: string
+        }
+        Update: {
+          name?: string
+          secret?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount: number
@@ -17601,6 +17616,27 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_link_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          token?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       telegram_otp: {
         Row: {
           chat_id: number | null
@@ -18737,6 +18773,7 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      sync_doctor_photo_map: { Args: { _map: Json }; Returns: number }
       sync_doctor_photo_urls: {
         Args: { _base: string; _ids: string[] }
         Returns: number

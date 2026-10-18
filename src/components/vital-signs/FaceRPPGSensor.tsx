@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScanFace, StopCircle, Heart, Wind, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import LiveWaveform from "./LiveWaveform";
+import VitalLiveMonitor from "./VitalLiveMonitor";
 import { openCamera, stopStream } from "@/lib/vitals/camera";
 import VitalResultScreen from "./VitalResultScreen";
 import { analyzePulse, bandpass, posSignal, resample, respiratoryRate } from "@/lib/vitals/dsp";
@@ -60,6 +60,9 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
   const [elapsed, setElapsed] = useState(0);
   const [bpm, setBpm] = useState<number | null>(null);
   const [resp, setResp] = useState<number | null>(null);
+  const [liveStress, setLiveStress] = useState<string | null>(null);
+  const stressRef = useRef<string | null>(null);
+  const respRef = useRef<number | null>(null);
   const [sqi, setSqi] = useState(0);
   const [hint, setHint] = useState<Hint>({ text: "Yuzingizni ramka ichiga joylang", tone: "ok" });
 
@@ -156,12 +159,19 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       }
 
       frame.current++;
+      if (samples.current.length > FS * 2 && samples.current.length <= FS * 8 && frame.current % 10 === 0) {
+        wave.current = bandpass(posSignal(resampleRGB(samples.current), FS), FS, 0.7, 3.5);
+      }
+      if (samples.current.length > FS * 14 && frame.current % 30 === 0) {
+        const rp = respiratoryRate(resample(lum.current.slice(-FS * 20), FS), FS);
+        if (rp && rp.ratio > 0.25) respRef.current = rp.rate;
+      }
       if (samples.current.length > FS * 8 && frame.current % 15 === 0) {
         const pos = bandpass(posSignal(resampleRGB(samples.current.slice(-FS * 10)), FS), FS, 0.7, 3.5);
         wave.current = pos.slice(-FS * 6);
         const res = analyzePulse(pos, FS, false);
         sqiRef.current = sqiRef.current * 0.6 + (res?.sqi ?? 0) * 0.4;
-        if (res && res.sqi >= MIN_SQI) bpmRef.current = res.bpm;
+        if (res && res.sqi >= MIN_SQI) { bpmRef.current = res.bpm; if (res.stress) stressRef.current = res.stress; }
       }
       const good = h.tone === "ok" && sqiRef.current >= MIN_SQI;
       if (face && h.tone !== "bad") goodMs.current += good ? dt : dt * 0.5;
@@ -174,7 +184,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
       say(key);
       const sec = Math.min(DURATION, goodMs.current / 1000);
       // React state at ~6 Hz keeps old phones smooth.
-      if (frame.current % 5 === 0) { setHint(h); setElapsed(sec); setSqi(Math.round(sqiRef.current)); setBpm(bpmRef.current); }
+      if (frame.current % 5 === 0) { setHint(h); setElapsed(sec); setSqi(Math.round(sqiRef.current)); setBpm(bpmRef.current); setResp(respRef.current); setLiveStress(stressRef.current); }
       if (sec >= DURATION) { finish(); return; }
     }
     requestAnimationFrame(loop);
@@ -183,6 +193,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
   const start = async () => {
     try {
       samples.current = []; lum.current = []; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; bpmRef.current = null; nose.current = null; lm.current = null; frame.current = 0;
+      stressRef.current = null; respRef.current = null; setLiveStress(null);
       setBpm(null); setResp(null); setSqi(0); setElapsed(0); setResult(null);
       spoken.current = { key: "face_start", at: performance.now() }; weakSince.current = 0;
       onStatus?.("face_start");
@@ -231,7 +242,7 @@ const FaceRPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =>
           : <Button onClick={start} disabled={loading}><ScanFace className="mr-1 h-4 w-4" /> Skanerlash</Button>}
       </div>
 
-      <LiveWaveform data={wave} active={active} />
+      <VitalLiveMonitor data={wave} active={active} bpm={bpm} resp={resp} stress={liveStress} />
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground"><span>Aniqlik</span><span className="tabular-nums">{Math.min(100, Math.round(sqi * 1.6))}%</span></div>
         <Progress value={Math.min(100, sqi * 1.6)} className="h-2" />

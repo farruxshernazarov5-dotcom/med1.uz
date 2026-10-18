@@ -560,6 +560,14 @@ async function setupBot() {
   };
 }
 
+async function signedInUser(req: Request): Promise<string | null> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) return null;
+  const authClient = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY") ?? "", { global: { headers: { Authorization: authHeader } } });
+  const { data } = await authClient.auth.getClaims(authHeader.slice(7));
+  return (data?.claims?.sub as string) ?? null;
+}
+
 async function authenticatedAdmin(req: Request): Promise<string | false> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) return false;
@@ -597,9 +605,46 @@ Deno.serve(async (req) => {
     }
     if (url.pathname.endsWith("/daily")) {
       // Only the scheduler (service role) or an admin may trigger the daily send.
-      if (!(await isTrustedCaller(req))) return new Response("Forbidden", { status: 403, headers: corsHeaders });
+      const jobSecret = req.headers.get("x-job-secret");
+      let jobOk = false;
+      if (jobSecret) {
+        const { data: row } = await db.from("internal_job_secrets").select("secret").eq("name", "emedinfo_daily").maybeSingle();
+        jobOk = !!row?.secret && row.secret === jobSecret;
+      }
+      if (!jobOk && !(await isTrustedCaller(req))) return new Response("Forbidden", { status: 403, headers: corsHeaders });
       // Idempotent: each user receives at most one message per 20 hours.
       return json(await sendDaily());
+    }
+
+    if (url.pathname.endsWith("/link-token") || url.pathname.endsWith("/send-report") || url.pathname.endsWith("/link-status") || url.pathname.endsWith("/unlink")) {
+      const uid = await signedInUser(req);
+      if (!uid) return json({ error: "Avval tizimga kiring" }, 401);
+      if (url.pathname.endsWith("/link-token")) {
+        await db.from("telegram_link_tokens").delete().eq("user_id", uid);
+        const { data, error } = await db.from("telegram_link_tokens").insert({ user_id: uid }).select("token").single();
+        if (error) return json({ error: error.message }, 500);
+        const me = await tg("getMe", {});
+        return json({ url: `https://t.me/${me?.result?.username ?? "eMedInfobot"}?start=link_${data.token}` });
+      }
+      const { data: prof } = await db.from("profiles").select("telegram_chat_id").eq("user_id", uid).maybeSingle();
+      const chat = prof?.telegram_chat_id ? Number(prof.telegram_chat_id) : 0;
+      if (url.pathname.endsWith("/link-status")) return json({ linked: !!chat });
+      if (url.pathname.endsWith("/unlink")) { await db.from("profiles").update({ telegram_chat_id: null }).eq("user_id", uid); return json({ ok: true }); }
+      if (!chat) return json({ error: "Telegram bot ulanmagan", linked: false }, 409);
+      const body = await req.json().catch(() => ({}));
+      const title = String(body?.title ?? "Med AI xulosasi").slice(0, 200);
+      const name = String(body?.filename ?? "med-ai-xulosa.pdf").replace(/[^\w.\-]/g, "_").slice(0, 80);
+      const b64 = String(body?.pdf ?? "");
+      if (!b64 || b64.length > 14_000_000) return json({ error: "PDF fayl noto‘g‘ri yoki juda katta" }, 400);
+      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      const form = new FormData();
+      form.append("chat_id", String(chat));
+      form.append("caption", `📄 <b>${esc(title)}</b>\n\n⚠️ Bu tashxis emas — shifokor bilan maslahatlashing.`);
+      form.append("parse_mode", "HTML");
+      form.append("document", new Blob([bytes], { type: "application/pdf" }), name.endsWith(".pdf") ? name : `${name}.pdf`);
+      const r = await fetch(`https://api.telegram.org/bot${TOKEN}/sendDocument`, { method: "POST", body: form });
+      const out = await r.json();
+      return json({ ok: !!out?.ok, error: out?.ok ? undefined : out?.description }, out?.ok ? 200 : 502);
     }
 
     if (url.pathname.endsWith("/publish")) {
@@ -695,6 +740,20 @@ Deno.serve(async (req) => {
 
     const text = String(msg.text ?? "").trim();
     const cmd = text.split(/[\s@]/)[0].toLowerCase();
+    const startArg = text.split(/\s+/)[1] ?? "";
+    if (cmd === "/start" && startArg.startsWith("link_")) {
+      const token = startArg.slice(5).replace(/[^a-f0-9]/g, "");
+      const { data: row } = await db.from("telegram_link_tokens").select("user_id, expires_at").eq("token", token).maybeSingle();
+      await db.from("telegram_link_tokens").delete().eq("token", token);
+      if (!row || new Date(row.expires_at) < new Date()) {
+        await tg("sendMessage", { chat_id: chatId, text: "⌛ Havola eskirgan. Med1.uz → Profil → Telegram bot bo‘limidan qayta ulang." });
+      } else {
+        await db.from("profiles").update({ telegram_chat_id: String(chatId) }).eq("user_id", row.user_id);
+        await tg("sendMessage", { chat_id: chatId, parse_mode: "HTML", text: "✅ <b>Hisobingiz botga ulandi!</b>\nEndi tahlil PDF xulosalari, bildirishnomalar va har kuni 20:00 da Med AI maslahatlari shu yerga keladi.", reply_markup: replyKeyboard(true) });
+        await sendMenu(chatId);
+      }
+      return new Response("ok", { headers: corsHeaders });
+    }
     if (cmd === "/start") {
       const profiles = await findProfiles(chatId);
       const name = msg.from?.first_name ? `, ${esc(msg.from.first_name)}` : "";
