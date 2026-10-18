@@ -18737,6 +18737,7 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      sync_doctor_photo_map: { Args: { _map: Json }; Returns: number }
       sync_doctor_photo_urls: {
         Args: { _base: string; _ids: string[] }
         Returns: number

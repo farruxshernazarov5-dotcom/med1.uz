@@ -43,6 +43,13 @@
       "when": 1791999441688,
       "tag": "0005_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792337808243,
+      "tag": "0006_doctor_photo_map_sync",
+      "breakpoints": true
     }
   ]
 }
