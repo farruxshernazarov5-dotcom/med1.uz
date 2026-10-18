@@ -65,12 +65,12 @@ export default function HospitalBag({ userId, week }: { userId: string; week: nu
   const [newItem, setNewItem] = useState("");
 
   useEffect(() => {
-    supabase.from("health_records").select("id,data").eq("user_id", userId).eq("record_type", "pregnancy_bag")
+    supabase.from("health_records").select("id,value").eq("user_id", userId).eq("record_type", "pregnancy_bag")
       .order("created_at", { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => {
         if (!data) return;
         setRowId(data.id);
-        const d = (data.data ?? {}) as any;
+        const d = ((data as any).value ?? {}) as any;
         setDone(new Set(d.done ?? []));
         setCustom(d.custom ?? []);
       });
@@ -78,9 +78,9 @@ export default function HospitalBag({ userId, week }: { userId: string; week: nu
 
   const save = async (nd: Set<string>, nc: Item[]) => {
     const payload = { done: [...nd], custom: nc };
-    if (rowId) await supabase.from("health_records").update({ data: payload } as any).eq("id", rowId);
+    if (rowId) await supabase.from("health_records").update({ value: payload } as any).eq("id", rowId);
     else {
-      const { data } = await supabase.from("health_records").insert({ user_id: userId, record_type: "pregnancy_bag", data: payload } as any).select("id").single();
+      const { data } = await supabase.from("health_records").insert({ user_id: userId, record_type: "pregnancy_bag", value: payload } as any).select("id").single();
       if (data) setRowId(data.id);
     }
   };
