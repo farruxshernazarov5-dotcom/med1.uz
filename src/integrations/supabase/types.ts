@@ -18477,6 +18477,10 @@ export type Database = {
         Args: { _admin: string; _payment_id: string; _reason: string }
         Returns: Json
       }
+      clinic_owner_has_feature: {
+        Args: { _clinic_id: string; _feature: string }
+        Returns: boolean
+      }
       convert_referral_credits_to_cash: {
         Args: { _credits: number; _idempotency_key: string }
         Returns: Json

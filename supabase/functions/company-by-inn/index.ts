@@ -11,6 +11,14 @@ serve(async (req) => {
   }
 
   try {
+    const __auth = req.headers.get('Authorization') || '';
+    const __token = __auth.replace(/^Bearer\s+/i, '');
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const __c = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: __auth } } });
+    const { data: __claims } = __token ? await __c.auth.getClaims(__token) : { data: null };
+    if (!__claims?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Tizimga kiring" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     const { inn } = await req.json();
 
     if (!inn || !/^\d{9}$/.test(inn)) {
