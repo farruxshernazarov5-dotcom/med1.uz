@@ -53,7 +53,8 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const moodContext = mood ? `\nFoydalanuvchining hozirgi kayfiyati: ${mood}/10` : "";
+    const __mood = Number(mood);
+    const moodContext = Number.isFinite(__mood) && __mood >= 0 && __mood <= 10 ? `\nFoydalanuvchining hozirgi kayfiyati: ${Math.round(__mood)}/10` : "";
     // On-device facial-expression scores (numbers only, no images). Validate strictly.
     const fa = __body?.faceAnalysis;
     const num = (v: unknown, max = 100) => (typeof v === "number" && isFinite(v) ? Math.max(0, Math.min(max, Math.round(v))) : null);

@@ -17,10 +17,9 @@ Deno.serve(async (req) => {
     const raw = await req.text();
     const secret = Deno.env.get("UZUM_SECRET_KEY") || "";
     const provided = req.headers.get("x-uzum-signature") || "";
-    if (secret) {
-      const expected = await hmacSha256Hex(secret, raw);
-      if (provided.toLowerCase() !== expected.toLowerCase()) return json(401, { error: 0, error_note: "invalid signature" });
-    }
+    if (!secret) return json(503, { error: -9, error_note: "not configured" });
+    const expected = await hmacSha256Hex(secret, raw);
+    if (!provided || provided.toLowerCase() !== expected.toLowerCase()) return json(401, { error: 0, error_note: "invalid signature" });
 
     const body = JSON.parse(raw || "{}");
     const { action, order_id, transaction_id, amount, service_id } = body;

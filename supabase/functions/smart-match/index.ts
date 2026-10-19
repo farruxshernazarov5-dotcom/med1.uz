@@ -94,8 +94,9 @@ serve(async (req) => {
       analysis = { keywords: [input_text.slice(0, 50)], symptoms: [], specialties: [], intent_score: 30, priority: "low", is_emergency: false, ai_summary: input_text.slice(0, 100) };
     }
 
-    const specialties: string[] = analysis.specialties || [];
-    const keywords: string[] = analysis.keywords || [];
+    const __term = (v: unknown) => typeof v === "string" ? v.replace(/[^\p{L}\p{N} '-]/gu, "").trim().slice(0, 40) : "";
+    const specialties: string[] = (Array.isArray(analysis.specialties) ? analysis.specialties : []).map(__term).filter(Boolean).slice(0, 8);
+    const keywords: string[] = (Array.isArray(analysis.keywords) ? analysis.keywords : []).map(__term).filter(Boolean).slice(0, 8);
 
     // 2. Match clinics
     const orFilter: string[] = [];

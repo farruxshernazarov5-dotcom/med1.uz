@@ -26,7 +26,12 @@ serve(async (req) => {
     __usageId = access.usageId ?? null;
 
 
-    const { messages, skinType, age, concerns, mode, photoBase64, lang } = await req.json();
+    const { messages, skinType: __st, age: __age, concerns: __cc, mode, photoBase64, lang } = await req.json();
+    const __clean = (v: unknown, n: number) => typeof v === "string" ? v.replace(/[^\p{L}\p{N} ,.'-]/gu, "").trim().slice(0, n) : (typeof v === "number" && isFinite(v) ? String(v) : "");
+    const skinType = __clean(__st, 30);
+    const __ageN = Number(__age);
+    const age = Number.isInteger(__ageN) && __ageN > 0 && __ageN < 120 ? String(__ageN) : "";
+    const concerns = Array.isArray(__cc) ? __cc.map((c) => __clean(c, 40)).filter(Boolean).slice(0, 10).join(", ") : __clean(__cc, 200);
     const __lang = resolveResponseLang(messages, lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");

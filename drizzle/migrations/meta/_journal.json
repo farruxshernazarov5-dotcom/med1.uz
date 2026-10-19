@@ -64,6 +64,13 @@
       "when": 1792405149320,
       "tag": "0008_restrict_internal_reference_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792405328485,
+      "tag": "0009_lock_ai_credit_rpcs",
+      "breakpoints": true
     }
   ]
 }

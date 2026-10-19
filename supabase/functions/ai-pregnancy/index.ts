@@ -64,10 +64,12 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     let contextMessage = "";
-    if (pregnancyWeek) {
-      contextMessage = `\n\nFoydalanuvchi hozir homiladorlikning ${pregnancyWeek}-haftasida (${trimester || ""}-trimester).`;
+    const __week = Number(pregnancyWeek);
+    const __tri = Number(trimester);
+    if (Number.isInteger(__week) && __week >= 1 && __week <= 42) {
+      contextMessage = `\n\nFoydalanuvchi hozir homiladorlikning ${__week}-haftasida${Number.isInteger(__tri) && __tri >= 1 && __tri <= 3 ? ` (${__tri}-trimester)` : ""}.`;
     }
-    if (mode) contextMessage += `\nReja rejimi: ${mode}.`;
+    if (typeof mode === "string" && /^[a-z_-]{1,30}$/i.test(mode)) contextMessage += `\nReja rejimi: ${mode}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
