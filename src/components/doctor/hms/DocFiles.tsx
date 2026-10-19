@@ -11,6 +11,14 @@ import { Upload, Image as ImageIcon, FileIcon, Trash2, Eye } from "lucide-react"
 
 interface Props { doctorId: string }
 
+// Files are stored by storage path and signed for 1 hour on view, so removing a record revokes access.
+const storagePath = (url: string): string | null => {
+  if (!url) return null;
+  if (url.startsWith("storage:")) return url.slice(8);
+  const m = url.match(/\/object\/sign\/doctor-files\/([^?]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
+};
+
 const FILE_CATEGORIES = ["X-ray", "MRT", "KT", "UZI", "EKG", "Boshqa hujjat"];
 
 const DocFiles = ({ doctorId }: Props) => {
@@ -27,7 +35,13 @@ const DocFiles = ({ doctorId }: Props) => {
       supabase.from("doctor_files").select("*, doctor_patients(full_name)").eq("doctor_id", doctorId).order("created_at", { ascending: false }),
       supabase.from("doctor_patients").select("id, full_name").eq("doctor_id", doctorId),
     ]);
-    setFiles(f.data || []); setPatients(p.data || []);
+    const rows = await Promise.all((f.data || []).map(async (row: any) => {
+      const path = storagePath(row.file_url);
+      if (!path) return { ...row, view_url: "" };
+      const { data } = await supabase.storage.from("doctor-files").createSignedUrl(path, 60 * 60);
+      return { ...row, view_url: data?.signedUrl || "" };
+    }));
+    setFiles(rows); setPatients(p.data || []);
   };
   useEffect(() => { load(); }, [doctorId]);
 
@@ -39,8 +53,7 @@ const DocFiles = ({ doctorId }: Props) => {
     const path = `${user.id}/${Date.now()}-${file.name}`;
     const { error } = await supabase.storage.from("doctor-files").upload(path, file);
     if (error) { toast({ title: "Yuklashda xatolik", description: error.message, variant: "destructive" }); setUploading(false); return; }
-    const { data } = await supabase.storage.from("doctor-files").createSignedUrl(path, 60 * 60 * 24 * 365);
-    setForm({ ...form, file_url: data?.signedUrl || "", file_name: file.name, file_type: file.type.startsWith("image/") ? "image" : "document" });
+    setForm({ ...form, file_url: `storage:${path}`, file_name: file.name, file_type: file.type.startsWith("image/") ? "image" : "document" });
     setUploading(false);
     toast({ title: "✅ Fayl yuklandi" });
   };
@@ -60,7 +73,11 @@ const DocFiles = ({ doctorId }: Props) => {
 
   const remove = async (id: string) => {
     if (!confirm("Faylni o'chirish?")) return;
-    await supabase.from("doctor_files").delete().eq("id", id); load();
+    const row = files.find((x) => x.id === id);
+    const path = row ? storagePath(row.file_url) : null;
+    await supabase.from("doctor_files").delete().eq("id", id);
+    if (path) await supabase.storage.from("doctor-files").remove([path]);
+    load();
   };
 
   return (
@@ -82,12 +99,12 @@ const DocFiles = ({ doctorId }: Props) => {
             <div key={f.id} className="bg-card rounded-xl border border-border overflow-hidden group">
               <div className="aspect-square bg-muted flex items-center justify-center relative">
                 {f.file_type === "image" ? (
-                  <img src={f.file_url} alt={f.file_name} className="w-full h-full object-cover" />
+                  <img src={f.view_url} alt={f.file_name} className="w-full h-full object-cover" />
                 ) : (
                   <FileIcon className="w-10 h-10 text-muted-foreground" />
                 )}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-                  <a href={f.file_url} target="_blank" rel="noreferrer"><Button size="sm" variant="secondary"><Eye className="w-3 h-3" /></Button></a>
+                  <a href={f.view_url} target="_blank" rel="noreferrer"><Button size="sm" variant="secondary"><Eye className="w-3 h-3" /></Button></a>
                   <Button size="sm" variant="destructive" onClick={() => remove(f.id)}><Trash2 className="w-3 h-3" /></Button>
                 </div>
               </div>

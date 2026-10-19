@@ -349,7 +349,7 @@ const DocPatient360 = ({ patient, doctorId, open, onClose }: Props) => {
 
             <TabsContent value="files" className="space-y-2 mt-4">
               {files.map((f) => (
-                <a key={f.id} href={f.file_url} target="_blank" rel="noreferrer" className="block p-3 bg-muted/30 rounded-lg hover:bg-muted transition-colors">
+                <a key={f.id} href="#" onClick={async (e) => { e.preventDefault(); const u: string = f.file_url || ""; const m = u.startsWith("storage:") ? u.slice(8) : (u.match(/\/object\/sign\/doctor-files\/([^?]+)/)?.[1] ? decodeURIComponent(u.match(/\/object\/sign\/doctor-files\/([^?]+)/)![1]) : null); if (!m) return; const { data } = await supabase.storage.from("doctor-files").createSignedUrl(m, 60 * 60); if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener"); }} className="block p-3 bg-muted/30 rounded-lg hover:bg-muted transition-colors">
                   <p className="text-sm font-medium flex items-center gap-2">
                     <ImageIcon className="w-4 h-4" /> {f.file_name}
                   </p>
