@@ -85,6 +85,13 @@
       "when": 1792405677771,
       "tag": "0011_enforce_clinic_plan_emr_lab",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792405732534,
+      "tag": "0012_enforce_clinic_plan_finance_payroll",
+      "breakpoints": true
     }
   ]
 }
