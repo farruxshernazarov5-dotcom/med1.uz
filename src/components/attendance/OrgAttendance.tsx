@@ -264,7 +264,7 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
                         {searchResults.map((r)=>(
                           <div key={r.user_id} className="flex items-center justify-between gap-2 rounded border bg-background p-2 text-xs">
                             <div className="min-w-0">
-                              <p className="font-medium truncate">{r.full_name || r.email || "—"}</p>
+                              <p className="font-medium truncate">{r.full_name || r.email || "Hisob topildi ✓"}</p>
                               <p className="text-muted-foreground truncate">{r.email || ""} {r.phone ? `· ${r.phone}` : ""}</p>
                               <p className="font-mono text-[10px] text-muted-foreground truncate">{r.user_id}</p>
                             </div>
