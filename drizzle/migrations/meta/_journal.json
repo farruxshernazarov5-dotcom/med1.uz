@@ -71,6 +71,13 @@
       "when": 1792405328485,
       "tag": "0009_lock_ai_credit_rpcs",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792405405184,
+      "tag": "0010_server_side_appointment_price",
+      "breakpoints": true
     }
   ]
 }
