@@ -59,7 +59,7 @@ const SponsorProfilePage = () => {
                 jobTitle: sponsor.occupation ?? undefined,
                 url: sponsor.website_url ?? undefined,
                 description: sponsor.bio ?? undefined,
-              }),
+              }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"),
             }} />
             <article className="bg-card border border-border rounded-3xl overflow-hidden shadow-xl">
               <div className="bg-gradient-to-r from-[#0A2540] to-[#1e3a5f] p-8 text-center">
