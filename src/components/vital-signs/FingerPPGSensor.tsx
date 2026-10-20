@@ -76,8 +76,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     const a = pick(red.current), b = pick(green.current);
     const live = analyzePulse(resample(red.current.slice(-FS * 12), FS), FS, true);
     const best = [a, b, live].filter(Boolean).sort((x, y) => y!.sqi - x!.sqi)[0];
+    const curLens = lensList.current.length ? streamRef.current?.getVideoTracks()[0]?.getSettings?.().deviceId : undefined;
     stop();
-    const curLens = lensList.current.length ? lens : undefined;
     if (best && best.sqi >= MIN_SQI && curLens) localStorage.setItem("med1_ppg_lens", curLens);
     if (!best || best.sqi < MIN_SQI) {
       setHint({ text: "Signal sifati yetarli emas. Barmoqni yengil qo‘yib, qayta urinib ko‘ring.", tone: "bad" });
