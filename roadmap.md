@@ -128,9 +128,9 @@
 - [ ] Haqiqiy telefonda sinov — foydalanuvchi yangi APK yig'ishi kerak
 
 ## 2026-10-20 so‘rov
-- [ ] Yangi shifokorlar: qabulga yozilish, chat, video, sharh, taqqoslash — mobil versiyaga moslash (chat mobilda ochilmayapti)
-- [ ] Vital AI barmoq: kamera almashtirishda faqat orqa kameralar, fonarga eng yaqin linzani avtomatik topish (Note 14)
-- [ ] Vital AI PDF: rangli jadval va salomatlik holatiga qarab ogohlantiruvchi rang
-- [ ] Barcha bildirishnomalarni (xavfsizlik ham) Telegramga yuborish
-- [ ] Telegramda admin panel, statistika, yuborilgan xabarlar va qo‘shimcha tugmalar (@oak2019)
-- [ ] Qabullar bo‘limidagi AI xulosalarni mobilga moslash
+- [x] Yangi shifokorlar: qabulga yozilish, chat, video, sharh, taqqoslash — mobil versiyaga moslash (chat mobilda ochilmayapti)
+- [x] Vital AI barmoq: kamera almashtirishda faqat orqa kameralar, fonarga eng yaqin linzani avtomatik topish (Note 14)
+- [x] Vital AI PDF: rangli jadval va salomatlik holatiga qarab ogohlantiruvchi rang
+- [x] Barcha bildirishnomalarni (xavfsizlik ham) Telegramga yuborish
+- [x] Telegramda admin panel, statistika, yuborilgan xabarlar va qo‘shimcha tugmalar (@oak2019)
+- [x] Qabullar bo‘limidagi AI xulosalarni mobilga moslash
