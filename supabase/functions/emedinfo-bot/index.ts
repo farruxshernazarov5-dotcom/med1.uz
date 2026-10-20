@@ -87,8 +87,10 @@ const MAIN_MENU = {
     [callback("🤖 AI salomatlik", "ai"), callback("🏥 Tibbiy xizmatlar", "services")],
     [callback("💼 Biznes boshqaruvi", "business"), callback("💳 Tarif va to‘lovlar", "payments")],
     [callback("📰 Yangiliklar va OAV", "media"), callback("📄 Hujjatlar", "docs")],
+    [app("📅 Qabullarim", "/mobile-appointments"), app("🫀 Vital AI", "/ai-vital-signs")],
+    [app("👨‍⚕️ Shifokor topish", "/doctors"), app("🔔 Bildirishnomalar", "/mobile-profile")],
     [callback("🌐 Platforma haqida", "platform"), callback("☎️ Yordam", "help")],
-    [app("🚀 Med1.uz Mini App", "/")],
+    [callback("⚙️ Bot sozlamalari", "settings"), app("🚀 Med1.uz Mini App", "/")],
   ],
 };
 
@@ -335,13 +337,81 @@ async function checkAccess(chatId: number, userId: number, acceptNow = false): P
   return false;
 }
 
-async function isBotAdmin(chatId: number) {
+async function botAdminId(chatId: number): Promise<string | null> {
   const profiles = await findProfiles(chatId);
   for (const p of profiles) {
     const { data } = await db.rpc("has_role", { _user_id: p.user_id, _role: "admin" });
-    if (data) return true;
+    if (data) return p.user_id;
   }
-  return false;
+  return null;
+}
+const isBotAdmin = async (chatId: number) => !!(await botAdminId(chatId));
+
+const KIND_LABEL: Record<string, string> = { manual: "Eslatma (hammaga)", manual_linked: "Eslatma (ulanganlar)", daily_ai: "Kunlik AI xabari" };
+const ADMIN_KB = (webUrl: string) => ({ inline_keyboard: [
+  [callback("📊 Statistika", "admin_stats"), callback("📨 Yuborilgan xabarlar", "admin_broadcasts")],
+  [callback("🔔 Bildirishnomalar oqimi", "admin_notifs"), callback("✍️ Eslatma yuborish", "admin_compose")],
+  [{ text: "🖥 To‘liq admin panel", web_app: { url: webUrl } }],
+  [callback("⬅️ Asosiy menyu", "menu")],
+] });
+
+async function adminWebUrl(userId: string) {
+  let url = `${SITE}/admin/telegram-bot`;
+  const { data: userData } = await db.auth.admin.getUserById(userId);
+  const email = userData?.user?.email;
+  if (email) {
+    const { data: link } = await db.auth.admin.generateLink({ type: "magiclink", email, options: { redirectTo: url } });
+    if (link?.properties?.action_link) url = link.properties.action_link;
+  }
+  return url;
+}
+
+async function sendAdminPanel(chatId: number, view = "home") {
+  const adminId = await botAdminId(chatId);
+  if (!adminId) return tg("sendMessage", { chat_id: chatId, text: "⛔ Admin panel faqat administratorlar uchun. Admin hisobingizni botga ulang (Profil → Telegram bot)." });
+  const kb = ADMIN_KB(await adminWebUrl(adminId));
+  if (view === "broadcasts") {
+    const { data } = await db.from("emedinfo_bot_broadcasts").select("kind, message, sent_count, failed_count, created_at").order("created_at", { ascending: false }).limit(10);
+    const rows = (data ?? []).map((b: any) => `• ${new Date(b.created_at).toLocaleString("uz-UZ", { timeZone: "Asia/Tashkent" })} — ${esc(KIND_LABEL[b.kind] ?? b.kind)}\n  ${esc(String(b.message).replace(/<[^>]+>/g, "").slice(0, 90))}\n  ✅ ${b.sent_count} · ⚠️ ${b.failed_count}`);
+    return tg("sendMessage", { chat_id: chatId, parse_mode: "HTML", text: `📨 <b>Yuborilgan xabarlar (oxirgi 10)</b>\n\n${rows.join("\n\n") || "Hali xabar yuborilmagan."}`, reply_markup: kb });
+  }
+  if (view === "notifs") {
+    const day = new Date(Date.now() - 86400_000).toISOString();
+    const { count: total } = await db.from("notifications").select("id", { count: "exact", head: true }).gte("created_at", day);
+    const { count: sent } = await db.from("notifications").select("id", { count: "exact", head: true }).gte("created_at", day).not("telegram_sent_at", "is", null);
+    const { data: last } = await db.from("notifications").select("title, type, created_at, telegram_sent_at").not("telegram_sent_at", "is", null).order("created_at", { ascending: false }).limit(8);
+    const rows = (last ?? []).map((n: any) => `• ${new Date(n.created_at).toLocaleTimeString("uz-UZ", { timeZone: "Asia/Tashkent", hour: "2-digit", minute: "2-digit" })} ${esc(n.type ?? "")} — ${esc(String(n.title).slice(0, 70))}`);
+    return tg("sendMessage", { chat_id: chatId, parse_mode: "HTML", text: `🔔 <b>Bildirishnomalar (24 soat)</b>\n\nJami yaratilgan: <b>${total ?? 0}</b>\nTelegramga yetkazilgan: <b>${sent ?? 0}</b>\n\n<b>So‘nggi yuborilganlar:</b>\n${rows.join("\n") || "—"}`, reply_markup: kb });
+  }
+  if (view === "compose") {
+    return tg("sendMessage", { chat_id: chatId, parse_mode: "HTML", text: "✍️ <b>Eslatma yuborish</b>\n\nBotga shunday yozing:\n<code>/send Matn</code> — barcha bot foydalanuvchilariga\n<code>/send_linked Matn</code> — faqat hisobi ulanganlarga\n\nNatija va hisobot shu yerga keladi.", reply_markup: kb });
+  }
+  const s = await botStats();
+  return tg("sendMessage", {
+    chat_id: chatId, parse_mode: "HTML",
+    text: `🛡 <b>@eMedInfobot — Admin panel</b>\n━━━━━━━━━━━━━━\n👥 Jami: <b>${s.total}</b> · 🟢 24 soat: <b>${s.active24h}</b> · 🆕 7 kun: <b>${s.new7d}</b>\n🔗 Ulangan profillar: <b>${s.linkedProfiles}</b> · 🚫 Bloklagan: <b>${s.blocked}</b>\n📨 Oxirgi xabarlar: <b>${s.broadcasts.length}</b>\n━━━━━━━━━━━━━━\nBo‘limni tanlang 👇`,
+    reply_markup: kb,
+  });
+}
+
+async function sendNotification(id: string) {
+  const since = new Date(Date.now() - 15 * 60_000).toISOString();
+  const { data: n } = await db.from("notifications").update({ telegram_sent_at: new Date().toISOString() })
+    .eq("id", id).is("telegram_sent_at", null).gte("created_at", since).select("user_id, title, message, type, link").maybeSingle();
+  if (!n) return { skipped: true };
+  const { data: prof } = await db.from("profiles").select("telegram_chat_id").eq("user_id", n.user_id).maybeSingle();
+  const chat = prof?.telegram_chat_id ? Number(prof.telegram_chat_id) : 0;
+  if (!chat) return { skipped: true };
+  const t = String(n.type ?? "").toLowerCase();
+  const icon = /secur|device|login|xavf/.test(t) ? "🛡" : /pay|wallet|tolov|coin/.test(t) ? "💳" : /appoint|qabul|remind/.test(t) ? "📅" : /lab|result|tahlil/.test(t) ? "🧪" : /ad|top|classified|elon/.test(t) ? "📣" : "🔔";
+  const link = typeof n.link === "string" && n.link.startsWith("/") && !n.link.startsWith("//") ? n.link : "/mobile-profile";
+  const res = await tg("sendMessage", {
+    chat_id: chat, parse_mode: "HTML",
+    text: `${icon} <b>${esc(n.title)}</b>\n\n${esc(String(n.message ?? "").slice(0, 3000))}\n\n<i>Med1.uz bildirishnomasi</i>`,
+    reply_markup: { inline_keyboard: [[app("🔎 Batafsil ochish", link)], [callback("⚙️ Bot sozlamalari", "settings")]] },
+  });
+  if (!res?.ok && res?.error_code === 403) await db.from("emedinfo_bot_users").update({ is_blocked: true }).eq("chat_id", chat);
+  return { ok: !!res?.ok };
 }
 
 async function sendStatsMessage(chatId: number) {
@@ -351,7 +421,7 @@ async function sendStatsMessage(chatId: number) {
     chat_id: chatId,
     parse_mode: "HTML",
     text: `📊 <b>@eMedInfobot statistikasi</b>\n\n👥 Jami start: <b>${s.total}</b>\n🟢 Faol 24 soat: <b>${s.active24h}</b>\n📅 Faol 7 kun: <b>${s.active7d}</b>\n🆕 Yangi 7 kun: <b>${s.new7d}</b>\n\n📢 Kanal a’zolari: <b>${s.channelMembers}</b>\n📜 Shartlarni qabul qilgan: <b>${s.termsAccepted}</b>\n🔓 To‘liq ruxsat: <b>${s.fullAccess}</b>\n\n🔗 Ulangan profillar: <b>${s.linkedProfiles}</b>\n🚫 Bloklagan: <b>${s.blocked}</b>\n🔕 Kunlik xabar o‘chirilgan: <b>${s.dailyOptOut}</b>`,
-    reply_markup: { inline_keyboard: [[callback("🔄 Yangilash", "admin_stats")], [app("📈 To‘liq panel", "/admin/telegram-bot")]] },
+    reply_markup: { inline_keyboard: [[callback("🔄 Yangilash", "admin_stats"), callback("🛡 Admin panel", "admin")], [callback("📨 Yuborilgan xabarlar", "admin_broadcasts")]] },
   });
 }
 
@@ -424,7 +494,7 @@ async function sendMenu(chatId: number) {
     chat_id: chatId,
     text: `${HEADER}\n\n${status}\nKerakli bo‘limni tanlang 👇`,
     parse_mode: "HTML",
-    reply_markup: MAIN_MENU,
+    reply_markup: (await isBotAdmin(chatId)) ? { inline_keyboard: [[callback("🛡 Admin panel va statistika", "admin")], ...MAIN_MENU.inline_keyboard] } : MAIN_MENU,
   });
 }
 
@@ -510,6 +580,23 @@ async function handleCallback(chatId: number, data: string) {
     return tg("sendMessage", { chat_id: chatId, text: data === "daily_off" ? "🔕 Kunlik AI xabarlari o‘chirildi." : "🔔 Kunlik AI xabarlari yoqildi.", reply_markup: { inline_keyboard: [[callback(data === "daily_off" ? "🔔 Qayta yoqish" : "🔕 O‘chirish", data === "daily_off" ? "daily_on" : "daily_off")]] } });
   }
   if (data === "profile" || data === "patient") return sendProfile(chatId);
+  if (data === "admin") return sendAdminPanel(chatId);
+  if (data === "admin_broadcasts") return sendAdminPanel(chatId, "broadcasts");
+  if (data === "admin_notifs") return sendAdminPanel(chatId, "notifs");
+  if (data === "admin_compose") return sendAdminPanel(chatId, "compose");
+  if (data === "settings") {
+    const { data: u } = await db.from("emedinfo_bot_users").select("daily_opt_out").eq("chat_id", chatId).maybeSingle();
+    const linked = (await findProfiles(chatId)).length > 0;
+    return tg("sendMessage", {
+      chat_id: chatId, parse_mode: "HTML",
+      text: `⚙️ <b>Bot sozlamalari</b>\n\n🔗 Hisob: <b>${linked ? "ulangan" : "ulanmagan"}</b>\n🔔 Barcha bildirishnomalar (xavfsizlik, qabul, to‘lov, tahlil, e’lonlar): <b>${linked ? "Telegramga keladi" : "hisob ulangach keladi"}</b>\n🌅 Kunlik 20:00 Med AI xabari: <b>${u?.daily_opt_out ? "o‘chiq" : "yoqiq"}</b>`,
+      reply_markup: { inline_keyboard: [
+        [callback(u?.daily_opt_out ? "🔔 Kunlik xabarni yoqish" : "🔕 Kunlik xabarni o‘chirish", u?.daily_opt_out ? "daily_on" : "daily_off")],
+        [app("🔗 Hisobni ulash / uzish", "/mobile-profile")],
+        [callback("⬅️ Asosiy menyu", "menu")],
+      ] },
+    });
+  }
   if (data === "business") return sendBusiness(chatId);
   if (data === "ai") return sendSection(chatId, "🤖 <b>AI salomatlik markazi</b>", "Kerakli AI xizmatini tanlang:", AI_MENU);
   if (data === "services") return sendSection(chatId, "🏥 <b>Tibbiy xizmatlar</b>", "Barcha xizmatlar sayt bilan jonli sinxron ishlaydi:", SERVICES_MENU);
@@ -549,6 +636,7 @@ async function setupBot() {
       { command: "docs", description: "Hujjatlar va shartnomalar" },
       { command: "about", description: "Med1.uz haqida" },
       { command: "help", description: "Yordam" },
+      { command: "admin", description: "Admin panel (faqat adminlar)" },
     ] }),
     menuButton: await tg("setChatMenuButton", { menu_button: { type: "web_app", text: "Med1.uz", web_app: { url: SITE } } }),
     name: await tg("setMyName", { name: "Med1.uz — Tibbiy AI" }),
@@ -602,6 +690,15 @@ Deno.serve(async (req) => {
       const adminId = await authenticatedAdmin(req);
       if (!adminId) return new Response("Forbidden", { status: 403, headers: corsHeaders });
       try { return json(await broadcast(await req.json(), adminId)); } catch (e) { return json({ error: (e as Error).message }, 400); }
+    }
+    if (url.pathname.endsWith("/notify")) {
+      const jobSecret = req.headers.get("x-job-secret");
+      const { data: row } = await db.from("internal_job_secrets").select("secret").eq("name", "emedinfo_notify").maybeSingle();
+      if (!jobSecret || !row?.secret || row.secret !== jobSecret) return new Response("Forbidden", { status: 403, headers: corsHeaders });
+      const body = await req.json().catch(() => ({}));
+      const id = typeof body?.id === "string" && /^[0-9a-f-]{36}$/i.test(body.id) ? body.id : null;
+      if (!id) return json({ error: "id required" }, 400);
+      return json(await sendNotification(id));
     }
     if (url.pathname.endsWith("/daily")) {
       // Only the scheduler (service role) or an admin may trigger the daily send.
@@ -681,6 +778,7 @@ Deno.serve(async (req) => {
       if (chatId) {
         await trackUser(query.from, Number(chatId));
         if (data === "admin_stats") { await sendStatsMessage(Number(chatId)); return new Response("ok", { headers: corsHeaders }); }
+        if (data.startsWith("admin")) { await handleCallback(Number(chatId), data); return new Response("ok", { headers: corsHeaders }); }
         const ok = await checkAccess(Number(chatId), Number(query.from?.id), data === "gate_accept");
         if (ok) {
           if (data === "gate_accept") {
@@ -699,6 +797,17 @@ Deno.serve(async (req) => {
     await trackUser(msg.from, chatId);
     const firstWord = String(msg.text ?? "").trim().split(/[\s@]/)[0].toLowerCase();
     if (firstWord === "/stats") { await sendStatsMessage(chatId); return new Response("ok", { headers: corsHeaders }); }
+    if (firstWord === "/admin") { await sendAdminPanel(chatId); return new Response("ok", { headers: corsHeaders }); }
+    if (firstWord === "/send" || firstWord === "/send_linked") {
+      const adminId = await botAdminId(chatId);
+      if (!adminId) { await tg("sendMessage", { chat_id: chatId, text: "⛔ Faqat administratorlar uchun." }); return new Response("ok", { headers: corsHeaders }); }
+      const message = String(msg.text ?? "").trim().replace(/^\/\S+\s*/, "");
+      if (!message) { await sendAdminPanel(chatId, "compose"); return new Response("ok", { headers: corsHeaders }); }
+      await tg("sendMessage", { chat_id: chatId, text: "⏳ Yuborilmoqda…" });
+      const r = await broadcast({ message, segment: firstWord === "/send_linked" ? "linked" : "all" }, adminId);
+      await tg("sendMessage", { chat_id: chatId, parse_mode: "HTML", text: `✅ Yuborildi: <b>${r.sent}</b>\n⚠️ Xato: <b>${r.failed}</b>`, reply_markup: { inline_keyboard: [[callback("📨 Yuborilgan xabarlar", "admin_broadcasts"), callback("🛡 Admin panel", "admin")]] } });
+      return new Response("ok", { headers: corsHeaders });
+    }
     if (!(await checkAccess(chatId, Number(msg.from?.id)))) return new Response("ok", { headers: corsHeaders });
 
     if (msg.contact) {
