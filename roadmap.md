@@ -126,3 +126,11 @@
 - [x] Psixolog AI uchun yuz mimikasi tahlili, AI ga uzatish va PDF xulosa (Qabullarda ham)
 - [ ] Yuz orqali kirish — foydalanuvchi qarorini kutmoqda (telefonning o'z Face Unlock'i tavsiya etilgan)
 - [ ] Haqiqiy telefonda sinov — foydalanuvchi yangi APK yig'ishi kerak
+
+## 2026-10-20 so‘rov
+- [ ] Yangi shifokorlar: qabulga yozilish, chat, video, sharh, taqqoslash — mobil versiyaga moslash (chat mobilda ochilmayapti)
+- [ ] Vital AI barmoq: kamera almashtirishda faqat orqa kameralar, fonarga eng yaqin linzani avtomatik topish (Note 14)
+- [ ] Vital AI PDF: rangli jadval va salomatlik holatiga qarab ogohlantiruvchi rang
+- [ ] Barcha bildirishnomalarni (xavfsizlik ham) Telegramga yuborish
+- [ ] Telegramda admin panel, statistika, yuborilgan xabarlar va qo‘shimcha tugmalar (@oak2019)
+- [ ] Qabullar bo‘limidagi AI xulosalarni mobilga moslash
