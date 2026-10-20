@@ -92,6 +92,13 @@
       "when": 1792405732534,
       "tag": "0012_enforce_clinic_plan_finance_payroll",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792462905211,
+      "tag": "0013_notifications_to_telegram",
+      "breakpoints": true
     }
   ]
 }
