@@ -23,3 +23,4 @@
 - Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.
 - `src/components/mobile/` and `src/lib/vitals/` have their own `AGENTS.md`; read them before changing files there.
 - Vital AI PDF reports are registered in `vital_reports` (code + SHA-256 only) and verified publicly via the `verify_vital_report` RPC at `/verify/vital/:code`, so QR checks never expose patient health data.
+- Every `notifications` insert is forwarded to the linked Telegram chat by a database trigger calling `emedinfo-bot/notify` (job secret + `telegram_sent_at` once-only flag), so web, app and Telegram alerts never diverge and alerts cannot be forged or replayed.
