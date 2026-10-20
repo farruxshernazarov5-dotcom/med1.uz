@@ -9,11 +9,42 @@ export async function openCamera(facing: "environment" | "user", width = 320, he
   });
 }
 
-/** Rear lenses (multi-camera phones put the flash next to only one of them). */
+const FRONT_RE = /front|user|selfie|facing front|old kamera/i;
+const BACK_RE = /back|rear|environment|facing back|orqa/i;
+
+/** Rear lenses only — a front camera is never returned (multi-camera phones put the flash next to one rear lens). */
 export async function rearCameras() {
   const all = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "videoinput");
-  const rear = all.filter((d) => !/front|user|old|selfie/i.test(d.label));
-  return rear.length ? rear : all;
+  const labelled = all.filter((d) => d.label);
+  if (!labelled.length) return [];
+  const back = labelled.filter((d) => BACK_RE.test(d.label) && !FRONT_RE.test(d.label));
+  return back.length ? back : labelled.filter((d) => !FRONT_RE.test(d.label));
+}
+
+export type RearLens = { deviceId: string; label: string; torch: boolean };
+
+/**
+ * Opens every rear lens once and keeps only those the browser reports as rear-facing,
+ * noting which ones can switch the flash on. Torch-capable lenses come first.
+ */
+export async function probeRearLenses(): Promise<RearLens[]> {
+  // A first stream unlocks device labels.
+  try { stopStream(await openCamera("environment", 320, 240)); } catch { return []; }
+  const list = await rearCameras();
+  const out: RearLens[] = [];
+  for (const d of list) {
+    const s = await openCamera("environment", 320, 240, d.deviceId).catch(() => null);
+    if (!s) continue;
+    const t = s.getVideoTracks()[0];
+    const caps = (t.getCapabilities?.() ?? {}) as any;
+    const facing: string[] = Array.isArray(caps.facingMode) ? caps.facingMode : caps.facingMode ? [caps.facingMode] : [];
+    const settingsFacing = (t.getSettings?.() as any)?.facingMode;
+    stopStream(s);
+    if (facing.includes("user") || settingsFacing === "user") continue;
+    out.push({ deviceId: d.deviceId, label: d.label, torch: !!caps.torch });
+    await new Promise((r) => setTimeout(r, 120)); // some Android HALs fail if a lens reopens instantly
+  }
+  return out.sort((a, b) => Number(b.torch) - Number(a.torch));
 }
 
 async function tryApply(track: MediaStreamTrack, c: Record<string, unknown>) {
