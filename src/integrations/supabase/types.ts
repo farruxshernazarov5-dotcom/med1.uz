@@ -13704,6 +13704,7 @@ export type Database = {
           is_read: boolean
           link: string | null
           message: string
+          telegram_sent_at: string | null
           title: string
           type: string
           user_id: string
@@ -13714,6 +13715,7 @@ export type Database = {
           is_read?: boolean
           link?: string | null
           message?: string
+          telegram_sent_at?: string | null
           title: string
           type?: string
           user_id: string
@@ -13724,6 +13726,7 @@ export type Database = {
           is_read?: boolean
           link?: string | null
           message?: string
+          telegram_sent_at?: string | null
           title?: string
           type?: string
           user_id?: string

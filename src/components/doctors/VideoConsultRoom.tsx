@@ -1,10 +1,11 @@
+import DoctorDialogContent from "./DoctorDialogContent";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Video, PhoneOff, Wifi, WifiOff, Timer, Copy } from "lucide-react";
 
 interface Props {
@@ -121,7 +122,7 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v && state === "active") end(); onOpenChange(v); }}>
-      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
+      <DoctorDialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto max-sm:block max-sm:space-y-4">
         <DialogHeader>
           <DialogTitle className="text-base flex items-center gap-2">
             <Video className="w-4 h-4 text-primary" /> Video konsultatsiya — {doctorName}
@@ -201,7 +202,7 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
         {state === "error" && (
           <Button variant="outline" onClick={createRoom} className="gap-2">Qayta urinish</Button>
         )}
-      </DialogContent>
+      </DoctorDialogContent>
     </Dialog>
   );
 }

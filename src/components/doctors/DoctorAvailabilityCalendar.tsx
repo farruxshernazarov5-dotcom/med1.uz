@@ -74,7 +74,7 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
                 Bu kuni shifokor qabul qilmaydi.
               </p>
             ) : (
-              <div className="flex flex-wrap gap-1.5">
+              <div className="grid grid-cols-3 min-[400px]:grid-cols-4 sm:grid-cols-6 gap-2">
                 {day?.slots.map((s) => {
                   const disabled = s.taken || s.past;
                   return (
@@ -84,7 +84,7 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
                       variant={disabled ? "ghost" : "outline"}
                       disabled={disabled}
                       onClick={() => onPickSlot?.(day.date, s.time)}
-                      className={`h-8 text-xs ${disabled ? "line-through opacity-40" : "hover:border-primary"}`}
+                      className={`h-11 text-xs ${disabled ? "line-through opacity-40" : "hover:border-primary"}`}
                     >
                       {s.time}
                     </Button>

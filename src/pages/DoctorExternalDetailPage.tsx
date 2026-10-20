@@ -140,8 +140,8 @@ const DoctorExternalDetailPage = () => {
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2 mt-5">
-                <Button className="gap-2" onClick={() => setBookOpen(true)}>
+              <div className="grid grid-cols-1 gap-2 mt-5 sm:flex sm:flex-wrap">
+                <Button className="gap-2 min-h-11 w-full sm:w-auto" onClick={() => setBookOpen(true)}>
                   <Calendar className="w-4 h-4" /> Qabulga yozilish
                 </Button>
                 <DoctorConsultActions doctorId={doc.id} doctorName={doc.name} />

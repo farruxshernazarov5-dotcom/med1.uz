@@ -1,9 +1,10 @@
+import DoctorDialogContent from "./DoctorDialogContent";
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -219,7 +220,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto">
+      <DoctorDialogContent className="max-w-lg max-h-[92vh] overflow-y-auto max-sm:block max-sm:space-y-4">
         <DialogHeader>
           <DialogTitle className="text-base">Onlayn qabulga yozilish — {doctorName}</DialogTitle>
         </DialogHeader>
@@ -387,7 +388,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
         )}
 
         {step < 5 && (
-          <div className="flex justify-between gap-2 pt-2">
+          <div className="sticky bottom-16 lg:bottom-0 flex justify-between gap-2 border-t bg-background py-3 sm:static [&>button]:min-h-11 [&>button:last-child]:flex-1">
             <Button variant="ghost" size="sm" disabled={step === 1} onClick={() => setStep((s) => s - 1)} className="gap-1">
               <ChevronLeft className="w-4 h-4" /> Orqaga
             </Button>
@@ -407,7 +408,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
             Bron qilish uchun <Link to="/auth" className="text-primary underline">tizimga kiring</Link>.
           </p>
         )}
-      </DialogContent>
+      </DoctorDialogContent>
     </Dialog>
   );
 }
