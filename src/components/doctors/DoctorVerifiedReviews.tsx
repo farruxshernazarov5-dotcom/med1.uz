@@ -81,12 +81,12 @@ export default function DoctorVerifiedReviews({ doctorId }: Props) {
   const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   return (
-    <div className="bg-card rounded-2xl border p-6">
-      <div className="flex items-center justify-between mb-1">
+    <div className="bg-card rounded-2xl border p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
         <h2 className="font-heading font-bold text-lg">Tasdiqlangan sharhlar ({reviews.length})</h2>
         {reviews.length > 0 && (
           <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+            <Star className="w-4 h-4 text-primary fill-primary" />
             <span className="font-bold">{avg.toFixed(1)}</span>
           </div>
         )}
@@ -102,13 +102,13 @@ export default function DoctorVerifiedReviews({ doctorId }: Props) {
           </p>
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button key={n} onClick={() => setRating(n)} aria-label={`${n} yulduz`}>
-                <Star className={`w-5 h-5 ${n <= rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />
+              <button className="h-11 w-11 inline-flex items-center justify-center rounded-md focus-visible:ring-2 focus-visible:ring-ring" aria-pressed={rating === n} key={n} onClick={() => setRating(n)} aria-label={`${n} yulduz`}>
+                <Star className={`w-5 h-5 ${n <= rating ? "text-primary fill-primary" : "text-muted-foreground"}`} />
               </button>
             ))}
           </div>
           <Textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Qabul qanday o'tdi?" />
-          <Button size="sm" onClick={submit} disabled={saving} className="gap-2">
+          <Button size="sm" onClick={submit} disabled={saving} className="gap-2 w-full sm:w-auto min-h-11">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />} Sharh yuborish
           </Button>
         </div>
@@ -131,10 +131,10 @@ export default function DoctorVerifiedReviews({ doctorId }: Props) {
         <div className="space-y-4">
           {reviews.map((r) => (
             <div key={r.id} className="border-b pb-3 last:border-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
+                    <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? "text-primary fill-primary" : "text-muted-foreground/30"}`} />
                   ))}
                 </div>
                 <Badge variant="outline" className="text-[10px] text-medical-green border-medical-green/30">
@@ -144,7 +144,7 @@ export default function DoctorVerifiedReviews({ doctorId }: Props) {
                   {new Date(r.created_at).toLocaleDateString("uz-UZ")}
                 </span>
               </div>
-              {r.comment && <p className="text-sm text-muted-foreground">{r.comment}</p>}
+              {r.comment && <p className="text-sm text-muted-foreground break-words">{r.comment}</p>}
             </div>
           ))}
         </div>

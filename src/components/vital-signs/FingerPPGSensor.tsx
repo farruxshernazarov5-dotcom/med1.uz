@@ -5,7 +5,7 @@ import { Fingerprint, StopCircle, SwitchCamera, Heart, Lock, AlertTriangle, Chec
 import { cn } from "@/lib/utils";
 import VitalLiveMonitor from "./VitalLiveMonitor";
 import VitalResultScreen from "./VitalResultScreen";
-import { openCamera, lock3A, setTorch, stopStream, rearCameras } from "@/lib/vitals/camera";
+import { openCamera, lock3A, setTorch, stopStream, probeRearLenses, type RearLens } from "@/lib/vitals/camera";
 import { estimateSpo2, analyzePulse, bandpass, resample, respiratoryRate, type Sample } from "@/lib/vitals/dsp";
 import { classifyRhythm } from "@/lib/vitals/rhythm";
 import type { VitalReading } from "./types";
@@ -42,7 +42,13 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
   const [paused, setPaused] = useState(false);
   const [cover, setCover] = useState(0);
   const coverAvg = useRef(0);
-  const [lenses, setLenses] = useState<MediaDeviceInfo[]>([]);
+  const [lenses, setLenses] = useState<RearLens[]>([]);
+  const lensList = useRef<RearLens[]>([]);
+  const scanScores = useRef<Map<string, number>>(new Map());
+  const autoScan = useRef(false);
+  const lensStartT = useRef(0);
+  const scanNext = useRef<(cur: string | undefined) => void>(() => {});
+  const [scanning, setScanning] = useState<string | null>(null);
   const [lens, setLens] = useState<string | undefined>(() => localStorage.getItem("med1_ppg_lens") ?? undefined);
   const [torchOk, setTorchOk] = useState(true);
   const noFingerSince = useRef(0);
@@ -71,6 +77,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     const live = analyzePulse(resample(red.current.slice(-FS * 12), FS), FS, true);
     const best = [a, b, live].filter(Boolean).sort((x, y) => y!.sqi - x!.sqi)[0];
     stop();
+    const curLens = lensList.current.length ? lens : undefined;
+    if (best && best.sqi >= MIN_SQI && curLens) localStorage.setItem("med1_ppg_lens", curLens);
     if (!best || best.sqi < MIN_SQI) {
       setHint({ text: "Signal sifati yetarli emas. Barmoqni yengil qo‘yib, qayta urinib ko‘ring.", tone: "bad" });
       onStatus?.("signal_weak");
@@ -157,6 +165,17 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       if (onLens && !good && h.tone === "ok" && red.current.length > FS * 6) h = { text: "Signal kuchsiz — qimirlamay, yengil bosib turing", tone: "warn" };
       if (ui) { setPaused(!good); setHint(h); setSqi(Math.round(sqiRef.current)); setBpm(bpmRef.current); setLiveResp(respRef.current); setLiveStress(stressRef.current); }
       // Spoken guidance: say each new instruction once.
+      // Wrong lens (flash far from it): the frame stays dark or pulse-less → try the next rear lens automatically.
+      if (autoScan.current && now - lensStartT.current > 6000) {
+        const noFinger = coverage < COVER && noFingerSince.current && now - noFingerSince.current > 5000;
+        const noPulse = onLens && red.current.length > FS * 10 && sqiRef.current < MIN_SQI;
+        if (noFinger || noPulse) {
+          const cur = streamRef.current?.getVideoTracks()[0]?.getSettings?.().deviceId;
+          if (cur) scanScores.current.set(cur, coverAvg.current * 100 + sqiRef.current);
+          scanNext.current(cur);
+          return;
+        }
+      }
       const key = h.text.startsWith("Signal yo") ? "lens_switch" : h.text.startsWith("Barmog") ? "finger_place" : h.text.startsWith("Qattiq") ? "press_light" : h.text.startsWith("Signal") ? "signal_weak" : "measuring";
       if (key !== lastSpoken.current) { lastSpoken.current = key; onStatus?.(key); }
       const sec = Math.min(DURATION, goodMs.current / 1000);
@@ -166,13 +185,23 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     requestAnimationFrame(loop);
   }, [finish, onStatus]);
 
-  const start = async (deviceId = lens) => {
+  const start = async (deviceId = lens, keepScan = false) => {
     try {
+      if (!keepScan) { scanScores.current = new Map(); autoScan.current = false; setScanning(null); }
       stopStream(streamRef.current); window.clearInterval(torchTimer.current); noFingerSince.current = 0;
       red.current = []; green.current = []; blue.current = []; lastSpoken.current = ""; wave.current = []; goodMs.current = 0; lastT.current = 0; sqiRef.current = 0; bpmRef.current = null; frameN.current = 0; stressRef.current = null; respRef.current = null; setLiveResp(null); setLiveStress(null);
       setBpm(null); setSqi(0); setElapsed(0); setResult(null); coverAvg.current = 0;
       onStatus?.("start");
-      if (!deviceId) deviceId = await findTorchLens();
+      if (!lensList.current.length) {
+        setHint({ text: "Fonar yonidagi kamera aniqlanmoqda…", tone: "warn" });
+        lensList.current = await probeRearLenses().catch(() => []);
+        setLenses(lensList.current);
+      }
+      const usable = lensList.current.filter((l) => l.torch).length ? lensList.current.filter((l) => l.torch) : lensList.current;
+      if (deviceId && !usable.some((l) => l.deviceId === deviceId)) deviceId = undefined;
+      if (!deviceId) deviceId = usable[0]?.deviceId;
+      if (!keepScan && usable.length > 1) autoScan.current = true;
+      setLens(deviceId);
       const stream = await openCamera("environment", 320, 240, deviceId).catch(() => openCamera("environment"));
       streamRef.current = stream;
       const v = videoRef.current!;
@@ -181,11 +210,8 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
       const torchOn = await setTorch(track, true);
       setTorchOk(torchOn);
       const curId = track.getSettings?.().deviceId;
-      if (torchOn && curId) { setLens(curId); localStorage.setItem("med1_ppg_lens", curId); }
-      navigator.mediaDevices.enumerateDevices().then(async (all) => {
-        const rear = await rearCameras();
-        setLenses(rear.length > 1 ? rear : all.filter((d) => d.kind === "videoinput"));
-      }).catch(() => {});
+      if (curId) setLens(curId);
+      lensStartT.current = performance.now();
       setHint({ text: "Barmog‘ingizni orqa kameraga qo‘ying", tone: "warn" });
       onStatus?.("finger_place");
       // Let auto-exposure settle on the finger, then freeze it so brightness changes = blood volume only.
@@ -203,21 +229,19 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     }
   };
 
-  /** Multi-lens phones put the flash next to one lens only: probe rear lenses and pick the one that controls the torch. */
-  const findTorchLens = async (): Promise<string | undefined> => {
-    try {
-      const tmp = await openCamera("environment", 320, 240); stopStream(tmp);
-      const list = await rearCameras();
-      setLenses(list);
-      for (const d of list) {
-        const s = await openCamera("environment", 320, 240, d.deviceId).catch(() => null);
-        if (!s) continue;
-        const caps = (s.getVideoTracks()[0].getCapabilities?.() ?? {}) as any;
-        stopStream(s);
-        if (caps.torch) { setLens(d.deviceId); localStorage.setItem("med1_ppg_lens", d.deviceId); return d.deviceId; }
-      }
-    } catch { /* fall back to default rear camera */ }
-    return undefined;
+  scanNext.current = (cur) => {
+    const usable = lensList.current.filter((l) => l.torch).length ? lensList.current.filter((l) => l.torch) : lensList.current;
+    const untried = usable.find((l) => !scanScores.current.has(l.deviceId) && l.deviceId !== cur);
+    if (untried) {
+      setScanning(`${scanScores.current.size + 1}/${usable.length}`);
+      void start(untried.deviceId, true);
+      return;
+    }
+    // Every lens tried: settle on the best-scoring one and stop auto-switching.
+    autoScan.current = false; setScanning(null);
+    const best = [...scanScores.current.entries()].sort((x, y) => y[1] - x[1])[0]?.[0];
+    if (best && best !== cur) void start(best, true);
+    else { lensStartT.current = performance.now(); requestAnimationFrame(loop); }
   };
 
   const switchLens = () => {
@@ -225,8 +249,9 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
     const cur = streamRef.current?.getVideoTracks()[0]?.getSettings?.().deviceId;
     const i = lenses.findIndex((d) => d.deviceId === cur);
     const next = lenses[(i + 1) % lenses.length].deviceId;
+    autoScan.current = false; setScanning(null);
     setLens(next); localStorage.setItem("med1_ppg_lens", next);
-    void start(next);
+    void start(next, true);
   };
 
   const remaining = Math.ceil(DURATION - elapsed);
@@ -291,11 +316,12 @@ const FingerPPGSensor = ({ onResult, onStatus }: { onResult: (r: VitalReading) =
 
       {active && (
         <div className="flex flex-wrap items-center gap-2">
-          {lenses.length > 1 && <Button size="sm" variant="outline" onClick={switchLens}><SwitchCamera className="mr-1 h-4 w-4" /> Kamerani almashtirish ({lenses.length})</Button>}
+          {scanning && <span className="text-xs text-primary">Fonar yonidagi kamera qidirilmoqda ({scanning})…</span>}
+          {lenses.length > 1 && <Button size="sm" variant="outline" onClick={switchLens}><SwitchCamera className="mr-1 h-4 w-4" /> Orqa kamera {Math.max(1, lenses.findIndex((l) => l.deviceId === lens) + 1)}/{lenses.length}</Button>}
           {!torchOk && <span className="text-xs text-muted-foreground">Fonar yoqilmadi — yorug‘ joyda yoki chiroq oldida o‘lchang.</span>}
         </div>
       )}
-      {!active && <p className="text-xs text-muted-foreground">Ko‘p kamerali telefonlarda (masalan Redmi Note 14) barmoq bilan fonar va unga eng yaqin kamerani birga yoping. Signal kelmasa “Kamerani almashtirish” tugmasini bosing — tanlangan kamera eslab qolinadi.</p>}
+      {!active && <p className="text-xs text-muted-foreground">Faqat orqa kameralar ishlatiladi. Ko‘p kamerali telefonlarda (masalan Redmi Note 14) ilova fonar bilan ishlaydigan kamerani o‘zi qidiradi: barmoq uchini eng katta linza va fonarga birga, yengil qo‘ying. Topilgan kamera eslab qolinadi.</p>}
       {active && locked.length > 0 && (
         <p className="text-[11px] text-muted-foreground flex items-center gap-1"><Lock className="w-3 h-3" /> Qulflandi: {locked.join(", ")}</p>
       )}

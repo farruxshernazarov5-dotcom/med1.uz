@@ -245,7 +245,7 @@ const MobileAppointmentsPage = () => {
 
       {/* Section panels */}
       <Dialog open={panel !== null && !!user} onOpenChange={(o) => !o && setPanel(null)}>
-        <DialogContent className="max-h-[88dvh] overflow-y-auto">
+        <DialogContent className="max-h-[88dvh] overflow-y-auto max-sm:w-[calc(100%-1rem)] max-sm:min-w-0 max-sm:overflow-x-hidden max-sm:p-4">
           <DialogTitle>{panel ? TITLES[panel] : ""}</DialogTitle>
           <DialogDescription>Faqat sizga ko‘rinadi.</DialogDescription>
            {loadError && panel !== 'reminders' && panel !== 'notifications' && <div role="alert" className="rounded-lg border border-destructive/30 p-3 text-sm text-destructive">Ayrim manbalar yuklanmadi. Ko‘rsatilgan ro‘yxat to‘liq bo‘lmasligi mumkin.<Button variant="outline" size="sm" className="mt-2" onClick={()=>void load()}>Qayta urinish</Button></div>}
@@ -299,7 +299,7 @@ const MobileAppointmentsPage = () => {
 
           {!loading && panel === "ai" && (
             ai.length === 0 ? <EmptyState panel="ai" onGo={() => setPanel(null)} /> : (
-              <div className="space-y-3">
+              <div className="min-w-0 space-y-3">
                 <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1" role="group" aria-label="Xizmat turi">
                   {[["all", ai.length] as [string, number], ...services].map(([id, n]) => (
                     <button key={id} onClick={() => setSvcFilter(id)} aria-pressed={svcFilter === id} className={cn("shrink-0 rounded-full border px-3 py-1 text-xs font-medium", svcFilter === id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground")}>
@@ -318,13 +318,13 @@ const MobileAppointmentsPage = () => {
                   <div key={day} className="space-y-2">
                     <p className="text-xs font-bold uppercase text-muted-foreground">{fmtDay(day)}</p>
                     {rows.map((r) => (
-                      <button key={r.id} onClick={() => setAiOpen(r)} className="w-full rounded-lg border border-border p-3 text-left transition active:scale-[0.98]">
+                      <button key={r.id} onClick={() => setAiOpen(r)} className="min-w-0 w-full break-words rounded-lg border border-border p-3 text-left transition active:scale-[0.98]">
                         <div className="flex items-center gap-2">
                           <Brain className="h-4 w-4 shrink-0 text-ai-purple" />
-                          <p className="flex-1 truncate text-sm font-semibold">{serviceName(r.service_id)}</p>
+                          <p className="min-w-0 flex-1 break-words text-sm font-semibold sm:truncate">{serviceName(r.service_id)}</p>
                           <span className="text-[11px] text-muted-foreground">{new Date(r.created_at).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" })}</span>
                         </div>
-                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{r.content.replace(/[#*_>`]/g, "").slice(0, 200)}</p>
+                        <p className="mt-1 line-clamp-2 break-words text-xs text-muted-foreground">{r.content.replace(/[#*_>`]/g, "").slice(0, 200)}</p>
                       </button>
                     ))}
                   </div>
@@ -372,15 +372,15 @@ const MobileAppointmentsPage = () => {
 
       {/* AI conclusion detail */}
       <Dialog open={!!aiOpen} onOpenChange={(o) => !o && setAiOpen(null)}>
-        <DialogContent className="max-h-[90dvh] overflow-y-auto">
+        <DialogContent className="max-h-[90dvh] overflow-y-auto max-sm:inset-0 max-sm:flex max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:flex-col max-sm:gap-3 max-sm:overflow-x-hidden max-sm:rounded-none max-sm:border-0 max-sm:px-4 max-sm:pt-[calc(1.5rem+env(safe-area-inset-top,0px))] max-sm:pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">
           {aiOpen && (
             <>
-              <DialogTitle className="flex items-center gap-2"><Brain className="h-5 w-5 text-ai-purple" /> {serviceName(aiOpen.service_id)}</DialogTitle>
+              <DialogTitle className="flex items-center gap-2 break-words pr-6"><Brain className="h-5 w-5 shrink-0 text-ai-purple" /> {serviceName(aiOpen.service_id)}</DialogTitle>
               <DialogDescription>{new Date(aiOpen.created_at).toLocaleString("uz-UZ", { dateStyle: "full", timeStyle: "short" })}</DialogDescription>
-              <MarkdownView source={aiOpen.content} className="text-sm" />
+              <MarkdownView source={aiOpen.content} className="min-w-0 max-w-full shrink-0 break-words text-base leading-7 sm:text-sm sm:leading-normal [&>div]:max-w-full [&>div]:overflow-x-auto [&_table]:min-w-[32rem] sm:[&_table]:min-w-0 [&_pre]:overflow-x-auto" />
               <p className="text-[11px] text-muted-foreground">AI xulosasi shifokor tashxisini almashtirmaydi.</p>
-              <Button className="w-full" onClick={() => void downloadAiReport({ title: `Med AI - ${serviceName(aiOpen.service_id)}`, conclusion: aiOpen.content, name: user?.email ?? "", date: aiOpen.created_at }).catch(() => toast.error("PDF yaratilmadi"))}><Download /> PDF xulosani yuklab olish</Button>
-              <div className="grid grid-cols-2 gap-2">
+              <Button className="w-full shrink-0" onClick={() => void downloadAiReport({ title: `Med AI - ${serviceName(aiOpen.service_id)}`, conclusion: aiOpen.content, name: user?.email ?? "", date: aiOpen.created_at }).catch(() => toast.error("PDF yaratilmadi"))}><Download /> PDF xulosani yuklab olish</Button>
+              <div className="grid shrink-0 grid-cols-1 gap-2 sm:grid-cols-2">
                 <Button variant="outline" onClick={() => { void navigator.clipboard?.writeText(aiOpen.content).then(() => toast.success("Nusxa olindi")); }}><Copy /> Nusxa olish</Button>
                 <Button asChild onClick={() => setAiOpen(null)}><Link to={aiPath(aiOpen.service_id)}>Xizmatni ochish</Link></Button>
               </div>

@@ -1,8 +1,9 @@
+import DoctorDialogContent from "./DoctorDialogContent";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDoctorCompare } from "@/hooks/useDoctorFavorites";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Scale, X, Star, Award } from "lucide-react";
 
 interface Row {
@@ -31,17 +32,17 @@ const CompareBar = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-40 bg-primary text-primary-foreground rounded-full shadow-2xl px-4 py-2.5 flex items-center gap-3 animate-fade-in">
+      <div className="fixed bottom-20 lg:bottom-4 inset-x-2 sm:left-auto sm:right-4 z-40 bg-primary text-primary-foreground rounded-full shadow-2xl px-4 py-2.5 flex items-center gap-2 justify-center animate-fade-in">
         <Scale className="w-4 h-4" />
         <span className="text-sm font-medium">{ids.length} shifokor tanlangan</span>
         <Button size="sm" variant="secondary" className="h-7" onClick={() => setOpen(true)}>Taqqoslash</Button>
-        <button onClick={clear} className="hover:opacity-70"><X className="w-4 h-4" /></button>
+        <button onClick={clear} aria-label="Tanlovni tozalash" className="min-h-10 min-w-10 flex items-center justify-center hover:opacity-70"><X className="w-4 h-4" /></button>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-5xl max-h-[85vh] overflow-auto">
+        <DoctorDialogContent className="max-w-5xl max-h-[85vh] overflow-auto max-sm:block max-sm:space-y-4">
           <DialogHeader><DialogTitle>Shifokorlarni taqqoslash</DialogTitle></DialogHeader>
-          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${rows.length || 1}, minmax(0, 1fr))` }}>
+          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, 240px), 1fr))` }}>
             {rows.map(d => (
               <div key={d.id} className="border rounded-xl p-4 space-y-3">
                 <div className="flex items-start justify-between">
@@ -50,7 +51,7 @@ const CompareBar = () => {
                   ) : (
                     <div className="w-16 h-16 rounded-lg bg-muted" />
                   )}
-                  <button onClick={() => toggle(d.id)} className="text-muted-foreground hover:text-destructive">
+                  <button onClick={() => toggle(d.id)} aria-label="Shifokorni olib tashlash" className="min-h-10 min-w-10 flex items-center justify-center text-muted-foreground hover:text-destructive">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -68,7 +69,7 @@ const CompareBar = () => {
               </div>
             ))}
           </div>
-        </DialogContent>
+        </DoctorDialogContent>
       </Dialog>
     </>
   );

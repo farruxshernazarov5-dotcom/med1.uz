@@ -1,3 +1,4 @@
+import DoctorDialogContent from "./DoctorDialogContent";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -5,7 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Send, Paperclip, MessageCircle, FileText, Wifi, WifiOff, ShieldAlert, Eye, EyeOff, Clock, Flag } from "lucide-react";
 
 interface Props {
@@ -69,7 +70,7 @@ export default function DoctorChatSession({ open, onOpenChange, doctorId, doctor
     })();
 
     const channel = supabase
-      .channel(`doctor-chat-${appointmentId}`)
+      .channel(`doctor-chat-${appointmentId}-${crypto.randomUUID()}`)
       .on("postgres_changes",
         { event: "INSERT", schema: "public", table: "doctor_ext_chat_messages", filter: `appointment_id=eq.${appointmentId}` },
         (payload) => {
@@ -152,7 +153,7 @@ export default function DoctorChatSession({ open, onOpenChange, doctorId, doctor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg h-[80vh] flex flex-col p-0">
+      <DoctorDialogContent className="max-w-lg h-[80vh] flex flex-col overflow-hidden p-0">
         <DialogHeader className="p-4 pb-2 border-b">
           <DialogTitle className="text-base flex items-center gap-2">
             <MessageCircle className="w-4 h-4 text-primary" /> {doctorName}
@@ -169,7 +170,7 @@ export default function DoctorChatSession({ open, onOpenChange, doctorId, doctor
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-2">
           {loading ? (
             <div className="py-10 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
           ) : messages.length === 0 ? (
@@ -184,7 +185,7 @@ export default function DoctorChatSession({ open, onOpenChange, doctorId, doctor
               const expired = m.attachment_expires_at ? new Date(m.attachment_expires_at) < new Date() : false;
               return (
                 <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[78%] rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                  <div className={`min-w-0 max-w-[85%] sm:max-w-[78%] break-words rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
                     {masked ? (
                       <div className="space-y-1.5">
                         <p className="flex items-center gap-1.5 text-xs font-semibold">
@@ -248,20 +249,20 @@ export default function DoctorChatSession({ open, onOpenChange, doctorId, doctor
           <div ref={bottomRef} />
         </div>
 
-        <div className="p-3 border-t flex items-center gap-2">
+        <div className="p-3 border-t flex shrink-0 items-center gap-2 bg-background">
           <input ref={fileRef} type="file" hidden accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
             onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }} />
           <Button size="icon" variant="ghost" disabled={sending} onClick={() => fileRef.current?.click()} aria-label="Fayl biriktirish">
             <Paperclip className="w-4 h-4" />
           </Button>
-          <Input value={text} onChange={(e) => setText(e.target.value)}
+          <Input className="min-w-0 text-base sm:text-sm" value={text} onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder="Xabar yozing..." />
           <Button size="icon" disabled={sending || !text.trim()} onClick={send} aria-label="Yuborish">
             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </div>
-      </DialogContent>
+      </DoctorDialogContent>
     </Dialog>
   );
 }
