@@ -134,3 +134,12 @@
 - [x] Barcha bildirishnomalarni (xavfsizlik ham) Telegramga yuborish
 - [x] Telegramda admin panel, statistika, yuborilgan xabarlar va qo‘shimcha tugmalar (@oak2019)
 - [x] Qabullar bo‘limidagi AI xulosalarni mobilga moslash
+
+## 2026-10-21 — Shifokorlar, Farmatsevt AI, oflayn ekran
+- [x] Yangi shifokorlarga sharh (FK xatosi tuzatildi), sevimli, taqqoslash, ulashish
+- [x] Har bir shifokor sahifasida mutaxassislikka mos Med AI tavsiyalari
+- [x] Platforma shifokorlariga chat/video/savol/qabul so‘rovlari (bildirishnoma + Telegram)
+- [x] Xizmatlar, narxlar, bron, kalendar, tavsiya etilgan tahlillar — mobil moslash
+- [x] Farmatsevt AI: dori qadog‘i/retsept/yaroqlilik skaneri, dorilarim, tezkor vositalar
+- [x] Med1 uslubidagi "Internet aloqasi uzildi" ekrani
+- [ ] Shifokor kabinetida kelgan so‘rovlarga javob berish ro‘yxati (hozircha bildirishnoma orqali)
