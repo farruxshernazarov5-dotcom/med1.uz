@@ -17017,7 +17017,7 @@ export type Database = {
       reviews: {
         Row: {
           appointment_id: string | null
-          clinic_id: string
+          clinic_id: string | null
           comment: string | null
           created_at: string
           doctor_id: string | null
@@ -17028,7 +17028,7 @@ export type Database = {
         }
         Insert: {
           appointment_id?: string | null
-          clinic_id: string
+          clinic_id?: string | null
           comment?: string | null
           created_at?: string
           doctor_id?: string | null
@@ -17039,7 +17039,7 @@ export type Database = {
         }
         Update: {
           appointment_id?: string | null
-          clinic_id?: string
+          clinic_id?: string | null
           comment?: string | null
           created_at?: string
           doctor_id?: string | null
