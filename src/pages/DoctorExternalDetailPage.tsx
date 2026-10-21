@@ -1,3 +1,6 @@
+import DoctorAITips from "@/components/doctors/DoctorAITips";
+import DoctorDirectoryActions from "@/components/doctors/DoctorDirectoryActions";
+import CompareBar from "@/components/doctors/CompareBar";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,14 +76,14 @@ const DoctorExternalDetailPage = () => {
 
 
   if (loading) return (
-    <div className="min-h-screen bg-background"><Header />
+    <div className="min-h-screen bg-background pb-40 lg:pb-0 break-words"><Header />
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <Skeleton className="h-64 rounded-2xl" />
       </div></div>
   );
 
   if (!doc) return (
-    <div className="min-h-screen bg-background"><Header />
+    <div className="min-h-screen bg-background pb-40 lg:pb-0 break-words"><Header />
       <div className="container mx-auto px-4 py-16 max-w-4xl text-center">
         <h1 className="text-2xl font-bold">Shifokor topilmadi</h1>
         <Link to="/doctors"><Button className="mt-4">Katalogga qaytish</Button></Link>
@@ -88,7 +91,7 @@ const DoctorExternalDetailPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-40 lg:pb-0 break-words">
       <SEO
         title={`${doc.name} — ${doc.primary_specialty} | Med1.uz`}
         description={`${doc.name}, ${doc.primary_specialty}${doc.experience ? `, ${doc.experience} yil tajriba` : ""}. ${doc.primary_region ?? ""}. Med1.uz shifokorlar katalogi.`}
@@ -101,7 +104,7 @@ const DoctorExternalDetailPage = () => {
           <Link to="/doctors" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-4">
             <ChevronLeft className="w-4 h-4" /> Barcha shifokorlar
           </Link>
-          <div className="bg-card rounded-2xl border p-6 md:p-8 flex flex-col md:flex-row gap-6">
+          <div className="bg-card rounded-2xl border p-4 sm:p-6 md:p-8 flex flex-col md:flex-row gap-6">
             <DoctorAvatar
               name={doc.name}
               photoUrl={doc.photo_url}
@@ -124,7 +127,7 @@ const DoctorExternalDetailPage = () => {
                   <ShieldCheck className="w-3 h-3 mr-1" /> Med1.uz tasdiqlagan
                 </Badge>
               </div>
-              <div className="flex items-center gap-4 mt-4">
+              <div className="flex flex-wrap items-center gap-4 mt-4">
                 {doc.rating != null && doc.rating > 0 && (
                   <div className="flex items-center gap-1">
                     <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
@@ -140,11 +143,12 @@ const DoctorExternalDetailPage = () => {
                   </div>
                 )}
               </div>
+              <DoctorDirectoryActions doctorId={doc.id} />
               <div className="grid grid-cols-1 gap-2 mt-5 sm:flex sm:flex-wrap">
                 <Button className="gap-2 min-h-11 w-full sm:w-auto" onClick={() => setBookOpen(true)}>
                   <Calendar className="w-4 h-4" /> Qabulga yozilish
                 </Button>
-                <DoctorConsultActions doctorId={doc.id} doctorName={doc.name} />
+                <DoctorConsultActions doctorId={doc.id} doctorName={doc.name} onBook={() => setBookOpen(true)} />
               </div>
               <DoctorBookingWizard
                 open={bookOpen}
@@ -161,13 +165,15 @@ const DoctorExternalDetailPage = () => {
 
       <section className="py-8">
         <div className="container mx-auto px-4 max-w-5xl grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            <div className="bg-card rounded-2xl border p-6">
+          <div className="min-w-0 md:col-span-2 space-y-6">
+            <div className="bg-card rounded-2xl border p-4 sm:p-6">
               <h2 className="font-heading font-bold text-lg mb-2">Shifokor haqida</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {doc.bio || `${doc.name} — ${doc.primary_specialty}${doc.experience ? `, ${doc.experience} yildan ortiq amaliy tajribaga ega` : ""}. ${doc.rank ? doc.rank + ". " : ""}${doc.primary_region ? doc.primary_region + " hududida faoliyat yuritadi. " : ""}Barcha kasalliklarni zamonaviy usullar bilan tashxislaydi va davolaydi.`}
               </p>
             </div>
+
+            <DoctorAITips specialty={doc.primary_specialty} />
 
             <DoctorServicesSection
               doctorId={doc.id}
@@ -177,14 +183,14 @@ const DoctorExternalDetailPage = () => {
               extraServices={doc.services}
             />
 
-            <DoctorAvailabilityCalendar doctorId={doc.id} />
+            <DoctorAvailabilityCalendar doctorId={doc.id} onPickSlot={() => setBookOpen(true)} />
 
             <MyDoctorAppointments doctorId={doc.id} doctorName={doc.name} />
 
             <RecommendedAnalyses specialty={doc.primary_specialty} />
 
 
-            <div className="bg-card rounded-2xl border p-6">
+            <div className="bg-card rounded-2xl border p-4 sm:p-6">
               <h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary" /> Yaqin atrofdagi shifokorlar
               </h2>
@@ -254,6 +260,7 @@ const DoctorExternalDetailPage = () => {
         </section>
       )}
 
+      <CompareBar aboveActions />
       <Footer />
     </div>
   );

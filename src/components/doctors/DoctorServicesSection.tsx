@@ -47,10 +47,10 @@ export default function DoctorServicesSection({ doctorId, doctorName, doctorSlug
   const packages = rows.filter((r) => r.is_package);
 
   return (
-    <div className="bg-card rounded-2xl border p-6" id="services">
-      <div className="flex items-center justify-between mb-1">
+    <div className="bg-card rounded-2xl border p-4 sm:p-6" id="services">
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between mb-1">
         <h2 className="font-heading font-bold text-lg">Xizmatlar va narxlar</h2>
-        <Button size="sm" onClick={() => book(rows[0])} className="gap-2">
+        <Button size="sm" onClick={() => book(rows[0])} className="gap-2 min-h-11">
           <Calendar className="w-4 h-4" /> Qabulga yozilish
         </Button>
       </div>
@@ -62,15 +62,15 @@ export default function DoctorServicesSection({ doctorId, doctorName, doctorSlug
 
       <div className="space-y-2 mt-3">
         {single.map((s, i) => (
-          <div key={s.id ?? i} className="flex items-center justify-between gap-3 p-3 rounded-xl border hover:border-primary/40 transition">
-            <div className="min-w-0">
+          <div key={s.id ?? i} className="flex flex-col items-stretch sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-xl border hover:border-primary/40 transition">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">{s.name}</p>
-              {s.description && <p className="text-xs text-muted-foreground truncate">{s.description}</p>}
+              {s.description && <p className="text-xs text-muted-foreground break-words">{s.description}</p>}
               <Badge variant="outline" className="text-[10px] mt-1"><Clock className="w-3 h-3 mr-1" />{s.duration_minutes} min</Badge>
             </div>
-            <div className="text-right shrink-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:block sm:text-right shrink-0">
               <p className="text-sm font-bold text-primary">{formatUzs(s.price)}</p>
-              <Button size="sm" variant="outline" className="mt-1 h-7 text-xs" onClick={() => book(s)}>Bron</Button>
+              <Button size="sm" variant="outline" className="mt-1 min-h-11 text-xs" onClick={() => book(s)}>Bron</Button>
             </div>
           </div>
         ))}
@@ -88,7 +88,7 @@ export default function DoctorServicesSection({ doctorId, doctorName, doctorSlug
                 {p.description && <p className="text-xs text-muted-foreground mt-1">{p.description}</p>}
                 <p className="text-lg font-bold text-primary mt-2">{formatUzs(p.price)}</p>
                 <p className="text-[11px] text-muted-foreground">{p.sessions_count} seans · {p.duration_minutes} min</p>
-                <Button size="sm" className="w-full mt-2 h-8 text-xs" onClick={() => book(p)}>Paketni bron qilish</Button>
+                <Button size="sm" className="w-full mt-2 min-h-11 text-xs" onClick={() => book(p)}>Paketni bron qilish</Button>
               </div>
             ))}
           </div>

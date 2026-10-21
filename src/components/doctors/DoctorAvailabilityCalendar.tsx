@@ -40,14 +40,14 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
           <CalendarDays className="w-4 h-4 text-primary" /> Mavjudlik kalendari
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="min-w-0 space-y-3 p-4 sm:p-6">
         {loading ? (
           <div className="py-8 flex justify-center">
             <Loader2 className="w-5 h-5 animate-spin text-primary" />
           </div>
         ) : (
           <>
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex min-w-0 max-w-full gap-2 overflow-x-auto pb-1">
               {days.map((d, i) => {
                 const dt = new Date(`${d.date}T00:00:00`);
                 const isActive = i === active;
@@ -62,7 +62,7 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
                     <p className="text-[10px] text-muted-foreground">{WEEKDAY_UZ[d.weekday]}</p>
                     <p className="text-sm font-bold">{dt.getDate()}</p>
                     <p className="text-[10px] text-medical-green">
-                      {d.closed ? "—" : `${d.freeCount} slot`}
+                      {d.closed ? "—" : `${d.freeCount} bo‘sh`}
                     </p>
                   </button>
                 );
@@ -91,7 +91,7 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
                   );
                 })}
                 {day && day.slots.length === 0 && (
-                  <p className="text-xs text-muted-foreground">Slotlar mavjud emas.</p>
+                  <p className="text-xs text-muted-foreground">Bo‘sh vaqtlar mavjud emas.</p>
                 )}
               </div>
             )}

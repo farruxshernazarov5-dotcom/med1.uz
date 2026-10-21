@@ -277,12 +277,12 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
             {date && (
               <div>
                 <p className="text-xs font-semibold mb-2 flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Vaqtni tanlang</p>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 min-[400px]:grid-cols-4 gap-2">
                   {SLOTS.map((t) => {
                     const busy = taken.includes(t);
                     return (
                       <button key={t} disabled={busy} onClick={() => setTime(t)}
-                        className={`py-2 rounded-lg border text-xs ${busy ? "opacity-40 line-through cursor-not-allowed" : time === t ? "border-primary bg-primary/10 font-bold" : "hover:bg-muted/50"}`}>
+                        className={`min-h-11 py-2 rounded-lg border text-xs ${busy ? "opacity-40 line-through cursor-not-allowed" : time === t ? "border-primary bg-primary/10 font-bold" : "hover:bg-muted/50"}`}>
                         {t}
                       </button>
                     );

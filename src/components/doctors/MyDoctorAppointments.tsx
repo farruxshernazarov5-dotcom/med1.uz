@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import DoctorDialogContent from "./DoctorDialogContent";
 import { CalendarClock, Loader2, XCircle, RefreshCw, BellRing, CreditCard } from "lucide-react";
 import { fetchDoctorCalendar, WEEKDAY_UZ, type DayAvailability } from "@/lib/doctorAvailability";
 
@@ -172,7 +173,7 @@ export default function MyDoctorAppointments({ doctorId, doctorName }: Props) {
       </CardContent>
 
       <Dialog open={!!cancelTarget} onOpenChange={(v) => { if (!v) { setCancelTarget(null); setReason(""); } }}>
-        <DialogContent className="max-w-md">
+        <DoctorDialogContent className="max-w-md max-sm:block max-sm:space-y-4">
           <DialogHeader><DialogTitle className="text-base">Bronni bekor qilish</DialogTitle></DialogHeader>
           <p className="text-xs text-muted-foreground">
             {cancelTarget?.payment_status === "paid"
@@ -183,11 +184,11 @@ export default function MyDoctorAppointments({ doctorId, doctorName }: Props) {
           <Button variant="destructive" onClick={cancel} disabled={!!busy} className="gap-2">
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />} Tasdiqlash
           </Button>
-        </DialogContent>
+        </DoctorDialogContent>
       </Dialog>
 
       <Dialog open={!!reschedTarget} onOpenChange={(v) => { if (!v) { setReschedTarget(null); setReason(""); } }}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DoctorDialogContent className="max-w-lg max-h-[85vh] overflow-y-auto max-sm:block max-sm:space-y-4">
           <DialogHeader><DialogTitle className="text-base">Boshqa vaqtga ko'chirish</DialogTitle></DialogHeader>
           {calLoading ? (
             <div className="py-8 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
@@ -221,7 +222,7 @@ export default function MyDoctorAppointments({ doctorId, doctorName }: Props) {
               <Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ko'chirish sababi (ixtiyoriy)" />
             </div>
           )}
-        </DialogContent>
+        </DoctorDialogContent>
       </Dialog>
     </Card>
   );

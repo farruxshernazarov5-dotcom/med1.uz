@@ -21,7 +21,7 @@ const DoctorDialogContent = forwardRef<ElementRef<typeof DialogContent>, Compone
     }, []);
     return <DialogContent ref={ref} {...props}
       style={{ ...style, ...(viewport ? { height: viewport.height, top: viewport.top } : {}) }}
-      className={cn(className, "max-sm:left-0 max-sm:top-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:h-[100dvh] max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:rounded-none max-sm:border-0 max-sm:z-[60] max-sm:pt-[max(1rem,env(safe-area-inset-top))] max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] max-sm:px-4 max-sm:[&>button:last-child]:top-[max(1rem,env(safe-area-inset-top))] max-sm:[&>button:last-child]:h-10 max-sm:[&>button:last-child]:w-10 max-sm:[&>div:first-child]:pr-10")} />;
+      className={cn(className, "min-w-0 max-sm:overflow-x-hidden max-sm:[&_input]:min-h-11 max-sm:[&_button]:min-h-11 max-sm:left-0 max-sm:top-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:h-[100dvh] max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:rounded-none max-sm:border-0 max-sm:z-[60] max-sm:pt-[max(1rem,env(safe-area-inset-top))] max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] max-sm:px-4 max-sm:[&>button:last-child]:top-[max(1rem,env(safe-area-inset-top))] max-sm:[&>button:last-child]:h-11 max-sm:[&>button:last-child]:w-11 max-sm:[&>div:first-child]:pr-10")} />;
   },
 );
 DoctorDialogContent.displayName = "DoctorDialogContent";
