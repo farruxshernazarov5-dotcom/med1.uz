@@ -41,9 +41,10 @@ const META: Record<Kind, { title: string; hint: string; placeholder: string; lab
 interface Props {
   doctorId: string;
   doctorName: string;
+  onBook?: () => void;
 }
 
-export default function DoctorConsultActions({ doctorId, doctorName }: Props) {
+export default function DoctorConsultActions({ doctorId, doctorName, onBook }: Props) {
   const { user } = useAuth();
   const [kind, setKind] = useState<Kind | null>(null);
   const [name, setName] = useState("");
@@ -118,6 +119,12 @@ export default function DoctorConsultActions({ doctorId, doctorName }: Props) {
         })}
       </div>
 
+      {onBook && <div className="fixed bottom-20 inset-x-2 z-40 grid grid-cols-[1.6fr_1fr_1fr] gap-1 rounded-2xl border bg-card p-2 shadow-lg lg:hidden">
+        <Button className="min-h-11 px-2 text-xs" onClick={onBook}>Qabulga yozilish</Button>
+        <Button variant="outline" className="min-h-11 px-2 text-xs" disabled={checking !== null} onClick={() => openLive("chat")}>Chat</Button>
+        <Button variant="outline" className="min-h-11 px-2 text-xs" disabled={checking !== null} onClick={() => openLive("video")}>Video</Button>
+      </div>}
+
       {activeAppt && (
         <DoctorChatSession
           open={liveChat}
@@ -151,16 +158,16 @@ export default function DoctorConsultActions({ doctorId, doctorName }: Props) {
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">{m?.hint}</p>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ism Familiya" />
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+998901234567" />
+              <Input aria-label="Ism Familiya" className="min-h-11" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ism Familiya" />
+              <Input aria-label="Telefon raqami" type="tel" className="min-h-11" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+998901234567" />
               {kind === "video" && (
                 <div>
                   <label className="text-xs font-semibold">Qulay vaqt</label>
                   <Input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
                 </div>
               )}
-              <Textarea rows={4} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={m?.placeholder} />
-              <Button onClick={submit} disabled={saving} className="w-full gap-2">
+              <Textarea aria-label="Xabaringiz" className="w-full" rows={4} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={m?.placeholder} />
+              <Button onClick={submit} disabled={saving} className="w-full min-h-11 gap-2">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />} Yuborish
               </Button>
             </div>

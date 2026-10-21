@@ -43,13 +43,33 @@ const RECOMMENDED: Record<string, { analyses: string[]; studies: string[]; ai?: 
   "Стоматолог":   { analyses: [], studies: ["OPTG (Panorama)", "RVG"], ai: [] },
 };
 
-export default function RecommendedAnalyses({ specialty }: { specialty?: string | null }) {
+/** Uzbek/Latin and Russian stems → catalogue key, so platform doctors (Uzbek specialties) match too. */
+const ALIASES: [RegExp, string][] = [
+  [/kardio|кардио/i, "Кардиолог"], [/endokrin|эндокрин/i, "Эндокринолог"], [/ginekol|гинеко|akusher/i, "Гинеколог"],
+  [/onkol|онкол/i, "Онколог"], [/nevropat|невропат/i, "Невропатолог"], [/nevrol|невролог/i, "Невролог"],
+  [/pulmon|пульмон/i, "Пульмонолог"], [/radiol|радиол|rentgen/i, "Радиолог"], [/ortoped|travmat|ортопед|травмат/i, "Ортопед"],
+  [/gastro|гастро/i, "Гастроэнтеролог"], [/urol|уролог|androl/i, "Уролог"], [/dermat|дермат|teri/i, "Дерматолог"],
+  [/pediat|педиат|bolalar/i, "Педиатр"], [/terap|терапев|umumiy amaliyot|оврач/i, "Терапевт"], [/oftalm|офтальм|ko.z/i, "Офтальмолог"],
+  [/lor|лор|otorino|отолар/i, "ЛОР (Отоларинголог)"], [/uzi|узи|ultratovush/i, "УЗИ-специалист"], [/stomat|стомат|tish/i, "Стоматолог"],
+];
+
+export function resolveSpecialtyKey(specialty?: string | null): string | null {
   if (!specialty) return null;
-  const rec = RECOMMENDED[specialty];
+  if (RECOMMENDED[specialty]) return specialty;
+  return ALIASES.find(([re]) => re.test(specialty))?.[1] ?? null;
+}
+
+export function getSpecialtyRecommendations(specialty?: string | null) {
+  const key = resolveSpecialtyKey(specialty);
+  return key ? RECOMMENDED[key] : null;
+}
+
+export default function RecommendedAnalyses({ specialty }: { specialty?: string | null }) {
+  const rec = getSpecialtyRecommendations(specialty);
   if (!rec) return null;
 
   return (
-    <div className="bg-card rounded-2xl border p-6">
+    <div className="bg-card rounded-2xl border p-4 sm:p-6">
       <h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2">
         <FileText className="w-5 h-5 text-primary" /> Tavsiya etilgan tahlillar va tekshiruvlar
       </h2>

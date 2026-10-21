@@ -15474,6 +15474,62 @@ export type Database = {
           },
         ]
       }
+      platform_doctor_requests: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          meeting_url: string | null
+          message: string
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          preferred_at: string | null
+          reply: string | null
+          request_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          meeting_url?: string | null
+          message: string
+          patient_id: string
+          patient_name: string
+          patient_phone: string
+          preferred_at?: string | null
+          reply?: string | null
+          request_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          meeting_url?: string | null
+          message?: string
+          patient_id?: string
+          patient_name?: string
+          patient_phone?: string
+          preferred_at?: string | null
+          reply?: string | null
+          request_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_doctor_requests_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_payments: {
         Row: {
           amount: number
@@ -17017,7 +17073,7 @@ export type Database = {
       reviews: {
         Row: {
           appointment_id: string | null
-          clinic_id: string
+          clinic_id: string | null
           comment: string | null
           created_at: string
           doctor_id: string | null
@@ -17028,7 +17084,7 @@ export type Database = {
         }
         Insert: {
           appointment_id?: string | null
-          clinic_id: string
+          clinic_id?: string | null
           comment?: string | null
           created_at?: string
           doctor_id?: string | null
@@ -17039,7 +17095,7 @@ export type Database = {
         }
         Update: {
           appointment_id?: string | null
-          clinic_id?: string
+          clinic_id?: string | null
           comment?: string | null
           created_at?: string
           doctor_id?: string | null
