@@ -9,6 +9,7 @@ import { MobileHealthAlerts } from "./MobileHealthAlerts";
 import { HealthAutoSync } from "./HealthAutoSync";
 import { AppLockScreen } from "./AppLockScreen";
 import { MobileSmartSearch } from "./MobileSmartSearch";
+import { OfflineScreen } from "./OfflineScreen";
 import { registerNotificationTaps, lockNow, registerForegroundReminderSound } from "@/lib/nativeHealth";
 import { initNativeChrome, isNativeApp, registerBackButton, registerDeepLinks, watchNetwork } from "@/lib/nativeApp";
 import { goBackSafe } from "@/lib/safeBack";
@@ -27,6 +28,7 @@ const MobileAppShell = () => {
   const location = useLocation();
   const [online, setOnline] = useState(true);
   const [restored, setRestored] = useState(false);
+  const [offlineDismissed, setOfflineDismissed] = useState(false);
 
   useEffect(() => {
     void initNativeChrome();
@@ -44,6 +46,7 @@ const MobileAppShell = () => {
           window.setTimeout(() => setRestored(false), 3000);
         }
         initialized = true;
+        if (!nextOnline) setOfflineDismissed(false);
         return nextOnline;
       });
     });
@@ -118,7 +121,13 @@ const MobileAppShell = () => {
 
   return (
     <>
-      {!online && (
+      {!online && !offlineDismissed && (
+        <OfflineScreen
+          onContinueOffline={() => setOfflineDismissed(true)}
+          onBackOnline={() => { setOnline(true); setRestored(true); window.setTimeout(() => setRestored(false), 3000); }}
+        />
+      )}
+      {!online && offlineDismissed && (
         <div className="fixed top-0 inset-x-0 z-[60] flex items-center justify-center gap-2 bg-medical-orange px-3 py-1.5 text-xs font-medium text-primary-foreground app-safe-top">
           <WifiOff className="h-3.5 w-3.5" />
           Oflayn rejim — saqlangan ma’lumotlar ko‘rsatilmoqda
