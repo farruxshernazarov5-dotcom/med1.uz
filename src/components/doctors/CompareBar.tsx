@@ -38,7 +38,7 @@ const CompareBar = ({ aboveActions = false }: { aboveActions?: boolean }) => {
 
   return (
     <>
-      <div className={`${aboveActions ? "bottom-40" : "bottom-20"} lg:bottom-4 inset-x-2 sm:left-auto sm:right-4 z-40 bg-primary text-primary-foreground rounded-full shadow-2xl px-4 py-2.5 flex items-center gap-2 justify-center animate-fade-in`}>
+      <div className={`fixed ${aboveActions ? "bottom-40" : "bottom-20"} lg:bottom-4 inset-x-2 sm:left-auto sm:right-4 z-40 bg-primary text-primary-foreground rounded-full shadow-2xl px-4 py-2.5 flex items-center gap-2 justify-center animate-fade-in`}>
         <Scale className="w-4 h-4" />
         <span className="text-sm font-medium">{ids.length} shifokor tanlangan</span>
         <Button size="sm" variant="secondary" className="min-h-11" onClick={() => setOpen(true)}>Taqqoslash</Button>

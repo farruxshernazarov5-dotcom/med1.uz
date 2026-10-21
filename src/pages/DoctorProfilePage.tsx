@@ -1,3 +1,8 @@
+import DoctorAITips from "@/components/doctors/DoctorAITips";
+import DoctorDirectoryActions from "@/components/doctors/DoctorDirectoryActions";
+import CompareBar from "@/components/doctors/CompareBar";
+import DoctorDialogContent from "@/components/doctors/DoctorDialogContent";
+import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +35,7 @@ const DAYS = [
 const DoctorProfilePage = () => {
   const { doctorId } = useParams();
   const { user } = useAuth();
+  const [consultKind, setConsultKind] = useState<"booking" | "chat" | "video" | "question" | null>(null);
   const [doctor, setDoctor] = useState<any>(null);
   const [clinic, setClinic] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
@@ -81,7 +87,7 @@ const DoctorProfilePage = () => {
     setSubmittingReview(true);
     const { error } = await supabase.from("reviews").insert({
       doctor_id: doctor.id,
-      clinic_id: doctor.clinic_id || doctor.id,
+      clinic_id: doctor.clinic_id || null,
       patient_id: user.id,
       rating: reviewRating,
       comment: reviewText.trim(),
@@ -98,7 +104,7 @@ const DoctorProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-40 lg:pb-0 break-words">
         <Header />
         <div className="container mx-auto px-4 max-w-4xl py-12">
           <Skeleton className="h-64 rounded-2xl mb-6" />
@@ -110,7 +116,7 @@ const DoctorProfilePage = () => {
 
   if (!doctor) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-40 lg:pb-0 break-words">
         <Header />
         <div className="text-center py-24">
           <Stethoscope className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
@@ -135,7 +141,7 @@ const DoctorProfilePage = () => {
   const mapQuery = [doctor.address, doctor.city, doctor.region].filter(Boolean).join(", ");
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-40 lg:pb-0 break-words">
       <Header />
 
       <section className="py-8 md:py-12">
@@ -161,7 +167,7 @@ const DoctorProfilePage = () => {
                     <Stethoscope className="w-12 h-12 text-primary-foreground" />
                   </div>
                 )}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
                     {doctor.full_name}
                   </h1>
@@ -195,7 +201,20 @@ const DoctorProfilePage = () => {
             </div>
 
             {/* Body */}
-            <div className="p-6 md:p-8 space-y-6">
+            <div className="p-4 sm:p-6 md:p-8 space-y-6">
+              <DoctorDirectoryActions doctorId={doctor.id} />
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <Button className="min-h-11" onClick={() => setConsultKind("booking")}>Qabulga yozilish</Button>
+                {(["chat", "video", "question"] as const).map(kind => <Button key={kind} variant="outline" className="min-h-11" onClick={() => setConsultKind(kind)}>{kind === "chat" ? "Chat" : kind === "video" ? "Video" : "Savol berish"}</Button>)}
+              </div>
+              <DoctorAITips specialty={doctor.specialty} />
+              <section className="rounded-xl border p-4">
+                <h2 className="font-bold mb-2">Xizmatlar va narxlar</h2>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div><p className="text-sm">{doctor.specialty} maslahati</p><p className="font-semibold text-primary">{doctor.consultation_price > 0 ? `${Number(doctor.consultation_price).toLocaleString("uz-UZ")} so‘m` : "Narxni qabuldan oldin aniqlashtiring"}</p></div>
+                  <Button className="min-h-11" onClick={() => setConsultKind("booking")}>Qabulga yozilish</Button>
+                </div>
+              </section>
               {/* Bio */}
               {doctor.bio && (
                 <div>
@@ -399,12 +418,12 @@ const DoctorProfilePage = () => {
           </div>
 
           {/* Social / Video / Photo */}
-          <div className="mt-8 bg-card rounded-2xl border border-border shadow-card p-6 md:p-8">
+          <div className="mt-8 bg-card rounded-2xl border border-border shadow-card p-4 sm:p-6 md:p-8">
             <SocialVideoShowcase entityType="doctor" entityId={doctor.id} />
           </div>
 
           {/* Reviews Section */}
-          <div className="mt-8 bg-card rounded-2xl border border-border shadow-card p-6 md:p-8 opacity-0 animate-fade-up" style={{ animationDelay: "150ms", animationFillMode: "forwards" }}>
+          <div className="mt-8 bg-card rounded-2xl border border-border shadow-card p-4 sm:p-6 md:p-8 opacity-0 animate-fade-up" style={{ animationDelay: "150ms", animationFillMode: "forwards" }}>
             <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-primary" /> Bemorlar sharhlari
               {reviews.length > 0 && <Badge variant="secondary">{reviews.length}</Badge>}
@@ -416,7 +435,7 @@ const DoctorProfilePage = () => {
                 <p className="text-sm font-medium text-foreground">Sharh qoldiring</p>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((r) => (
-                    <button key={r} onClick={() => setReviewRating(r)}>
+                    <button key={r} className="h-11 w-11 shrink-0 flex items-center justify-center" aria-label={`${r} yulduz`} aria-pressed={reviewRating === r} onClick={() => setReviewRating(r)}>
                       <Star
                         className={cn("w-6 h-6 transition-colors", r <= reviewRating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground")}
                       />
@@ -424,12 +443,14 @@ const DoctorProfilePage = () => {
                   ))}
                 </div>
                 <Textarea
+                  className="w-full"
+                  aria-label="Sharhingiz"
                   placeholder="Shifokor haqida fikringizni yozing..."
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
                   rows={3}
                 />
-                <Button onClick={handleSubmitReview} disabled={submittingReview} className="bg-hero-gradient text-primary-foreground border-0">
+                <Button onClick={handleSubmitReview} disabled={submittingReview} className="w-full sm:w-auto min-h-11 bg-hero-gradient text-primary-foreground border-0">
                   <Send className="w-4 h-4 mr-2" /> {submittingReview ? "Yuborilmoqda..." : "Yuborish"}
                 </Button>
               </div>
@@ -451,7 +472,7 @@ const DoctorProfilePage = () => {
               <div className="space-y-4">
                 {reviews.map((rev) => (
                   <div key={rev.id} className="p-4 rounded-xl bg-background border border-border">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
                           {(rev.profiles as any)?.full_name?.[0] || "?"}
@@ -483,6 +504,24 @@ const DoctorProfilePage = () => {
         </div>
       </section>
 
+      <div className="fixed bottom-20 inset-x-2 z-40 grid grid-cols-[1.6fr_1fr_1fr] gap-1 rounded-2xl border bg-card p-2 shadow-lg lg:hidden">
+        <Button className="min-h-11 px-2 text-xs" onClick={() => setConsultKind("booking")}>Qabulga yozilish</Button>
+        <Button variant="outline" className="min-h-11 px-2 text-xs" onClick={() => setConsultKind("chat")}>Chat</Button>
+        <Button variant="outline" className="min-h-11 px-2 text-xs" onClick={() => setConsultKind("video")}>Video</Button>
+      </div>
+      <Dialog open={consultKind !== null} onOpenChange={open => !open && setConsultKind(null)}>
+        <DoctorDialogContent className="max-w-md overflow-y-auto max-sm:block max-sm:space-y-4">
+          <DialogHeader><DialogTitle>{consultKind === "booking" ? "Qabulga yozilish" : consultKind === "chat" ? "Shifokor bilan chat" : consultKind === "video" ? "Video maslahat" : "Shifokorga savol"} — {doctor.full_name}</DialogTitle></DialogHeader>
+          <div className="space-y-4 text-sm">
+            {consultKind === "booking" && clinic ? <>
+              <p className="text-muted-foreground">Qabul sanasi va vaqtini klinikaning bronlash sahifasida tanlang.</p>
+              <Button asChild className="w-full min-h-11"><Link to={`/booking?clinic=${clinic.id}&doctor=${doctor.id}`}>Qabulga yozilish</Link></Button>
+            </> : <p className="text-muted-foreground">{consultKind === "booking" ? "Bu shifokor uchun onlayn bronlash hali ulanmagan." : "Bu shifokor uchun onlayn chat, video va savol yuborish hali ulanmagan."} {clinic?.phone ? "Klinika bilan bog‘lanib, maslahat imkoniyati va vaqtini aniqlashtiring." : "Qabul va aloqa ma’lumotlari yangilanishini kuting."}</p>}
+            {clinic?.phone && <Button asChild variant="outline" className="w-full min-h-11"><a href={`tel:${clinic.phone}`}>Klinikaga qo‘ng‘iroq qilish</a></Button>}
+          </div>
+        </DoctorDialogContent>
+      </Dialog>
+      <CompareBar aboveActions />
       <Footer />
     </div>
   );
