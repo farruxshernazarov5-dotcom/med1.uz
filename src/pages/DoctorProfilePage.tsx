@@ -1,5 +1,6 @@
 import DoctorAiTips from "@/components/doctors/DoctorAiTips";
 import DoctorQuickActions from "@/components/doctors/DoctorQuickActions";
+import PlatformDoctorRequestForm from "@/components/doctors/PlatformDoctorRequestForm";
 import CompareBar from "@/components/doctors/CompareBar";
 import DoctorDialogContent from "@/components/doctors/DoctorDialogContent";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -92,9 +93,10 @@ const DoctorProfilePage = () => {
       comment: reviewText.trim(),
     });
     if (error) {
-      toast({ title: "Xatolik", description: error.message, variant: "destructive" });
+      toast({ title: "Sharh yuborilmadi", description: "Internet aloqasini tekshirib, qayta urinib ko‘ring", variant: "destructive" });
     } else {
       toast({ title: "✅ Sharh yuborildi!", description: "Moderatsiyadan o'tgach ko'rinadi" });
+      setReviews((prev) => [{ id: crypto.randomUUID(), rating: reviewRating, comment: reviewText.trim(), created_at: new Date().toISOString(), is_approved: false, patient_id: user.id }, ...prev]);
       setReviewText("");
       setReviewRating(5);
     }
@@ -474,11 +476,11 @@ const DoctorProfilePage = () => {
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                          {(rev.profiles as any)?.full_name?.[0] || "?"}
+                          {rev.patient_id === user?.id ? "S" : "B"}
                         </div>
                         <div>
                           <p className="text-sm font-medium text-foreground">
-                            {(rev.profiles as any)?.full_name || "Anonim"}
+                            {rev.patient_id === user?.id ? "Siz" : "Bemor"}{!rev.is_approved && <span className="ml-2 text-[10px] font-normal text-medical-orange">Moderatsiyada</span>}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
                             {new Date(rev.created_at).toLocaleDateString("uz-UZ")}
@@ -515,7 +517,9 @@ const DoctorProfilePage = () => {
             {consultKind === "booking" && clinic ? <>
               <p className="text-muted-foreground">Qabul sanasi va vaqtini klinikaning bronlash sahifasida tanlang.</p>
               <Button asChild className="w-full min-h-11"><Link to={`/booking?clinic=${clinic.id}&doctor=${doctor.id}`}>Qabulga yozilish</Link></Button>
-            </> : <p className="text-muted-foreground">{consultKind === "booking" ? "Bu shifokor uchun onlayn bronlash hali ulanmagan." : "Bu shifokor uchun onlayn chat, video va savol yuborish hali ulanmagan."} {clinic?.phone ? "Klinika bilan bog‘lanib, maslahat imkoniyati va vaqtini aniqlashtiring." : "Qabul va aloqa ma’lumotlari yangilanishini kuting."}</p>}
+            </> : consultKind ? (
+              <PlatformDoctorRequestForm key={consultKind} doctorId={doctor.id} kind={consultKind} onDone={() => setConsultKind(null)} />
+            ) : null}
             {clinic?.phone && <Button asChild variant="outline" className="w-full min-h-11"><a href={`tel:${clinic.phone}`}>Klinikaga qo‘ng‘iroq qilish</a></Button>}
           </div>
         </DoctorDialogContent>
