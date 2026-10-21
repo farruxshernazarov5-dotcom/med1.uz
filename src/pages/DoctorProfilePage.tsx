@@ -1,5 +1,5 @@
-import DoctorAITips from "@/components/doctors/DoctorAITips";
-import DoctorDirectoryActions from "@/components/doctors/DoctorDirectoryActions";
+import DoctorAiTips from "@/components/doctors/DoctorAiTips";
+import DoctorQuickActions from "@/components/doctors/DoctorQuickActions";
 import CompareBar from "@/components/doctors/CompareBar";
 import DoctorDialogContent from "@/components/doctors/DoctorDialogContent";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -66,9 +66,8 @@ const DoctorProfilePage = () => {
         // Fetch reviews
         const { data: revs } = await supabase
           .from("reviews")
-          .select("*, profiles:patient_id(full_name, avatar_url)")
+          .select("id, rating, comment, created_at, is_approved, patient_id")
           .eq("doctor_id", doctorId)
-          .eq("is_approved", true)
           .order("created_at", { ascending: false })
           .limit(20);
         setReviews(revs || []);
@@ -202,12 +201,12 @@ const DoctorProfilePage = () => {
 
             {/* Body */}
             <div className="p-4 sm:p-6 md:p-8 space-y-6">
-              <DoctorDirectoryActions doctorId={doctor.id} />
+              <DoctorQuickActions className="mt-4" doctorId={doctor.id} name={doctor.full_name} specialty={doctor.specialty} photoUrl={doctor.photo_url} route={`/doctors/${doctor.id}`} />
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <Button className="min-h-11" onClick={() => setConsultKind("booking")}>Qabulga yozilish</Button>
                 {(["chat", "video", "question"] as const).map(kind => <Button key={kind} variant="outline" className="min-h-11" onClick={() => setConsultKind(kind)}>{kind === "chat" ? "Chat" : kind === "video" ? "Video" : "Savol berish"}</Button>)}
               </div>
-              <DoctorAITips specialty={doctor.specialty} />
+              <DoctorAiTips doctorName={doctor.full_name} specialty={doctor.specialty} experience={doctor.experience_years} online={!!doctor.online_consultation} />
               <section className="rounded-xl border p-4">
                 <h2 className="font-bold mb-2">Xizmatlar va narxlar</h2>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

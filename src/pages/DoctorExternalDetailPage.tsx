@@ -1,5 +1,5 @@
-import DoctorAITips from "@/components/doctors/DoctorAITips";
-import DoctorDirectoryActions from "@/components/doctors/DoctorDirectoryActions";
+import DoctorAiTips from "@/components/doctors/DoctorAiTips";
+import DoctorQuickActions from "@/components/doctors/DoctorQuickActions";
 import CompareBar from "@/components/doctors/CompareBar";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -143,7 +143,7 @@ const DoctorExternalDetailPage = () => {
                   </div>
                 )}
               </div>
-              <DoctorDirectoryActions doctorId={doc.id} />
+              <DoctorQuickActions className="mt-4" doctorId={doc.id} name={doc.name} specialty={doc.primary_specialty} photoUrl={doc.photo_url} route={`/doctors/ext/${doc.slug}`} />
               <div className="grid grid-cols-1 gap-2 mt-5 sm:flex sm:flex-wrap">
                 <Button className="gap-2 min-h-11 w-full sm:w-auto" onClick={() => setBookOpen(true)}>
                   <Calendar className="w-4 h-4" /> Qabulga yozilish
@@ -173,7 +173,7 @@ const DoctorExternalDetailPage = () => {
               </p>
             </div>
 
-            <DoctorAITips specialty={doc.primary_specialty} />
+            <DoctorAiTips doctorName={doc.name} specialty={doc.primary_specialty} experience={doc.experience} online />
 
             <DoctorServicesSection
               doctorId={doc.id}
