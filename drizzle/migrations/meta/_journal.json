@@ -99,6 +99,13 @@
       "when": 1792462905211,
       "tag": "0013_notifications_to_telegram",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792604372107,
+      "tag": "0014_platform_doctor_consult_requests",
+      "breakpoints": true
     }
   ]
 }
