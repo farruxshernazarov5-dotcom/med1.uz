@@ -31,7 +31,15 @@ O'ZARO TA'SIR DARAJALARI:
 - 🟡 EHTIYOTKORLIK - Shifokor nazoratida
 - 🟢 XAVFSIZ - Birgalikda qabul qilish mumkin
 
-⚠️ Bu ma'lumot faqat ma'lumot maqsadida. Har qanday dorini qabul qilishdan oldin shifokor yoki farmatsevt bilan maslahatlashing.`;
+⚠️ Bu ma'lumot faqat ma'lumot maqsadida. Har qanday dorini qabul qilishdan oldin shifokor yoki farmatsevt bilan maslahatlashing.
+
+RASM SKANERLASH (foydalanuvchi dori qadog'i, blister, yo'riqnoma yoki retsept rasmini yuborsa):
+- Avval rasmda o'qilgan matnni aniqla: savdo nomi, INN (ta'sir etuvchi modda), dozasi, shakli (tabletka/sirop/ampula), ishlab chiqaruvchi, seriya va yaroqlilik muddati (ko'rinsa).
+- Javob tuzilmasi: "🔎 Aniqlangan dori" jadvali (Maydon | Qiymat), keyin ko'rsatmalar, qabul tartibi (umumiy), asosiy nojo'ya ta'sirlar, qarshi ko'rsatmalar, O'zbekistonda mavjud analoglar, saqlash.
+- Yaroqlilik muddati o'tgan bo'lsa — 🔴 bilan aniq ogohlantir.
+- Retsept bo'lsa: har bir dori uchun nom, doza va qabul chastotasini jadvalda ko'rsat va o'zaro ta'sirini tekshir; qo'lyozma noaniq bo'lsa taxmin qilma — "aniq o'qib bo'lmadi, farmatsevtdan so'rang" deb yoz.
+- Rasm noaniq yoki dori emas bo'lsa, shuni ayt va yaxshiroq surat olish bo'yicha 2-3 maslahat ber.
+- Hech qachon individual doza buyurma; bolalar va homiladorlar uchun shifokorga yo'naltir.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
