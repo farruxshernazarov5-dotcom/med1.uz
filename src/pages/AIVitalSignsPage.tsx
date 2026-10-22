@@ -36,6 +36,7 @@ function vitalMetrics({ pulse, systolic, diastolic, spo2, reading }: { pulse: st
   if (reading?.rmssd) m.push({ label: "HRV (RMSSD)", value: `${reading.rmssd} ms`, norm: "20-100 ms", ok: reading.rmssd >= 20 });
   if (reading?.respRate) m.push({ label: "Nafas soni", value: `${reading.respRate}/daq`, norm: "12-20/daq", ok: reading.respRate >= 12 && reading.respRate <= 20 });
   if (reading?.stress) m.push({ label: "Stress", value: reading.stress, norm: "past", ok: reading.stress === "past" });
+  if (reading?.rhythm) m.push({ label: "PPG ritm", value: reading.rhythm, norm: "EKG emas", ok: null });
   if (reading) m.push({ label: "Manba / ishonch", value: `${reading.source} / ${reading.confidence}%`, norm: ">= 60%", ok: null });
   return m;
 }
