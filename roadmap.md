@@ -143,3 +143,10 @@
 - [x] Farmatsevt AI: dori qadog‘i/retsept/yaroqlilik skaneri, dorilarim, tezkor vositalar
 - [x] Med1 uslubidagi "Internet aloqasi uzildi" ekrani
 - [ ] Shifokor kabinetida kelgan so‘rovlarga javob berish ro‘yxati (hozircha bildirishnoma orqali)
+
+## 2026-10-22 — Kabinet va AI xulosalari
+- [ ] Kabinetda klinika, shifokor va xizmat sevimlilarini birlashtirish
+- [ ] Profil raqamini fon ostida qolmasdan ko‘rsatish
+- [ ] AI xulosalarida manba va tavsiya mutaxassis, PDFlarda barqaror jadvallar
+- [ ] Shifokor bilan himoyalangan chat va Jitsi video oqimini tiklash
+- [ ] Bola parvarishi AI uchun yoshga mos xavfsiz tavsiyalar

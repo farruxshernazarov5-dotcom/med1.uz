@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import PlatformDoctorConversation, { type ConversationRequest } from "./PlatformDoctorConversation";
 
 export type PlatformRequestKind = "chat" | "video" | "question" | "booking";
 
@@ -28,6 +29,17 @@ export default function PlatformDoctorRequestForm({ doctorId, kind, onDone }: Pr
   const [when, setWhen] = useState("");
   const [saving, setSaving] = useState(false);
   const [sent, setSent] = useState(false);
+  const [conversation, setConversation] = useState<ConversationRequest | null>(null);
+  useEffect(() => {
+    if (!user || (kind !== "chat" && kind !== "video")) return;
+    let active = true;
+    const load = async () => {
+      const { data, error } = await supabase.from("platform_doctor_requests").select("id,patient_name,message,reply,meeting_url,status,request_type").eq("doctor_id",doctorId).eq("patient_id",user.id).eq("request_type",kind).not("status","in","(declined,done)").order("created_at",{ascending:false}).limit(1);
+      if (active && !error) setConversation(data?.[0] ?? null);
+    };
+    void load(); const timer = window.setInterval(()=>void load(),5000);
+    return ()=>{active=false;window.clearInterval(timer);};
+  }, [user,doctorId,kind,sent]);
 
   useEffect(() => {
     if (!user) return;
@@ -41,6 +53,7 @@ export default function PlatformDoctorRequestForm({ doctorId, kind, onDone }: Pr
     return <p className="text-sm text-muted-foreground">So‘rov yuborish uchun <Link to="/auth" className="text-primary underline">tizimga kiring</Link>.</p>;
   }
 
+  if (conversation) return <PlatformDoctorConversation request={conversation}/>;
   if (sent) {
     return (
       <div className="text-center space-y-3 py-6">

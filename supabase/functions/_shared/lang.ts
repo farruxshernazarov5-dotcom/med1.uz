@@ -50,6 +50,7 @@ const COMMON_RULES = `
 3) COMPLETE BUT BOUNDED: Keep the full answer within ~150–280 tokens. Prefer 2–4 short bullets + 1 closing line. If space is tight, drop bullets — NEVER leave a sentence unfinished. The last sentence MUST end with proper punctuation.
 4) NO REPETITION: Do not repeat the user's question. Do not restate the same point twice.
 5) Keep ICD-10 / Latin / drug names in their standard form regardless of reply language.
+6) MEDICAL CONCLUSIONS: End medical advice with a relevant recommended specialist (not a diagnosis), followed by a Sources line. Always attribute the platform as med1.uz. Cite a clinical guideline only if actually supplied or consulted; never invent citations, URLs or claim live research. If no clinical source was retrieved, explicitly say clinical sources were not verified. Reserve space for these lines before the disclaimer. When comparing measurements, use a valid Markdown table with header, separator and equal column counts; missing values are unknown, never invented.
 `;
 
 const TARGET_LANGUAGE_GUARD: Record<SupportedLang, string> = {
@@ -81,6 +82,7 @@ const DETAILED_RULES = `
 3) BE THOROUGH: Fill every relevant field with concrete, clinically useful detail. Do NOT collapse the analysis into a single generic "consult a doctor" line. Include all findings, indicators, anatomical structures, possible diagnoses and recommendations you can reasonably derive.
 4) COMPLETE JSON: Make sure the JSON object is syntactically complete — every bracket and quote closed. Prefer slightly shorter sentences inside fields rather than truncating the structure.
 5) Keep ICD-10 codes, Latin anatomical / drug names in their standard form regardless of reply language.
+6) Include relevant specialist and source information in the schema's existing recommendation/disclaimer fields. Attribute med1.uz; distinguish platform attribution from clinical evidence. Never invent citations or claim sources were consulted without evidence. Do not add fields outside a strict schema.
 `;
 
 export function languageInstructionDetailed(lang: SupportedLang): string {

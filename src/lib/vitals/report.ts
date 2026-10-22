@@ -1,3 +1,4 @@
+import { reportTables } from "@/lib/aiReportTables";
 import { isNativeApp } from "@/lib/nativeApp";
 import { sendPdfToTelegram } from "@/lib/telegramBotLink";
 import { supabase } from "@/integrations/supabase/client";
@@ -159,7 +160,11 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   const sourceMetric = metrics?.find((m) => /manba|ishonch|signal/i.test(m.label));
   block("Manba va signal sifati", sourceMetric ? sourceMetric.value : "Manba: qo'lda kiritilgan yoki saqlangan AI xulosasi. Signal sifati: ko'rsatilmagan.");
   if (summary) block("O'lchangan ko'rsatkichlar", summary);
-  block("Med AI xulosasi", conclusion);
+  for (const table of reportTables(conclusion)) {
+    autoTable(doc, {startY:y,margin:{left:14,right:14,top:20,bottom:28},head:[table.head.map(clean)],body:table.rows.map(row=>row.map(clean)),theme:"grid",styles:{fontSize:9,cellPadding:3,overflow:"linebreak"},headStyles:{fillColor:headerColor},willDrawPage:data=>{if(data.pageNumber>1) background();},didDrawPage:data=>{y=(data.cursor?.y ?? 20)+8;}});
+  }
+  if (!/mutaxassis|specialist/i.test(conclusion)) block("Tavsiya etilgan mutaxassis", "Xulosada ko'rsatilmagan. Oilaviy shifokor bilan aniqlashtiring.");
+  block("Manbalar", "Platforma: med1.uz. Klinik manbalar faqat AI xulosasida aniq keltirilgan bo'lsa ko'rsatiladi; aks holda tekshirilmagan.");
   block("Keyingi qadamlar", "1. Natijani shifokoringiz bilan muhokama qiling.\n2. Qayta o'lchovni dam olgan holatda, bir xil vaqtda bajaring.\n3. Ko'krakda og'riq, hansirash, hushdan ketish bo'lsa darhol 103 ga qo'ng'iroq qiling.\n4. Med1.uz orqali shifokor qabuliga yozilishingiz mumkin.");
 
   // Footer on every page

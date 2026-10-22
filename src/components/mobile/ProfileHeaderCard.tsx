@@ -50,8 +50,8 @@ export function ProfileHeaderCard({ subtitle, badge }: { subtitle: string; badge
           </Button>
         )}
       </div>
-      <div className="-mt-10 flex items-end gap-4 px-5 pb-4">
-        <div className="relative">
+      <div className="relative z-10 flex items-start gap-4 px-5 pb-4 pt-3">
+        <div className="relative -mt-10 shrink-0">
           <Avatar className="h-20 w-20 border-4 border-background tier-ring">
             <AvatarImage src={profile?.avatar_url ?? ""} className="object-cover" />
             <AvatarFallback className="tier-soft tier-text text-xl font-bold">{initials || <User />}</AvatarFallback>
@@ -66,7 +66,7 @@ export function ProfileHeaderCard({ subtitle, badge }: { subtitle: string; badge
         </div>
         <div className="min-w-0 flex-1 pb-1">
           <h2 className="break-words text-xl font-bold">{profile?.full_name || "Xush kelibsiz!"}</h2>
-          <p className="mt-0.5 break-all text-sm text-muted-foreground">{subtitle}</p>
+          <p className="mt-0.5 break-words text-sm leading-6 text-muted-foreground" dir="ltr">{subtitle}</p>
           {badge}
         </div>
       </div>

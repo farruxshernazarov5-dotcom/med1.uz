@@ -15474,6 +15474,41 @@ export type Database = {
           },
         ]
       }
+      platform_doctor_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          request_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          request_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          request_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_doctor_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "platform_doctor_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_doctor_requests: {
         Row: {
           created_at: string
