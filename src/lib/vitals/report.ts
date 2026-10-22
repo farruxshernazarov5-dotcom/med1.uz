@@ -124,15 +124,16 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   doc.setTextColor(146, 64, 14); doc.setFontSize(11); doc.text("DIQQAT: BU TASHXIS EMAS", 32, y + 5);
   doc.setFontSize(8.5);
   doc.text(doc.splitTextToSize("Ushbu xulosa faqat ma'lumot uchun. Kamera o'lchovlari taxminiy va tibbiy asbob o'rnini bosmaydi. Shikoyat bo'lsa shifokorga murojaat qiling; og'ir holatda 103 ga qo'ng'iroq qiling.", code ? 100 : 140), 32, y + 11);
-  y += 58;
+  y += code ? 58 : 38;
 
   const block = (title: string, body: string) => {
-    if (y > 255) { doc.addPage(); background(); y = 20; }
+    if (y > (title ? 240 : 262)) { doc.addPage(); background(); y = 20; }
     if (title) {
       doc.setFillColor(...headerColor); doc.rect(12, y - 4.5, 1.5, 6, "F");
       doc.setTextColor(10, 37, 64); doc.setFontSize(12.5); doc.setFont("helvetica", "bold"); doc.text(clean(title), 16, y); y += 7;
     }
     doc.setFont("helvetica", "normal");
+    if (!body.trim()) { y += 1; return; }
     doc.setFontSize(10); doc.setTextColor(40, 50, 60);
     for (const line of doc.splitTextToSize(clean(body), W)) {
       if (y > 262) { doc.addPage(); background(); y = 20; }
@@ -190,7 +191,7 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     }
   }
   if (!/mutaxassis|specialist/i.test(conclusion)) block("Tavsiya etilgan mutaxassis", "Xulosada ko'rsatilmagan. Oilaviy shifokor bilan aniqlashtiring.");
-  block("Manbalar", "Platforma: med1.uz. Klinik manbalar faqat AI xulosasida aniq keltirilgan bo'lsa ko'rsatiladi; aks holda tekshirilmagan.");
+  if (!/manbalar|sources|references/i.test(conclusion)) block("Manbalar", "Platforma: med1.uz. Klinik manbalar faqat AI xulosasida aniq keltirilgan bo'lsa ko'rsatiladi; aks holda tekshirilmagan.");
   block("Keyingi qadamlar", "1. Natijani shifokoringiz bilan muhokama qiling.\n2. Qayta o'lchovni dam olgan holatda, bir xil vaqtda bajaring.\n3. Ko'krakda og'riq, hansirash, hushdan ketish bo'lsa darhol 103 ga qo'ng'iroq qiling.\n4. Med1.uz orqali shifokor qabuliga yozilishingiz mumkin.");
 
   // Footer on every page
