@@ -1,4 +1,4 @@
-import { reportTables } from "@/lib/aiReportTables";
+import { parseMarkdown } from "@/lib/markdownRender";
 import { isNativeApp } from "@/lib/nativeApp";
 import { sendPdfToTelegram } from "@/lib/telegramBotLink";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,7 +39,7 @@ export type MetricStatus = "normal" | "attention" | "urgent" | "unknown";
 export function classifyMetricStatus(metric: ReportMetric): MetricStatus {
   const label = metric.label.toLowerCase();
   const value = Number.parseFloat(metric.value.replace(",", "."));
-  if (/manba|ishonch|signal/.test(label)) return "unknown";
+  if (/manba|ishonch|signal|ritm|rhythm/.test(label)) return "unknown";
   if (/stress/.test(label)) return /^(past|low)$/i.test(metric.value.trim()) ? "normal" : "attention";
   if (Number.isFinite(value)) {
     if (/spo2|spo₂/.test(label)) return value < 92 ? "urgent" : value < 95 ? "attention" : "normal";
@@ -73,31 +73,32 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const PW = 210, PH = 297, W = 170;
 
+  const statuses = (metrics ?? []).map(classifyMetricStatus);
+  const overall: MetricStatus = statuses.includes("urgent") ? "urgent" : statuses.includes("attention") ? "attention" : statuses.includes("normal") ? "normal" : "unknown";
+  const headerColor = statusColors[overall];
+
   const background = () => {
     // Soft clinical gradient (vertical bands), heartbeat line, corner crosses.
     for (let i = 0; i < 60; i++) {
       const k = i / 59;
-      doc.setFillColor(236 - 10 * k, 248 - 6 * k, 250 - 2 * k);
+      doc.setFillColor(...headerColor.map(c => Math.round(255 - (255 - c) * (0.025 + k * 0.035))) as [number, number, number]);
       doc.rect(0, (PH / 60) * i, PW, PH / 60 + 0.5, "F");
     }
-    doc.setDrawColor(190, 225, 232); doc.setLineWidth(0.6);
+    doc.setDrawColor(...headerColor.map(c => Math.round(255 - (255 - c) * 0.18)) as [number, number, number]); doc.setLineWidth(0.6);
     const yb = PH - 22;
     doc.lines([[60, 0], [4, -8], [4, 16], [4, -14], [4, 6], [134, 0]], 0, yb);
     doc.setFillColor(214, 238, 242);
     for (const [x, y] of [[188, 12], [12, 270]]) { doc.rect(x - 1.5, y - 5, 3, 10, "F"); doc.rect(x - 5, y - 1.5, 10, 3, "F"); }
   };
 
-  const statuses = (metrics ?? []).map(classifyMetricStatus);
-  const overall: MetricStatus = statuses.includes("urgent") ? "urgent" : statuses.includes("attention") ? "attention" : statuses.includes("normal") ? "normal" : "unknown";
-  const headerColor = statusColors[overall];
   background();
   // Header band
   doc.setFillColor(...headerColor); doc.roundedRect(12, 10, PW - 24, 35, 4, 4, "F");
   doc.setFillColor(47, 128, 237); doc.circle(26, 25, 7, "F");
   doc.setTextColor(255); doc.setFontSize(10); doc.text("+", 24.6, 26.8);
-  doc.setFontSize(17); doc.text(clean(title).slice(0, 52), 38, 23);
-  doc.setFontSize(9); doc.setTextColor(190, 210, 235);
-  doc.text(`${new Date(date ?? Date.now()).toLocaleString("uz-UZ")}  |  ${clean(name) || "Bemor"}  |  med1.uz`, 38, 31);
+  doc.setFontSize(14); doc.text(doc.splitTextToSize(clean(title), 156).slice(0, 2), 38, 21);
+  doc.setFontSize(8); doc.setTextColor(255);
+  doc.text(doc.splitTextToSize(`${new Date(date ?? Date.now()).toLocaleString("uz-UZ")}  |  ${clean(name) || "Bemor"}  |  med1.uz`, 156).slice(0, 1), 38, 32);
 
   doc.setFillColor(255, 255, 255); doc.roundedRect(38, 35, 65, 6, 2, 2, "F");
   doc.setTextColor(...headerColor); doc.setFontSize(8);
@@ -123,12 +124,16 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   doc.setTextColor(146, 64, 14); doc.setFontSize(11); doc.text("DIQQAT: BU TASHXIS EMAS", 32, y + 5);
   doc.setFontSize(8.5);
   doc.text(doc.splitTextToSize("Ushbu xulosa faqat ma'lumot uchun. Kamera o'lchovlari taxminiy va tibbiy asbob o'rnini bosmaydi. Shikoyat bo'lsa shifokorga murojaat qiling; og'ir holatda 103 ga qo'ng'iroq qiling.", code ? 100 : 140), 32, y + 11);
-  y += 58;
+  y += code ? 58 : 38;
 
   const block = (title: string, body: string) => {
-    if (y > 255) { doc.addPage(); background(); y = 20; }
-    doc.setFillColor(47, 128, 237); doc.rect(12, y - 4.5, 1.5, 6, "F");
-    doc.setTextColor(10, 37, 64); doc.setFontSize(12.5); doc.text(title, 16, y); y += 7;
+    if (y > (title ? 240 : 262)) { doc.addPage(); background(); y = 20; }
+    if (title) {
+      doc.setFillColor(...headerColor); doc.rect(12, y - 4.5, 1.5, 6, "F");
+      doc.setTextColor(10, 37, 64); doc.setFontSize(12.5); doc.setFont("helvetica", "bold"); doc.text(clean(title), 16, y); y += 7;
+    }
+    doc.setFont("helvetica", "normal");
+    if (!body.trim()) { y += 1; return; }
     doc.setFontSize(10); doc.setTextColor(40, 50, 60);
     for (const line of doc.splitTextToSize(clean(body), W)) {
       if (y > 262) { doc.addPage(); background(); y = 20; }
@@ -136,6 +141,19 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     }
     y += 5;
   };
+  const rhythm = metrics?.find(m => /ritm|rhythm/i.test(m.label));
+  if (rhythm) {
+    doc.setFillColor(255, 255, 255); doc.roundedRect(14, y - 4, 182, 30, 2, 2, "F");
+    doc.setTextColor(...headerColor); doc.setFontSize(10);
+    doc.text("PPG ritm bahosi", 18, y + 2);
+    doc.setTextColor(40, 50, 60); doc.setFontSize(9);
+    doc.text(doc.splitTextToSize(clean(rhythm.value), 90), 18, y + 8);
+    doc.setDrawColor(...headerColor); doc.setLineWidth(0.7);
+    doc.lines([[7,0],[2,-2],[2,2],[3,0],[2,-7],[2,12],[2,-5],[5,0],[3,-2],[3,2],[12,0]], 140, y + 10);
+    doc.setFontSize(7); doc.setTextColor(90, 105, 120);
+    doc.text("Chiziq dekorativ. Kamera PPG bahosi - EKG yozuvi emas.", 18, y + 21);
+    y += 34;
+  }
   if (metrics?.length) {
     autoTable(doc, {
       startY: y, margin: { left: 14, right: 14, top: 20, bottom: 28 },
@@ -159,12 +177,21 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   }
   const sourceMetric = metrics?.find((m) => /manba|ishonch|signal/i.test(m.label));
   block("Manba va signal sifati", sourceMetric ? sourceMetric.value : "Manba: qo'lda kiritilgan yoki saqlangan AI xulosasi. Signal sifati: ko'rsatilmagan.");
-  if (summary) block("O'lchangan ko'rsatkichlar", summary);
-  for (const table of reportTables(conclusion)) {
-    autoTable(doc, {startY:y,margin:{left:14,right:14,top:20,bottom:28},head:[table.head.map(clean)],body:table.rows.map(row=>row.map(clean)),theme:"grid",styles:{fontSize:9,cellPadding:3,overflow:"linebreak"},headStyles:{fillColor:headerColor},willDrawPage:data=>{if(data.pageNumber>1) background();},didDrawPage:data=>{y=(data.cursor?.y ?? 20)+8;}});
+  if (summary && !metrics?.length) block("O'lchangan ko'rsatkichlar", summary);
+  block("Med AI xulosasi", "");
+  const text = (runs: { text: string }[]) => runs.map(r => r.text).join("");
+  for (const part of parseMarkdown(conclusion)) {
+    if (part.type === "hr") { y += 3; continue; }
+    if (part.type === "table") {
+      autoTable(doc, {startY:y,margin:{left:14,right:14,top:20,bottom:28},head:[part.head.map(c => clean(text(c)))],body:part.rows.map(row=>part.head.map((_, i)=>clean(text(row[i] ?? [{text:"-"}])))),theme:"grid",styles:{fontSize:9,cellPadding:3,overflow:"linebreak",lineColor:[215,225,230],textColor:[40,50,60]},headStyles:{fillColor:headerColor,textColor:[255,255,255]},alternateRowStyles:{fillColor:[248,250,250]},willDrawPage:data=>{if(data.pageNumber>1) background();},didDrawPage:data=>{y=(data.cursor?.y ?? 20)+8;}});
+    } else if (part.type === "ul" || part.type === "ol") {
+      block("", part.items.map((runs, i) => `${part.type === "ol" ? `${i+1}.` : "-"} ${text(runs)}`).join("\n"));
+    } else {
+      block(part.type === "p" ? "" : text(part.runs), part.type === "p" ? text(part.runs) : "");
+    }
   }
   if (!/mutaxassis|specialist/i.test(conclusion)) block("Tavsiya etilgan mutaxassis", "Xulosada ko'rsatilmagan. Oilaviy shifokor bilan aniqlashtiring.");
-  block("Manbalar", "Platforma: med1.uz. Klinik manbalar faqat AI xulosasida aniq keltirilgan bo'lsa ko'rsatiladi; aks holda tekshirilmagan.");
+  if (!/manbalar|sources|references/i.test(conclusion)) block("Manbalar", "Platforma: med1.uz. Klinik manbalar faqat AI xulosasida aniq keltirilgan bo'lsa ko'rsatiladi; aks holda tekshirilmagan.");
   block("Keyingi qadamlar", "1. Natijani shifokoringiz bilan muhokama qiling.\n2. Qayta o'lchovni dam olgan holatda, bir xil vaqtda bajaring.\n3. Ko'krakda og'riq, hansirash, hushdan ketish bo'lsa darhol 103 ga qo'ng'iroq qiling.\n4. Med1.uz orqali shifokor qabuliga yozilishingiz mumkin.");
 
   // Footer on every page
