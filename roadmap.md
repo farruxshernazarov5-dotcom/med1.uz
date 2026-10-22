@@ -153,4 +153,4 @@
 - [ ] Jitsi konferensiyasi va ikki tomonlama shifokor javobini haqiqiy telefonda sinash — shifokor ishtiroki va yangi APK kerak
 
 ## 2026-10-22 — PDF namuna ko‘rinishi
-- [ ] Vital PDF: holat ranglari, ko‘rsatkichlar jadvali, pastda oddiy xulosa va PPG ritm bezagi; PDFni ko‘rib tekshirish
+- [x] Vital PDF: holat ranglari, ko‘rsatkichlar jadvali, pastda oddiy xulosa va PPG ritm bezagi; ikki sahifa ko‘rib tekshirildi, ortiqcha bo‘shliq va takroriy manbalar tuzatildi; 11 test o‘tdi
