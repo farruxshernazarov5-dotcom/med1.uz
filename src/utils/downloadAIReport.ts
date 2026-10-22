@@ -1,3 +1,5 @@
+import { esc } from "@/lib/htmlEscape";
+import { reportTables } from "@/lib/aiReportTables";
 import { DISCLAIMER_TEXT_PLAIN } from "@/components/MedicalDisclaimer";
 
 interface PatientInfo {
@@ -19,7 +21,7 @@ interface ReportData {
   suggestedSpecialist?: string;
 }
 
-function generateReportHTML(data: ReportData): string {
+export function generateReportHTML(data: ReportData): string {
   const date = data.date || new Date().toLocaleDateString("uz-UZ");
   const time = new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" });
   const riskColor = data.riskLevel?.toLowerCase().includes("yuqori") ? "#dc2626"
@@ -32,9 +34,9 @@ function generateReportHTML(data: ReportData): string {
   const patientName = data.patientInfo?.fullName || data.patientName || "Noma'lum";
   const reportId = `MED1-${Date.now().toString(36).toUpperCase()}`;
 
-  return `<!DOCTYPE html><html lang="uz"><head><meta charset="utf-8"><title>${data.title} — Med1.uz</title>
+  return `<!DOCTYPE html><html lang="uz"><head><meta charset="utf-8"><title>${esc(data.title)} — Med1.uz</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
   *{margin:0;padding:0;box-sizing:border-box}
   
   body{
@@ -195,7 +197,7 @@ function generateReportHTML(data: ReportData): string {
   /* Sections */
   .section{
     margin:0 40px 20px;
-    page-break-inside:avoid;
+    page-break-inside:auto;
   }
   .section-header{
     display:flex;
@@ -227,6 +229,7 @@ function generateReportHTML(data: ReportData): string {
     line-height:1.8;
     padding-left:38px;
   }
+  table{width:100%;table-layout:fixed;border-collapse:collapse;margin:10px 0;font-size:12px} th,td{border:1px solid #cbd5e1;padding:8px;vertical-align:top;overflow-wrap:anywhere} th{background:#e0f2fe;text-align:left} thead{display:table-header-group} tr{break-inside:avoid} .section-content{padding-left:0} .patient-value{overflow-wrap:anywhere} @media print{.section{break-inside:auto}.section-header{break-after:avoid}@page{margin:12mm;size:A4}}
   .section-content ul{padding-left:18px;margin:0;}
   .section-content li{
     margin-bottom:6px;
@@ -262,10 +265,11 @@ function generateReportHTML(data: ReportData): string {
     align-items:center;
     margin-top:32px;
   }
-  .footer-left{font-size:11px;color:#94a3b8;line-height:1.8;}
+  .footer-left{font-size:11px;color:#94a3b8;line-height:1.8;min-width:0;flex:1;overflow-wrap:anywhere;padding-right:18px;}
   .footer-left a{color:#0ea5e9;text-decoration:none;font-weight:600;}
   .footer-qr{
     text-align:center;
+    flex-shrink:0;
   }
   .footer-qr img{
     width:80px;height:80px;
@@ -297,7 +301,7 @@ function generateReportHTML(data: ReportData): string {
     .no-print{display:none!important;}
     .watermark{position:absolute;}
     .watermark-pattern{position:absolute;}
-    @page{margin:0;size:A4;}
+    @page{margin:12mm;size:A4;}
   }
 </style></head><body>
 
@@ -321,14 +325,14 @@ function generateReportHTML(data: ReportData): string {
       </div>
     </div>
     <div class="header-right">
-      📅 ${date} &nbsp;|&nbsp; 🕐 ${time}<br>
-      📋 ${data.serviceType}
+      📅 ${esc(date)} &nbsp;|&nbsp; 🕐 ${time}<br>
+      📋 ${esc(data.serviceType)}
     </div>
   </div>
 
   <!-- Title bar -->
   <div class="title-bar">
-    <h1>📄 ${data.title}</h1>
+    <h1>📄 ${esc(data.title)}</h1>
     <div class="report-id">ID: ${reportId}</div>
   </div>
 
@@ -338,27 +342,27 @@ function generateReportHTML(data: ReportData): string {
     <div class="patient-grid">
       <div class="patient-item">
         <div class="patient-label">F.I.Sh</div>
-        <div class="patient-value">${patientName}</div>
+        <div class="patient-value">${esc(patientName)}</div>
       </div>
       <div class="patient-item">
         <div class="patient-label">Tug'ilgan sana</div>
-        <div class="patient-value">${data.patientInfo?.dateOfBirth || "—"}</div>
+        <div class="patient-value">${esc(data.patientInfo?.dateOfBirth || "—")}</div>
       </div>
       <div class="patient-item">
         <div class="patient-label">Telefon raqam</div>
-        <div class="patient-value">${data.patientInfo?.phone || "—"}</div>
+        <div class="patient-value">${esc(data.patientInfo?.phone || "—")}</div>
       </div>
       <div class="patient-item">
         <div class="patient-label">Manzil</div>
-        <div class="patient-value">${data.patientInfo?.address || "—"}</div>
+        <div class="patient-value">${esc(data.patientInfo?.address || "—")}</div>
       </div>
       <div class="patient-item">
         <div class="patient-label">Tekshiruv sanasi</div>
-        <div class="patient-value">${date}</div>
+        <div class="patient-value">${esc(date)}</div>
       </div>
       <div class="patient-item">
         <div class="patient-label">Xizmat turi</div>
-        <div class="patient-value">${data.serviceType}</div>
+        <div class="patient-value">${esc(data.serviceType)}</div>
       </div>
     </div>
   </div>
@@ -369,26 +373,26 @@ function generateReportHTML(data: ReportData): string {
     <div class="risk-indicator">${data.riskLevel?.toLowerCase().includes("yuqori") ? "!" : data.riskLevel?.toLowerCase().includes("o'rtacha") ? "~" : "✓"}</div>
     <div class="risk-info">
       <h3>${riskLabel}</h3>
-      <p>AI tizimi tomonidan aniqlangan xavf darajasi: <strong>${data.riskLevel}</strong></p>
+      <p>AI tizimi tomonidan aniqlangan xavf darajasi: <strong>${esc(data.riskLevel)}</strong></p>
     </div>
   </div>` : ""}
 
   <!-- Specialist -->
-  ${data.suggestedSpecialist ? `
+  ${`
   <div class="specialist-box">
     <div class="icon">👨‍⚕️</div>
-    <div class="text">Tavsiya etilgan mutaxassis: <strong>${data.suggestedSpecialist}</strong></div>
-  </div>` : ""}
+    <div class="text">Tavsiya etilgan mutaxassis: <strong>${esc(data.suggestedSpecialist || "Xulosada ko‘rsatilmagan — oilaviy shifokor bilan aniqlashtiring")}</strong></div>
+  </div>`}
 
   <!-- Sections -->
   ${data.sections.map((s, i) => `
   <div class="section">
     <div class="section-header">
       <div class="section-number">${i + 1}</div>
-      <div class="section-title">${s.heading}</div>
+      <div class="section-title">${esc(s.heading)}</div>
     </div>
     <div class="section-content">
-      ${s.content.includes("\n") ? `<ul>${s.content.split("\n").filter(Boolean).map((l) => `<li>${l.replace(/^[-•]\s*/, "")}</li>`).join("")}</ul>` : `<p>${s.content}</p>`}
+      ${reportTables(s.content).map(t=>`<table><thead><tr>${t.head.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${t.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`).join("") }
     </div>
   </div>`).join("")}
 
@@ -398,7 +402,7 @@ function generateReportHTML(data: ReportData): string {
       <span>⚠️</span>
       <h4>Tibbiy Ogohlantirish</h4>
     </div>
-    <p>${DISCLAIMER_TEXT_PLAIN}</p>
+    <p>${esc(DISCLAIMER_TEXT_PLAIN)}</p>
   </div>
 
   <!-- Footer -->
@@ -406,7 +410,7 @@ function generateReportHTML(data: ReportData): string {
     <div class="footer-left">
       <strong>Ma'lumot manbasi:</strong> <a href="https://med1.uz">med1.uz</a><br>
       © ${new Date().getFullYear()} Med1.uz — Barcha huquqlar himoyalangan<br>
-      Bu hujjat AI tizimi tomonidan avtomatik yaratilgan
+      Bu hujjat AI tizimi tomonidan avtomatik yaratilgan. Klinik manbalar faqat xulosada aniq keltirilgan bo‘lsa ko‘rsatiladi; aks holda tekshirilmagan.
     </div>
     <div class="footer-qr">
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`https://med1.uz/verify/${reportId}`)}&color=0284c7" alt="QR Code" />
@@ -444,11 +448,11 @@ export function downloadAIReportTxt(data: ReportData) {
   text += "═══════════════════════════════════════════\n";
   text += "            MED1.UZ — AI TAHLIL HISOBOTI\n";
   text += "═══════════════════════════════════════════\n\n";
-  text += `📋 Xizmat turi: ${data.serviceType}\n`;
-  text += `📅 Sana: ${date}\n`;
+  text += `📋 Xizmat turi: ${esc(data.serviceType)}\n`;
+  text += `📅 Sana: ${esc(date)}\n`;
   if (data.patientName) text += `👤 Foydalanuvchi: ${data.patientName}\n`;
-  if (data.riskLevel) text += `⚠️ Xavf darajasi: ${data.riskLevel}\n`;
-  if (data.suggestedSpecialist) text += `👨‍⚕️ Tavsiya etilgan mutaxassis: ${data.suggestedSpecialist}\n`;
+  if (data.riskLevel) text += `⚠️ Xavf darajasi: ${esc(data.riskLevel)}\n`;
+  if (data.suggestedSpecialist) text += `👨‍⚕️ Tavsiya etilgan mutaxassis: ${esc(data.suggestedSpecialist || "Xulosada ko‘rsatilmagan — oilaviy shifokor bilan aniqlashtiring")}\n`;
   text += "\n───────────────────────────────────────────\n\n";
   for (const section of data.sections) {
     text += `▶ ${section.heading}\n`;
@@ -456,7 +460,7 @@ export function downloadAIReportTxt(data: ReportData) {
   }
   text += "───────────────────────────────────────────\n";
   text += "⚠️ TIBBIY OGOHLANTIRISH\n";
-  text += `${DISCLAIMER_TEXT_PLAIN}\n\n`;
+  text += `${esc(DISCLAIMER_TEXT_PLAIN)}\n\n`;
   text += "───────────────────────────────────────────\n";
   text += "Ma'lumot manbasi: med1.uz\n";
   text += `© ${new Date().getFullYear()} Med1.uz — Barcha huquqlar himoyalangan\n`;
@@ -464,7 +468,7 @@ export function downloadAIReportTxt(data: ReportData) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `med1uz-${data.serviceType.replace(/\s+/g, "-").toLowerCase()}-${date}.txt`;
+  a.download = `med1uz-${data.serviceType.replace(/\s+/g, "-").toLowerCase()}-${esc(date)}.txt`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

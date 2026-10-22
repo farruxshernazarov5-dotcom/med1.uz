@@ -3,7 +3,7 @@ import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,7 @@ import DocFiles from "@/components/doctor/hms/DocFiles";
 import DocBrandPosts from "@/components/doctor/hms/DocBrandPosts";
 import DocBrandPromos from "@/components/doctor/hms/DocBrandPromos";
 import DocBrandLeads from "@/components/doctor/hms/DocBrandLeads";
+import PlatformDoctorInbox from "@/components/doctors/PlatformDoctorInbox";
 import DocBrandAnalytics from "@/components/doctor/hms/DocBrandAnalytics";
 import DocAnalytics from "@/components/doctor/hms/DocAnalytics";
 import DocAudit from "@/components/doctor/hms/DocAudit";
@@ -70,7 +71,8 @@ const DoctorDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
-  const [tab, setTab] = useState("overview");
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState(params.get("tab") === "leads" ? "leads" : "overview");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -228,7 +230,7 @@ const DoctorDashboard = () => {
       {tab === "files" && <DocFiles doctorId={doctor.id} />}
       {tab === "posts" && <DocBrandPosts doctorId={doctor.id} />}
       {tab === "promos" && <DocBrandPromos doctorId={doctor.id} />}
-      {tab === "leads" && <DocBrandLeads doctorId={doctor.id} />}
+      {tab === "leads" && <><PlatformDoctorInbox doctorId={doctor.id}/><DocBrandLeads doctorId={doctor.id} /></>}
       {tab === "stats" && <DocAnalytics doctorId={doctor.id} />}
       {tab === "analytics" && <DocBrandAnalytics doctorId={doctor.id} />}
       {tab === "audit" && <DocAudit doctorId={doctor.id} />}

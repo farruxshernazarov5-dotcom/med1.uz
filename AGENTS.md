@@ -24,3 +24,6 @@
 - `src/components/mobile/` and `src/lib/vitals/` have their own `AGENTS.md`; read them before changing files there.
 - Vital AI PDF reports are registered in `vital_reports` (code + SHA-256 only) and verified publicly via the `verify_vital_report` RPC at `/verify/vital/:code`, so QR checks never expose patient health data.
 - Every `notifications` insert is forwarded to the linked Telegram chat by a database trigger calling `emedinfo-bot/notify` (job secret + `telegram_sent_at` once-only flag), so web, app and Telegram alerts never diverge and alerts cannot be forged or replayed.
+
+- AI PDF exports normalize both Markdown tables and prose through `aiReportTables.ts` without inventing missing results, so printed and native reports retain fixed columns.
+- Platform doctor conversations use request-linked `platform_doctor_messages` with participant-only RLS and server-set sensitive flags; external doctor appointment chat remains separate because their doctor foreign keys differ.

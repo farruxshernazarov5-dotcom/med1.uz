@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-const KEY = "med1_doctor_favorites";
+import { useMobileFavorites } from "@/hooks/useMobileFavorites";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 const CHANGE_EVENT = "med1-doctor-selection";
 const COMPARE_KEY = "med1_doctor_compare";
 
@@ -9,25 +11,16 @@ function read(key: string): string[] {
 }
 
 export function useDoctorFavorites() {
-  const [ids, setIds] = useState<string[]>(() => read(KEY));
-
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => { if (e.key === KEY) setIds(read(KEY)); };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  const toggle = useCallback((id: string) => {
-    setIds(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      localStorage.setItem(KEY, JSON.stringify(next));
-      queueMicrotask(() => window.dispatchEvent(new Event(CHANGE_EVENT)));
-      return next;
-    });
-  }, []);
-
-  const has = useCallback((id: string) => ids.includes(id), [ids]);
-  return { ids, toggle, has };
+  const favorites = useMobileFavorites();
+  const ids = useMemo(() => favorites.items.filter(f => f.entity_type === "doctor").map(f => f.entity_id), [favorites.items]);
+  const toggle = useCallback(async (id: string) => {
+    const { data, error } = await supabase.from("doctors_external").select("name, slug, primary_specialty").eq("id", id).maybeSingle();
+    if (!data || error) { toast({title:"Shifokor ma’lumotlari yuklanmadi",variant:"destructive"}); return; }
+    const result = await favorites.toggle({entity_type:"doctor",entity_id:id,label:data.name,route:`/doctors/ext/${data.slug}`,metadata:{specialty:data.primary_specialty}});
+    if(result.needsAuth) toast({title:"Sevimlilarni saqlash uchun tizimga kiring"});
+    else if(result.error) toast({title:"Saqlanmadi",variant:"destructive"});
+  }, [favorites.toggle]);
+  return { ids, toggle, has: (id:string) => favorites.has("doctor",id) };
 }
 
 export function useDoctorCompare() {

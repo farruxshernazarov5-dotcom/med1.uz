@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   Baby, Heart, Calendar, MessageSquare, Send, Loader2,
   Activity, Apple, Pill, AlertTriangle, CheckCircle, Clock,
@@ -72,21 +73,21 @@ const MILESTONES: Record<string, { title: string; skills: string[]; feeding: str
   "0-1": {
     title: "0-1 oy – Yangi tug'ilgan davr",
     skills: ["Reflekslar (emish, ushlash)", "Tovushlarga reaktsiya", "Boshini qisqa vaqt tutadi", "Yuzlarga qaraydi"],
-    feeding: "Har 2-3 soatda emizish, kuniga 8-12 marta",
+    feeding: "Ochlik signallariga qarab emizish; odatda kuniga 8–12 marta, individual ehtiyojni pediatr bilan baholang",
     sleep: "Kuniga 16-18 soat uyqu",
     activities: ["Teri-teriga kontakt", "Yumshoq musiqa tinglash", "Yuzma-yuz muloqot"],
   },
   "1-3": {
     title: "1-3 oy – Ilk tabassumlar",
     skills: ["Tabassim qiladi", "Tovushlarga bosh buradi", "Qo'llarini ochadi", "Kuzatadi (tracking)"],
-    feeding: "Har 3-4 soatda emizish",
+    feeding: "Ochlik signallariga qarab emizish, qat’iy soatga majburlamaslik",
     sleep: "Kuniga 15-17 soat uyqu",
     activities: ["Tummy time (qorin ustida yotqizish)", "Rang-barang o'yinchoqlar", "Qo'shiqlar aytish"],
   },
   "3-6": {
     title: "3-6 oy – Faol o'rganish",
     skills: ["O'giriladi", "Qo'l bilan ushlaydi", "Kulgich", "Og'ziga oladi", "O'tirishga harakat"],
-    feeding: "4-6 soatda emizish, 6 oydan qo'shimcha ovqat",
+    feeding: "Ochlik signallariga qarab emizish; taxminan 6 oydan tayyorlik belgilariga qarab qo‘shimcha ovqat",
     sleep: "Kuniga 14-16 soat uyqu",
     activities: ["O'yinchoqlar bilan o'ynash", "Sensor o'yinlar", "Musiqa va raqslar"],
   },
@@ -272,7 +273,7 @@ const AIBabyCarePage = () => {
       });
     };
     try {
-      await streamChat({ messages: [...messages, userMsg], babyAgeMonths, mode: chatMode, onDelta: upsert, onDone: () => setStreaming(false) });
+      await streamChat({ messages: [...messages, userMsg], babyAgeMonths: baby ? babyAgeMonths : undefined, mode: chatMode, onDelta: upsert, onDone: () => setStreaming(false) });
     } catch { setStreaming(false); toast({ title: "Xatolik yuz berdi", variant: "destructive" }); }
   };
 
@@ -570,7 +571,7 @@ const AIBabyCarePage = () => {
                       <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                         <div className={cn("max-w-[85%] rounded-2xl px-4 py-2.5 text-sm",
                           m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted")}>
-                          {m.role === "assistant" ? <div className="prose prose-sm dark:prose-invert max-w-none"><ReactMarkdown>{m.content}</ReactMarkdown></div> : m.content}
+                          {m.role === "assistant" ? <div className="prose prose-sm dark:prose-invert max-w-none overflow-x-auto"><ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown></div> : m.content}
                         </div>
                       </div>
                     ))}
