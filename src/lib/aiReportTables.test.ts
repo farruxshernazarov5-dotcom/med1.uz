@@ -10,4 +10,11 @@ describe("AI report data tables",()=>{
   it("keeps non-tabular conclusions in a two-column data model",()=>{
     expect(reportTables("Dam oling.")[0].rows).toEqual([["Tahlil","Dam oling."]]);
   });
+  it("splits long explanations without losing words or columns",()=>{
+    const text = "Tavsiya ".repeat(100).trim();
+    const table = reportTables(text)[0];
+    expect(table.rows.length).toBeGreaterThan(1);
+    expect(table.rows.every(row=>row.length===2)).toBe(true);
+    expect(table.rows.map(row=>row[1]).join(" ")).toBe(text);
+  });
 });

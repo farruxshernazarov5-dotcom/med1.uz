@@ -265,10 +265,11 @@ export function generateReportHTML(data: ReportData): string {
     align-items:center;
     margin-top:32px;
   }
-  .footer-left{font-size:11px;color:#94a3b8;line-height:1.8;}
+  .footer-left{font-size:11px;color:#94a3b8;line-height:1.8;min-width:0;flex:1;overflow-wrap:anywhere;padding-right:18px;}
   .footer-left a{color:#0ea5e9;text-decoration:none;font-weight:600;}
   .footer-qr{
     text-align:center;
+    flex-shrink:0;
   }
   .footer-qr img{
     width:80px;height:80px;

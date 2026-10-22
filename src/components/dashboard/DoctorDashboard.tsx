@@ -3,7 +3,7 @@ import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,8 @@ const DoctorDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
-  const [tab, setTab] = useState("overview");
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState(params.get("tab") === "leads" ? "leads" : "overview");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
