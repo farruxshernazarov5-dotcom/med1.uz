@@ -46,7 +46,7 @@ export default function PlatformDoctorConversation({request, doctorSide=false, o
   };
   const safeRoom=(()=>{try{const url=new URL(request.meeting_url ?? "");return url.protocol==="https:"&&url.hostname==="meet.jit.si"?url.href:null;}catch{return null;}})();
   const bubble=(id:string,content:string,hidden:boolean,mine:boolean)=> <div key={id} className={`max-w-[90%] break-words rounded-lg p-3 text-sm ${mine?"ml-auto bg-primary text-primary-foreground":"mr-auto bg-muted text-foreground"}`}>
-    {hidden&&!revealed.includes(id)?<div><p className="mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Shaxsiy ma’lumot yashirildi</p><Button size="sm" variant="outline" onClick={()=>setRevealed(v=>[...v,id])}><Eye className="mr-2 h-4 w-4"/>Ko‘rsatish</Button></div>:<p className="whitespace-pre-wrap">{content}</p>}
+    {hidden&&!revealed.includes(id)?<div><p className="mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Shaxsiy ma’lumot yashirildi</p><Button size="sm" variant="outline" className="bg-card text-foreground" onClick={()=>setRevealed(v=>[...v,id])}><Eye className="mr-2 h-4 w-4"/>Ko‘rsatish</Button></div>:<p className="whitespace-pre-wrap">{content}</p>}
   </div>;
   return <div className="min-w-0 space-y-3">
     <div className="flex flex-wrap items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary"/><span className="text-xs text-muted-foreground">Parol, OTP va karta ma’lumotlarini yubormang</span></div>
