@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Eye, ShieldCheck, Loader2, Video } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { isNativeApp } from "@/lib/nativeApp";
 
 export type ConversationRequest = {id:string; patient_name:string; message:string; reply:string|null; meeting_url:string|null; status:string; request_type:string};
 type Message = {id:string; sender_id:string; content:string; is_hidden:boolean};
@@ -45,6 +46,11 @@ export default function PlatformDoctorConversation({request, doctorSide=false, o
     if(error)toast({title:"Video uchrashuv ochilmadi",variant:"destructive"});else onUpdated?.();
   };
   const safeRoom=(()=>{try{const url=new URL(request.meeting_url ?? "");return url.protocol==="https:"&&url.hostname==="meet.jit.si"?url.href:null;}catch{return null;}})();
+  const openRoom=async()=>{
+    if(!safeRoom)return;
+    try { if(isNativeApp()){const {Browser}=await import("@capacitor/browser");await Browser.open({url:safeRoom});}else window.open(safeRoom,"_blank","noopener,noreferrer"); }
+    catch {toast({title:"Konferensiya ochilmadi",variant:"destructive"});}
+  };
   const bubble=(id:string,content:string,hidden:boolean,mine:boolean)=> <div key={id} className={`max-w-[90%] break-words rounded-lg p-3 text-sm ${mine?"ml-auto bg-primary text-primary-foreground":"mr-auto bg-muted text-foreground"}`}>
     {hidden&&!revealed.includes(id)?<div><p className="mb-2 flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Shaxsiy ma’lumot yashirildi</p><Button size="sm" variant="outline" className="bg-card text-foreground" onClick={()=>setRevealed(v=>[...v,id])}><Eye className="mr-2 h-4 w-4"/>Ko‘rsatish</Button></div>:<p className="whitespace-pre-wrap">{content}</p>}
   </div>;
@@ -56,7 +62,7 @@ export default function PlatformDoctorConversation({request, doctorSide=false, o
       {request.reply&&bubble("reply",request.reply,true,doctorSide)}
       {messages.map(m=>bubble(m.id,m.content,m.is_hidden,m.sender_id===user?.id))}
     </div>
-    {safeRoom?<Button asChild className="w-full min-h-11"><a href={safeRoom} target="_blank" rel="noopener noreferrer"><Video className="mr-2 h-4 w-4"/>Jitsi konferensiyaga kirish</a></Button>:doctorSide?<Button variant="outline" disabled={busy} onClick={()=>void startVideo()}><Video className="mr-2 h-4 w-4"/>Video uchrashuvni tasdiqlash</Button>:request.request_type==="video"?<p className="text-xs text-muted-foreground">Shifokor video vaqtini tasdiqlashini kutmoqda</p>:null}
+    {safeRoom?<Button className="w-full min-h-11" onClick={()=>void openRoom()}><Video className="mr-2 h-4 w-4"/>Jitsi konferensiyaga kirish</Button>:doctorSide?<Button variant="outline" disabled={busy} onClick={()=>void startVideo()}><Video className="mr-2 h-4 w-4"/>Video uchrashuvni tasdiqlash</Button>:request.request_type==="video"?<p className="text-xs text-muted-foreground">Shifokor video vaqtini tasdiqlashini kutmoqda</p>:null}
     <div className="flex items-end gap-2"><Textarea aria-label="Chat xabari" autoFocus rows={2} maxLength={2000} value={text} onChange={e=>setText(e.target.value)} disabled={busy||["declined","done"].includes(request.status)}/><Button size="icon" aria-label="Chat xabarini yuborish" className="h-11 w-11 shrink-0" disabled={busy||!text.trim()||["declined","done"].includes(request.status)} onClick={()=>void send()}>{busy?<Loader2 className="h-4 w-4 animate-spin"/>:<Send className="h-4 w-4"/>}</Button></div>
   </div>;
 }

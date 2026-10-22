@@ -142,11 +142,12 @@
 - [x] Xizmatlar, narxlar, bron, kalendar, tavsiya etilgan tahlillar — mobil moslash
 - [x] Farmatsevt AI: dori qadog‘i/retsept/yaroqlilik skaneri, dorilarim, tezkor vositalar
 - [x] Med1 uslubidagi "Internet aloqasi uzildi" ekrani
-- [ ] Shifokor kabinetida kelgan so‘rovlarga javob berish ro‘yxati (hozircha bildirishnoma orqali)
+- [x] Shifokor kabinetida kelgan so‘rovlarga javob berish ro‘yxati
 
 ## 2026-10-22 — Kabinet va AI xulosalari
-- [ ] Kabinetda klinika, shifokor va xizmat sevimlilarini birlashtirish
-- [ ] Profil raqamini fon ostida qolmasdan ko‘rsatish
-- [ ] AI xulosalarida manba va tavsiya mutaxassis, PDFlarda barqaror jadvallar
-- [ ] Shifokor bilan himoyalangan chat va Jitsi video oqimini tiklash
-- [ ] Bola parvarishi AI uchun yoshga mos xavfsiz tavsiyalar
+- [x] Kabinetda klinika, shifokor va xizmat sevimlilarini birlashtirish — hisobda saqlash/qayta ochish tekshirildi
+- [x] Profil raqamini fon ostida qolmasdan ko‘rsatish — matn banner ustida, qatordan chiqish tuzatildi
+- [x] AI xulosalarida manba va tavsiya mutaxassis, PDFlarda barqaror jadvallar — uzun qatorlar va takroriy sarlavhalar tekshirildi
+- [x] Shifokor bilan himoyalangan chat va Jitsi video oqimini tiklash — bemor yuborishi va serverda maxfiy belgi tekshirildi
+- [x] Bola parvarishi AI uchun yoshga mos xavfsiz tavsiyalar — jonli javobda pediatr va tekshirilmagan manba belgisi tasdiqlandi
+- [ ] Jitsi konferensiyasi va ikki tomonlama shifokor javobini haqiqiy telefonda sinash — shifokor ishtiroki va yangi APK kerak
