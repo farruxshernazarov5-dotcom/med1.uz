@@ -151,3 +151,6 @@
 - [x] Shifokor bilan himoyalangan chat va Jitsi video oqimini tiklash — bemor yuborishi va serverda maxfiy belgi tekshirildi
 - [x] Bola parvarishi AI uchun yoshga mos xavfsiz tavsiyalar — jonli javobda pediatr va tekshirilmagan manba belgisi tasdiqlandi
 - [ ] Jitsi konferensiyasi va ikki tomonlama shifokor javobini haqiqiy telefonda sinash — shifokor ishtiroki va yangi APK kerak
+
+## 2026-10-22 — PDF namuna ko‘rinishi
+- [ ] Vital PDF: holat ranglari, ko‘rsatkichlar jadvali, pastda oddiy xulosa va PPG ritm bezagi; PDFni ko‘rib tekshirish
