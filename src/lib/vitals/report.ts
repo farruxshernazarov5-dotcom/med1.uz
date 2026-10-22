@@ -78,16 +78,20 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   const headerColor = statusColors[overall];
 
   const background = () => {
-    // Soft clinical gradient (vertical bands), heartbeat line, corner crosses.
+    // Visible ice-blue clinical gradient (not plain white), heartbeat line, corner crosses.
     for (let i = 0; i < 60; i++) {
       const k = i / 59;
-      doc.setFillColor(...headerColor.map(c => Math.round(255 - (255 - c) * (0.025 + k * 0.035))) as [number, number, number]);
+      doc.setFillColor(...headerColor.map(c => Math.round(255 - (255 - c) * (0.10 + k * 0.10))) as [number, number, number]);
       doc.rect(0, (PH / 60) * i, PW, PH / 60 + 0.5, "F");
     }
-    doc.setDrawColor(...headerColor.map(c => Math.round(255 - (255 - c) * 0.18)) as [number, number, number]); doc.setLineWidth(0.6);
+    // Faint vertical side accents for a "card on tinted page" feel.
+    doc.setFillColor(...headerColor.map(c => Math.round(255 - (255 - c) * 0.16)) as [number, number, number]);
+    doc.rect(0, 0, 2.5, PH, "F");
+    doc.rect(PW - 2.5, 0, 2.5, PH, "F");
+    doc.setDrawColor(...headerColor.map(c => Math.round(255 - (255 - c) * 0.32)) as [number, number, number]); doc.setLineWidth(0.8);
     const yb = PH - 22;
     doc.lines([[60, 0], [4, -8], [4, 16], [4, -14], [4, 6], [134, 0]], 0, yb);
-    doc.setFillColor(214, 238, 242);
+    doc.setFillColor(198, 224, 232);
     for (const [x, y] of [[188, 12], [12, 270]]) { doc.rect(x - 1.5, y - 5, 3, 10, "F"); doc.rect(x - 5, y - 1.5, 10, 3, "F"); }
   };
 
