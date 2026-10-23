@@ -5,10 +5,11 @@ export function buildSms(phone: string, otp: string, template: string) {
   if (!/^\+?998\d{9}$/.test(phone) || !/^\d{6,8}$/.test(otp)) {
     throw new Error("invalid_sms_payload");
   }
-  if (!template.includes("{code}") || template.length > 1000) {
-    throw new Error("invalid_sms_template");
-  }
-  return { phone: phone.replace(/^\+/, ""), message: template.split("{code}").join(otp) };
+  // Accept common placeholder spellings used when saving the approved Eskiz text.
+  const t = template.trim();
+  const ph = t.match(/\{\{\s*(code|otp|kod)\s*\}\}|\{\s*(code|otp|kod)\s*\}|%(code|otp|kod)%|\[(code|otp|kod)\]|<(code|otp|kod)>|%s|%d|#{4,8}|X{4,8}/i);
+  if (!ph || t.length > 1000) throw new Error("invalid_sms_template");
+  return { phone: phone.replace(/^\+/, ""), message: t.split(ph[0]).join(otp) };
 }
 
 export async function sendEskizSms(
