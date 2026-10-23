@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
-import ClickMiniAppThemeProvider from "@/components/ClickMiniAppThemeProvider";
+import ClickMiniAppThemeProvider, { ClickMiniAppReady } from "@/components/ClickMiniAppThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -188,6 +188,7 @@ const App = () => (
           <AIDiagnosticsPanel />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
+              <ClickMiniAppReady />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />

@@ -5,6 +5,17 @@ import { getClickMiniAppState, readyClickMiniApp, subscribeClickMiniApp } from "
 /** Host theme is temporary: do not overwrite the user's saved website theme. */
 export default function ClickMiniAppThemeProvider({ children }: { children: ReactNode }) {
   const state = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
+  return (
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme"
+      forcedTheme={state.active ? state.theme : undefined}>
+      {children}
+    </ThemeProvider>
+  );
+}
+
+/** Inside route Suspense so ready waits for the actual page, not its loader. */
+export function ClickMiniAppReady() {
+  const state = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
   useEffect(() => {
     let secondFrame = 0;
     const frame = requestAnimationFrame(() => {
@@ -12,10 +23,5 @@ export default function ClickMiniAppThemeProvider({ children }: { children: Reac
     });
     return () => { cancelAnimationFrame(frame); cancelAnimationFrame(secondFrame); };
   }, [state.active]);
-  return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme"
-      forcedTheme={state.active ? state.theme : undefined}>
-      {children}
-    </ThemeProvider>
-  );
+  return null;
 }
