@@ -1,3 +1,8 @@
+## 2026-10-23 — Click MiniApp
+- [ ] Click SDK ulash, init/ready, web-session va mavzu aniqlash
+- [ ] MiniApp Click to‘lov deep linklari; oddiy web/Capacitor oqimini saqlash
+- [ ] SDK va to‘lov oqimlarini test va brauzer orqali tekshirish
+
 - [x] Eskiz login/parol va tasdiqlangan matn Secrets’da; imzolangan SMS yuborish funksiyasi tayyorlandi
 - [ ] Eskiz SMS OTP’ni login bilan faollashtirish — Cloud’da SMS hook sozlash/signing secret imkoniyati, mavjud hisob telefon identifikatorini bog‘lash va haqiqiy SMS sinovi kutiladi; Telegram kirish o‘zgarmadi
 - [x] 78 Med Coin bo‘lsa AI kunlik limit blokini tuzatish
