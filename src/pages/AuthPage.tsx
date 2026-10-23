@@ -65,6 +65,7 @@ const AuthPage = () => {
   // Phone auth state (login)
   const [phone, setPhone] = useState("+998");
   const [otpSent, setOtpSent] = useState(false);
+  const [phoneChannel, setPhoneChannel] = useState<"sms" | "telegram">("sms");
   const [otpCode, setOtpCode] = useState("");
   const otpInput = useRef<HTMLInputElement>(null);
 
@@ -126,6 +127,9 @@ const AuthPage = () => {
   const handleGoogleSignIn = () => handleOAuthSignIn("google");
   const handleMicrosoftSignIn = () => handleOAuthSignIn("microsoft");
 
+  const otpFn = phoneChannel === "sms" ? "eskiz-otp" : "telegram-otp";
+  const channelName = phoneChannel === "sms" ? "SMS" : "Telegram";
+
   const handlePhoneSendOtp = async () => {
     const cleanPhone = phone.replace(/\s/g, "");
     if (cleanPhone.length < 13) {
@@ -134,7 +138,7 @@ const AuthPage = () => {
     }
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("telegram-otp/send-otp", {
+      const { data, error } = await supabase.functions.invoke(`${otpFn}/send-otp`, {
         body: { phone: cleanPhone },
       });
       if (error) throw error;
@@ -146,9 +150,9 @@ const AuthPage = () => {
         });
       } else if (data?.success) {
         setOtpSent(true);
-        toast({ title: "Telegram kod yuborildi", description: `${cleanPhone} raqamiga Telegram orqali kod yuborildi` });
+        toast({ title: `${channelName} kod yuborildi`, description: `${cleanPhone} raqamiga ${channelName} orqali kod yuborildi` });
       } else {
-        toast({ title: "Xatolik", description: data?.message || "Noma'lum xatolik", variant: "destructive" });
+        toast({ title: "Xatolik", description: data?.message || data?.error || "Noma'lum xatolik", variant: "destructive" });
       }
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
@@ -160,7 +164,7 @@ const AuthPage = () => {
     setSubmitting(true);
     try {
       const cleanPhone = phone.replace(/\s/g, "");
-      const { data, error } = await supabase.functions.invoke("telegram-otp/verify-otp", {
+      const { data, error } = await supabase.functions.invoke(`${otpFn}/verify-otp`, {
         body: { phone: cleanPhone, otp: otpCode },
       });
       if (error) throw error;
