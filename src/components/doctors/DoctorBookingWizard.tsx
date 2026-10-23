@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { isNativeApp, openCheckout } from "@/lib/nativeApp";
+import { getClickMiniAppState, installClickMiniApp } from "@/lib/clickMiniApp";
 import { formatUzs } from "@/data/doctorServiceTemplates";
 import {
   Calendar, Clock, CreditCard, CheckCircle2, Loader2, ChevronRight, ChevronLeft,
@@ -162,8 +163,17 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     setPaymentId(json.payment?.id ?? null);
     setCheckoutUrl(json.checkout_url);
     setPayState("awaiting");
-    if (isNativeApp()) void openCheckout(json.checkout_url);
-    else window.open(json.checkout_url, "_blank", "noopener");
+    await launchCheckout(json.checkout_url);
+  };
+
+  const launchCheckout = async (url: string) => {
+    try {
+      await installClickMiniApp();
+      if (isNativeApp() || getClickMiniAppState().active) await openCheckout(url);
+      else window.open(url, "_blank", "noopener");
+    } catch (error) {
+      toast({ title: "To‘lov sahifasi ochilmadi", description: error instanceof Error ? error.message : "Qayta urinib ko‘ring", variant: "destructive" });
+    }
   };
 
   const submit = async () => {
@@ -366,11 +376,9 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
                       <Loader2 className="w-4 h-4 animate-spin" /> To'lov kutilmoqda...
                     </p>
                     {checkoutUrl && (
-                      <a href={checkoutUrl} target="_blank" rel="noreferrer">
-                        <Button size="sm" variant="outline" className="gap-2">
+                        <Button size="sm" variant="outline" className="gap-2" onClick={() => void launchCheckout(checkoutUrl)}>
                           <CreditCard className="w-4 h-4" /> To'lov sahifasini ochish
                         </Button>
-                      </a>
                     )}
                   </div>
                 )}

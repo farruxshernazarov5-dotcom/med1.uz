@@ -6,10 +6,12 @@ import "./index.css";
 import { installErrorTracker } from "./lib/errorTracker";
 import { installAiInvokeHeaders } from "./lib/installAiInvokeHeaders";
 import { installTelegramWebApp } from "./lib/telegramWebApp";
+import { watchClickSDKLoad } from "./lib/clickMiniApp";
 
 installErrorTracker();
 installAiInvokeHeaders();
 installTelegramWebApp();
+watchClickSDKLoad();
 
 // After an update, old page files disappear; reload once to fetch the new ones.
 const CHUNK_RELOAD_KEY = "med1_chunk_reload_at";
@@ -28,7 +30,9 @@ window.addEventListener("unhandledrejection", (event) => {
   if (/Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(msg)) reloadForNewVersion();
 });
 
-createRoot(document.getElementById("root")!).render(
+const root = document.getElementById("root");
+if (!root) throw new Error("App root topilmadi");
+createRoot(root).render(
   <HelmetProvider>
     <App />
   </HelmetProvider>
