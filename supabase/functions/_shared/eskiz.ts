@@ -43,9 +43,11 @@ export async function sendEskizSms(
     method: "POST", headers: { Authorization: `Bearer ${token}` },
     body, signal: AbortSignal.timeout(5000),
   });
-  if (!sent.ok) throw new Error("eskiz_send_failed");
-  const result = await sent.json();
-  if (result?.status !== "waiting" && result?.status !== "success") {
-    throw new Error("eskiz_send_failed");
+  const result = await sent.json().catch(() => null);
+  if (!sent.ok || (result?.status !== "waiting" && result?.status !== "success")) {
+    // Provider reason with every digit masked, so the OTP and phone never reach logs.
+    const reason = String(result?.message ?? result?.status ?? "")
+      .replace(/\d/g, "•").slice(0, 160);
+    throw new Error(`eskiz_send_failed (${sent.status}) ${reason}`.trim());
   }
 }
