@@ -17486,6 +17486,39 @@ export type Database = {
         }
         Relationships: []
       }
+      sms_otp: {
+        Row: {
+          attempts: number
+          code_hash: string | null
+          expires_at: string | null
+          last_sent_at: string | null
+          phone: string
+          send_count: number
+          updated_at: string
+          window_start: string | null
+        }
+        Insert: {
+          attempts?: number
+          code_hash?: string | null
+          expires_at?: string | null
+          last_sent_at?: string | null
+          phone: string
+          send_count?: number
+          updated_at?: string
+          window_start?: string | null
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string | null
+          expires_at?: string | null
+          last_sent_at?: string | null
+          phone?: string
+          send_count?: number
+          updated_at?: string
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       sponsor_contributions: {
         Row: {
           amount: number

@@ -65,6 +65,7 @@ const AuthPage = () => {
   // Phone auth state (login)
   const [phone, setPhone] = useState("+998");
   const [otpSent, setOtpSent] = useState(false);
+  const [phoneChannel, setPhoneChannel] = useState<"sms" | "telegram">("sms");
   const [otpCode, setOtpCode] = useState("");
   const otpInput = useRef<HTMLInputElement>(null);
 
@@ -126,6 +127,9 @@ const AuthPage = () => {
   const handleGoogleSignIn = () => handleOAuthSignIn("google");
   const handleMicrosoftSignIn = () => handleOAuthSignIn("microsoft");
 
+  const otpFn = phoneChannel === "sms" ? "eskiz-otp" : "telegram-otp";
+  const channelName = phoneChannel === "sms" ? "SMS" : "Telegram";
+
   const handlePhoneSendOtp = async () => {
     const cleanPhone = phone.replace(/\s/g, "");
     if (cleanPhone.length < 13) {
@@ -134,7 +138,7 @@ const AuthPage = () => {
     }
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("telegram-otp/send-otp", {
+      const { data, error } = await supabase.functions.invoke(`${otpFn}/send-otp`, {
         body: { phone: cleanPhone },
       });
       if (error) throw error;
@@ -146,9 +150,9 @@ const AuthPage = () => {
         });
       } else if (data?.success) {
         setOtpSent(true);
-        toast({ title: "Telegram kod yuborildi", description: `${cleanPhone} raqamiga Telegram orqali kod yuborildi` });
+        toast({ title: `${channelName} kod yuborildi`, description: `${cleanPhone} raqamiga ${channelName} orqali kod yuborildi` });
       } else {
-        toast({ title: "Xatolik", description: data?.message || "Noma'lum xatolik", variant: "destructive" });
+        toast({ title: "Xatolik", description: data?.message || data?.error || "Noma'lum xatolik", variant: "destructive" });
       }
     } catch (err: any) {
       toast({ title: "Xatolik", description: err.message, variant: "destructive" });
@@ -160,7 +164,7 @@ const AuthPage = () => {
     setSubmitting(true);
     try {
       const cleanPhone = phone.replace(/\s/g, "");
-      const { data, error } = await supabase.functions.invoke("telegram-otp/verify-otp", {
+      const { data, error } = await supabase.functions.invoke(`${otpFn}/verify-otp`, {
         body: { phone: cleanPhone, otp: otpCode },
       });
       if (error) throw error;
@@ -475,6 +479,25 @@ const AuthPage = () => {
             {mode === "login" && authMethod === "phone" && (
               <div className="space-y-4">
                 {!otpSent && (
+                  <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-muted">
+                    {(["sms", "telegram"] as const).map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setPhoneChannel(c)}
+                        className={`h-9 rounded-lg text-xs font-semibold transition-colors ${phoneChannel === c ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}
+                      >
+                        {c === "sms" ? "SMS kod" : "Telegram"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {!otpSent && phoneChannel === "sms" && (
+                  <p className="text-xs text-muted-foreground rounded-xl border border-border p-3">
+                    Raqamingizni kiriting — Med1.uz kirish kodi SMS orqali keladi. Kod 5 daqiqa amal qiladi.
+                  </p>
+                )}
+                {!otpSent && phoneChannel === "telegram" && (
                   <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
                     <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     <div className="relative space-y-3">
@@ -517,7 +540,7 @@ const AuthPage = () => {
                       <MessageCircle className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <p className="text-xs text-foreground">
-                      <span className="font-semibold">Telegram</span>ga 6 raqamli kod yuborildi
+                      <span className="font-semibold">{channelName}</span> orqali 6 raqamli kod yuborildi
                     </p>
                   </div>
                 )}
@@ -568,7 +591,7 @@ const AuthPage = () => {
                   ) : (
                     <Send className="w-4 h-4" />
                   )}
-                  {submitting ? "Kutilmoqda..." : otpSent ? "Kodni tasdiqlash" : "Telegram kod yuborish"}
+                  {submitting ? "Kutilmoqda..." : otpSent ? "Kodni tasdiqlash" : `${channelName} kod yuborish`}
                 </Button>
 
                 {otpSent && (

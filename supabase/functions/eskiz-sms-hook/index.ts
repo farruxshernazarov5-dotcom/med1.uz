@@ -1,5 +1,5 @@
 import { Webhook } from "npm:standardwebhooks@1.0.0";
-import { sendEskizSms } from "./eskiz.ts";
+import { sendEskizSms } from "../_shared/eskiz.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
