@@ -56,8 +56,8 @@ export async function sendEskizSms(
         });
         const j = await tl.json().catch(() => null);
         const list = (j?.result ?? j?.data ?? []) as Array<Record<string, unknown>>;
-        console.log("eskiz templates:", JSON.stringify((Array.isArray(list) ? list : []).slice(0, 10).map((x) => ({
-          status: x.status, text: String(x.template ?? x.text ?? "").replace(/\d{4,}/g, "••••"),
+        console.log("eskiz templates:", JSON.stringify((Array.isArray(list) ? list : []).filter((x) => x.status !== "service" || /tasdiq|kod/i.test(String(x.template ?? ""))).map((x) => ({
+          status: x.status, keys: Object.keys(x), text: String(x.template ?? x.text ?? "").replace(/\d{4,}/g, "••••"),
         }))), "raw keys:", JSON.stringify(Object.keys(j ?? {})));
       } catch { /* diagnostic only */ }
     }
