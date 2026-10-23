@@ -1,3 +1,4 @@
+- [ ] Eskiz SMS OTP: Secrets orqali yuborish, imzolangan Auth SMS hook, sinov; Cloud’da SMS hook ulanishi va haqiqiy kod tekshiruvi kutiladi
 - [x] 78 Med Coin bo‘lsa AI kunlik limit blokini tuzatish
 - [x] Bemor tarif nomi va rangini haqiqiy obunaga mos ko‘rsatish
 - [x] Click to‘lovidagi yetkazib beruvchi ma’lumoti xatosini aniqlash va checkout havolasini tuzatish
