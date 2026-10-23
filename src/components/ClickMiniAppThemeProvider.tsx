@@ -11,7 +11,7 @@ export default function ClickMiniAppThemeProvider({ children }: { children: Reac
       secondFrame = requestAnimationFrame(() => { void readyClickMiniApp(); });
     });
     return () => { cancelAnimationFrame(frame); cancelAnimationFrame(secondFrame); };
-  }, []);
+  }, [state.active]);
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme"
       forcedTheme={state.active ? state.theme : undefined}>

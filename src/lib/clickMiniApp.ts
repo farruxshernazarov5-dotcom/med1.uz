@@ -96,7 +96,7 @@ export function watchClickSDKLoad() {
   void installClickMiniApp();
   // Covers a deferred CDN load without polling or holding up React rendering.
   document.getElementById("click-miniapp-sdk")?.addEventListener("load", () => {
-    void installClickMiniApp().then(() => readyClickMiniApp());
+    void installClickMiniApp();
   }, { once: true });
 }
 
