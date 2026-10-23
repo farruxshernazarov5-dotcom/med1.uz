@@ -479,6 +479,25 @@ const AuthPage = () => {
             {mode === "login" && authMethod === "phone" && (
               <div className="space-y-4">
                 {!otpSent && (
+                  <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-muted">
+                    {(["sms", "telegram"] as const).map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setPhoneChannel(c)}
+                        className={`h-9 rounded-lg text-xs font-semibold transition-colors ${phoneChannel === c ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}
+                      >
+                        {c === "sms" ? "SMS kod" : "Telegram"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {!otpSent && phoneChannel === "sms" && (
+                  <p className="text-xs text-muted-foreground rounded-xl border border-border p-3">
+                    Raqamingizni kiriting — Med1.uz kirish kodi SMS orqali keladi. Kod 5 daqiqa amal qiladi.
+                  </p>
+                )}
+                {!otpSent && phoneChannel === "telegram" && (
                   <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
                     <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     <div className="relative space-y-3">
@@ -521,7 +540,7 @@ const AuthPage = () => {
                       <MessageCircle className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <p className="text-xs text-foreground">
-                      <span className="font-semibold">Telegram</span>ga 6 raqamli kod yuborildi
+                      <span className="font-semibold">{channelName}</span> orqali 6 raqamli kod yuborildi
                     </p>
                   </div>
                 )}
@@ -572,7 +591,7 @@ const AuthPage = () => {
                   ) : (
                     <Send className="w-4 h-4" />
                   )}
-                  {submitting ? "Kutilmoqda..." : otpSent ? "Kodni tasdiqlash" : "Telegram kod yuborish"}
+                  {submitting ? "Kutilmoqda..." : otpSent ? "Kodni tasdiqlash" : `${channelName} kod yuborish`}
                 </Button>
 
                 {otpSent && (
