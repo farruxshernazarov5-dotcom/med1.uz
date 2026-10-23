@@ -48,6 +48,19 @@ export async function sendEskizSms(
     // Provider reason with every digit masked, so the OTP and phone never reach logs.
     const reason = String(result?.message ?? result?.status ?? "")
       .replace(/\d/g, "•").slice(0, 160);
+    if (/модерац/i.test(reason)) {
+      // Diagnostic: which texts does Eskiz hold for this account, and in what status?
+      try {
+        const tl = await request("https://notify.eskiz.uz/api/user/templates", {
+          headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000),
+        });
+        const j = await tl.json().catch(() => null);
+        const list = (j?.result ?? j?.data ?? []) as Array<Record<string, unknown>>;
+        console.log("eskiz templates:", JSON.stringify((Array.isArray(list) ? list : []).filter((x) => x.status !== "service" || /tasdiq|kod/i.test(String(x.template ?? ""))).map((x) => ({
+          status: x.status, keys: Object.keys(x), text: String(x.template ?? x.text ?? "").replace(/\d{4,}/g, "••••"),
+        }))), "raw keys:", JSON.stringify(Object.keys(j ?? {})));
+      } catch { /* diagnostic only */ }
+    }
     throw new Error(`eskiz_send_failed (${sent.status}) ${reason}`.trim());
   }
 }

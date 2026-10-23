@@ -12,6 +12,8 @@ const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body)
 const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const PHONE_RE = /^\+998\d{9}$/;
 const TTL_MS = 5 * 60_000, COOLDOWN_MS = 60_000, WINDOW_MS = 60 * 60_000, MAX_SENDS = 5, MAX_ATTEMPTS = 5;
+// Exact text approved in my.eskiz.uz → СМС → Мои тексты (public, not a secret).
+const APPROVED_TEMPLATE = "Med1.uz tasdiqlash kodi: {code}. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!";
 
 async function hash(phone: string, code: string) {
   const pepper = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -50,6 +52,14 @@ Deno.serve(async (req) => {
     const count = inWindow ? cur!.send_count : 0;
     if (count >= MAX_SENDS) return reply({ error: "limit", message: "Juda ko‘p urinish. 1 soatdan keyin qayta urinib ko‘ring." });
     const code = otp();
+    {
+      const saved = (Deno.env.get("ESKIZ_SMS_TEMPLATE") || "").trim();
+      let i = 0; while (i < saved.length && saved[i] === APPROVED_TEMPLATE[i]) i++;
+      console.log("template compare:", JSON.stringify({
+        equal: saved === APPROVED_TEMPLATE, savedLen: saved.length,
+        approvedLen: APPROVED_TEMPLATE.length, firstDiffAt: i,
+      }));
+    }
     try {
       await sendEskizSms({
         email: Deno.env.get("ESKIZ_EMAIL") || "",
