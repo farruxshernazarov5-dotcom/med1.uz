@@ -1,6 +1,12 @@
-// @vitest-environment node
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { buildSms, sendEskizSms } from "../../supabase/functions/eskiz-sms-hook/eskiz";
+
+beforeAll(() => {
+  // jsdom lacks the Deno/native timeout helper; requests are mocked in this suite.
+  if (!AbortSignal.timeout) Object.defineProperty(AbortSignal, "timeout", {
+    configurable: true, value: () => new AbortController().signal,
+  });
+});
 
 describe("Eskiz SMS delivery", () => {
   it("uses the approved text with the exact supplied OTP and Uzbekistan phone", () => {
