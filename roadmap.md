@@ -1,3 +1,5 @@
+- [x] Eskiz login/parol va tasdiqlangan matn Secrets’da; imzolangan SMS yuborish funksiyasi tayyorlandi
+- [ ] Eskiz SMS OTP’ni login bilan faollashtirish — Cloud’da SMS hook sozlash/signing secret imkoniyati, mavjud hisob telefon identifikatorini bog‘lash va haqiqiy SMS sinovi kutiladi; Telegram kirish o‘zgarmadi
 - [x] 78 Med Coin bo‘lsa AI kunlik limit blokini tuzatish
 - [x] Bemor tarif nomi va rangini haqiqiy obunaga mos ko‘rsatish
 - [x] Click to‘lovidagi yetkazib beruvchi ma’lumoti xatosini aniqlash va checkout havolasini tuzatish
