@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { sendEskizSms } from "../eskiz-sms-hook/eskiz.ts";
+import { sendEskizSms } from "../_shared/eskiz.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
