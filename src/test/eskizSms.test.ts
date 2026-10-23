@@ -20,6 +20,10 @@ describe("Eskiz SMS delivery", () => {
   it("does not invent text when the template lacks its code placeholder", () => {
     expect(() => buildSms("+998901234567", "123456", "Med1.uz")).toThrow("invalid_sms_template");
   });
+  it("replaces the sample code in an approved text saved verbatim", () => {
+    expect(buildSms("+998901234567", "654321", "Med1.uz tasdiqlash kodi: 1234").message)
+      .toBe("Med1.uz tasdiqlash kodi: 654321");
+  });
   it("reads provider credentials only for login and sends the supplied message", async () => {
     const request = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify({ data: { token: "test-only-token" } })))

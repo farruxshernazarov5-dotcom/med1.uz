@@ -7,9 +7,15 @@ export function buildSms(phone: string, otp: string, template: string) {
   }
   // Accept common placeholder spellings used when saving the approved Eskiz text.
   const t = template.trim();
+  if (t.length > 1000) throw new Error("invalid_sms_template");
   const ph = t.match(/\{\{\s*(code|otp|kod)\s*\}\}|\{\s*(code|otp|kod)\s*\}|%(code|otp|kod)%|\[(code|otp|kod)\]|<(code|otp|kod)>|%s|%d|#{4,8}|X{4,8}/i);
-  if (!ph || t.length > 1000) throw new Error("invalid_sms_template");
-  return { phone: phone.replace(/^\+/, ""), message: t.split(ph[0]).join(otp) };
+  if (ph) return { phone: phone.replace(/^\+/, ""), message: t.split(ph[0]).join(otp) };
+  // Eskiz-approved texts are often saved exactly as approved, with a sample code
+  // (e.g. "Kod: 1234"). Swap that single 4-8 digit sample for the real OTP.
+  const sample = t.match(/(?<!\d)\d{4,8}(?!\d)/);
+  if (!sample || sample.index === undefined) throw new Error("invalid_sms_template");
+  const message = t.slice(0, sample.index) + otp + t.slice(sample.index + sample[0].length);
+  return { phone: phone.replace(/^\+/, ""), message };
 }
 
 export async function sendEskizSms(

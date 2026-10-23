@@ -58,6 +58,14 @@ Deno.serve(async (req) => {
       }, phone, code);
     } catch (e) {
       console.error("eskiz send failed:", (e as Error).message); // no phone/code in logs
+      if ((e as Error).message === "invalid_sms_template") {
+        // Shape only (never the text): helps tell an empty secret from a missing code marker.
+        const t = (Deno.env.get("ESKIZ_SMS_TEMPLATE") || "").trim();
+        console.error("template shape:", JSON.stringify({
+          length: t.length, digits: (t.match(/\d/g) || []).length,
+          braces: /[{}]/.test(t), percent: t.includes("%"), hash: t.includes("#"),
+        }));
+      }
       return reply({ error: "send_failed", message: "SMS yuborilmadi. Keyinroq qayta urinib ko‘ring." });
     }
     await supabase.from("sms_otp").upsert({
