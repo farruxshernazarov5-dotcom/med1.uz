@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it, vi } from "vitest";
 import { buildSms, sendEskizSms } from "../../supabase/functions/eskiz-sms-hook/eskiz";
 

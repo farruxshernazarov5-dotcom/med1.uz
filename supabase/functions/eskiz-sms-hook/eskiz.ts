@@ -8,7 +8,7 @@ export function buildSms(phone: string, otp: string, template: string) {
   if (!template.includes("{code}") || template.length > 1000) {
     throw new Error("invalid_sms_template");
   }
-  return { phone: phone.replace(/^\+/, ""), message: template.replaceAll("{code}", otp) };
+  return { phone: phone.replace(/^\+/, ""), message: template.split("{code}").join(otp) };
 }
 
 export async function sendEskizSms(
