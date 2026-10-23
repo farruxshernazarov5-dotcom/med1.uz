@@ -2,7 +2,7 @@
 
 - Click MiniApp startup and checkout adaptation live in `src/lib/clickMiniApp.ts`; activate only after the official SDK native handshake, keep Click web-session separate from Med1 auth and require a dedicated server-issued MiniApp Service ID, because the CDN also loads in normal browsers and website billing IDs cannot be reused. Hosting must inject validated session metadata per request without shared caching; see `docs/CLICK_MINIAPP.md`.
 
-- Eskiz delivers only Cloud Auth-generated SMS OTPs through a signature-verified Send SMS hook; keep Telegram OTP unchanged and do not switch the public login UI until the hosted hook is enabled and existing-account identity linking is verified, preventing duplicate profiles and login regressions.
+- Phone SMS login uses the `eskiz-otp` function (server-generated hashed OTP in service-only `sms_otp`, cooldown/attempt limits) and sends only to numbers already on a profile, then signs into that existing account via magic-link token like Telegram OTP; Telegram OTP stays as an alternative, so existing profiles are never duplicated.
 
 - Keep `EMEDINFO_BOT_TOKEN` (interactive Med1.uz patient/business bot) isolated from `TELEGRAM_BOT_TOKEN` (legacy OTP, security and payment notifications), because existing authentication and alert delivery must not regress.
 - Telegram menus open the canonical `https://med1.uz` routes as Mini App pages instead of duplicating website business logic, so web and bot always use the same features and data.
