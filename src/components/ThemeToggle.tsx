@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp";
 
 type Theme = "light" | "dark" | "system";
 
 const ThemeToggle = () => {
+  const click = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
       return (localStorage.getItem("med1-theme") as Theme) || "system";
@@ -13,6 +15,7 @@ const ThemeToggle = () => {
   });
 
   useEffect(() => {
+    if (click.active && click.theme) return;
     const root = document.documentElement;
     const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const isDark = theme === "dark" || (theme === "system" && systemDark);
@@ -28,7 +31,7 @@ const ThemeToggle = () => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     mq.addEventListener("change", listener);
     return () => mq.removeEventListener("change", listener);
-  }, [theme]);
+  }, [theme, click.active, click.theme]);
 
   const options: { value: Theme; icon: typeof Sun; label: string }[] = [
     { value: "light", icon: Sun, label: "Kunduz" },

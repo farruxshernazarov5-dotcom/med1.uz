@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
-import { ThemeProvider } from "next-themes";
+import ClickMiniAppThemeProvider from "@/components/ClickMiniAppThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -165,7 +165,7 @@ const PageLoader = () => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme">
+    <ClickMiniAppThemeProvider>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
@@ -335,7 +335,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
-    </ThemeProvider>
+    </ClickMiniAppThemeProvider>
   </QueryClientProvider>
 );
 

@@ -4,6 +4,8 @@
  * required for the web build to keep working.
  */
 
+import { clickMiniAppCheckoutUrl, installClickMiniApp } from "./clickMiniApp";
+
 let cachedNative: boolean | null = null;
 
 export function isNativeApp(): boolean {
@@ -155,6 +157,8 @@ export function watchNetwork(cb: (online: boolean) => void): () => void {
  */
 export async function openCheckout(url: string, onClosed?: () => void): Promise<void> {
   if (!/^https:\/\//i.test(url)) throw new Error("Noto‘g‘ri to‘lov havolasi");
+  await installClickMiniApp();
+  url = clickMiniAppCheckoutUrl(url);
   if (!isNativeApp()) {
     window.location.href = url;
     return;
