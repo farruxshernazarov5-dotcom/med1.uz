@@ -15,4 +15,10 @@ describe("approved transactional SMS", () => {
     expect(renderTransactionalSms("appointment_today_reminder", ["14:00", "Ali Valiyev"], [template])).toBe("Med1.uz: Eslatma! Bugun soat 14:00 da shifokor Ali Valiyev qabuliga yozilgansiz.");
     expect(() => renderTransactionalSms("appointment_today_reminder", ["14:00", "bir ikki uch tort besh"], [template])).toThrow("sms_pattern_mismatch");
   });
+  it("requires every reminder parameter and rejects extra, blank or unresolved values", () => {
+    const template = { id: "96931", status: "service", text: "Med1.uz: Bugun %w, shifokor %w{1,4}.", originalText: "Med1.uz: Bugun %s, shifokor %s." };
+    for (const values of [["14:00"], ["14:00", "Ali", "extra"], ["14:00", " "], ["14:00", "%s"]]) {
+      expect(() => renderTransactionalSms("appointment_today_reminder", values, [template])).toThrow("invalid_sms_arguments");
+    }
+  });
 });

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { buildSms, sendEskizSms } from "../../supabase/functions/_shared/eskiz";
+import { buildSms, sendEskizSms, sendEskizMessage } from "../../supabase/functions/_shared/eskiz";
 
 beforeAll(() => {
   // jsdom lacks the Deno/native timeout helper; requests are mocked in this suite.
@@ -9,6 +9,12 @@ beforeAll(() => {
 });
 
 describe("Eskiz SMS delivery", () => {
+  it("blocks an unresolved reminder parameter before contacting the provider", async () => {
+    const request = vi.fn();
+    await expect(sendEskizMessage("test-only", "+998901234567", "Med1.uz: Bugun soat %s da qabul.", request))
+      .rejects.toThrow("sms_unresolved_placeholder");
+    expect(request).not.toHaveBeenCalled();
+  });
   it("preserves the exact Med1 approved wording while substituting the code", () => {
     expect(buildSms("+998901234567", "654321", "Med1.uz tasdiqlash kodi: {code}. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!").message)
       .toBe("Med1.uz tasdiqlash kodi: 654321. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!");

@@ -1,4 +1,5 @@
 import { isTrustedCaller } from "../_shared/trusted-caller.ts";
+import { assertFinalSmsText } from "../_shared/eskiz.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 const corsHeaders = {
@@ -129,6 +130,8 @@ Deno.serve(async (req) => {
           if (!phone) { errText = "phone_missing"; }
           else if (!smsToken) { errText = "sms_provider_not_configured"; }
           else {
+            // Validate the entire text before truncation or any provider request.
+            assertFinalSmsText(msg.text);
             const res = await fetch("https://notify.eskiz.uz/api/message/sms/send", {
               method: "POST",
               headers: { "Content-Type": "application/json", Authorization: `Bearer ${smsToken}` },
