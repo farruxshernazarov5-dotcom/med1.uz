@@ -1,4 +1,5 @@
 ## 2026-10-24 — Eskiz va Click WebView
+- [x] Qabul SMS parametrlari soni va yakuniy matnni tekshirish; almashtirilmagan %s yuborilishini bloklash
 - [x] Eskiz aniq kod almashtirish, %w, bo‘sh joy saqlash; jonli OTP sinovi Eskiz tomonidan rad etildi
 - [ ] Yetti tasdiqlangan SMS bildirishnomasi: aniq renderer va testlar tayyor; avtomatik jo‘natish yoqilmadi — telefon egasi tasdig‘i va kengaytirilgan SMS roziligi kerak, mijoz yozadigan notifications pullik yuborishni boshqarmaydi
 - [x] Click uchun mavjud xizmatlarga ulangan /click sahifasi va keng/tor ekran sinovi

@@ -1,4 +1,4 @@
-import type { EskizTemplate } from "./eskiz.ts";
+import { assertFinalSmsText, type EskizTemplate } from "./eskiz.ts";
 
 // These are provider template IDs, not credentials. No free-form SMS text is accepted.
 export const SMS_TEMPLATE_IDS = {
@@ -17,7 +17,11 @@ export type SmsEvent = keyof typeof SMS_TEMPLATE_IDS;
 export function renderTransactionalSms(event: SmsEvent, values: string[], templates: EskizTemplate[]): string {
   const template = templates.find(t => t.id === SMS_TEMPLATE_IDS[event] && t.status === "service");
   if (!template?.originalText || !template.text) throw new Error("sms_template_not_approved");
-  if (values.some(v => !v || v.length > 255 || /[\r\n]/.test(v))) throw new Error("invalid_sms_arguments");
+  const parameterCount = (template.originalText.match(/%s/g) ?? []).length;
+  if (!Array.isArray(values) || !parameterCount || parameterCount !== values.length ||
+    values.some(v => typeof v !== "string" || !v.trim() || v.length > 255 || /[\r\n]|%[swd]/i.test(v))) {
+    throw new Error("invalid_sms_arguments");
+  }
   let index = 0;
   const message = template.originalText.replace(/%s/g, () => values[index++] ?? "");
   if (index !== values.length || !index || /%[sw]/.test(message) || message.length > 1000) throw new Error("invalid_sms_arguments");
@@ -34,5 +38,6 @@ export function renderTransactionalSms(event: SmsEvent, values: string[], templa
   }
   pattern += template.text.slice(start).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   if (!new RegExp(`^${pattern}$`, "u").test(message)) throw new Error("sms_pattern_mismatch");
+  assertFinalSmsText(message);
   return message;
 }

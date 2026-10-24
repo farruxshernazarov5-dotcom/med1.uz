@@ -46,7 +46,16 @@ export async function eskizTemplates(token: string, request: typeof fetch = fetc
   return list.map((x) => ({ id: String(x.id ?? ""), status: String(x.status ?? ""), text: String(x.template ?? x.text ?? ""), originalText: String(x.original_text ?? "") }));
 }
 
+/** Fail closed before contacting Eskiz; provider placeholders are never SMS content. */
+export function assertFinalSmsText(message: string): void {
+  if (typeof message !== "string" || !message.trim() || message.length > 1000) throw new Error("invalid_sms_payload");
+  if (/%[swd]/i.test(message) || /\{\{?\s*(?:code|otp|kod)\s*\}\}?/i.test(message)) {
+    throw new Error("sms_unresolved_placeholder");
+  }
+}
+
 export async function sendEskizMessage(token: string, phone: string, message: string, request: typeof fetch = fetch): Promise<void> {
+  assertFinalSmsText(message);
   if (!/^\+?998\d{9}$/.test(phone) || !message || message.length > 1000) throw new Error("invalid_sms_payload");
   const body = new FormData();
   body.set("mobile_phone", phone.replace(/^\+/, ""));
