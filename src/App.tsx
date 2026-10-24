@@ -136,6 +136,7 @@ const MobileTipsPage = lazy(() => import("./pages/MobileTipsPage"));
 const MobileProfilePage = lazy(() => import("./pages/MobileProfilePage"));
 const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage"));
 const AppBridgePage = lazy(() => import("./pages/AppBridgePage"));
+const ClickMiniAppPage = lazy(() => import("./pages/ClickMiniAppPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingDock from "./components/FloatingDock";
@@ -191,6 +192,7 @@ const App = () => (
               <ClickMiniAppReady />
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/click" element={<ClickMiniAppPage />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />
                 <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />

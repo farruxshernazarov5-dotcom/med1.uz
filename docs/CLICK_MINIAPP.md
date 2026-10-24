@@ -8,6 +8,8 @@ Official references (checked 2026-10-23):
 
 ## Implemented
 
+The entry page is `https://med1.uz/click`: real doctor, clinic, diagnostics, AI, appointment and profile routes plus smart search. It is usable in a normal browser; only the native SDK handshake shows connected Click status. It does not authenticate a Click session as a Med1 user or treat payment-return query values as proof of payment. Register this entry URL with Click. Actual MiniApp payments still require the hosting handoff and dedicated billing credentials below.
+
 The deferred CDN script in `index.html` exposes `window.ClickSDK`. A single native-host handshake runs through `init()`; `ready()` runs after React commits its first screen. The site's existing login is unchanged. Loading the SDK in a normal browser does not activate MiniApp mode: the native Android/iOS transport and successful handshake are required.
 
 Host `context.theme` temporarily overrides the theme through the existing theme provider. It does not overwrite `med1-theme`. `getClickMiniAppState()` exposes platform/theme; `getClickWebSession()` reads the optional per-request session handoff without storing or logging it. No Click session is trusted as a Med1 login.
