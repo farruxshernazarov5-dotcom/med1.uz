@@ -1,3 +1,8 @@
+## 2026-10-24 — Eskiz va Click WebView
+- [ ] Eskiz shablonlarini aniq almashtirish va jonli provayder tekshiruvi
+- [ ] Yetti tasdiqlangan SMS matnini sayt bildirishnomalariga xavfsiz moslash
+- [ ] Click uchun mavjud xizmatlarga ulangan /click sahifasi va brauzer sinovi
+
 ## 2026-10-23 — Click MiniApp
 - [x] Click SDK ulash, init/ready va host mavzusi; web-session uchun xavfsiz hosting metadata o‘qish tayyor
 - [x] MiniApp Click to‘lov deep linklari; oddiy web/Capacitor oqimini saqlash
