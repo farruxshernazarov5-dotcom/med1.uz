@@ -1,4 +1,6 @@
 ## 2026-10-24 — Eskiz va Click WebView
+- [x] Yetti SMS uchun umumiy tekshirilgan server yuborish yordamchisi va admin matn oldindan ko‘rish; yetti yo‘lning yuborish/bloklash testlari
+- [ ] So‘ralgan haqiqiy test SMS — faol hisobda admin ruxsati yo‘q (403); ruxsat chetlab o‘tilmadi
 - [x] Qabul SMS parametrlari soni va yakuniy matnni tekshirish; almashtirilmagan %s yuborilishini bloklash
 - [x] Eskiz aniq kod almashtirish, %w, bo‘sh joy saqlash; jonli OTP sinovi Eskiz tomonidan rad etildi
 - [ ] Yetti tasdiqlangan SMS bildirishnomasi: aniq renderer va testlar tayyor; avtomatik jo‘natish yoqilmadi — telefon egasi tasdig‘i va kengaytirilgan SMS roziligi kerak, mijoz yozadigan notifications pullik yuborishni boshqarmaydi
