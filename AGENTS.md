@@ -4,6 +4,7 @@
 - The `/click` entry reuses existing Med1 routes and authentication, because duplicating MiniApp business flows would desynchronize appointments and account data.
 - Eskiz transactional SMS must render provider `original_text` against its approved matching pattern and verify authoritative events plus patient consent; generic client-writable notifications must never authorize paid SMS.
 - All Eskiz send paths validate final text with `assertFinalSmsText` before the provider request; transactional rendering also requires an exact parameter count, preventing unresolved placeholders from reaching recipients.
+- Authorized transactional dispatchers use `sendApprovedTransactionalSms` for all mapped events; `eskiz-admin` only previews provider-backed text and parameter counts, keeping diagnostics separate from paid dispatch.
 
 - Phone SMS login uses the `eskiz-otp` function (server-generated hashed OTP in service-only `sms_otp`, cooldown/attempt limits) and sends only to numbers already on a profile, then signs into that existing account via magic-link token like Telegram OTP; Telegram OTP stays as an alternative, so existing profiles are never duplicated.
 

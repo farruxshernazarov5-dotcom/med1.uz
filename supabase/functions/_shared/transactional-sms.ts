@@ -1,4 +1,4 @@
-import { assertFinalSmsText, type EskizTemplate } from "./eskiz.ts";
+import { assertFinalSmsText, sendEskizMessage, type EskizTemplate } from "./eskiz.ts";
 
 // These are provider template IDs, not credentials. No free-form SMS text is accepted.
 export const SMS_TEMPLATE_IDS = {
@@ -11,6 +11,16 @@ export const SMS_TEMPLATE_IDS = {
   ai_subscription_expiring: "96935",
 } as const;
 export type SmsEvent = keyof typeof SMS_TEMPLATE_IDS;
+
+/** Only call after the dispatcher has verified event, consent and deduplication.
+ * All seven events use the same approved rendering and final-text send guard. */
+export async function sendApprovedTransactionalSms(
+  token: string, phone: string, event: SmsEvent, values: string[],
+  templates: EskizTemplate[], request: typeof fetch = fetch,
+): Promise<void> {
+  const message = renderTransactionalSms(event, values, templates);
+  await sendEskizMessage(token, phone, message, request);
+}
 
 /** Render original provider wording, then validate against the approved pattern.
  * Sending requires separate server-side event/consent checks; this does not send. */
