@@ -1,5 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { renderTransactionalSms, sendApprovedTransactionalSms, SMS_TEMPLATE_IDS, type SmsEvent } from "../../supabase/functions/_shared/transactional-sms";
+
+beforeAll(() => {
+  // jsdom lacks the Deno/native helper; provider requests are mocked here.
+  if (!AbortSignal.timeout) Object.defineProperty(AbortSignal, "timeout", {
+    configurable: true, value: () => new AbortController().signal,
+  });
+});
 
 describe("approved transactional SMS", () => {
   const events = Object.keys(SMS_TEMPLATE_IDS) as SmsEvent[];
