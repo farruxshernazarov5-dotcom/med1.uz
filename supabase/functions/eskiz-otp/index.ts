@@ -49,11 +49,11 @@ Deno.serve(async (req) => {
       return reply({ error: "cooldown", message: "Yangi kodni 1 daqiqadan keyin so‘rang." });
     }
     const inWindow = cur?.window_start && now - new Date(cur.window_start).getTime() < WINDOW_MS;
-    const count = inWindow ? cur!.send_count : 0;
+    const count = inWindow ? (cur?.send_count ?? 0) : 0;
     if (count >= MAX_SENDS) return reply({ error: "limit", message: "Juda ko‘p urinish. 1 soatdan keyin qayta urinib ko‘ring." });
     const code = otp();
     {
-      const saved = (Deno.env.get("ESKIZ_SMS_TEMPLATE") || "").trim();
+      const saved = Deno.env.get("ESKIZ_SMS_TEMPLATE") || "";
       let i = 0; while (i < saved.length && saved[i] === APPROVED_TEMPLATE[i]) i++;
       console.log("template compare:", JSON.stringify({
         equal: saved === APPROVED_TEMPLATE, savedLen: saved.length,
@@ -76,12 +76,17 @@ Deno.serve(async (req) => {
           braces: /[{}]/.test(t), percent: t.includes("%"), hash: t.includes("#"),
         }));
       }
-      return reply({ error: "send_failed", message: "SMS yuborilmadi. Keyinroq qayta urinib ko‘ring." });
+      const reason = (e as Error).message;
+      return reply({ error: "send_failed", message: reason === "eskiz_template_not_approved"
+        ? "Eskiz kodli SMS matnini qabul qilmadi. Hozircha Telegram orqali kiring."
+        : reason === "invalid_sms_template"
+          ? "SMS matnida kod o‘rni sozlanmagan. Hozircha Telegram orqali kiring."
+          : "SMS yuborilmadi. Keyinroq yoki Telegram orqali urinib ko‘ring." });
     }
     await supabase.from("sms_otp").upsert({
       phone, code_hash: await hash(phone, code), expires_at: new Date(now + TTL_MS).toISOString(),
       attempts: 0, last_sent_at: new Date(now).toISOString(),
-      window_start: inWindow ? cur!.window_start : new Date(now).toISOString(),
+      window_start: inWindow ? cur?.window_start : new Date(now).toISOString(),
       send_count: count + 1, updated_at: new Date(now).toISOString(),
     }, { onConflict: "phone" });
     return reply({ success: true });

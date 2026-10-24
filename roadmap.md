@@ -1,3 +1,9 @@
+## 2026-10-24 — Eskiz va Click WebView
+- [x] Eskiz aniq kod almashtirish, %w, bo‘sh joy saqlash; jonli OTP sinovi Eskiz tomonidan rad etildi
+- [ ] Yetti tasdiqlangan SMS bildirishnomasi: aniq renderer va testlar tayyor; avtomatik jo‘natish yoqilmadi — telefon egasi tasdig‘i va kengaytirilgan SMS roziligi kerak, mijoz yozadigan notifications pullik yuborishni boshqarmaydi
+- [x] Click uchun mavjud xizmatlarga ulangan /click sahifasi va keng/tor ekran sinovi
+- [ ] Eskiz OTP yetkazilishi — kodli matn uchun Eskiz tasdig‘i kerak; boshqa yetti matn OTP emas
+
 ## 2026-10-23 — Click MiniApp
 - [x] Click SDK ulash, init/ready va host mavzusi; web-session uchun xavfsiz hosting metadata o‘qish tayyor
 - [x] MiniApp Click to‘lov deep linklari; oddiy web/Capacitor oqimini saqlash
@@ -6,7 +12,7 @@
 - [ ] Haqiqiy Click MiniApp to‘lovi — Click bergan alohida Service ID, xizmat faollashuvi va Click ilovasida sinov kerak; amaldagi web to‘lov ID’lari almashtirilmadi
 
 - [x] Eskiz login/parol va tasdiqlangan matn Secrets’da; imzolangan SMS yuborish funksiyasi tayyorlandi
-- [ ] Eskiz SMS OTP’ni login bilan faollashtirish — Cloud’da SMS hook sozlash/signing secret imkoniyati, mavjud hisob telefon identifikatorini bog‘lash va haqiqiy SMS sinovi kutiladi; Telegram kirish o‘zgarmadi
+- [x] Eskiz SMS OTP login oqimi mavjud profillarga ulandi; Telegram kirish o‘zgarmadi — real yuborish Eskiz OTP tasdig‘iga bog‘liq (yuqorida)
 - [x] 78 Med Coin bo‘lsa AI kunlik limit blokini tuzatish
 - [x] Bemor tarif nomi va rangini haqiqiy obunaga mos ko‘rsatish
 - [x] Click to‘lovidagi yetkazib beruvchi ma’lumoti xatosini aniqlash va checkout havolasini tuzatish

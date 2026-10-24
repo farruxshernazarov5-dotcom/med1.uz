@@ -1,6 +1,8 @@
 # Project Architecture Rules
 
 - Click MiniApp startup and checkout adaptation live in `src/lib/clickMiniApp.ts`; activate only after the official SDK native handshake, keep Click web-session separate from Med1 auth and require a dedicated server-issued MiniApp Service ID, because the CDN also loads in normal browsers and website billing IDs cannot be reused. Hosting must inject validated session metadata per request without shared caching; see `docs/CLICK_MINIAPP.md`.
+- The `/click` entry reuses existing Med1 routes and authentication, because duplicating MiniApp business flows would desynchronize appointments and account data.
+- Eskiz transactional SMS must render provider `original_text` against its approved matching pattern and verify authoritative events plus patient consent; generic client-writable notifications must never authorize paid SMS.
 
 - Phone SMS login uses the `eskiz-otp` function (server-generated hashed OTP in service-only `sms_otp`, cooldown/attempt limits) and sends only to numbers already on a profile, then signs into that existing account via magic-link token like Telegram OTP; Telegram OTP stays as an alternative, so existing profiles are never duplicated.
 

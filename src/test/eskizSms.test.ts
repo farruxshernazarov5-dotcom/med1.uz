@@ -9,6 +9,13 @@ beforeAll(() => {
 });
 
 describe("Eskiz SMS delivery", () => {
+  it("preserves the exact Med1 approved wording while substituting the code", () => {
+    expect(buildSms("+998901234567", "654321", "Med1.uz tasdiqlash kodi: {code}. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!").message)
+      .toBe("Med1.uz tasdiqlash kodi: 654321. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!");
+  });
+  it("substitutes Eskiz percent-w and preserves whitespace", () => {
+    expect(buildSms("+998901234567", "654321", " Med1.uz kod: %w. ").message).toBe(" Med1.uz kod: 654321. ");
+  });
   it("uses the approved text with the exact supplied OTP and Uzbekistan phone", () => {
     expect(buildSms("+998901234567", "123456", "Med1.uz: {code}"))
       .toEqual({ phone: "998901234567", message: "Med1.uz: 123456" });

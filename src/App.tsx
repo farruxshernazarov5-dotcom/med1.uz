@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
 import ClickMiniAppThemeProvider, { ClickMiniAppReady } from "@/components/ClickMiniAppThemeProvider";
@@ -136,6 +136,7 @@ const MobileTipsPage = lazy(() => import("./pages/MobileTipsPage"));
 const MobileProfilePage = lazy(() => import("./pages/MobileProfilePage"));
 const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage"));
 const AppBridgePage = lazy(() => import("./pages/AppBridgePage"));
+const ClickMiniAppPage = lazy(() => import("./pages/ClickMiniAppPage"));
 
 import FloatingAISearch from "./components/FloatingAISearch";
 import FloatingDock from "./components/FloatingDock";
@@ -153,6 +154,12 @@ import { BusinessEdgeTab } from "./components/mobile/BusinessEdgeTab";
 
 
 const queryClient = new QueryClient();
+
+// The Click entry owns its compact navigation; native onboarding is unrelated there.
+const MobileShellOutsideClick = () => {
+  const { pathname } = useLocation();
+  return pathname === "/click" ? null : <MobileAppShell />;
+};
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -174,7 +181,7 @@ const App = () => (
           <CreditProvider>
           <SubdomainRouter />
           <ReferralCapture />
-          <MobileAppShell />
+          <MobileShellOutsideClick />
           <BusinessEdgeTab />
           <AIServiceHelpButton />
 
@@ -191,6 +198,7 @@ const App = () => (
               <ClickMiniAppReady />
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/click" element={<ClickMiniAppPage />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />
                 <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />
