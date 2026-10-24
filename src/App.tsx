@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
 import ClickMiniAppThemeProvider, { ClickMiniAppReady } from "@/components/ClickMiniAppThemeProvider";
@@ -155,6 +155,12 @@ import { BusinessEdgeTab } from "./components/mobile/BusinessEdgeTab";
 
 const queryClient = new QueryClient();
 
+// The Click entry owns its compact navigation; native onboarding is unrelated there.
+const MobileShellOutsideClick = () => {
+  const { pathname } = useLocation();
+  return pathname === "/click" ? null : <MobileAppShell />;
+};
+
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
     <div className="flex flex-col items-center gap-3">
@@ -175,7 +181,7 @@ const App = () => (
           <CreditProvider>
           <SubdomainRouter />
           <ReferralCapture />
-          <MobileAppShell />
+          <MobileShellOutsideClick />
           <BusinessEdgeTab />
           <AIServiceHelpButton />
 

@@ -1,7 +1,8 @@
 ## 2026-10-24 — Eskiz va Click WebView
-- [ ] Eskiz shablonlarini aniq almashtirish va jonli provayder tekshiruvi
-- [ ] Yetti tasdiqlangan SMS matnini sayt bildirishnomalariga xavfsiz moslash
-- [ ] Click uchun mavjud xizmatlarga ulangan /click sahifasi va brauzer sinovi
+- [x] Eskiz aniq kod almashtirish, %w, bo‘sh joy saqlash; jonli OTP sinovi Eskiz tomonidan rad etildi
+- [ ] Yetti tasdiqlangan SMS bildirishnomasi: aniq renderer va testlar tayyor; avtomatik jo‘natish yoqilmadi — telefon egasi tasdig‘i va kengaytirilgan SMS roziligi kerak, mijoz yozadigan notifications pullik yuborishni boshqarmaydi
+- [x] Click uchun mavjud xizmatlarga ulangan /click sahifasi va keng/tor ekran sinovi
+- [ ] Eskiz OTP yetkazilishi — kodli matn uchun Eskiz tasdig‘i kerak; boshqa yetti matn OTP emas
 
 ## 2026-10-23 — Click MiniApp
 - [x] Click SDK ulash, init/ready va host mavzusi; web-session uchun xavfsiz hosting metadata o‘qish tayyor
