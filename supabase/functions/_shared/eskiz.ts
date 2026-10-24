@@ -34,7 +34,7 @@ export async function eskizToken(config: Pick<EskizConfig, "email" | "password">
   return token;
 }
 
-export type EskizTemplate = { id: string; status: string; text: string };
+export type EskizTemplate = { id: string; status: string; text: string; originalText: string };
 export async function eskizTemplates(token: string, request: typeof fetch = fetch): Promise<EskizTemplate[]> {
   const response = await request("https://notify.eskiz.uz/api/user/templates", {
     headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000),
@@ -43,7 +43,7 @@ export async function eskizTemplates(token: string, request: typeof fetch = fetc
   const j = await response.json();
   const list = j?.result ?? j?.data;
   if (!Array.isArray(list)) throw new Error("eskiz_templates_failed");
-  return list.map((x) => ({ id: String(x.id ?? ""), status: String(x.status ?? ""), text: String(x.template ?? x.text ?? "") }));
+  return list.map((x) => ({ id: String(x.id ?? ""), status: String(x.status ?? ""), text: String(x.template ?? x.text ?? ""), originalText: String(x.original_text ?? "") }));
 }
 
 export async function sendEskizMessage(token: string, phone: string, message: string, request: typeof fetch = fetch): Promise<void> {
