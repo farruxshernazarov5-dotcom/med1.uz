@@ -69,5 +69,16 @@ export async function sendEskizMessage(token: string, phone: string, message: st
 export async function sendEskizSms(config: EskizConfig, phone: string, otp: string, request: typeof fetch = fetch): Promise<void> {
   const sms = buildSms(phone, otp, config.template);
   const token = await eskizToken(config, request);
-  await sendEskizMessage(token, sms.phone, sms.message, request);
+  try {
+    await sendEskizMessage(token, sms.phone, sms.message, request);
+  } catch (error) {
+    if (error instanceof Error && error.message === "eskiz_template_not_approved") {
+      try {
+        const templates = await eskizTemplates(token, request);
+        // Provider-approved public wording only: no pending text, credentials, phone or OTP.
+        console.log("eskiz approved templates", JSON.stringify(templates.filter(t => t.status === "service")));
+      } catch { /* Provider diagnostics must not replace the original failure. */ }
+    }
+    throw error;
+  }
 }
