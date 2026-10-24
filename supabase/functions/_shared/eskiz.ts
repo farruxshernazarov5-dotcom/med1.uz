@@ -6,9 +6,9 @@ export function buildSms(phone: string, otp: string, template: string) {
     throw new Error("invalid_sms_payload");
   }
   // Accept common placeholder spellings used when saving the approved Eskiz text.
-  const t = template.trim();
-  if (t.length > 1000) throw new Error("invalid_sms_template");
-  const ph = t.match(/\{\{\s*(code|otp|kod)\s*\}\}|\{\s*(code|otp|kod)\s*\}|%(code|otp|kod)%|\[(code|otp|kod)\]|<(code|otp|kod)>|%s|%d|#{4,8}|X{4,8}/i);
+  const t = template;
+  if (!t.trim() || t.length > 1000) throw new Error("invalid_sms_template");
+  const ph = t.match(/\{\{\s*(code|otp|kod)\s*\}\}|\{\s*(code|otp|kod)\s*\}|%(code|otp|kod)%|\[(code|otp|kod)\]|<(code|otp|kod)>|%s|%d|%w|#{4,8}|X{4,8}/i);
   if (ph) return { phone: phone.replace(/^\+/, ""), message: t.split(ph[0]).join(otp) };
   // Eskiz-approved texts are often saved exactly as approved, with a sample code
   // (e.g. "Kod: 1234"). Swap that single 4-8 digit sample for the real OTP.
@@ -18,11 +18,7 @@ export function buildSms(phone: string, otp: string, template: string) {
   return { phone: phone.replace(/^\+/, ""), message };
 }
 
-export async function sendEskizSms(
-  config: EskizConfig, phone: string, otp: string,
-  request: typeof fetch = fetch,
-): Promise<void> {
-  const sms = buildSms(phone, otp, config.template);
+export async function eskizToken(config: Pick<EskizConfig, "email" | "password">, request: typeof fetch = fetch): Promise<string> {
   if (!config.email || !config.password) throw new Error("eskiz_not_configured");
   const credentials = new FormData();
   credentials.set("email", config.email);
@@ -35,9 +31,26 @@ export async function sendEskizSms(
   const auth = await login.json();
   const token = auth?.data?.token;
   if (typeof token !== "string" || !token) throw new Error("eskiz_login_failed");
+  return token;
+}
+
+export type EskizTemplate = { id: string; status: string; text: string };
+export async function eskizTemplates(token: string, request: typeof fetch = fetch): Promise<EskizTemplate[]> {
+  const response = await request("https://notify.eskiz.uz/api/user/templates", {
+    headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000),
+  });
+  if (!response.ok) throw new Error("eskiz_templates_failed");
+  const j = await response.json();
+  const list = j?.result ?? j?.data;
+  if (!Array.isArray(list)) throw new Error("eskiz_templates_failed");
+  return list.map((x) => ({ id: String(x.id ?? ""), status: String(x.status ?? ""), text: String(x.template ?? x.text ?? "") }));
+}
+
+export async function sendEskizMessage(token: string, phone: string, message: string, request: typeof fetch = fetch): Promise<void> {
+  if (!/^\+?998\d{9}$/.test(phone) || !message || message.length > 1000) throw new Error("invalid_sms_payload");
   const body = new FormData();
-  body.set("mobile_phone", sms.phone);
-  body.set("message", sms.message);
+  body.set("mobile_phone", phone.replace(/^\+/, ""));
+  body.set("message", message);
   body.set("from", "4546");
   const sent = await request("https://notify.eskiz.uz/api/message/sms/send", {
     method: "POST", headers: { Authorization: `Bearer ${token}` },
@@ -48,19 +61,13 @@ export async function sendEskizSms(
     // Provider reason with every digit masked, so the OTP and phone never reach logs.
     const reason = String(result?.message ?? result?.status ?? "")
       .replace(/\d/g, "•").slice(0, 160);
-    if (/модерац/i.test(reason)) {
-      // Diagnostic: which texts does Eskiz hold for this account, and in what status?
-      try {
-        const tl = await request("https://notify.eskiz.uz/api/user/templates", {
-          headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000),
-        });
-        const j = await tl.json().catch(() => null);
-        const list = (j?.result ?? j?.data ?? []) as Array<Record<string, unknown>>;
-        console.log("eskiz templates:", JSON.stringify((Array.isArray(list) ? list : []).filter((x) => x.status !== "service" || /tasdiq|kod/i.test(String(x.template ?? ""))).map((x) => ({
-          status: x.status, keys: Object.keys(x), text: String(x.template ?? x.text ?? "").replace(/\d{4,}/g, "••••"),
-        }))), "raw keys:", JSON.stringify(Object.keys(j ?? {})));
-      } catch { /* diagnostic only */ }
-    }
+    if (/модерац/i.test(reason)) throw new Error("eskiz_template_not_approved");
     throw new Error(`eskiz_send_failed (${sent.status}) ${reason}`.trim());
   }
+}
+
+export async function sendEskizSms(config: EskizConfig, phone: string, otp: string, request: typeof fetch = fetch): Promise<void> {
+  const sms = buildSms(phone, otp, config.template);
+  const token = await eskizToken(config, request);
+  await sendEskizMessage(token, sms.phone, sms.message, request);
 }
