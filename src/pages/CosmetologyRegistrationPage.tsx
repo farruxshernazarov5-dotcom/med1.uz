@@ -1,3 +1,4 @@
+import { signInDestination } from "@/lib/authDestination";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -135,7 +136,7 @@ const CosmetologyRegistrationPage = () => {
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
 
   const handleSubmit = async () => {
-    if (!user) { toast({ title: "Avval tizimga kiring", variant: "destructive" }); navigate("/auth"); return; }
+    if (!user) { toast({ title: "Avval tizimga kiring", variant: "destructive" }); navigate(signInDestination(window.location.pathname)); return; }
     setSubmitting(true);
     try {
       const logoUrl = await uploadLogo();

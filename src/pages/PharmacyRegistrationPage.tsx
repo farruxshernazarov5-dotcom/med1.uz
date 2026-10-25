@@ -1,3 +1,4 @@
+import { signInDestination } from "@/lib/authDestination";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -131,7 +132,7 @@ const PharmacyRegistrationPage = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <Pill className="w-16 h-16 text-primary mx-auto mb-4" />
         <h2 className="text-2xl font-bold mb-2">Ro'yxatdan o'tish uchun tizimga kiring</h2>
-        <Button onClick={() => navigate("/auth")} className="mt-4">Kirish</Button>
+        <Button onClick={() => navigate(signInDestination(window.location.pathname))} className="mt-4">Kirish</Button>
       </div>
       <Footer />
     </div>

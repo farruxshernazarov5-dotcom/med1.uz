@@ -1,5 +1,6 @@
+import { signInDestination } from "@/lib/authDestination";
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
@@ -47,7 +48,7 @@ const STEPS = [
 ];
 
 const DoctorRegistrationPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -177,10 +178,8 @@ const DoctorRegistrationPage = () => {
     setSubmitting(false);
   };
 
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
+  if (authLoading) return null;
+  if (!user) return <Navigate to={signInDestination("/doctor-register")} replace />;
 
   return (
     <div className="min-h-screen bg-background">
