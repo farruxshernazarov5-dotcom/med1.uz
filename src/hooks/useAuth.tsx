@@ -11,7 +11,7 @@ interface AuthContextType {
   loading: boolean;
   userRole: string | null;
   profile: { full_name: string; phone: string; avatar_url: string; cover_url?: string | null } | null;
-  signUp: (email: string, password: string, fullName: string, role?: string, phone?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, role?: string, phone?: string) => Promise<{ error: any; alreadyRegistered?: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   verifyPhoneOtp: (phone: string, token: string) => Promise<{ error: any }>;
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, fullName: string, role = "patient", phone = "") => {
     const referralCode = getStoredReferralCode();
     const referralMeta = getStoredReferralMeta();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -115,11 +115,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         emailRedirectTo: publicOrigin(),
       },
     });
-    if (!error && referralCode) {
+    // With email confirmation on, an existing address returns a user with no identities and no email is sent.
+    const alreadyRegistered = !error && !!data?.user && (data.user.identities?.length ?? 0) === 0;
+    if (!error && !alreadyRegistered && referralCode) {
       // Keep code until trigger persists referral row; clear after a short delay.
       setTimeout(() => clearReferralCode(), 5000);
     }
-    return { error };
+    return { error, alreadyRegistered };
   };
 
   const signIn = async (email: string, password: string) => {

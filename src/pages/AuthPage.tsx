@@ -373,10 +373,20 @@ const AuthPage = () => {
       }
       const verifiedPhone = regPhoneVerified ? regPhone.replace(/\s/g, "") : "";
       setPendingRole(role);
-      const { error } = await signUp(email, password, fullName, role, verifiedPhone);
-      if (error) {
+      const { error, alreadyRegistered } = await signUp(email, password, fullName, role, verifiedPhone);
+      if (error && /already registered|already been registered|user_already_exists/i.test(`${error.message} ${error.code ?? ""}`) || (!error && alreadyRegistered)) {
+        // Mavjud email — yangi hisob ochmaymiz, kirishga yo'naltiramiz
+        toast({
+          title: "Bu email allaqachon ro'yxatdan o'tgan",
+          description: "Qayta ro'yxatdan o'tish shart emas. Kiring yoki “Parolni unutdingizmi?” orqali parolni tiklang.",
+          duration: 10000,
+        });
+        setPassword("");
+        setMode("login");
+      } else if (error) {
         toast({ title: "Xatolik", description: error.message, variant: "destructive" });
       } else {
+        setPendingConfirmEmail(email.trim());
         toast({ 
           title: "✅ Ro'yxatdan o'tdingiz!", 
           description: "📧 Tasdiqlash xati emailingizga yuborildi. Spam papkasini ham tekshiring (5-10 daq.)",
