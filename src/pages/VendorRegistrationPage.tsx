@@ -1,3 +1,4 @@
+import { signInDestination } from "@/lib/authDestination";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -143,7 +144,7 @@ const VendorRegistrationPage = () => {
   const handleSubmit = async () => {
     if (!user) {
       toast({ title: "Avval tizimga kiring", variant: "destructive" });
-      navigate("/auth");
+      navigate(signInDestination(window.location.pathname));
       return;
     }
     setSubmitting(true);
