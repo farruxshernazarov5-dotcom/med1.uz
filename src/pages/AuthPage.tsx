@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { isNativeApp } from "@/lib/nativeApp";
+import { isNativeApp, publicOrigin } from "@/lib/nativeApp";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { lovable } from "@/integrations/lovable/index";
@@ -74,6 +74,10 @@ const AuthPage = () => {
   const [regOtpSent, setRegOtpSent] = useState(false);
   const [regOtpCode, setRegOtpCode] = useState("");
   const [regPhoneVerified, setRegPhoneVerified] = useState(false);
+
+  // Ro'yxatdan o'tgan, lekin emailni hali tasdiqlamagan foydalanuvchi
+  const [pendingConfirmEmail, setPendingConfirmEmail] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
 
   const { signIn, signUp, signInWithPhone, verifyPhoneOtp, user, loading: authLoading, userRole: currentUserRole } = useAuth();
   const navigate = useNavigate();
@@ -292,6 +296,27 @@ const AuthPage = () => {
     setSubmitting(false);
   };
 
+  const resendConfirmation = async () => {
+    if (!pendingConfirmEmail) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: pendingConfirmEmail,
+      options: { emailRedirectTo: publicOrigin() },
+    });
+    setResending(false);
+    if (error) {
+      const wait = /rate limit|seconds/i.test(error.message);
+      toast({
+        title: wait ? "Biroz kuting" : "Xatolik",
+        description: wait ? "Xat yaqinda yuborilgan. Bir daqiqadan so'ng qayta urinib ko'ring." : error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "✅ Qayta yuborildi", description: `${pendingConfirmEmail} — pochtangizni tekshiring.` });
+    }
+  };
+
   const quickLogin = async () => {
     const creds = await loadSavedLogin();
     if (!creds) { toast({ title: "Tasdiqlanmadi", description: "Email va parol bilan kiring.", variant: "destructive" }); return; }
@@ -313,9 +338,16 @@ const AuthPage = () => {
         if (await saveLogin(email, password)) setSavedLogin(true);
       }
       if (error) {
-        const msg = error.message === "Email not confirmed" ? "Email tasdiqlanmagan. Iltimos, emailingizni tekshiring." : error.message;
-        toast({ title: "Xatolik", description: msg, variant: "destructive" });
+        const unconfirmed = /email not confirmed/i.test(error.message) || (error as any).code === "email_not_confirmed";
+        if (unconfirmed) setPendingConfirmEmail(email.trim());
+        const msg = unconfirmed
+          ? "Email hali tasdiqlanmagan. Pastdagi tugma orqali tasdiqlash xatini qayta yuboring."
+          : /invalid login credentials/i.test(error.message)
+            ? "Email yoki parol noto'g'ri. Parolni unutgan bo'lsangiz, “Parolni unutdingizmi?” ni bosing."
+            : error.message;
+        toast({ title: "Kirib bo'lmadi", description: msg, variant: "destructive" });
       } else {
+        setPendingConfirmEmail(null);
         toast({ title: "Xush kelibsiz!" });
         // userRole yuklanishini kutib, aniq dashboard'ga yo'naltirish
         // /dashboard route role'ni aniqlab redirect qiladi
@@ -753,6 +785,19 @@ const AuthPage = () => {
                     </button>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Email tasdiqlanmagan — qayta ro'yxatdan o'tish o'rniga xatni qayta yuborish */}
+            {authMethod === "email" && pendingConfirmEmail && (
+              <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm space-y-2">
+                <p className="font-semibold text-foreground">📧 Emailingizni tasdiqlang</p>
+                <p className="text-muted-foreground">
+                  <strong>{pendingConfirmEmail}</strong> manziliga tasdiqlash havolasi yuborildi. Qayta ro'yxatdan o'tish shart emas — xatdagi havolani bosing, so'ng shu yerda kiring. Spam papkasini ham tekshiring.
+                </p>
+                <Button type="button" variant="outline" size="sm" className="w-full" disabled={resending} onClick={resendConfirmation}>
+                  {resending ? "Yuborilmoqda..." : "Tasdiqlash xatini qayta yuborish"}
+                </Button>
               </div>
             )}
 
