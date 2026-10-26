@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Bluetooth, Watch, HeartPulse, RefreshCw, Unplug, Info } from "lucide-react";
 import { connectBleHeartRate } from "@/lib/vitals/wearables";
-import { healthStatus, healthStoreName, healthSupportedPlatform, isAutoSyncOn, requestHealthAccess, setAutoSync, syncHealthData } from "@/lib/vitals/healthConnect";
+import { healthDiagnostics, healthStoreName, healthSupportedPlatform, isAutoSyncOn, openHealthSettings, requestHealthAccess, setAutoSync, syncHealthData } from "@/lib/vitals/healthConnect";
 import { useAuth } from "@/hooks/useAuth";
 import type { VitalReading } from "./types";
 import { std } from "@/lib/vitals/dsp";
@@ -33,7 +33,9 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
       setBle(dev);
     } catch (e: any) {
       setMsg(e?.message === "NO_WEB_BLUETOOTH"
-        ? "Bu brauzer/ilova Bluetooth pulsometrlarni qo‘llamaydi. Chrome (Android/Kompyuter) orqali med1.uz saytida urinib ko‘ring."
+        ? native
+          ? "Ilova ichida Bluetooth pulsometr bevosita ulanmaydi. Soatingiz ma’lumotlarini pastdagi “import” tugmasi orqali oling — u barcha soat va fitnes bilaguzuklarni qamraydi."
+          : "Bu brauzer Bluetooth pulsometrlarni qo‘llamaydi. Chrome (Android/Kompyuter) orqali med1.uz saytida urinib ko‘ring."
         : "Qurilma ulanmadi. Pulsometr yoqilganini va yaqinligini tekshiring.");
     }
   };
