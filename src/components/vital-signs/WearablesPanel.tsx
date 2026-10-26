@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Bluetooth, Watch, HeartPulse, RefreshCw, Unplug, Info } from "lucide-react";
 import { connectBleHeartRate } from "@/lib/vitals/wearables";
-import { healthStatus, healthStoreName, healthSupportedPlatform, isAutoSyncOn, requestHealthAccess, setAutoSync, syncHealthData } from "@/lib/vitals/healthConnect";
+import { healthDiagnostics, healthStoreName, healthSupportedPlatform, isAutoSyncOn, openHealthSettings, requestHealthAccess, setAutoSync, syncHealthData } from "@/lib/vitals/healthConnect";
 import { useAuth } from "@/hooks/useAuth";
 import type { VitalReading } from "./types";
 import { std } from "@/lib/vitals/dsp";
@@ -33,7 +33,9 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
       setBle(dev);
     } catch (e: any) {
       setMsg(e?.message === "NO_WEB_BLUETOOTH"
-        ? "Bu brauzer/ilova Bluetooth pulsometrlarni qo‘llamaydi. Chrome (Android/Kompyuter) orqali med1.uz saytida urinib ko‘ring."
+        ? native
+          ? "Ilova ichida Bluetooth pulsometr bevosita ulanmaydi. Soatingiz ma’lumotlarini pastdagi “import” tugmasi orqali oling — u barcha soat va fitnes bilaguzuklarni qamraydi."
+          : "Bu brauzer Bluetooth pulsometrlarni qo‘llamaydi. Chrome (Android/Kompyuter) orqali med1.uz saytida urinib ko‘ring."
         : "Qurilma ulanmadi. Pulsometr yoqilganini va yaqinligini tekshiring.");
     }
   };
@@ -53,20 +55,35 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
   const sync = async () => {
     setMsg(null);
     if (!user) { setMsg("Import uchun avval tizimga kiring."); return; }
-    const status = await healthStatus();
-    if (status === "unsupported") { setMsg("Health Connect / Apple Health faqat Med ALL mobil ilovasida ishlaydi. Hozircha qo‘lda kiriting."); return; }
-    if (status === "not_installed") { setMsg("Telefoningizda Health Connect o‘rnatilmagan. Play Market’dan “Health Connect by Android” ni o‘rnating, so‘ng qayta urinib ko‘ring."); return; }
+    const diag = await healthDiagnostics();
+    if (diag.status === "unsupported") {
+      setMsg(diag.detail === "web"
+        ? "Aqlli soat ma’lumotlari faqat Med ALL mobil ilovasida import qilinadi. Hozircha qo‘lda kiriting."
+        : `Soat ulanmadi${diag.detail ? ` (${diag.detail})` : ""}. Ilovani yangilab, qayta urinib ko‘ring.`);
+      return;
+    }
+    if (diag.status === "not_installed") { setMsg("Telefoningizda Health Connect o‘rnatilmagan. Play Market’dan “Health Connect by Android” ni o‘rnating, so‘ng qayta urinib ko‘ring."); return; }
     setSyncing(true);
     try {
       const granted = await requestHealthAccess();
-      if (!granted.length) { setMsg("Ruxsat berilmadi. Health Connect sozlamalarida Med ALL uchun ruxsatlarni yoqing."); return; }
+      if (!granted.length) {
+        setMsg("Ruxsat berilmadi. “Sozlamalarni ochish” tugmasini bosib, Med ALL uchun puls, SpO2, uyqu va qadamlar ruxsatini yoqing.");
+        return;
+      }
       const r = await syncHealthData(user.id);
       setAutoSync(true); setAuto(true);
       const l = r.latest;
       setManual({ bpm: String(l.bpm ?? ""), spo2: String(l.spo2 ?? ""), sleep: String(l.sleepHours ?? ""), steps: String(l.steps ?? "") });
-      setMsg(`${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.${l.bpm ? " Natija Med AI tahliliga uzatildi." : ""}`);
+      const partial = r.failed.length ? ` Ba’zi bo‘limlar o‘qilmadi: ${r.failed.join(", ")} — sozlamalarda ruxsatlarini tekshiring.` : "";
+      setMsg(r.imported
+        ? `${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.${l.bpm ? " Natija Med AI tahliliga uzatildi." : ""}${partial}`
+        : `Yangi yozuv topilmadi. Soatingiz ${platform}ga yozayotganini va ruxsatlar yoqilganini tekshiring.${partial}`);
       if (l.bpm) onResult({ source: "watch", bpm: l.bpm, confidence: 95, spo2: l.spo2 ?? null, sleepHours: l.sleepHours ?? null, steps: l.steps ?? null, device: platform });
-    } catch { setMsg("Ma’lumotni o‘qib bo‘lmadi. Internet va ruxsatlarni tekshiring."); }
+    } catch (e: any) {
+      setMsg(e?.message === "save_failed"
+        ? "Ma’lumot o‘qildi, lekin Med1 tarixiga saqlanmadi. Internetni tekshirib, qayta urinib ko‘ring."
+        : "Ma’lumotni o‘qib bo‘lmadi. Internet va ruxsatlarni tekshiring.");
+    }
     finally { setSyncing(false); }
   };
 
@@ -99,6 +116,9 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
         <p className="text-xs text-muted-foreground">Galaxy Watch, Mi Band, Fitbit va boshqalar {platform}ga yozgan puls, SpO2, uyqu va qadamlar sizning ruxsatingiz bilan Med1 tarixiga import qilinadi. Faqat o‘qiladi, hech narsa yozilmaydi.</p>
         <div className="flex flex-wrap items-center gap-3">
           <Button size="sm" variant="outline" onClick={sync} disabled={syncing}><RefreshCw className={`w-4 h-4 mr-1 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Import qilinmoqda…" : `${platform}dan import`}</Button>
+          {native && (
+            <Button size="sm" variant="ghost" onClick={() => void openHealthSettings()}>Sozlamalarni ochish</Button>
+          )}
           {native && (
             <label className="flex items-center gap-2 text-xs text-foreground">
               <Switch checked={auto} onCheckedChange={toggleAuto} aria-label="Avtomatik import" /> Avtomatik import

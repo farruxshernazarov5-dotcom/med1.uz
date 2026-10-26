@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, MessageCircle, Mail, Phone, Save, CheckCircle2 } from "lucide-react";
+import { Bell, MessageCircle, Mail, Phone, Save, CheckCircle2, Volume2 } from "lucide-react";
+import { setVoiceNotify, testVoiceNotify, voiceNotifyOn } from "@/lib/voiceNotify";
 
 const NotificationPreferences = () => {
   const { user } = useAuth();
@@ -21,6 +22,16 @@ const NotificationPreferences = () => {
     sms: false,
   });
   const [telegramChatId, setTelegramChatId] = useState("");
+  const [voice, setVoice] = useState(voiceNotifyOn());
+
+  const toggleVoice = async (on: boolean) => {
+    setVoiceNotify(on);
+    setVoice(on);
+    if (on) {
+      const ok = await testVoiceNotify();
+      if (!ok) toast({ title: "Ovoz ishlamadi", description: "Qurilmangiz ovozli o'qishni qo'llamaydi yoki ovoz o'chirilgan.", variant: "destructive" });
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -132,6 +143,24 @@ const NotificationPreferences = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border">
+          <div className="flex items-center gap-3">
+            <Volume2 className="w-5 h-5 text-primary" />
+            <div>
+              <p className="text-sm font-medium text-foreground">MED ALL ovozli bildirishnomalar</p>
+              <p className="text-xs text-muted-foreground">Yangi xabar kelganda “MED ALL. …” deb ovoz chiqarib o'qiydi</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {voice && (
+              <Badge variant="outline" className="text-[10px] bg-medical-green/10 text-medical-green border-medical-green/30">
+                Faol
+              </Badge>
+            )}
+            <Switch checked={voice} onCheckedChange={(v) => void toggleVoice(v)} />
+          </div>
         </div>
 
         {channels.telegram && (

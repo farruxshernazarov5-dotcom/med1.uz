@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { deviceKey, forgetDevice, listDevices, type UserDevice } from "@/lib/userDevices";
+import { QrDeviceLink } from "./QrDeviceLink";
 
 const when = (iso: string) => new Date(iso).toLocaleString("uz-UZ", { dateStyle: "medium", timeStyle: "short" });
 
@@ -73,6 +74,7 @@ export function DevicesPanel() {
           <ShieldAlert className="h-4 w-4 shrink-0 text-medical-orange" /> Notanish qurilma ko‘rsangiz, parolni o‘zgartiring va boshqa qurilmalardan chiqing.
         </div>
       )}
+      <QrDeviceLink />
       <Button variant="outline" className="mt-3 w-full text-destructive" disabled={busy} onClick={() => void signOutOthers()}><LogOut /> Boshqa qurilmalardan chiqish</Button>
     </section>
   );

@@ -39,6 +39,36 @@ export async function openHealthSettings() {
   try { const { p } = await plugin(); await (p as any).openHealthConnectSettings?.(); } catch { /* ignore */ }
 }
 
+export type HealthDiagnostics = {
+  platform: string;
+  pluginLoaded: boolean;
+  status: HealthStatus;
+  granted: string[];
+  detail?: string;
+};
+
+/** Detailed probe used by the Vital AI wearables panel to explain why a watch is not syncing. */
+export async function healthDiagnostics(): Promise<HealthDiagnostics> {
+  const platform = Capacitor.getPlatform();
+  const base: HealthDiagnostics = { platform, pluginLoaded: false, status: "unsupported", granted: [] };
+  if (!Capacitor.isNativePlatform()) return { ...base, detail: "web" };
+  try {
+    const { p } = await plugin();
+    base.pluginLoaded = true;
+    const r: any = await p.isAvailable();
+    base.status = r?.available ? "available" : "not_installed";
+    if (base.status === "available") {
+      try {
+        const auth: any = await (p as any).checkAuthorization?.({ read: READ });
+        base.granted = auth?.readAuthorized ?? [];
+      } catch { /* older plugin builds lack checkAuthorization */ }
+    }
+  } catch (e: any) {
+    base.detail = e?.message?.slice?.(0, 120) ?? "plugin_error";
+  }
+  return base;
+}
+
 type Row = { user_id: string; record_type: string; value: Record<string, unknown>; recorded_at: string };
 
 async function lastImport(userId: string, type: string): Promise<Date> {
@@ -49,7 +79,7 @@ async function lastImport(userId: string, type: string): Promise<Date> {
   return data?.recorded_at ? new Date(new Date(data.recorded_at).getTime() + 1000) : fallback;
 }
 
-export type SyncResult = { imported: number; latest: { bpm?: number; spo2?: number; sleepHours?: number; steps?: number } };
+export type SyncResult = { imported: number; latest: { bpm?: number; spo2?: number; sleepHours?: number; steps?: number }; failed: string[] };
 
 /** Imports new samples since the previous import (first run: last 7 days). */
 export async function syncHealthData(userId: string): Promise<SyncResult> {
@@ -57,52 +87,62 @@ export async function syncHealthData(userId: string): Promise<SyncResult> {
   const end = new Date().toISOString();
   const rows: Row[] = [];
   const latest: SyncResult["latest"] = {};
+  // One denied/unavailable data type must not abort the whole import.
+  const failed: string[] = [];
 
   // Heart rate: hourly averages keep the history readable instead of thousands of beats.
-  const hrFrom = await lastImport(userId, "vital_pulse");
-  const hr = await p.queryAggregated({ dataType: "heartRate", startDate: hrFrom.toISOString(), endDate: end, bucket: "hour", aggregation: ["average", "min", "max"] });
-  for (const s of hr.samples ?? []) {
-    const avg = Math.round(s.values?.average ?? s.value);
-    if (!avg) continue;
-    rows.push({ user_id: userId, record_type: "vital_pulse", recorded_at: s.startDate,
-      value: { pulse: avg, min: s.values?.min, max: s.values?.max, source: SOURCE } });
-    latest.bpm = avg;
-  }
+  try {
+    const hrFrom = await lastImport(userId, "vital_pulse");
+    const hr = await p.queryAggregated({ dataType: "heartRate", startDate: hrFrom.toISOString(), endDate: end, bucket: "hour", aggregation: ["average", "min", "max"] });
+    for (const s of hr.samples ?? []) {
+      const avg = Math.round(s.values?.average ?? s.value);
+      if (!avg) continue;
+      rows.push({ user_id: userId, record_type: "vital_pulse", recorded_at: s.startDate,
+        value: { pulse: avg, min: s.values?.min, max: s.values?.max, source: SOURCE } });
+      latest.bpm = avg;
+    }
+  } catch { failed.push("heartRate"); }
 
-  const spFrom = await lastImport(userId, "vital_spo2");
-  const sp = await p.readSamples({ dataType: "oxygenSaturation", startDate: spFrom.toISOString(), endDate: end, limit: 200, ascending: true });
-  for (const s of sp.samples ?? []) {
-    const v = Math.round(s.value <= 1 ? s.value * 100 : s.value);
-    rows.push({ user_id: userId, record_type: "vital_spo2", recorded_at: s.startDate, value: { spo2: v, source: SOURCE, device: s.sourceName } });
-    latest.spo2 = v;
-  }
+  try {
+    const spFrom = await lastImport(userId, "vital_spo2");
+    const sp = await p.readSamples({ dataType: "oxygenSaturation", startDate: spFrom.toISOString(), endDate: end, limit: 200, ascending: true });
+    for (const s of sp.samples ?? []) {
+      const v = Math.round(s.value <= 1 ? s.value * 100 : s.value);
+      rows.push({ user_id: userId, record_type: "vital_spo2", recorded_at: s.startDate, value: { spo2: v, source: SOURCE, device: s.sourceName } });
+      latest.spo2 = v;
+    }
+  } catch { failed.push("oxygenSaturation"); }
 
-  const stFrom = await lastImport(userId, "activity_steps");
-  const st = await p.queryAggregated({ dataType: "steps", startDate: stFrom.toISOString(), endDate: end, bucket: "day", aggregation: "sum" });
-  for (const s of st.samples ?? []) {
-    const v = Math.round(s.value);
-    // Today's bucket is still growing; it is re-imported tomorrow as a final value.
-    if (!v || new Date(s.endDate) > new Date()) { if (v) latest.steps = v; continue; }
-    rows.push({ user_id: userId, record_type: "activity_steps", recorded_at: s.startDate, value: { steps: v, source: SOURCE } });
-    latest.steps = v;
-  }
+  try {
+    const stFrom = await lastImport(userId, "activity_steps");
+    const st = await p.queryAggregated({ dataType: "steps", startDate: stFrom.toISOString(), endDate: end, bucket: "day", aggregation: "sum" });
+    for (const s of st.samples ?? []) {
+      const v = Math.round(s.value);
+      // Today's bucket is still growing; it is re-imported tomorrow as a final value.
+      if (!v || new Date(s.endDate) > new Date()) { if (v) latest.steps = v; continue; }
+      rows.push({ user_id: userId, record_type: "activity_steps", recorded_at: s.startDate, value: { steps: v, source: SOURCE } });
+      latest.steps = v;
+    }
+  } catch { failed.push("steps"); }
 
-  const slFrom = await lastImport(userId, "sleep_session");
-  const sl = await p.readSamples({ dataType: "sleep", startDate: slFrom.toISOString(), endDate: end, limit: 60, ascending: true });
-  for (const s of sl.samples ?? []) {
-    const minutes = Math.round((new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000);
-    const asleep = s.stages?.filter((x: any) => x.stage !== "awake" && x.stage !== "inBed")
-      .reduce((a: number, x: any) => a + x.durationMinutes, 0);
-    const hours = Math.round(((asleep || minutes) / 60) * 10) / 10;
-    if (hours < 0.5) continue;
-    rows.push({ user_id: userId, record_type: "sleep_session", recorded_at: s.startDate,
-      value: { hours, start: s.startDate, end: s.endDate, source: SOURCE, device: s.sourceName } });
-    latest.sleepHours = hours;
-  }
+  try {
+    const slFrom = await lastImport(userId, "sleep_session");
+    const sl = await p.readSamples({ dataType: "sleep", startDate: slFrom.toISOString(), endDate: end, limit: 60, ascending: true });
+    for (const s of sl.samples ?? []) {
+      const minutes = Math.round((new Date(s.endDate).getTime() - new Date(s.startDate).getTime()) / 60000);
+      const asleep = s.stages?.filter((x: any) => x.stage !== "awake" && x.stage !== "inBed")
+        .reduce((a: number, x: any) => a + x.durationMinutes, 0);
+      const hours = Math.round(((asleep || minutes) / 60) * 10) / 10;
+      if (hours < 0.5) continue;
+      rows.push({ user_id: userId, record_type: "sleep_session", recorded_at: s.startDate,
+        value: { hours, start: s.startDate, end: s.endDate, source: SOURCE, device: s.sourceName } });
+      latest.sleepHours = hours;
+    }
+  } catch { failed.push("sleep"); }
 
   for (let i = 0; i < rows.length; i += 200) {
     const { error } = await supabase.from("health_records").insert(rows.slice(i, i + 200) as any);
-    if (error) throw error;
+    if (error) throw new Error("save_failed");
   }
-  return { imported: rows.length, latest };
+  return { imported: rows.length, latest, failed };
 }

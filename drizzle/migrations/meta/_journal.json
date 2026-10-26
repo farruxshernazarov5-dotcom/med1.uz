@@ -120,6 +120,13 @@
       "when": 1792756561364,
       "tag": "0016_sms_otp",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792979874791,
+      "tag": "0017_device_link_tokens",
+      "breakpoints": true
     }
   ]
 }
