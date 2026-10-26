@@ -43,6 +43,7 @@ const DentalPage = lazy(() => import("./pages/DentalPage"));
 const DentalDetailPage = lazy(() => import("./pages/DentalDetailPage"));
 const TermDetailPage = lazy(() => import("./pages/TermDetailPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const LinkDevicePage = lazy(() => import("./pages/LinkDevicePage"));
 const StaffCheckInPage = lazy(() => import("./pages/StaffCheckInPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const BookingPage = lazy(() => import("./pages/BookingPage"));
@@ -225,6 +226,7 @@ const App = () => (
                 <Route path="/dental" element={<DentalPage />} />
                 <Route path="/dental/:slug" element={<DentalDetailPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/link-device" element={<LinkDevicePage />} />
                 <Route path="/app-bridge" element={<AppBridgePage />} />
                 <Route path="/check-in" element={<StaffCheckInPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />

@@ -39,6 +39,36 @@ export async function openHealthSettings() {
   try { const { p } = await plugin(); await (p as any).openHealthConnectSettings?.(); } catch { /* ignore */ }
 }
 
+export type HealthDiagnostics = {
+  platform: string;
+  pluginLoaded: boolean;
+  status: HealthStatus;
+  granted: string[];
+  detail?: string;
+};
+
+/** Detailed probe used by the Vital AI wearables panel to explain why a watch is not syncing. */
+export async function healthDiagnostics(): Promise<HealthDiagnostics> {
+  const platform = Capacitor.getPlatform();
+  const base: HealthDiagnostics = { platform, pluginLoaded: false, status: "unsupported", granted: [] };
+  if (!Capacitor.isNativePlatform()) return { ...base, detail: "web" };
+  try {
+    const { p } = await plugin();
+    base.pluginLoaded = true;
+    const r: any = await p.isAvailable();
+    base.status = r?.available ? "available" : "not_installed";
+    if (base.status === "available") {
+      try {
+        const auth: any = await (p as any).checkAuthorization?.({ read: READ });
+        base.granted = auth?.readAuthorized ?? [];
+      } catch { /* older plugin builds lack checkAuthorization */ }
+    }
+  } catch (e: any) {
+    base.detail = e?.message?.slice?.(0, 120) ?? "plugin_error";
+  }
+  return base;
+}
+
 type Row = { user_id: string; record_type: string; value: Record<string, unknown>; recorded_at: string };
 
 async function lastImport(userId: string, type: string): Promise<Date> {
