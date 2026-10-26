@@ -117,6 +117,9 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
         <div className="flex flex-wrap items-center gap-3">
           <Button size="sm" variant="outline" onClick={sync} disabled={syncing}><RefreshCw className={`w-4 h-4 mr-1 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Import qilinmoqda…" : `${platform}dan import`}</Button>
           {native && (
+            <Button size="sm" variant="ghost" onClick={() => void openHealthSettings()}>Sozlamalarni ochish</Button>
+          )}
+          {native && (
             <label className="flex items-center gap-2 text-xs text-foreground">
               <Switch checked={auto} onCheckedChange={toggleAuto} aria-label="Avtomatik import" /> Avtomatik import
             </label>
