@@ -55,20 +55,35 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
   const sync = async () => {
     setMsg(null);
     if (!user) { setMsg("Import uchun avval tizimga kiring."); return; }
-    const status = await healthStatus();
-    if (status === "unsupported") { setMsg("Health Connect / Apple Health faqat Med ALL mobil ilovasida ishlaydi. Hozircha qo‘lda kiriting."); return; }
-    if (status === "not_installed") { setMsg("Telefoningizda Health Connect o‘rnatilmagan. Play Market’dan “Health Connect by Android” ni o‘rnating, so‘ng qayta urinib ko‘ring."); return; }
+    const diag = await healthDiagnostics();
+    if (diag.status === "unsupported") {
+      setMsg(diag.detail === "web"
+        ? "Aqlli soat ma’lumotlari faqat Med ALL mobil ilovasida import qilinadi. Hozircha qo‘lda kiriting."
+        : `Soat ulanmadi${diag.detail ? ` (${diag.detail})` : ""}. Ilovani yangilab, qayta urinib ko‘ring.`);
+      return;
+    }
+    if (diag.status === "not_installed") { setMsg("Telefoningizda Health Connect o‘rnatilmagan. Play Market’dan “Health Connect by Android” ni o‘rnating, so‘ng qayta urinib ko‘ring."); return; }
     setSyncing(true);
     try {
       const granted = await requestHealthAccess();
-      if (!granted.length) { setMsg("Ruxsat berilmadi. Health Connect sozlamalarida Med ALL uchun ruxsatlarni yoqing."); return; }
+      if (!granted.length) {
+        setMsg("Ruxsat berilmadi. “Sozlamalarni ochish” tugmasini bosib, Med ALL uchun puls, SpO2, uyqu va qadamlar ruxsatini yoqing.");
+        return;
+      }
       const r = await syncHealthData(user.id);
       setAutoSync(true); setAuto(true);
       const l = r.latest;
       setManual({ bpm: String(l.bpm ?? ""), spo2: String(l.spo2 ?? ""), sleep: String(l.sleepHours ?? ""), steps: String(l.steps ?? "") });
-      setMsg(`${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.${l.bpm ? " Natija Med AI tahliliga uzatildi." : ""}`);
+      const partial = r.failed.length ? ` Ba’zi bo‘limlar o‘qilmadi: ${r.failed.join(", ")} — sozlamalarda ruxsatlarini tekshiring.` : "";
+      setMsg(r.imported
+        ? `${r.imported} ta yangi yozuv Med1 tarixiga import qilindi. Avtomatik import yoqildi.${l.bpm ? " Natija Med AI tahliliga uzatildi." : ""}${partial}`
+        : `Yangi yozuv topilmadi. Soatingiz ${platform}ga yozayotganini va ruxsatlar yoqilganini tekshiring.${partial}`);
       if (l.bpm) onResult({ source: "watch", bpm: l.bpm, confidence: 95, spo2: l.spo2 ?? null, sleepHours: l.sleepHours ?? null, steps: l.steps ?? null, device: platform });
-    } catch { setMsg("Ma’lumotni o‘qib bo‘lmadi. Internet va ruxsatlarni tekshiring."); }
+    } catch (e: any) {
+      setMsg(e?.message === "save_failed"
+        ? "Ma’lumot o‘qildi, lekin Med1 tarixiga saqlanmadi. Internetni tekshirib, qayta urinib ko‘ring."
+        : "Ma’lumotni o‘qib bo‘lmadi. Internet va ruxsatlarni tekshiring.");
+    }
     finally { setSyncing(false); }
   };
 
