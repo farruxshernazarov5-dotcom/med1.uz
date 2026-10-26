@@ -37,7 +37,9 @@ const PatientNotifications = () => {
     const channel = supabase
       .channel(`user-notifications-${Math.random().toString(36).slice(2, 8)}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, (payload) => {
-        setNotifications((prev) => [payload.new as any, ...prev]);
+        const item = payload.new as any;
+        setNotifications((prev) => [item, ...prev]);
+        void import("@/lib/voiceNotify").then((m) => m.speakNotification(item.id, item.title, item.message)).catch(() => {});
       })
       .subscribe();
 
