@@ -62,7 +62,7 @@ export default function ClickPartnerAdminPage() {
   };
 
   if (authLoading || allowed === null) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
-  if (!allowed) return <main className="mx-auto max-w-lg px-6 py-20 text-center space-y-4"><ShieldCheck className="mx-auto h-10 w-10 text-primary" /><h1 className="text-xl font-semibold">Click — administrator paneli</h1><p className="text-muted-foreground">Bu sahifa uchun administrator huquqi kerak.</p><Button asChild><Link to="/auth?redirect=%2Fadmin%2Fpartners%2Fclick">Tizimga kirish</Link></Button></main>;
+  if (!allowed) return <main className="mx-auto max-w-lg px-6 py-20 text-center space-y-4"><ShieldCheck className="mx-auto h-10 w-10 text-primary" /><h1 className="text-xl font-semibold">Click — administrator paneli</h1><p className="text-muted-foreground">Bu sahifa uchun administrator huquqi kerak.</p><Button asChild><Link to="/auth?next=%2Fadmin%2Fpartners%2Fclick">Tizimga kirish</Link></Button></main>;
 
   const activity = <section className="space-y-4">
     <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold">Click konversiyalari</h2><Button variant="outline" size="sm" onClick={exportRows} disabled={!stats.rows.length}><Download className="h-4 w-4" /> Eksport</Button></div>

@@ -34,7 +34,7 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
     } catch (e: any) {
       setMsg(e?.message === "NO_WEB_BLUETOOTH"
         ? native
-          ? "Ilova ichida Bluetooth pulsometr bevosita ulanmaydi. Soatingiz ma’lumotlarini pastdagi “import” tugmasi orqali oling — u barcha soat va fitnes bilaguzuklarni qamraydi."
+          ? "Bu ilovada bevosita Bluetooth ulanishi mavjud emas. Soat ilovasi Health Connect yoki Apple Health bilan sinxronlansa, pastdagi import tugmasidan foydalaning."
           : "Bu brauzer Bluetooth pulsometrlarni qo‘llamaydi. Chrome (Android/Kompyuter) orqali med1.uz saytida urinib ko‘ring."
         : "Qurilma ulanmadi. Pulsometr yoqilganini va yaqinligini tekshiring.");
     }
@@ -71,7 +71,7 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
         return;
       }
       const r = await syncHealthData(user.id);
-      setAutoSync(true); setAuto(true);
+      if (r.imported > 0 && r.failed.length < 4) { setAutoSync(true); setAuto(true); }
       const l = r.latest;
       setManual({ bpm: String(l.bpm ?? ""), spo2: String(l.spo2 ?? ""), sleep: String(l.sleepHours ?? ""), steps: String(l.steps ?? "") });
       const partial = r.failed.length ? ` Ba’zi bo‘limlar o‘qilmadi: ${r.failed.join(", ")} — sozlamalarda ruxsatlarini tekshiring.` : "";
