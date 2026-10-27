@@ -1,3 +1,8 @@
+## 2026-10-27 — Click paneli va davom ettirish
+- [ ] /admin/partners/click: alohida Click ko‘rsatkichlari, MiniApp holati, mavjud Click to‘lov/diagnostika paneli va hamkorlar menyusidan kirish
+- [ ] QR server funksiyalarini yuklash, bir martalik ulanishni tekshirish; ovoz va Vital soat tuzatishlarini tekshirish
+- [ ] Haqiqiy telefonda QR/ovoz/soat sinovi — yangi APK va qurilma kerak
+
 ## 2026-10-24 — Eskiz va Click WebView
 - [x] Yetti SMS uchun umumiy tekshirilgan server yuborish yordamchisi va admin matn oldindan ko‘rish; yetti yo‘lning yuborish/bloklash testlari
 - [ ] So‘ralgan haqiqiy test SMS — faol hisobda admin ruxsati yo‘q (403); ruxsat chetlab o‘tilmadi
