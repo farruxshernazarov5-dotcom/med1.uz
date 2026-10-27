@@ -4,6 +4,7 @@ import { ArrowRight, Building2, CalendarDays, FlaskConical, Search, ShieldCheck,
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp";
+import { usePartnerSource } from "@/hooks/usePartnerSource";
 import logo from "@/assets/logo.webp";
 import medical from "@/assets/hero-medical.webp";
 
@@ -17,6 +18,7 @@ const services = [
 ];
 
 export default function ClickMiniAppPage() {
+  usePartnerSource();
   const host = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();

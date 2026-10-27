@@ -29,6 +29,7 @@ export const MobileHealthAlerts = () => {
     return subscribeFeed(user.id, (n) => {
       const link = safeFeedLink(n.link) ?? "/mobile-appointments?panel=notifications";
       playReminderChime();
+      void import("@/lib/voiceNotify").then(m => m.speakNotification(n.id, n.title, n.message)).catch(() => {});
       if (isNativeApp()) void hasNotificationPermission().then((ok) => ok && notifyNow(n.title, n.message, link).catch(() => {}));
       else if (document.visibilityState === "hidden") showWebNotification(n.title, n.message, link);
       toast(n.title, { description: n.message, duration: 10000, action: { label: "Ko‘rish", onClick: () => navigate(link) } });

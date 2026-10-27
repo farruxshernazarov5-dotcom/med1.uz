@@ -11,6 +11,7 @@
  * inspect HAMBI without leaving the Partners hub.
  */
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -179,7 +180,7 @@ const AdminPartnersModule = () => {
 
   // Realtime new partner notifications
   useEffect(() => {
-    const ch = supabase.channel("admin-partners-rt")
+    const ch = supabase.channel(`admin-partners-rt-${crypto.randomUUID()}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "api_partners" }, () => refresh())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
@@ -368,6 +369,7 @@ const AdminPartnersModule = () => {
           <p className="text-[11px] text-white/50">MED-ALL AI ekotizimidagi barcha hamkorlar — markaziy boshqaruv</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
+          <Button asChild variant="outline" size="sm"><Link to="/admin/partners/click"><Wallet className="h-4 w-4" /> Click</Link></Button>
           <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-300">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> LIVE
           </span>

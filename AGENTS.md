@@ -2,6 +2,9 @@
 
 - Click MiniApp startup and checkout adaptation live in `src/lib/clickMiniApp.ts`; activate only after the official SDK native handshake, keep Click web-session separate from Med1 auth and require a dedicated server-issued MiniApp Service ID, because the CDN also loads in normal browsers and website billing IDs cannot be reused. Hosting must inject validated session metadata per request without shared caching; see `docs/CLICK_MINIAPP.md`.
 - The `/click` entry reuses existing Med1 routes and authentication, because duplicating MiniApp business flows would desynchronize appointments and account data.
+- `/admin/partners/click` owns Click-only attribution and reuses `ClickTestPanel` behind an explicit operations action; never reuse HAMBI's synthetic statistics or equate attributed visits with a native SDK handshake.
+- QR account pairing tokens are server-issued, single-use login credentials with five-minute expiry; clients may only read their own status, never insert tokens for another account.
+- MED ALL voice alerts use `voiceNotify.ts` with explicit opt-in and session deduplication; Health Connect imports tolerate individual denied data types without pretending a watch connection was verified.
 - Eskiz transactional SMS must render provider `original_text` against its approved matching pattern and verify authoritative events plus patient consent; generic client-writable notifications must never authorize paid SMS.
 - All Eskiz send paths validate final text with `assertFinalSmsText` before the provider request; transactional rendering also requires an exact parameter count, preventing unresolved placeholders from reaching recipients.
 - Authorized transactional dispatchers use `sendApprovedTransactionalSms` for all mapped events; `eskiz-admin` only previews provider-backed text and parameter counts, keeping diagnostics separate from paid dispatch.

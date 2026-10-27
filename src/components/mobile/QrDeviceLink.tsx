@@ -22,6 +22,7 @@ export function QrDeviceLink() {
     try {
       const l = await createDeviceLink();
       setLink(l);
+      setLeft(Math.max(0, Math.ceil((l.expiresAt - Date.now()) / 1000)));
       setQr(await deviceLinkQrDataUrl(l.url));
       timer.current = setInterval(async () => {
         const remain = Math.max(0, Math.round((l.expiresAt - Date.now()) / 1000));
@@ -48,7 +49,7 @@ export function QrDeviceLink() {
           <DialogHeader>
             <DialogTitle>Med ALL ilovasini ulash</DialogTitle>
             <DialogDescription>
-              Telefoningizda Med ALL ilovasini oching va shu QR kodni skanerlang — hisobingiz avtomatik ulanadi.
+              QR kod hisobingizga kirish huquqini beradi. Uni boshqalarga ko‘rsatmang yoki yubormang. Faqat o‘z telefoningizda skanerlang.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center gap-3 py-2">

@@ -62,7 +62,7 @@ export const usePartnerSource = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const slug = (params.get("source") || params.get("partner") || "").toLowerCase().trim();
+    const slug = (params.get("source") || params.get("partner") || (location.pathname === "/click" ? "click" : "")).toLowerCase().trim();
     if (!slug) return;
 
     let cancelled = false;

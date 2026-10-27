@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { deviceKey, forgetDevice, listDevices, type UserDevice } from "@/lib/userDevices";
 import { QrDeviceLink } from "./QrDeviceLink";
+import { DeviceLinkScanner } from "./DeviceLinkScanner";
 
 const when = (iso: string) => new Date(iso).toLocaleString("uz-UZ", { dateStyle: "medium", timeStyle: "short" });
 
@@ -75,6 +76,7 @@ export function DevicesPanel() {
         </div>
       )}
       <QrDeviceLink />
+      <DeviceLinkScanner />
       <Button variant="outline" className="mt-3 w-full text-destructive" disabled={busy} onClick={() => void signOutOthers()}><LogOut /> Boshqa qurilmalardan chiqish</Button>
     </section>
   );
