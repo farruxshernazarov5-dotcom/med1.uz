@@ -24,6 +24,13 @@ beforeEach(() => {
 });
 
 describe("Click MiniApp lifecycle", () => {
+  it('returns through the official Click close method only after handshake', async () => {
+    const sdk = {...mockHost(), close: vi.fn()};
+    Object.assign(window,{ClickSDK:sdk});
+    const click=await import('./clickMiniApp');
+    await click.installClickMiniApp(); click.returnToClick();
+    expect(sdk.close).toHaveBeenCalledTimes(1);
+  });
   it("does not activate from the CDN global alone in an ordinary browser", async () => {
     const sdk = mockHost(); Reflect.deleteProperty(window, "ClickSDKAndroid");
     const click = await import("./clickMiniApp");

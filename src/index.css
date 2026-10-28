@@ -2,7 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* Click partner skin uses semantic roles, preserving the host's light/dark mode. */
+.click-partner:not(.dark) {
+  --background: 210 25% 97%;
+  --foreground: 210 12% 12%;
+  --primary: 205 100% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 205 100% 45%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 205 80% 94%;
+  --accent-foreground: 205 100% 30%;
+  --ring: 205 100% 45%;
+  --radius: 0.5rem;
+}
+.click-partner.dark {
+  --background: 210 10% 8%;
+  --card: 210 10% 13%;
+  --foreground: 0 0% 96%;
+  --primary: 205 100% 60%;
+  --primary-foreground: 210 10% 8%;
+  --secondary: 205 100% 60%;
+  --ring: 205 100% 60%;
+  --radius: 0.5rem;
+}
 
 @layer base {
   :root {

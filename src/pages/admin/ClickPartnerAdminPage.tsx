@@ -9,11 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp";
 import { clickPartnerStats, type ClickConversion } from "@/lib/clickPartnerStats";
+import ClickRequests from "@/components/partner/ClickRequests";
 
 const ClickTestPanel = lazy(() => import("@/components/admin/payments/ClickTestPanel"));
 const modules = [
   { id: "overview", name: "Umumiy ko‘rinish", icon: Activity },
   { id: "activity", name: "Tashriflar va konversiyalar", icon: Globe2 },
+  { id: "requests", name: "So‘rovlar va hisobotlar", icon: BookOpen },
   { id: "miniapp", name: "Click MiniApp", icon: ShieldCheck },
   { id: "payments", name: "To‘lovlar va callbacklar", icon: CreditCard },
   { id: "docs", name: "Ulanish ma’lumotlari", icon: BookOpen },
@@ -79,6 +81,7 @@ export default function ClickPartnerAdminPage() {
       <div className="min-w-0 space-y-6">{error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         {active === "overview" && <><div className="grid grid-cols-2 gap-3 xl:grid-cols-4">{[{ label: "Click tashriflari", value: visits }, { label: "Ro‘yxatdan o‘tish", value: stats.signups }, { label: "Tasdiqlangan obunalar", value: stats.subscriptions }, { label: "Tasdiqlangan tushum (UZS)", value: stats.revenue }].map(item => <Card key={item.label}><CardContent className="p-4"><p className="text-xs text-muted-foreground">{item.label}</p><p className="mt-3 break-words text-2xl font-semibold tabular-nums">{busy ? "…" : item.value.toLocaleString("uz-UZ")}</p></CardContent></Card>)}</div>{activity}</>}
         {active === "activity" && activity}
+        {active === "requests" && <ClickRequests admin/>}
         {active === "miniapp" && <section className="space-y-5"><h2 className="text-lg font-semibold">Click MiniApp holati</h2><dl className="divide-y divide-border">{[["Kirish sahifasi", "https://med1.uz/click"], ["Joriy qurilmada Click SDK", host.active ? "Rasmiy ulanish tasdiqlandi" : "Oddiy brauzer — Click qurilmasida tekshirish kerak"], ["Click web-session", "Hosting orqali so‘rovga mos uzatish talab qilinadi"], ["MiniApp to‘lovi", "Click bergan alohida Service ID va haqiqiy qurilma sinovi kerak"], ["Med1 hisobi", "Mavjud kirish va profillar saqlanadi"]].map(([label, value]) => <div key={label} className="grid gap-2 py-4 sm:grid-cols-2"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="break-words text-sm">{value}</dd></div>)}</dl><Button asChild variant="outline"><Link to="/click">Click sahifasini ochish</Link></Button></section>}
         {active === "payments" && <section className="space-y-4"><h2 className="text-lg font-semibold">Click to‘lovlar boshqaruvi</h2>{!operations ? <><p className="text-sm text-muted-foreground">Diagnostika, Prepare/Complete, to‘lov jurnali va fiskalizatsiya. Sinov amallari to‘lov yozuvlarini yaratishi mumkin.</p><Button variant="outline" onClick={() => setOperations(true)}><CreditCard className="h-4 w-4" /> Boshqaruv amallarini ochish</Button></> : <Suspense fallback={<Loader2 className="animate-spin" />}><ClickTestPanel /></Suspense>}</section>}
         {active === "docs" && <section className="space-y-4"><h2 className="text-lg font-semibold">Click ulanish ma’lumotlari</h2>{[["MiniApp", "https://med1.uz/click"], ["Prepare", "https://pay.med1.uz/click/prepare"], ["Complete", "https://pay.med1.uz/click/complete"], ["To‘lovdan qaytish", "https://med1.uz/payment/success"]].map(([label, value]) => <div key={label} className="border-b border-border py-3"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 break-all text-sm">{value}</p></div>)}<Button asChild variant="outline"><a href="https://one-platform.click.uz/merchant-docs/reference" target="_blank" rel="noopener noreferrer"><BookOpen className="h-4 w-4" /> Click rasmiy hujjatlari</a></Button></section>}

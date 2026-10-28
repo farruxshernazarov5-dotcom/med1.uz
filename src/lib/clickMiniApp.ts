@@ -13,6 +13,7 @@ export interface ClickInitResult {
 interface ClickSDK {
   init(): Promise<ClickInitResult>;
   ready(): Promise<void>;
+  close?(): void;
   context?: ClickInitResult["context"] | null;
 }
 
@@ -98,6 +99,13 @@ export function watchClickSDKLoad() {
   document.getElementById("click-miniapp-sdk")?.addEventListener("load", () => {
     void installClickMiniApp();
   }, { once: true });
+}
+
+/** Official SDK close is fire-and-forget; never call unrelated host bridges. */
+export function returnToClick() {
+  const sdk = (window as ClickWindow).ClickSDK;
+  if (state.active && typeof sdk?.close === 'function') { sdk.close(); return; }
+  window.location.assign('https://my.click.uz');
 }
 
 const MED1_HOSTS = new Set(["med1.uz", "www.med1.uz", "ai.med1.uz", "clinic.med1.uz", "doctors.med1.uz", "admin.med1.uz"]);

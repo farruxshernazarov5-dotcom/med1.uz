@@ -134,6 +134,13 @@
       "when": 1793065319996,
       "tag": "0018_secure_device_link_issuance",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793155092070,
+      "tag": "0019_click_requests_and_device_reports",
+      "breakpoints": true
     }
   ]
 }

@@ -1495,6 +1495,45 @@ export type Database = {
         }
         Relationships: []
       }
+      click_partner_requests: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          platform: string | null
+          response: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          platform?: string | null
+          response?: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          platform?: string | null
+          response?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       click_webhook_log: {
         Row: {
           action: string
@@ -5155,6 +5194,7 @@ export type Database = {
         Row: {
           created_at: string
           expires_at: string
+          source_slug: string | null
           token: string
           used_at: string | null
           user_id: string
@@ -5162,6 +5202,7 @@ export type Database = {
         Insert: {
           created_at?: string
           expires_at: string
+          source_slug?: string | null
           token: string
           used_at?: string | null
           user_id: string
@@ -5169,6 +5210,7 @@ export type Database = {
         Update: {
           created_at?: string
           expires_at?: string
+          source_slug?: string | null
           token?: string
           used_at?: string | null
           user_id?: string

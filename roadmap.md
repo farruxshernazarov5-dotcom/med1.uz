@@ -1,3 +1,9 @@
+## 2026-10-28 — Click real panel
+- [ ] Click so‘rovlari va ulanish hisobotlarini saqlash, admin o‘qish/javob berish
+- [ ] Mavjud profil menyusi bilan Click kabineti, Clickka qaytish va Clickka mos ko‘rinish
+- [ ] Server funksiyalarini ishga tushirish va hisobga kirib asosiy oqimni tekshirish
+- [ ] Click avtomatik kirish va haqiqiy MiniApp to‘lovi — Click tasdiqlash xizmati, hosting va alohida Service ID kerak
+
 ## 2026-10-27 — Click paneli va davom ettirish
 - [ ] /admin/partners/click: alohida Click ko‘rsatkichlari, MiniApp holati, mavjud Click to‘lov/diagnostika paneli va hamkorlar menyusidan kirish
 - [ ] QR server funksiyalarini yuklash, bir martalik ulanishni tekshirish; ovoz va Vital soat tuzatishlarini tekshirish
