@@ -13,7 +13,7 @@ export type DeviceLink = { token: string; url: string; expiresAt: number };
 
 /** Creates a pairing token and the URL the QR code should encode. */
 export async function createDeviceLink(): Promise<DeviceLink> {
-  const { data, error } = await supabase.functions.invoke("device-link-qr", { body: {} });
+  const { data, error } = await supabase.functions.invoke("device-link-qr", { body: { source_slug: sessionStorage.getItem('med1_click_entry') === '1' ? 'click' : undefined } });
   if (error || !data?.token) throw new Error(data?.error || error?.message || "link_failed");
   return {
     token: data.token as string,

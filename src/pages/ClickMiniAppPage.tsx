@@ -1,10 +1,12 @@
-import { useState, useSyncExternalStore } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Building2, CalendarDays, FlaskConical, Search, ShieldCheck, Sparkles, Stethoscope, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp";
 import { usePartnerSource } from "@/hooks/usePartnerSource";
+import { useAuth } from "@/hooks/useAuth";
+import ClickRequests from "@/components/partner/ClickRequests";
 import logo from "@/assets/logo.webp";
 import medical from "@/assets/hero-medical.webp";
 
@@ -22,6 +24,10 @@ export default function ClickMiniAppPage() {
   const host = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const {user,loading}=useAuth();
+  const [params]=useSearchParams();
+  const requests=params.get('view')==='requests';
+  useEffect(()=>{if(!loading&&user&&!requests)navigate('/mobile-profile',{replace:true});},[loading,user?.id,requests,navigate]);
   return (
     <main className="min-h-screen bg-background text-foreground pb-28">
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
@@ -35,8 +41,9 @@ export default function ClickMiniAppPage() {
             {host.active ? "Click ulangan" : "Med1.uz veb"}
           </span>
         </header>
-        <section className="py-6">
+        {requests ? <section className="py-6">{user?<ClickRequests/>:<Button asChild><Link to="/auth?next=%2Fclick%3Fview%3Drequests">Hisobga kirish</Link></Button>}</section> : <><section className="py-6">
           <h1 className="text-2xl font-semibold">Salomatlik markazi</h1>
+          {!user&&<Button asChild className="mt-4 w-full"><Link to="/auth?next=%2Fmobile-profile">Shaxsiy kabinetga kirish</Link></Button>}
           <form className="mt-5 flex gap-2" onSubmit={(event) => {
             event.preventDefault();
             if (query.trim()) navigate(`/smart-search?q=${encodeURIComponent(query.trim())}`);
@@ -61,6 +68,7 @@ export default function ClickMiniAppPage() {
             <img src={medical} alt="Tibbiy xizmatlar" className="aspect-[16/7] w-full object-cover" loading="lazy" />
           </Link>
         </section>
+        </>}
         <footer className="mt-8 flex flex-wrap gap-4 text-xs text-muted-foreground">
           <Link to="/privacy">Maxfiylik</Link><Link to="/terms">Foydalanish shartlari</Link><Link to="/contact">Yordam</Link>
         </footer>

@@ -23,6 +23,8 @@ Deno.serve(async (req) => {
     if (!u?.user) return j({ error: "unauthorized" }, 401);
 
     const admin = createClient(URL, SVC);
+    const body = await req.json().catch(() => ({}));
+    const source_slug = body.source_slug === 'click' ? 'click' : null;
     // Housekeeping: drop this user's expired or already-used tokens.
     await admin.from("device_link_tokens").delete()
       .eq("user_id", u.user.id)
@@ -31,7 +33,7 @@ Deno.serve(async (req) => {
     const token = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "").slice(0, 16);
     const expires_at = new Date(Date.now() + TTL_SECONDS * 1000).toISOString();
 
-    const { error } = await admin.from("device_link_tokens").insert({ token, user_id: u.user.id, expires_at });
+    const { error } = await admin.from("device_link_tokens").insert({ token, user_id: u.user.id, expires_at, source_slug });
     if (error) return j({ error: error.message }, 500);
     return j({ token, expires_at, ttl: TTL_SECONDS });
   } catch (e: any) {

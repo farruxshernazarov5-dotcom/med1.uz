@@ -145,6 +145,7 @@ import FloatingDock from "./components/FloatingDock";
 import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
 import { GeoPromoProvider } from "./components/geo/GeoPromoProvider";
 import HambiReturnButton from "./components/partner/HambiReturnButton";
+import ClickExperience from "./components/partner/ClickExperience";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 import YandexAdsManager from "./components/ads/YandexAdsManager";
@@ -194,6 +195,7 @@ const App = () => (
           <GeoPromoProvider />
           <CookieConsent />
           <HambiReturnButton />
+          <ClickExperience />
           <AIDiagnosticsPanel />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>

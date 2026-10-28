@@ -35,6 +35,7 @@ const HambiReturnButton = () => {
   const { pathname } = useLocation();
 
   if (!partner) return null;
+  if (partner.slug === 'click') return null;
   if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
 
   const brand = partner.brand_color || "#E30613";
