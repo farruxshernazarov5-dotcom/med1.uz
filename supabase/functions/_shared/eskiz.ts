@@ -1,5 +1,6 @@
 /** Provider-only delivery; OTP creation and verification remain in Cloud Auth. */
 export type EskizConfig = { email: string; password: string; template: string };
+export const OTP_TEMPLATE_ID = "96927";
 
 export function buildSms(phone: string, otp: string, template: string) {
   if (!/^\+?998\d{9}$/.test(phone) || !/^\d{6,8}$/.test(otp)) {
@@ -12,7 +13,9 @@ export function buildSms(phone: string, otp: string, template: string) {
   if (ph) return { phone: phone.replace(/^\+/, ""), message: t.split(ph[0]).join(otp) };
   // Eskiz-approved texts are often saved exactly as approved, with a sample code
   // (e.g. "Kod: 1234"). Swap that single 4-8 digit sample for the real OTP.
-  const sample = t.match(/(?<!\d)\d{4,8}(?!\d)/);
+  const samples = [...t.matchAll(/(?<!\d)\d{4,8}(?!\d)/g)];
+  if (samples.length !== 1) throw new Error("invalid_sms_template");
+  const sample = samples[0];
   if (!sample || sample.index === undefined) throw new Error("invalid_sms_template");
   const message = t.slice(0, sample.index) + otp + t.slice(sample.index + sample[0].length);
   return { phone: phone.replace(/^\+/, ""), message };
@@ -35,6 +38,31 @@ export async function eskizToken(config: Pick<EskizConfig, "email" | "password">
 }
 
 export type EskizTemplate = { id: string; status: string; text: string; originalText: string };
+/** Match the final message against Eskiz's approved word-field pattern, not a local guess. */
+export function assertApprovedSmsPattern(message: string, approvedPattern: string): void {
+  if (!approvedPattern || approvedPattern.length > 2000) throw new Error("invalid_sms_pattern");
+  const marker = /%w(?:\{(\d+),(\d+)\})?/g;
+  let pattern = "", start = 0;
+  for (const match of approvedPattern.matchAll(marker)) {
+    const at = match.index ?? 0;
+    pattern += approvedPattern.slice(start, at).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const min = Number(match[1] ?? 1), max = Number(match[2] ?? 1);
+    if (min < 1 || max < min || max > 10) throw new Error("invalid_sms_pattern");
+    pattern += `\\S+(?: \\S+){${min - 1},${max - 1}}`;
+    start = at + match[0].length;
+  }
+  pattern += approvedPattern.slice(start).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  if (!new RegExp(`^${pattern}$`, "u").test(message)) throw new Error("sms_pattern_mismatch");
+  assertFinalSmsText(message);
+}
+
+export function buildApprovedOtpSms(phone: string, otp: string, templates: EskizTemplate[]) {
+  const approved = templates.find(t => t.id === OTP_TEMPLATE_ID && t.status === "service");
+  if (!approved?.originalText || !approved.text) throw new Error("eskiz_template_not_approved");
+  const sms = buildSms(phone, otp, approved.originalText);
+  assertApprovedSmsPattern(sms.message, approved.text);
+  return sms;
+}
 export async function eskizTemplates(token: string, request: typeof fetch = fetch): Promise<EskizTemplate[]> {
   const response = await request("https://notify.eskiz.uz/api/user/templates", {
     headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000),
@@ -76,18 +104,8 @@ export async function sendEskizMessage(token: string, phone: string, message: st
 }
 
 export async function sendEskizSms(config: EskizConfig, phone: string, otp: string, request: typeof fetch = fetch): Promise<void> {
-  const sms = buildSms(phone, otp, config.template);
+  if (!/^\+?998\d{9}$/.test(phone) || !/^\d{6,8}$/.test(otp)) throw new Error("invalid_sms_payload");
   const token = await eskizToken(config, request);
-  try {
-    await sendEskizMessage(token, sms.phone, sms.message, request);
-  } catch (error) {
-    if (error instanceof Error && error.message === "eskiz_template_not_approved") {
-      try {
-        const templates = await eskizTemplates(token, request);
-        // Provider-approved public wording only: no pending text, credentials, phone or OTP.
-        console.log("eskiz approved templates", JSON.stringify(templates.filter(t => t.status === "service")));
-      } catch { /* Provider diagnostics must not replace the original failure. */ }
-    }
-    throw error;
-  }
+  const sms = buildApprovedOtpSms(phone, otp, await eskizTemplates(token, request));
+  await sendEskizMessage(token, sms.phone, sms.message, request);
 }

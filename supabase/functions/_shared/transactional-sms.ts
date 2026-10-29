@@ -1,4 +1,4 @@
-import { assertFinalSmsText, sendEskizMessage, type EskizTemplate } from "./eskiz.ts";
+import { assertApprovedSmsPattern, sendEskizMessage, type EskizTemplate } from "./eskiz.ts";
 
 // These are provider template IDs, not credentials. No free-form SMS text is accepted.
 export const SMS_TEMPLATE_IDS = {
@@ -35,19 +35,6 @@ export function renderTransactionalSms(event: SmsEvent, values: string[], templa
   let index = 0;
   const message = template.originalText.replace(/%s/g, () => values[index++] ?? "");
   if (index !== values.length || !index || /%[sw]/.test(message) || message.length > 1000) throw new Error("invalid_sms_arguments");
-  // %w is one word; %w{1,4} allows an approved 1–4-word field.
-  const marker = /%w(?:\{(\d+),(\d+)\})?/g;
-  let pattern = "", start = 0;
-  for (const match of template.text.matchAll(marker)) {
-    const at = match.index ?? 0;
-    pattern += template.text.slice(start, at).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const min = Number(match[1] ?? 1), max = Number(match[2] ?? 1);
-    if (min < 1 || max < min || max > 10) throw new Error("invalid_sms_pattern");
-    pattern += `\\S+(?: \\S+){${min - 1},${max - 1}}`;
-    start = at + match[0].length;
-  }
-  pattern += template.text.slice(start).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  if (!new RegExp(`^${pattern}$`, "u").test(message)) throw new Error("sms_pattern_mismatch");
-  assertFinalSmsText(message);
+  assertApprovedSmsPattern(message, template.text);
   return message;
 }
