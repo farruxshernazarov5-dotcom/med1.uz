@@ -1,7 +1,7 @@
 ## 2026-10-29 — Eskiz tasdiqlangan skrinshotga moslash
-- [ ] OTP 96927 matnini provayderdan olish, namunaviy kodni almashtirish va tasdiqlangan naqshni tekshirish
-- [ ] Qabul 96929 va AI 96928 matnlarining aniq parametr testlari
-- [ ] Serverga yuklash va jonli tekshirish — Cloud bazasi hozir mavjud emas
+- [x] OTP 96927 matnini provayderdan olish, namunaviy kodni almashtirish va tasdiqlangan naqshni tekshirish
+- [x] Qabul 96929 va AI 96928 matnlarining aniq parametr testlari — jami 31 test o‘tdi
+- [ ] Serverga yuklash va jonli tekshirish — Lovable Cloud to‘xtatilgan; foydalanuvchi qayta yoqishga ruxsat berishi kerak
 
 ## 2026-10-28 — Click real panel
 - [ ] Click so‘rovlari va ulanish hisobotlarini saqlash, admin o‘qish/javob berish
