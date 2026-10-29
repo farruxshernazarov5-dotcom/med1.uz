@@ -1,11 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { buildSms, eskizToken, eskizTemplates } from "../_shared/eskiz.ts";
+import { buildApprovedOtpSms, OTP_TEMPLATE_ID, eskizToken, eskizTemplates } from "../_shared/eskiz.ts";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { renderTransactionalSms, SMS_TEMPLATE_IDS, type SmsEvent } from "../_shared/transactional-sms.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 const reply = (data: unknown, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -47,12 +44,12 @@ Deno.serve(async (req) => {
         previews.push({ event: input.event, message: renderTransactionalSms(input.event as SmsEvent, input.values, templates) });
       } catch { return reply({ error: "sms_preview_invalid", event: input.event }, 400); }
     }
-    const saved = Deno.env.get("ESKIZ_SMS_TEMPLATE") || "";
-    const expected = "Med1.uz tasdiqlash kodi: {code}. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!";
-    // Only return public provider templates and shape checks, never secret values or live OTPs.
+    // Synthetic code is checked internally; never return a live OTP or secret values.
     let valid = false;
-    try { buildSms("+998900000000", "123456", saved); valid = true; } catch { /* shape only */ }
-    return reply({ templates, transactional, previews, sent: false, otp: { exactExpected: saved === expected, validCodeMarker: valid } });
+    try { buildApprovedOtpSms("+998900000000", "654321", templates); valid = true; } catch { /* shape only */ }
+    return reply({ templates, transactional, previews, sent: false, otp: {
+      templateId: OTP_TEMPLATE_ID, source: "provider", approved: templates.some(t => t.id === OTP_TEMPLATE_ID && t.status === "service"), validCodeMarker: valid,
+    } });
   } catch {
     return reply({ error: "Eskiz hisobini yoki matnlarini tekshirib bo‘lmadi" }, 502);
   }

@@ -9,6 +9,18 @@ beforeAll(() => {
 });
 
 describe("approved transactional SMS", () => {
+  it("fills all four approved appointment confirmation fields from screenshot 96929", () => {
+    const originalText = "Med1.uz: Qabulga yozildingiz. Shifokor: %s, sana: %s, vaqt: %s. Manzil: %s.";
+    const template = { id: "96929", status: "service", originalText, text: "Med1.uz: Qabulga yozildingiz. Shifokor: %w{1,4}, sana: %w, vaqt: %w. Manzil: %w{1,4}." };
+    expect(renderTransactionalSms("appointment_confirmed", ["Ali Valiyev", "29.10.2026", "14:00", "Toshkent shahri"], [template]))
+      .toBe("Med1.uz: Qabulga yozildingiz. Shifokor: Ali Valiyev, sana: 29.10.2026, vaqt: 14:00. Manzil: Toshkent shahri.");
+    expect(() => renderTransactionalSms("appointment_confirmed", ["Ali Valiyev", "29.10.2026", "14:00"], [template])).toThrow("invalid_sms_arguments");
+  });
+  it("fills the approved AI ready destination from screenshot 96928", () => {
+    const originalText = "Med1.uz: Siz so'ragan tibbiy AI tahlili tayyor. Natijani profilingizda ko'rishingiz mumkin: %s";
+    expect(renderTransactionalSms("ai_analysis_ready", ["https://med1.uz/mobile-profile"], [{ id: "96928", status: "service", originalText, text: originalText.replace("%s", "%w") }]))
+      .toBe("Med1.uz: Siz so'ragan tibbiy AI tahlili tayyor. Natijani profilingizda ko'rishingiz mumkin: https://med1.uz/mobile-profile");
+  });
   const events = Object.keys(SMS_TEMPLATE_IDS) as SmsEvent[];
   for (const event of events) {
     it(`sends ${event} only after approved parameter substitution`, async () => {

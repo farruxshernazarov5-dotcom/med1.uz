@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { buildSms, sendEskizSms, sendEskizMessage } from "../../supabase/functions/_shared/eskiz";
+import { buildSms, buildApprovedOtpSms, sendEskizSms, sendEskizMessage } from "../../supabase/functions/_shared/eskiz";
 
 beforeAll(() => {
   // jsdom lacks the Deno/native timeout helper; requests are mocked in this suite.
@@ -9,6 +9,22 @@ beforeAll(() => {
 });
 
 describe("Eskiz SMS delivery", () => {
+  const originalText = "Med1.uz saytiga kirish uchun tasdiqlash kodi: 1234. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!";
+  const approved = { id: "96927", status: "service", originalText, text: originalText.replace("1234", "%w") };
+  it("replaces the screenshot's sample code using approved OTP template 96927", () => {
+    expect(buildApprovedOtpSms("+998901234567", "654321", [approved]).message)
+      .toBe("Med1.uz saytiga kirish uchun tasdiqlash kodi: 654321. Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!");
+  });
+  it("never substitutes a code into an unapproved or unrelated template", () => {
+    expect(() => buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, status: "pending" }])).toThrow("eskiz_template_not_approved");
+    expect(() => buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, id: "96929" }])).toThrow("eskiz_template_not_approved");
+  });
+  it("blocks an OTP if the provider pattern only permits the literal sample code", () => {
+    expect(() => buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, text: originalText }])).toThrow("sms_pattern_mismatch");
+  });
+  it("rejects ambiguous sample-code fields", () => {
+    expect(() => buildSms("+998901234567", "654321", "Kod: 1234, tel: 5678")).toThrow("invalid_sms_template");
+  });
   it("blocks an unresolved reminder parameter before contacting the provider", async () => {
     const request = vi.fn();
     await expect(sendEskizMessage("test-only", "+998901234567", "Med1.uz: Bugun soat %s da qabul.", request))
@@ -40,20 +56,22 @@ describe("Eskiz SMS delivery", () => {
   it("reads provider credentials only for login and sends the supplied message", async () => {
     const request = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify({ data: { token: "test-only-token" } })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ result: [{ id: "96927", status: "service", original_text: originalText, template: approved.text }] })))
       .mockResolvedValueOnce(new Response(JSON.stringify({ status: "waiting" })));
     await sendEskizSms({ email: "test@example.invalid", password: "test-only", template: "Kod: {code}" },
       "+998901234567", "123456", request);
-    expect(request).toHaveBeenCalledTimes(2);
+    expect(request).toHaveBeenCalledTimes(3);
     const loginBody = request.mock.calls[0][1].body as FormData;
     expect(loginBody.get("email")).toBe("test@example.invalid");
     expect(loginBody.get("password")).toBe("test-only");
-    const smsBody = request.mock.calls[1][1].body as FormData;
-    expect(smsBody.get("message")).toBe("Kod: 123456");
+    const smsBody = request.mock.calls[2][1].body as FormData;
+    expect(smsBody.get("message")).toBe(originalText.replace("1234", "123456"));
     expect(smsBody.has("password")).toBe(false);
   });
   it("does not report provider rejection as successful delivery", async () => {
     const request = vi.fn()
       .mockResolvedValueOnce(new Response(JSON.stringify({ data: { token: "test-only-token" } })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ result: [{ id: "96927", status: "service", original_text: originalText, template: approved.text }] })))
       .mockResolvedValueOnce(new Response(JSON.stringify({ status: "error" })));
     await expect(sendEskizSms({ email: "test@example.invalid", password: "test-only", template: "{code}" },
       "+998901234567", "123456", request)).rejects.toThrow("eskiz_send_failed");

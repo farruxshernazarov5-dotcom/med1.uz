@@ -1,6 +1,8 @@
 # Eskiz SMS status and safe mapping
 
-Live API check on 2026-10-24 rejected the OTP send with the provider moderation error. Seven `service` templates are approved, but none is OTP. Do not repurpose subscription or appointment messages for login.
+The 2026-10-29 supplied screenshot shows OTP 96927 approved on 2026-10-26, appointment confirmation 96929 and AI-ready 96928 approved on 2026-10-23. Live provider availability must still be verified. Do not repurpose subscription or appointment messages for login.
+
+OTP delivery now loads provider template 96927, replaces its unambiguous code field (including the sample `1234`) with the real six-digit code, and validates the final text against the provider's approved pattern before sending. Stale `ESKIZ_SMS_TEMPLATE` wording is not used for delivery. A literal-only pattern, missing template or pending status blocks sending; moderation is never bypassed. Login/password remain server secrets.
 
 `_shared/transactional-sms.ts` maps those seven provider IDs to typed events. It renders `original_text` (%s), validates the result against `template` (%w and %w{1,4}), and rejects changed punctuation, missing values, rejected templates and overly long fields. It does not dispatch SMS.
 

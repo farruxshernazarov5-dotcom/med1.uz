@@ -1,3 +1,8 @@
+## 2026-10-29 — Eskiz tasdiqlangan skrinshotga moslash
+- [x] OTP 96927 matnini provayderdan olish, namunaviy kodni almashtirish va tasdiqlangan naqshni tekshirish
+- [x] Qabul 96929 va AI 96928 matnlarining aniq parametr testlari — jami 31 test o‘tdi
+- [ ] Serverga yuklash va jonli tekshirish — Lovable Cloud to‘xtatilgan; foydalanuvchi qayta yoqishga ruxsat berishi kerak
+
 ## 2026-10-28 — Click real panel
 - [ ] Click so‘rovlari va ulanish hisobotlarini saqlash, admin o‘qish/javob berish
 - [ ] Mavjud profil menyusi bilan Click kabineti, Clickka qaytish va Clickka mos ko‘rinish
