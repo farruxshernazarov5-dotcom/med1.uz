@@ -7,6 +7,7 @@ import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp"
 import { usePartnerSource } from "@/hooks/usePartnerSource";
 import { useAuth } from "@/hooks/useAuth";
 import ClickRequests from "@/components/partner/ClickRequests";
+import ClickOnboarding, { clickOnboardingSeen } from "@/components/partner/ClickOnboarding";
 import logo from "@/assets/logo.webp";
 import medical from "@/assets/hero-medical.webp";
 
@@ -23,6 +24,7 @@ export default function ClickMiniAppPage() {
   usePartnerSource();
   const host = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
   const [query, setQuery] = useState("");
+  const [onb, setOnb] = useState(() => !clickOnboardingSeen());
   const navigate = useNavigate();
   const {user,loading}=useAuth();
   const [params]=useSearchParams();
@@ -30,6 +32,7 @@ export default function ClickMiniAppPage() {
   useEffect(()=>{if(!loading&&user&&!requests)navigate('/mobile-profile',{replace:true});},[loading,user?.id,requests,navigate]);
   return (
     <main className="min-h-screen bg-background text-foreground pb-28">
+      {onb && !user && <ClickOnboarding onDone={() => setOnb(false)} />}
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
         <header className="flex items-center justify-between gap-3 border-b border-border pb-5">
           <Link to="/click" className="flex items-center gap-3" aria-label="Med1.uz asosiy">
