@@ -5,12 +5,12 @@ import s2 from "@/assets/click-onb-2.jpg";
 import s3 from "@/assets/click-onb-3.jpg";
 import s4 from "@/assets/click-onb-4.jpg";
 
-const KEY = "med1.clickOnboarding.v1";
+const KEY = "med1.clickOnboarding.v2";
 const slides = [
-  { img: s1, title: "Shifokorga onlayn yoziling", text: "Minglab shifokor va klinikalar — qulay vaqtni tanlang." },
-  { img: s2, title: "Med AI sog'liq tahlili", text: "Puls, stress va ritmni telefon orqali tekshiring." },
-  { img: s3, title: "Click orqali xavfsiz to'lov", text: "Xizmatlar uchun to'lov bir necha soniyada." },
-  { img: s4, title: "Tahlil natijalari qo'lingizda", text: "Butun oila salomatligi bitta kabinetda." },
+  { img: s1, title: "Med AI shifokor yordamchisi", text: "Shikoyatingizni yozing — AI 24/7 javob beradi va mutaxassisni tavsiya qiladi." },
+  { img: s2, title: "Vital AI: puls va stress", text: "Telefon kamerasi orqali yurak ritmi, nafas va stressni tekshiring." },
+  { img: s3, title: "Tahlillarni AI o'qiydi", text: "Laboratoriya natijasini rasmga oling — tushunarli xulosa oling." },
+  { img: s4, title: "Oila uchun AI xizmatlar", text: "Homiladorlik, bola parvarishi, dietolog va farmatsevt AI bir joyda." },
 ];
 
 export function clickOnboardingSeen() {
