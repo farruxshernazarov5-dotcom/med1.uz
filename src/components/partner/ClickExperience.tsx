@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, MessageSquare, UserRound } from 'lucide-react';
+import { ArrowLeft, Brain, MessageSquare, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getClickMiniAppState, returnToClick, subscribeClickMiniApp } from '@/lib/clickMiniApp';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,8 +21,9 @@ export default function ClickExperience() {
     return()=>{cancelled=true;};
   },[host.active,user?.id]);
   if(!attributed||pathname.startsWith('/admin')||pathname.startsWith('/auth'))return null;
-  return <nav aria-label="Click kabinet menyusi" className="fixed bottom-20 left-1/2 z-[60] flex max-w-[calc(100%-24px)] -translate-x-1/2 items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-md lg:bottom-4">
+  return <nav aria-label="Click kabinet menyusi" className="fixed bottom-20 left-1/2 z-50 flex max-w-[calc(100%-24px)] -translate-x-1/2 items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-md lg:bottom-4">
     <Button variant="ghost" size="sm" onClick={returnToClick}><ArrowLeft className="h-4 w-4"/>Clickka qaytish</Button>
+    <Button asChild variant="ghost" size="icon"><Link to="/click" aria-label="Barcha Med AI xizmatlari"><Brain/></Link></Button>
     <Button asChild variant="ghost" size="icon"><Link to="/mobile-profile" aria-label="Shaxsiy kabinet"><UserRound/></Link></Button>
     <Button asChild variant="ghost" size="icon"><Link to="/click?view=requests" aria-label="Click so‘rovlarim"><MessageSquare/></Link></Button>
   </nav>;
