@@ -10,11 +10,13 @@ const PREF = "med1.voiceNotify";
 const SPEAK_PREFIX = "MED ALL.";
 const MAX_LEN = 220;
 
-export const voiceNotifyOn = (): boolean => {
-  try { return localStorage.getItem(PREF) === "1"; } catch { return false; }
+export type VoiceNotifyScope = "general" | "click";
+const preferenceKey = (scope: VoiceNotifyScope) => scope === "click" ? "med1.clickVoiceNotify" : PREF;
+export const voiceNotifyOn = (scope: VoiceNotifyScope = "general"): boolean => {
+  try { return localStorage.getItem(preferenceKey(scope)) === "1"; } catch { return false; }
 };
-export const setVoiceNotify = (on: boolean) => {
-  try { on ? localStorage.setItem(PREF, "1") : localStorage.removeItem(PREF); } catch { /* ignore */ }
+export const setVoiceNotify = (on: boolean, scope: VoiceNotifyScope = "general") => {
+  try { on ? localStorage.setItem(preferenceKey(scope), "1") : localStorage.removeItem(preferenceKey(scope)); } catch { /* ignore */ }
 };
 
 // Notifications already spoken this session (realtime can deliver duplicates).
@@ -51,9 +53,10 @@ function speakWeb(text: string): boolean {
  * Speaks "MED ALL. <title>. <message>" for a fresh notification.
  * No-ops when the preference is off or the item was already spoken.
  */
-export async function speakNotification(id: string, title: string, message?: string | null): Promise<void> {
-  if (!voiceNotifyOn() || spoken.has(id)) return;
-  spoken.add(id);
+export async function speakNotification(id: string, title: string, message?: string | null, scope: VoiceNotifyScope = "general"): Promise<void> {
+  const key = `${scope}:${id}`;
+  if (!voiceNotifyOn(scope) || spoken.has(key)) return;
+  spoken.add(key);
   if (spoken.size > 50) spoken.delete(spoken.values().next().value as string);
   const text = `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
   if (isNativeApp()) {

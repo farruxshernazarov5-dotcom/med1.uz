@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp";
 import { clickPartnerStats, type ClickConversion } from "@/lib/clickPartnerStats";
 import ClickRequests from "@/components/partner/ClickRequests";
+import ClickVoiceNotifications from "@/components/partner/ClickVoiceNotifications";
 
 const ClickTestPanel = lazy(() => import("@/components/admin/payments/ClickTestPanel"));
 const modules = [
@@ -79,6 +80,7 @@ export default function ClickPartnerAdminPage() {
     <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[230px_minmax(0,1fr)]">
       <nav aria-label="Click bo‘limlari" className="flex gap-2 overflow-x-auto lg:flex-col">{modules.map(({ id, name, icon: Icon }) => <Button key={id} variant={active === id ? "secondary" : "ghost"} className="shrink-0 justify-start" onClick={() => setActive(id)}><Icon className="h-4 w-4" />{name}</Button>)}</nav>
       <div className="min-w-0 space-y-6">{error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        {user && <ClickVoiceNotifications userId={user.id} />}
         {active === "overview" && <><div className="grid grid-cols-2 gap-3 xl:grid-cols-4">{[{ label: "Click tashriflari", value: visits }, { label: "Ro‘yxatdan o‘tish", value: stats.signups }, { label: "Tasdiqlangan obunalar", value: stats.subscriptions }, { label: "Tasdiqlangan tushum (UZS)", value: stats.revenue }].map(item => <Card key={item.label}><CardContent className="p-4"><p className="text-xs text-muted-foreground">{item.label}</p><p className="mt-3 break-words text-2xl font-semibold tabular-nums">{busy ? "…" : item.value.toLocaleString("uz-UZ")}</p></CardContent></Card>)}</div>{activity}</>}
         {active === "activity" && activity}
         {active === "requests" && <ClickRequests admin/>}
