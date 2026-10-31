@@ -1,3 +1,8 @@
+## 2026-10-31 — Click AI va profil
+- [ ] Barcha mavjud AI xizmatlari va profilga Click kirish menyusini ulash
+- [ ] Click × MED ALL logotipini yaratish va onboarding boshiga qo‘yish
+- [ ] So‘rovlar va QR hisobotlarining admin paneliga bog‘lanishini tekshirish; jonli saqlash Cloud holatiga bog‘liq
+
 ## 2026-10-29 — Eskiz tasdiqlangan skrinshotga moslash
 - [x] OTP 96927 matnini provayderdan olish, namunaviy kodni almashtirish va tasdiqlangan naqshni tekshirish
 - [x] Qabul 96929 va AI 96928 matnlarining aniq parametr testlari — jami 31 test o‘tdi
