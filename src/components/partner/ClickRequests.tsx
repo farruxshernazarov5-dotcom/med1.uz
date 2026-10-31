@@ -15,12 +15,20 @@ export default function ClickRequests({ admin = false }: { admin?: boolean }) {
   const [busy,setBusy]=useState(false); const [error,setError]=useState('');
   const [subject,setSubject]=useState(''); const [message,setMessage]=useState('');
   const [responses,setResponses]=useState<Record<string,string>>({});
-  const refresh=useCallback(async()=>{
+  const [filter,setFilter]=useState('all');
+  const [saved,setSaved]=useState(false);
+  const refresh=useCallback(async(silent=false)=>{
     if(!user)return;
-    setBusy(true);setError('');
-    try{setRows(await readClickRequests());}catch{setError('So‘rovlarni o‘qib bo‘lmadi. Qayta urinib ko‘ring.');}finally{setBusy(false);}
+    if(!silent)setBusy(true);
+    try{setRows(await readClickRequests());setError('');}catch{setError('So‘rovlarni o‘qib bo‘lmadi. Qayta urinib ko‘ring.');}finally{if(!silent)setBusy(false);}
   },[user?.id]);
   useEffect(()=>{void refresh();},[refresh]);
+  useEffect(()=>{
+    const timer=window.setInterval(()=>{if(document.visibilityState==='visible')void refresh(true);},15000);
+    const onVisible=()=>{if(document.visibilityState==='visible')void refresh(true);};
+    document.addEventListener('visibilitychange',onVisible);
+    return()=>{window.clearInterval(timer);document.removeEventListener('visibilitychange',onVisible);};
+  },[refresh]);
   const reply=async(row:ClickRequest)=>{
     const response=(responses[row.id]??row.response).trim();
     if(!response || response.length>2000)return;
@@ -35,14 +43,16 @@ export default function ClickRequests({ admin = false }: { admin?: boolean }) {
   return <section className="space-y-5">
     <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">{admin?'Click so‘rovlari va ulanish hisobotlari':'Click so‘rovlarim'}</h2><div className="flex gap-2">{admin&&<Button variant="outline" size="icon" title="Hisobotni yuklab olish" aria-label="Hisobotni yuklab olish" onClick={exportRows} disabled={!rows.length}><Download/></Button>}<Button variant="outline" size="icon" aria-label="So‘rovlarni yangilash" onClick={()=>void refresh()} disabled={busy}><RefreshCw className={busy?'animate-spin':''}/></Button></div></div>
     {error&&<p role="alert" className="text-sm text-destructive">{error}</p>}
-    {!admin&&user&&<form className="space-y-3 border-b border-border pb-6" onSubmit={async e=>{e.preventDefault();setBusy(true);setError('');try{await submitClickRequest(user.id,subject,message);setSubject('');setMessage('');await refresh();}catch(e){setError(e instanceof Error?e.message:'So‘rov saqlanmadi.');setBusy(false);}}}>
+    {saved&&!error&&<p role="status" className="text-sm text-secondary">So‘rov saqlandi.</p>}
+    {!admin&&user&&<form className="space-y-3 border-b border-border pb-6" onSubmit={async e=>{e.preventDefault();setBusy(true);setError('');setSaved(false);try{await submitClickRequest(user.id,subject,message);setSaved(true);setSubject('');setMessage('');await refresh();}catch(e){setError(e instanceof Error?e.message:'So‘rov saqlanmadi.');setBusy(false);}}}>
       <label className="block space-y-2 text-sm"><span>Mavzu</span><Input required maxLength={160} value={subject} onChange={e=>setSubject(e.target.value)}/></label>
       <label className="block space-y-2 text-sm"><span>Xabar</span><Textarea required maxLength={2000} rows={4} value={message} onChange={e=>setMessage(e.target.value)}/></label>
       <Button disabled={busy||!subject.trim()||!message.trim()} type="submit"><Send className="h-4 w-4"/>Yuborish</Button>
     </form>}
     {busy&&!rows.length&&<Loader2 className="animate-spin"/>}
-    {!busy&&!rows.length&&<p className="py-8 text-center text-muted-foreground">Hozircha so‘rovlar yo‘q.</p>}
-    <div className="divide-y divide-border">{rows.map(row=><article key={row.id} className="space-y-3 py-5">
+    {admin&&<nav aria-label="Hisobot turi" className="flex flex-wrap gap-2">{[{id:'all',label:'Barchasi'},{id:'support',label:'So‘rovlar'},{id:'device_link',label:'QR ulanishlar'},{id:'sdk_report',label:'SDK hisobotlari'}].map(item=><Button key={item.id} variant={filter===item.id?'secondary':'outline'} size="sm" aria-pressed={filter===item.id} onClick={()=>setFilter(item.id)}>{item.label} · {rows.filter(row=>item.id==='all'||row.kind===item.id).length}</Button>)}</nav>}
+    {!busy&&!error&&!rows.some(row=>filter==='all'||row.kind===filter)&&<p className="py-8 text-center text-muted-foreground">Hozircha yozuvlar yo‘q.</p>}
+    <div className="divide-y divide-border">{rows.filter(row=>filter==='all'||row.kind===filter).map(row=><article key={row.id} className="space-y-3 py-5">
       <div className="flex flex-wrap items-start justify-between gap-2"><h3 className="min-w-0 break-words font-semibold">{row.subject}</h3><Badge variant="outline" className="whitespace-normal">{statuses[row.status]??row.status}</Badge></div>
       <p className="text-xs text-muted-foreground">{new Date(row.created_at).toLocaleString('uz-UZ')} · {row.kind}{row.platform?` · ${row.platform}`:''}</p>
       <p className="whitespace-pre-wrap break-words text-sm">{row.message}</p>
