@@ -1,3 +1,9 @@
+## 2026-10-31 — Click AI va profil
+- [x] 23 AI xizmat + AI Orchestrator va mavjud profilga Click menyusini ulash; mobil/keng ekran tekshirildi
+- [x] Click × MED ALL logotipi va sahifaga xos favicon; onboarding boshida, kirgan foydalanuvchilarga ham bir marta
+- [x] So‘rovlar va QR hisobotlari bir xil admin manbasiga ulangan; tur filtrlari, 15 soniyali yangilash, saqlash holati; 19 test o‘tdi
+- [ ] So‘rov yuborish → admin o‘qish va QR server hisobotini jonli tekshirish — Cloud hali to‘xtatilgan; haqiqiy Click qurilmasi ham kerak
+
 ## 2026-10-29 — Eskiz tasdiqlangan skrinshotga moslash
 - [x] OTP 96927 matnini provayderdan olish, namunaviy kodni almashtirish va tasdiqlangan naqshni tekshirish
 - [x] Qabul 96929 va AI 96928 matnlarining aniq parametr testlari — jami 31 test o‘tdi

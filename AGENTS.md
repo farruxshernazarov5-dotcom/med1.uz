@@ -1,7 +1,7 @@
 # Project Architecture Rules
 
 - Click MiniApp startup and checkout adaptation live in `src/lib/clickMiniApp.ts`; activate only after the official SDK native handshake, keep Click web-session separate from Med1 auth and require a dedicated server-issued MiniApp Service ID, because the CDN also loads in normal browsers and website billing IDs cannot be reused. Hosting must inject validated session metadata per request without shared caching; see `docs/CLICK_MINIAPP.md`.
-- The `/click` entry reuses existing Med1 routes and authentication, because duplicating MiniApp business flows would desynchronize appointments and account data.
+- The `/click` entry reuses existing Med1 routes, authentication, and `MOBILE_AI_SERVICES` for grouped AI navigation (plus the orchestrator), because duplicate catalogues and business flows would diverge; its partnership favicon is route-scoped so other Med1 pages retain their branding.
 - `/admin/partners/click` owns Click-only attribution and reuses `ClickTestPanel` behind an explicit operations action; `click_partner_requests` stores owner-scoped support requests and admin replies, distinguishes unverified client SDK reports from server QR claims, and never stores Click sessions or QR credentials. Never reuse HAMBI's synthetic statistics or equate attribution/QR claims with Click identity verification.
 - QR account pairing tokens are server-issued, single-use login credentials with five-minute expiry; clients may only read their own status, never insert tokens for another account.
 - MED ALL voice alerts use `voiceNotify.ts` with explicit opt-in and session deduplication; Health Connect imports tolerate individual denied data types without pretending a watch connection was verified.
