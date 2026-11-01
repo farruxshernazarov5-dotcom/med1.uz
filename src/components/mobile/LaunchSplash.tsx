@@ -48,7 +48,7 @@ export default function LaunchSplash() {
         <span className="splash-ring" style={{ animationDelay: "1.5s" }} />
         <span className="splash-orbit"><i /></span>
         <div className="splash-logo-wrap">
-          <img src={logo} alt="" className="w-24 h-24 object-contain splash-logo" />
+          <img src={logo} alt="" className="w-[7.25rem] h-[7.25rem] object-cover rounded-[1.6rem] splash-logo" />
           <span className="splash-shine" />
         </div>
       </div>
