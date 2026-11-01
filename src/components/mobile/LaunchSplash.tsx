@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import logo from "@/assets/logo.webp";
 import { isNativeApp } from "@/lib/nativeApp";
 
@@ -37,7 +37,7 @@ export default function LaunchSplash() {
       className={`splash-root fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden ${phase === "leave" ? "splash-leave" : ""}`}
     >
       <div className="splash-aurora" />
-      <div className="splash-grid" />
+      <PlexusCanvas />
       {Array.from({ length: 14 }).map((_, i) => (
         <span key={i} className="splash-particle" style={{ left: `${(i * 37) % 100}%`, animationDelay: `${(i % 7) * 0.25}s`, animationDuration: `${2.4 + (i % 4) * 0.5}s` }} />
       ))}
@@ -66,4 +66,53 @@ export default function LaunchSplash() {
       <div className="splash-bar mt-8"><i /></div>
     </div>
   );
+}
+
+/** Moving node network: drifting glowing points joined by lines when close. */
+function PlexusCanvas() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current; if (!c) return;
+    const ctx = c.getContext("2d"); if (!ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let w = 0, h = 0, raf = 0;
+    type N = { x: number; y: number; vx: number; vy: number; r: number };
+    let nodes: N[] = [];
+    const resize = () => {
+      w = window.innerWidth; h = window.innerHeight;
+      c.width = w * dpr; c.height = h * dpr; c.style.width = w + "px"; c.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.min(90, Math.round((w * h) / 9000));
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 1.8 + 1.2,
+      }));
+    };
+    resize(); window.addEventListener("resize", resize);
+    const maxD = 140;
+    const tick = () => {
+      ctx.clearRect(0, 0, w, h);
+      for (const n of nodes) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
+      }
+      for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < maxD) {
+          ctx.strokeStyle = `hsla(172, 90%, 55%, ${(1 - d / maxD) * 0.55})`;
+          ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+      ctx.shadowColor = "hsl(172, 95%, 60%)"; ctx.shadowBlur = 10; ctx.fillStyle = "hsl(172, 95%, 62%)";
+      for (const n of nodes) { ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill(); }
+      ctx.shadowBlur = 0;
+      raf = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 pointer-events-none" />;
 }
