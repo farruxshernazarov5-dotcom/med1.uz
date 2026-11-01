@@ -152,6 +152,7 @@ import YandexAdsManager from "./components/ads/YandexAdsManager";
 import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
 import SubdomainRouter from "./components/SubdomainRouter";
 import MobileAppShell from "./components/mobile/MobileAppShell";
+import LaunchSplash from "./components/mobile/LaunchSplash";
 import AIServiceHelpButton from "./components/AIServiceHelpButton";
 import { BusinessEdgeTab } from "./components/mobile/BusinessEdgeTab";
 
@@ -178,6 +179,7 @@ const App = () => (
     <ClickMiniAppThemeProvider>
     <AuthProvider>
       <TooltipProvider>
+        <LaunchSplash />
         <Toaster />
         <Sonner />
         <BrowserRouter>
