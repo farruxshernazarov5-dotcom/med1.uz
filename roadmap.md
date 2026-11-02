@@ -1,3 +1,12 @@
+## 2026-11-02 — Click rasmlar va tezlik
+- [x] Baza va Run kredit xarajatlari o‘lchandi; uchta sekin shifokor saralashiga indeks qo‘shildi va jonli reja tekshirildi
+- [ ] Jonli rejalashtirilgan ishlar va kredit tejalishi — xavfsiz jadval ro‘yxati vositasi va keyingi solishtirma o‘lchov yo‘q
+- [x] 23 yangi kreativ foto (22 modul + Orchestrator), siqilgan WebP
+- [ ] Mammografiya yangi fotosi — tasvir provayderi rad etdi; mavjud foto saqlandi, foydalanuvchi qarori kerak
+- [x] Click × MED ALL logotipi va sahifaga xos favicon yangilandi
+- [x] Tanishtiruv tez ochiladi, ? orqali qayta ko‘riladi, mavjud Profil saqlandi
+- [x] Rasmlar yengillashtirildi, ortiqcha Click global panellari olib tashlandi, tor/keng ekran tekshirildi
+
 ## 2026-11-02 — Ovoz, manbalar, AI kirish, soat, Med Coin, bot
 - [x] Ochilish animatsiyasi ~5 soniyaga uzaytirildi
 - [x] AI PDF: PubMed/Scopus/WoS/Cochrane/Scholar/WHO havolali "Ilmiy manbalar" jadvali; Qabullar PDF'ida signal jadvali

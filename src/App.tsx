@@ -166,6 +166,12 @@ const MobileShellOutsideClick = () => {
   return pathname === "/click" ? null : <MobileAppShell />;
 };
 
+const WebsiteExtrasOutsideClick = () => {
+  const { pathname } = useLocation();
+  if (pathname === '/click') return null;
+  return <><BusinessEdgeTab/><AIServiceHelpButton/><YandexAdsManager/><FloatingAISearch/><FloatingDock/><SmartMatchPanel/><GeoPromoProvider/><HambiReturnButton/><AIDiagnosticsPanel/></>;
+};
+
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
     <div className="flex flex-col items-center gap-3">
@@ -188,18 +194,9 @@ const App = () => (
           <SubdomainRouter />
           <ReferralCapture />
           <MobileShellOutsideClick />
-          <BusinessEdgeTab />
-          <AIServiceHelpButton />
-
-          <YandexAdsManager />
-          <FloatingAISearch />
-          <FloatingDock />
-          <SmartMatchPanel />
-          <GeoPromoProvider />
+          <WebsiteExtrasOutsideClick />
           <CookieConsent />
-          <HambiReturnButton />
           <ClickExperience />
-          <AIDiagnosticsPanel />
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <ClickMiniAppReady />

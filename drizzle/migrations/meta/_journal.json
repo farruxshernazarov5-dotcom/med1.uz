@@ -141,6 +141,13 @@
       "when": 1793155092070,
       "tag": "0019_click_requests_and_device_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1793599675511,
+      "tag": "0020_doctor_directory_sort_indexes",
+      "breakpoints": true
     }
   ]
 }

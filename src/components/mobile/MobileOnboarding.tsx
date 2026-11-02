@@ -23,6 +23,9 @@ export const MobileOnboarding = () => {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
+    // Click has already introduced its AI experience; don't cover its Profile
+    // with a second, unrelated website introduction on the next navigation.
+    if (sessionStorage.getItem('med1_click_entry') === '1') return;
     if (mobile && !localStorage.getItem(STORAGE_KEY)) setOpen(true);
   }, [mobile]);
 

@@ -1,16 +1,17 @@
-import { useState, useSyncExternalStore } from "react";
+import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, Crown, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { ArrowRight, CircleHelp, Crown, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getClickMiniAppState, subscribeClickMiniApp } from "@/lib/clickMiniApp";
 import { usePartnerSource } from "@/hooks/usePartnerSource";
 import { useAuth } from "@/hooks/useAuth";
-import ClickRequests from "@/components/partner/ClickRequests";
 import ClickOnboarding, { clickOnboardingSeen } from "@/components/partner/ClickOnboarding";
-import partnershipLogo from "@/assets/click-med-all-partnership.png";
-import { MOBILE_AI_SERVICES } from "@/data/mobileServiceCatalog";
+import partnershipLogo from "@/assets/click_med_all_logo_header.webp";
+import { MOBILE_AI_SERVICES } from "@/data/mobileAiCatalog";
+import { AI_SERVICE_COVERS } from "@/data/aiServiceCovers";
+const ClickRequests = lazy(() => import("@/components/partner/ClickRequests"));
 
 export default function ClickMiniAppPage() {
   usePartnerSource();
@@ -20,6 +21,8 @@ export default function ClickMiniAppPage() {
   const navigate = useNavigate();
   const {user}=useAuth();
   const [params]=useSearchParams();
+  const guide = params.get('guide') === '1';
+  useEffect(() => { if(guide) setOnb(true); }, [guide]);
   const requests=params.get('view')==='requests';
   return (
     <main className="min-h-screen bg-background text-foreground pb-28">
@@ -28,14 +31,14 @@ export default function ClickMiniAppPage() {
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
         <header className="flex items-center justify-between gap-3 border-b border-border pb-5">
           <Link to="/click" className="flex items-center gap-3" aria-label="Med1.uz asosiy">
-            <img src={partnershipLogo} alt="Click × MED ALL" width={1536} height={512} className="h-14 w-52 max-w-full object-contain" />
+            <img src={partnershipLogo} alt="Click × MED ALL" width={700} height={90} fetchPriority="high" className="h-auto w-64 max-w-full rounded bg-card p-1" />
           </Link>
-          <span role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="flex shrink-0 items-center gap-2"><span role="status" className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex">
             <ShieldCheck className="h-4 w-4 text-secondary" />
             {host.active ? "Click ulangan" : "Med1.uz veb"}
-          </span>
+          </span><Button variant="ghost" size="icon" aria-label="Tanishtiruvni qayta ko‘rish" title="Tanishtiruvni qayta ko‘rish" onClick={() => setOnb(true)}><CircleHelp /></Button></div>
         </header>
-        {requests ? <section className="py-6">{user?<ClickRequests/>:<Button asChild><Link to="/auth?next=%2Fclick%3Fview%3Drequests">Hisobga kirish</Link></Button>}</section> : <><section className="py-6">
+        {requests ? <section className="py-6">{user?<Suspense fallback={<p role="status">Yuklanmoqda…</p>}><ClickRequests/></Suspense>:<Button asChild><Link to="/auth?next=%2Fclick%3Fview%3Drequests">Hisobga kirish</Link></Button>}</section> : <><section className="py-6">
           <h1 className="text-2xl font-semibold">Med AI xizmatlari</h1>
           {!user&&<Button asChild className="mt-4 w-full"><Link to="/auth?next=%2Fclick">Med AI uchun kirish</Link></Button>}
           <nav aria-label="Click shaxsiy menyusi" className="mt-4 grid grid-cols-2 gap-3">
@@ -50,13 +53,13 @@ export default function ClickMiniAppPage() {
             <Button type="submit" size="icon" disabled={!query.trim()} className="h-12 w-12 shrink-0" aria-label="Qidirish"><Search /></Button>
           </form>
         </section>
-        <Button asChild variant="secondary" className="mb-6 h-14 w-full justify-between"><Link to="/ai-orchestrator"><span className="flex items-center gap-2"><Sparkles />AI Orchestrator</span><ArrowRight /></Link></Button>
+        <Button asChild variant="outline" className="mb-6 h-auto w-full overflow-hidden p-0"><Link to="/ai-orchestrator"><img src={AI_SERVICE_COVERS['ai-orchestrator']} width={768} height={512} loading="lazy" decoding="async" alt="" className="h-24 w-28 shrink-0 object-cover"/><span className="flex min-w-0 flex-1 items-center gap-2 px-3"><Sparkles className="shrink-0 text-primary"/>AI Orchestrator</span><ArrowRight className="mr-4 shrink-0"/></Link></Button>
         {([{id:'main',title:'Med AI xizmatlari'},{id:'special',title:'Ixtisoslashgan AI'},{id:'radiology',title:'Radiologiya AI'}] as const).map(group=><section key={group.id} className="mb-7">
         <h2 className="mb-3 text-lg font-semibold">{group.title}</h2>
         <nav aria-label={group.title} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {MOBILE_AI_SERVICES.filter(service=>service.aiGroup===group.id).map(({ title, path, icon: Icon, tone }) => (
-            <Button key={path} asChild variant="outline" className="h-28 flex-col gap-3 whitespace-normal rounded-lg bg-card p-3 text-center">
-              <Link to={path}><span className={`flex h-10 w-10 items-center justify-center rounded-lg ${tone}`}><Icon className="!h-6 !w-6" /></span><span>{title}</span></Link>
+          {MOBILE_AI_SERVICES.filter(service=>service.aiGroup===group.id).map(({ id, title, path, icon: Icon, tone }) => (
+            <Button key={path} asChild variant="outline" className="group h-auto flex-col gap-0 overflow-hidden whitespace-normal rounded-lg bg-card p-0 text-left">
+              <Link to={path}><div className="aspect-[3/2] w-full overflow-hidden bg-muted"><img src={AI_SERVICE_COVERS[id]} alt="" width={768} height={512} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-300 motion-safe:group-hover:scale-105" /></div><span className="flex min-h-20 w-full items-center gap-2 p-3"><span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded ${tone}`}><Icon className="!h-4 !w-4" /></span><span className="min-w-0 flex-1 text-sm leading-snug">{title}</span></span></Link>
             </Button>
           ))}
         </nav>
@@ -67,7 +70,7 @@ export default function ClickMiniAppPage() {
         </section>
         </>}
         <footer className="mt-8 flex flex-wrap gap-4 text-xs text-muted-foreground">
-          <Link to="/privacy">Maxfiylik</Link><Link to="/terms">Foydalanish shartlari</Link><Link to="/contact">Yordam</Link>
+          <Link to="/privacy">Maxfiylik</Link><Link to="/terms">Foydalanish shartlari</Link><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setOnb(true)}><CircleHelp className="h-3 w-3"/>Yordam</Button><Link to="/mobile-profile?section=support">Bog‘lanish</Link>
         </footer>
       </div>
     </main>
