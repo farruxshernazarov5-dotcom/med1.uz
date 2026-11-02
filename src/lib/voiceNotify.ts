@@ -64,7 +64,7 @@ export function voiceKind(title: string, message?: string | null, type?: string 
   const t = `${type ?? ""} ${title} ${message ?? ""}`.toLowerCase();
   if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
   if (/coin|med coin|obuna muddati|expir/.test(t)) return "coin";
-  if (/ai|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
+  if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
   if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
   return "message";
 }
