@@ -1,6 +1,6 @@
 ## 2026-11-02 — SMS kirishni qayta ishga tushirish
 - [x] Cloud sog‘lom, Eskiz xizmatlari yuklandi; jonli sinovda `%d` naqsh mos kelmasligi aniqlandi
-- [ ] Provayderning tasdiqlangan raqam naqshini moslash va SMSni qayta yuborish
+- [x] `%d` raqam maydoni tasdiqlangan naqshdan aniq render qilindi; 33 test o‘tdi, xizmatlar yuklandi, sayt tugmasidan +998992144103 ga SMS Eskiz tomonidan qabul qilindi; kod saqlanishi va noto‘g‘ri format rad etilishi tekshirildi
 - [ ] Telefonga kelgan haqiqiy kod bilan kirishni yakuniy tekshirish — kodni foydalanuvchi ilovada kiritadi
 
 ## 2026-11-02 — Click ochilish tezligi
@@ -28,7 +28,7 @@
 - [x] Vital AI: ilovada haqiqiy Bluetooth (soat), aniq xato sabablari — yangi APK kerak
 - [ ] Obuna Med Coin muddati tugasa o'chirish + ogohlantirish (ilova va Telegram) — Cloud to'xtatilgan
 - [ ] Bot va har kungi AI xabarlari tekshiruvi — Cloud to'xtatilgan
-- [ ] Eskiz OTP jonli sinovi — Cloud to'xtatilgan
+- [ ] Eskiz OTP yakuniy kirish sinovi — SMS yuborish ishladi; telefon egasi haqiqiy kodni ilovada kiritishi kerak
 - [ ] AI server funksiyalarida kirish talabi (server tomoni) — Cloud to'xtatilgan
 
 ## 2026-10-31 — Click AI va profil
@@ -40,7 +40,7 @@
 ## 2026-10-29 — Eskiz tasdiqlangan skrinshotga moslash
 - [x] OTP 96927 matnini provayderdan olish, namunaviy kodni almashtirish va tasdiqlangan naqshni tekshirish
 - [x] Qabul 96929 va AI 96928 matnlarining aniq parametr testlari — jami 31 test o‘tdi
-- [ ] Serverga yuklash va jonli tekshirish — Lovable Cloud to‘xtatilgan; foydalanuvchi qayta yoqishga ruxsat berishi kerak
+- [x] Serverga yuklandi; jonli Eskiz `%d` naqshi moslandi va SMS yuborish sayt orqali tekshirildi (2026-11-02)
 
 ## 2026-10-28 — Click real panel
 - [ ] Click so‘rovlari va ulanish hisobotlarini saqlash, admin o‘qish/javob berish
