@@ -3,7 +3,7 @@ import logo from "@/assets/logo.webp";
 import { isNativeApp } from "@/lib/nativeApp";
 
 const SESSION_KEY = "med1_splash_seen";
-const DURATION = 2600;
+const DURATION = 5200;
 
 /**
  * Animated launch screen: pulse rings, ECG trace drawing in, logo assembling

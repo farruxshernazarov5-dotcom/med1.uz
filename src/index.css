@@ -791,7 +791,7 @@
 .splash-word span{display:inline-block;opacity:0;transform:translateY(18px) rotateX(80deg);animation:splLetter .5s ease-out forwards;background:linear-gradient(180deg,hsl(0 0% 100%),hsl(214 90% 80%));-webkit-background-clip:text;background-clip:text;color:transparent}
 .splash-tag{color:hsl(214 60% 80%);opacity:0;animation:splFade .6s 1.7s forwards}
 .splash-bar{width:120px;height:3px;border-radius:9px;background:hsl(0 0% 100%/.15);overflow:hidden}
-.splash-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,hsl(214 83% 56%),hsl(252 100% 69%),hsl(170 90% 60%));transform-origin:left;animation:splLoad 2.4s ease-in-out forwards}
+.splash-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,hsl(214 83% 56%),hsl(252 100% 69%),hsl(170 90% 60%));transform-origin:left;animation:splLoad 5s ease-in-out forwards}
 @keyframes splSpin{to{transform:rotate(360deg)}}
 @keyframes splRise{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-105vh);opacity:0}}
 @keyframes splRing{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.7);opacity:0}}

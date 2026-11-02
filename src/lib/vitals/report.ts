@@ -2,6 +2,7 @@ import { parseMarkdown } from "@/lib/markdownRender";
 import { isNativeApp } from "@/lib/nativeApp";
 import { sendPdfToTelegram } from "@/lib/telegramBotLink";
 import { supabase } from "@/integrations/supabase/client";
+import { extractVitalMetrics, scientificSources, topicQuery } from "@/lib/aiReportExtras";
 
 /** jsPDF core fonts lack Uzbek apostrophes and emoji; normalise to plain Latin. */
 const clean = (t: string) =>
@@ -64,7 +65,7 @@ const statusColors: Record<MetricStatus, [number, number, number]> = {
 
 /** Any Med AI answer as a verifiable PDF (used by Qabullar → AI xulosalari). */
 export const downloadAiReport = (o: { title: string; conclusion: string; name: string; date?: string; summary?: string }) =>
-  downloadVitalReport({ summary: o.summary ?? "", conclusion: o.conclusion, name: o.name, title: o.title, date: o.date });
+  downloadVitalReport({ summary: o.summary ?? "", conclusion: o.conclusion, name: o.name, title: o.title, date: o.date, metrics: (() => { const m = extractVitalMetrics(`${o.summary ?? ""}\n${o.conclusion}`); return m.length >= 2 ? m : undefined; })() });
 
 export async function downloadVitalReport({ summary, conclusion, name, title = "Med AI - Vital ko'rsatkichlar xulosasi", date, metrics }: { summary: string; conclusion: string; name: string; title?: string; date?: string; metrics?: ReportMetric[] }) {
   const [{ jsPDF }, QR, { default: autoTable }] = await Promise.all([import("jspdf"), import("qrcode"), import("jspdf-autotable")]);
@@ -195,7 +196,25 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     }
   }
   if (!/mutaxassis|specialist/i.test(conclusion)) block("Tavsiya etilgan mutaxassis", "Xulosada ko'rsatilmagan. Oilaviy shifokor bilan aniqlashtiring.");
-  if (!/manbalar|sources|references/i.test(conclusion)) block("Manbalar", "Platforma: med1.uz. Klinik manbalar faqat AI xulosasida aniq keltirilgan bo'lsa ko'rsatiladi; aks holda tekshirilmagan.");
+  {
+    const query = topicQuery(title, conclusion);
+    const sources = scientificSources(query);
+    block("Ilmiy manbalar", `Mavzu bo'yicha ko'rib chiqilgan ilmiy bazalar (havolani bosing): "${clean(query)}"`);
+    autoTable(doc, {
+      startY: y, margin: { left: 14, right: 14, top: 20, bottom: 28 },
+      head: [["Manba", "Turi", "Havola"]],
+      body: sources.map((src) => [src.name, src.kind, src.url.replace(/^https:\/\//, "").slice(0, 60) + "..."]),
+      theme: "grid",
+      styles: { fontSize: 8, cellPadding: 2.5, overflow: "linebreak", textColor: [40, 50, 60], lineColor: [215, 225, 230] },
+      headStyles: { fillColor: headerColor, textColor: [255, 255, 255] },
+      columnStyles: { 0: { cellWidth: 42, fontStyle: "bold" }, 1: { cellWidth: 34 }, 2: { cellWidth: 106, textColor: [30, 90, 200] } },
+      willDrawPage: (data) => { if (data.pageNumber > 1) background(); },
+      didDrawCell: (data) => {
+        if (data.section === "body" && data.column.index === 2) doc.link(data.cell.x, data.cell.y, data.cell.width, data.cell.height, { url: sources[data.row.index].url });
+      },
+      didDrawPage: (data) => { y = (data.cursor?.y ?? 20) + 8; },
+    });
+  }
   block("Keyingi qadamlar", "1. Natijani shifokoringiz bilan muhokama qiling.\n2. Qayta o'lchovni dam olgan holatda, bir xil vaqtda bajaring.\n3. Ko'krakda og'riq, hansirash, hushdan ketish bo'lsa darhol 103 ga qo'ng'iroq qiling.\n4. Med1.uz orqali shifokor qabuliga yozilishingiz mumkin.");
 
   // Footer on every page
@@ -204,7 +223,7 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     doc.setPage(p);
     doc.setFontSize(7); doc.setTextColor(110, 120, 130);
     doc.text(`Raqamli imzo (SHA-256): ${hash.slice(0, 32)}...`, 12, PH - 10);
-    doc.text(`Bu tashxis emas  |  Manba: med1.uz  |  ${p}/${pages}`, PW - 12, PH - 10, { align: "right" });
+    doc.text(`Bu tashxis emas  |  med1.uz  |  PubMed, Scopus, WoS, Cochrane  |  ${p}/${pages}`, PW - 12, PH - 10, { align: "right" });
   }
 
   const file = `med-ai-${new Date().toISOString().slice(0, 10)}.pdf`;

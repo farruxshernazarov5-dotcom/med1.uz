@@ -13,10 +13,18 @@ const MAX_LEN = 220;
 export type VoiceNotifyScope = "general" | "click";
 const preferenceKey = (scope: VoiceNotifyScope) => scope === "click" ? "med1.clickVoiceNotify" : PREF;
 export const voiceNotifyOn = (scope: VoiceNotifyScope = "general"): boolean => {
-  try { return localStorage.getItem(preferenceKey(scope)) === "1"; } catch { return false; }
+  try {
+    const v = localStorage.getItem(preferenceKey(scope));
+    // Patient alerts are on by default (can be switched off); Click admin alerts are opt-in.
+    return scope === "general" ? v !== "0" : v === "1";
+  } catch { return false; }
 };
 export const setVoiceNotify = (on: boolean, scope: VoiceNotifyScope = "general") => {
-  try { on ? localStorage.setItem(preferenceKey(scope), "1") : localStorage.removeItem(preferenceKey(scope)); } catch { /* ignore */ }
+  try {
+    if (on) localStorage.setItem(preferenceKey(scope), "1");
+    else if (scope === "general") localStorage.setItem(preferenceKey(scope), "0");
+    else localStorage.removeItem(preferenceKey(scope));
+  } catch { /* ignore */ }
 };
 
 // Notifications already spoken this session (realtime can deliver duplicates).
@@ -49,6 +57,29 @@ function speakWeb(text: string): boolean {
   } catch { return false; }
 }
 
+export type VoiceKind = "appointment" | "ai" | "wallet" | "coin" | "message";
+
+/** Classifies a notification so voice and the appointment chime never get mixed up. */
+export function voiceKind(title: string, message?: string | null, type?: string | null): VoiceKind {
+  const t = `${type ?? ""} ${title} ${message ?? ""}`.toLowerCase();
+  if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
+  if (/coin|med coin|obuna muddati|expir/.test(t)) return "coin";
+  if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
+  if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
+  return "message";
+}
+
+/** Short spoken phrase per kind — never reads private medical text aloud. */
+export function voicePhrase(kind: VoiceKind): string {
+  switch (kind) {
+    case "ai": return "MED ALL. AI xulosangiz tayyor.";
+    case "wallet": return "MED ALL. Hisobingiz to'ldirildi.";
+    case "coin": return "MED ALL. Med Coin muddati tugamoqda, ulardan foydalanib qoling.";
+    case "appointment": return "MED ALL. Qabul eslatmasi.";
+    default: return "MED ALL. Sizda yangi xabar bor.";
+  }
+}
+
 /**
  * Speaks "MED ALL. <title>. <message>" for a fresh notification.
  * No-ops when the preference is off or the item was already spoken.
@@ -58,7 +89,7 @@ export async function speakNotification(id: string, title: string, message?: str
   if (!voiceNotifyOn(scope) || spoken.has(key)) return;
   spoken.add(key);
   if (spoken.size > 50) spoken.delete(spoken.values().next().value as string);
-  const text = `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
+  const text = scope === "general" ? voicePhrase(voiceKind(title, message)) : `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
   if (isNativeApp()) {
     if (await speakNative(text)) return;
   }

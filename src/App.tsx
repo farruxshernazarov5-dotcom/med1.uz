@@ -1,3 +1,4 @@
+import { RequireAuthAI } from "@/components/auth/RequireAuthAI";
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -260,12 +261,12 @@ const App = () => (
                 <Route path="/sitemap" element={<SitemapPage />} />
                 <Route path="/symptom-checker" element={<SymptomCheckerPage />} />
                 <Route path="/ai-services" element={<AIServicesPage />} />
-                <Route path="/ai-doctor-chat" element={<AIDoctorChatPage />} />
-                <Route path="/ai-report-analysis" element={<AIReportAnalysisPage />} />
-                <Route path="/ai-health-risk" element={<AIHealthRiskPage />} />
-                <Route path="/ai-diagnostika" element={<AIDiagnostikaPage />} />
-                <Route path="/ai-radiology" element={<AIRadiologyPage />} />
-                <Route path="/ai-health-assistant" element={<AIHealthAssistantPage />} />
+                <Route path="/ai-doctor-chat" element={<RequireAuthAI><AIDoctorChatPage /></RequireAuthAI>} />
+                <Route path="/ai-report-analysis" element={<RequireAuthAI><AIReportAnalysisPage /></RequireAuthAI>} />
+                <Route path="/ai-health-risk" element={<RequireAuthAI><AIHealthRiskPage /></RequireAuthAI>} />
+                <Route path="/ai-diagnostika" element={<RequireAuthAI><AIDiagnostikaPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology" element={<RequireAuthAI><AIRadiologyPage /></RequireAuthAI>} />
+                <Route path="/ai-health-assistant" element={<RequireAuthAI><AIHealthAssistantPage /></RequireAuthAI>} />
                 <Route path="/smart-search" element={<SmartSearchPage />} />
                 <Route path="/partnership" element={<PartnershipPage />} />
                 <Route path="/report/:reportId" element={<ReportVerificationPage />} />
@@ -277,26 +278,26 @@ const App = () => (
                 <Route path="/verify/publication/:certificateId" element={<PublicationVerificationPage />} />
                 <Route path="/verify/vital/:code" element={<VitalReportVerifyPage />} />
                 <Route path="/pharmacy-register" element={<PharmacyRegistrationPage />} />
-                <Route path="/ai-pregnancy" element={<AIPregnancyPage />} />
-                <Route path="/ai-baby-care" element={<AIBabyCarePage />} />
-                <Route path="/ai-cosmetology" element={<AICosmetologyPage />} />
+                <Route path="/ai-pregnancy" element={<RequireAuthAI><AIPregnancyPage /></RequireAuthAI>} />
+                <Route path="/ai-baby-care" element={<RequireAuthAI><AIBabyCarePage /></RequireAuthAI>} />
+                <Route path="/ai-cosmetology" element={<RequireAuthAI><AICosmetologyPage /></RequireAuthAI>} />
                 <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/ai-dietolog" element={<AIDietologPage />} />
-                <Route path="/ai-psixolog" element={<AIPsixologPage />} />
-                <Route path="/ai-farmatsevt" element={<AIFarmatsevtPage />} />
-                <Route path="/ai-fitness" element={<AIFitnessPage />} />
+                <Route path="/ai-dietolog" element={<RequireAuthAI><AIDietologPage /></RequireAuthAI>} />
+                <Route path="/ai-psixolog" element={<RequireAuthAI><AIPsixologPage /></RequireAuthAI>} />
+                <Route path="/ai-farmatsevt" element={<RequireAuthAI><AIFarmatsevtPage /></RequireAuthAI>} />
+                <Route path="/ai-fitness" element={<RequireAuthAI><AIFitnessPage /></RequireAuthAI>} />
                 <Route path="/ai-subscription" element={<AISubscriptionPage />} />
                 <Route path="/ai-payment" element={<AIPaymentPage />} />
-                <Route path="/ai-oncology" element={<AIOncologyPage />} />
-                <Route path="/ai-diabetes" element={<AIDiabetesPage />} />
-                <Route path="/ai-radiology/pulmonology" element={<AIRadiologyPulmonologyPage />} />
-                <Route path="/ai-radiology/brain" element={<AIRadiologyBrainPage />} />
-                <Route path="/ai-radiology/bone" element={<AIRadiologyBonePage />} />
-                <Route path="/ai-radiology/chest-ct" element={<AIRadiologyChestCTPage />} />
-                <Route path="/ai-radiology/mammography" element={<AIRadiologyMammographyPage />} />
-                <Route path="/ai-radiology/abdomen" element={<AIRadiologyAbdomenPage />} />
-                <Route path="/ai-radiology/spine" element={<AIRadiologySpinePage />} />
-                <Route path="/ai-orchestrator" element={<AIOrchestratorPage />} />
+                <Route path="/ai-oncology" element={<RequireAuthAI><AIOncologyPage /></RequireAuthAI>} />
+                <Route path="/ai-diabetes" element={<RequireAuthAI><AIDiabetesPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/pulmonology" element={<RequireAuthAI><AIRadiologyPulmonologyPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/brain" element={<RequireAuthAI><AIRadiologyBrainPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/bone" element={<RequireAuthAI><AIRadiologyBonePage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/chest-ct" element={<RequireAuthAI><AIRadiologyChestCTPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/mammography" element={<RequireAuthAI><AIRadiologyMammographyPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/abdomen" element={<RequireAuthAI><AIRadiologyAbdomenPage /></RequireAuthAI>} />
+                <Route path="/ai-radiology/spine" element={<RequireAuthAI><AIRadiologySpinePage /></RequireAuthAI>} />
+                <Route path="/ai-orchestrator" element={<RequireAuthAI><AIOrchestratorPage /></RequireAuthAI>} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/admin/seo-monitor" element={<AdminPage initialTab="monitoring" />} />
@@ -319,7 +320,7 @@ const App = () => (
                 <Route path="/admin/api-center" element={<APICenterPage />} />
                 <Route path="/legal-center" element={<LegalCenterPage />} />
                 <Route path="/legal" element={<LegalCenterPage />} />
-                <Route path="/ai-vital-signs" element={<AIVitalSignsPage />} />
+                <Route path="/ai-vital-signs" element={<RequireAuthAI><AIVitalSignsPage /></RequireAuthAI>} />
                 <Route path="/blood-donor-register" element={<BloodDonorRegistrationPage />} />
                 <Route path="/dental-register" element={<DentalRegistrationPage />} />
                 <Route path="/bloodbank-register" element={<BloodBankRegistrationPage />} />
