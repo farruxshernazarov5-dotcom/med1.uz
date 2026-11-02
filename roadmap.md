@@ -1,3 +1,8 @@
+## 2026-11-02 — SMS kirishni qayta ishga tushirish
+- [x] Cloud sog‘lom, Eskiz xizmatlari yuklandi; jonli sinovda `%d` naqsh mos kelmasligi aniqlandi
+- [ ] Provayderning tasdiqlangan raqam naqshini moslash va SMSni qayta yuborish
+- [ ] Telefonga kelgan haqiqiy kod bilan kirishni yakuniy tekshirish — kodni foydalanuvchi ilovada kiritadi
+
 ## 2026-11-02 — Click ochilish tezligi
 - [x] Clickka kerak bo‘lmagan bosh sahifa, mobil qobiq va global panellar boshlang‘ich yuklamadan ajratildi; mahalliy so‘rovlar 250 → 150, 10 SDK test o‘tdi
 - [ ] Haqiqiy Click/ishlab turgan domenning sekin internetdagi ochilishi — qurilma sinovi kerak; sun’iy 1,6 Mbps preview sinovi 33,66 soniya, to‘liq yechim tasdiqlanmagan
