@@ -1,3 +1,7 @@
+## 2026-11-02 — Click ochilish tezligi
+- [x] Clickka kerak bo‘lmagan bosh sahifa, mobil qobiq va global panellar boshlang‘ich yuklamadan ajratildi; mahalliy so‘rovlar 250 → 150, 10 SDK test o‘tdi
+- [ ] Haqiqiy Click/ishlab turgan domenning sekin internetdagi ochilishi — qurilma sinovi kerak; sun’iy 1,6 Mbps preview sinovi 33,66 soniya, to‘liq yechim tasdiqlanmagan
+
 ## 2026-11-02 — Click to‘liq profil
 - [x] /click/profile mavjud profil funksiyalarini bir xil hisob bilan ochadi; xabarlar, qabullar, AI tarix, tahlillar, retseptlar, tibbiy tarix va sharhlar to‘g‘ridan-to‘g‘ri ulandi
 - [x] Telefon va kompyuterda menyu, ichki bo‘limlar va Clickka qaytish tekshirildi; hisobga kirgan holatda tahrirlash, AI tarix, xabarlar, sevimlilar va til ochildi
