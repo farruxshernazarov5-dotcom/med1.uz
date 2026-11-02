@@ -1,9 +1,11 @@
 ## 2026-11-02 — Click rasmlar va tezlik
-- [ ] Baza va Run kredit xarajatlari: joriy o‘lchovlar, sekin so‘rovlar/indekslar va asosiy sabablarni tuzatish
-- [ ] Har bir AI moduliga alohida kreativ foto
-- [ ] Click × MED ALL logotipini aniqroq qilish va faviconni yangilash
-- [ ] Tanishtiruvni tez ochish, ? orqali qayta ko‘rish va mavjud Profilni saqlash
-- [ ] Rasmlarni yengillashtirish va Click oqimini brauzerda tekshirish
+- [x] Baza va Run kredit xarajatlari o‘lchandi; uchta sekin shifokor saralashiga indeks qo‘shildi va jonli reja tekshirildi
+- [ ] Jonli rejalashtirilgan ishlar va kredit tejalishi — xavfsiz jadval ro‘yxati vositasi va keyingi solishtirma o‘lchov yo‘q
+- [x] 23 yangi kreativ foto (22 modul + Orchestrator), siqilgan WebP
+- [ ] Mammografiya yangi fotosi — tasvir provayderi rad etdi; mavjud foto saqlandi, foydalanuvchi qarori kerak
+- [x] Click × MED ALL logotipi va sahifaga xos favicon yangilandi
+- [x] Tanishtiruv tez ochiladi, ? orqali qayta ko‘riladi, mavjud Profil saqlandi
+- [x] Rasmlar yengillashtirildi, ortiqcha Click global panellari olib tashlandi, tor/keng ekran tekshirildi
 
 ## 2026-11-02 — Ovoz, manbalar, AI kirish, soat, Med Coin, bot
 - [x] Ochilish animatsiyasi ~5 soniyaga uzaytirildi
