@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { buildSms, buildApprovedOtpSms, sendEskizSms, sendEskizMessage } from "../../supabase/functions/_shared/eskiz";
+import { buildSms, buildApprovedOtpSms, assertApprovedSmsPattern, sendEskizSms, sendEskizMessage } from "../../supabase/functions/_shared/eskiz";
 
 beforeAll(() => {
   // jsdom lacks the Deno/native timeout helper; requests are mocked in this suite.
@@ -18,6 +18,15 @@ describe("Eskiz SMS delivery", () => {
   it("never substitutes a code into an unapproved or unrelated template", () => {
     expect(() => buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, status: "pending" }])).toThrow("eskiz_template_not_approved");
     expect(() => buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, id: "96929" }])).toThrow("eskiz_template_not_approved");
+  });
+  it("renders live template 96927 numeric field with Eskiz's approved punctuation", () => {
+    const text = "Med1.uz saytiga kirish uchun tasdiqlash kodi: %d Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!";
+    expect(buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, text }]).message)
+      .toBe("Med1.uz saytiga kirish uchun tasdiqlash kodi: 654321 Kodni hech kimga, hatto kompaniya xodimlariga ham bermang!");
+  });
+  it("numeric approval rejects non-digits and unapproved punctuation", () => {
+    expect(() => assertApprovedSmsPattern("Kod: abc", "Kod: %d")).toThrow("sms_pattern_mismatch");
+    expect(() => assertApprovedSmsPattern("Kod: 654321.", "Kod: %d")).toThrow("sms_pattern_mismatch");
   });
   it("blocks an OTP if the provider pattern only permits the literal sample code", () => {
     expect(() => buildApprovedOtpSms("+998901234567", "654321", [{ ...approved, text: originalText }])).toThrow("sms_pattern_mismatch");
