@@ -38,17 +38,17 @@ export async function eskizToken(config: Pick<EskizConfig, "email" | "password">
 }
 
 export type EskizTemplate = { id: string; status: string; text: string; originalText: string };
-/** Match the final message against Eskiz's approved word-field pattern, not a local guess. */
+/** Match final text against Eskiz's approved word/numeric fields, not a local guess. */
 export function assertApprovedSmsPattern(message: string, approvedPattern: string): void {
   if (!approvedPattern || approvedPattern.length > 2000) throw new Error("invalid_sms_pattern");
-  const marker = /%w(?:\{(\d+),(\d+)\})?/g;
+  const marker = /%(w|d)(?:\{(\d+),(\d+)\})?/g;
   let pattern = "", start = 0;
   for (const match of approvedPattern.matchAll(marker)) {
     const at = match.index ?? 0;
     pattern += approvedPattern.slice(start, at).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const min = Number(match[1] ?? 1), max = Number(match[2] ?? 1);
+    const min = Number(match[2] ?? 1), max = Number(match[3] ?? 1);
     if (min < 1 || max < min || max > 10) throw new Error("invalid_sms_pattern");
-    pattern += `\\S+(?: \\S+){${min - 1},${max - 1}}`;
+    pattern += match[1] === "d" ? "[0-9]+" : `\\S+(?: \\S+){${min - 1},${max - 1}}`;
     start = at + match[0].length;
   }
   pattern += approvedPattern.slice(start).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -60,6 +60,12 @@ export function buildApprovedOtpSms(phone: string, otp: string, templates: Eskiz
   const approved = templates.find(t => t.id === OTP_TEMPLATE_ID && t.status === "service");
   if (!approved?.originalText || !approved.text) throw new Error("eskiz_template_not_approved");
   const sms = buildSms(phone, otp, approved.originalText);
+  // Eskiz can normalize the sample's punctuation when approving a numeric field
+  // (original: "1234.", approved: "%d"). Use that authoritative pattern verbatim.
+  // Only one unambiguous numeric field may be substituted; never loosen matching.
+  if ((approved.text.match(/%d/g) ?? []).length === 1 && !/%w|%s|%d\{/.test(approved.text)) {
+    sms.message = approved.text.replace("%d", otp);
+  }
   assertApprovedSmsPattern(sms.message, approved.text);
   return sms;
 }
