@@ -9,7 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
 import ClickMiniAppThemeProvider, { ClickMiniAppReady } from "@/components/ClickMiniAppThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import Index from "./pages/Index";
+const Index = lazy(() => import("./pages/Index"));
 import NotFound from "./pages/NotFound";
 
 // Lazy-loaded pages for code splitting
@@ -141,21 +141,21 @@ const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage")
 const AppBridgePage = lazy(() => import("./pages/AppBridgePage"));
 const ClickMiniAppPage = lazy(() => import("./pages/ClickMiniAppPage"));
 
-import FloatingAISearch from "./components/FloatingAISearch";
-import FloatingDock from "./components/FloatingDock";
-import { SmartMatchPanel } from "./components/smart-match/SmartMatchPanel";
-import { GeoPromoProvider } from "./components/geo/GeoPromoProvider";
-import HambiReturnButton from "./components/partner/HambiReturnButton";
+const FloatingAISearch = lazy(() => import("./components/FloatingAISearch"));
+const FloatingDock = lazy(() => import("./components/FloatingDock"));
+const SmartMatchPanel = lazy(() => import("./components/smart-match/SmartMatchPanel").then(m => ({ default: m.SmartMatchPanel })));
+const GeoPromoProvider = lazy(() => import("./components/geo/GeoPromoProvider").then(m => ({ default: m.GeoPromoProvider })));
+const HambiReturnButton = lazy(() => import("./components/partner/HambiReturnButton"));
 import ClickExperience from "./components/partner/ClickExperience";
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
-import YandexAdsManager from "./components/ads/YandexAdsManager";
-import AIDiagnosticsPanel from "./components/AIDiagnosticsPanel";
+const YandexAdsManager = lazy(() => import("./components/ads/YandexAdsManager"));
+const AIDiagnosticsPanel = lazy(() => import("./components/AIDiagnosticsPanel"));
 import SubdomainRouter from "./components/SubdomainRouter";
-import MobileAppShell from "./components/mobile/MobileAppShell";
-import LaunchSplash from "./components/mobile/LaunchSplash";
-import AIServiceHelpButton from "./components/AIServiceHelpButton";
-import { BusinessEdgeTab } from "./components/mobile/BusinessEdgeTab";
+const MobileAppShell = lazy(() => import("./components/mobile/MobileAppShell"));
+const LaunchSplash = lazy(() => import("./components/mobile/LaunchSplash"));
+const AIServiceHelpButton = lazy(() => import("./components/AIServiceHelpButton"));
+const BusinessEdgeTab = lazy(() => import("./components/mobile/BusinessEdgeTab").then(m => ({ default: m.BusinessEdgeTab })));
 
 
 const queryClient = new QueryClient();
@@ -163,13 +163,13 @@ const queryClient = new QueryClient();
 // The Click entry owns its compact navigation; native onboarding is unrelated there.
 const MobileShellOutsideClick = () => {
   const { pathname } = useLocation();
-  return pathname === "/click" || pathname.startsWith("/click/") ? null : <MobileAppShell />;
+  return pathname === "/click" || pathname.startsWith("/click/") ? null : <Suspense fallback={null}><MobileAppShell /></Suspense>;
 };
 
 const WebsiteExtrasOutsideClick = () => {
   const { pathname } = useLocation();
   if (pathname === '/click' || pathname.startsWith('/click/')) return null;
-  return <><BusinessEdgeTab/><AIServiceHelpButton/><YandexAdsManager/><FloatingAISearch/><FloatingDock/><SmartMatchPanel/><GeoPromoProvider/><HambiReturnButton/><AIDiagnosticsPanel/></>;
+  return <Suspense fallback={null}><BusinessEdgeTab/><AIServiceHelpButton/><YandexAdsManager/><FloatingAISearch/><FloatingDock/><SmartMatchPanel/><GeoPromoProvider/><HambiReturnButton/><AIDiagnosticsPanel/></Suspense>;
 };
 
 const PageLoader = () => (
@@ -186,7 +186,7 @@ const App = () => (
     <ClickMiniAppThemeProvider>
     <AuthProvider>
       <TooltipProvider>
-        <LaunchSplash />
+        {!window.location.pathname.startsWith('/click') && <Suspense fallback={null}><LaunchSplash /></Suspense>}
         <Toaster />
         <Sonner />
         <BrowserRouter>
