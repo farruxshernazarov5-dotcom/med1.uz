@@ -158,21 +158,28 @@ export function downloadHMSReportHTML(data: HMSReportData) {
 }
 
 // ========== CSV ==========
+// Quote a cell and neutralise spreadsheet formula prefixes (CSV injection).
+function csvCell(v: unknown): string {
+  let s = String(v ?? "");
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return `"${s.replace(/"/g, '""')}"`;
+}
+
 export function downloadHMSReportCSV(data: HMSReportData) {
   const BOM = "\uFEFF";
   let csv = "";
 
   if (data.kpiCards?.length) {
     csv += "Ko'rsatkich,Qiymat\n";
-    data.kpiCards.forEach(k => { csv += `"${k.label}","${k.value}"\n`; });
+    data.kpiCards.forEach(k => { csv += `${csvCell(k.label)},${csvCell(k.value)}\n`; });
     csv += "\n";
   }
 
   if (data.tables?.length) {
     data.tables.forEach(t => {
-      csv += `"${t.title}"\n`;
-      csv += t.table.headers.map(h => `"${h}"`).join(",") + "\n";
-      t.table.rows.forEach(r => { csv += r.map(c => `"${c}"`).join(",") + "\n"; });
+      csv += `${csvCell(t.title)}\n`;
+      csv += t.table.headers.map(csvCell).join(",") + "\n";
+      t.table.rows.forEach(r => { csv += r.map(csvCell).join(",") + "\n"; });
       csv += "\n";
     });
   }

@@ -126,11 +126,33 @@ FAQAT quyidagi JSON qaytar, boshqa matn yozma:
 
     if (action === "advise") {
       // Real statistics only — AI must reason on supplied numbers.
+      // Only the caller's own campaigns are shown individually; the market is
+      // reduced to anonymous aggregates so no competitor's bids or stats leak.
       const { data: stats } = await admin
         .from("med1_ad_campaigns")
-        .select("placement_id, region, bid_amount, impressions, clicks, status")
+        .select("owner_id, placement_id, region, bid_amount, impressions, clicks")
         .eq("status", "active")
         .limit(300);
+      const groups = new Map<string, { placement_id: string; region: string | null; n: number; bidSum: number; imp: number; clk: number }>();
+      const own: Array<Record<string, unknown>> = [];
+      for (const s of stats ?? []) {
+        if (s.owner_id === userId) {
+          own.push({ placement_id: s.placement_id, region: s.region, bid: s.bid_amount, impressions: s.impressions, clicks: s.clicks });
+        }
+        const key = `${s.placement_id}|${s.region ?? ""}`;
+        const g = groups.get(key) ?? { placement_id: s.placement_id, region: s.region, n: 0, bidSum: 0, imp: 0, clk: 0 };
+        g.n += 1; g.bidSum += Number(s.bid_amount) || 0; g.imp += Number(s.impressions) || 0; g.clk += Number(s.clicks) || 0;
+        groups.set(key, g);
+      }
+      const market = [...groups.values()]
+        .filter((g) => g.n >= 3) // suppress groups small enough to identify one advertiser
+        .map((g) => ({
+          placement_id: g.placement_id,
+          region: g.region,
+          competitors: g.n,
+          avg_bid: Math.round(g.bidSum / g.n),
+          avg_ctr: g.imp > 0 ? Number((g.clk / g.imp).toFixed(4)) : null,
+        }));
 
       const system = `Sen Med1.uz reklama analitigisan. FAQAT berilgan real raqamlarga tayan, hech narsa o'ylab topma.
 Reklama beruvchiga qaysi TOP o'rin foydaliroq ekanini 3-5 qisqa jumlada ${langName(lang)} tilida tushuntir.
@@ -144,13 +166,8 @@ CTR = kliklar / ko'rishlar. Narx va raqobat darajasini solishtir. Aniq tavsiya b
           specialty: body?.specialty,
           budget: body?.budget,
           auction: body?.auction ?? [],
-          active_campaign_stats: (stats ?? []).map((s) => ({
-            placement_id: s.placement_id,
-            region: s.region,
-            bid: s.bid_amount,
-            impressions: s.impressions,
-            clicks: s.clicks,
-          })),
+          my_campaigns: own,
+          market_aggregates: market,
         }),
         500,
       );
