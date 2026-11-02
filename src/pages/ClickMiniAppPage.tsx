@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useSyncExternalStore } from "react";
+import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, CircleHelp, Crown, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { Helmet } from "react-helmet-async";
@@ -21,6 +21,8 @@ export default function ClickMiniAppPage() {
   const navigate = useNavigate();
   const {user}=useAuth();
   const [params]=useSearchParams();
+  const guide = params.get('guide') === '1';
+  useEffect(() => { if(guide) setOnb(true); }, [guide]);
   const requests=params.get('view')==='requests';
   return (
     <main className="min-h-screen bg-background text-foreground pb-28">
