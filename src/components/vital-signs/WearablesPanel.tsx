@@ -32,11 +32,16 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
       const dev = await connectBleHeartRate((b, r) => { setLiveBpm(b); bpms.current.push(b); rr.current.push(...r); });
       setBle(dev);
     } catch (e: any) {
-      setMsg(e?.message === "NO_WEB_BLUETOOTH"
-        ? native
-          ? "Bu ilovada bevosita Bluetooth ulanishi mavjud emas. Soat ilovasi Health Connect yoki Apple Health bilan sinxronlansa, pastdagi import tugmasidan foydalaning."
-          : "Bu brauzer Bluetooth pulsometrlarni qo‘llamaydi. Chrome (Android/Kompyuter) orqali med1.uz saytida urinib ko‘ring."
-        : "Qurilma ulanmadi. Pulsometr yoqilganini va yaqinligini tekshiring.");
+      const code = e?.message;
+      setMsg(code === "NO_WEB_BLUETOOTH"
+        ? "Bu brauzer Bluetooth soatlarni qo‘llamaydi. Med ALL ilovasi yoki Chrome (Android/Kompyuter) orqali urinib ko‘ring."
+        : code === "BT_OFF"
+          ? "Telefonda Bluetooth o‘chiq. Uni yoqing va qayta urinib ko‘ring."
+          : code === "NO_HR_SERVICE"
+            ? "Soat pulsni Bluetooth orqali uzatmayapti. Soatda “Puls uzatish / HR broadcast” rejimini yoqing (Garmin, Polar, Amazfit, Huawei, Xiaomi’da bor). Apple Watch, Galaxy Watch va ko‘p soatlar pulsni faqat Health Connect / Apple Health orqali beradi — pastdagi import tugmasidan foydalaning."
+            : native
+              ? "Soat ulanmadi. Bluetooth va “Yaqin qurilmalar” ruxsatini bering, soatni telefonga yaqin tuting va soat ilovasida boshqa telefon ulanmaganini tekshiring."
+              : "Qurilma ulanmadi. Soat yoqilganini va yaqinligini tekshiring.");
     }
   };
 
