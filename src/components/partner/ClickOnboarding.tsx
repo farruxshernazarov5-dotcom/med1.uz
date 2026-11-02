@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import s1 from "@/assets/ai_doctor_cover.webp";
-import s2 from "@/assets/ai_vitals_cover.webp";
-import s3 from "@/assets/ai_laboratory_cover.webp";
-import s4 from "@/assets/ai_baby_care_cover.webp";
+import s1 from "@/assets/click_onb_doctor.jpg.asset.json";
+import s2 from "@/assets/click_onb_vitals.jpg";
+import s3 from "@/assets/click_onb_lab.jpg.asset.json";
+import s4 from "@/assets/click_onb_family.jpg.asset.json";
 import partnershipLogo from "@/assets/click_med_all_logo_header.webp";
 
 const KEY = "med1.clickOnboarding.v3";
 const slides = [
-  { img: s1, title: "Click × MED ALL", text: "Med AI va shaxsiy profilingiz — bir joyda." },
-  { img: s1, title: "Med AI shifokor yordamchisi", text: "Shikoyatingizni yozing — AI 24/7 javob beradi va mutaxassisni tavsiya qiladi." },
+  { img: s1.url, title: "Med AI shifokor yordamchisi", text: "Shikoyatingizni yozing — AI 24/7 javob beradi va mutaxassisni tavsiya qiladi." },
   { img: s2, title: "Vital AI: puls va stress", text: "Telefon kamerasi orqali yurak ritmi, nafas va stressni tekshiring." },
-  { img: s3, title: "Tahlillarni AI o'qiydi", text: "Laboratoriya natijasini rasmga oling — tushunarli xulosa oling." },
-  { img: s4, title: "Oila uchun AI xizmatlar", text: "Homiladorlik, bola parvarishi, dietolog va farmatsevt AI bir joyda." },
+  { img: s3.url, title: "Tahlillarni AI o'qiydi", text: "Laboratoriya natijasini rasmga oling — tushunarli xulosa oling." },
+  { img: s4.url, title: "Oila uchun AI xizmatlar", text: "Homiladorlik, bola parvarishi, dietolog va farmatsevt AI bir joyda." },
 ];
 
 export function clickOnboardingSeen() {
