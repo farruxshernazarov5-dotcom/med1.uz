@@ -163,12 +163,12 @@ const queryClient = new QueryClient();
 // The Click entry owns its compact navigation; native onboarding is unrelated there.
 const MobileShellOutsideClick = () => {
   const { pathname } = useLocation();
-  return pathname === "/click" ? null : <MobileAppShell />;
+  return pathname === "/click" || pathname.startsWith("/click/") ? null : <MobileAppShell />;
 };
 
 const WebsiteExtrasOutsideClick = () => {
   const { pathname } = useLocation();
-  if (pathname === '/click') return null;
+  if (pathname === '/click' || pathname.startsWith('/click/')) return null;
   return <><BusinessEdgeTab/><AIServiceHelpButton/><YandexAdsManager/><FloatingAISearch/><FloatingDock/><SmartMatchPanel/><GeoPromoProvider/><HambiReturnButton/><AIDiagnosticsPanel/></>;
 };
 
@@ -203,6 +203,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/click" element={<ClickMiniAppPage />} />
+                <Route path="/click/profile" element={<MobileProfilePage click />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />
                 <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />

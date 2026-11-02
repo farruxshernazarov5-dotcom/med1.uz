@@ -1,3 +1,7 @@
+## 2026-11-02 — Click to‘liq profil
+- [ ] Mavjud barcha profil funksiyalarini Click kabinetiga ulash
+- [ ] Telefon va kompyuterda menyu, ichki bo‘limlar va Clickka qaytishni tekshirish
+
 ## 2026-11-02 — Click rasmlar va tezlik
 - [x] Baza va Run kredit xarajatlari o‘lchandi; uchta sekin shifokor saralashiga indeks qo‘shildi va jonli reja tekshirildi
 - [ ] Jonli rejalashtirilgan ishlar va kredit tejalishi — xavfsiz jadval ro‘yxati vositasi va keyingi solishtirma o‘lchov yo‘q
