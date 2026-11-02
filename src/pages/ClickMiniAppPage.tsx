@@ -42,7 +42,7 @@ export default function ClickMiniAppPage() {
           <h1 className="text-2xl font-semibold">Med AI xizmatlari</h1>
           {!user&&<Button asChild className="mt-4 w-full"><Link to="/auth?next=%2Fclick">Med AI uchun kirish</Link></Button>}
           <nav aria-label="Click shaxsiy menyusi" className="mt-4 grid grid-cols-2 gap-3">
-            <Button asChild variant="outline" className="h-12"><Link to="/mobile-profile"><UserRound />Profil</Link></Button>
+            <Button asChild variant="outline" className="h-12"><Link to="/click/profile"><UserRound />Profil</Link></Button>
             <Button asChild variant="outline" className="h-12"><Link to="/click?view=requests"><MessageSquare />So‘rovlarim</Link></Button>
           </nav>
           <form className="mt-5 flex gap-2" onSubmit={(event) => {
@@ -70,7 +70,7 @@ export default function ClickMiniAppPage() {
         </section>
         </>}
         <footer className="mt-8 flex flex-wrap gap-4 text-xs text-muted-foreground">
-          <Link to="/privacy">Maxfiylik</Link><Link to="/terms">Foydalanish shartlari</Link><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setOnb(true)}><CircleHelp className="h-3 w-3"/>Yordam</Button><Link to="/mobile-profile?section=support">Bog‘lanish</Link>
+          <Link to="/privacy">Maxfiylik</Link><Link to="/terms">Foydalanish shartlari</Link><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setOnb(true)}><CircleHelp className="h-3 w-3"/>Yordam</Button><Link to="/click/profile?section=support">Bog‘lanish</Link>
         </footer>
       </div>
     </main>

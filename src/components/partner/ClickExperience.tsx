@@ -10,7 +10,7 @@ export default function ClickExperience() {
   const {pathname}=useLocation(); const {user}=useAuth();
   const host=useSyncExternalStore(subscribeClickMiniApp,getClickMiniAppState,getClickMiniAppState);
   const [attributed,setAttributed]=useState(()=>sessionStorage.getItem('med1_click_entry')==='1');
-  useEffect(()=>{if(pathname==='/click'||host.active){sessionStorage.setItem('med1_click_entry','1');setAttributed(true);}},[pathname,host.active]);
+  useEffect(()=>{if(pathname==='/click'||pathname.startsWith('/click/')||host.active){sessionStorage.setItem('med1_click_entry','1');setAttributed(true);}},[pathname,host.active]);
   useEffect(()=>{document.documentElement.classList.toggle('click-partner',attributed);return()=>document.documentElement.classList.remove('click-partner');},[attributed]);
   useEffect(()=>{
     if(!host.active||!user)return;
@@ -24,7 +24,7 @@ export default function ClickExperience() {
   return <nav aria-label="Click kabinet menyusi" className="fixed bottom-20 left-1/2 z-50 flex max-w-[calc(100%-24px)] -translate-x-1/2 items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-md lg:bottom-4">
     <Button variant="ghost" size="sm" onClick={returnToClick}><ArrowLeft className="h-4 w-4"/>Clickka qaytish</Button>
     <Button asChild variant="ghost" size="icon"><Link to="/click" aria-label="Barcha Med AI xizmatlari"><Brain/></Link></Button>
-    <Button asChild variant="ghost" size="icon"><Link to="/mobile-profile" aria-label="Shaxsiy kabinet"><UserRound/></Link></Button>
+    <Button asChild variant="ghost" size="icon"><Link to="/click/profile" aria-label="Shaxsiy kabinet"><UserRound/></Link></Button>
     <Button asChild variant="ghost" size="icon"><Link to="/click?view=requests" aria-label="Click so‘rovlarim"><MessageSquare/></Link></Button>
     <Button asChild variant="ghost" size="icon"><Link to="/click?guide=1" aria-label="Click tanishtiruvi va yordam"><CircleHelp/></Link></Button>
   </nav>;
