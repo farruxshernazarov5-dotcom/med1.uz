@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Brain, MessageSquare, UserRound } from 'lucide-react';
+import { ArrowLeft, Brain, CircleHelp, MessageSquare, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getClickMiniAppState, returnToClick, subscribeClickMiniApp } from '@/lib/clickMiniApp';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,5 +26,6 @@ export default function ClickExperience() {
     <Button asChild variant="ghost" size="icon"><Link to="/click" aria-label="Barcha Med AI xizmatlari"><Brain/></Link></Button>
     <Button asChild variant="ghost" size="icon"><Link to="/mobile-profile" aria-label="Shaxsiy kabinet"><UserRound/></Link></Button>
     <Button asChild variant="ghost" size="icon"><Link to="/click?view=requests" aria-label="Click so‘rovlarim"><MessageSquare/></Link></Button>
+    <Button asChild variant="ghost" size="icon"><Link to="/click?guide=1" aria-label="Click tanishtiruvi va yordam"><CircleHelp/></Link></Button>
   </nav>;
 }
