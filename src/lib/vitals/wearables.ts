@@ -22,7 +22,7 @@ export function parseHeartRate(dv: DataView): { bpm: number; rr: number[] } {
 
 async function connectNative(onBeat: (bpm: number, rr: number[]) => void) {
   const { BleClient } = await import("@capacitor-community/bluetooth-le");
-  await BleClient.initialize({ androidNeverForLocation: true });
+  await BleClient.initialize();
   if (!(await BleClient.isEnabled())) {
     try { await BleClient.requestEnable(); } catch { throw new Error("BT_OFF"); }
   }
