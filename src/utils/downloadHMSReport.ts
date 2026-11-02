@@ -161,7 +161,7 @@ export function downloadHMSReportHTML(data: HMSReportData) {
 // Quote a cell and neutralise spreadsheet formula prefixes (CSV injection).
 function csvCell(v: unknown): string {
   let s = String(v ?? "");
-  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  if (/^[=+\-@\t\r]/.test(s) && !/^-?\d[\d\s.,]*$/.test(s)) s = "'" + s;
   return `"${s.replace(/"/g, '""')}"`;
 }
 
