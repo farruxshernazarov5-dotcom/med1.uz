@@ -1,6 +1,6 @@
 ## 2026-11-02 — Click to‘liq profil
-- [ ] Mavjud barcha profil funksiyalarini Click kabinetiga ulash
-- [ ] Telefon va kompyuterda menyu, ichki bo‘limlar va Clickka qaytishni tekshirish
+- [x] /click/profile mavjud profil funksiyalarini bir xil hisob bilan ochadi; xabarlar, qabullar, AI tarix, tahlillar, retseptlar, tibbiy tarix va sharhlar to‘g‘ridan-to‘g‘ri ulandi
+- [x] Telefon va kompyuterda menyu, ichki bo‘limlar va Clickka qaytish tekshirildi; hisobga kirgan holatda tahrirlash, AI tarix, xabarlar, sevimlilar va til ochildi
 
 ## 2026-11-02 — Click rasmlar va tezlik
 - [x] Baza va Run kredit xarajatlari o‘lchandi; uchta sekin shifokor saralashiga indeks qo‘shildi va jonli reja tekshirildi
