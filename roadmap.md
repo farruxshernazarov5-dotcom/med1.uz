@@ -1,3 +1,9 @@
+## 2026-11-02 — Click rasmlar va tezlik
+- [ ] Har bir AI moduliga alohida kreativ foto
+- [ ] Click × MED ALL logotipini aniqroq qilish va faviconni yangilash
+- [ ] Tanishtiruvni tez ochish, ? orqali qayta ko‘rish va mavjud Profilni saqlash
+- [ ] Rasmlarni yengillashtirish va Click oqimini brauzerda tekshirish
+
 ## 2026-11-02 — Ovoz, manbalar, AI kirish, soat, Med Coin, bot
 - [x] Ochilish animatsiyasi ~5 soniyaga uzaytirildi
 - [x] AI PDF: PubMed/Scopus/WoS/Cochrane/Scholar/WHO havolali "Ilmiy manbalar" jadvali; Qabullar PDF'ida signal jadvali
