@@ -7,7 +7,7 @@ import s3 from "@/assets/click_onb_lab.jpg.asset.json";
 import s4 from "@/assets/click_onb_family.jpg.asset.json";
 import partnershipLogo from "@/assets/click_med_all_logo_header.webp";
 
-const KEY = "med1.clickOnboarding.v3";
+const KEY = "med1.clickOnboarding.v4";
 const slides = [
   { img: s1.url, title: "Med AI shifokor yordamchisi", text: "Shikoyatingizni yozing — AI 24/7 javob beradi va mutaxassisni tavsiya qiladi." },
   { img: s2, title: "Vital AI: puls va stress", text: "Telefon kamerasi orqali yurak ritmi, nafas va stressni tekshiring." },
@@ -37,7 +37,7 @@ export default function ClickOnboarding({ onDone }: { onDone: () => void }) {
     <div className="fixed inset-0 z-[100] flex h-[100dvh] flex-col overflow-y-auto bg-background" role="dialog" aria-modal="true" aria-label="Click × MED ALL tanishuv" onKeyDown={event => { if(event.key==='Escape') finish(); if(event.key==='Tab') { const controls=event.currentTarget.querySelectorAll<HTMLButtonElement>('button'); const first=controls[0]; const lastControl=controls[controls.length-1]; if(event.shiftKey&&document.activeElement===first){event.preventDefault();lastControl?.focus();}else if(!event.shiftKey&&document.activeElement===lastControl){event.preventDefault();first?.focus();} } }}>
       <header className="flex shrink-0 items-center justify-between gap-3 bg-card px-5 py-5"><img src={partnershipLogo} alt="Click × MED ALL hamkorligi" width={700} height={90} fetchPriority="high" className="h-auto w-64 max-w-[80%] rounded bg-card p-1" /><Button ref={closeRef} variant="ghost" size="icon" aria-label="Tanishtiruvni yopish" onClick={finish}><X/></Button></header>
       <div className="relative mx-auto min-h-0 w-full max-w-3xl flex-1 overflow-hidden">
-        <img key={s.img} src={s.img} alt={s.title} width={768} height={512} fetchPriority="high" loading="eager" decoding="async" className="h-full min-h-48 w-full object-cover" />
+        <img key={s.img} src={s.img} alt={s.title} width={768} height={1024} fetchPriority="high" loading="eager" decoding="async" className="h-full min-h-48 w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
         <Button variant="secondary" size="sm" onClick={finish} className="absolute right-4 top-4">O'tkazib yuborish</Button>
       </div>
