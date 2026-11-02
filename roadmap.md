@@ -1,3 +1,14 @@
+## 2026-11-02 — Ovoz, manbalar, AI kirish, soat, Med Coin, bot
+- [x] Ochilish animatsiyasi ~5 soniyaga uzaytirildi
+- [x] AI PDF: PubMed/Scopus/WoS/Cochrane/Scholar/WHO havolali "Ilmiy manbalar" jadvali; Qabullar PDF'ida signal jadvali
+- [x] MED ALL ovozli iboralar (yangi xabar / AI xulosa / hisob to'ldirildi / Med Coin), qabul signali alohida; standart yoqilgan
+- [x] AI sahifalari faqat tizimga kirganlarga
+- [x] Vital AI: ilovada haqiqiy Bluetooth (soat), aniq xato sabablari — yangi APK kerak
+- [ ] Obuna Med Coin muddati tugasa o'chirish + ogohlantirish (ilova va Telegram) — Cloud to'xtatilgan
+- [ ] Bot va har kungi AI xabarlari tekshiruvi — Cloud to'xtatilgan
+- [ ] Eskiz OTP jonli sinovi — Cloud to'xtatilgan
+- [ ] AI server funksiyalarida kirish talabi (server tomoni) — Cloud to'xtatilgan
+
 ## 2026-10-31 — Click AI va profil
 - [x] 23 AI xizmat + AI Orchestrator va mavjud profilga Click menyusini ulash; mobil/keng ekran tekshirildi
 - [x] Click × MED ALL logotipi va sahifaga xos favicon; onboarding boshida, kirgan foydalanuvchilarga ham bir marta
