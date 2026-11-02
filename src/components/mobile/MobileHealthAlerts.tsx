@@ -28,8 +28,11 @@ export const MobileHealthAlerts = () => {
     if (!user) return;
     return subscribeFeed(user.id, (n) => {
       const link = safeFeedLink(n.link) ?? "/mobile-appointments?panel=notifications";
-      playReminderChime();
-      void import("@/lib/voiceNotify").then(m => m.speakNotification(n.id, n.title, n.message)).catch(() => {});
+      void import("@/lib/voiceNotify").then((m) => {
+        // Appointment reminders keep their own chime; every other alert speaks its MED ALL phrase.
+        if (m.voiceKind(n.title, n.message, (n as { type?: string }).type) === "appointment" || !m.voiceNotifyOn()) playReminderChime();
+        return m.speakNotification(n.id, n.title, n.message);
+      }).catch(() => playReminderChime());
       if (isNativeApp()) void hasNotificationPermission().then((ok) => ok && notifyNow(n.title, n.message, link).catch(() => {}));
       else if (document.visibilityState === "hidden") showWebNotification(n.title, n.message, link);
       toast(n.title, { description: n.message, duration: 10000, action: { label: "Ko‘rish", onClick: () => navigate(link) } });
