@@ -1,4 +1,5 @@
 ## 2026-11-02 — Click rasmlar va tezlik
+- [ ] Baza va Run kredit xarajatlari: joriy o‘lchovlar, sekin so‘rovlar/indekslar va asosiy sabablarni tuzatish
 - [ ] Har bir AI moduliga alohida kreativ foto
 - [ ] Click × MED ALL logotipini aniqroq qilish va faviconni yangilash
 - [ ] Tanishtiruvni tez ochish, ? orqali qayta ko‘rish va mavjud Profilni saqlash
