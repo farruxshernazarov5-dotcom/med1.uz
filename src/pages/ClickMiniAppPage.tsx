@@ -36,7 +36,7 @@ export default function ClickMiniAppPage() {
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
         <header className="flex items-center justify-between gap-3 border-b border-border pb-5">
           <Link to="/click" className="flex items-center gap-3" aria-label="Med1.uz asosiy">
-            <img src={partnershipLogo} alt="Click × MED ALL" width={700} height={90} fetchPriority="high" className="h-auto w-64 max-w-full rounded bg-card p-1" />
+            <img src={partnershipLogo} alt="Click × MED ALL" width={700} height={90} fetchPriority="high" className="h-auto w-64 max-w-full rounded bg-card p-1 dark:bg-foreground" />
           </Link>
           <div className="flex shrink-0 items-center gap-2"><span role="status" className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex">
             <ShieldCheck className="h-4 w-4 text-secondary" />
