@@ -161,14 +161,16 @@ const BusinessEdgeTab = lazy(() => import("./components/mobile/BusinessEdgeTab")
 const queryClient = new QueryClient();
 
 // The Click entry owns its compact navigation; native onboarding is unrelated there.
+// Once a visitor arrives through Click, every page in that session keeps Click's own menu and no ads.
+const inClickSession = (pathname: string) => pathname === "/click" || pathname.startsWith("/click/") || (typeof sessionStorage !== "undefined" && sessionStorage.getItem("med1_click_entry") === "1");
 const MobileShellOutsideClick = () => {
   const { pathname } = useLocation();
-  return pathname === "/click" || pathname.startsWith("/click/") ? null : <Suspense fallback={null}><MobileAppShell /></Suspense>;
+  return inClickSession(pathname) ? null : <Suspense fallback={null}><MobileAppShell /></Suspense>;
 };
 
 const WebsiteExtrasOutsideClick = () => {
   const { pathname } = useLocation();
-  if (pathname === '/click' || pathname.startsWith('/click/')) return null;
+  if (inClickSession(pathname)) return null;
   return <Suspense fallback={null}><BusinessEdgeTab/><AIServiceHelpButton/><YandexAdsManager/><FloatingAISearch/><FloatingDock/><SmartMatchPanel/><GeoPromoProvider/><HambiReturnButton/><AIDiagnosticsPanel/></Suspense>;
 };
 
