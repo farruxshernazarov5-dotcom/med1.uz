@@ -170,7 +170,7 @@ const MobileShellOutsideClick = () => {
 
 const WebsiteExtrasOutsideClick = () => {
   const { pathname } = useLocation();
-  if (inClickSession(pathname)) return null;
+  if (inClickSession(pathname)) return <Suspense fallback={null}><BusinessEdgeTab/></Suspense>;
   return <Suspense fallback={null}><BusinessEdgeTab/><AIServiceHelpButton/><YandexAdsManager/><FloatingAISearch/><FloatingDock/><SmartMatchPanel/><GeoPromoProvider/><HambiReturnButton/><AIDiagnosticsPanel/></Suspense>;
 };
 

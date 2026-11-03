@@ -5,9 +5,10 @@ import { getClickMiniAppState, readyClickMiniApp, subscribeClickMiniApp } from "
 /** Host theme is temporary: do not overwrite the user's saved website theme. */
 export default function ClickMiniAppThemeProvider({ children }: { children: ReactNode }) {
   const state = useSyncExternalStore(subscribeClickMiniApp, getClickMiniAppState, getClickMiniAppState);
+  // Click visitors get their own saved choice (dark by default) and can switch it; the website theme stays untouched.
+  const click = typeof window !== "undefined" && (window.location.pathname.startsWith("/click") || sessionStorage.getItem("med1_click_entry") === "1" || state.active);
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="med1-theme"
-      forcedTheme={state.active ? state.theme : undefined}>
+    <ThemeProvider attribute="class" defaultTheme={click ? "dark" : "light"} enableSystem={false} storageKey={click ? "med1-click-theme" : "med1-theme"}>
       {children}
     </ThemeProvider>
   );
