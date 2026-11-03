@@ -1,13 +1,12 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Brain, CircleHelp, MessageSquare, UserRound } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft, Brain, CircleHelp, Home, MessageSquare, UserRound } from 'lucide-react';
 import { getClickMiniAppState, returnToClick, subscribeClickMiniApp } from '@/lib/clickMiniApp';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function ClickExperience() {
-  const {pathname}=useLocation(); const {user}=useAuth();
+  const {pathname,search}=useLocation(); const {user}=useAuth();
   const host=useSyncExternalStore(subscribeClickMiniApp,getClickMiniAppState,getClickMiniAppState);
   const [attributed,setAttributed]=useState(()=>sessionStorage.getItem('med1_click_entry')==='1');
   useEffect(()=>{if(pathname==='/click'||pathname.startsWith('/click/')||host.active){sessionStorage.setItem('med1_click_entry','1');setAttributed(true);}},[pathname,host.active]);
@@ -21,11 +20,19 @@ export default function ClickExperience() {
     return()=>{cancelled=true;};
   },[host.active,user?.id]);
   if(!attributed||pathname.startsWith('/admin')||pathname.startsWith('/auth'))return null;
-  return <nav aria-label="Click kabinet menyusi" className="fixed bottom-20 left-1/2 z-50 flex max-w-[calc(100%-24px)] -translate-x-1/2 items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-md lg:bottom-4">
-    <Button variant="ghost" size="sm" onClick={returnToClick}><ArrowLeft className="h-4 w-4"/>Clickka qaytish</Button>
-    <Button asChild variant="ghost" size="icon"><Link to="/click" aria-label="Barcha Med AI xizmatlari"><Brain/></Link></Button>
-    <Button asChild variant="ghost" size="icon"><Link to="/click/profile" aria-label="Shaxsiy kabinet"><UserRound/></Link></Button>
-    <Button asChild variant="ghost" size="icon"><Link to="/click?view=requests" aria-label="Click so‘rovlarim"><MessageSquare/></Link></Button>
-    <Button asChild variant="ghost" size="icon"><Link to="/click?guide=1" aria-label="Click tanishtiruvi va yordam"><CircleHelp/></Link></Button>
+  const items=[
+    {to:'/click',label:'Asosiy',icon:Home,active:pathname==='/click'&&!search},
+    {to:'/click?view=requests',label:'So‘rovlar',icon:MessageSquare,active:search.includes('view=requests')},
+    {to:'/ai-orchestrator',label:'Med AI',icon:Brain,center:true,active:pathname==='/ai-orchestrator'},
+    {to:'/click/profile',label:'Profil',icon:UserRound,active:pathname.startsWith('/click/profile')},
+    {to:'/click?guide=1',label:'Yordam',icon:CircleHelp,active:search.includes('guide=1')},
+  ];
+  return <nav aria-label="Click kabinet menyusi" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_hsl(var(--primary)/0.35)] backdrop-blur-md">
+    <div className="mx-auto flex max-w-3xl items-end justify-between px-2 pt-1">
+      <button type="button" onClick={returnToClick} className="flex w-14 flex-col items-center gap-0.5 py-2 text-[10px] text-muted-foreground" aria-label="Clickka qaytish"><ArrowLeft className="h-5 w-5"/>Click</button>
+      {items.map(({to,label,icon:Icon,center,active})=>center
+        ? <Link key={to} to={to} aria-label={label} className="-mt-6 flex flex-col items-center gap-0.5 text-[10px] font-medium text-primary"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg ring-4 ring-card"><Icon className="h-6 w-6"/></span>{label}</Link>
+        : <Link key={to} to={to} aria-label={label} aria-current={active?'page':undefined} className={`relative flex w-14 flex-col items-center gap-0.5 py-2 text-[10px] ${active?'font-semibold text-primary':'text-muted-foreground'}`}>{active&&<span className="absolute top-0 h-0.5 w-6 rounded-full bg-primary"/>}<Icon className="h-5 w-5"/>{label}</Link>)}
+    </div>
   </nav>;
 }
