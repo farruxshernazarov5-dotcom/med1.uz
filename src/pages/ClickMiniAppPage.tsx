@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, CircleHelp, Crown, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { ArrowRight, CircleHelp, Coins, Crown, Moon, Sun, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import ClickOnboarding, { clickOnboardingSeen } from "@/components/partner/Click
 import partnershipLogo from "@/assets/click_med_all_logo_header.webp";
 import { MOBILE_AI_SERVICES } from "@/data/mobileAiCatalog";
 import { AI_SERVICE_COVERS } from "@/data/aiServiceCovers";
+import { useTheme } from "next-themes";
+import { useCredits } from "@/hooks/useCredits";
 const ClickRequests = lazy(() => import("@/components/partner/ClickRequests"));
 
 export default function ClickMiniAppPage() {
@@ -20,6 +22,9 @@ export default function ClickMiniAppPage() {
   const [onb, setOnb] = useState(() => !clickOnboardingSeen());
   const navigate = useNavigate();
   const {user}=useAuth();
+  const {balance}=useCredits();
+  const {resolvedTheme,setTheme}=useTheme();
+  const dark=resolvedTheme!=='light';
   const [params]=useSearchParams();
   const guide = params.get('guide') === '1';
   useEffect(() => { if(guide) setOnb(true); }, [guide]);
@@ -36,10 +41,14 @@ export default function ClickMiniAppPage() {
           <div className="flex shrink-0 items-center gap-2"><span role="status" className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:flex">
             <ShieldCheck className="h-4 w-4 text-secondary" />
             {host.active ? "Click ulangan" : "Med1.uz veb"}
-          </span><Button variant="ghost" size="icon" aria-label="Tanishtiruvni qayta ko‘rish" title="Tanishtiruvni qayta ko‘rish" onClick={() => setOnb(true)}><CircleHelp /></Button></div>
+          </span><Button variant="ghost" size="icon" aria-label={dark?"Kunduzgi rejim":"Tungi rejim"} title={dark?"Kunduzgi rejim":"Tungi rejim"} onClick={()=>setTheme(dark?'light':'dark')}>{dark?<Sun/>:<Moon/>}</Button><Button variant="ghost" size="icon" aria-label="Tanishtiruvni qayta ko‘rish" title="Tanishtiruvni qayta ko‘rish" onClick={() => setOnb(true)}><CircleHelp /></Button></div>
         </header>
         {requests ? <section className="py-6">{user?<Suspense fallback={<p role="status">Yuklanmoqda…</p>}><ClickRequests/></Suspense>:<Button asChild><Link to="/auth?next=%2Fclick%3Fview%3Drequests">Hisobga kirish</Link></Button>}</section> : <><section className="py-6">
           <h1 className="text-2xl font-semibold">Med AI xizmatlari</h1>
+          {user&&<Link to="/ai-subscription" className="mt-4 flex items-center justify-between rounded-xl border border-primary/30 bg-gradient-to-r from-primary/15 via-accent/10 to-transparent p-4">
+            <span className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground"><Coins className="h-5 w-5"/></span><span><span className="block text-xs text-muted-foreground">Med Coin balansingiz</span><span className="text-2xl font-bold">{balance}</span></span></span>
+            <span className="flex items-center gap-1 text-sm font-medium text-primary">To‘ldirish<ArrowRight className="h-4 w-4"/></span>
+          </Link>}
           {!user&&<Button asChild className="mt-4 w-full"><Link to="/auth?next=%2Fclick">Med AI uchun kirish</Link></Button>}
           <nav aria-label="Click shaxsiy menyusi" className="mt-4 grid grid-cols-2 gap-3">
             <Button asChild variant="outline" className="h-12"><Link to="/click/profile"><UserRound />Profil</Link></Button>
