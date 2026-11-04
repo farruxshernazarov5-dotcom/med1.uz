@@ -220,6 +220,44 @@ async function openAccount(chatId: number, userId: string, role: string) {
   });
 }
 
+/**
+ * Picks a service not used in the last week and asks Med AI to write a fresh,
+ * engaging Uzbek message for it, so subscribers never get the same text twice.
+ * Falls back to the curated text when the AI is unavailable.
+ */
+async function pickDailyMessage(): Promise<{ text: string; button: string; path: string }> {
+  const { data: recent } = await db.from("emedinfo_bot_broadcasts").select("button_path, message")
+    .eq("kind", "daily_ai").order("created_at", { ascending: false }).limit(7);
+  const used = new Set((recent ?? []).map((r) => r.button_path));
+  const pool = DAILY_MESSAGES.filter((m) => !used.has(m.path));
+  const base = (pool.length ? pool : DAILY_MESSAGES)[Math.floor(Math.random() * (pool.length || DAILY_MESSAGES.length))];
+  const key = Deno.env.get("LOVABLE_API_KEY");
+  if (!key) return base;
+  const angles = ["qiziqarli tibbiy fakt", "mavsumga mos maslahat", "kichik kundalik challenge", "savol-javob ko‘rinishida", "afsona va haqiqat", "motivatsion hikoya", "raqam/statistika bilan"];
+  const angle = angles[Math.floor(Math.random() * angles.length)];
+  const month = new Date().toLocaleString("uz-UZ", { month: "long", timeZone: "Asia/Tashkent" });
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        temperature: 1,
+        messages: [
+          { role: "system", content: "Siz Med1.uz Telegram botining kontent muallifisiz. Faqat o‘zbek (lotin) tilida, 2–4 qisqa jumla, 1–3 emoji, birinchi qator <b>qalin sarlavha</b>. Faqat Telegram HTML (<b>, <i>) ishlating. Tashxis qo‘ymang, dori dozasi bermang. Oxirida xizmatni sinab ko‘rishga chaqiring. Faqat xabar matnini qaytaring." },
+          { role: "user", content: `Bugun: ${month}. Uslub: ${angle}. Xizmat: ${base.button} (${base.path}). Namuna g‘oya: ${base.text.replace(/<[^>]+>/g, "")}. Oxirgi xabarlarni takrorlamang: ${(recent ?? []).map((r) => (r.message ?? "").replace(/<[^>]+>/g, "").slice(0, 80)).join(" | ")}` },
+        ],
+      }),
+    });
+    if (!res.ok) { console.error("daily ai failed", res.status, await res.text()); return base; }
+    const out = await res.json();
+    let text = String(out?.choices?.[0]?.message?.content ?? "").trim().replace(/^```\w*|```$/g, "").trim();
+    // keep only Telegram-safe tags
+    text = text.replace(/<(?!\/?(b|i)>)[^>]*>/g, "").slice(0, 900);
+    return text.length > 40 ? { ...base, text } : base;
+  } catch (e) { console.error("daily ai error", e); return base; }
+}
+
 async function sendDaily(limit = 600) {
   const cutoff = new Date(Date.now() - 20 * 3600_000).toISOString();
   const { data: users, error } = await db.from("emedinfo_bot_users")
@@ -229,8 +267,7 @@ async function sendDaily(limit = 600) {
     .order("last_seen_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
-  const day = Math.floor(Date.now() / 86400_000);
-  const item = DAILY_MESSAGES[day % DAILY_MESSAGES.length];
+  const item = await pickDailyMessage();
   let sent = 0, failed = 0;
   for (const user of users ?? []) {
     await db.from("emedinfo_bot_users").update({ last_daily_at: new Date().toISOString() }).eq("chat_id", user.chat_id);
