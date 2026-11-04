@@ -117,11 +117,44 @@ export async function unlockWithBiometric(): Promise<boolean> {
 }
 
 /** Remembers when the app went to background so the auto-lock delay can be applied. */
-export const markHidden = () => sessionStorage.setItem(HIDDEN_AT_KEY, String(Date.now()));
+export const markHidden = () => { if (!isExternalPickerOpen()) sessionStorage.setItem(HIDDEN_AT_KEY, String(Date.now())); };
 export function shouldLockOnResume(): boolean {
   const s = getLockSettings();
   if (s.method === "none") return false;
   const at = Number(sessionStorage.getItem(HIDDEN_AT_KEY) ?? 0);
-  if (!at) return false;
+  if (!at || isExternalPickerOpen()) return false;
   return Date.now() - at >= s.timeoutMin * 60_000;
+}
+
+/**
+ * Opening the system file picker / camera sends the app to background. Without
+ * this guard the lock screen appeared on return and the chosen photo was lost.
+ * Any tap on a file input (or its label) opens a 3-minute grace window that ends
+ * as soon as the user is back and the input fires `change`/`cancel`.
+ */
+const PICKER_KEY = "med1_picker_open_at";
+export const beginExternalPicker = () => sessionStorage.setItem(PICKER_KEY, String(Date.now()));
+export const endExternalPicker = () => sessionStorage.removeItem(PICKER_KEY);
+export function isExternalPickerOpen(): boolean {
+  const at = Number(sessionStorage.getItem(PICKER_KEY) ?? 0);
+  return !!at && Date.now() - at < 3 * 60_000;
+}
+if (typeof document !== "undefined") {
+  const isFileTarget = (t: EventTarget | null) => {
+    const el = t instanceof Element ? t : null;
+    if (!el) return false;
+    if (el.closest('input[type="file"]')) return true;
+    const label = el.closest("label");
+    return !!label && !!(label.control as HTMLInputElement | null)?.type?.match(/^file$/);
+  };
+  document.addEventListener("click", (e) => { if (isFileTarget(e.target)) beginExternalPicker(); }, true);
+  const done = (e: Event) => { if ((e.target as HTMLInputElement)?.type === "file") setTimeout(endExternalPicker, 1500); };
+  document.addEventListener("change", done, true);
+  document.addEventListener("cancel", done, true);
+  // Programmatic input.click() calls (hidden inputs behind buttons).
+  const origClick = HTMLInputElement.prototype.click;
+  HTMLInputElement.prototype.click = function (this: HTMLInputElement) {
+    if (this.type === "file") beginExternalPicker();
+    return origClick.call(this);
+  };
 }

@@ -18645,6 +18645,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      cash_wallet_lookup_card: { Args: { _card: string }; Returns: Json }
       cash_wallet_refund: {
         Args: {
           _description?: string
@@ -18660,6 +18661,15 @@ export type Database = {
           _idempotency_key: string
           _service_reference: string
           _service_type: string
+        }
+        Returns: Json
+      }
+      cash_wallet_transfer: {
+        Args: {
+          _amount: number
+          _idempotency_key: string
+          _note?: string
+          _to_card: string
         }
         Returns: Json
       }

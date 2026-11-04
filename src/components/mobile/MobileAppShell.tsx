@@ -10,6 +10,7 @@ import { HealthAutoSync } from "./HealthAutoSync";
 import { AppLockScreen } from "./AppLockScreen";
 import { MobileSmartSearch } from "./MobileSmartSearch";
 import { OfflineScreen } from "./OfflineScreen";
+import { isExternalPickerOpen } from "@/lib/appLock";
 import { registerNotificationTaps, lockNow, registerForegroundReminderSound } from "@/lib/nativeHealth";
 import { initNativeChrome, isNativeApp, registerBackButton, registerDeepLinks, watchNetwork } from "@/lib/nativeApp";
 import { goBackSafe } from "@/lib/safeBack";
@@ -91,7 +92,7 @@ const MobileAppShell = () => {
     void registerNotificationTaps((path) => navigate(path)).then((d) => { dispose = d; });
     void registerForegroundReminderSound().then((d) => { disposeSound = d; });
     // Re-lock the medical card whenever the app goes to background.
-    const onHide = () => { if (document.visibilityState === "hidden") lockNow(); };
+    const onHide = () => { if (document.visibilityState === "hidden" && !isExternalPickerOpen()) lockNow(); };
     document.addEventListener("visibilitychange", onHide);
     return () => { dispose(); disposeSound(); document.removeEventListener("visibilitychange", onHide); };
   }, [navigate]);
