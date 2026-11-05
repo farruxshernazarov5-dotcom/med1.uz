@@ -96,7 +96,7 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
 
   return (
     <div className="space-y-6">
-      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} onCancel={endExternalPicker} />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
       {/* Photo Guide Card */}
       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-background to-violet-500/5 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
