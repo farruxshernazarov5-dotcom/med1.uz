@@ -175,7 +175,14 @@ export async function generateStampDataUrl(_p: StampPayload, sizePx = 960): Prom
     await new Promise<void>((resolve, reject) => { img.onload = () => resolve(); img.onerror = () => reject(new Error('Muhr ochilmadi')); img.src = url; });
     const canvas = document.createElement('canvas'); canvas.width = sizePx; canvas.height = sizePx;
     const ctx = canvas.getContext('2d'); if (!ctx) throw new Error('Canvas context yo‘q');
-    ctx.drawImage(img, 0, 0, sizePx, sizePx);
+    // Fit the original inside a square without stretching either axis.
+    // Both receipt formats embed this square at equal PDF width/height.
+    if (!img.naturalWidth || !img.naturalHeight) throw new Error('Muhr o‘lchami noto‘g‘ri');
+    const scale = Math.min(sizePx / img.naturalWidth, sizePx / img.naturalHeight);
+    const width = img.naturalWidth * scale;
+    const height = img.naturalHeight * scale;
+    ctx.clearRect(0, 0, sizePx, sizePx);
+    ctx.drawImage(img, (sizePx - width) / 2, (sizePx - height) / 2, width, height);
     return canvas.toDataURL('image/png');
   } finally { URL.revokeObjectURL(url); }
 }
