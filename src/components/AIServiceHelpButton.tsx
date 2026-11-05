@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { CircleHelp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { MOBILE_AI_SERVICES_WITH_IMAGES } from "@/data/mobileServiceCatalog";
 import { MobileServiceDetail } from "@/components/mobile/MobileServiceDetail";
 
@@ -28,14 +29,15 @@ const AIServiceHelpButton = () => {
   if (!service) return null;
   return (
     <>
-      <button
+      <Button
+        size="icon"
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`${service.title} haqida yordam`}
         className="fixed bottom-24 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg active:scale-95 lg:bottom-6"
       >
         <CircleHelp className="h-6 w-6" />
-      </button>
+      </Button>
       <MobileServiceDetail service={service} open={open} onOpenChange={setOpen} />
     </>
   );

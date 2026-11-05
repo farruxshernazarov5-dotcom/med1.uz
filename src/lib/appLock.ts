@@ -46,7 +46,9 @@ export function saveLockSettings(next: LockSettings): void {
 export const isLockEnabled = () => getLockSettings().method !== "none";
 
 async function hash(secret: string, saltHex: string): Promise<string> {
-  const salt = Uint8Array.from(saltHex.match(/../g)!.map((h) => parseInt(h, 16)));
+  const pairs = saltHex.match(/../g);
+  if (!pairs) throw new Error('Invalid lock salt');
+  const salt = Uint8Array.from(pairs.map((h) => parseInt(h, 16)));
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 150_000, hash: "SHA-256" }, key, 256);
   return Array.from(new Uint8Array(bits), (b) => b.toString(16).padStart(2, "0")).join("");
@@ -134,7 +136,11 @@ export function shouldLockOnResume(): boolean {
  */
 const PICKER_KEY = "med1_picker_open_at";
 export const beginExternalPicker = () => sessionStorage.setItem(PICKER_KEY, String(Date.now()));
-export const endExternalPicker = () => sessionStorage.removeItem(PICKER_KEY);
+export const endExternalPicker = () => {
+  sessionStorage.removeItem(PICKER_KEY);
+  // The picker is not an idle/background session; discard stale idle timestamps.
+  sessionStorage.removeItem(HIDDEN_AT_KEY);
+};
 export function isExternalPickerOpen(): boolean {
   const at = Number(sessionStorage.getItem(PICKER_KEY) ?? 0);
   return !!at && Date.now() - at < 3 * 60_000;
