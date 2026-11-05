@@ -18913,6 +18913,10 @@ export type Database = {
         }
         Returns: Json
       }
+      purchase_medcoin_from_wallet: {
+        Args: { _idempotency_key: string; _package_code: string }
+        Returns: Json
+      }
       purge_security_logs: { Args: { _days?: number }; Returns: number }
       refund_ai_credits: {
         Args: {
@@ -19045,6 +19049,19 @@ export type Database = {
           scanned_count: number
           status: string
           verification_code: string
+        }[]
+      }
+      verify_payment_receipt: {
+        Args: { _id: string }
+        Returns: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          paid_at: string
+          provider: string
+          purpose: string
+          status: string
         }[]
       }
       verify_vital_report: {
