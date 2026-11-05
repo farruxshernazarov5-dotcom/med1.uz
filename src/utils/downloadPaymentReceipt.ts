@@ -199,7 +199,7 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("◆  TRANZAKSIYA TAFSILOTLARI", margin, y);
+  doc.text("TRANZAKSIYA TAFSILOTLARI", margin, y);
   y += 4;
   doc.setDrawColor(...COLORS.accent);
   doc.setLineWidth(0.5);
@@ -335,7 +335,7 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
-  doc.text("✦  med1.uz/dashboard — AI shifokor, e-retsept, tahlillar va onlayn navbat",
+  doc.text("med1.uz/dashboard — AI shifokor, e-retsept, tahlillar va onlayn navbat",
     pageW / 2, footerY - 2, { align: "center" });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
@@ -361,7 +361,7 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
   if (logoData) {
     const sz = 14;
     doc.addImage(logoData, "PNG", (W - sz) / 2, y, sz, sz);
-    y += sz + 2;
+    y += sz + 5;
   }
   doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold"); doc.setFontSize(14);

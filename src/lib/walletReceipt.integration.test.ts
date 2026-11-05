@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { loadEnv } from 'vite';
 import { createClient } from '@supabase/supabase-js';
-const env = loadEnv('test', process.cwd(), 'VITE_');
+const env = import.meta.env;
 const client = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 describe('live wallet receipt permissions', () => {
   it('verifies the reported completed transfer without disclosing payer data', async () => {
