@@ -26,6 +26,9 @@
 - Lab aggregation exposes source failures separately from empty results; readiness alerts must not advance their checkpoint after a failed read.
 - The native app loads bundled `dist` files (no `server.url`), so app changes require a rebuild + `npx cap sync`; native Google/Microsoft sign-in runs in the system browser via `/app-bridge` and returns only through the manifest-registered, package-pinned `uz.medall.app://app-auth` link with a one-time state nonce (`src/lib/nativeOAuth.ts`), because providers block WebView OAuth.
 - Mobile cash balances are server-owned in `cash_wallets` with an immutable ledger; only confirmed provider payments or guarded RPCs may change them, preventing client-side balance forgery.
+- Med Coin purchases from cash balances use `purchase_medcoin_from_wallet` with package-catalog pricing, wallet locking and idempotency; existing fulfillment grants expiring coins and writes the receipt in the same transaction.
+- Payment receipt QR checks use the UUID-only `verify_payment_receipt` RPC for platform payments and wallet entries, exposing no payer identity or balances; printed seals reuse the uploaded official image without modifying it.
+- File-picker lock guards install at startup; photo scanners keep their inputs mounted and retain the scanner tab state, preventing lazy loading or tab changes from discarding selections.
 - Mobile classifieds use one moderated catalogue and keep paid Med1 TOP placements separate from organic listings, preserving the platform's sponsored-content rule.
 - Saved native logins live only in the OS keystore via `src/lib/nativeCredentials.ts` behind a biometric check; web storage keeps just an on/off flag.
 - Native Google sign-in uses the OS account picker via `src/lib/nativeGoogle.ts` (ID token + hashed nonce → signInWithIdToken); the `/app-bridge` browser flow is only a fallback for old APKs, because browser hand-off left users stranded in Chrome.

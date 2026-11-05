@@ -128,21 +128,23 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text("ELEKTRON KVITANSIYA", pageW - margin, 16, { align: "right" });
+  // Receipt identity has a separate band; never shares the company header.
+  doc.setTextColor(...COLORS.primary);
+  doc.text("ELEKTRON KVITANSIYA", pageW - margin, 52, { align: "right" });
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
-  doc.text(`№ ${receiptNumber}`, pageW - margin, 23, { align: "right" });
+  doc.text(receiptNumber, margin, 52);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(180, 215, 255);
-  doc.text(data.paidAt.toLocaleString("uz-UZ"), pageW - margin, 29, { align: "right" });
+  doc.text(data.paidAt.toLocaleString("uz-UZ"), pageW - margin, 58, { align: "right" });
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(255, 255, 255);
-  doc.text("✚ Medical Payment", pageW - margin, 38, { align: "right" });
+  // Company logo and contact text remain exclusively inside the top header.
 
   // SUCCESS BADGE
-  let y = 56;
+  let y = 64;
   doc.setFillColor(...COLORS.greenSoft);
   doc.setDrawColor(...COLORS.green);
   doc.setLineWidth(0.4);
@@ -150,7 +152,7 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(...COLORS.green);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("✓  TO'LOV MUVAFFAQIYATLI QABUL QILINDI", pageW / 2, y + 9, { align: "center" });
+  doc.text("TO'LOV MUVAFFAQIYATLI QABUL QILINDI", pageW / 2, y + 9, { align: "center" });
 
   // SUMMA KARTASI
   y += 22;
@@ -273,10 +275,10 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
 
   // QR — footer ustida joylashishini ta'minlash uchun chegara qo'yamiz
   y += 8;
-  const qrBlockHeight = 40;
+  const qrBlockHeight = 48;
   const footerTop = pageH - 22 - 8; // footer chizig'i + 1mm bo'sh joy
   const maxQrY = footerTop - qrBlockHeight - 2;
-  if (y > maxQrY) y = maxQrY; // overflow bo'lsa QR'ni footer ustida joylash
+  if (y > maxQrY) { doc.addPage(); y = 20; }
   const verifyUrl = `https://med1.uz/verify?payment_id=${data.paymentId}`;
   try {
     const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
@@ -301,12 +303,12 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
     doc.setFontSize(7.5);
     // Uzun URL'ni 2 qatorga sig'dirish uchun softBreak + wrap
     const urlSafe = verifyUrl.replace(/(\S{40})/g, "$1\u200B");
-    const urlLines = doc.splitTextToSize(urlSafe, 95);
+    const urlLines = doc.splitTextToSize(urlSafe, 75);
     doc.text(urlLines.slice(0, 2), margin + 44, y + 23);
     doc.setTextColor(...COLORS.muted);
     doc.setFont("helvetica", "italic");
     doc.setFontSize(7);
-    doc.text("Imzo talab qilmaydi (O'z.R Qonuni 562)", margin + 44, y + 36);
+    doc.text("Med1.uz elektron kvitansiyasi", margin + 44, y + 36);
   } catch (e) {
     console.warn("QR generation failed", e);
   }
@@ -316,13 +318,10 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
     const stampPng = await generateStampDataUrl(
       { receiptNumber, paidAt: data.paidAt, microId, amount: data.amount }, 560
     );
-    const stampSize = 48;
+    const stampSize = 42;
     const stampX = pageW - margin - stampSize;
-    const stampY = y - 4;
-    const gstate = (doc as any).GState ? new (doc as any).GState({ opacity: 0.92 }) : null;
-    if (gstate) (doc as any).setGState(gstate);
+    const stampY = y;
     doc.addImage(stampPng, "PNG", stampX, stampY, stampSize, stampSize);
-    if (gstate) (doc as any).setGState(new (doc as any).GState({ opacity: 1 }));
   } catch (e) {
     console.warn("Stamp generation failed", e);
   }
@@ -384,7 +383,7 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
   doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(...COLORS.primary);
   doc.text("ELEKTRON KVITANSIYA", W / 2, y, { align: "center" }); y += 4;
   doc.setFontSize(10);
-  doc.text(`№ ${receiptNumber}`, W / 2, y, { align: "center" }); y += 4;
+  doc.text(receiptNumber, W / 2, y, { align: "center" }); y += 4;
   doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(...COLORS.muted);
   doc.text(data.paidAt.toLocaleString("uz-UZ"), W / 2, y, { align: "center" }); y += 4;
 
@@ -392,7 +391,7 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
   doc.setFillColor(...COLORS.greenSoft); doc.setDrawColor(...COLORS.green); doc.setLineWidth(0.3);
   doc.roundedRect(M, y, innerW, 7, 1.5, 1.5, "FD");
   doc.setTextColor(...COLORS.green); doc.setFont("helvetica", "bold"); doc.setFontSize(8);
-  doc.text("✓ MUVAFFAQIYATLI TO'LANDI", W / 2, y + 4.7, { align: "center" }); y += 10;
+  doc.text("MUVAFFAQIYATLI TO'LANDI", W / 2, y + 4.7, { align: "center" }); y += 10;
 
   // SUMMA
   doc.setTextColor(...COLORS.muted); doc.setFont("helvetica", "normal"); doc.setFontSize(7);
@@ -463,11 +462,8 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
 
   // MUHR
   if (stampPng) {
-    const sz = 22;
-    const gstate = (doc as any).GState ? new (doc as any).GState({ opacity: 0.85 }) : null;
-    if (gstate) (doc as any).setGState(gstate);
+    const sz = 32;
     doc.addImage(stampPng, "PNG", (W - sz) / 2, y, sz, sz);
-    if (gstate) (doc as any).setGState(new (doc as any).GState({ opacity: 1 }));
     y += sz + 2;
   }
 
