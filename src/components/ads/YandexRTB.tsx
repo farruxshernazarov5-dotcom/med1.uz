@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Megaphone } from "lucide-react";
+import { isClickExperience } from '@/lib/clickExperiencePolicy';
 
 declare global {
   interface Window {
@@ -40,7 +41,8 @@ const YandexRTB = ({
   );
 
   useEffect(() => {
-    if (!blockId) return;
+    if (!blockId || isClickExperience()) return;
+    let disposed = false;
 
     // Yandex Context script'ini bir marta yuklash
     const SCRIPT_SRC = "https://yandex.ru/ads/system/context.js";
@@ -52,7 +54,8 @@ const YandexRTB = ({
     }
 
     window.yaContextCb = window.yaContextCb || [];
-    window.yaContextCb.push(() => {
+    const render = () => {
+      if (disposed || isClickExperience()) return;
       try {
         window.Ya?.Context?.AdvManager?.render({
           blockId,
@@ -62,9 +65,12 @@ const YandexRTB = ({
       } catch (e) {
         console.warn("Yandex RTB render failed", e);
       }
-    });
+    };
+    window.yaContextCb.push(render);
+    return () => { disposed = true; window.yaContextCb = window.yaContextCb?.filter(cb => cb !== render); };
   }, [blockId, format]);
 
+  if (isClickExperience()) return null;
   return (
     <div
       className={`bg-card rounded-2xl border border-border shadow-card overflow-hidden ${className}`}

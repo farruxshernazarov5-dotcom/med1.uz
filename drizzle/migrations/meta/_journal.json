@@ -155,6 +155,20 @@
       "when": 1793803912301,
       "tag": "0021_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1793861221177,
+      "tag": "0022_wallet_coin_purchase_and_receipt_verification",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793861388169,
+      "tag": "0023_enable_wallet_payment_provider_and_package_reads",
+      "breakpoints": true
     }
   ]
 }

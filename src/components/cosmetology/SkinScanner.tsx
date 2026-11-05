@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { readAiImage } from '@/lib/aiImage';
+import { beginExternalPicker, endExternalPicker } from '@/lib/appLock';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,22 +48,29 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
   const [showTips, setShowTips] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [preparing, setPreparing] = useState(false);
+  const openPhoto = (selfie: boolean) => {
+    const input = fileRef.current;
+    if (!input) return;
+    if (selfie) input.setAttribute('capture', 'user');
+    else input.removeAttribute('capture');
+    beginExternalPicker();
+    input.click();
+  };
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Fayl hajmi 10MB dan oshmasligi kerak", variant: "destructive" });
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
+    setPreparing(true);
+    try {
+      const result = await readAiImage(file);
       setPhotoPreview(result);
       setPhotoBase64(result);
       setShowTips(false);
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      toast({ title: err instanceof Error ? err.message : 'Rasm yuklanmadi', variant: 'destructive' });
+    } finally { setPreparing(false); endExternalPicker(); }
   };
 
   const removePhoto = () => {
@@ -87,6 +96,7 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
 
   return (
     <div className="space-y-6">
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
       {/* Photo Guide Card */}
       <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-background to-violet-500/5 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -135,7 +145,7 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
               </div>
             )}
 
-            <div className="flex gap-4 items-start">
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
               {photoPreview ? (
                 <div className="relative group">
                   <div className="w-36 h-36 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-lg">
@@ -151,13 +161,12 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
                   </div>
                 </div>
               ) : (
-                <label className="w-36 h-36 rounded-2xl border-2 border-dashed border-primary/30 hover:border-primary/60 hover:bg-primary/5 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 bg-muted/20 group">
+                <Button variant="outline" onClick={() => openPhoto(false)} disabled={preparing} className="w-36 h-36 rounded-lg border-2 border-dashed border-primary/30 flex flex-col items-center justify-center gap-2 bg-muted/20 group">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Camera className="w-6 h-6 text-primary" />
                   </div>
                   <span className="text-xs text-muted-foreground font-medium">Rasm yuklang</span>
-                  <input ref={fileRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handlePhoto} />
-                </label>
+                </Button>
               )}
               <div className="flex-1 space-y-2">
                 <p className="text-sm text-muted-foreground">
@@ -166,15 +175,10 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
                     : "Yuz fotosuratini yuklang — AI teriningiz holatini batafsil tahlil qiladi."}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
+                  <Button variant="outline" size="sm" disabled={preparing} onClick={() => openPhoto(false)}>
                     <Upload className="w-4 h-4 mr-1" /> Galereyadan
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    if (fileRef.current) {
-                      fileRef.current.setAttribute("capture", "user");
-                      fileRef.current.click();
-                    }
-                  }}>
+                  <Button variant="outline" size="sm" disabled={preparing} onClick={() => openPhoto(true)}>
                     <Camera className="w-4 h-4 mr-1" /> Selfie
                   </Button>
                 </div>
@@ -221,7 +225,7 @@ const SkinScanner = ({ skinType, setSkinType, age, setAge, selectedConcerns, tog
             size="lg"
             className={`w-full text-base h-14 transition-all ${photoBase64 ? "bg-gradient-to-r from-primary to-violet-600 hover:from-primary/90 hover:to-violet-600/90 shadow-lg" : ""}`}
             onClick={startScan}
-            disabled={loading}
+            disabled={loading || preparing}
           >
             {loading ? (
               <>

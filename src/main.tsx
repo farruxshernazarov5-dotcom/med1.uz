@@ -7,6 +7,8 @@ import { installErrorTracker } from "./lib/errorTracker";
 import { installAiInvokeHeaders } from "./lib/installAiInvokeHeaders";
 import { installTelegramWebApp } from "./lib/telegramWebApp";
 import { watchClickSDKLoad } from "./lib/clickMiniApp";
+// Install picker guards before any lazy page can open the native camera.
+import "./lib/appLock";
 
 installErrorTracker();
 installAiInvokeHeaders();

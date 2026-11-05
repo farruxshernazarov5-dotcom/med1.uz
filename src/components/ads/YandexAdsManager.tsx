@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { isClickExperience } from '@/lib/clickExperiencePolicy';
 
 /**
  * Yandex RTB Ads Manager — FULLSCREEN ONLY.
@@ -10,11 +11,13 @@ import React, { useEffect } from 'react';
  */
 const YandexAdsManager: React.FC = () => {
   useEffect(() => {
+    if (isClickExperience()) return;
+    let disposed = false;
     let done = false;
     const timers: number[] = [];
 
     const loadScript = () => {
-      if (done) return;
+      if (done || disposed || isClickExperience()) return;
       done = true;
       const scriptId = 'yandex-context-script';
       if (!document.getElementById(scriptId)) {
@@ -35,6 +38,7 @@ const YandexAdsManager: React.FC = () => {
     (window as any).yaContextCb = (window as any).yaContextCb || [];
 
     const renderCallback = () => {
+      if (disposed || isClickExperience()) return;
       try {
         const Ya = (window as any).Ya;
         if (!Ya?.Context?.AdvManager) return;
@@ -64,6 +68,8 @@ const YandexAdsManager: React.FC = () => {
     (window as any).yaContextCb.push(renderCallback);
 
     return () => {
+      disposed = true;
+      window.yaContextCb = window.yaContextCb?.filter(cb => cb !== renderCallback);
       events.forEach((e) => window.removeEventListener(e, loadScript));
       timers.forEach((t) => window.clearTimeout(t));
     };

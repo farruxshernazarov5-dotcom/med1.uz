@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import AdCard from "./AdCard";
 import { fetchTopAds, type AdCampaign, type Lang } from "@/lib/med1Top";
 import { useLanguage } from "@/hooks/useLanguage";
+import { isClickExperience } from '@/lib/clickExperiencePolicy';
 
 interface Props {
   region?: string;
@@ -23,6 +24,7 @@ const SponsoredAds = ({ region, specialty, entityType, limit = 3, title, classNa
   const [ads, setAds] = useState<AdCampaign[]>([]);
 
   useEffect(() => {
+    if (isClickExperience()) return;
     let alive = true;
     fetchTopAds({ region, specialty, entityType, limit, order: "rank" })
       .then((rows) => alive && setAds(rows))
@@ -32,7 +34,7 @@ const SponsoredAds = ({ region, specialty, entityType, limit = 3, title, classNa
     };
   }, [region, specialty, entityType, limit]);
 
-  if (ads.length === 0) return null;
+  if (ads.length === 0 || isClickExperience()) return null;
 
   return (
     <section className={`rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-3 md:p-4 ${className ?? ""}`}>

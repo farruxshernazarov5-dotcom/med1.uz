@@ -19,10 +19,15 @@ const PURPOSE_LABELS: Record<string, string> = {
   saas_cosmetology: "Kosmetologiya SaaS tarif",
   hms_invoice: "Klinika xizmati to'lovi",
   ai_credits: "AI kredit to'ldirish",
+  cash_wallet_topup: "Avans kartani to‘ldirish",
+  cash_wallet_transfer_out: "Kartaga o‘tkazma yuborildi",
+  cash_wallet_transfer_in: "Kartaga o‘tkazma qabul qilindi",
+  cash_wallet_payment: "Avans karta orqali xarid",
 };
 
 const STATUS_LABELS: Record<string, { label: string; tone: "ok" | "warn" | "bad" }> = {
   paid: { label: "✓ To'langan", tone: "ok" },
+  completed: { label: "✓ Tasdiqlangan", tone: "ok" },
   pending: { label: "⏳ Kutilmoqda", tone: "warn" },
   failed: { label: "✗ Muvaffaqiyatsiz", tone: "bad" },
   cancelled: { label: "✗ Bekor qilingan", tone: "bad" },
@@ -69,23 +74,24 @@ const ReportVerificationPage = () => {
   const [searched, setSearched] = useState(false);
   const [manualCode, setManualCode] = useState("");
   const [downloading, setDownloading] = useState(false);
+  const [lookupError, setLookupError] = useState(false);
 
   const verifyPayment = async (paymentId: string) => {
     setLoading(true);
     setDoc(null);
     setPayment(null);
     setSearched(true);
-    const { data } = await supabase
-      .from("platform_payments")
-      .select("id, amount, currency, status, purpose, reference_id, provider, paid_at, created_at, user_id")
-      .eq("id", paymentId)
-      .maybeSingle();
-    setPayment(data);
+    setLookupError(false);
+    const { data, error } = await supabase.rpc('verify_payment_receipt', { _id: paymentId.trim() });
+    setLookupError(!!error);
+    setPayment(data?.[0] ?? null);
     setLoading(false);
   };
 
   const verify = async (code: string) => {
     if (!code?.trim()) return;
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(code.trim())) { await verifyPayment(code.trim()); return; }
+    setLookupError(false);
     setLoading(true);
     setDoc(null);
     setPayment(null);
@@ -116,7 +122,7 @@ const ReportVerificationPage = () => {
       setManualCode(code);
       verify(code);
     }
-  }, [reportId]);
+  }, [reportId, searchParams]);
 
   const handleDownloadReceipt = async () => {
     if (!payment) return;
@@ -141,7 +147,7 @@ const ReportVerificationPage = () => {
   };
 
   const isValid = doc?.status === "valid";
-  const isPaid = payment?.status === "paid";
+  const isPaid = payment?.status === "paid" || payment?.status === "completed";
   const docTypeLabels: Record<string, string> = {
     lab_result: "Laboratoriya natijasi",
     prescription: "Retsept",
@@ -383,9 +389,9 @@ const ReportVerificationPage = () => {
           <Card className="border-destructive/30">
             <CardContent className="p-6 text-center">
               <XCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-              <h3 className="font-semibold text-foreground mb-1">Topilmadi</h3>
+              <h3 className="font-semibold text-foreground mb-1">{lookupError ? 'Tekshiruv vaqtincha bajarilmadi' : 'Topilmadi'}</h3>
               <p className="text-sm text-muted-foreground">
-                Ushbu kod bo'yicha hujjat yoki to'lov topilmadi: <span className="font-mono">{manualCode}</span>
+                {lookupError ? 'Aloqani tekshirib, qayta urinib ko‘ring.' : <>Ushbu kod bo'yicha hujjat yoki to'lov topilmadi: <span className="font-mono break-all">{manualCode}</span></>}
               </p>
             </CardContent>
           </Card>

@@ -165,7 +165,17 @@ export async function stampSvgToPngDataUrl(svg: string, sizePx = 480): Promise<s
   });
 }
 
-export async function generateStampDataUrl(p: StampPayload, sizePx = 480): Promise<string> {
-  const svg = buildStampSvg(p);
-  return stampSvgToPngDataUrl(svg, sizePx);
+export async function generateStampDataUrl(_p: StampPayload, sizePx = 960): Promise<string> {
+  const { default: seal } = await import('@/assets/medall-official-seal.png.asset.json');
+  const response = await fetch(seal.url);
+  if (!response.ok || !response.headers.get('content-type')?.startsWith('image/')) throw new Error('Rasmiy muhr yuklanmadi');
+  const url = URL.createObjectURL(await response.blob());
+  try {
+    const img = new Image();
+    await new Promise<void>((resolve, reject) => { img.onload = () => resolve(); img.onerror = () => reject(new Error('Muhr ochilmadi')); img.src = url; });
+    const canvas = document.createElement('canvas'); canvas.width = sizePx; canvas.height = sizePx;
+    const ctx = canvas.getContext('2d'); if (!ctx) throw new Error('Canvas context yo‘q');
+    ctx.drawImage(img, 0, 0, sizePx, sizePx);
+    return canvas.toDataURL('image/png');
+  } finally { URL.revokeObjectURL(url); }
 }

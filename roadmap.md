@@ -227,3 +227,12 @@
 
 ## 2026-10-22 — PDF namuna ko‘rinishi
 - [x] Vital PDF: holat ranglari, ko‘rsatkichlar jadvali, pastda oddiy xulosa va PPG ritm bezagi; ikki sahifa ko‘rib tekshirildi, ortiqcha bo‘shliq va takroriy manbalar tuzatildi; 11 test o‘tdi
+
+## 5-noyabr karta, chek va AI mobil tuzatishlari
+- [x] Avans kartada to‘ldirish va katalog narxlari bo‘yicha Med Coin xaridi; serverda paket, balans, idempotent hisob-kitob va mavjud muddatli grantlar
+- [x] Haqiqiy karta operatsiyasi QR verifikatsiyasi jonli tasdiqlandi; A4/80mm cheklar yuborilgan aniq muhr bilan ko‘rildi
+- [x] Kamera qulflash himoyasi erta yuklanadi; kosmetologiya rasm inputi va tanlangan foto tab almashtirganda saqlanadi; mobil menyular ajratildi
+- [x] Click AI ? yordami ochilishi tekshirildi; inline va kechikkan fullscreen reklama chaqiruvlari Clickda cheklangan
+- [x] Mobil/desktop overflow yo‘q; foto qaytib ko‘rindi va mablag‘ yetishmasa xarid serverda rad etildi
+- [ ] Yakuniy haqiqiy pul xaridi/to‘ldirish — sinov hisobida avans balans 0; foydalanuvchi to‘lovni tasdiqlashi kerak
+- [ ] Native kamera va qolgan barcha AI ichki oqimlari haqiqiy telefonda — yangi APK va qurilma kerak; mahalliy kodni yangilab npx cap sync bajaring

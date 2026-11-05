@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { isClickExperience } from '@/lib/clickExperiencePolicy';
 import { Megaphone, ArrowRight, Stethoscope, BookOpen, Activity } from "lucide-react";
 
 const adVariants = [
@@ -29,6 +30,7 @@ const adVariants = [
 ];
 
 const AdBanner = ({ variant = 0 }: { variant?: number }) => {
+  if (isClickExperience()) return null;
   const ad = adVariants[variant % adVariants.length];
 
   return (

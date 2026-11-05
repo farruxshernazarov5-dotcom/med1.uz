@@ -235,7 +235,7 @@ const AICosmetologyPage = () => {
         <MedicalDisclaimer className="mb-6" />
 
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="grid grid-cols-6 w-full max-w-3xl mx-auto mb-6">
+          <TabsList className="grid h-auto grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 w-full max-w-3xl mx-auto mb-6 [&>button]:min-w-0 [&>button]:min-h-11 [&>button]:px-2">
             <TabsTrigger value="scanner"><Scan className="w-4 h-4 mr-1" /> Skaner</TabsTrigger>
             <TabsTrigger value="care"><Sun className="w-4 h-4 mr-1" /> Parvarish</TabsTrigger>
             <TabsTrigger value="treatments"><FlaskConical className="w-4 h-4 mr-1" /> Muolajalar</TabsTrigger>
@@ -245,7 +245,7 @@ const AICosmetologyPage = () => {
           </TabsList>
 
           {/* SKIN SCANNER TAB */}
-          <TabsContent value="scanner" className="space-y-6">
+          <TabsContent value="scanner" forceMount className="space-y-6 data-[state=inactive]:hidden">
             <SkinScanner
               skinType={skinType} setSkinType={setSkinType}
               age={age} setAge={setAge}
