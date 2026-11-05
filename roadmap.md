@@ -227,3 +227,10 @@
 
 ## 2026-10-22 — PDF namuna ko‘rinishi
 - [x] Vital PDF: holat ranglari, ko‘rsatkichlar jadvali, pastda oddiy xulosa va PPG ritm bezagi; ikki sahifa ko‘rib tekshirildi, ortiqcha bo‘shliq va takroriy manbalar tuzatildi; 11 test o‘tdi
+
+## 5-noyabr karta, chek va AI mobil tuzatishlari
+- [ ] Avans kartani to‘ldirish va mavjud narxlar bo‘yicha Med Coin xaridi
+- [ ] Haqiqiy karta operatsiyalari QR verifikatsiyasi va yuborilgan muhr bilan ustma-ust bo‘lmagan chek
+- [ ] Foto/selfie yuklash va AI ichki menyularini mobilga moslash
+- [ ] Click AI xizmatlari uchun yordam va barcha reklama yo‘llarini chiqarish
+- [ ] Tegishli sinovlar va mobil/desktop oqimlarini tekshirish
