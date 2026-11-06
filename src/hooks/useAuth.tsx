@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserRole(role);
     setProfile(profileRes.data ?? null);
     void import("@/lib/userDevices").then((m) => m.registerThisDevice(userId)).catch(() => {});
+    void import("@/lib/nativePush").then((m) => m.initNativePush()).catch(() => {});
   };
 
   const refreshProfile = async () => {

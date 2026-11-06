@@ -21,10 +21,26 @@ const permissions = [
   "android.permission.CAMERA",
   "android.permission.RECORD_AUDIO",
   "android.permission.INTERNET",
+  // Bluetooth watches: Android 12+ needs SCAN/CONNECT, older Android needs location for BLE scans
+  "android.permission.BLUETOOTH_SCAN",
+  "android.permission.BLUETOOTH_CONNECT",
+  "android.permission.BLUETOOTH",
+  "android.permission.BLUETOOTH_ADMIN",
+  "android.permission.ACCESS_FINE_LOCATION",
+  "android.permission.ACCESS_COARSE_LOCATION",
 ];
 const missing = permissions.filter((p) => !xml.includes(`"${p}"`));
 if (missing.length) {
   xml = xml.replace(/<application/, `${missing.map((p) => `<uses-permission android:name="${p}" />`).join("\n    ")}\n\n    <application`);
+}
+
+if (!xml.includes("android.hardware.bluetooth_le")) {
+  xml = xml.replace(/<application/, `<uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />\n\n    <application`);
+}
+
+// Push notifications need the Firebase config file from the Firebase console
+if (!fs.existsSync("android/app/google-services.json")) {
+  console.warn("⚠ android/app/google-services.json yo‘q — Firebase konsolidan (med-all-5d132, paket uz.medall.app) yuklab qo‘ying, aks holda push ishlamaydi.");
 }
 
 // Google / Microsoft sign-in returns to the app through uz.medall.app://app-auth
