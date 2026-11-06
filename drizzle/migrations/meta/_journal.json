@@ -169,6 +169,13 @@
       "when": 1793861388169,
       "tag": "0023_enable_wallet_payment_provider_and_package_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793991965691,
+      "tag": "0024_migration",
+      "breakpoints": true
     }
   ]
 }
