@@ -16184,6 +16184,36 @@ export type Database = {
         }
         Relationships: []
       }
+      push_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          last_daily_at: string | null
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_daily_at?: string | null
+          platform?: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_daily_at?: string | null
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       referral_codes: {
         Row: {
           code: string
@@ -18675,6 +18705,10 @@ export type Database = {
       }
       claim_initial_role: { Args: { _role: string }; Returns: string }
       claim_my_payment: { Args: { _payment_id: string }; Returns: Json }
+      claim_push_token: {
+        Args: { _platform: string; _token: string }
+        Returns: undefined
+      }
       click_fulfill_payment: { Args: { _payment_id: string }; Returns: Json }
       click_refund_payment: {
         Args: { _admin: string; _payment_id: string; _reason: string }

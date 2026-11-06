@@ -281,6 +281,13 @@ async function sendDaily(limit = 600) {
     if (result?.ok) sent++; else { failed++; if (result?.error_code === 403) await db.from("emedinfo_bot_users").update({ is_blocked: true }).eq("chat_id", user.chat_id); }
     await new Promise((r) => setTimeout(r, 40));
   }
+  // Daily Med AI message also as a phone push (once per ~20h per device)
+  const { data: pushRows } = await db.from("push_tokens").select("id, user_id").or(`last_daily_at.is.null,last_daily_at.lt.${cutoff}`).limit(2000);
+  if (pushRows?.length) {
+    await db.from("push_tokens").update({ last_daily_at: new Date().toISOString() }).in("id", pushRows.map((r) => r.id));
+    const plain = item.text.replace(/<[^>]+>/g, "");
+    await pushToUsers([...new Set(pushRows.map((r) => r.user_id))], "Med AI 💙", plain, item.path).catch((e) => console.error("daily push", e));
+  }
   if (sent || failed) await db.from("emedinfo_bot_broadcasts").insert({ kind: "daily_ai", message: item.text, button_text: item.button, button_path: item.path, sent_count: sent, failed_count: failed });
   return { sent, failed };
 }
@@ -431,11 +438,37 @@ async function sendAdminPanel(chatId: number, view = "home") {
   });
 }
 
+
+const FCM_URL = "https://connector-gateway.lovable.dev/firebase_messaging/v1/projects/_/messages:send";
+async function pushToUsers(userIds: string[], title: string, body: string, path: string) {
+  const lovKey = Deno.env.get("LOVABLE_API_KEY"), fcmKey = Deno.env.get("FIREBASE_MESSAGING_API_KEY");
+  if (!lovKey || !fcmKey || !userIds.length) return 0;
+  const { data: rows } = await db.from("push_tokens").select("id, token").in("user_id", userIds).limit(2000);
+  let ok = 0;
+  for (const row of rows ?? []) {
+    const res = await fetch(FCM_URL, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${lovKey}`, "X-Connection-Api-Key": fcmKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: { token: row.token, notification: { title: title.slice(0, 120), body: body.slice(0, 400) }, data: { path },
+        android: { priority: "HIGH", notification: { channel_id: "med_all_push", sound: "default" } } } }),
+    });
+    if (res.ok) ok++;
+    else {
+      const t = await res.text();
+      console.error(`FCM [${res.status}]: ${t.slice(0, 300)}`);
+      if (res.status === 404 || (res.status === 400 && /UNREGISTERED|registration token/i.test(t))) await db.from("push_tokens").delete().eq("id", row.id);
+    }
+  }
+  return ok;
+}
+
 async function sendNotification(id: string) {
   const since = new Date(Date.now() - 15 * 60_000).toISOString();
   const { data: n } = await db.from("notifications").update({ telegram_sent_at: new Date().toISOString() })
     .eq("id", id).is("telegram_sent_at", null).gte("created_at", since).select("user_id, title, message, type, link").maybeSingle();
   if (!n) return { skipped: true };
+  const pushPath = typeof n.link === "string" && n.link.startsWith("/") && !n.link.startsWith("//") ? n.link : "/mobile-profile";
+  await pushToUsers([n.user_id], String(n.title ?? "Med ALL"), String(n.message ?? ""), pushPath).catch((e) => console.error("push", e));
   const { data: prof } = await db.from("profiles").select("telegram_chat_id").eq("user_id", n.user_id).maybeSingle();
   const chat = prof?.telegram_chat_id ? Number(prof.telegram_chat_id) : 0;
   if (!chat) return { skipped: true };
