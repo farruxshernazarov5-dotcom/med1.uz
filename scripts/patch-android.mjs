@@ -39,7 +39,7 @@ if (!xml.includes("android.hardware.bluetooth_le")) {
 }
 
 // Push notifications need the Firebase config file from the Firebase console
-if (!fs.existsSync("android/app/google-services.json")) {
+if (!existsSync("android/app/google-services.json")) {
   console.warn("⚠ android/app/google-services.json yo‘q — Firebase konsolidan (med-all-5d132, paket uz.medall.app) yuklab qo‘ying, aks holda push ishlamaydi.");
 }
 
