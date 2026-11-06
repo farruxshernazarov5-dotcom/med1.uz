@@ -45,3 +45,4 @@
 
 - AI PDF exports retain fixed columns without inventing missing results; Vital PDF renders only actual Markdown tables as tables and keeps narrative blocks as prose, so measurements and advice remain visually distinct.
 - Platform doctor conversations use request-linked `platform_doctor_messages` with participant-only RLS and server-set sensitive flags; external doctor appointment chat remains separate because their doctor foreign keys differ.
+- Native push (FCM) tokens live in `push_tokens` (claimed via `claim_push_token` RPC from `src/lib/nativePush.ts`); `emedinfo-bot` sends pushes in the same notification-forward path as Telegram plus the daily Med AI message, so closed-app alerts never diverge from the feed.
