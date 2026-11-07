@@ -1,3 +1,8 @@
+## 2026-11-07 — Xizmat holati animatsiyalari
+- [ ] Texnik ishlar va yangilanishlarni mavjud boshqaruvga ulash
+- [ ] AI va natija kutiladigan xizmatlarga mos jonli kutish ekrani
+- [ ] Telefon/kompyuter va haqiqiy holat tugashini tekshirish
+
 ## 2026-11-02 — SMS kirishni qayta ishga tushirish
 - [x] Cloud sog‘lom, Eskiz xizmatlari yuklandi; jonli sinovda `%d` naqsh mos kelmasligi aniqlandi
 - [x] `%d` raqam maydoni tasdiqlangan naqshdan aniq render qilindi; 33 test o‘tdi, xizmatlar yuklandi, sayt tugmasidan +998992144103 ga SMS Eskiz tomonidan qabul qilindi; kod saqlanishi va noto‘g‘ri format rad etilishi tekshirildi
