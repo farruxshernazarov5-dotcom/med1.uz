@@ -176,6 +176,13 @@
       "when": 1793991965691,
       "tag": "0024_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794022152538,
+      "tag": "0025_wallet_topup_no_medcoin",
+      "breakpoints": true
     }
   ]
 }
