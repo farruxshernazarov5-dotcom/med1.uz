@@ -1,7 +1,8 @@
 ## 2026-11-07 — Xizmat holati animatsiyalari
-- [ ] Texnik ishlar va yangilanishlarni mavjud boshqaruvga ulash
-- [ ] AI va natija kutiladigan xizmatlarga mos jonli kutish ekrani
-- [ ] Telefon/kompyuter va haqiqiy holat tugashini tekshirish
+- [x] Texnik ishlar va yangilanishlar uchun kreativ rasmlar va e’lon sozlamasi; odatda o‘chiq, yangilanish har versiyada bir marta
+- [x] AI so‘rovlari (oqimli javoblar ham), sahifa ochilishi va to‘lov tekshiruviga xizmatga mos animatsiya; soxta foizsiz, fayl maydonlari saqlanadi
+- [x] 12 test, telefon/kompyuter e’lonlari va hisobga kirib haqiqiy AI so‘rovi → javob → animatsiya yopilishi tekshirildi
+- [ ] Native qurilmada ko‘rish — yangi APK yig‘ilishi va telefon sinovi kerak
 
 ## 2026-11-02 — SMS kirishni qayta ishga tushirish
 - [x] Cloud sog‘lom, Eskiz xizmatlari yuklandi; jonli sinovda `%d` naqsh mos kelmasligi aniqlandi
