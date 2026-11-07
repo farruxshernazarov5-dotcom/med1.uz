@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Shared status experiences use semantic roles and never claim invented progress. */
+.service-processing { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px; text-align:center; width:100%; }
+.service-processing-compact { padding:24px 20px; }
+.service-connection { display:flex; align-items:center; justify-content:center; width:100%; max-width:320px; height:150px; }
+.service-node { position:relative; display:grid; place-items:center; flex-shrink:0; width:78px; height:78px; border-radius:50%; background:hsl(var(--secondary)/.08); border:1px solid hsl(var(--secondary)/.3); color:hsl(var(--secondary)); }
+.service-node svg { width:32px; height:32px; }
+.service-node::after { content:""; position:absolute; inset:-7px; border:1px solid hsl(var(--secondary)/.3); border-top:2px solid hsl(var(--secondary)); border-radius:50%; animation:service-orbit 3s linear infinite; }
+.service-node-target::after { animation-direction:reverse; }
+.service-wire { display:flex; align-items:center; justify-content:space-around; width:86px; height:2px; margin:0 16px; background:hsl(var(--secondary)/.2); }
+.service-wire i { display:block; width:7px; height:7px; flex-shrink:0; border-radius:50%; background:hsl(var(--secondary)); animation:service-transfer 1.5s ease-in-out infinite; }
+.service-wire i:nth-child(2) { animation-delay:.25s; }
+.service-wire i:nth-child(3) { animation-delay:.5s; }
+.service-activity-overlay { position:fixed; z-index:90; bottom:100px; right:16px; width:min(360px,calc(100vw - 32px)); border:1px solid hsl(var(--border)); border-radius:8px; background:hsl(var(--background)/.97); box-shadow:var(--shadow-card); }
+.service-activity-overlay.is-minimized { width: min(300px,calc(100vw - 32px)); }
+.platform-maintenance { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; overflow-y:auto; background:hsl(var(--background)); color:hsl(var(--foreground)); padding:24px; }
+.status-announcement { width:100%; max-width:440px; margin:auto; text-align:center; }
+.status-photo { width:min(100%,300px); height:auto; aspect-ratio:1; object-fit:contain; margin:16px auto 24px; border-radius:8px; animation:status-reveal .6s ease-out both; }
+.status-update-dialog { max-width:480px; max-height:calc(100dvh - 32px); overflow-y:auto; border-radius:8px; }
+@keyframes service-orbit { to { transform:rotate(360deg); } }
+@keyframes service-transfer { 0%,100% { opacity:.25; transform:scale(.8); } 50% { opacity:1; transform:scale(1.2); } }
+@keyframes status-reveal { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@media(min-width:1024px) { .service-activity-overlay { bottom:28px; right:28px; } }
+@media(prefers-reduced-motion:reduce) { .service-node::after,.service-wire i,.status-photo { animation:none; } }
+
 /* Click partner skin uses semantic roles, preserving the host's light/dark mode. */
 .click-partner:not(.dark) {
   --background: 210 25% 97%;

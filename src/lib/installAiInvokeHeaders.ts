@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { aiChannelHeaders } from "@/lib/aiChannel";
 import { recordAiDiagnostic } from "@/lib/aiDiagnostics";
+import { beginServiceActivity, followServiceResponse } from "@/lib/serviceActivity";
 
 const AI_FUNCTIONS = new Set([
   "symptom-checker",
@@ -25,6 +26,9 @@ const AI_FUNCTIONS = new Set([
   "diag-ai-workflow",
   "doctor-ai-assistant",
   "ai-health-check",
+  "ai-oncology",
+  "ai-diabetes",
+  "ai-orchestrator",
 ]);
 
 let installed = false;
@@ -62,6 +66,22 @@ function extractRequestId(err: any): string | null {
 export function installAiInvokeHeaders() {
   if (installed) return;
   installed = true;
+
+  // Only our known AI endpoints are observed. No payloads, patient text or headers are stored.
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (input, init) => {
+    let service: string | null = null;
+    try {
+      const url = new URL(input instanceof Request ? input.url : String(input), window.location.origin);
+      const backend = new URL(import.meta.env.VITE_SUPABASE_URL);
+      const name = url.pathname.match(/^\/functions\/v1\/([^/]+)$/)?.[1];
+      if (url.origin === backend.origin && name && AI_FUNCTIONS.has(name)) service = url.searchParams.get("service") || name;
+    } catch { /* Ordinary fetch requests are unchanged. */ }
+    if (!service) return originalFetch(input, init);
+    const finish = beginServiceActivity(service);
+    try { return followServiceResponse(await originalFetch(input, init), finish); }
+    catch (error) { finish(); throw error; }
+  };
 
   const functionsClient = supabase.functions as any;
   const originalInvoke = functionsClient.invoke?.bind(functionsClient);

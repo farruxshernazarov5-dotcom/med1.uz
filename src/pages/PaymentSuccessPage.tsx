@@ -10,6 +10,7 @@ import { getDashboardPath } from "@/lib/dashboard";
 import { downloadPaymentReceipt, type ReceiptFormat } from "@/utils/downloadPaymentReceipt";
 import { FileText, Printer } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import ServiceProcessing from "@/components/ServiceProcessing";
 
 type Status = "loading" | "paid" | "pending" | "failed" | "not_found";
 
@@ -165,18 +166,12 @@ const PaymentSuccessPage = () => {
         <CardContent className="p-8 text-center space-y-6">
           {/* Status icon */}
           {status === "loading" && (
-            <>
-              <Loader2 className="w-16 h-16 mx-auto text-primary animate-spin" />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">To'lovni tekshirmoqdamiz...</h1>
-                <p className="text-muted-foreground text-sm mt-1">Iltimos kuting, bir necha soniya</p>
-              </div>
-            </>
+            <ServiceProcessing service="payment" compact />
           )}
 
           {status === "pending" && (
             <>
-              <Clock className="w-16 h-16 mx-auto text-amber-500 animate-pulse" />
+              {polls < 15 ? <ServiceProcessing service="payment" compact /> : <Clock className="w-16 h-16 mx-auto text-secondary" />}
               <div>
                 <h1 className="text-2xl font-bold text-foreground">To'lov qayta ishlanmoqda</h1>
                 <p className="text-muted-foreground text-sm mt-1">
