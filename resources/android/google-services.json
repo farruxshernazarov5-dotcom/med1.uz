@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "231168571127",
+    "project_id": "med-all-5d132",
+    "storage_bucket": "med-all-5d132.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231168571127:android:b6750209882a32fef705f2",
+        "android_client_info": {
+          "package_name": "uz.medall.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT3E-NuUeskiolDIsLBefwBeiUYOs9UEQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
