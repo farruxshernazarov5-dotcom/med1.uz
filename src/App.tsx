@@ -9,6 +9,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { CreditProvider } from "@/hooks/useCredits";
 import ClickMiniAppThemeProvider, { ClickMiniAppReady } from "@/components/ClickMiniAppThemeProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ServiceProcessing from "@/components/ServiceProcessing";
+const PlatformStatusExperience = lazy(() => import("./components/PlatformStatusExperience"));
 const Index = lazy(() => import("./pages/Index"));
 import NotFound from "./pages/NotFound";
 
@@ -175,12 +177,7 @@ const WebsiteExtrasOutsideClick = () => {
 };
 
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[60vh]">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-      <p className="text-sm text-muted-foreground">Yuklanmoqda...</p>
-    </div>
-  </div>
+  <div className="flex items-center justify-center min-h-[60vh]"><ServiceProcessing /></div>
 );
 
 const App = () => (
@@ -199,6 +196,7 @@ const App = () => (
           <WebsiteExtrasOutsideClick />
           <CookieConsent />
           <ClickExperience />
+          <Suspense fallback={null}><PlatformStatusExperience /></Suspense>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <ClickMiniAppReady />

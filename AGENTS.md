@@ -1,5 +1,7 @@
 # Project Architecture Rules
 
+- Platform notices use the deployment-owned public `platform-status.json` (disabled by default, never inferred from outages); `PlatformStatusExperience` renders notices once and the allowlisted AI fetch observer tracks response consumption without storing payloads, so streaming results and mounted photo inputs are preserved.
+
 - Click MiniApp startup and checkout adaptation live in `src/lib/clickMiniApp.ts`; activate only after the official SDK native handshake, keep Click web-session separate from Med1 auth and require a dedicated server-issued MiniApp Service ID, because the CDN also loads in normal browsers and website billing IDs cannot be reused. Hosting must inject validated session metadata per request without shared caching; see `docs/CLICK_MINIAPP.md`.
 - The `/click` entry reuses existing Med1 routes, authentication, and `MOBILE_AI_SERVICES` for grouped AI navigation (plus the orchestrator), because duplicate catalogues and business flows would diverge; its partnership favicon is route-scoped so other Med1 pages retain their branding.
 - The lightweight `mobileAiCatalog` owns AI route records and is re-exported by the full mobile catalogue; Click loads no service-story bundle and uses compressed `aiServiceCovers`, preventing image/story payloads from delaying its introduction.
