@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
 import { hapticTap } from "@/lib/nativeApp";
 import { cn } from "@/lib/utils";
-import { APP_RELEASE, isUnseenRelease } from "@/data/appUpdates";
+import { isUnseenRelease } from "@/data/appUpdates";
 import { Button } from "@/components/ui/button";
 
 type Item = {

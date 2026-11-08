@@ -45,10 +45,11 @@ async function speakNative(text: string): Promise<boolean> {
   } catch { return false; }
 }
 
-function speakWeb(text: string): boolean {
+function speakWeb(text: string, onFailure?: () => void): boolean {
   try {
     if (!("speechSynthesis" in window)) return false;
     const u = new SpeechSynthesisUtterance(text);
+    u.onerror = () => { onFailure?.(); window.dispatchEvent(new Event('medall:voice-blocked')); };
     u.lang = "uz-UZ";
     u.rate = 1;
     const voice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("uz"))
@@ -64,8 +65,8 @@ export type VoiceKind = "appointment" | "ai" | "wallet" | "transfer" | "coin" | 
 /** Classifies a notification so voice and the appointment chime never get mixed up. */
 export function voiceKind(title: string, message?: string | null, type?: string | null): VoiceKind {
   const t = `${type ?? ""} ${title} ${message ?? ""}`.toLowerCase();
-  if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
   if (/transfer|o[‘’'`ʻ]?tkazma|pul.*yubor/.test(t)) return "transfer";
+  if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
   if (/coin|med coin|obuna muddati|expir/.test(t)) return "coin";
   if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
   if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
@@ -98,7 +99,7 @@ export async function speakNotification(id: string, title: string, message?: str
   if (isNativeApp()) {
     if (await speakNative(text)) return;
   }
-  if (!speakWeb(text)) spoken.delete(key);
+  if (!speakWeb(text, () => spoken.delete(key))) spoken.delete(key);
 }
 
 /** Test voice from the settings toggle. */
