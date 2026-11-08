@@ -37,7 +37,10 @@ function clean(text: string): string {
 async function speakNative(text: string): Promise<boolean> {
   try {
     const { TextToSpeech } = await import("@capacitor-community/text-to-speech");
-    await TextToSpeech.speak({ text, lang: "uz-UZ", rate: 1.0, pitch: 1.0, category: "ambient" });
+    const { languages } = await TextToSpeech.getSupportedLanguages();
+    const lang = languages.find(l => /^uz/i.test(l)) ?? languages.find(l => /^ru/i.test(l)) ?? languages.find(l => /^en/i.test(l));
+    if (!lang) return false;
+    await TextToSpeech.speak({ text: text.replace(/MED ALL/g, 'Med oll'), lang, rate: 1.0, pitch: 1.0, category: "playback" });
     return true;
   } catch { return false; }
 }
@@ -45,7 +48,6 @@ async function speakNative(text: string): Promise<boolean> {
 function speakWeb(text: string): boolean {
   try {
     if (!("speechSynthesis" in window)) return false;
-    window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "uz-UZ";
     u.rate = 1;
@@ -57,12 +59,13 @@ function speakWeb(text: string): boolean {
   } catch { return false; }
 }
 
-export type VoiceKind = "appointment" | "ai" | "wallet" | "coin" | "message";
+export type VoiceKind = "appointment" | "ai" | "wallet" | "transfer" | "coin" | "message";
 
 /** Classifies a notification so voice and the appointment chime never get mixed up. */
 export function voiceKind(title: string, message?: string | null, type?: string | null): VoiceKind {
   const t = `${type ?? ""} ${title} ${message ?? ""}`.toLowerCase();
   if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
+  if (/transfer|o[‘’'`ʻ]?tkazma|pul.*yubor/.test(t)) return "transfer";
   if (/coin|med coin|obuna muddati|expir/.test(t)) return "coin";
   if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
   if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
@@ -72,6 +75,7 @@ export function voiceKind(title: string, message?: string | null, type?: string 
 /** Short spoken phrase per kind — never reads private medical text aloud. */
 export function voicePhrase(kind: VoiceKind): string {
   switch (kind) {
+    case "transfer": return "MED ALL. Sizda yangi o'tkazma bor.";
     case "ai": return "MED ALL. AI xulosangiz tayyor.";
     case "wallet": return "MED ALL. Hisobingiz to'ldirildi.";
     case "coin": return "MED ALL. Med Coin muddati tugamoqda, ulardan foydalanib qoling.";
@@ -87,13 +91,14 @@ export function voicePhrase(kind: VoiceKind): string {
 export async function speakNotification(id: string, title: string, message?: string | null, scope: VoiceNotifyScope = "general"): Promise<void> {
   const key = `${scope}:${id}`;
   if (!voiceNotifyOn(scope) || spoken.has(key)) return;
+  if (scope === 'general' && voiceKind(title, message) === 'appointment') return;
   spoken.add(key);
   if (spoken.size > 50) spoken.delete(spoken.values().next().value as string);
   const text = scope === "general" ? voicePhrase(voiceKind(title, message)) : `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
   if (isNativeApp()) {
     if (await speakNative(text)) return;
   }
-  speakWeb(text);
+  if (!speakWeb(text)) spoken.delete(key);
 }
 
 /** Test voice from the settings toggle. */

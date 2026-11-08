@@ -149,6 +149,7 @@ const SmartMatchPanel = lazy(() => import("./components/smart-match/SmartMatchPa
 const GeoPromoProvider = lazy(() => import("./components/geo/GeoPromoProvider").then(m => ({ default: m.GeoPromoProvider })));
 const HambiReturnButton = lazy(() => import("./components/partner/HambiReturnButton"));
 import ClickExperience from "./components/partner/ClickExperience";
+const NotificationVoiceListener = lazy(() => import('./components/NotificationVoiceListener'));
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 const YandexAdsManager = lazy(() => import("./components/ads/YandexAdsManager"));
@@ -196,6 +197,7 @@ const App = () => (
           <WebsiteExtrasOutsideClick />
           <CookieConsent />
           <ClickExperience />
+          <Suspense fallback={null}><NotificationVoiceListener /></Suspense>
           <Suspense fallback={null}><PlatformStatusExperience /></Suspense>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>

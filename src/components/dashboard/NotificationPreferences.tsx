@@ -160,6 +160,7 @@ const NotificationPreferences = () => {
               </Badge>
             )}
             <Switch checked={voice} onCheckedChange={(v) => void toggleVoice(v)} />
+            <Button variant="outline" size="icon" aria-label="Ovozli xabarni sinash" title="Ovozli xabarni sinash" onClick={() => void testVoiceNotify().then(ok => { if (!ok) toast({ title: 'Ovoz ishlamadi', variant: 'destructive' }); })}><Volume2 /></Button>
           </div>
         </div>
 

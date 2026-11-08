@@ -54,7 +54,7 @@ export default function ClickMiniAppPage() {
             <Button asChild variant="outline" className="h-12"><Link to="/click/profile"><UserRound />Profil</Link></Button>
             <Button asChild variant="outline" className="h-12"><Link to="/click?view=requests"><MessageSquare />So‘rovlarim</Link></Button>
             <Button asChild variant="outline" className="h-12"><Link to="/click/appointments"><CalendarCheck />Qabullar</Link></Button>
-            <Button asChild variant="outline" className="h-12"><Link to="/click/profile?section=ai-history"><History />Chat tarixi</Link></Button>
+            <Button asChild variant="outline" className="h-12"><Link to="/click/profile?section=cabinet&detail=ai-history"><History />Chat tarixi</Link></Button>
             <Button asChild variant="outline" className="h-12"><Link to="/reels"><Play />Med Reels</Link></Button>
           </nav>
           <form className="mt-5 flex gap-2" onSubmit={(event) => {
