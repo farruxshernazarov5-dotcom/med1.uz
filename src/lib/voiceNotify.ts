@@ -45,25 +45,25 @@ export function uzForRussianVoice(text: string): string {
 }
 const MED_UZ = (t: string) => t.replace(/MED ALL/g, 'Med Oll');
 
-async function speakNative(text: string): Promise<boolean> {
+async function speakNative(text: string, ruText?: string): Promise<boolean> {
   try {
     const { TextToSpeech } = await import("@capacitor-community/text-to-speech");
     const { languages } = await TextToSpeech.getSupportedLanguages();
     const lang = languages.find(l => /^uz/i.test(l)) ?? languages.find(l => /^ru/i.test(l)) ?? languages.find(l => /^en/i.test(l));
     if (!lang) return false;
-    const spokenText = /^uz/i.test(lang) ? MED_UZ(text) : /^ru/i.test(lang) ? uzForRussianVoice(text) : MED_UZ(text);
+    const spokenText = /^uz/i.test(lang) ? MED_UZ(text) : /^ru/i.test(lang) ? (ruText ?? uzForRussianVoice(text)) : MED_UZ(text);
     await TextToSpeech.speak({ text: spokenText, lang, rate: 0.92, pitch: 1.0, category: "playback" });
     return true;
   } catch { return false; }
 }
 
-function speakWeb(text: string, onFailure?: () => void): boolean {
+function speakWeb(text: string, onFailure?: () => void, ruText?: string): boolean {
   try {
     if (!("speechSynthesis" in window)) return false;
     const voices = window.speechSynthesis.getVoices();
     const uz = voices.find((v) => v.lang.toLowerCase().startsWith("uz"));
     const ru = uz ? undefined : voices.find((v) => v.lang.toLowerCase().startsWith("ru"));
-    const u = new SpeechSynthesisUtterance(ru ? uzForRussianVoice(text) : MED_UZ(text));
+    const u = new SpeechSynthesisUtterance(ru ? (ruText ?? uzForRussianVoice(text)) : MED_UZ(text));
     u.onerror = () => { onFailure?.(); window.dispatchEvent(new Event('medall:voice-blocked')); };
     u.lang = ru ? "ru-RU" : "uz-UZ";
     u.rate = 0.92;
@@ -85,6 +85,18 @@ export function voiceKind(title: string, message?: string | null, type?: string 
   if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
   if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
   return "message";
+}
+
+/** Natural Russian phrases used when the phone has no Uzbek voice (Russian voices mangle Uzbek words). */
+export function voicePhraseRu(kind: VoiceKind): string {
+  switch (kind) {
+    case "transfer": return "Мед Олл. У вас новый перевод.";
+    case "ai": return "Мед Олл. Ваше заключение искусственного интеллекта готово.";
+    case "wallet": return "Мед Олл. Ваш баланс пополнен.";
+    case "coin": return "Мед Олл. Срок действия Мед Коинов истекает, успейте их использовать.";
+    case "appointment": return "Мед Олл. Напоминание о приёме.";
+    default: return "Мед Олл. У вас новое сообщение.";
+  }
 }
 
 /** Short spoken phrase per kind — never reads private medical text aloud. */
@@ -109,16 +121,19 @@ export async function speakNotification(id: string, title: string, message?: str
   if (scope === 'general' && voiceKind(title, message) === 'appointment') return;
   spoken.add(key);
   if (spoken.size > 50) spoken.delete(spoken.values().next().value as string);
-  const text = scope === "general" ? voicePhrase(voiceKind(title, message)) : `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
+  const kind = voiceKind(title, message);
+  const ruText = scope === "general" ? voicePhraseRu(kind) : undefined;
+  const text = scope === "general" ? voicePhrase(kind) : `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
   if (isNativeApp()) {
-    if (await speakNative(text)) return;
+    if (await speakNative(text, ruText)) return;
   }
-  if (!speakWeb(text, () => spoken.delete(key))) spoken.delete(key);
+  if (!speakWeb(text, () => spoken.delete(key), ruText)) spoken.delete(key);
 }
 
 /** Test voice from the settings toggle. */
 export async function testVoiceNotify(): Promise<boolean> {
   const text = `${SPEAK_PREFIX} Ovozli bildirishnomalar yoqildi. Yangi xabarlar endi ovoz chiqarib o'qiladi.`;
-  if (isNativeApp() && (await speakNative(text))) return true;
-  return speakWeb(text);
+  const ru = "Мед Олл. Голосовые уведомления включены. Новые сообщения теперь будут озвучиваться.";
+  if (isNativeApp() && (await speakNative(text, ru))) return true;
+  return speakWeb(text, undefined, ru);
 }

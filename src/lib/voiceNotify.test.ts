@@ -16,3 +16,14 @@ describe('uzForRussianVoice', () => {
     expect(uzForRussianVoice("MED ALL. Sizda yangi o'tkazma bor.")).toBe('Мед Олл. Сизда янги утказма бор.');
   });
 });
+
+import { voicePhraseRu } from './voiceNotify';
+describe('Russian fallback phrases', () => {
+  it('uses natural Russian for transfers', () => { expect(voicePhraseRu('transfer')).toBe('Мед Олл. У вас новый перевод.'); });
+  it('speaks Russian when only a Russian voice exists', async () => {
+    const speak=vi.fn();vi.stubGlobal('SpeechSynthesisUtterance',class{lang='';constructor(public text:string){}});
+    vi.stubGlobal('speechSynthesis',{speak,getVoices:()=>[{lang:'ru-RU'}]});setVoiceNotify(true);
+    await speakNotification('ru-msg','Yangi xabar');
+    expect(speak.mock.calls[0][0].text).toBe('Мед Олл. У вас новое сообщение.');
+  });
+});
