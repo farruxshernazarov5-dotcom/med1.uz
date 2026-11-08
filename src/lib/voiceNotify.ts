@@ -74,6 +74,34 @@ function speakWeb(text: string, onFailure?: () => void, ruText?: string): boolea
   } catch { return false; }
 }
 
+/** Pre-recorded natural female voices (public/voice/<id>-<kind>.mp3) — device TTS mispronounces Uzbek. */
+export const VOICE_OPTIONS = [
+  { id: "kore", label: "Madina — yumshoq" },
+  { id: "aoede", label: "Nilufar — iliq" },
+  { id: "leda", label: "Malika — yosh, quvnoq" },
+  { id: "zephyr", label: "Dilnoza — tiniq" },
+] as const;
+export type VoiceId = typeof VOICE_OPTIONS[number]["id"];
+const VOICE_PREF = "med1.voiceId";
+export const getVoiceId = (): VoiceId => {
+  try { const v = localStorage.getItem(VOICE_PREF); if (VOICE_OPTIONS.some(o => o.id === v)) return v as VoiceId; } catch { /* ignore */ }
+  return "kore";
+};
+export const setVoiceId = (id: VoiceId) => { try { localStorage.setItem(VOICE_PREF, id); } catch { /* ignore */ } };
+export const voiceClipUrl = (kind: VoiceKind | "test", id: VoiceId = getVoiceId()) => `/voice/${id}-${kind}.mp3`;
+
+let current: HTMLAudioElement | null = null;
+async function playClip(kind: VoiceKind | "test", id?: VoiceId): Promise<boolean> {
+  try {
+    if (typeof Audio === "undefined") return false;
+    current?.pause();
+    const a = new Audio(voiceClipUrl(kind, id));
+    current = a;
+    await a.play();
+    return true;
+  } catch { return false; }
+}
+
 export type VoiceKind = "appointment" | "ai" | "wallet" | "transfer" | "coin" | "message";
 
 /** Classifies a notification so voice and the appointment chime never get mixed up. */
@@ -122,6 +150,7 @@ export async function speakNotification(id: string, title: string, message?: str
   spoken.add(key);
   if (spoken.size > 50) spoken.delete(spoken.values().next().value as string);
   const kind = voiceKind(title, message);
+  if (scope === "general" && (await playClip(kind))) return;
   const ruText = scope === "general" ? voicePhraseRu(kind) : undefined;
   const text = scope === "general" ? voicePhrase(kind) : `${SPEAK_PREFIX} ${clean(title)}.${message ? ` ${clean(message)}` : ""}`;
   if (isNativeApp()) {
@@ -131,7 +160,8 @@ export async function speakNotification(id: string, title: string, message?: str
 }
 
 /** Test voice from the settings toggle. */
-export async function testVoiceNotify(): Promise<boolean> {
+export async function testVoiceNotify(id?: VoiceId): Promise<boolean> {
+  if (await playClip("test", id)) return true;
   const text = `${SPEAK_PREFIX} Ovozli bildirishnomalar yoqildi. Yangi xabarlar endi ovoz chiqarib o'qiladi.`;
   const ru = "Мед Олл. Голосовые уведомления включены. Новые сообщения теперь будут озвучиваться.";
   if (isNativeApp() && (await speakNative(text, ru))) return true;
