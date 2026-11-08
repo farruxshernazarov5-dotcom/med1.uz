@@ -74,7 +74,7 @@ export default function MobileProfilePage({ click = false }: { click?: boolean }
  case 'referral':return <Referral/>;
  case 'cash_wallet':return <CashWallet/>;
  case 'payments':return <Payments/>;
- case 'notifications':return <div className="space-y-4">{user&&<TelegramBotLinkCard/>}{user&&<Preferences/>}<Reminders/>{click&&user&&<Notifications/>}</div>;
+ case 'notifications':return <div className="space-y-4">{user&&<Preferences/>}<Reminders/>{click&&user&&<Notifications/>}</div>;
  case 'favorites':return <Favorites/>;
  case 'support':return user?<Support/>:link(tr('Biz bilan bog‘lanish','Связаться с нами','Contact us'),'/contact');
  case 'feedback':return <Feedback/>;
