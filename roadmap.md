@@ -1,3 +1,13 @@
+## 2026-11-08 — Click, foto, ovoz va yangi xizmatlar
+- [ ] Click qabullarining barcha mavjud funksiyalari va AI chat tarixiga kirish
+- [ ] AI foto/kamera tanlovining qayta ochilish xatosini tuzatish
+- [ ] MED ALL gapiradigan yangi xabar va o‘tkazma bildirishnomalari
+- [ ] Oila a’zolari salomatligi kuzatuvini kengaytirish
+- [ ] Vital Bluetooth ulanishi va aniq qurilma holatlari
+- [ ] Mobil yangi funksiyalar uchun NEW belgisi va yangiliklar ro‘yxati
+- [ ] Shifokor/mutaxassis foto-video va ijtimoiy reels lentasi, xavfsiz yuklash
+- [ ] Hisobga kirib asosiy oqimlar, testlar va ekranlarni tekshirish
+
 ## 2026-11-07 — Xizmat holati animatsiyalari
 - [x] Texnik ishlar va yangilanishlar uchun kreativ rasmlar va e’lon sozlamasi; odatda o‘chiq, yangilanish har versiyada bir marta
 - [x] AI so‘rovlari (oqimli javoblar ham), sahifa ochilishi va to‘lov tekshiruviga xizmatga mos animatsiya; soxta foizsiz, fayl maydonlari saqlanadi

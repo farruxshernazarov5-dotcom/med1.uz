@@ -204,6 +204,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/click" element={<ClickMiniAppPage />} />
                 <Route path="/click/profile" element={<MobileProfilePage click />} />
+                <Route path="/click/appointments" element={<MobileAppointmentsPage click />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />
                 <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />

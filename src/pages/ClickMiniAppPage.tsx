@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowRight, CircleHelp, Coins, Crown, Moon, Sun, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { ArrowRight, CalendarCheck, History, Play, CircleHelp, Coins, Crown, Moon, Sun, MessageSquare, Search, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,9 @@ export default function ClickMiniAppPage() {
           <nav aria-label="Click shaxsiy menyusi" className="mt-4 grid grid-cols-2 gap-3">
             <Button asChild variant="outline" className="h-12"><Link to="/click/profile"><UserRound />Profil</Link></Button>
             <Button asChild variant="outline" className="h-12"><Link to="/click?view=requests"><MessageSquare />So‘rovlarim</Link></Button>
+            <Button asChild variant="outline" className="h-12"><Link to="/click/appointments"><CalendarCheck />Qabullar</Link></Button>
+            <Button asChild variant="outline" className="h-12"><Link to="/click/profile?section=ai-history"><History />Chat tarixi</Link></Button>
+            <Button asChild variant="outline" className="h-12"><Link to="/reels"><Play />Med Reels</Link></Button>
           </nav>
           <form className="mt-5 flex gap-2" onSubmit={(event) => {
             event.preventDefault();

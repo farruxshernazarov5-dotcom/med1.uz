@@ -1,6 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, Brain, CircleHelp, Home, MessageSquare, UserRound } from 'lucide-react';
+import { ArrowLeft, Brain, CalendarCheck, Home, UserRound } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { getClickMiniAppState, returnToClick, subscribeClickMiniApp } from '@/lib/clickMiniApp';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,14 +23,13 @@ export default function ClickExperience() {
   if(!attributed||pathname.startsWith('/admin')||pathname.startsWith('/auth'))return null;
   const items=[
     {to:'/click',label:'Asosiy',icon:Home,active:pathname==='/click'&&!search},
-    {to:'/click?view=requests',label:'So‘rovlar',icon:MessageSquare,active:search.includes('view=requests')},
+    {to:'/click/appointments',label:'Qabullar',icon:CalendarCheck,active:pathname==='/click/appointments'},
     {to:'/ai-orchestrator',label:'Med AI',icon:Brain,center:true,active:pathname==='/ai-orchestrator'},
     {to:'/click/profile',label:'Profil',icon:UserRound,active:pathname.startsWith('/click/profile')},
-    {to:'/click?guide=1',label:'Yordam',icon:CircleHelp,active:search.includes('guide=1')},
   ];
   return <nav aria-label="Click kabinet menyusi" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-12px_hsl(var(--primary)/0.35)] backdrop-blur-md">
     <div className="mx-auto flex max-w-3xl items-end justify-between px-2 pt-1">
-      <button type="button" onClick={returnToClick} className="flex w-14 flex-col items-center gap-0.5 py-2 text-[10px] text-muted-foreground" aria-label="Clickka qaytish"><ArrowLeft className="h-5 w-5"/>Click</button>
+      <Button variant="ghost" type="button" onClick={returnToClick} className="h-auto w-14 flex-col gap-0.5 px-0 py-2 text-[10px] text-muted-foreground" aria-label="Clickka qaytish"><ArrowLeft className="h-5 w-5"/>Click</Button>
       {items.map(({to,label,icon:Icon,center,active})=>center
         ? <Link key={to} to={to} aria-label={label} className="-mt-6 flex flex-col items-center gap-0.5 text-[10px] font-medium text-primary"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg ring-4 ring-card"><Icon className="h-6 w-6"/></span>{label}</Link>
         : <Link key={to} to={to} aria-label={label} aria-current={active?'page':undefined} className={`relative flex w-14 flex-col items-center gap-0.5 py-2 text-[10px] ${active?'font-semibold text-primary':'text-muted-foreground'}`}>{active&&<span className="absolute top-0 h-0.5 w-6 rounded-full bg-primary"/>}<Icon className="h-5 w-5"/>{label}</Link>)}
