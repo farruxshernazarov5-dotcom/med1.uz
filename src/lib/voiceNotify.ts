@@ -34,13 +34,25 @@ function clean(text: string): string {
   return text.replace(/\s+/g, " ").trim().slice(0, MAX_LEN);
 }
 
+const CYR: [RegExp,string][] = [[/o['‘’ʻ`]/gi,'ў'],[/g['‘’ʻ`]/gi,'ғ'],[/sh/gi,'ш'],[/ch/gi,'ч'],[/ng/gi,'нг'],[/yo/gi,'ё'],[/yu/gi,'ю'],[/ya/gi,'я'],[/['‘’ʻ`]/g,'ъ']];
+const MAP: Record<string,string> = {a:'а',b:'б',d:'д',e:'е',f:'ф',g:'г',h:'ҳ',i:'и',j:'ж',k:'к',l:'л',m:'м',n:'н',o:'о',p:'п',q:'қ',r:'р',s:'с',t:'т',u:'у',v:'в',x:'х',y:'й',z:'з',c:'с',w:'в'};
+/** Uzbek Latin → Cyrillic so Russian voices pronounce Uzbek words correctly (no Uzbek voice on most phones). */
+export function uzForRussianVoice(text: string): string {
+  let t = text.replace(/MED ALL/g, 'Мед Олл').replace(/Med Coin/gi, 'Мед Коин').replace(/\bAI\b/g, 'Эй-Ай');
+  for (const [r, c] of CYR) t = t.replace(r, c);
+  return t.replace(/[a-z]/gi, ch => { const c = MAP[ch.toLowerCase()] ?? ch; return ch === ch.toUpperCase() ? c.toUpperCase() : c; })
+    .replace(/ў/g,'у').replace(/Ў/g,'У').replace(/ҳ/g,'х').replace(/қ/g,'к').replace(/ғ/g,'г').replace(/Қ/g,'К').replace(/Ғ/g,'Г').replace(/Ҳ/g,'Х');
+}
+const MED_UZ = (t: string) => t.replace(/MED ALL/g, 'Med Oll');
+
 async function speakNative(text: string): Promise<boolean> {
   try {
     const { TextToSpeech } = await import("@capacitor-community/text-to-speech");
     const { languages } = await TextToSpeech.getSupportedLanguages();
     const lang = languages.find(l => /^uz/i.test(l)) ?? languages.find(l => /^ru/i.test(l)) ?? languages.find(l => /^en/i.test(l));
     if (!lang) return false;
-    await TextToSpeech.speak({ text: text.replace(/MED ALL/g, 'Med oll'), lang, rate: 1.0, pitch: 1.0, category: "playback" });
+    const spokenText = /^uz/i.test(lang) ? MED_UZ(text) : /^ru/i.test(lang) ? uzForRussianVoice(text) : MED_UZ(text);
+    await TextToSpeech.speak({ text: spokenText, lang, rate: 0.92, pitch: 1.0, category: "playback" });
     return true;
   } catch { return false; }
 }
@@ -48,12 +60,14 @@ async function speakNative(text: string): Promise<boolean> {
 function speakWeb(text: string, onFailure?: () => void): boolean {
   try {
     if (!("speechSynthesis" in window)) return false;
-    const u = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const uz = voices.find((v) => v.lang.toLowerCase().startsWith("uz"));
+    const ru = uz ? undefined : voices.find((v) => v.lang.toLowerCase().startsWith("ru"));
+    const u = new SpeechSynthesisUtterance(ru ? uzForRussianVoice(text) : MED_UZ(text));
     u.onerror = () => { onFailure?.(); window.dispatchEvent(new Event('medall:voice-blocked')); };
-    u.lang = "uz-UZ";
-    u.rate = 1;
-    const voice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("uz"))
-      ?? window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("ru"));
+    u.lang = ru ? "ru-RU" : "uz-UZ";
+    u.rate = 0.92;
+    const voice = uz ?? ru;
     if (voice) u.voice = voice;
     window.speechSynthesis.speak(u);
     return true;

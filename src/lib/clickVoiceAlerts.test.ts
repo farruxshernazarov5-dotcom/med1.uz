@@ -33,7 +33,7 @@ describe('Click voice notifications', () => {
     expect(speak).not.toHaveBeenCalled();
     setVoiceNotify(true, 'click');
     await speakNotification('enabled-click', 'Click orqali yangi so‘rov keldi', null, 'click');
-    expect(speak.mock.calls[0][0].text).toBe('MED ALL. Click orqali yangi so‘rov keldi.');
+    expect(speak.mock.calls[0][0].text).toBe('Med Oll. Click orqali yangi so‘rov keldi.');
     await speakNotification('enabled-click', 'Click orqali yangi so‘rov keldi', null, 'click');
     expect(speak).toHaveBeenCalledTimes(1);
     vi.unstubAllGlobals();
