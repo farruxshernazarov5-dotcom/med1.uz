@@ -1,3 +1,15 @@
+## 2026-11-08 — Click, foto, ovoz va yangi xizmatlar
+- [x] Click qabullari mavjud umumiy sahifaga ulandi; chat tarixi profil kabinetidan ochiladi
+- [x] AI sahifalari auth refresh vaqtida mounted qoladi; Farmatsevt inputlari doim mounted, surat saqlanadi, user chat yoziladi; serverdagi assistant history hayot sikli mustahkamlandi
+- [x] Click/veb uchun global yangi xabar kuzatuvi va native push ovozi; o‘tkazma iborasi, qo‘llanadigan TTS til, sinov tugmasi, qabul signali alohida
+- [x] Oila monitoringi har bir a’zo oynasida; oxirgi haqiqiy qiymat/sana, bo‘sh va noto‘g‘ri qiymat validatsiyasi
+- [x] Vital Bluetooth: bitta tanlov oynasi, uzilish holati, xatoda disconnect, paket tekshiruvi, bufer chegaralari
+- [x] Mobil NEW belgisi, versiyali yangiliklar ro‘yxati va funksiyalarga havolalar
+- [x] Med Reels lenta, haqiqiy foto/video yuklash, ijtimoiy linklar; rol/RLS, admin tekshiruvi va private storage; foto upload/read/delete hisobda tekshirildi
+- [x] 22 test, build OK; hisobga kirib foto auth refreshda saqlanishi, Click nav/history, oilaviy monitoring, ovoz sozlamasi, desktop/mobile reels tekshirildi
+- [ ] Jonli Farmatsevt AI javobi → tarix: sinov hisobida Med Coin yetarli emas (402); so‘rov yuborildi, mablag‘ cheklovi chetlab o‘tilmadi
+- [ ] Native ovoz/Bluetooth/kamera yakuniy sinovi: yangilangan APK va haqiqiy mos BLE qurilma kerak; yopiq ilovada FCM keladi, gapiradigan ovoz faqat ilova ishlayotganda
+
 ## 2026-11-07 — Xizmat holati animatsiyalari
 - [x] Texnik ishlar va yangilanishlar uchun kreativ rasmlar va e’lon sozlamasi; odatda o‘chiq, yangilanish har versiyada bir marta
 - [x] AI so‘rovlari (oqimli javoblar ham), sahifa ochilishi va to‘lov tekshiruviga xizmatga mos animatsiya; soxta foizsiz, fayl maydonlari saqlanadi

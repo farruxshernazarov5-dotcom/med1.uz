@@ -26,6 +26,9 @@ export async function initNativePush(): Promise<void> {
       await supabase.rpc("claim_push_token" as never, { _token: value, _platform: platform } as never);
     });
     await p.addListener("registrationError", (e) => console.warn("push registration failed", e));
+    await p.addListener('pushNotificationReceived', ({ id, title, body }) => {
+      void import('./voiceNotify').then(m => m.speakNotification(id, title ?? 'Yangi xabar', body));
+    });
     await p.addListener("pushNotificationActionPerformed", ({ notification }) => {
       const path = String(notification.data?.path ?? "");
       if (path.startsWith("/") && !path.startsWith("//")) window.location.assign(path);

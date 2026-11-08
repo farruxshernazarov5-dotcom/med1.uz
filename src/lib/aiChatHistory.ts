@@ -23,7 +23,7 @@ export async function logAiChat(entry: AIChatEntry): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from("ai_chat_history" as any).insert({
+    const { error } = await supabase.from("ai_chat_history" as any).insert({
       user_id: user.id,
       service_id: entry.serviceId,
       session_id: entry.sessionId ?? null,
@@ -34,6 +34,7 @@ export async function logAiChat(entry: AIChatEntry): Promise<void> {
       model: entry.model ?? null,
       metadata: entry.metadata ?? {},
     });
+    if (error) throw error;
   } catch (e) {
     console.warn("logAiChat failed", e);
   }

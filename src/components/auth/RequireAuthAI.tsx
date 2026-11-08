@@ -9,8 +9,8 @@ import { signInDestination } from "@/lib/authDestination";
 export const RequireAuthAI = ({ children }: { children: ReactNode }) => {
   const { user, loading } = useAuth();
   const { pathname, search } = useLocation();
-  if (loading) return <div className="min-h-[60vh] grid place-items-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   if (user) return <>{children}</>;
+  if (loading) return <div className="min-h-[60vh] grid place-items-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   return (
     <div className="min-h-[70vh] grid place-items-center px-6">
       <div className="max-w-sm w-full text-center space-y-4 rounded-2xl border bg-card p-8 shadow-sm">

@@ -1,0 +1,14 @@
+CREATE TABLE public.medical_reels (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), owner_id uuid NOT NULL, title text NOT NULL CHECK (length(title) BETWEEN 1 AND 160), description text NOT NULL DEFAULT '', media_kind text NOT NULL CHECK (media_kind IN ('photo','video','social')), storage_path text, external_url text, status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')), created_at timestamptz NOT NULL DEFAULT now(), CHECK ((storage_path IS NOT NULL AND external_url IS NULL) OR (storage_path IS NULL AND external_url ~ '^https://')));
+GRANT SELECT ON public.medical_reels TO anon;
+GRANT SELECT, INSERT, DELETE ON public.medical_reels TO authenticated;
+GRANT UPDATE (status) ON public.medical_reels TO authenticated;
+GRANT ALL ON public.medical_reels TO service_role;
+ALTER TABLE public.medical_reels ENABLE ROW LEVEL SECURITY;
+CREATE POLICY reels_read ON public.medical_reels FOR SELECT USING (status='approved' OR owner_id=auth.uid() OR public.has_role(auth.uid(),'admin'));
+CREATE POLICY reels_publish ON public.medical_reels FOR INSERT TO authenticated WITH CHECK (owner_id=auth.uid() AND status='pending' AND (storage_path IS NULL OR split_part(storage_path,'/',1)=auth.uid()::text) AND EXISTS (SELECT 1 FROM public.user_roles r WHERE r.user_id=auth.uid() AND r.role IN ('doctor','clinic','cosmetology','dental','diagnostics','maternity','pharmacy','admin')));
+CREATE POLICY reels_review ON public.medical_reels FOR UPDATE TO authenticated USING (public.has_role(auth.uid(),'admin')) WITH CHECK (public.has_role(auth.uid(),'admin'));
+CREATE POLICY reels_delete ON public.medical_reels FOR DELETE TO authenticated USING (owner_id=auth.uid() OR public.has_role(auth.uid(),'admin'));
+CREATE INDEX medical_reels_feed_idx ON public.medical_reels (created_at DESC) WHERE status='approved';
+CREATE POLICY reels_files_read ON storage.objects FOR SELECT USING (bucket_id='medical-reels' AND ((storage.foldername(name))[1]=auth.uid()::text OR public.has_role(auth.uid(),'admin') OR EXISTS (SELECT 1 FROM public.medical_reels r WHERE r.storage_path=name AND r.status='approved')));
+CREATE POLICY reels_files_upload ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id='medical-reels' AND (storage.foldername(name))[1]=auth.uid()::text AND EXISTS (SELECT 1 FROM public.user_roles r WHERE r.user_id=auth.uid() AND r.role IN ('doctor','clinic','cosmetology','dental','diagnostics','maternity','pharmacy','admin')));
+CREATE POLICY reels_files_delete ON storage.objects FOR DELETE TO authenticated USING (bucket_id='medical-reels' AND (storage.foldername(name))[1]=auth.uid()::text);

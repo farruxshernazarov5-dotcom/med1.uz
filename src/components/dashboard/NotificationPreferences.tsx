@@ -23,6 +23,8 @@ const NotificationPreferences = () => {
   });
   const [telegramChatId, setTelegramChatId] = useState("");
   const [voice, setVoice] = useState(voiceNotifyOn());
+  const [voiceBlocked, setVoiceBlocked] = useState(false);
+  useEffect(() => { const failed=()=>setVoiceBlocked(true); window.addEventListener('medall:voice-blocked',failed);return()=>window.removeEventListener('medall:voice-blocked',failed); },[]);
 
   const toggleVoice = async (on: boolean) => {
     setVoiceNotify(on);
@@ -160,9 +162,11 @@ const NotificationPreferences = () => {
               </Badge>
             )}
             <Switch checked={voice} onCheckedChange={(v) => void toggleVoice(v)} />
+            <Button variant="outline" size="icon" aria-label="Ovozli xabarni sinash" title="Ovozli xabarni sinash" onClick={() => void testVoiceNotify().then(ok => { if (!ok) toast({ title: 'Ovoz ishlamadi', variant: 'destructive' }); })}><Volume2 /></Button>
           </div>
         </div>
 
+        {voiceBlocked && <p role="alert" className="text-sm text-destructive">Ovozli xabarni brauzer to‘xtatdi. Ovoz sinovi tugmasini bosing va telefonning media ovozini tekshiring.</p>}
         {channels.telegram && (
           <div className="space-y-2 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
             <Label className="text-sm font-medium">Telegram Chat ID</Label>

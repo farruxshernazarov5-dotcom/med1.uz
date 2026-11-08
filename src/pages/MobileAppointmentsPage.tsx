@@ -70,7 +70,7 @@ const EmptyState = ({ panel, onGo }: { panel: Panel; onGo: () => void }) => (
   </div>
 );
 
-const MobileAppointmentsPage = () => {
+const MobileAppointmentsPage = ({ click = false }: { click?: boolean }) => {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
@@ -176,9 +176,9 @@ const MobileAppointmentsPage = () => {
   const tipsCover = MOBILE_TIP_MENUS[1].frames[0];
 
   return (
-    <div className="min-h-screen bg-background pb-28">
+    <div className="mx-auto min-h-screen max-w-4xl bg-background pb-28">
       <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-border bg-card/90 px-3 py-2 backdrop-blur-xl app-safe-top">
-        <Button asChild variant="ghost" size="icon" aria-label="Orqaga"><Link to="/"><ArrowLeft /></Link></Button>
+        <Button asChild variant="ghost" size="icon" aria-label="Orqaga"><Link to={click ? '/click' : '/'}><ArrowLeft /></Link></Button>
         <h1 className="flex-1 text-base font-bold text-foreground">Qabullar</h1>
         <Button variant="ghost" size="icon" aria-label="Yo‘riqnomani ochish" onClick={() => setGuideOpen(true)}><CircleHelp /></Button>
       </header>
@@ -195,7 +195,7 @@ const MobileAppointmentsPage = () => {
       {!user ? (
         <div className="m-4 rounded-xl border border-border bg-card p-5 text-center">
           <p className="font-semibold text-foreground">Ma’lumotlaringizni ko‘rish uchun tizimga kiring</p>
-           <Button asChild className="mt-3"><Link to={signInDestination(`/mobile-appointments${params.size ? `?${params.toString()}` : ''}`)}>Kirish</Link></Button>
+           <Button asChild className="mt-3"><Link to={signInDestination(`${click ? '/click/appointments' : '/mobile-appointments'}${params.size ? `?${params.toString()}` : ''}`)}>Kirish</Link></Button>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 p-4">

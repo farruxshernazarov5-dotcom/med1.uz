@@ -10,27 +10,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { Activity, Heart, Droplets, Scale, Thermometer, Plus, TrendingUp, Trash2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { HEALTH_FIELDS, healthInputError, latestMetric } from '@/lib/familyHealth';
 
 const METRICS = [
-  { key: "systolic", label: "Bosim (yuqori)", unit: "mmHg", color: "#ef4444", icon: Droplets },
-  { key: "heart_rate", label: "Yurak urishi", unit: "bpm", color: "#f43f5e", icon: Heart },
-  { key: "spo2", label: "SpO₂", unit: "%", color: "#3b82f6", icon: Activity },
-  { key: "glucose", label: "Qand", unit: "mmol/l", color: "#f59e0b", icon: Droplets },
-  { key: "weight_kg", label: "Vazn", unit: "kg", color: "#10b981", icon: Scale },
-  { key: "temperature", label: "Harorat", unit: "°C", color: "#8b5cf6", icon: Thermometer },
+  { key: "systolic", label: "Bosim (yuqori)", unit: "mmHg", color: "hsl(var(--destructive))", icon: Droplets },
+  { key: "heart_rate", label: "Yurak urishi", unit: "bpm", color: "hsl(var(--destructive))", icon: Heart },
+  { key: "spo2", label: "SpO₂", unit: "%", color: "hsl(var(--primary))", icon: Activity },
+  { key: "glucose", label: "Qand", unit: "mmol/l", color: "hsl(var(--medical-orange))", icon: Droplets },
+  { key: "weight_kg", label: "Vazn", unit: "kg", color: "hsl(var(--medical-green))", icon: Scale },
+  { key: "temperature", label: "Harorat", unit: "°C", color: "hsl(var(--accent))", icon: Thermometer },
 ];
 
-const PatientHealthTracking = () => {
+const PatientHealthTracking = ({ memberId }: { memberId?: string }) => {
   const { user } = useAuth();
   const [logs, setLogs] = useState<any[]>([]);
   const [family, setFamily] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState("systolic");
-  const [filterMember, setFilterMember] = useState<string>("self");
+  const [filterMember, setFilterMember] = useState<string>(memberId ?? "self");
+  const [error, setError] = useState(false);
   const [form, setForm] = useState<any>({
     log_date: new Date().toISOString().slice(0, 10),
-    family_member_id: "",
+    family_member_id: memberId ?? "",
     systolic: "", diastolic: "", heart_rate: "", spo2: "",
     glucose: "", weight_kg: "", height_cm: "", temperature: "", notes: "",
   });
@@ -41,6 +43,7 @@ const PatientHealthTracking = () => {
       supabase.from("patient_health_logs").select("*").eq("user_id", user.id).order("log_date", { ascending: true }),
       supabase.from("family_members").select("id, full_name").eq("user_id", user.id),
     ]);
+    setError(!!logsRes.error || !!famRes.error);
     setLogs(logsRes.data || []);
     setFamily(famRes.data || []);
     setLoading(false);
@@ -50,13 +53,15 @@ const PatientHealthTracking = () => {
 
   const save = async () => {
     if (!user) return;
+    const invalid = healthInputError(form);
+    if (invalid) return toast({ title: invalid, variant: 'destructive' });
     const payload: any = {
       user_id: user.id,
       log_date: form.log_date,
       family_member_id: form.family_member_id || null,
       notes: form.notes || null,
     };
-    ["systolic", "diastolic", "heart_rate", "spo2", "glucose", "weight_kg", "height_cm", "temperature"].forEach(k => {
+    HEALTH_FIELDS.forEach(k => {
       if (form[k]) payload[k] = parseFloat(form[k]);
     });
     const { error } = await supabase.from("patient_health_logs").insert(payload);
@@ -68,12 +73,14 @@ const PatientHealthTracking = () => {
   };
 
   const remove = async (id: string) => {
-    await supabase.from("patient_health_logs").delete().eq("id", id);
+    if (!window.confirm('Yozuv o‘chirilsinmi?')) return;
+    const { error } = await supabase.from("patient_health_logs").delete().eq("id", id);
+    if(error) return toast({title:'Yozuv o‘chirilmadi',variant:'destructive'});
     setLogs(prev => prev.filter(l => l.id !== id));
   };
 
   const filtered = logs.filter(l => filterMember === "self" ? !l.family_member_id : l.family_member_id === filterMember);
-  const metric = METRICS.find(m => m.key === selectedMetric)!;
+  const metric = METRICS.find(m => m.key === selectedMetric) ?? METRICS[0];
   const chartData = filtered
     .filter(l => l[selectedMetric] != null)
     .map(l => ({ date: new Date(l.log_date).toLocaleDateString("uz-UZ", { day: "2-digit", month: "short" }), value: l[selectedMetric] }));
@@ -86,7 +93,7 @@ const PatientHealthTracking = () => {
         <h2 className="font-heading text-xl font-bold text-foreground">📊 Sog'liq monitoring</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className="bg-hero-gradient text-primary-foreground border-0">
+            <Button size="sm" onClick={()=>setForm({...form,family_member_id:filterMember==='self'?'':filterMember})} className="bg-hero-gradient text-primary-foreground border-0">
               <Plus className="w-4 h-4 mr-1" /> Yangi yozuv
             </Button>
           </DialogTrigger>
@@ -126,11 +133,13 @@ const PatientHealthTracking = () => {
         </Dialog>
       </div>
 
+      {error && <div role="alert" className="mb-4 text-sm text-destructive">Ma’lumotlar to‘liq yuklanmadi. <Button variant="outline" size="sm" onClick={()=>void fetchData()}>Qayta urinish</Button></div>}
+
       {family.length > 0 && (
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-          <button onClick={() => setFilterMember("self")} className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap ${filterMember === "self" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>O'zim</button>
+          <Button variant={filterMember==='self'?'default':'outline'} size="sm" onClick={() => setFilterMember("self")}>O'zim</Button>
           {family.map(f => (
-            <button key={f.id} onClick={() => setFilterMember(f.id)} className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap ${filterMember === f.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{f.full_name}</button>
+            <Button key={f.id} size="sm" variant={filterMember===f.id?'default':'outline'} onClick={() => setFilterMember(f.id)}>{f.full_name}</Button>
           ))}
         </div>
       )}
@@ -138,14 +147,16 @@ const PatientHealthTracking = () => {
       {/* Latest values */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
         {METRICS.map(m => {
-          const v = latest?.[m.key];
+          const reading = latestMetric(filtered,m.key);
+          const v = reading?.[m.key];
           return (
             <div key={m.key} className="bg-card rounded-xl border border-border p-3">
               <div className="flex items-center gap-2 mb-1">
-                <m.icon className="w-4 h-4" style={{ color: m.color }} />
+                <m.icon className="w-4 h-4 text-primary" />
                 <span className="text-xs text-muted-foreground">{m.label}</span>
               </div>
               <p className="text-lg font-bold text-foreground">{v != null ? `${v} ${m.unit}` : "—"}</p>
+              {reading && <p className="text-[10px] text-muted-foreground">{new Date(reading.log_date).toLocaleDateString('uz-UZ')}</p>}
             </div>
           );
         })}

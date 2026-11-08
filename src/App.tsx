@@ -141,6 +141,7 @@ const MobileTipsPage = lazy(() => import("./pages/MobileTipsPage"));
 const MobileProfilePage = lazy(() => import("./pages/MobileProfilePage"));
 const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage"));
 const AppBridgePage = lazy(() => import("./pages/AppBridgePage"));
+const ReelsPage = lazy(() => import('./pages/ReelsPage'));
 const ClickMiniAppPage = lazy(() => import("./pages/ClickMiniAppPage"));
 
 const FloatingAISearch = lazy(() => import("./components/FloatingAISearch"));
@@ -149,6 +150,7 @@ const SmartMatchPanel = lazy(() => import("./components/smart-match/SmartMatchPa
 const GeoPromoProvider = lazy(() => import("./components/geo/GeoPromoProvider").then(m => ({ default: m.GeoPromoProvider })));
 const HambiReturnButton = lazy(() => import("./components/partner/HambiReturnButton"));
 import ClickExperience from "./components/partner/ClickExperience";
+const NotificationVoiceListener = lazy(() => import('./components/NotificationVoiceListener'));
 import CookieConsent from "./components/CookieConsent";
 import ReferralCapture from "./components/referral/ReferralCapture";
 const YandexAdsManager = lazy(() => import("./components/ads/YandexAdsManager"));
@@ -196,6 +198,7 @@ const App = () => (
           <WebsiteExtrasOutsideClick />
           <CookieConsent />
           <ClickExperience />
+          <Suspense fallback={null}><NotificationVoiceListener /></Suspense>
           <Suspense fallback={null}><PlatformStatusExperience /></Suspense>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
@@ -204,6 +207,8 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/click" element={<ClickMiniAppPage />} />
                 <Route path="/click/profile" element={<MobileProfilePage click />} />
+                <Route path="/click/appointments" element={<MobileAppointmentsPage click />} />
+                <Route path="/reels" element={<ReelsPage />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />
                 <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />

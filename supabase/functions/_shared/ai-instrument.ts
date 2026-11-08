@@ -17,7 +17,7 @@ export function instrumentStream(
   fallbackPromptTokens: number,
 ): ReadableStream<Uint8Array> {
   const [client, monitor] = body.tee();
-  (async () => {
+  const completionTask = (async () => {
     try {
       const reader = monitor.getReader();
       const decoder = new TextDecoder();
@@ -62,6 +62,9 @@ export function instrumentStream(
       console.warn("instrumentStream monitor failed", e);
     }
   })();
+  // Keep history writes alive after the streamed response closes in hosted functions.
+  const runtime = (globalThis as unknown as { EdgeRuntime?: { waitUntil: (task: Promise<void>) => void } }).EdgeRuntime;
+  runtime?.waitUntil(completionTask);
   return client;
 }
 
