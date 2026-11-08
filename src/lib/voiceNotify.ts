@@ -52,7 +52,7 @@ async function speakNative(text: string): Promise<boolean> {
     const lang = languages.find(l => /^uz/i.test(l)) ?? languages.find(l => /^ru/i.test(l)) ?? languages.find(l => /^en/i.test(l));
     if (!lang) return false;
     const spokenText = /^uz/i.test(lang) ? MED_UZ(text) : /^ru/i.test(lang) ? uzForRussianVoice(text) : MED_UZ(text);
-    await TextToSpeech.speak({ text: spokenText, lang, rate: 1.0, pitch: 1.0, category: "playback" });
+    await TextToSpeech.speak({ text: spokenText, lang, rate: 0.92, pitch: 1.0, category: "playback" });
     return true;
   } catch { return false; }
 }
