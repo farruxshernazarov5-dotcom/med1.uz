@@ -17,6 +17,9 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
+import { readAiImage } from '@/lib/aiImage';
+import { beginExternalPicker, endExternalPicker } from '@/lib/appLock';
+import { logAiChat } from '@/lib/aiChatHistory';
 
 type Part = { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } };
 interface Message { role: "user" | "assistant"; content: string | Part[] }
@@ -36,21 +39,6 @@ const QUICK_TOOLS: { label: string; icon: typeof Pill; build: (med: string) => s
   { label: "Nojo‘ya ta’sir", icon: HeartPulse, build: (m) => `${m || "Bu dori"} ning eng ko‘p uchraydigan va xavfli nojo‘ya ta’sirlari` },
 ];
 
-/** Downscale to ≤1280px JPEG so scans upload quickly on mobile data. */
-async function compressImage(file: File): Promise<string> {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const el = new Image(); el.onload = () => resolve(el); el.onerror = reject; el.src = url;
-    });
-    const scale = Math.min(1, 1280 / Math.max(img.width, img.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(img.width * scale); canvas.height = Math.round(img.height * scale);
-    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", 0.85);
-  } finally { URL.revokeObjectURL(url); }
-}
-
 const textOf = (c: Message["content"]) => (typeof c === "string" ? c : c.filter((p): p is Extract<Part, { type: "text" }> => p.type === "text").map((p) => p.text).join("\n"));
 const imageOf = (c: Message["content"]) => (typeof c === "string" ? null : c.find((p): p is Extract<Part, { type: "image_url" }> => p.type === "image_url")?.image_url.url ?? null);
 
@@ -64,6 +52,8 @@ const AIFarmatsevtPage = () => {
   const [newMed, setNewMed] = useState("");
   const [scanMode, setScanMode] = useState<ScanMode>("package");
   const [preview, setPreview] = useState<string | null>(null);
+  const [preparing, setPreparing] = useState(false);
+  const sessionId = useRef(crypto.randomUUID());
   const scrollRef = useRef<HTMLDivElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -115,6 +105,7 @@ const AIFarmatsevtPage = () => {
         setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ ${msg}` }]);
         return;
       }
+      void logAiChat({ serviceId: 'ai-farmatsevt', sessionId: sessionId.current, role: 'user', content: textOf(content), attachments: imageOf(content) ? [{ name: 'Dori skaneri', type: 'image/jpeg' }] : [] });
       let assistant = "";
       await consumeAiStream(response, (delta) => {
         assistant += delta;
@@ -126,6 +117,7 @@ const AIFarmatsevtPage = () => {
           return next;
         });
       });
+      // The server stores the completed assistant response; never duplicate it here.
     } catch (error) {
       if ((error as Error).name !== "AbortError") toast.error(navigator.onLine ? "Xatolik yuz berdi. Qaytadan urinib ko‘ring." : "Internet aloqasi yo‘q.");
     } finally {
@@ -139,14 +131,17 @@ const AIFarmatsevtPage = () => {
   const onPick = async (file?: File | null) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) { toast.error("Faqat rasm yuklang"); return; }
-    try { setPreview(await compressImage(file)); } catch { toast.error("Rasmni o‘qib bo‘lmadi"); }
+    setPreparing(true);
+    try { setPreview(await readAiImage(file)); setTab('scan'); }
+    catch (err) { toast.error(err instanceof Error ? err.message : "Rasmni o‘qib bo‘lmadi"); }
+    finally { setPreparing(false); endExternalPicker(); }
   };
 
   const analyzeScan = () => {
     if (!preview) return;
-    const mode = SCAN_MODES.find((m) => m.id === scanMode)!;
+    const mode = SCAN_MODES.find((m) => m.id === scanMode);
+    if (!mode) return;
     void send([{ type: "text", text: mode.prompt }, { type: "image_url", image_url: { url: preview } }]);
-    setPreview(null);
   };
 
   return (
@@ -182,6 +177,8 @@ const AIFarmatsevtPage = () => {
             ]}
           />
 
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" aria-label="Kamera" onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ''; void onPick(file); }} />
+          <input ref={galleryRef} type="file" accept="image/*" className="hidden" aria-label="Galereya" onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ''; void onPick(file); }} />
           <Tabs value={tab} onValueChange={setTab} className="mt-6">
             <TabsList className="grid w-full grid-cols-3 h-auto">
               <TabsTrigger value="scan" className="min-h-10 gap-1.5"><ScanLine className="h-4 w-4" /> Skaner</TabsTrigger>
@@ -219,17 +216,15 @@ const AIFarmatsevtPage = () => {
                     <div className="pointer-events-none absolute inset-6 rounded-xl border border-primary/40" />
                   </div>
 
-                  <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" aria-label="Kamera" onChange={(e) => { void onPick(e.target.files?.[0]); e.target.value = ""; }} />
-                  <input ref={galleryRef} type="file" accept="image/*" className="hidden" aria-label="Galereya" onChange={(e) => { void onPick(e.target.files?.[0]); e.target.value = ""; }} />
-
+                  {preparing && <p role="status" className="text-sm text-muted-foreground">Rasm tayyorlanmoqda…</p>}
                   {preview ? (
                     <Button onClick={analyzeScan} disabled={isLoading} className="w-full min-h-12 gap-2 text-base">
                       {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ScanLine className="h-5 w-5" />} Med AI bilan tahlil qilish
                     </Button>
                   ) : (
                     <div className="grid grid-cols-2 gap-2">
-                      <Button onClick={() => cameraRef.current?.click()} className="min-h-12 gap-2"><Camera className="h-5 w-5" /> Suratga olish</Button>
-                      <Button variant="outline" onClick={() => galleryRef.current?.click()} className="min-h-12 gap-2"><ImagePlus className="h-5 w-5" /> Galereyadan</Button>
+                      <Button disabled={preparing} onClick={() => { beginExternalPicker(); cameraRef.current?.click(); }} className="min-h-12 gap-2"><Camera className="h-5 w-5" /> Suratga olish</Button>
+                      <Button disabled={preparing} variant="outline" onClick={() => { beginExternalPicker(); galleryRef.current?.click(); }} className="min-h-12 gap-2"><ImagePlus className="h-5 w-5" /> Galereyadan</Button>
                     </div>
                   )}
                   <p className="text-[11px] text-muted-foreground text-center">Rasm faqat tahlil uchun yuboriladi va saqlanmaydi.</p>
@@ -322,7 +317,7 @@ const AIFarmatsevtPage = () => {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="icon" className="h-11 w-11 shrink-0" onClick={() => { setTab("scan"); setTimeout(() => cameraRef.current?.click(), 50); }} aria-label="Dorini skanerlash"><Camera className="h-4 w-4" /></Button>
+                    <Button variant="outline" size="icon" className="h-11 w-11 shrink-0" onClick={() => { setTab("scan"); beginExternalPicker(); cameraRef.current?.click(); }} aria-label="Dorini skanerlash"><Camera className="h-4 w-4" /></Button>
                     <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendText()} placeholder={t("aiForms.pharmacist.chatPlaceholder")} disabled={isLoading} className="flex-1 min-h-11" />
                     {isLoading ? (
                       <Button className="h-11 w-11 shrink-0" size="icon" variant="outline" onClick={() => abortRef.current?.abort()} aria-label="To‘xtatish"><Square className="h-4 w-4" /></Button>
