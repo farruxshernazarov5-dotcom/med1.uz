@@ -10,3 +10,9 @@ describe('Spoken MED ALL messages',()=>{
   await speakNotification('appointment-test','Qabul eslatmasi');expect(speak).toHaveBeenCalledTimes(1);vi.unstubAllGlobals();
  });
 });
+import { uzForRussianVoice } from './voiceNotify';
+describe('uzForRussianVoice', () => {
+  it('transliterates Uzbek phrase for Russian voices', () => {
+    expect(uzForRussianVoice("MED ALL. Sizda yangi o'tkazma bor.")).toBe('Мед Олл. Сизда янги утказма бор.');
+  });
+});

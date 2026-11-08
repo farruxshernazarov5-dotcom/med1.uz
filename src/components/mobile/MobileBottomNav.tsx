@@ -47,7 +47,7 @@ const MobileBottomNav = () => {
           ),
       },
       {
-        label: lang === "ru" ? "Приёмы" : lang === "en" ? "Visits" : "Qabullar",
+        label: lang === "ru" ? "Приёмы" : lang === "en" ? "Appointments" : "Qabullar",
         to: "/mobile-appointments",
         icon: CalendarCheck,
         match: (p) => p.startsWith("/mobile-appointments") || p.startsWith("/mobile-tips") || p.startsWith("/booking"),
