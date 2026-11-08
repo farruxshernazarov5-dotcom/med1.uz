@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Users, Plus, Edit, Trash2, Heart, AlertCircle } from "lucide-react";
+import PatientHealthTracking from './PatientHealthTracking';
 
 const RELATIONSHIPS = [
   { value: "spouse", label: "Turmush o'rtog'i" },
@@ -33,6 +34,7 @@ const PatientFamily = () => {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [form, setForm] = useState<any>(emptyForm);
+  const [monitor, setMonitor] = useState<{id:string;full_name:string}|null>(null);
 
   const fetch = async () => {
     if (!user) return;
@@ -123,6 +125,7 @@ const PatientFamily = () => {
                     {m.allergies && <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 inline-flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Allergiya</span>}
                     {m.chronic_conditions && <span className="px-2 py-0.5 rounded bg-violet-500/10 text-violet-600">Surunkali</span>}
                   </div>
+                  <Button variant="outline" className="mt-3 w-full" onClick={()=>setMonitor(m)}><Heart className="h-4 w-4"/>Salomatlik ko‘rsatkichlari</Button>
                 </div>
               );
             })}
@@ -130,6 +133,7 @@ const PatientFamily = () => {
         )
       }
 
+      <Dialog open={!!monitor} onOpenChange={value=>{if(!value)setMonitor(null);}}><DialogContent className="max-h-[90dvh] max-w-3xl overflow-y-auto"><DialogTitle>{monitor?.full_name} — salomatlik</DialogTitle>{monitor&&<PatientHealthTracking key={monitor.id} memberId={monitor.id}/>}</DialogContent></Dialog>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editing ? "Tahrirlash" : "Yangi a'zo"}</DialogTitle></DialogHeader>
