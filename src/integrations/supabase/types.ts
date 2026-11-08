@@ -12962,6 +12962,42 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_reels: {
+        Row: {
+          created_at: string
+          description: string
+          external_url: string | null
+          id: string
+          media_kind: string
+          owner_id: string
+          status: string
+          storage_path: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          external_url?: string | null
+          id?: string
+          media_kind: string
+          owner_id: string
+          status?: string
+          storage_path?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          external_url?: string | null
+          id?: string
+          media_kind?: string
+          owner_id?: string
+          status?: string
+          storage_path?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       medtech_clients: {
         Row: {
           address: string | null
