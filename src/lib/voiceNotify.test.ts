@@ -27,3 +27,8 @@ describe('Russian fallback phrases', () => {
     expect(speak.mock.calls[0][0].text).toBe('Мед Олл. У вас новое сообщение.');
   });
 });
+
+import { voiceClipUrl } from './voiceNotify';
+describe('recorded voices', () => {
+  it('maps chosen voice and kind to a recorded clip', () => { expect(voiceClipUrl('transfer','leda')).toBe('/voice/leda-transfer.mp3'); });
+});

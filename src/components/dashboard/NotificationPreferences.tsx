@@ -23,6 +23,7 @@ const NotificationPreferences = () => {
   });
   const [telegramChatId, setTelegramChatId] = useState("");
   const [voice, setVoice] = useState(voiceNotifyOn());
+  const [voiceId, setVoiceIdState] = useState<VoiceId>(getVoiceId());
   const [voiceBlocked, setVoiceBlocked] = useState(false);
   useEffect(() => { const failed=()=>setVoiceBlocked(true); window.addEventListener('medall:voice-blocked',failed);return()=>window.removeEventListener('medall:voice-blocked',failed); },[]);
 
