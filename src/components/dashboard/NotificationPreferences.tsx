@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Bell, MessageCircle, Mail, Phone, Save, CheckCircle2, Volume2 } from "lucide-react";
-import { setVoiceNotify, testVoiceNotify, voiceNotifyOn } from "@/lib/voiceNotify";
+import { setVoiceNotify, testVoiceNotify, voiceNotifyOn, VOICE_OPTIONS, getVoiceId, setVoiceId, type VoiceId } from "@/lib/voiceNotify";
 
 const NotificationPreferences = () => {
   const { user } = useAuth();
@@ -23,6 +23,7 @@ const NotificationPreferences = () => {
   });
   const [telegramChatId, setTelegramChatId] = useState("");
   const [voice, setVoice] = useState(voiceNotifyOn());
+  const [voiceId, setVoiceIdState] = useState<VoiceId>(getVoiceId());
   const [voiceBlocked, setVoiceBlocked] = useState(false);
   useEffect(() => { const failed=()=>setVoiceBlocked(true); window.addEventListener('medall:voice-blocked',failed);return()=>window.removeEventListener('medall:voice-blocked',failed); },[]);
 
@@ -164,6 +165,18 @@ const NotificationPreferences = () => {
             <Switch checked={voice} onCheckedChange={(v) => void toggleVoice(v)} />
             <Button variant="outline" size="icon" aria-label="Ovozli xabarni sinash" title="Ovozli xabarni sinash" onClick={() => void testVoiceNotify().then(ok => { if (!ok) toast({ title: 'Ovoz ishlamadi', variant: 'destructive' }); })}><Volume2 /></Button>
           </div>
+        </div>
+
+        <div className="space-y-2 rounded-xl border border-border bg-muted/30 p-3">
+          <p className="text-sm font-medium text-foreground">Ovoz tanlash</p>
+          <div role="radiogroup" aria-label="Ovoz tanlash" className="grid gap-2 sm:grid-cols-2">
+            {VOICE_OPTIONS.map(o => (
+              <Button key={o.id} type="button" role="radio" aria-checked={voiceId === o.id} variant={voiceId === o.id ? "default" : "outline"} className="justify-start gap-2" onClick={() => { setVoiceId(o.id); setVoiceIdState(o.id); void testVoiceNotify(o.id); }}>
+                <Volume2 />{o.label}
+              </Button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">Ovozni bosing — namuna eshitiladi va tanlanadi.</p>
         </div>
 
         {voiceBlocked && <p role="alert" className="text-sm text-destructive">Ovozli xabarni brauzer to‘xtatdi. Ovoz sinovi tugmasini bosing va telefonning media ovozini tekshiring.</p>}

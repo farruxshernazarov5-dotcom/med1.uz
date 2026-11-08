@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 vi.mock('./nativeApp', () => ({ isNativeApp: () => false }));
+vi.stubGlobal('Audio', undefined);
 import { createClickVoiceTracker } from './clickVoiceAlerts';
 import { setVoiceNotify, voiceNotifyOn, speakNotification } from './voiceNotify';
 
