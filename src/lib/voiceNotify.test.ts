@@ -1,5 +1,6 @@
 import { describe,it,expect,vi } from 'vitest';
 vi.mock('./nativeApp',()=>({isNativeApp:()=>false}));
+vi.stubGlobal('Audio', undefined);
 import {voiceKind,voicePhrase,speakNotification,setVoiceNotify} from './voiceNotify';
 describe('Spoken MED ALL messages',()=>{
  it('uses a distinct transfer phrase',()=>{expect(voiceKind('Yangi o‘tkazma','Pul qabul qilindi')).toBe('transfer');expect(voicePhrase('transfer')).toBe("MED ALL. Sizda yangi o'tkazma bor.");});
