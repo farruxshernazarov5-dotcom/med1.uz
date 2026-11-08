@@ -141,6 +141,7 @@ const MobileTipsPage = lazy(() => import("./pages/MobileTipsPage"));
 const MobileProfilePage = lazy(() => import("./pages/MobileProfilePage"));
 const MobileClassifiedsPage = lazy(() => import("./pages/MobileClassifiedsPage"));
 const AppBridgePage = lazy(() => import("./pages/AppBridgePage"));
+const ReelsPage = lazy(() => import('./pages/ReelsPage'));
 const ClickMiniAppPage = lazy(() => import("./pages/ClickMiniAppPage"));
 
 const FloatingAISearch = lazy(() => import("./components/FloatingAISearch"));
@@ -207,6 +208,7 @@ const App = () => (
                 <Route path="/click" element={<ClickMiniAppPage />} />
                 <Route path="/click/profile" element={<MobileProfilePage click />} />
                 <Route path="/click/appointments" element={<MobileAppointmentsPage click />} />
+                <Route path="/reels" element={<ReelsPage />} />
                 <Route path="/api-docs" element={<ApiDocsPage />} />
                 <Route path="/api-docs/*" element={<ApiDocsPage />} />
                 <Route path="/medicine" element={<MedicinePage />} />

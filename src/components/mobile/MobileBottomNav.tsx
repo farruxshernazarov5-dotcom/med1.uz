@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
 import { hapticTap } from "@/lib/nativeApp";
 import { cn } from "@/lib/utils";
+import { APP_RELEASE, isUnseenRelease } from "@/data/appUpdates";
 import { Button } from "@/components/ui/button";
 
 type Item = {
@@ -95,7 +96,7 @@ const MobileBottomNav = () => {
                 >
                   <Icon className="h-5 w-5" />
                 </span>
-                <span className="leading-none">{item.label}</span>
+                <span className="leading-none">{item.label}{item.to==='/mobile-profile'&&isUnseenRelease(localStorage.getItem('medall_updates_seen'))&&<span className="ml-1 rounded bg-medical-green px-1 text-[8px] text-primary-foreground">NEW</span>}</span>
               </Link>
             </li>
           );
@@ -133,7 +134,7 @@ const MobileBottomNav = () => {
                 <span className={cn("flex h-8 w-12 items-center justify-center rounded-full transition-colors", active && "bg-primary/10")}>
                   <Icon className="h-5 w-5" />
                 </span>
-                <span className="leading-none">{item.label}</span>
+                <span className="leading-none">{item.label}{item.to==='/mobile-profile'&&isUnseenRelease(localStorage.getItem('medall_updates_seen'))&&<span className="ml-1 rounded bg-medical-green px-1 text-[8px] text-primary-foreground">NEW</span>}</span>
               </Link>
             </li>
           );
