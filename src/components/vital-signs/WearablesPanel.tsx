@@ -17,6 +17,7 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
   const [msg, setMsg] = useState<string | null>(null);
   const [manual, setManual] = useState({ bpm: "", spo2: "", sleep: "", steps: "" });
   const [syncing, setSyncing] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [auto, setAuto] = useState(isAutoSyncOn());
   const rr = useRef<number[]>([]);
   const bpms = useRef<number[]>([]);
@@ -26,10 +27,12 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
   useEffect(() => () => ble?.disconnect(), [ble]);
 
   const connect = async () => {
+    if (connecting) return;
+    setConnecting(true);
     setMsg(null);
     try {
       rr.current = []; bpms.current = [];
-      const dev = await connectBleHeartRate((b, r) => { setLiveBpm(b); bpms.current.push(b); rr.current.push(...r); });
+      const dev = await connectBleHeartRate((b, r) => { setLiveBpm(b); bpms.current = [...bpms.current.slice(-119), b]; rr.current = [...rr.current, ...r].slice(-180); }, () => { setBle(null); setLiveBpm(null); setMsg('Bluetooth aloqasi uzildi. Qayta ulang.'); });
       setBle(dev);
     } catch (e: any) {
       const code = e?.message;
@@ -38,11 +41,11 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
         : code === "BT_OFF"
           ? "Telefonda Bluetooth o‘chiq. Uni yoqing va qayta urinib ko‘ring."
           : code === "NO_HR_SERVICE"
-            ? "Soat pulsni Bluetooth orqali uzatmayapti. Soatda “Puls uzatish / HR broadcast” rejimini yoqing (Garmin, Polar, Amazfit, Huawei, Xiaomi’da bor). Apple Watch, Galaxy Watch va ko‘p soatlar pulsni faqat Health Connect / Apple Health orqali beradi — pastdagi import tugmasidan foydalaning."
+            ? "Qurilmada standart Bluetooth puls uzatish (0x180D) xizmati topilmadi. Modelingiz HR broadcast rejimini qo‘llasa uni yoqing. Aks holda soatning rasmiy ilovasini Health Connect / Apple Healthga ulang va pastdagi importdan foydalaning."
             : native
               ? "Soat ulanmadi. Bluetooth va “Yaqin qurilmalar” ruxsatini bering, soatni telefonga yaqin tuting va soat ilovasida boshqa telefon ulanmaganini tekshiring."
               : "Qurilma ulanmadi. Soat yoqilganini va yaqinligini tekshiring.");
-    }
+    } finally { setConnecting(false); }
   };
 
   const finishBle = () => {
@@ -113,7 +116,7 @@ const WearablesPanel = ({ onResult }: { onResult: (r: VitalReading) => void }) =
               <Button size="sm" variant="outline" onClick={() => { ble.disconnect(); setBle(null); }} aria-label="Uzish"><Unplug className="w-4 h-4" /></Button>
             </div>
           </div>
-        ) : <Button size="sm" variant="outline" onClick={connect}><Bluetooth className="w-4 h-4 mr-1" /> Qurilmani ulash</Button>}
+        ) : <Button disabled={connecting} size="sm" variant="outline" onClick={connect}><Bluetooth className="w-4 h-4 mr-1" /> {connecting ? 'Ulanmoqda…' : 'Qurilmani ulash'}</Button>}
       </div>
 
       <div className="rounded-2xl border border-border p-4 space-y-3">
