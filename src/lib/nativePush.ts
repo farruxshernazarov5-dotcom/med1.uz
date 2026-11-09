@@ -21,9 +21,13 @@ export async function initNativePush(): Promise<void> {
     if (perm.receive === "prompt" || perm.receive === "prompt-with-rationale") perm = await p.requestPermissions();
     if (perm.receive !== "granted") { started = false; return; }
     await p.createChannel?.({ id: "med_all_push", name: "Med ALL xabarlari", importance: 5, visibility: 1, vibration: true }).catch(() => {});
+    // One channel per recorded voice+kind: Android fixes a channel's sound at creation.
+    for (const v of ["kore", "aoede", "leda", "zephyr"]) for (const k of ["message", "transfer", "wallet", "ai", "coin"])
+      await p.createChannel?.({ id: `medall_voice_${v}_${k}`, name: `Med ALL ovozli xabar (${v}, ${k})`, importance: 5, visibility: 1, vibration: true, sound: `medall_${v}_${k}` }).catch(() => {});
     await p.addListener("registration", async ({ value }) => {
       const platform = /iPhone|iPad/i.test(navigator.userAgent) ? "ios" : "android";
       await supabase.rpc("claim_push_token" as never, { _token: value, _platform: platform } as never);
+      void syncPushVoice();
     });
     await p.addListener("registrationError", (e) => console.warn("push registration failed", e));
     await p.addListener('pushNotificationReceived', ({ id, title, body }) => {
@@ -38,4 +42,12 @@ export async function initNativePush(): Promise<void> {
     started = false;
     console.warn("push init failed", e);
   }
+}
+
+/** Tells the server which recorded voice closed-app alerts should use ("off" = plain signal). */
+export async function syncPushVoice(): Promise<void> {
+  if (!isNativeApp()) return;
+  const m = await import("./voiceNotify");
+  const voice = m.voiceNotifyOn("general") ? m.getVoiceId() : "off";
+  await supabase.rpc("set_push_voice" as never, { _voice: voice } as never);
 }

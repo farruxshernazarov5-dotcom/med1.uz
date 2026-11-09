@@ -25,6 +25,7 @@ export const setVoiceNotify = (on: boolean, scope: VoiceNotifyScope = "general")
     else if (scope === "general") localStorage.setItem(preferenceKey(scope), "0");
     else localStorage.removeItem(preferenceKey(scope));
   } catch { /* ignore */ }
+  if (scope === "general") void import("./nativePush").then((m) => m.syncPushVoice()).catch(() => {});
 };
 
 // Notifications already spoken this session (realtime can deliver duplicates).
@@ -87,7 +88,10 @@ export const getVoiceId = (): VoiceId => {
   try { const v = localStorage.getItem(VOICE_PREF); if (VOICE_OPTIONS.some(o => o.id === v)) return v as VoiceId; } catch { /* ignore */ }
   return "kore";
 };
-export const setVoiceId = (id: VoiceId) => { try { localStorage.setItem(VOICE_PREF, id); } catch { /* ignore */ } };
+export const setVoiceId = (id: VoiceId) => {
+  try { localStorage.setItem(VOICE_PREF, id); } catch { /* ignore */ }
+  void import("./nativePush").then((m) => m.syncPushVoice()).catch(() => {});
+};
 export const voiceClipUrl = (kind: VoiceKind | "test", id: VoiceId = getVoiceId()) => `/voice/${id}-${kind}.mp3`;
 
 /** One reusable element, unlocked by the first tap, so later alerts may play without a gesture (WebView autoplay rule). */
