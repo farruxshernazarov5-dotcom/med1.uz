@@ -16229,6 +16229,7 @@ export type Database = {
           token: string
           updated_at: string
           user_id: string
+          voice_id: string
         }
         Insert: {
           created_at?: string
@@ -16238,6 +16239,7 @@ export type Database = {
           token: string
           updated_at?: string
           user_id: string
+          voice_id?: string
         }
         Update: {
           created_at?: string
@@ -16247,6 +16249,7 @@ export type Database = {
           token?: string
           updated_at?: string
           user_id?: string
+          voice_id?: string
         }
         Relationships: []
       }
@@ -19052,6 +19055,7 @@ export type Database = {
         Args: { _cap: number; _channel: string; _user: string }
         Returns: boolean
       }
+      set_push_voice: { Args: { _voice: string }; Returns: undefined }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       sync_doctor_photo_map: { Args: { _map: Json }; Returns: number }

@@ -439,18 +439,31 @@ async function sendAdminPanel(chatId: number, view = "home") {
 }
 
 
+/** Mirrors client voiceKind; closed-app alerts play the user's recorded voice via an Android channel sound. */
+function pushVoiceKind(text: string): string {
+  const t = text.toLowerCase();
+  if (/transfer|o[‘’'`ʻ]?tkazma|pul.*yubor/.test(t)) return "transfer";
+  if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
+  if (/coin|obuna muddati|expir/.test(t)) return "coin";
+  if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
+  if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
+  return "message";
+}
 const FCM_URL = "https://connector-gateway.lovable.dev/firebase_messaging/v1/projects/_/messages:send";
 async function pushToUsers(userIds: string[], title: string, body: string, path: string) {
   const lovKey = Deno.env.get("LOVABLE_API_KEY"), fcmKey = Deno.env.get("FIREBASE_MESSAGING_API_KEY");
   if (!lovKey || !fcmKey || !userIds.length) return 0;
-  const { data: rows } = await db.from("push_tokens").select("id, token").in("user_id", userIds).limit(2000);
+  const { data: rows } = await db.from("push_tokens").select("id, token, voice_id").in("user_id", userIds).limit(2000);
   let ok = 0;
-  for (const row of rows ?? []) {
+  const kind = pushVoiceKind(`${title} ${body}`);
+  for (const row of (rows ?? []) as { id: string; token: string; voice_id?: string }[]) {
+    const v = row.voice_id && row.voice_id !== "off" && kind !== "appointment" ? row.voice_id : null;
+    const androidNote = v ? { channel_id: `medall_voice_${v}_${kind}`, sound: `medall_${v}_${kind}` } : { channel_id: "med_all_push", sound: "default" };
     const res = await fetch(FCM_URL, {
       method: "POST",
       headers: { Authorization: `Bearer ${lovKey}`, "X-Connection-Api-Key": fcmKey, "Content-Type": "application/json" },
       body: JSON.stringify({ message: { token: row.token, notification: { title: title.slice(0, 120), body: body.slice(0, 400) }, data: { path },
-        android: { priority: "HIGH", notification: { channel_id: "med_all_push", sound: "default" } } } }),
+        android: { priority: "HIGH", notification: androidNote } } }),
     });
     if (res.ok) ok++;
     else {
