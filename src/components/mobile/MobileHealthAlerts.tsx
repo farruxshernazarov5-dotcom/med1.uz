@@ -18,6 +18,11 @@ const CHECK_EVERY_MS = 2 * 60 * 1000;
  *   and a phone notification in the native app
  * - native app re-schedules OS reminders for upcoming visits
  */
+const m_kind = (n: { title: string; message?: string | null; type?: string }) => {
+  const t = `${n.type ?? ""} ${n.title} ${n.message ?? ""}`.toLowerCase();
+  return /transfer|tkazma/.test(t) ? "transfer" : /appointment|qabul|visit|eslatma/.test(t) ? "appointment" : "other";
+};
+
 export const MobileHealthAlerts = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -33,7 +38,9 @@ export const MobileHealthAlerts = () => {
         if (m.voiceKind(n.title, n.message, (n as { type?: string }).type) === "appointment") playReminderChime();
         return m.speakNotification(n.id, n.title, n.message);
       }).catch(() => {});
-      if (isNativeApp()) void hasNotificationPermission().then((ok) => ok && notifyNow(n.title, n.message, link).catch(() => {}));
+      // While the app is open the spoken phrase is the alert; an OS notification here would play its signal over it.
+      const speaks = m_kind(n) !== "appointment";
+      if (isNativeApp() && !(speaks && document.visibilityState === "visible")) void hasNotificationPermission().then((ok) => ok && notifyNow(n.title, n.message, link).catch(() => {}));
       else if (document.visibilityState === "hidden") showWebNotification(n.title, n.message, link);
       toast(n.title, { description: n.message, duration: 10000, action: { label: "Ko‘rish", onClick: () => navigate(link) } });
     });

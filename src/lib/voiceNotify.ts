@@ -90,13 +90,28 @@ export const getVoiceId = (): VoiceId => {
 export const setVoiceId = (id: VoiceId) => { try { localStorage.setItem(VOICE_PREF, id); } catch { /* ignore */ } };
 export const voiceClipUrl = (kind: VoiceKind | "test", id: VoiceId = getVoiceId()) => `/voice/${id}-${kind}.mp3`;
 
+/** One reusable element, unlocked by the first tap, so later alerts may play without a gesture (WebView autoplay rule). */
 let current: HTMLAudioElement | null = null;
+function player(): HTMLAudioElement | null {
+  if (typeof Audio === "undefined") return null;
+  if (!current) current = new Audio();
+  return current;
+}
+if (typeof window !== "undefined") {
+  const unlock = () => {
+    const a = player();
+    if (a) { a.muted = true; a.src = voiceClipUrl("message"); void a.play().then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; }); }
+    window.removeEventListener("pointerdown", unlock, true);
+  };
+  window.addEventListener("pointerdown", unlock, true);
+}
 async function playClip(kind: VoiceKind | "test", id?: VoiceId): Promise<boolean> {
   try {
-    if (typeof Audio === "undefined") return false;
-    current?.pause();
-    const a = new Audio(voiceClipUrl(kind, id));
-    current = a;
+    const a = player();
+    if (!a) return false;
+    a.pause();
+    a.muted = false;
+    a.src = voiceClipUrl(kind, id);
     await a.play();
     return true;
   } catch { return false; }
