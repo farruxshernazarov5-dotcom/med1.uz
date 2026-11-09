@@ -18,6 +18,7 @@ import {
   Stethoscope, Bell, Trash2, Shield, Sparkles, Briefcase
 } from "lucide-react";
 import AIServiceHero from "@/components/AIServiceHero";
+import PregnancyTools from "@/components/pregnancy/PregnancyTools";
 import HospitalBag from "@/components/pregnancy/HospitalBag";
 import SEO from "@/components/SEO";
 import aiPregnancyImg from "@/assets/ai-pregnancy.webp";
@@ -76,7 +77,7 @@ const WEEKLY_DATA: Record<number, { size: string; weight: string; fruit: string;
 };
 
 type Msg = { role: "user" | "assistant"; content: string };
-type TabId = "overview" | "weekly" | "chat" | "kicks" | "bag" | "reminders";
+type TabId = "overview" | "weekly" | "chat" | "kicks" | "tools" | "bag" | "reminders";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-pregnancy`;
 
@@ -107,7 +108,7 @@ const AIPregnancyPage = () => {
   const [reminders, setReminders] = useState<any[]>([]);
   const [newReminder, setNewReminder] = useState({ title: "", date: "", type: "checkup" });
   const [dailyKicks, setDailyKicks] = useState(() => localStorage.getItem(KICKS_PREF) === "1");
-  useEffect(() => { const q = new URLSearchParams(window.location.search).get("tab"); if (q === "kicks" || q === "reminders") setTab(q); }, []);
+  useEffect(() => { const q = new URLSearchParams(window.location.search).get("tab"); if (q === "kicks" || q === "reminders" || q === "tools") setTab(q); }, []);
 
   // Logs
   const [logs, setLogs] = useState<any[]>([]);
@@ -332,6 +333,7 @@ const AIPregnancyPage = () => {
     { id: "weekly" as TabId, label: "Haftalik", icon: Calendar },
     { id: "chat" as TabId, label: "AI Chat", icon: MessageSquare },
     { id: "kicks" as TabId, label: "Harakatlar", icon: Activity },
+    { id: "tools" as TabId, label: "Vositalar", icon: Clock },
     { id: "bag" as TabId, label: "Tug'ruq sumkasi", icon: Briefcase },
     { id: "reminders" as TabId, label: "Eslatmalar", icon: Bell },
   ];
@@ -665,6 +667,7 @@ const AIPregnancyPage = () => {
             )}
           </div>
         )}
+        {tab === "tools" && <PregnancyTools week={currentWeek} />}
       </div>
       <Footer />
     </div>
