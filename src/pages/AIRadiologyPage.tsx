@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
+import { beginExternalPicker, endExternalPicker } from "@/lib/appLock";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -347,10 +348,10 @@ const AIRadiologyPage = () => {
                         <p className="text-xs text-muted-foreground mt-1">JPG, PNG, PDF • Maksimal 10MB</p>
                       </div>
                       <div className="flex gap-2 mt-2">
-                        <Button variant="outline" size="sm" type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>
+                        <Button variant="outline" size="sm" type="button" onClick={(e) => { e.stopPropagation(); beginExternalPicker(); fileInputRef.current?.click(); }}>
                           <Upload className="w-4 h-4 mr-1" /> Fayl tanlash
                         </Button>
-                        <Button variant="outline" size="sm" type="button" className="sm:hidden" onClick={(e) => { e.stopPropagation(); cameraInputRef.current?.click(); }}>
+                        <Button variant="outline" size="sm" type="button" className="sm:hidden" onClick={(e) => { e.stopPropagation(); beginExternalPicker(); cameraInputRef.current?.click(); }}>
                           <Camera className="w-4 h-4 mr-1" /> Kamera
                         </Button>
                       </div>
@@ -377,8 +378,8 @@ const AIRadiologyPage = () => {
                     </div>
                   </div>
                 )}
-                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
-                <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; endExternalPicker(); if (f) handleFile(f); e.target.value = ""; }} />
+                <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => { endExternalPicker(); const f = e.target.files?.[0]; if (f) handleFile(f); }} />
               </div>
 
               <Button
