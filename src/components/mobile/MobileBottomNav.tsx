@@ -18,21 +18,6 @@ type Item = {
 const MobileBottomNav = () => {
   const { pathname } = useLocation();
   const { lang } = useLanguage();
-  const [visible, setVisible] = useState(true);
-  const lastY = useRef(0);
-
-  useEffect(() => {
-    lastY.current = window.scrollY;
-    const handleScroll = () => {
-      const nextY = window.scrollY;
-      const delta = nextY - lastY.current;
-      if (nextY < 48 || delta < -8) setVisible(true);
-      if (nextY > 120 && delta > 8) setVisible(false);
-      lastY.current = nextY;
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const items = useMemo<Item[]>(
     () => [
@@ -70,7 +55,7 @@ const MobileBottomNav = () => {
       aria-label="Asosiy mobil menyu"
       className={cn(
         "app-bottom-nav fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur-xl transition-transform duration-300 lg:hidden",
-        visible ? "translate-y-0" : "translate-y-full",
+        "translate-y-0",
       )}
     >
       <ul className="grid grid-cols-5">

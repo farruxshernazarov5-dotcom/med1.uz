@@ -1,3 +1,10 @@
+## 2026-11-12 — Mobil tezlik, Bola AI va eslatmalar
+- [x] Mobil AI menyusi yengil katalog/rasmlardan yuklanadi; telefon tablari moslandi, pastki menyu doim ko‘rinadi
+- [x] Bola AI: aniq yosh, shaxsiy kontekst, xavf belgilarini baholash
+- [x] Eslatmalar: vaqt validatsiyasi, turlar, 10 daqiqaga surish va xato holatlari
+- [x] 16 test, build OK; hisobga kirib Bola AI xavf belgisi, AI menyusi va bildirishnoma sozlamalari telefon ko‘rinishida tekshirildi
+- [ ] Haqiqiy telefonda takroriy eslatma/surishni tekshirish: yangi APK kerak; jonli Bola AI javobi hali sinovdan o‘tmadi
+
 ## 2026-11-08 — Click, foto, ovoz va yangi xizmatlar
 - [x] Click qabullari mavjud umumiy sahifaga ulandi; chat tarixi profil kabinetidan ochiladi
 - [x] AI sahifalari auth refresh vaqtida mounted qoladi; Farmatsevt inputlari doim mounted, surat saqlanadi, user chat yoziladi; serverdagi assistant history hayot sikli mustahkamlandi

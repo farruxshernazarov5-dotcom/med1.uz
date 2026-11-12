@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/drawer";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hapticTap } from "@/lib/nativeApp";
-import { MOBILE_AI_SERVICES_WITH_IMAGES } from "@/data/mobileServiceCatalog";
+import { MOBILE_AI_SERVICES } from "@/data/mobileAiCatalog";
+import { AI_SERVICE_COVERS } from "@/data/aiServiceCovers";
 import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 
 type AnalysisStatus = "idle" | "processing" | "ready";
@@ -46,7 +47,7 @@ type AITool = {
   image?: string;
 };
 
-const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES_WITH_IMAGES.map((tool) => ({
+const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES.map((tool) => ({
   id: tool.id.startsWith("radiology-") ? `ai-${tool.id}` : tool.id,
   title: tool.title,
   description: tool.description,
@@ -56,7 +57,7 @@ const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES_WITH_IMAGES.map((tool) => ({
   badge: tool.badge === "Ommabop" || tool.badge === "Yangi" ? tool.badge : undefined,
   popular: tool.featured,
   tone: tool.tone,
-  image: tool.image,
+  image: AI_SERVICE_COVERS[tool.id],
 }));
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {
@@ -224,7 +225,7 @@ export const MobileAIHubSheet = () => {
 
 
           <Tabs value={category} onValueChange={(value) => { setCategory(value as ToolCategory); setQuery(""); void hapticTap(); }}>
-            <TabsList className="flex h-auto w-full justify-start gap-1 overflow-x-auto bg-transparent p-0 pb-1" aria-label="AI xizmatlari toifalari">
+            <TabsList className="grid grid-cols-2 h-auto w-full gap-1 bg-transparent p-0 pb-1" aria-label="AI xizmatlari toifalari">
               {(Object.keys(CATEGORY_LABELS) as ToolCategory[]).map((key) => (
                 <TabsTrigger key={key} value={key} className="h-9 shrink-0 rounded-full border border-border px-3 text-xs data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   {CATEGORY_LABELS[key]}

@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { consumeAiStream } from "@/lib/aiStream";
 import { responseLangForText } from "@/lib/aiLang";
+import { babyAge, childQuestions, childUrgency } from "@/lib/babyCare";
 
 /* ——— Types ——— */
 interface BabyProfile {
@@ -62,10 +63,6 @@ type Msg = { role: "user" | "assistant"; content: string };
 type TabId = "profile" | "growth" | "vaccination" | "development" | "mother" | "chat";
 
 /* ——— Helpers ——— */
-const diffMonths = (birth: Date, now: Date) => {
-  return (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
-};
-const diffDays = (a: Date, b: Date) => Math.floor((b.getTime() - a.getTime()) / 86400000);
 const fmt = (d: string) => new Date(d).toLocaleDateString("uz-UZ", { year: "numeric", month: "long", day: "numeric" });
 
 /* ——— Development milestones ——— */
@@ -183,16 +180,22 @@ const AIBabyCarePage = () => {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [chatMode, setChatMode] = useState("general");
+  const [temperature, setTemperature] = useState("");
+  const [danger, setDanger] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
-  const babyAgeMonths = baby ? diffMonths(new Date(baby.birth_date), new Date()) : 0;
-  const babyAgeDays = baby ? diffDays(new Date(baby.birth_date), new Date()) : 0;
+  const age = baby ? babyAge(baby.birth_date) : null;
+  const babyAgeMonths = age?.months ?? 0;
+  const babyAgeDays = age?.days ?? 0;
+  const urgency = childUrgency(age?.days, temperature, danger);
 
-  useEffect(() => { if (user) fetchBaby(); else setLoading(false); }, [user]);
+  useEffect(() => { if (user) void fetchBaby(); else { setBaby(null); setLoading(false); } }, [user?.id]);
 
   const fetchBaby = async () => {
+    if (!user) return;
     setLoading(true);
-    const { data } = await supabase.from("baby_profiles").select("*").eq("user_id", user!.id).eq("is_active", true).limit(1).single();
+    const { data, error } = await supabase.from("baby_profiles").select("*").eq("user_id", user.id).eq("is_active", true).limit(1).maybeSingle();
+    if (error) toast({ title: "Bola ma’lumotlari yuklanmadi", variant: "destructive" });
     if (data) {
       setBaby(data as BabyProfile);
       setFormName(data.baby_name); setFormDate(data.birth_date);
@@ -201,7 +204,7 @@ const AIBabyCarePage = () => {
       setFormHospital(data.hospital_name || ""); setFormMotherNotes(data.mother_health_notes || "");
       // Fetch related data
       const [gl, vr] = await Promise.all([
-        supabase.from("baby_growth_logs").select("*").eq("baby_id", data.id).order("log_date", { ascending: false }),
+        supabase.from("baby_growth_logs").select("*").eq("baby_id", data.id).order("log_date", { ascending: false }).limit(100),
         supabase.from("vaccination_records").select("*").eq("baby_id", data.id).order("scheduled_date"),
       ]);
       setGrowthLogs((gl.data || []) as GrowthLog[]);
@@ -212,6 +215,7 @@ const AIBabyCarePage = () => {
 
   const saveBaby = async () => {
     if (!user || !formName.trim() || !formDate) { toast({ title: "Ism va tug'ilgan sanani kiriting", variant: "destructive" }); return; }
+    if (!babyAge(formDate)) { toast({ title: "Tug‘ilgan sana noto‘g‘ri", variant: "destructive" }); return; }
     setSaving(true);
     const payload = {
       user_id: user.id, baby_name: formName.trim(), birth_date: formDate,
@@ -273,7 +277,9 @@ const AIBabyCarePage = () => {
       });
     };
     try {
-      await streamChat({ messages: [...messages, userMsg], babyAgeMonths: baby ? babyAgeMonths : undefined, mode: chatMode, onDelta: upsert, onDone: () => setStreaming(false) });
+      const latest = growthLogs[0];
+      const context = baby ? `Bola yoshi: ${babyAgeDays} kun, ${babyAgeMonths} to‘liq oy. Jinsi: ${baby.gender}. Oxirgi qayd: ${latest ? `${latest.log_date}, vazn ${latest.weight_g ?? "noma’lum"} g, bo‘y ${latest.height_cm ?? "noma’lum"} sm` : "yo‘q"}. Bajarilmagan emlashlar: ${vaccinations.filter(v => !v.is_completed).length}. Harorat: ${temperature || "kiritilmagan"}. Nafas qiyinlashishi/hushyorlik pasayishi/tutqanoq: ${danger ? "ha" : "qayd etilmagan"}. Ma’lumot yetishmasa aniqlashtiring, tashxis yoki dori dozasini taxmin qilmang. Pediatrga murojaat mezonlarini ko‘rsating.` : "Bolaning yoshi noma’lum; maslahatdan oldin yoshini so‘rang.";
+      await streamChat({ messages: [...messages, { ...userMsg, content: `${context}\n\nSavol: ${userMsg.content}` }], babyAgeMonths: age?.months, mode: chatMode, onDelta: upsert, onDone: () => setStreaming(false) });
     } catch { setStreaming(false); toast({ title: "Xatolik yuz berdi", variant: "destructive" }); }
   };
 
@@ -328,17 +334,16 @@ const AIBabyCarePage = () => {
         ]}
       />
 
-      <div className="container mx-auto px-4 pb-12">
+      <div className="container mx-auto max-w-5xl px-3 sm:px-4 pb-24">
         <MedicalDisclaimer compact className="mb-6" />
 
         {/* Tabs */}
-        <div className="flex gap-1 overflow-x-auto pb-1 mb-6 scrollbar-none">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6" role="tablist" aria-label="Bola parvarishi bo‘limlari">
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
-              className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all",
-                activeTab === t.id ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
-              <t.icon className="w-4 h-4" />{t.label}
-            </button>
+            <Button key={t.id} role="tab" aria-selected={activeTab === t.id} variant={activeTab === t.id ? "default" : "outline"} onClick={() => setActiveTab(t.id)}
+              className="h-16 min-w-0 flex-col gap-1 whitespace-normal px-1 text-xs">
+              <t.icon className="w-4 h-4 shrink-0" />{t.label}
+            </Button>
           ))}
         </div>
 
@@ -390,7 +395,7 @@ const AIBabyCarePage = () => {
                     <Card>
                       <CardHeader><CardTitle className="flex items-center gap-2"><Scale className="w-5 h-5 text-blue-500" />{t("aiForms.baby.addMeasure")}</CardTitle></CardHeader>
                       <CardContent>
-                        <div className="grid grid-cols-3 gap-3 mb-4">
+                        <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-3 mb-4">
                           <div><Label>{t("aiForms.baby.weightG")}</Label><Input type="number" value={gWeight} onChange={e => setGWeight(e.target.value)} placeholder="4200" /></div>
                           <div><Label>{t("aiForms.baby.heightCm")}</Label><Input type="number" value={gHeight} onChange={e => setGHeight(e.target.value)} placeholder="55" /></div>
                           <div><Label>{t("aiForms.baby.headCm")}</Label><Input type="number" value={gHead} onChange={e => setGHead(e.target.value)} placeholder="37" /></div>
@@ -540,10 +545,18 @@ const AIBabyCarePage = () => {
 
             {/* ——— CHAT TAB ——— */}
             {activeTab === "chat" && (
-              <div className="max-w-2xl mx-auto">
+              <div className="max-w-2xl mx-auto space-y-4">
+                <section className="space-y-3 border-b border-border pb-4">
+                  <h2 className="font-semibold flex items-center gap-2"><Thermometer className="h-4 w-4 text-primary" /> Bola holati</h2>
+                  <Label htmlFor="baby-temperature">Harorat (°C)</Label>
+                  <Input id="baby-temperature" type="number" inputMode="decimal" min="34" max="43" step="0.1" value={temperature} onChange={e => setTemperature(e.target.value)} placeholder="36.6" />
+                  <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={danger} onChange={e => setDanger(e.target.checked)} className="mt-1" />Nafas qiyinlashgan, lablari ko‘kargan, tutqanoq yoki uyg‘otib bo‘lmayapti</label>
+                  {urgency !== "none" && <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive" role="alert">{urgency === "emergency" ? "AI javobini kutmang. Darhol 103 ga qo‘ng‘iroq qiling." : urgency === "urgent" ? "3 oydan kichik yoki yoshi noma’lum bolada 38°C isitma: zudlik bilan tibbiy ko‘rik kerak." : "Isitma bo‘yicha pediatr bilan bog‘laning. Holat yomonlashsa 103 ga qo‘ng‘iroq qiling."}<Button asChild variant="destructive" size="sm" className="mt-2"><a href="tel:103">103</a></Button></div>}
+                  <p className="text-xs text-muted-foreground">Ma’lumot manbasi: med1.uz</p>
+                </section>
                 <Card className="overflow-hidden">
                   <CardHeader className="bg-gradient-to-r from-pink-500/10 to-primary/10 py-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <CardTitle className="flex items-center gap-2 text-base"><MessageSquare className="w-5 h-5 text-pink-500" />AI Bola Parvarishi Chat</CardTitle>
                       <select className="text-xs border rounded-lg px-2 py-1 bg-background" value={chatMode} onChange={e => setChatMode(e.target.value)}>
                         <option value="general">Umumiy</option>
@@ -555,14 +568,14 @@ const AIBabyCarePage = () => {
                       </select>
                     </div>
                   </CardHeader>
-                  <div ref={chatRef} className="h-[400px] overflow-y-auto p-4 space-y-4">
+                  <div ref={chatRef} className="h-[min(400px,50dvh)] overflow-y-auto p-3 sm:p-4 space-y-4">
                     {messages.length === 0 && (
                       <div className="text-center py-10 text-muted-foreground">
                         <Baby className="w-10 h-10 mx-auto mb-3 text-pink-400" />
                         <p className="text-sm">Bola parvarishi bo'yicha savolingizni yozing</p>
                         <div className="flex flex-wrap justify-center gap-2 mt-4">
-                          {["Emizish tartibi qanday bo'lishi kerak?", "6 oylik bolaga qanday ovqat berish kerak?", "Bola nima uchun ko'p yig'laydi?"].map(q => (
-                            <button key={q} onClick={() => { setInput(q); }} className="text-xs px-3 py-1.5 rounded-full bg-muted hover:bg-muted/80 text-foreground">{q}</button>
+                          {childQuestions(age?.months).map(q => (
+                            <Button key={q} variant="secondary" onClick={() => { setInput(q); }} className="h-auto min-h-11 whitespace-normal text-xs px-3 py-2">{q}</Button>
                           ))}
                         </div>
                       </div>
@@ -580,9 +593,9 @@ const AIBabyCarePage = () => {
                     )}
                   </div>
                   <div className="border-t p-3 flex gap-2">
-                    <Input value={input} onChange={e => setInput(e.target.value)} placeholder={t("aiForms.common.askQuestion")}
+                    <Input className="min-w-0" value={input} onChange={e => setInput(e.target.value)} placeholder={t("aiForms.common.askQuestion")}
                       onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()} disabled={streaming} />
-                    <Button onClick={sendChat} disabled={streaming || !input.trim()} size="icon"><Send className="w-4 h-4" /></Button>
+                    <Button aria-label="Savol yuborish" className="shrink-0" onClick={sendChat} disabled={streaming || !input.trim()} size="icon"><Send className="w-4 h-4" /></Button>
                   </div>
                 </Card>
               </div>

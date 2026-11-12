@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, CalendarClock, FlaskConical, Fingerprint, Pill, Plus, Smartphone, Trash2, X } from "lucide-react";
+import { Bell, CalendarClock, Clock, FlaskConical, Fingerprint, Pill, Plus, Smartphone, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { isNativeApp } from "@/lib/nativeApp";
 import {
   biometricAvailable, cancelReminder, ensureNotificationPermission, isBiometricLockEnabled, isLabAlertsEnabled,
-  listReminders, scheduleMedication, scheduleTestReminder, ensureExactAlarms, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
+  listReminders, scheduleMedication, snoozeReminder, scheduleTestReminder, ensureExactAlarms, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
   verifyBiometric, type PendingReminder, REMINDER_SOUNDS, getReminderSound, setReminderSound, previewReminderSound, ensureReminderChannel, type ReminderSoundId,
 } from "@/lib/nativeHealth";
 
@@ -51,6 +51,8 @@ export const NativeHealthSettings = () => {
   const [name, setName] = useState("");
   const [dose, setDose] = useState("");
   const [times, setTimes] = useState<string[]>(["08:00"]);
+  const [busy, setBusy] = useState(false);
+  const [filter, setFilter] = useState("all");
   const [bio, setBio] = useState({ ok: false, label: "" });
   const [bioOn, setBioOn] = useState(isBiometricLockEnabled());
   const [denied, setDenied] = useState<PermissionKind | null>(null);
@@ -78,11 +80,15 @@ export const NativeHealthSettings = () => {
   }
 
   const addMed = async () => {
-    if (!name.trim() || times.length === 0) return;
+    if (!name.trim() || times.length === 0 || busy) return;
     if (!(await ensureNotificationPermission())) { askPermission("notifications", () => void addMed()); return; }
-    const n = await scheduleMedication(name.trim(), dose.trim(), times);
-    toast({ title: "Eslatma qo‘shildi", description: `Har kuni ${n} marta eslatiladi` });
-    setName(""); setDose(""); setTimes(["08:00"]); void refresh();
+    setBusy(true);
+    try {
+      const n = await scheduleMedication(name.trim(), dose.trim(), times);
+      toast({ title: "Eslatma qo‘shildi", description: `Har kuni ${n} marta eslatiladi` });
+      setName(""); setDose(""); setTimes(["08:00"]); await refresh();
+    } catch (e) { toast({ title: e instanceof Error ? e.message : "Eslatma qo‘shilmadi", variant: "destructive" }); }
+    finally { setBusy(false); }
   };
 
   const syncAppts = async () => {
@@ -133,7 +139,7 @@ export const NativeHealthSettings = () => {
             ))}
             {times.length < 6 && <Button variant="outline" size="sm" onClick={() => setTimes([...times, "20:00"])}><Plus className="mr-1 h-4 w-4" /> Vaqt</Button>}
           </div>
-          <Button className="w-full" onClick={addMed} disabled={!name.trim()}>Eslatmani yoqish</Button>
+          <Button className="w-full" onClick={addMed} disabled={!name.trim() || busy}>{busy ? "Saqlanmoqda…" : "Eslatmani yoqish"}</Button>
         </CardContent>
       </Card>
 
@@ -158,11 +164,13 @@ export const NativeHealthSettings = () => {
       <Card>
         <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Bell className="h-5 w-5 text-medical-orange" /> Faol eslatmalar ({reminders.length})</CardTitle></CardHeader>
         <CardContent className="space-y-2">
+          <label className="flex items-center gap-2 text-sm">Tur<select aria-label="Eslatma turi" className="h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-3" value={filter} onChange={e => setFilter(e.target.value)}><option value="all">Barchasi</option><option value="med">Dorilar</option><option value="appt">Qabullar</option><option value="preg">Homiladorlik</option></select></label>
           {reminders.length === 0 && <p className="text-sm text-muted-foreground">Hozircha faol eslatma yo‘q. Yuqorida dori qo‘shing yoki qabullarni sinxronlang.</p>}
-          {reminders.map((r) => (
+          {reminders.filter(r => filter === "all" || r.kind === filter).map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-2 rounded-lg border border-border p-2 text-sm">
-              <div className="min-w-0"><p className="truncate font-medium">{r.title}</p><p className="truncate text-xs text-muted-foreground">{r.body}</p></div>
-              <Button size="icon" variant="ghost" aria-label="Eslatmani o‘chirish" onClick={async () => { await cancelReminder(r.id); void refresh(); }}><Trash2 className="h-4 w-4" /></Button>
+              <div className="min-w-0 flex-1"><p className="break-words font-medium">{r.title}</p><p className="text-xs text-muted-foreground break-words">{r.body}</p><p className="text-xs text-primary">{r.time ? `Har kuni ${r.time}` : r.at ? new Date(r.at).toLocaleString("uz-UZ") : ""}</p></div>
+              <Button size="icon" variant="ghost" className="shrink-0" title="10 daqiqadan keyin eslatish" aria-label="10 daqiqadan keyin eslatish" onClick={async () => { try { await snoozeReminder(r); await refresh(); toast({ title: "10 daqiqadan keyin eslatiladi" }); } catch { toast({ title: "Eslatma surilmadi", variant: "destructive" }); } }}><Clock className="h-4 w-4" /></Button>
+              <Button size="icon" variant="ghost" className="shrink-0" aria-label="Eslatmani o‘chirish" onClick={async () => { try { await cancelReminder(r.id); await refresh(); } catch { toast({ title: "Eslatma o‘chirilmadi", variant: "destructive" }); } }}><Trash2 className="h-4 w-4" /></Button>
             </div>
           ))}
         </CardContent>

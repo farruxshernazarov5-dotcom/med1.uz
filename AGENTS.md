@@ -51,3 +51,4 @@
 - Medical reels use `medical_reels` with role-checked publishing, admin-only moderation and private signed storage; the feed also reuses published entity video links, so existing expert media remains visible without exposing unpublished uploads.
 - Mobile release badges use the bundled `appUpdates` catalogue and a seen-version flag only; they never imply a new APK was remotely installed.
 - Family monitoring reuses owner-scoped `patient_health_logs` with per-member filters and per-metric latest values, so a partial new entry cannot hide earlier measurements.
+- The mobile AI sheet imports the lightweight AI catalogue and compressed covers, not service stories; child advice uses completed age and existing growth/vaccination context, while reminder time normalization and snooze arithmetic live in pure tested helpers to avoid duplicate or malformed OS schedules.

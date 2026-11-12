@@ -4,8 +4,9 @@
  * Reminders live only in the OS notification scheduler — nothing is cached in web storage.
  */
 import { isNativeApp } from "./nativeApp";
+import { normalizeReminderTimes, snoozeTime } from "./reminderSchedule";
 
-export type PendingReminder = { id: number; title: string; body: string; at?: string; kind: "med" | "appt" };
+export type PendingReminder = { id: number; title: string; body: string; at?: string; time?: string; route?: string; kind: "med" | "appt" | "preg" | "lab" | "test" };
 
 const MED_BASE = 100000;
 const APPT_BASE = 500000;
@@ -17,7 +18,8 @@ let lnMod: typeof import("@capacitor/local-notifications") | null = null;
 async function loadLn() { lnMod ??= await import("@capacitor/local-notifications"); }
 async function ln(): Promise<{ p: typeof import("@capacitor/local-notifications").LocalNotifications }> {
   await loadLn();
-  return { p: lnMod!.LocalNotifications };
+  if (!lnMod) throw new Error("Bildirishnomalar yuklanmadi");
+  return { p: lnMod.LocalNotifications };
 }
 
 export async function ensureNotificationPermission(): Promise<boolean> {
@@ -65,11 +67,12 @@ export async function ensureReminderChannel(): Promise<void> {
     const { Capacitor } = await import("@capacitor/core");
     if (Capacitor.getPlatform() !== "android") { channelReady = true; return; }
     const LN = (await ln()).p;
+    const sound = REMINDER_SOUNDS.find((x) => x.id === getReminderSound());
     await LN.deleteChannel({ id: "med1_reminders" }).catch(() => {});
     await LN.createChannel({
       id: REMINDER_CHANNEL,
       name: `Med ALL eslatmalari — ${REMINDER_SOUNDS.find((x) => x.id === getReminderSound())?.label ?? "ovozli"}`,
-      ...(REMINDER_SOUNDS.find((x) => x.id === getReminderSound())?.file ? { sound: `${REMINDER_SOUNDS.find((x) => x.id === getReminderSound())!.file}.wav` } : {}),
+      ...(sound?.file ? { sound: `${sound.file}.wav` } : {}),
       description: "Dori, qabul va tahlil eslatmalari (ovoz va tebranish bilan)",
       importance: 5,
       visibility: 1,
@@ -154,17 +157,20 @@ export async function openAppSettings(): Promise<void> {
 
 /** Daily repeating medication reminder at HH:MM. */
 export async function scheduleMedication(name: string, dose: string, times: string[]): Promise<number> {
+  if (!isNativeApp()) return 0;
+  if (!name.trim()) throw new Error("Dori nomini kiriting");
+  const validTimes = normalizeReminderTimes(times);
   const LN = (await ln()).p;
   await ensureReminderChannel();
   const base = MED_BASE + Math.floor(Math.random() * 300000);
-  const notifications = times.map((t, i) => {
+  const notifications = validTimes.map((t, i) => {
     const [hour, minute] = t.split(":").map(Number);
     return {
       id: base + i,
       title: `💊 Dori vaqti: ${name}`,
       body: dose ? `${dose} — ichishni unutmang` : "Dorini ichishni unutmang",
       channelId: REMINDER_CHANNEL,
-      schedule: { on: { hour, minute }, allowWhileIdle: true },
+      schedule: { on: { hour, minute }, repeats: true, allowWhileIdle: true },
       extra: { kind: "med", route: "/mobile-appointments?panel=reminders" },
     };
   });
@@ -209,8 +215,10 @@ export async function listReminders(): Promise<PendingReminder[]> {
     const { notifications } = await LN.getPending();
     return notifications.map((n) => ({
       id: n.id, title: n.title, body: n.body,
-      at: (n.schedule?.at as unknown as string | undefined) ?? undefined,
-      kind: n.id >= APPT_BASE ? "appt" : "med",
+      at: n.schedule?.at ? new Date(n.schedule.at).toISOString() : undefined,
+      time: n.schedule?.on?.hour !== undefined ? `${String(n.schedule.on.hour).padStart(2, "0")}:${String(n.schedule.on.minute ?? 0).padStart(2, "0")}` : undefined,
+      route: typeof n.extra?.route === "string" ? n.extra.route : undefined,
+      kind: ["med", "appt", "preg", "lab", "test"].includes(n.extra?.kind) ? n.extra.kind : n.id >= APPT_BASE ? "appt" : "med",
     }));
   } catch { return []; }
 }
@@ -218,6 +226,20 @@ export async function listReminders(): Promise<PendingReminder[]> {
 export async function cancelReminder(id: number) {
   const LN = (await ln()).p;
   await LN.cancel({ notifications: [{ id }] });
+}
+
+/** One-off copy; daily medication alarm is retained, one-off reminders are moved. */
+export async function snoozeReminder(reminder: PendingReminder, minutes = 10) {
+  if (!isNativeApp()) return;
+  const at = snoozeTime(minutes);
+  const LN = (await ln()).p;
+  await ensureReminderChannel();
+  if (!reminder.time) await LN.cancel({ notifications: [{ id: reminder.id }] });
+  await LN.schedule({ notifications: [{
+    id: reminder.time ? 1000000 + Math.floor(Math.random() * 900000) : reminder.id,
+    title: reminder.title, body: reminder.body, channelId: REMINDER_CHANNEL,
+    schedule: { at, allowWhileIdle: true }, extra: { kind: reminder.kind, route: reminder.route },
+  }] });
 }
 
 /** Checks (never prompts) whether notifications are already allowed. */
