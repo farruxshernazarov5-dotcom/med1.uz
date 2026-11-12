@@ -46,8 +46,9 @@ Deno.serve(async (req) => {
         .limit(limit);
       if (status !== "all") q = q.eq("status", status);
       if (search) {
-        const like = `%${search}%`;
-        q = /^[0-9a-f-]{8,}$/i.test(search)
+        // Quote the filter value; escape quotes/backslashes before composing OR syntax.
+        const like = `"%${search.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}%"`;
+        q = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(search)
           ? q.or(`id.eq.${search},user_id.eq.${search}`)
           : q.or(`purpose.ilike.${like},provider_transaction_id.ilike.${like}`);
       }

@@ -36,16 +36,16 @@ Deno.serve(async (req) => {
   if (path === "send-otp") {
     // Only registered numbers get SMS: avoids paid-SMS abuse and duplicate profiles.
     if (!(await findProfileUser(phone))) {
-      return reply({ error: "not_registered", message: "Bu raqam bilan hisob topilmadi. Avval ro‘yxatdan o‘ting." });
+      return reply({ success: true });
     }
     const now = Date.now();
     const { data: cur } = await supabase.from("sms_otp").select("*").eq("phone", phone).maybeSingle();
     if (cur?.last_sent_at && now - new Date(cur.last_sent_at).getTime() < COOLDOWN_MS) {
-      return reply({ error: "cooldown", message: "Yangi kodni 1 daqiqadan keyin so‘rang." });
+      return reply({ success: true });
     }
     const inWindow = cur?.window_start && now - new Date(cur.window_start).getTime() < WINDOW_MS;
     const count = inWindow ? (cur?.send_count ?? 0) : 0;
-    if (count >= MAX_SENDS) return reply({ error: "limit", message: "Juda ko‘p urinish. 1 soatdan keyin qayta urinib ko‘ring." });
+    if (count >= MAX_SENDS) return reply({ success: true });
     const code = otp();
     try {
       await sendEskizSms({
@@ -58,12 +58,8 @@ Deno.serve(async (req) => {
       if ((e as Error).message === "invalid_sms_template") {
         console.error("Approved OTP template has no unambiguous code field");
       }
-      const reason = (e as Error).message;
-      return reply({ error: "send_failed", message: reason === "eskiz_template_not_approved"
-        ? "Eskiz kodli SMS matnini qabul qilmadi. Hozircha Telegram orqali kiring."
-        : reason === "invalid_sms_template"
-          ? "SMS matnida kod o‘rni sozlanmagan. Hozircha Telegram orqali kiring."
-          : "SMS yuborilmadi. Keyinroq yoki Telegram orqali urinib ko‘ring." });
+      // Do not disclose account existence through delivery/cooldown responses.
+      return reply({ success: true });
     }
     await supabase.from("sms_otp").upsert({
       phone, code_hash: await hash(phone, code), expires_at: new Date(now + TTL_MS).toISOString(),

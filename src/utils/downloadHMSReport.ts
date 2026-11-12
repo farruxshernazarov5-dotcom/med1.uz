@@ -37,37 +37,39 @@ function getQRCodeUrl(reportId: string): string {
   return `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(getVerificationUrl(reportId))}&color=0284c7`;
 }
 
-function generateHTML(data: HMSReportData): string {
+const esc = (value: unknown): string => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+
+export function generateHTML(data: HMSReportData): string {
   const date = data.date || new Date().toLocaleDateString("uz-UZ");
   const time = new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" });
   const reportId = generateReportId();
 
   const kpiHTML = data.kpiCards?.length ? `
     <div class="kpi-grid">
-      ${data.kpiCards.map(k => `<div class="kpi-card"><div class="kpi-value">${k.value}</div><div class="kpi-label">${k.label}</div></div>`).join("")}
+      ${data.kpiCards.map(k => `<div class="kpi-card"><div class="kpi-value">${esc(k.value)}</div><div class="kpi-label">${esc(k.label)}</div></div>`).join("")}
     </div>` : "";
 
   const sectionsHTML = data.sections?.map((s, i) => `
     <div class="section">
       <div class="section-header">
         <div class="section-number">${i + 1}</div>
-        <div class="section-title">${s.heading}</div>
+        <div class="section-title">${esc(s.heading)}</div>
       </div>
       <div class="section-content">
-        ${s.content.includes("\n") ? `<ul>${s.content.split("\n").filter(Boolean).map(l => `<li>${l.replace(/^[-•]\s*/, "")}</li>`).join("")}</ul>` : `<p>${s.content}</p>`}
+        ${s.content.includes("\n") ? `<ul>${s.content.split("\n").filter(Boolean).map(l => `<li>${esc(l.replace(/^[-•]\s*/, ""))}</li>`).join("")}</ul>` : `<p>${esc(s.content)}</p>`}
       </div>
     </div>`).join("") || "";
 
   const tablesHTML = data.tables?.map(t => `
     <div class="table-section">
-      <h3 class="table-title">${t.title}</h3>
+      <h3 class="table-title">${esc(t.title)}</h3>
       <table>
-        <thead><tr>${t.table.headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
-        <tbody>${t.table.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>
+        <thead><tr>${t.table.headers.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+        <tbody>${t.table.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody>
       </table>
     </div>`).join("") || "";
 
-  return `<!DOCTYPE html><html lang="uz"><head><meta charset="utf-8"><title>${data.title} — Med1.uz</title>
+  return `<!DOCTYPE html><html lang="uz"><head><meta charset="utf-8"><title>${esc(data.title)} — Med1.uz</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
@@ -128,17 +130,17 @@ function generateHTML(data: HMSReportData): string {
       <div class="logo-box">
         <svg width="32" height="32" viewBox="0 0 36 36" fill="none"><path d="M14 4h8v10h10v8H22v10h-8V22H4v-8h10V4z" fill="white" fill-opacity="0.9"/></svg>
       </div>
-      <div class="logo-text">Med1.uz<span>${data.moduleType} hisoboti</span></div>
+      <div class="logo-text">Med1.uz<span>${esc(data.moduleType)} hisoboti</span></div>
     </div>
-    <div class="header-right">📅 ${date} | 🕐 ${time}<br>${data.clinicName ? `🏥 ${data.clinicName}` : ""}</div>
+    <div class="header-right">📅 ${esc(date)} | 🕐 ${time}<br>${data.clinicName ? `🏥 ${esc(data.clinicName)}` : ""}</div>
   </div>
-  <div class="title-bar"><h1>📄 ${data.title}</h1><div class="report-id">ID: ${reportId}</div></div>
+  <div class="title-bar"><h1>📄 ${esc(data.title)}</h1><div class="report-id">ID: ${reportId}</div></div>
   ${kpiHTML}
   ${sectionsHTML}
   ${tablesHTML}
   <div class="disclaimer"><h4>⚠️ Ogohlantirish</h4><p>Ushbu hisobot Med1.uz HMS tizimi tomonidan avtomatik yaratilgan. Ma'lumotlar to'g'riligini tekshiring.</p></div>
   <div class="report-footer">
-    <div class="footer-left"><strong>Tizim:</strong> <a href="https://med1.uz">Med1.uz HMS</a><br>© ${new Date().getFullYear()} Med1.uz — Barcha huquqlar himoyalangan<br>${data.generatedBy ? `Yaratdi: ${data.generatedBy}` : "Avtomatik hisobot"}</div>
+    <div class="footer-left"><strong>Tizim:</strong> <a href="https://med1.uz">Med1.uz HMS</a><br>© ${new Date().getFullYear()} Med1.uz — Barcha huquqlar himoyalangan<br>${data.generatedBy ? `Yaratdi: ${esc(data.generatedBy)}` : "Avtomatik hisobot"}</div>
     <div class="footer-qr"><img src="${getQRCodeUrl(reportId)}" alt="QR Code" /><p>Verifikatsiya: ${reportId}</p></div>
   </div>
   <div class="no-print"><div class="btn-group">
@@ -203,27 +205,27 @@ export function downloadHMSReportTXT(data: HMSReportData) {
   txt += "════════════════════════════════════════════\n";
   txt += "          MED1.UZ — HMS HISOBOTI\n";
   txt += "════════════════════════════════════════════\n\n";
-  txt += `📋 Modul: ${data.moduleType}\n`;
-  txt += `📄 Hisobot: ${data.title}\n`;
-  txt += `📅 Sana: ${date}\n`;
+  txt += `📋 Modul: ${esc(data.moduleType)}\n`;
+  txt += `📄 Hisobot: ${esc(data.title)}\n`;
+  txt += `📅 Sana: ${esc(date)}\n`;
   txt += `🆔 ID: ${reportId}\n`;
-  if (data.clinicName) txt += `🏥 Klinika: ${data.clinicName}\n`;
+  if (data.clinicName) txt += `🏥 Klinika: ${esc(data.clinicName)}\n`;
   txt += `🔗 Verifikatsiya: ${getVerificationUrl(reportId)}\n`;
   txt += "\n────────────────────────────────────────────\n\n";
 
   if (data.kpiCards?.length) {
     txt += "📊 UMUMIY KO'RSATKICHLAR\n";
-    data.kpiCards.forEach(k => { txt += `  • ${k.label}: ${k.value}\n`; });
+    data.kpiCards.forEach(k => { txt += `  • ${esc(k.label)}: ${esc(k.value)}\n`; });
     txt += "\n";
   }
 
   data.sections?.forEach((s, i) => {
-    txt += `▶ ${i + 1}. ${s.heading}\n`;
-    txt += `${s.content}\n\n`;
+    txt += `▶ ${i + 1}. ${esc(s.heading)}\n`;
+    txt += `${esc(s.content)}\n\n`;
   });
 
   data.tables?.forEach(t => {
-    txt += `📋 ${t.title}\n`;
+    txt += `📋 ${esc(t.title)}\n`;
     txt += t.table.headers.join(" | ") + "\n";
     txt += "─".repeat(60) + "\n";
     t.table.rows.forEach(r => { txt += r.join(" | ") + "\n"; });
