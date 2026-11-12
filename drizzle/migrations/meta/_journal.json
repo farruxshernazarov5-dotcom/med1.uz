@@ -197,6 +197,13 @@
       "when": 1794243177474,
       "tag": "0027_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1794442761978,
+      "tag": "0028_scope_reels_file_reads",
+      "breakpoints": true
     }
   ]
 }
