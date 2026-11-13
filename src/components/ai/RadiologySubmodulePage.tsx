@@ -22,6 +22,11 @@ import { downloadAIReport } from "@/utils/downloadAIReport";
 import RadiologyOnboardingModal from "@/components/ai/RadiologyOnboardingModal";
 import AiUsageLog from "@/components/ai/AiUsageLog";
 import { Info, Lightbulb, Users, Cog, HelpCircle } from "lucide-react";
+import RadiologyCamera from "./RadiologyCamera";
+import { beginExternalPicker, endExternalPicker } from "@/lib/appLock";
+import { normalizeRadiologyAnalysis } from "@/lib/aiJson";
+import { radiologyClinicalContext } from "@/lib/radiologyReport";
+import { downloadAiReport } from "@/lib/vitals/report";
 
 
 type ScanType = "xray" | "mri" | "ct";
@@ -90,6 +95,7 @@ export default function RadiologySubmodulePage({
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [reportImages, setReportImages] = useState<string[]>([]);
 
   const handleFile = useCallback((file: File) => {
     const allowed = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
@@ -131,12 +137,13 @@ export default function RadiologySubmodulePage({
         imageBase64: pdfPages[0] ?? await fileToBase64(uploadedFile),
         imageMimeType: pdfPages.length > 0 ? "image/jpeg" : uploadedFile.type,
         pdfPageImages: pdfPages,
-        scanType, bodyPart, patientAge, patientGender, clinicalInfo,
+        scanType, bodyPart, patientAge, patientGender, clinicalInfo: radiologyClinicalContext(clinicalInfo, scanType),
       });
       const { data, error } = await supabase.functions.invoke(functionName, { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setAnalysis(data as Analysis);
+      setReportImages(pdfPages.length ? pdfPages.map(p => `data:image/jpeg;base64,${p}`) : filePreview ? [filePreview] : []);
+      setAnalysis(normalizeRadiologyAnalysis(data, scanType) as Analysis);
       setStep("results");
     } catch (err: any) {
       toast({ title: "Xato", description: err.message || "Tahlil xatosi", variant: "destructive" });
@@ -181,6 +188,7 @@ export default function RadiologySubmodulePage({
     setAnalysis(null);
     setUploadedFile(null);
     setFilePreview(null);
+    setReportImages([]);
     setBodyPart("");
     setClinicalInfo("");
   };
@@ -317,7 +325,7 @@ export default function RadiologySubmodulePage({
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => { beginExternalPicker(); fileInputRef.current?.click(); }}
                     className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 hover:bg-muted/30"}`}
                   >
                     <div className="flex flex-col items-center gap-2">
@@ -327,8 +335,8 @@ export default function RadiologySubmodulePage({
                       <p className="font-medium text-sm">Tashlang yoki bosing</p>
                       <p className="text-xs text-muted-foreground">JPG, PNG, PDF • max 10MB</p>
                       <div className="flex gap-2 mt-1">
-                        <Button variant="outline" size="sm" type="button"><Upload className="w-3.5 h-3.5 mr-1" /> Fayl</Button>
-                        <Button variant="outline" size="sm" type="button" className="sm:hidden"><Camera className="w-3.5 h-3.5 mr-1" /> Kamera</Button>
+                        <Button variant="outline" size="sm" type="button" onClick={e => { e.stopPropagation(); beginExternalPicker(); fileInputRef.current?.click(); }}><Upload className="w-3.5 h-3.5 mr-1" /> Fayl tanlash</Button>
+                        <RadiologyCamera onCapture={handleFile} />
                       </div>
                     </div>
                   </div>
@@ -348,7 +356,7 @@ export default function RadiologySubmodulePage({
                   </div>
                 )}
                 <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+                  onChange={(e) => { endExternalPicker(); const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
               </div>
 
               <Button onClick={handleAnalyze} disabled={!uploadedFile || isLoading} size="lg" className="w-full">
@@ -427,24 +435,12 @@ export default function RadiologySubmodulePage({
                 <Button
                   variant="outline"
                   onClick={() => {
-                    const findingsText = analysis.findings.map(f =>
-                      `${f.location}: ${f.description} (${severityConfig[f.severity]?.label || f.severity})`
-                    ).join("\n");
-                    downloadAIReport({
+                    void downloadAiReport({
                       title,
-                      serviceType: `AI Radiology · ${scanLabel}`,
-                      patientName: user?.email ?? undefined,
-                      riskLevel: analysis.overallAssessment.riskLevel === "critical" ? "Yuqori"
-                        : analysis.overallAssessment.riskLevel === "attention" ? "O'rtacha" : "Past",
-                      suggestedSpecialist: analysis.suggestedSpecialist,
-                      sections: [
-                        { heading: "Umumiy xulosa", content: analysis.overallAssessment.summary },
-                        { heading: "Anatomik strukturalar", content: analysis.anatomicalStructures.map(a => `${a.name}: ${a.description}`).join("\n") || "—" },
-                        { heading: "Topilmalar", content: findingsText || "Sezilarli topilma yo'q" },
-                        { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
-                        { heading: "Keyingi tekshiruvlar", content: analysis.followUpStudies.join("\n") || "—" },
-                      ],
-                    });
+                      name: user?.email ?? "",
+                      conclusion: JSON.stringify(analysis),
+                      images: reportImages,
+                    }).catch(() => toast({ title: "PDF yaratilmadi", variant: "destructive" }));
                   }}
                 >
                   <Download className="w-4 h-4 mr-1" /> PDF yuklab olish

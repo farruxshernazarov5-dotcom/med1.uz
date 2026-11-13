@@ -25,6 +25,9 @@ import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
 import { normalizeRadiologyAnalysis } from "@/lib/aiJson";
 import { pdfToImageBase64Pages } from "@/lib/pdf";
+import RadiologyCamera from "@/components/ai/RadiologyCamera";
+import { radiologyClinicalContext } from "@/lib/radiologyReport";
+import { downloadAiReport } from "@/lib/vitals/report";
 
 interface AnatomicalStructure {
   name: string;
@@ -89,7 +92,6 @@ const AIRadiologyPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<"input" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -102,6 +104,7 @@ const AIRadiologyPage = () => {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [analysis, setAnalysis] = useState<RadiologyAnalysis | null>(null);
+  const [reportImages, setReportImages] = useState<string[]>([]);
 
   const handleFile = useCallback((file: File) => {
     const allowed = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
@@ -157,11 +160,12 @@ const AIRadiologyPage = () => {
         bodyPart,
         patientAge,
         patientGender,
-        clinicalInfo,
+        clinicalInfo: radiologyClinicalContext(clinicalInfo, scanType),
       });
       const { data, error } = await supabase.functions.invoke("ai-radiology", { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      setReportImages(pdfPages.length ? pdfPages.map(p => `data:image/jpeg;base64,${p}`) : filePreview ? [filePreview] : []);
       setAnalysis(normalizeRadiologyAnalysis(data, scanType) as RadiologyAnalysis);
       setStep("results");
       window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/ai-radiology" } }));
@@ -212,6 +216,7 @@ const AIRadiologyPage = () => {
     setAnalysis(null);
     setUploadedFile(null);
     setFilePreview(null);
+    setReportImages([]);
     setBodyPart("");
     setClinicalInfo("");
   };
@@ -336,7 +341,7 @@ const AIRadiologyPage = () => {
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => { beginExternalPicker(); fileInputRef.current?.click(); }}
                     className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 hover:bg-muted/30"}`}
                   >
                     <div className="flex flex-col items-center gap-3">
@@ -351,9 +356,7 @@ const AIRadiologyPage = () => {
                         <Button variant="outline" size="sm" type="button" onClick={(e) => { e.stopPropagation(); beginExternalPicker(); fileInputRef.current?.click(); }}>
                           <Upload className="w-4 h-4 mr-1" /> Fayl tanlash
                         </Button>
-                        <Button variant="outline" size="sm" type="button" className="sm:hidden" onClick={(e) => { e.stopPropagation(); beginExternalPicker(); cameraInputRef.current?.click(); }}>
-                          <Camera className="w-4 h-4 mr-1" /> Kamera
-                        </Button>
+                        <RadiologyCamera onCapture={handleFile} />
                       </div>
                     </div>
                   </div>
@@ -378,8 +381,7 @@ const AIRadiologyPage = () => {
                     </div>
                   </div>
                 )}
-                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; endExternalPicker(); if (f) handleFile(f); e.target.value = ""; }} />
-                <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => { endExternalPicker(); const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+                <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => { endExternalPicker(); const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
               </div>
 
               <Button
@@ -557,18 +559,12 @@ const AIRadiologyPage = () => {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button onClick={() => downloadAIReport({
+                <Button onClick={() => void downloadAiReport({
                   title: "Radiologiya Tahlili",
-                  serviceType: `AI ${scanLabel} Tahlili`,
-                  riskLevel: analysis.overallAssessment.riskLevel === "critical" ? "Yuqori" : analysis.overallAssessment.riskLevel === "attention" ? "O'rtacha" : "Normal",
-                  suggestedSpecialist: analysis.suggestedSpecialist,
-                  sections: [
-                    { heading: "Umumiy baholash", content: analysis.overallAssessment.summary },
-                    ...(analysis.findings.length > 0 ? [{ heading: "Topilmalar", content: analysis.findings.map(f => `${f.location}: ${f.description} (${f.severity})`).join("\n") }] : []),
-                    { heading: "Tavsiyalar", content: analysis.recommendations.join("\n") },
-                    ...(analysis.followUpStudies?.length ? [{ heading: "Qo'shimcha tekshiruvlar", content: analysis.followUpStudies.join(", ") }] : []),
-                  ],
-                })} variant="outline" className="flex-1">
+                  name: user?.email ?? "",
+                  conclusion: JSON.stringify(analysis),
+                  images: reportImages,
+                }).catch(() => toast({ title: "PDF yaratilmadi", variant: "destructive" }))} variant="outline" className="flex-1">
                   <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
                 </Button>
                 {user && (

@@ -1,4 +1,5 @@
 import { downloadAiReport } from "@/lib/vitals/report";
+import { radiologyReportMarkdown } from "@/lib/radiologyReport";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -377,7 +378,7 @@ const MobileAppointmentsPage = ({ click = false }: { click?: boolean }) => {
             <>
               <DialogTitle className="flex items-center gap-2 break-words pr-6"><Brain className="h-5 w-5 shrink-0 text-ai-purple" /> {serviceName(aiOpen.service_id)}</DialogTitle>
               <DialogDescription>{new Date(aiOpen.created_at).toLocaleString("uz-UZ", { dateStyle: "full", timeStyle: "short" })}</DialogDescription>
-              <MarkdownView source={aiOpen.content} className="min-w-0 max-w-full shrink-0 break-words text-base leading-7 sm:text-sm sm:leading-normal [&>div]:max-w-full [&>div]:overflow-x-auto [&_table]:min-w-[32rem] sm:[&_table]:min-w-0 [&_pre]:overflow-x-auto" />
+              <MarkdownView source={radiologyReportMarkdown(aiOpen.content) ?? aiOpen.content} className="min-w-0 max-w-full shrink-0 break-words text-base leading-7 sm:text-sm sm:leading-normal [&>div]:max-w-full [&>div]:overflow-x-auto [&_table]:min-w-[32rem] sm:[&_table]:min-w-0 [&_pre]:overflow-x-auto" />
               <p className="text-[11px] text-muted-foreground">AI xulosasi shifokor tashxisini almashtirmaydi.</p>
               <Button className="w-full shrink-0" onClick={() => void downloadAiReport({ title: `Med AI - ${serviceName(aiOpen.service_id)}`, conclusion: aiOpen.content, name: user?.email ?? "", date: aiOpen.created_at }).catch(() => toast.error("PDF yaratilmadi"))}><Download /> PDF xulosani yuklab olish</Button>
               <div className="grid shrink-0 grid-cols-1 gap-2 sm:grid-cols-2">

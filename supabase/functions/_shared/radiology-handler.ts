@@ -89,9 +89,9 @@ MUHIM QOIDALAR:
 3. Patologik o'zgarishlarni ICD-10 kodi bilan ifodalab ber
 4. YAKUNIY TASHXIS QOYMA — faqat tahlil va tavsiya ber
 5. Foydalanuvchining so'nggi xabari tilida javob ber
-6. HECH QACHON "o'qiy olmayman" dema — har doim tahlil qil
+6. Tasvir o'qilmasa yoki tibbiy tasvir bo'lmasa, buni ochiq ayt, topilmalarni bo'sh qoldir va sifatli material so'ra. Hech qachon majburan patologiya yoki normal natija yaratma.
 7. Professional radiologiya terminologiyasidan foydalan
-8. Artefaktlar va tasvir sifatini alohida baholab ber
+8. Artefaktlar va tasvir sifatini alohida baholab ber. Foto/bitta kesim to'liq DICOM seriyasi emas; ko'rinmagan ketma-ketlik, kontrast fazasi, o'lcham yoki shkalani taxmin qilma. BI-RADS, ASPECTS va boshqa shkalalarni faqat zarur material yetarli bo'lsa ishlat. Xulosada cheklov, keyingi tekshiruv va mos mutaxassis bo'lsin. Iqtibos yoki ilmiy havolalarni to'qima.
 
 JAVOBNI FAQAT valid JSON object sifatida ber (markdown, \`\`\`json, izoh, salomlashish YO'Q):
 {

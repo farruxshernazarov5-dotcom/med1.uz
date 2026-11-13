@@ -27,7 +27,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hapticTap } from "@/lib/nativeApp";
 import { MOBILE_AI_SERVICES } from "@/data/mobileAiCatalog";
-import { AI_SERVICE_COVERS } from "@/data/aiServiceCovers";
+import { MOBILE_SERVICE_IMAGES } from "@/data/mobileServiceImages";
 import AIServiceInfoButton from "@/components/medcoin/AIServiceInfoButton";
 
 type AnalysisStatus = "idle" | "processing" | "ready";
@@ -57,7 +57,7 @@ const AI_TOOLS: AITool[] = MOBILE_AI_SERVICES.map((tool) => ({
   badge: tool.badge === "Ommabop" || tool.badge === "Yangi" ? tool.badge : undefined,
   popular: tool.featured,
   tone: tool.tone,
-  image: AI_SERVICE_COVERS[tool.id],
+  image: MOBILE_SERVICE_IMAGES[tool.id],
 }));
 
 const CATEGORY_LABELS: Record<ToolCategory, string> = {

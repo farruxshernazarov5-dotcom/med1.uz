@@ -3,11 +3,13 @@ import { isNativeApp } from "@/lib/nativeApp";
 import { sendPdfToTelegram } from "@/lib/telegramBotLink";
 import { supabase } from "@/integrations/supabase/client";
 import { extractVitalMetrics, scientificSources, topicQuery } from "@/lib/aiReportExtras";
+import { radiologyReportMarkdown } from "@/lib/radiologyReport";
+import reportFont from "@/assets/fonts/medical-unicode-compatible.ttf.asset.json";
 
-/** jsPDF core fonts lack Uzbek apostrophes and emoji; normalise to plain Latin. */
+/** Preserve Unicode letters; remove unsupported pictographic glyphs only. */
 const clean = (t: string) =>
   t.replace(/[‘’ʻʼ`]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, "-")
-    .replace(/[#*_>|]/g, "").replace(/[^\x20-\x7E\n\u00C0-\u017F]/g, "").replace(/\n{3,}/g, "\n\n");
+    .replace(/[#*_>|]/g, "").replace(/\p{Extended_Pictographic}|\uFE0F/gu, "").replace(/\n{3,}/g, "\n\n");
 
 const VERIFY_BASE = "https://med1.uz/verify/vital/";
 
@@ -64,14 +66,23 @@ const statusColors: Record<MetricStatus, [number, number, number]> = {
 };
 
 /** Any Med AI answer as a verifiable PDF (used by Qabullar → AI xulosalari). */
-export const downloadAiReport = (o: { title: string; conclusion: string; name: string; date?: string; summary?: string }) =>
-  downloadVitalReport({ summary: o.summary ?? "", conclusion: o.conclusion, name: o.name, title: o.title, date: o.date, metrics: (() => { const m = extractVitalMetrics(`${o.summary ?? ""}\n${o.conclusion}`); return m.length >= 2 ? m : undefined; })() });
+export const downloadAiReport = (o: { title: string; conclusion: string; name: string; date?: string; summary?: string; images?: string[] }) =>
+  downloadVitalReport({ summary: o.summary ?? "", conclusion: radiologyReportMarkdown(o.conclusion) ?? o.conclusion, name: o.name, title: o.title, date: o.date, images: o.images, metrics: (() => { const m = extractVitalMetrics(`${o.summary ?? ""}\n${o.conclusion}`); return m.length >= 2 ? m : undefined; })() });
 
-export async function downloadVitalReport({ summary, conclusion, name, title = "Med AI - Vital ko'rsatkichlar xulosasi", date, metrics }: { summary: string; conclusion: string; name: string; title?: string; date?: string; metrics?: ReportMetric[] }) {
+export async function downloadVitalReport({ summary, conclusion, name, title = "Med AI - Vital ko'rsatkichlar xulosasi", date, metrics, images }: { summary: string; conclusion: string; name: string; title?: string; date?: string; metrics?: ReportMetric[]; images?: string[] }) {
   const [{ jsPDF }, QR, { default: autoTable }] = await Promise.all([import("jspdf"), import("qrcode"), import("jspdf-autotable")]);
   const hash = await sha256(`${summary}\n${conclusion}`);
   const code = await register(hash);
   const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const fontResponse = await fetch(reportFont.url);
+  if (!fontResponse.ok) throw new Error("PDF shriftini yuklab bo'lmadi");
+  const bytes = new Uint8Array(await fontResponse.arrayBuffer());
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  doc.addFileToVFS("MedicalUnicode.ttf", btoa(binary));
+  doc.addFont("MedicalUnicode.ttf", "medical", "normal");
+  doc.addFont("MedicalUnicode.ttf", "medical", "bold");
+  doc.setFont("medical", "normal");
   const PW = 210, PH = 297, W = 170;
 
   const statuses = (metrics ?? []).map(classifyMetricStatus);
@@ -135,9 +146,9 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     if (y > (title ? 240 : 262)) { doc.addPage(); background(); y = 20; }
     if (title) {
       doc.setFillColor(...headerColor); doc.rect(12, y - 4.5, 1.5, 6, "F");
-      doc.setTextColor(10, 37, 64); doc.setFontSize(12.5); doc.setFont("helvetica", "bold"); doc.text(clean(title), 16, y); y += 7;
+      doc.setTextColor(10, 37, 64); doc.setFontSize(12.5); doc.setFont("medical", "bold"); doc.text(clean(title), 16, y); y += 7;
     }
-    doc.setFont("helvetica", "normal");
+    doc.setFont("medical", "normal");
     if (!body.trim()) { y += 1; return; }
     doc.setFontSize(10); doc.setTextColor(40, 50, 60);
     for (const line of doc.splitTextToSize(clean(body), W)) {
@@ -165,7 +176,7 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
       head: [["Ko'rsatkich", "Natija", "Me'yor", "Holat"]],
       body: metrics.map((m) => [clean(m.label), clean(m.value), clean(m.norm), statusLabels[classifyMetricStatus(m)]]),
       theme: "grid",
-      styles: { font: "helvetica", fontSize: 9, cellPadding: 3, overflow: "linebreak", textColor: [40, 50, 60], lineColor: [215, 225, 230] },
+      styles: { font: "medical", fontSize: 9, cellPadding: 3, overflow: "linebreak", textColor: [40, 50, 60], lineColor: [215, 225, 230] },
       headStyles: { fillColor: headerColor, textColor: [255, 255, 255] },
       alternateRowStyles: { fillColor: [242, 248, 249] },
       columnStyles: { 0: { cellWidth: 46 }, 1: { cellWidth: 44 }, 2: { cellWidth: 40 }, 3: { cellWidth: 52 } },
@@ -181,14 +192,14 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     });
   }
   const sourceMetric = metrics?.find((m) => /manba|ishonch|signal/i.test(m.label));
-  block("Manba va signal sifati", sourceMetric ? sourceMetric.value : "Manba: qo'lda kiritilgan yoki saqlangan AI xulosasi. Signal sifati: ko'rsatilmagan.");
+  if (metrics?.length) block("Manba va signal sifati", sourceMetric ? sourceMetric.value : "Manba: qo'lda kiritilgan yoki saqlangan AI xulosasi. Signal sifati: ko'rsatilmagan.");
   if (summary && !metrics?.length) block("O'lchangan ko'rsatkichlar", summary);
   block("Med AI xulosasi", "");
   const text = (runs: { text: string }[]) => runs.map(r => r.text).join("");
   for (const part of parseMarkdown(conclusion)) {
     if (part.type === "hr") { y += 3; continue; }
     if (part.type === "table") {
-      autoTable(doc, {startY:y,margin:{left:14,right:14,top:20,bottom:28},head:[part.head.map(c => clean(text(c)))],body:part.rows.map(row=>part.head.map((_, i)=>clean(text(row[i] ?? [{text:"-"}])))),theme:"grid",styles:{fontSize:9,cellPadding:3,overflow:"linebreak",lineColor:[215,225,230],textColor:[40,50,60]},headStyles:{fillColor:headerColor,textColor:[255,255,255]},alternateRowStyles:{fillColor:[248,250,250]},willDrawPage:data=>{if(data.pageNumber>1) background();},didDrawPage:data=>{y=(data.cursor?.y ?? 20)+8;}});
+      autoTable(doc, {startY:y,margin:{left:14,right:14,top:20,bottom:28},head:[part.head.map(c => clean(text(c)))],body:part.rows.map(row=>part.head.map((_, i)=>clean(text(row[i] ?? [{text:"-"}])))),theme:"grid",styles:{font:"medical",fontSize:9,cellPadding:3,overflow:"linebreak",lineColor:[215,225,230],textColor:[40,50,60]},headStyles:{fillColor:headerColor,textColor:[255,255,255]},alternateRowStyles:{fillColor:[248,250,250]},willDrawPage:data=>{if(data.pageNumber>1) background();},didDrawPage:data=>{y=(data.cursor?.y ?? 20)+8;}});
     } else if (part.type === "ul" || part.type === "ol") {
       block("", part.items.map((runs, i) => `${part.type === "ol" ? `${i+1}.` : "-"} ${text(runs)}`).join("\n"));
     } else {
@@ -199,13 +210,13 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
   {
     const query = topicQuery(title, conclusion);
     const sources = scientificSources(query);
-    block("Ilmiy manbalar", `Mavzu bo'yicha ko'rib chiqilgan ilmiy bazalar (havolani bosing): "${clean(query)}"`);
+    block("Ilmiy manbalarni qidirish", `Quyidagi havolalar mavzu bo'yicha qidiruv uchun, xulosada bu maqolalar ishlatilganini bildirmaydi: "${clean(query)}"`);
     autoTable(doc, {
       startY: y, margin: { left: 14, right: 14, top: 20, bottom: 28 },
       head: [["Manba", "Turi", "Havola"]],
       body: sources.map((src) => [src.name, src.kind, src.url.replace(/^https:\/\//, "").slice(0, 60) + "..."]),
       theme: "grid",
-      styles: { fontSize: 8, cellPadding: 2.5, overflow: "linebreak", textColor: [40, 50, 60], lineColor: [215, 225, 230] },
+      styles: { font: "medical", fontSize: 8, cellPadding: 2.5, overflow: "linebreak", textColor: [40, 50, 60], lineColor: [215, 225, 230] },
       headStyles: { fillColor: headerColor, textColor: [255, 255, 255] },
       columnStyles: { 0: { cellWidth: 42, fontStyle: "bold" }, 1: { cellWidth: 34 }, 2: { cellWidth: 106, textColor: [30, 90, 200] } },
       willDrawPage: (data) => { if (data.pageNumber > 1) background(); },
@@ -216,6 +227,15 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     });
   }
   block("Keyingi qadamlar", "1. Natijani shifokoringiz bilan muhokama qiling.\n2. Qayta o'lchovni dam olgan holatda, bir xil vaqtda bajaring.\n3. Ko'krakda og'riq, hansirash, hushdan ketish bo'lsa darhol 103 ga qo'ng'iroq qiling.\n4. Med1.uz orqali shifokor qabuliga yozilishingiz mumkin.");
+
+  for (const [i, image] of (images ?? []).entries()) {
+    const img = new Image(); img.src = image; await img.decode();
+    doc.addPage(); background(); y = 20;
+    block(`Yuklangan material ${i + 1}`, "Tahlilga yuborilgan tasvir. AI xulosasi yakuniy radiolog tashxisi emas.");
+    const ratio = Math.min(178 / img.naturalWidth, 214 / img.naturalHeight);
+    const w = img.naturalWidth * ratio, h = img.naturalHeight * ratio;
+    doc.addImage(image, "JPEG", (PW - w) / 2, y, w, h);
+  }
 
   // Footer on every page
   const pages = doc.getNumberOfPages();

@@ -1,3 +1,11 @@
+## 2026-11-13 — Radiologiya kamera, PDF va xizmat rasmlari
+- [x] Rentgen/KT/MRT va 7 submodulda umumiy kamera va fayl amallari ajratildi; web kamera surat olishi tekshirildi
+- [x] Radiologiya JSON xulosasi PDF jadvallariga aylantirildi, joriy tahlilga yuborilgan tasvirlar proporsional ilova qilinadi; Unicode shrift va uch sahifa tekshirildi, bo‘sh sarlavhalar olib tashlandi
+- [x] Tasvir sifati, to‘liq bo‘lmagan kesim va DICOM cheklovlari promptda mustahkamlandi; 8 funksiya deploy qilindi
+- [x] Oddiy AI menyusidagi avvalgi rasmlar tiklandi; Click va yordam rasmlariga tegilmadi; mobil rasmlar tekshirildi
+- [x] 9 test, build OK; hisobda kamera→surat va PDF yuklash tekshirildi (mahalliy CDN font testi original fayl bilan yetkazildi)
+- [ ] Haqiqiy APK kamerasi va jonli AI xulosasi: yangi APK/telefon kerak, sinov hisobida Med Coin 0; eski tarixda saqlanmagan rasmlar tiklanmaydi
+
 ## 2026-11-12 — Mobil tezlik, Bola AI va eslatmalar
 - [x] Mobil AI menyusi yengil katalog/rasmlardan yuklanadi; telefon tablari moslandi, pastki menyu doim ko‘rinadi
 - [x] Bola AI: aniq yosh, shaxsiy kontekst, xavf belgilarini baholash
