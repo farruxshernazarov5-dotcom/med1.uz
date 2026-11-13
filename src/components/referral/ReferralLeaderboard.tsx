@@ -34,7 +34,7 @@ export const ReferralLeaderboard = ({ rows }: { rows: LeaderRow[] }) => {
                       {top ? <Medal className="w-3.5 h-3.5" /> : r.rank}
                     </span>
                     <div>
-                      <p className="text-sm font-medium">{r.org_role ? (ROLE_LABEL[r.org_role] ?? r.org_role) : r.masked_id}</p>
+                      <p className="text-sm font-medium">{r.org_role ? (ROLE_LABEL[r.org_role] ?? r.org_role) : "—"}</p>
                       <p className="text-xs text-muted-foreground">#{r.owner_id.slice(0, 6)}…</p>
                     </div>
                   </div>
