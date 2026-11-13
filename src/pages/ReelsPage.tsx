@@ -47,6 +47,8 @@ export default function ReelsPage(){
     for(const source of existing??[]){if(seen.has(source.url)||!allowedReelUrl(source.url))continue;seen.add(source.url);items.push({id:`source:${source.id}`,title:source.title??'Mutaxassis videosi',description:source.description??'',media_kind:'social',external_url:source.url,storage_path:null,owner_id:source.owner_id,status:'approved',created_at:source.created_at});}
   }
   await Promise.all(items.map(async item=>{if(item.storage_path){const {data:signed}=await supabase.storage.from('medical-reels').createSignedUrl(item.storage_path,3600);item.url=signed?.signedUrl;}}));
+  const missing=items.filter(i=>i.storage_path&&!i.url&&i.status==='approved').map(i=>i.storage_path as string);
+  if(missing.length){const {data:pub}=await supabase.functions.invoke('reels-media',{body:{paths:missing}});const urls=(pub?.urls??{}) as Record<string,string>;for(const i of items)if(i.storage_path&&!i.url)i.url=urls[i.storage_path];}
   setRows(items);setLoading(false);
  };
  useEffect(()=>{void load();},[view,user?.id,admin]);

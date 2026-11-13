@@ -40,17 +40,17 @@ serve(async (req) => {
     // Aggregate from referral_codes
     const { data, error } = await admin
       .from("referral_codes")
-      .select("owner_id, org_role, total_uses, total_rewards_credits")
+      .select("owner_id, total_uses")
       .order("total_uses", { ascending: false })
       .limit(limit);
-    if (error) return json({ error: error.message }, 500);
+    if (error) { console.error(error); return json({ error: "failed" }, 500); }
 
     const rows: LeaderRow[] = (data ?? []).map((r: any, i: number) => ({
       rank: i + 1,
       masked_id: maskId(r.owner_id),
-      org_role: r.org_role ?? null,
+      org_role: null,
       total_uses: r.total_uses ?? 0,
-      total_rewards_credits: Number(r.total_rewards_credits ?? 0),
+      total_rewards_credits: 0,
     }));
 
     cache = { ts: Date.now(), limit, data: rows };

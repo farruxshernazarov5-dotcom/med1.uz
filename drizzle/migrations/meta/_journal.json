@@ -211,6 +211,13 @@
       "when": 1794443143368,
       "tag": "0029_guard_selected_account_rpcs",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1794552901472,
+      "tag": "0030_secure_role_claim_and_reels_reads",
+      "breakpoints": true
     }
   ]
 }
