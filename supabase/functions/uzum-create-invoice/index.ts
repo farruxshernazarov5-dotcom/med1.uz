@@ -51,6 +51,10 @@ Deno.serve(async (req) => {
     const packageCode = body?.package_code ? String(body.package_code) : null;
     const priced = await resolvePackagePrice(admin, packageCode, rawAmount);
     if (!priced.ok) return json(400, { error: priced.error });
+    if (!priced.packageId) {
+      const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
+      if (!(environment === "sandbox" && isAdmin)) return json(400, { error: "Paket topilmadi" });
+    }
     const amount = priced.amount;
     const { data: payment, error: payErr } = await admin.from("platform_payments").insert({
       user_id: userId,

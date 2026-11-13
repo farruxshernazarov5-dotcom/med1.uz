@@ -122,12 +122,14 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
 
   const findUser = async () => {
     if (!userSearch.trim()) return;
+    if (!staffForm.id) return toast({ title: "Avval xodimni saqlang", description: "Saqlangandan so'ng email/telefon orqali hisobni ulashingiz mumkin." });
     setSearching(true);
-    const { data, error } = await supabase.functions.invoke("org-attendance-find-user", { body: { query: userSearch.trim() } });
+    const { data, error } = await supabase.functions.invoke("org-attendance-find-user", { body: { query: userSearch.trim(), staff_id: staffForm.id } });
     setSearching(false);
     if (error || (data as any)?.error) return toast({ title: "Xatolik", description: (data as any)?.error || error?.message, variant: "destructive" });
-    setSearchResults((data as any)?.results || []);
-    if (!(data as any)?.results?.length) toast({ title: "Topilmadi", description: "Bu email/telefon bo'yicha foydalanuvchi yo'q. Xodim avval ro'yxatdan o'tishi kerak." });
+    toast({ title: "So'rov qabul qilindi", description: "Agar bu email/telefon ro'yxatdan o'tgan bo'lsa, hisob xodimga ulandi." });
+    setUserSearch("");
+    fetchAll();
   };
 
   const pickUser = (r: any) => {

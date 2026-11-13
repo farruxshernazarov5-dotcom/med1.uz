@@ -29,13 +29,15 @@ serve(async (req) => {
     const url = new URL(req.url);
     const limit = Math.min(50, Math.max(1, Number(url.searchParams.get("limit") ?? 10)));
 
-    if (cache && cache.limit === limit && Date.now() - cache.ts < TTL_MS) {
-      return json({ ok: true, cached: true, data: cache.data });
-    }
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(SUPABASE_URL, SERVICE);
+    const token = (req.headers.get("Authorization") || "").replace("Bearer ", "");
+    const { data: u } = token ? await admin.auth.getUser(token) : { data: { user: null } } as any;
+    if (!u?.user) return json({ error: "unauthorized" }, 401);
+    const { data: isAdmin } = await admin.rpc("has_role", { _user_id: u.user.id, _role: "admin" });
+    if (!isAdmin) return json({ ok: true, cached: false, data: [] });
 
     // Aggregate from referral_codes
     const { data, error } = await admin

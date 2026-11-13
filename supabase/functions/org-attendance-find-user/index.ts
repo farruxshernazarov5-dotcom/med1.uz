@@ -22,7 +22,10 @@ Deno.serve(async (req) => {
     const business = new Set(["admin", "clinic", "diagnostics", "maternity", "cosmetology", "doctor", "pharmacy", "bloodbank", "dental", "vendor"]);
     if (!(roles || []).some((r: any) => business.has(r.role))) return j({ error: "forbidden" }, 403);
 
-    const { query } = await req.json();
+    const { query, staff_id } = await req.json();
+    if (typeof staff_id !== "string" || !/^[0-9a-f-]{36}$/i.test(staff_id)) return j({ error: "Avval xodimni saqlang" }, 400);
+    const { data: staff } = await admin.from("org_attendance_staff").select("id").eq("id", staff_id).eq("owner_id", u.user.id).maybeSingle();
+    if (!staff) return j({ error: "forbidden" }, 403);
     if (!query || typeof query !== "string") return j({ error: "Email yoki telefon kiriting" }, 400);
     const q = query.trim().toLowerCase().slice(0, 200);
     const results: any[] = [];
@@ -46,7 +49,11 @@ Deno.serve(async (req) => {
       return j({ error: "To'liq email yoki telefon raqam kiriting" }, 400);
     }
 
-    return j({ results });
+    // Link server-side; never reveal account IDs or whether an account exists.
+    if (results[0]?.user_id && results[0].user_id !== u.user.id) {
+      await admin.from("org_attendance_staff").update({ user_id: results[0].user_id }).eq("id", staff_id).eq("owner_id", u.user.id);
+    }
+    return j({ ok: true });
   } catch (e: any) {
     return j({ error: "error" }, 500);
   }

@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
     const urls: Record<string, string> = {};
     for (const r of data ?? []) {
       if (!r.storage_path || r.storage_path.split("/")[0] !== String(r.owner_id)) continue;
-      const { data: s } = await admin.storage.from("medical-reels").createSignedUrl(r.storage_path, 3600);
+      const { data: s } = await admin.storage.from("medical-reels").createSignedUrl(r.storage_path, 300);
       if (s?.signedUrl) urls[r.storage_path] = s.signedUrl;
     }
     return json({ urls });
