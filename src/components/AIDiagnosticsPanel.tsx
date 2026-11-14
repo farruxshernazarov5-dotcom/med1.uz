@@ -299,7 +299,7 @@ function MappingTab({ rows, loading }: { rows: MappingAuditRow[]; loading: boole
 function HealthTab({ health, loading, run }: { health: any; loading: boolean; run: () => void }) {
   return (
     <div className="space-y-2">
-      <button onClick={run} disabled={loading} className="flex items-center gap-1 rounded bg-primary px-2 py-1 text-xs text-primary-foreground hover:opacity-90 disabled:opacity-50">
+      <button onClick={run} disabled={loading} aria-label="AI xizmatlari holatini yangilash" className="flex items-center gap-1 rounded bg-primary px-2 py-1 text-xs text-primary-foreground hover:opacity-90 disabled:opacity-50">
         <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
         {loading ? "Tekshirilmoqda…" : "Health check"}
       </button>

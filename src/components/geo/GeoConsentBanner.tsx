@@ -31,9 +31,9 @@ export function GeoConsentBanner({ onGrant }: Props) {
 
   return (
     <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[380px] z-[60] bg-card border border-border rounded-2xl shadow-2xl p-4 animate-in slide-in-from-bottom-5">
-      <button onClick={decline} className="absolute top-2 right-2 w-7 h-7 rounded-lg hover:bg-muted flex items-center justify-center">
+      <Button variant="ghost" size="icon" onClick={decline} aria-label="Joylashuv taklifini yopish" className="absolute top-2 right-2 w-7 h-7 rounded-lg">
         <X className="w-4 h-4" />
-      </button>
+      </Button>
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
           <MapPin className="w-5 h-5 text-white" />

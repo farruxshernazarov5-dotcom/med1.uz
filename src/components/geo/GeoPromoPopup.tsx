@@ -36,9 +36,9 @@ export function GeoPromoPopup({ match, onClose }: Props) {
   return (
     <div className="fixed bottom-20 lg:bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-[400px] z-[70] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 fade-in">
       <div className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 p-4 text-white">
-        <button onClick={onClose} className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center">
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Tavsiyani yopish" className="absolute top-2 right-2 w-7 h-7 rounded-lg">
           <X className="w-4 h-4" />
-        </button>
+        </Button>
         <div className="flex items-center gap-2 text-xs font-semibold mb-1">
           <Sparkles className="w-3.5 h-3.5" /> AI GEO TAVSIYA
         </div>

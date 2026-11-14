@@ -4,7 +4,7 @@
 import { writeFileSync, readFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://www.med1.uz";
+const BASE_URL = "https://med1-uz.lovable.app";
 
 interface Entry {
   path: string;
@@ -12,8 +12,6 @@ interface Entry {
   priority?: string;
   lastmod?: string;
 }
-
-const today = new Date().toISOString().slice(0, 10);
 
 // ---- Static routes ----
 const staticEntries: Entry[] = [
@@ -222,7 +220,7 @@ function build(entries: Entry[]) {
     [
       `  <url>`,
       `    <loc>${BASE_URL}${e.path}</loc>`,
-      `    <lastmod>${e.lastmod ?? today}</lastmod>`,
+      e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
       e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
       e.priority ? `    <priority>${e.priority}</priority>` : null,
       `  </url>`,

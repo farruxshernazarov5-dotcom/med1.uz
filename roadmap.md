@@ -1,3 +1,8 @@
+## 2026-11-14 — SEO findings
+- [ ] Add accessible names and pharmacy logo alternative text; verify portal structured data
+- [ ] Correct existing sitemap host and remove generation-date lastmod fallback
+- [ ] Publish verification tag and sitemap, verify Search Console ownership, and submit sitemap
+
 ## 2026-11-13 — Radiologiya kamera, PDF va xizmat rasmlari
 - [x] Rentgen/KT/MRT va 7 submodulda umumiy kamera va fayl amallari ajratildi; web kamera surat olishi tekshirildi
 - [x] Radiologiya JSON xulosasi PDF jadvallariga aylantirildi, joriy tahlilga yuborilgan tasvirlar proporsional ilova qilinadi; Unicode shrift va uch sahifa tekshirildi, bo‘sh sarlavhalar olib tashlandi
