@@ -6,6 +6,36 @@
 // Invoke manually or on a schedule (e.g. every minute via pg_cron):
 //   POST /webhook-dispatcher  { "limit": 50 }
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+// Only deliver to public HTTPS destinations; block internal/private hosts (SSRF).
+async function isSafeWebhookUrl(raw: string): Promise<boolean> {
+  let u: URL;
+  try { u = new URL(raw); } catch { return false; }
+  if (u.protocol !== "https:" || u.username || u.password) return false;
+  if (u.port && u.port !== "443") return false;
+  const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (!host.includes(".") || host === "localhost" || /\.(local|localhost|internal|lan|home|corp)$/.test(host)) return false;
+  const isPrivate = (ip: string) => {
+    if (ip.includes(":")) {
+      const l = ip.toLowerCase();
+      return l === "::1" || l === "::" || l.startsWith("fc") || l.startsWith("fd") || l.startsWith("fe80") || l.startsWith("::ffff:");
+    }
+    const p = ip.split(".").map(Number);
+    if (p.length !== 4 || p.some((n) => isNaN(n))) return true;
+    const [a, b] = p;
+    return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224;
+  };
+  if (/^[\d.]+$/.test(host) || host.includes(":")) return !isPrivate(host);
+  try {
+    const ips = [
+      ...(await Deno.resolveDns(host, "A").catch(() => [] as string[])),
+      ...(await Deno.resolveDns(host, "AAAA").catch(() => [] as string[])),
+    ];
+    if (ips.length === 0) return false;
+    return !ips.some(isPrivate);
+  } catch { return false; }
+}
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -114,7 +144,11 @@ serve(async (req) => {
     try {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 10_000);
+      if (!(await isSafeWebhookUrl(r.api_webhooks.url))) {
+        throw new Error("blocked_destination");
+      }
       const res = await fetch(r.api_webhooks.url, {
+        redirect: "manual",
         method: "POST",
         headers: {
           "Content-Type": "application/json",

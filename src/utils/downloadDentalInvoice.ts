@@ -40,7 +40,7 @@ export function generateDentalInvoiceHTML(data: DentalInvoiceData): string {
   const paymentRows = data.payments.map(p =>
     `<tr>
       <td style="padding:8px 12px;font-size:12px;border-bottom:1px solid #f1f5f9">${esc(p.date)}</td>
-      <td style="padding:8px 12px;font-size:12px;border-bottom:1px solid #f1f5f9">${methodLabels[p.method] || p.method}</td>
+      <td style="padding:8px 12px;font-size:12px;border-bottom:1px solid #f1f5f9">${esc(methodLabels[p.method] || String(p.method ?? ""))}</td>
       <td style="padding:8px 12px;font-size:12px;border-bottom:1px solid #f1f5f9;text-align:right;color:#16a34a;font-weight:600">+${Number(p.amount).toLocaleString()} so'm</td>
     </tr>`
   ).join("");

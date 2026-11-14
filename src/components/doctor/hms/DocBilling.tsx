@@ -201,7 +201,7 @@ const DocBilling = ({ doctorId }: Props) => {
     const w = window.open("", "_blank");
     if (!w) return;
     w.document.write(`
-      <html><head><title>${inv.invoice_number}</title>
+      <html><head><title>${esc(inv.invoice_number)}</title>
       <style>
         body{font-family:Arial;padding:40px;max-width:700px;margin:auto;color:#1a1a1a}
         .header{border-bottom:3px solid #0EA5E9;padding-bottom:20px;margin-bottom:30px;display:flex;justify-content:space-between}
