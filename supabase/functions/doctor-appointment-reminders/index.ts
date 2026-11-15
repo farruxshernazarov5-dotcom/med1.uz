@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
               body: {
                 to,
                 subject: msg.subject,
-                html: `<p>${msg.text.replace(/\n/g, "<br/>")}</p>`,
+                html: `<p>${msg.text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/\n/g, "<br/>")}</p>`,
                 purpose: "transactional",
                 idempotency_key: `doc-appt-${r.id}`,
               },

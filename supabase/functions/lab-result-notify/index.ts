@@ -129,11 +129,14 @@ serve(async (req) => {
     // SECURITY: recipient is always the patient's own account email (server-resolved),
     // never a caller-supplied address.
     let patientEmail: string | null = null;
+    let emailPatientName = "";
     if (activeChannels.includes("email") && email_data) {
       const targetId = patient_id || callerId;
       const { data: target } = await supabase.auth.admin.getUserById(targetId);
       const em = target?.user?.email || "";
       if (em && !em.endsWith("@phone.med1.uz")) patientEmail = em;
+      const { data: p } = await supabase.from("profiles").select("full_name").eq("user_id", targetId).maybeSingle();
+      emailPatientName = String(p?.full_name || "").slice(0, 120);
     }
     if (activeChannels.includes("email") && patientEmail) {
       try {
@@ -142,14 +145,10 @@ serve(async (req) => {
             templateName: "lab-result-notification",
             recipientEmail: patientEmail,
             idempotencyKey: `lab-result-${lab_result_id}-${Date.now()}`,
+            // SECURITY: never forward caller-supplied content; use server-resolved data only.
             templateData: {
-              patientName: email_data.patient_name,
-              testName: email_data.test_name,
-              testCategory: email_data.test_category,
-              resultsCount: email_data.results_count,
-              abnormalCount: email_data.abnormal_count,
-              resultsSummary: email_data.results_summary,
-              date: email_data.date,
+              patientName: emailPatientName,
+              date: new Date().toISOString().slice(0, 10),
             },
           },
         });

@@ -253,6 +253,13 @@
       "when": 1794748772674,
       "tag": "0035_guard_push_token_and_ai_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1794752554720,
+      "tag": "0036_restrict_appointment_status_and_card_lookup",
+      "breakpoints": true
     }
   ]
 }

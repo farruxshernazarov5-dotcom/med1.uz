@@ -807,7 +807,8 @@ const SecurityCenterModule = () => {
       header.join(","),
       ...h.rows.map((r) => header.map((k) => {
         const v = (r as any)[k];
-        const s = typeof v === "string" ? v.replace(/"/g, '""') : String(v);
+        const raw = typeof v === "string" ? v : String(v ?? "");
+        const s = (/^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw).replace(/"/g, '""');
         return /[",\n]/.test(s) ? `"${s}"` : s;
       }).join(",")),
     ];
