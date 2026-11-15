@@ -8082,6 +8082,21 @@ export type Database = {
         }
         Relationships: []
       }
+      document_pin_secret: {
+        Row: {
+          id: boolean
+          secret: string
+        }
+        Insert: {
+          id?: boolean
+          secret?: string
+        }
+        Update: {
+          id?: boolean
+          secret?: string
+        }
+        Relationships: []
+      }
       document_verifications: {
         Row: {
           clinic_id: string | null
@@ -18827,6 +18842,10 @@ export type Database = {
           usage_id: string
         }[]
       }
+      document_pin_value: {
+        Args: { _code: string; _kind: string }
+        Returns: string
+      }
       enqueue_webhook_event: {
         Args: { _event: string; _payload: Json }
         Returns: number
@@ -18850,6 +18869,10 @@ export type Database = {
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }
       generate_wallet_card_number: { Args: never; Returns: string }
       get_credit_to_uzs_rate: { Args: never; Returns: number }
+      get_document_pin: {
+        Args: { _code: string; _kind: string }
+        Returns: string
+      }
       get_nearby_medical_services: {
         Args: {
           _lat: number

@@ -129,7 +129,8 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     doc.addImage(qr, "PNG", PW - 52, y, 36, 36);
     doc.setFontSize(7); doc.setTextColor(10, 37, 64);
     doc.text(code, PW - 34, y + 41, { align: "center" });
-    doc.text("QR orqali tekshiring", PW - 34, y + 45, { align: "center" });
+    const { data: pin } = await supabase.rpc("get_document_pin", { _kind: "vital", _code: code });
+    doc.text(typeof pin === "string" ? `Tekshiruv kodi: ${pin}` : "QR orqali tekshiring", PW - 34, y + 45, { align: "center" });
   }
 
   // Warning box

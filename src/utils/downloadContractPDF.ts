@@ -1,3 +1,4 @@
+import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
 import { parseMarkdown, type MdRun } from "@/lib/markdownRender";
@@ -50,6 +51,8 @@ export async function downloadContractPDF(d: ContractPDFData): Promise<void> {
   doc.text("med1.uz  •  Yuridik Markaz  •  Rasmiy hujjat", M, 18);
   doc.text(`No ${d.contractNumber}`, M, 23);
   doc.addImage(qrDataUrl, "PNG", W - M - 22, 3, 22, 22);
+  const { data: pin } = await supabase.rpc("get_document_pin", { _kind: "contract", _code: d.hashId });
+  if (typeof pin === "string") { doc.setFontSize(8); doc.text(`Kod: ${pin}`, W - M - 24, 15, { align: "right" }); }
 
   // ---------- TITLE ----------
   let y = 36;
