@@ -5,7 +5,7 @@ import { sanitizeChatMessages } from "../_shared/sanitize-messages.ts";
 // to internal handlers (clinic, doctor, lab, pharmacy, emr, ai, payment).
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { createAiUsageEvent, estimateTokensFromMessages } from "../_shared/ai-access.ts";
+import { estimateTokensFromMessages, getServiceCost, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { mapModel } from "../_shared/model-map.ts";
 import { reportEdgeError } from "../_shared/error-sink.ts";
@@ -499,9 +499,21 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     }
     const mapped = mapModel(typeof body?.model === "string" ? body.model : null, { service: "api-gateway:ai-chat" });
     const model = mapped.model;
-    const usageId = partnerOwnerId
-      ? await createAiUsageEvent({ userId: partnerOwnerId, serviceId: "api-gateway:ai-chat", req, channel: "api", model })
-      : null;
+    // Paid AI calls must be attributed to a partner owner and charged in Med Coin before the upstream request.
+    if (!partnerOwnerId) {
+      return json(403, { code: "ai_not_allowed", message: "This API key is not linked to a billable account" }, requestId);
+    }
+    const aiServiceId = "api-gateway:ai-chat";
+    const aiCost = getServiceCost(aiServiceId);
+    const { data: deductData, error: deductErr } = await supabase.rpc("deduct_ai_credits", {
+      _user_id: partnerOwnerId, _service_id: aiServiceId, _cost: aiCost, _channel: "api", _model: model,
+    });
+    const deductRow = Array.isArray(deductData) ? deductData[0] : deductData;
+    if (deductErr || !deductRow?.success) {
+      return json(402, { code: "ai_credits_exhausted", message: "Insufficient Med Coin balance" }, requestId);
+    }
+    const usageId: string | null = deductRow.usage_id ?? null;
+    const refund = () => refundAiCredits(partnerOwnerId!, aiServiceId, aiCost, "api-gateway upstream failure");
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -517,15 +529,18 @@ async function dispatch(supabase: any, path: string, req: Request, requestId: st
     });
 
     if (aiRes.status === 429) {
+      await refund();
       await instrumentError(usageId, startTime, { status: "rate_limited", errorCode: "429", errorMessage: "AI rate limit reached" });
       return json(429, { code: "ai_rate_limited", message: "AI rate limit reached, retry later" }, requestId);
     }
     if (aiRes.status === 402) {
+      await refund();
       await instrumentError(usageId, startTime, { status: "error", errorCode: "402", errorMessage: "AI credits exhausted" });
       return json(402, { code: "ai_credits_exhausted", message: "AI credits exhausted" }, requestId);
     }
     if (!aiRes.ok) {
       const txt = await aiRes.text();
+      await refund();
       await instrumentError(usageId, startTime, { status: statusFromHttp(aiRes.status), errorCode: String(aiRes.status), errorMessage: txt.slice(0, 500) });
       return json(502, { code: "ai_upstream_error", message: txt.slice(0, 300) }, requestId);
     }

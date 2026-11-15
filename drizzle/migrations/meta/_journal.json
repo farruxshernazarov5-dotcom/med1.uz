@@ -246,6 +246,13 @@
       "when": 1794747552593,
       "tag": "0034_private_document_password_verification",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1794748772674,
+      "tag": "0035_guard_push_token_and_ai_usage",
+      "breakpoints": true
     }
   ]
 }

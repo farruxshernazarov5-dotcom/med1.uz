@@ -158,7 +158,12 @@ const OrgAttendance = ({ ownerId, orgType = "clinic", orgName }: Props) => {
       r.is_late ? `${r.late_minutes}` : "0",
       `${r.worked_minutes || 0}`, r.status || "",
     ]));
-    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const cell = (v: unknown) => {
+      let t = String(v ?? "");
+      if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+      return `"${t.replace(/"/g, '""')}"`;
+    };
+    const csv = rows.map((r) => r.map(cell).join(",")).join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
     const a = document.createElement("a"); a.href = url; a.download = `attendance-${filterDate}.csv`; a.click();
   };
