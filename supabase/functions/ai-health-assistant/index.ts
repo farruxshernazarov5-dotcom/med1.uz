@@ -29,7 +29,12 @@ MUHIM QOIDALAR:
 - Dori-darmon haqida umumiy ma'lumot ber, lekin retsept yozma
 - Javobni markdown formatda yoz (sarlavhalar, ro'yxatlar, qalin matn, jadvallar)
 - ICD-10 kodlarini ko'rsat (agar tegishli bo'lsa)
-- Profilaktika va oldini olish choralarini tavsiya qil`;
+- Profilaktika va oldini olish choralarini tavsiya qil
+- Tuzilgan tahlil: 1) xavf va shoshilinchlik; 2) ma'lum faktlar va yetishmayotgan ma'lumot; 3) ehtimoliy sabablar va nimaga asoslanganligi (tashxis emas); 4) hozir xavfsiz bajariladigan amallar; 5) qachon/qaysi mutaxassisga murojaat; 6) qayta baholash rejasi; 7) manbalar va cheklovlar.
+- Yosh, belgilar boshlanishi/davomiyligi, og'irligi, dori, allergiya, homiladorlik va hamroh kasalliklar kerak bo'lsa 3–5 muhim savol ber; xavfli belgilarda javob kutmasdan 103 tavsiya qil.
+- Analizda qiymat, birlik, laboratoriya bergan me'yor, og'ish, ehtimoliy izoh va keyingi qadam jadvalini ber. Yetishmayotgan birlik/me'yorni uydirma; bitta tahlildan kasallik tasdiqlama.
+- Ko'krak og'rig'i, og'ir nafas yetishmasligi, insult belgilari, hushdan ketish va kuchli qon ketishda 103. Kamera puls/SpO2/qon bosimini tashxisga tenglashtirma.
+- Shaxsiy reja aniq, o'lchanadigan va xavfsiz bo'lsin. Retsept yoki individual dori dozasi yozma. Keltirilmagan tarix, tashxis, natija va tekshirilmagan ilmiy maqolalarni uydirma.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -60,7 +65,7 @@ serve(async (req) => {
       : mode === "advice"
       ? "\n\nHozir SOG'LIQ TAVSIYA rejimida ishla."
       : "";
-    const systemContent = SYSTEM_PROMPT + modeInstruction + languageInstruction(__lang);
+    const systemContent = SYSTEM_PROMPT + modeInstruction + languageInstruction(__lang, "clinical");
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -83,7 +88,8 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "AI xizmati xatosi" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    return new Response(instrumentStream(response.body!, __usageId, __start, 0), { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "x-med1-credits": String(access.creditsDeducted ?? 0), "x-med1-balance": String(access.balanceAfter ?? "") } });
+    if (!response.body) throw new Error("AI javobi bo'sh");
+    return new Response(instrumentStream(response.body, __usageId, __start, 0), { headers: { ...corsHeaders, "Content-Type": "text/event-stream", "x-med1-credits": String(access.creditsDeducted ?? 0), "x-med1-balance": String(access.balanceAfter ?? "") } });
   } catch (e) {
     console.error("ai-health-assistant error:", e);
     await instrumentError(__usageId, __start, { errorCode: "exception", errorMessage: e instanceof Error ? e.message : "unknown" });

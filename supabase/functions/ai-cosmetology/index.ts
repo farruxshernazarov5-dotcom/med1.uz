@@ -48,7 +48,11 @@ MUHIM QOIDALAR:
 1. Har bir javob oxirida: "⚠️ AI tahlili faqat ma'lumot berish maqsadida. Aniq tashxis uchun dermatolog yoki kosmetolog bilan maslahatlashing."
 2. Javoblarni ilmiy asoslangan, aniq va strukturali tarzda yoz
 3. Har bir muolaja uchun foyda va xavflarni ko'rsat
-4. Jiddiy holatlar (melanoma shubhasi, og'ir akne, infeksiya) uchun DARHOL shifokor ko'rigini tavsiya qil`;
+4. Jiddiy holatlar (melanoma shubhasi, og'ir akne, infeksiya) uchun DARHOL shifokor ko'rigini tavsiya qil
+5. Batafsil javob: ko'rinadigan belgi, joylashuvi, ishonchlilik va cheklovlarni ajrat. Suratdagi poralar sonini butun yuz uchun aniq sanab bo'lmaydi; segmentatsiya yoki kalibrlangan o'lchov bo'lmasa ANIQ SONNI UYDIRMA. Ko'rinadigan poralar zichligini sifat jihatidan (kam/o'rtacha/ko'p) va yuz sohasi bo'yicha izohla.
+6. Oddiy surat namlik, elastiklik, UV zarari yoki teri turini aniq o'lchamaydi. Ularni kuzatuv/taxmin deb belgilab, aniqlab bo'lmasa "baholanmaydi" yoz. 0–10 va 0–100 ballar klinik validatsiyalangan o'lchov emasligini ayt; asossiz ball yoki muolaja narxini uydirma.
+7. Parvarish rejasida yangi ingredientni bittadan kiritish, patch-test, qo'llash tezligi, mos kelmaydigan kombinatsiyalar, homiladorlik/emizishdagi ehtiyotlar va 2–4 haftalik kuzatuvni ko'rsat. Allergiya, ishlatilayotgan mahsulotlar va muolajalar noma'lum bo'lsa so'ra.
+8. T-zona, yonoq, peshona, ko'z atrofi va iyakni alohida bahola; mavjud rasmdan aniqlanmaydigan belgini ochiq ko'rsat. Ilmiy havolalar faqat tekshirilgan bo'lsa maqola sifatida keltir; qidiruv havolasini tekshirilgan maqola deb atama.`;
 
     if (mode === "skin-analysis") {
       systemPrompt += `\n\nAI TERI SKANERI rejimi faol.
@@ -189,7 +193,7 @@ Kundalik tartib tavsiyalari`;
       body: JSON.stringify({
         model: access.model || "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: systemPrompt + languageInstruction(__lang) },
+          { role: "system", content: systemPrompt + languageInstruction(__lang, "clinical") },
           ...formattedMessages,
         ],
         max_completion_tokens: access.maxTokens ?? 600,
@@ -207,7 +211,8 @@ Kundalik tartib tavsiyalari`;
       return new Response(JSON.stringify({ error: "AI xatolik yuz berdi" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    return new Response(instrumentStream(response.body!, __usageId, __start, 0), {
+    if (!response.body) throw new Error("AI javobi bo'sh");
+    return new Response(instrumentStream(response.body, __usageId, __start, 0), {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {

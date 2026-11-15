@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import PrivateDocumentVerification from "@/components/PrivateDocumentVerification";
 
 type Contract = {
   hash_id: string;
@@ -45,7 +46,7 @@ const STATUS_LABEL: Record<string, { label: string; tone: "ok" | "warn" | "bad" 
   rejected: { label: "✗ Rad etilgan", tone: "bad" },
 };
 
-export default function ContractVerifyPage() {
+function LegacyContractVerifyPage() {
   const { hashId } = useParams<{ hashId: string }>();
   const [code, setCode] = useState(hashId || "");
   const [loading, setLoading] = useState(false);
@@ -241,6 +242,12 @@ export default function ContractVerifyPage() {
       <Footer />
     </div>
   );
+}
+
+export default function ContractVerifyPage() {
+  const { hashId = "" } = useParams<{ hashId: string }>();
+  if (/^TEMPLATE-/i.test(hashId)) return <LegacyContractVerifyPage />;
+  return <PrivateDocumentVerification kind="contract" initialCode={hashId} />;
 }
 
 function Row({ icon, label, value, mono }: { icon: React.ReactNode; label: string; value: string; mono?: boolean }) {

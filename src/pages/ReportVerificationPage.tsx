@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadPaymentReceipt } from "@/utils/downloadPaymentReceipt";
 import { toast } from "@/hooks/use-toast";
+import PrivateDocumentVerification from "@/components/PrivateDocumentVerification";
 
 const PURPOSE_LABELS: Record<string, string> = {
   ai_subscription: "AI obuna",
@@ -34,38 +35,7 @@ const STATUS_LABELS: Record<string, { label: string; tone: "ok" | "warn" | "bad"
   refunded: { label: "↩ Qaytarilgan", tone: "warn" },
 };
 
-const SYNTH_PREFIXES: Record<string, { type: string; label: string }> = {
-  "HAMBI-": { type: "hambi_report", label: "HAMBI × MED-ALL AI — Enterprise hisobot" },
-  "SUB-":   { type: "subscription_report", label: "Obunalar hisoboti" },
-  "PAY-":   { type: "payment_report", label: "To'lovlar hisoboti" },
-  "REV-":   { type: "revenue_report", label: "Daromad hisoboti" },
-  "DOC-":   { type: "documents_report", label: "Hujjatlar hisoboti" },
-  "MED1-":  { type: "ai_report", label: "AI tahlil hisoboti" },
-  "LAB-":   { type: "lab_report", label: "Laboratoriya hisoboti" },
-  "INV-":   { type: "invoice", label: "Hisob-faktura" },
-};
-
-function synthesizeVerification(rawCode: string) {
-  const code = rawCode.trim().toUpperCase();
-  for (const [prefix, meta] of Object.entries(SYNTH_PREFIXES)) {
-    if (code.startsWith(prefix)) {
-      return {
-        id: code,
-        verification_code: code,
-        document_type: meta.type,
-        document_label: meta.label,
-        status: "valid",
-        document_date: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        scanned_count: 0,
-        synthesized: true,
-      };
-    }
-  }
-  return null;
-}
-
-const ReportVerificationPage = () => {
+const PaymentVerificationPage = () => {
   const { reportId } = useParams<{ reportId: string }>();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -102,10 +72,6 @@ const ReportVerificationPage = () => {
     if (data) {
       setDoc(data);
       await supabase.rpc("register_document_scan" as any, { _code: code.trim() });
-    } else {
-      // Fallback: synthesize a valid result for known auto-generated document prefixes
-      const synth = synthesizeVerification(code);
-      if (synth) setDoc(synth);
     }
     setLoading(false);
   };
@@ -411,4 +377,10 @@ const ReportVerificationPage = () => {
   );
 };
 
-export default ReportVerificationPage;
+export default function ReportVerificationPage() {
+  const { reportId = "" } = useParams<{ reportId: string }>();
+  const [params] = useSearchParams();
+  const code = reportId || params.get("code") || "";
+  if (params.get("payment_id") || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(code)) return <PaymentVerificationPage />;
+  return <PrivateDocumentVerification kind="document" initialCode={code} />;
+}

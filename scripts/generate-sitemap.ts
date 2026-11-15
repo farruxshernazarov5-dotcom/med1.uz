@@ -4,7 +4,7 @@
 import { writeFileSync, readFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://med1-uz.lovable.app";
+const BASE_URL = "https://med1.uz";
 
 interface Entry {
   path: string;

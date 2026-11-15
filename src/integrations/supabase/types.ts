@@ -8058,6 +8058,30 @@ export type Database = {
           },
         ]
       }
+      document_access_passwords: {
+        Row: {
+          blocked_until: string | null
+          code: string
+          failed_attempts: number
+          kind: string
+          password_hash: string
+        }
+        Insert: {
+          blocked_until?: string | null
+          code: string
+          failed_attempts?: number
+          kind: string
+          password_hash: string
+        }
+        Update: {
+          blocked_until?: string | null
+          code?: string
+          failed_attempts?: number
+          kind?: string
+          password_hash?: string
+        }
+        Relationships: []
+      }
       document_verifications: {
         Row: {
           clinic_id: string | null
@@ -19010,6 +19034,19 @@ export type Database = {
           _owner_id: string
           _payment_id?: string
           _type: string
+        }
+        Returns: Json
+      }
+      owns_private_document: {
+        Args: { _code: string; _kind: string }
+        Returns: boolean
+      }
+      private_document_access: {
+        Args: {
+          _action?: string
+          _code: string
+          _kind: string
+          _password?: string
         }
         Returns: Json
       }

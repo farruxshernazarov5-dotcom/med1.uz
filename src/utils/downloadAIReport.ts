@@ -428,17 +428,15 @@ export function generateReportHTML(data: ReportData): string {
 </body></html>`;
 }
 
-export function downloadAIReport(data: ReportData) {
-  const html = generateReportHTML(data);
-  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, "_blank");
-  if (win) {
-    win.onload = () => {
-      setTimeout(() => { win.print(); }, 600);
-    };
-  }
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+export async function downloadAIReport(data: ReportData) {
+  const { downloadAiReport } = await import("@/lib/vitals/report");
+  return downloadAiReport({
+    title: data.title,
+    name: data.patientInfo?.fullName || data.patientName || "Noma'lum",
+    date: data.date,
+    conclusion: data.sections.map(section => `## ${section.heading}\n\n${section.content}`).join("\n\n"),
+    summary: [data.riskLevel && `Xavf darajasi: ${data.riskLevel}`, data.suggestedSpecialist && `Mutaxassis: ${data.suggestedSpecialist}`].filter(Boolean).join("\n"),
+  });
 }
 
 // Legacy text-only download

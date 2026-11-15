@@ -239,6 +239,13 @@
       "when": 1794644657205,
       "tag": "0033_guard_selected_privileged_rpcs",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1794747552593,
+      "tag": "0034_private_document_password_verification",
+      "breakpoints": true
     }
   ]
 }

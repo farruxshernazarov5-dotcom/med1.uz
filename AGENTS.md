@@ -42,7 +42,7 @@
 - Screenshot blocking goes through `useSecureScreen()` in `src/lib/secureScreen.ts` (ref-counted, native only), so sensitive screens opt in without touching the website.
 - Reminder sounds live in `resources/android/raw` and each sound has its own Android channel, because Android fixes a channel's sound when it is created.
 - `src/components/mobile/` and `src/lib/vitals/` have their own `AGENTS.md`; read them before changing files there.
-- Vital AI PDF reports are registered in `vital_reports` (code + SHA-256 only) and verified publicly via the `verify_vital_report` RPC at `/verify/vital/:code`, so QR checks never expose patient health data.
+- Personal QR checks use owner-set bcrypt passwords via `private_document_access`, not legacy public RPCs; receipt checks stay non-personal.
 - Every `notifications` insert is forwarded to the linked Telegram chat by a database trigger calling `emedinfo-bot/notify` (job secret + `telegram_sent_at` once-only flag), so web, app and Telegram alerts never diverge and alerts cannot be forged or replayed.
 
 - AI PDF exports retain fixed columns without inventing missing results; Vital PDF renders only actual Markdown tables as tables and keeps narrative blocks as prose, so measurements and advice remain visually distinct.

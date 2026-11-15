@@ -1,7 +1,18 @@
+## 2026-11-15 — Domen, batafsil AI va parolli QR
+- [x] Kanonik manzillar va 2368 sahifali mavjud sitemap med1.uz ga moslandi
+- [ ] Domen va QR sahifasi o‘zgarishlarini jonli chiqarish — foydalanuvchi Publish → Update tasdig‘i kerak; hozirgi sayt eski canonical/sitemapni ko‘rsatmoqda
+- [x] Kosmetologiya va salomatlik assistenti uchun qisqa til direktivasi batafsil, dalilga asoslangan tahlilga almashtirildi; model/limit/narx o‘zgarmadi, ikkala funksiya deploy qilindi
+- [ ] Jonli AI javob sifati — brauzer so‘rovi javob bermadi; noma’lum natijani avtomatik qayta yuborilmadi, kosmetologiya fotosi mavjud emas
+- [x] Shaxsiy QR serverda bcrypt parol bilan himoyalandi; 5 xato → 10 daqiqa blok; soxta prefix tasdig‘i olib tashlandi; eski HTML AI eksporti haqiqiy ro‘yxatga olingan PDF oqimiga ulandi
+- [x] Hisob egasi parol o‘rnatish → noto‘g‘ri parol rad etilishi → haqiqiy xulosa ochilishi va anonim blok sinovdan o‘tdi; vaqtinchalik sinov paroli olib tashlandi
+- [x] HUMO imkoniyati tekshirildi: Uzum BaaS pul o‘tkazmasi alohida xizmat, mavjud merchant to‘lov integratsiyasi yetarli emas
+- [ ] HUMO kartaga chiqarish — bankning payout/BaaS shartnomasi va tasdiqlangan kirish huquqi kerak; soxta pul chiqarish qo‘shilmadi
+- [x] 6 test va avtomatik build OK
+
 ## 2026-11-14 — SEO findings
 - [x] Added and verified accessible names, pharmacy logo alternative text and WebSite portal structured data; build OK
 - [x] Corrected existing sitemap host; 2368 URLs validated and generation-date lastmod fallback removed
-- [ ] Search Console ownership and sitemap submission: publishing requested, but the one post-deployment check still served the old verification tag and sitemap host; resume only once the new deployment is live
+- [x] Search Console ownership and sitemap submission completed for the published Lovable site (previous turn)
 
 ## 2026-11-13 — Radiologiya kamera, PDF va xizmat rasmlari
 - [x] Rentgen/KT/MRT va 7 submodulda umumiy kamera va fayl amallari ajratildi; web kamera surat olishi tekshirildi
