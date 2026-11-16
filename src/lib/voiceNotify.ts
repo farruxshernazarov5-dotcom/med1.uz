@@ -127,10 +127,11 @@ export type VoiceKind = "appointment" | "ai" | "wallet" | "transfer" | "coin" | 
 export function voiceKind(title: string, message?: string | null, type?: string | null): VoiceKind {
   const t = `${type ?? ""} ${title} ${message ?? ""}`.toLowerCase();
   if (/transfer|o[‘’'`ʻ]?tkazma|pul.*yubor/.test(t)) return "transfer";
-  if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
-  if (/coin|med coin|obuna muddati|expir/.test(t)) return "coin";
+  if (/coin|obuna muddati|expir/.test(t)) return "coin";
   if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
   if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
+  // Only real visit reminders get the chime; "qabul qilindi"/generic "eslatma" are spoken messages.
+  if (/appointment|qabul(ingiz)? (eslatma|vaqti|yaqin|ertaga|bugun)|qabulga yozil|qabul (tasdiqlandi|bekor)|visit/.test(t)) return "appointment";
   return "message";
 }
 

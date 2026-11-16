@@ -81,6 +81,14 @@ export const SUBMODULE_CONFIG: Record<RadiologySubModule, SubModuleConfig> = {
   },
 };
 
+const RADIOLOGY_DEPTH = `=== CHUQUR RADIOLOGIK TAVSIF ===
+- Avval tasvir texnikasini bahola: modallik, proyeksiya/kesim, kontrast, sifat (artefakt, harakat, ekspozitsiya) va tahlilga yaroqliligi.
+- Har bir anatomik sohani tizimli ko'rib chiq (normal sohalarni ham "o'zgarishsiz" deb qayd et) — hech bir sohani tashlab ketma.
+- Topilmalarda joylashuv, o'lcham (taxminiy bo'lsa belgila), shakl, chegara, zichlik/signal va solishtirish uchun avvalgi tekshiruv zarurligini yoz.
+- Tegishli shkalani qo'lla (BI-RADS, Lung-RADS, Fleischner, LI-RADS, Pfirrmann, ASPECTS) va ishonch darajasini (past/o'rta/yuqori) ko'rsat.
+- Differensial tashxisni ehtimollik tartibida ber, qizil bayroqlarda shoshilinch murojaatni birinchi qatorda yoz.
+- Keyingi qadam: qo'shimcha tekshiruv, kuzatuv muddati va mutaxassis. Tasvirda ko'rinmaganini o'ylab topma.`;
+
 const BASE_SYSTEM_PROMPT = `Sen Med1.uz platformasining IXTISOSLASHGAN AI radiolog yordamchisisan. Sen ilmiy tibbiy bazalarga (ICD-10, SNOMED CT, ACR, RSNA, Fleischner, BI-RADS, Lung-RADS, LI-RADS, ASPECTS, Pfirrmann) asoslanib ishlaysan.
 
 MUHIM QOIDALAR:
@@ -188,7 +196,7 @@ export async function handleRadiologySubmodule(req: Request, subModule: Radiolog
 
     const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
 
-    const systemPrompt = `${BASE_SYSTEM_PROMPT}\n\n=== IXTISOS ===\n${config.focus}\n\nMutaxassis: ${config.specialist}`;
+    const systemPrompt = `${BASE_SYSTEM_PROMPT}\n\n${RADIOLOGY_DEPTH}\n\n=== IXTISOS ===\n${config.focus}\n\nMutaxassis: ${config.specialist}`;
 
     const messages = [
       { role: "system", content: systemPrompt + languageInstructionDetailed(__lang) },

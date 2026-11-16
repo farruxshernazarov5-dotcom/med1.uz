@@ -73,6 +73,10 @@ const sidebarSections = [
       { id: "geo_templates", label: "📍 Geo shablonlar", icon: Megaphone },
       { id: "premium_perks", label: "💎 Premium & Promo", icon: Megaphone },
       { id: "partners", label: "🤝 Hamkorlar (HAMBI)", icon: Handshake },
+      { id: "hambi_dashboard", label: "📊 HAMBI dashboard", icon: BarChart3, href: "/admin/hambi" },
+      { id: "click_partner", label: "🟦 Click hamkor paneli", icon: Handshake, href: "/admin/partners/click" },
+      { id: "telegram_bot", label: "🤖 Telegram bot", icon: Bot, href: "/admin/telegram-bot" },
+      { id: "seo_monitor", label: "🔎 SEO monitor", icon: BarChart3, href: "/admin/seo-monitor" },
       { id: "api_partners", label: "🔌 API Hamkorlar", icon: Plug },
       { id: "knowledge", label: "📚 Bilim bazasi", icon: FileText },
       { id: "referral_admin", label: "🎁 Referral & Reward", icon: Gift },
@@ -91,6 +95,7 @@ const sidebarSections = [
       { id: "billing", label: "Hisob-kitob", icon: CreditCard },
       { id: "payments", label: "To'lov testi", icon: CreditCard, href: "/admin/payment-sandbox" },
       { id: "med_coin_center", label: "🪙 Med Coin nazorati", icon: CreditCard, href: "/admin/med-coin" },
+      { id: "payme_admin", label: "💠 Payme kassasi", icon: CreditCard, href: "/admin/payme" },
       { id: "sponsors", label: "Homiylar", icon: Gift },
       { id: "medical_ads", label: "📣 Medical Ads / Med1 TOP", icon: Rocket },
       { id: "tax_reports", label: "🧾 Soliq hisobotlari", icon: Receipt },
@@ -174,7 +179,7 @@ const AdminDashboard = ({ initialTab = "overview" }: AdminDashboardProps) => {
       supabase.from("blood_banks_registered").select("*").order("created_at", { ascending: false }),
       supabase.from("medtech_vendors").select("*").order("created_at", { ascending: false }),
       supabase.from("ai_usage").select("*").order("used_at", { ascending: false }).limit(500),
-      supabase.from("user_roles").select("*, profiles(full_name, phone)").eq("role", "admin"),
+      supabase.from("user_roles").select("*").eq("role", "admin"),
       supabase.from("user_credits").select("balance, expires_at, created_at").gt("expires_at", new Date().toISOString()).limit(1000),
     ]);
 
@@ -223,7 +228,14 @@ const AdminDashboard = ({ initialTab = "overview" }: AdminDashboardProps) => {
     setPharmacies(pharmRes.data || []);
     setBloodBanks(bbRes.data || []);
     setVendors(vendorRes.data || []);
-    setAdminUsers(adminRes.data || []);
+    // user_roles links to auth users, not profiles — join profiles separately.
+    const adminRows = adminRes.data || [];
+    const adminIds = adminRows.map((r: any) => r.user_id).filter(Boolean);
+    const { data: adminProfiles } = adminIds.length
+      ? await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", adminIds)
+      : { data: [] as any[] };
+    const byUser = new Map((adminProfiles || []).map((p: any) => [p.user_id, p]));
+    setAdminUsers(adminRows.map((r: any) => ({ ...r, profiles: byUser.get(r.user_id) ?? null })));
     setAiUsageRows(aiUsage);
     setAiCreditsRows(creditsRes.data || []);
   }, []);

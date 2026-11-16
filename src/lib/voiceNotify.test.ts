@@ -33,3 +33,9 @@ import { voiceClipUrl } from './voiceNotify';
 describe('recorded voices', () => {
   it('maps chosen voice and kind to a recorded clip', () => { expect(voiceClipUrl('transfer','leda')).toBe('/voice/leda-transfer.mp3'); });
 });
+
+describe('voice vs chime classification', () => {
+  it('speaks payments that say "qabul qilindi" instead of chiming', () => { expect(voiceKind("To'lov qabul qilindi", '50 000 so‘m')).toBe('wallet'); });
+  it('speaks generic reminders/messages', () => { expect(voiceKind('Yangi eslatma', 'Sizga xabar keldi')).toBe('message'); });
+  it('keeps real visit reminders as appointment', () => { expect(voiceKind('Qabul eslatmasi', 'Ertaga 10:00')).toBe('appointment'); });
+});

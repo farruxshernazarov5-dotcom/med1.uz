@@ -49,6 +49,16 @@ JAVOBNI FAQAT valid JSON object sifatida ber (markdown, \`\`\`json, izoh, saloml
   "followUpTests": ["Qo'shimcha tavsiya etilgan tahlillar"]
 }`;
 
+const LAB_DEPTH = `
+
+=== CHUQUR LABORATORIYA TAHLILI ===
+- Hujjatdagi HAR BIR ko'rsatkichni alohida yoz: qiymat, birlik, laboratoriya me'yori (hujjatdagi bo'lsa aynan shuni), holat (past/me'yor/yuqori/kritik) va me'yordan og'ish foizi.
+- Ko'rsatkichlarni tizimlar bo'yicha guruhla (qon, jigar, buyrak, lipid, qand, gormon, yallig'lanish, elektrolit) va o'zaro bog'liqlikni izohla (masalan Hb+MCV+ferritin → anemiya turi ehtimoli; ALT/AST nisbati; eGFR).
+- Yosh, jins, homiladorlik yoki dori ta'siri me'yorni o'zgartirsa, buni ayt.
+- Kritik qiymatlarda birinchi qatorda shoshilinch ogohlantirish va 103 ni ko'rsat.
+- Qo'shimcha kerakli tahlillar, qayta topshirish muddati va qaysi mutaxassisga borish kerakligini yoz.
+- Hujjatda yo'q qiymatni o'ylab topma; o'qib bo'lmagan joyni "aniq o'qilmadi" deb belgila. Tashxis qo'yma, ehtimollar va keyingi qadamlarni ber.`;
+
 function normalizeReportResult(parsed: Record<string, unknown> | null, content: string) {
   const obj = parsed ?? {};
   const indicators = Array.isArray(obj.indicators) ? obj.indicators : [];
@@ -110,7 +120,7 @@ serve(async (req) => {
     if (patientGender) userMessage += `Bemor jinsi: ${patientGender}\n`;
 
     const messages: any[] = [
-      { role: "system", content: SYSTEM_PROMPT + languageInstructionDetailed(__lang) },
+      { role: "system", content: SYSTEM_PROMPT + LAB_DEPTH + languageInstructionDetailed(__lang) },
     ];
 
     if (imageBase64 && imageMimeType) {

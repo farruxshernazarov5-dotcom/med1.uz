@@ -183,6 +183,14 @@ const DAILY_MESSAGES = [
   { text: "🧠 <b>Stress ko‘paydimi?</b>\n\nAI psixolog bilan anonim suhbatlashing — hech kim bilmaydi, maslahat esa tayyor.", button: "🧠 AI psixolog", path: "/ai-psixolog" },
   { text: "💊 <b>Dorilarni birga ichsa bo‘ladimi?</b>\n\nAI farmatsevt dori o‘zaro ta’sirini soniyalarda tekshiradi.", button: "💊 AI farmatsevt", path: "/ai-farmatsevt" },
   { text: "🏃 <b>Harakat — bu dori!</b>\n\nAI fitness murabbiy sizga mos kunlik mashqlar rejasini tuzadi.", button: "🏃 AI fitness", path: "/ai-fitness" },
+  { text: "🩻 <b>Rentgen yoki MRT xulosasi qo‘lingizdami?</b>\n\nRadiologiya AI tasvirni ko‘rib, shifokoringizga beradigan savollarni tayyorlaydi.", button: "🩻 Radiologiya AI", path: "/ai-radiology" },
+  { text: "❤️‍🩹 <b>Yurak urishingizni telefon bilan o‘lchang</b>\n\nVital AI kamera orqali puls, nafas va stressni baholaydi.", button: "📈 Vital AI", path: "/ai-vital-signs" },
+  { text: "🤰 <b>Homiladorlik haftama-hafta</b>\n\nAI homila rivoji, tekshiruvlar va xavf belgilarini eslatib turadi.", button: "🤰 Homiladorlik AI", path: "/ai-pregnancy" },
+  { text: "👶 <b>Chaqaloq parvarishi bo‘yicha savol bormi?</b>\n\nBola parvarishi AI yoshga mos maslahat beradi.", button: "👶 Bola parvarishi AI", path: "/ai-baby-care" },
+  { text: "✨ <b>Teringiz nimani so‘rayapti?</b>\n\nKosmetologiya AI selfie orqali teri holatini batafsil tahlil qiladi.", button: "✨ Kosmetologiya AI", path: "/ai-cosmetology" },
+  { text: "🩸 <b>Qand darajangiz nazoratdami?</b>\n\nDiabet AI o‘lchovlaringiz va ovqatlanishingizni tahlil qiladi.", button: "🩸 Diabet AI", path: "/ai-diabetes" },
+  { text: "🎗 <b>Erta aniqlash — hayot saqlaydi</b>\n\nOnkologiya AI skrining muddatlari va xavf omillarini tushuntiradi.", button: "🎗 Onkologiya AI", path: "/ai-oncology" },
+  { text: "💙 <b>Shaxsiy salomatlik yordamchingiz</b>\n\nSalomatlik assistenti kundalik odatlaringiz bo‘yicha reja tuzadi.", button: "💙 Salomatlik assistenti", path: "/ai-health-assistant" },
 ];
 
 async function trackUser(from: Record<string, unknown> | undefined, chatId: number) {
@@ -228,9 +236,9 @@ async function openAccount(chatId: number, userId: string, role: string) {
 async function pickDailyMessage(): Promise<{ text: string; button: string; path: string }> {
   const { data: recent } = await db.from("emedinfo_bot_broadcasts").select("button_path, message")
     .eq("kind", "daily_ai").order("created_at", { ascending: false }).limit(7);
-  const used = new Set((recent ?? []).map((r) => r.button_path));
-  const pool = DAILY_MESSAGES.filter((m) => !used.has(m.path));
-  const base = (pool.length ? pool : DAILY_MESSAGES)[Math.floor(Math.random() * (pool.length || DAILY_MESSAGES.length))];
+  // Strict round-robin: each day moves to the next service, so every service gets its turn.
+  const lastIdx = DAILY_MESSAGES.findIndex((m) => m.path === recent?.[0]?.button_path);
+  const base = DAILY_MESSAGES[(lastIdx + 1) % DAILY_MESSAGES.length];
   const key = Deno.env.get("LOVABLE_API_KEY");
   if (!key) return base;
   const angles = ["qiziqarli tibbiy fakt", "mavsumga mos maslahat", "kichik kundalik challenge", "savol-javob ko‘rinishida", "afsona va haqiqat", "motivatsion hikoya", "raqam/statistika bilan"];
@@ -443,10 +451,11 @@ async function sendAdminPanel(chatId: number, view = "home") {
 function pushVoiceKind(text: string): string {
   const t = text.toLowerCase();
   if (/transfer|o[‘’'`ʻ]?tkazma|pul.*yubor/.test(t)) return "transfer";
-  if (/appointment|qabul|visit|eslatma/.test(t)) return "appointment";
   if (/coin|obuna muddati|expir/.test(t)) return "coin";
   if (/\bai\b|xulosa|tahlil.*tayyor|lab_ready/.test(t)) return "ai";
   if (/wallet|balans|hisob.*to.?ldir|to.?lov|payment|top.?up|cash/.test(t)) return "wallet";
+  // Only real visit reminders get the chime; "qabul qilindi"/generic "eslatma" are spoken messages.
+  if (/appointment|qabul(ingiz)? (eslatma|vaqti|yaqin|ertaga|bugun)|qabulga yozil|qabul (tasdiqlandi|bekor)|visit/.test(t)) return "appointment";
   return "message";
 }
 const FCM_URL = "https://connector-gateway.lovable.dev/firebase_messaging/v1/projects/_/messages:send";
