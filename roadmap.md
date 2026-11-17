@@ -1,3 +1,8 @@
+## 2026-11-17 — Referral avans bonuslari
+- [ ] Tasdiqlangan yangi hisobga bir marta 10 000 so‘m, taklifchiga 5 000 so‘m; server himoyasi va hamyon tarixi
+- [ ] Namuna uslubidagi ulashish matni, takliflar taraqqiyoti va aniq shartlar
+- [ ] Bonus, takroriy chaqiruv va hisobga kirgan mobil/desktop oqimini tekshirish
+
 ## 2026-11-15 — Domen, batafsil AI va parolli QR
 - [x] Kanonik manzillar va 2368 sahifali mavjud sitemap med1.uz ga moslandi
 - [ ] Domen va QR sahifasi o‘zgarishlarini jonli chiqarish — foydalanuvchi Publish → Update tasdig‘i kerak; hozirgi sayt eski canonical/sitemapni ko‘rsatmoqda

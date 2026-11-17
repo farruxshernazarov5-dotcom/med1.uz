@@ -267,6 +267,13 @@
       "when": 1794753599862,
       "tag": "0037_document_four_digit_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1794881850625,
+      "tag": "0038_referral_signup_cash_bonuses",
+      "breakpoints": true
     }
   ]
 }

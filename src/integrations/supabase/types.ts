@@ -1420,6 +1420,7 @@ export type Database = {
       cash_wallets: {
         Row: {
           balance: number
+          bonus_balance: number
           card_number: string
           created_at: string
           currency: string
@@ -1428,6 +1429,7 @@ export type Database = {
         }
         Insert: {
           balance?: number
+          bonus_balance?: number
           card_number?: string
           created_at?: string
           currency?: string
@@ -1436,6 +1438,7 @@ export type Database = {
         }
         Update: {
           balance?: number
+          bonus_balance?: number
           card_number?: string
           created_at?: string
           currency?: string
@@ -16524,6 +16527,7 @@ export type Database = {
           block_self_referral: boolean
           cancel_on_refund: boolean
           cancel_on_unsubscribe_days: number
+          cash_campaign_started_at: string
           credit_to_uzs: number
           id: number
           max_referrals_per_ip_24h: number
@@ -16541,6 +16545,7 @@ export type Database = {
           block_self_referral?: boolean
           cancel_on_refund?: boolean
           cancel_on_unsubscribe_days?: number
+          cash_campaign_started_at?: string
           credit_to_uzs?: number
           id?: number
           max_referrals_per_ip_24h?: number
@@ -16558,6 +16563,7 @@ export type Database = {
           block_self_referral?: boolean
           cancel_on_refund?: boolean
           cancel_on_unsubscribe_days?: number
+          cash_campaign_started_at?: string
           credit_to_uzs?: number
           id?: number
           max_referrals_per_ip_24h?: number
@@ -18810,6 +18816,7 @@ export type Database = {
       }
       claim_initial_role: { Args: { _role: string }; Returns: string }
       claim_my_payment: { Args: { _payment_id: string }; Returns: Json }
+      claim_my_signup_bonus: { Args: { _code?: string }; Returns: Json }
       claim_push_token: {
         Args: { _platform: string; _token: string }
         Returns: undefined
@@ -18873,6 +18880,7 @@ export type Database = {
         Args: { _code: string; _kind: string }
         Returns: string
       }
+      get_my_referral_cash_summary: { Args: never; Returns: Json }
       get_nearby_medical_services: {
         Args: {
           _lat: number
@@ -18993,6 +19001,10 @@ export type Database = {
           next_grant_at: string
         }[]
       }
+      grant_signup_cash_bonus: {
+        Args: { _user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -19074,6 +19086,10 @@ export type Database = {
         Returns: Json
       }
       purchase_medcoin_from_wallet: {
+        Args: { _idempotency_key: string; _package_code: string }
+        Returns: Json
+      }
+      purchase_wallet_package: {
         Args: { _idempotency_key: string; _package_code: string }
         Returns: Json
       }
