@@ -4,6 +4,9 @@ import { Gift, Users, Wallet, Sparkles, ArrowRight, CheckCircle2, Share2, Trendi
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ReferralInviteForm } from "@/components/referral/ReferralInviteForm";
+import { ReferralCashBonusCard } from "@/components/referral/ReferralCashBonusCard";
+import { useAuth } from "@/hooks/useAuth";
 
 const TIERS = [
   { name: "Bronze", min: 0, color: "from-amber-600 to-amber-800", perks: ["Standart bonus", "Wallet'ga credits"] },
@@ -15,10 +18,11 @@ const TIERS = [
 const STEPS = [
   { icon: Share2, title: "Kodingizni ulashing", text: "Shaxsiy referral kodingiz va havolangizni do'stlaringizga yuboring." },
   { icon: Users, title: "Ular ro'yxatdan o'tadi", text: "Yangi foydalanuvchi sizning havolangiz orqali Med1.uz'ga qo'shiladi." },
-  { icon: Wallet, title: "Siz bonus olasiz", text: "U obuna bo'lganda — credits, oylar va AI bonusi avtomatik hisobingizga tushadi." },
+  { icon: Wallet, title: "Siz bonus olasiz", text: "Do'stingiz hisobini tasdiqlashi bilan unga 10 000 so'm, sizga 5 000 so'm avans kartaga tushadi." },
 ];
 
 export default function ReferralPage() {
+  const { user } = useAuth();
   useEffect(() => {
     document.title = "Referral dasturi — Do'stingizni taklif qiling | Med1.uz";
   }, []);
@@ -34,7 +38,7 @@ export default function ReferralPage() {
           Do'stingizni taklif qiling — bonus oling
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Med1.uz referral dasturida har bir muvaffaqiyatli taklif uchun credits, bonus oylar va AI limit qo'lga kiriting.
+          Ro'yxatdan o'ting — 10 000 so'm. Har bir taklif qilgan do'stingiz uchun yana 5 000 so'm. Bonus tariflar va Med Coin uchun ishlatiladi, cheklov yo'q.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg" className="gap-2">
@@ -47,6 +51,11 @@ export default function ReferralPage() {
             <Link to="/referral-terms">Shartlarni o'qish</Link>
           </Button>
         </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-4 grid gap-4 lg:grid-cols-2">
+        <ReferralInviteForm />
+        {user && <ReferralCashBonusCard />}
       </section>
 
       {/* How it works */}
@@ -108,13 +117,13 @@ export default function ReferralPage() {
           <CardContent className="p-8 md:p-12 grid md:grid-cols-3 gap-8 text-center">
             <div>
               <Wallet className="w-10 h-10 mx-auto mb-3 text-primary" />
-              <div className="text-3xl font-bold">10 000+</div>
-              <div className="text-sm text-muted-foreground mt-1">Credits / muvaffaqiyatli taklif</div>
+              <div className="text-3xl font-bold">10 000 so‘m</div>
+              <div className="text-sm text-muted-foreground mt-1">Har bir yangi tasdiqlangan hisobga</div>
             </div>
             <div>
               <TrendingUp className="w-10 h-10 mx-auto mb-3 text-primary" />
-              <div className="text-3xl font-bold">+1 oy</div>
-              <div className="text-sm text-muted-foreground mt-1">Bonus obuna har taklif uchun</div>
+              <div className="text-3xl font-bold">5 000 so‘m</div>
+              <div className="text-sm text-muted-foreground mt-1">Sizga har bir taklif uchun</div>
             </div>
             <div>
               <Sparkles className="w-10 h-10 mx-auto mb-3 text-primary" />

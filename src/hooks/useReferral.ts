@@ -157,7 +157,7 @@ export const useReferral = () => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
   };
 
-  const referralLink = code ? `${publicOrigin()}/auth?ref=${code.code}` : "";
+  const referralLink = code ? `${publicOrigin()}/auth?mode=register&ref=${code.code}` : "";
 
   return { loading, code, stats, wallet, referrals, leaderboard, notifications, referralLink, reload, markNotifRead };
 };

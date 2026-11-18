@@ -6,6 +6,7 @@ import { ReferralOverviewCard } from "./ReferralOverviewCard";
 import { ReferralCodeCard } from "./ReferralCodeCard";
 import { ReferralInvitedTable } from "./ReferralInvitedTable";
 import { ReferralWalletCard } from "./ReferralWalletCard";
+import { ReferralCashBonusCard } from "./ReferralCashBonusCard";
 import { ReferralLeaderboard } from "./ReferralLeaderboard";
 import { ReferralTierBadge } from "./ReferralTierBadge";
 import { ReferralGuide } from "./ReferralGuide";
@@ -33,6 +34,7 @@ export const ReferralPanel = ({ compact = false }: Props) => {
   if (compact) {
     return (
       <div className="space-y-4">
+        <ReferralCashBonusCard />
         <ReferralOverviewCard stats={stats} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {code && <ReferralCodeCard code={code.code} link={referralLink} />}
@@ -61,6 +63,7 @@ export const ReferralPanel = ({ compact = false }: Props) => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4 mt-4">
+          <ReferralCashBonusCard />
           <ReferralOverviewCard stats={stats} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 space-y-4">

@@ -48,7 +48,7 @@ type AuthMethod = "email" | "phone";
 
 const AuthPage = () => {
   const [searchParams] = useSearchParams();
-  const [mode, setMode] = useState<"login" | "register">(() => searchParams.get("mode") === "register" ? "register" : "login");
+  const [mode, setMode] = useState<"login" | "register">(() => (searchParams.get("mode") === "register" || searchParams.get("ref")) ? "register" : "login");
   const [authMethod, setAuthMethod] = useState<AuthMethod>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -86,14 +86,16 @@ const AuthPage = () => {
   const rawNext = searchParams.get("next");
   const safeNext = safeAuthDestination(rawNext);
 
+  const inviteCode = searchParams.get("ref") || searchParams.get("invite");
   useEffect(() => {
-    if (authLoading || !user) return;
+    // Invite links must not silently drop a visitor into whoever is already signed in on this device.
+    if (authLoading || !user || inviteCode) return;
     let active = true;
     void supabase.auth.getUser().then(({ data, error }) => {
       if (active && !error && data.user) navigate(safeNext ?? "/dashboard", { replace: true });
     });
     return () => { active = false; };
-  }, [authLoading, user, safeNext, navigate]);
+  }, [authLoading, user, safeNext, navigate, inviteCode]);
 
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
@@ -428,6 +430,21 @@ const AuthPage = () => {
               {mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}
             </h1>
             <p className="text-muted-foreground mt-2 opacity-0 animate-fade-up" style={{ animationDelay: '160ms', animationFillMode: 'forwards' }}>Med1.uz platformasiga xush kelibsiz</p>
+            {inviteCode && (
+              <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-3 text-left text-sm">
+                <p className="font-semibold text-foreground">🎁 Taklif kodi: {inviteCode.toUpperCase().slice(0, 32)}</p>
+                <p className="text-muted-foreground mt-1">Yangi hisobni tasdiqlaganingizdan so‘ng avans kartangizga 10 000 so‘m bonus tushadi.</p>
+                {user && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-foreground">Bu qurilmada <b>{user.email || user.phone || "boshqa hisob"}</b> hisobi ochiq. Yangi hisob ochish uchun avval chiqing.</p>
+                    <div className="flex gap-2">
+                      <Button type="button" size="sm" onClick={() => void supabase.auth.signOut()}>Chiqish va ro‘yxatdan o‘tish</Button>
+                      <Button type="button" size="sm" variant="outline" onClick={() => navigate(safeNext ?? "/dashboard", { replace: true })}>Shu hisobda davom etish</Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="bg-card rounded-2xl border border-border shadow-card p-6 opacity-0 animate-fade-up" style={{ animationDelay: '240ms', animationFillMode: 'forwards' }}>

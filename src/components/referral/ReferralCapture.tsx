@@ -1,16 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { captureReferralFromUrl } from "@/lib/referralCapture";
+import { captureReferralFromUrl, getStoredReferralCode, clearReferralCode } from "@/lib/referralCapture";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Mount inside <BrowserRouter>. On every route change, checks the URL for
- * ?ref= / ?referral= / ?invite= and persists the code to localStorage so the
- * registration flow can attach it to the new account.
+ * Captures ?ref= codes and, once a confirmed account is signed in, claims the
+ * signup bonus server-side (works for email, phone and Google sign-ups alike).
  */
 export default function ReferralCapture() {
   const location = useLocation();
+  const { user } = useAuth();
+  const claimedFor = useRef<string | null>(null);
+
   useEffect(() => {
     captureReferralFromUrl();
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!user || claimedFor.current === user.id) return;
+    // Account older than 30 days can never claim — skip the call.
+    if (user.created_at && Date.now() - new Date(user.created_at).getTime() > 30 * 864e5) return;
+    claimedFor.current = user.id;
+    const code = getStoredReferralCode();
+    void (supabase as any).rpc("claim_my_signup_bonus", { _code: code }).then(({ error }: { error: unknown }) => {
+      if (!error && code) clearReferralCode();
+    });
+  }, [user]);
   return null;
 }
