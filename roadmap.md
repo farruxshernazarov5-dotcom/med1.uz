@@ -1,3 +1,8 @@
+## 2026-11-19 — Pullik taklif bonusi
+- [ ] Taklifchiga 5 000 so‘mni ro‘yxatdan o‘tishda emas, do‘stining birinchi tasdiqlangan pullik xaridida berish; takroriy va bonusdan bonus yig‘ishni bloklash
+- [ ] Bir bonus uchun bir e-mail va mavjud ilova/Telegram xabari; marketing matni va panel holatlari
+- [ ] Hisobga kirgan sinov, bonus sarflash va takroriy xarid tekshiruvlari; DNS sabab e-mail yuborish blokini ko‘rsatish
+
 ## 2026-11-17 — Referral avans bonuslari
 - [ ] Tasdiqlangan yangi hisobga bir marta 10 000 so‘m, taklifchiga 5 000 so‘m; server himoyasi va hamyon tarixi
 - [x] Ulashish matni, bonus hisobi kartasi, saytdan taklif yuborish shakli; taklif havolasi boshqa hisobga kirib ketmaydi

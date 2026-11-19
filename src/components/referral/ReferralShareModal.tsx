@@ -30,7 +30,7 @@ const CHANNELS: { key: ChannelKey; label: string; icon: typeof Send; gradient: s
 ];
 
 const buildMessage = (code: string, link: string) =>
-  `🏥 MED-ALL AI / med1.uz — O'zbekistondagi yetakchi raqamli sog'liqni saqlash platformasi.\n\n✨ Mening taklifim bilan ro'yxatdan o'ting va bonus oling:\n🎟 Promo kod: ${code}\n🔗 ${link}`;
+  `🏥 MED-ALL AI / med1.uz — salomatlik uchun AI xizmatlari.\n\n🎁 Yangi hisobingizni tasdiqlang — avans kartangizga 10 000 so‘m bonus. Tarif va Med Coin xaridiga ishlating.\n🤝 Do‘stlaringizni ham taklif qiling: har birining birinchi pullik xaridi uchun 5 000 so‘m bonus.\n🎟 Promo kod: ${code}\n🔗 ${link}`;
 
 const withSource = (link: string, src: ChannelKey) => {
   try {

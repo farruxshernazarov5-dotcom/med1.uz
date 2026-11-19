@@ -18,7 +18,7 @@ const TIERS = [
 const STEPS = [
   { icon: Share2, title: "Kodingizni ulashing", text: "Shaxsiy referral kodingiz va havolangizni do'stlaringizga yuboring." },
   { icon: Users, title: "Ular ro'yxatdan o'tadi", text: "Yangi foydalanuvchi sizning havolangiz orqali Med1.uz'ga qo'shiladi." },
-  { icon: Wallet, title: "Siz bonus olasiz", text: "Do'stingiz hisobini tasdiqlashi bilan unga 10 000 so'm, sizga 5 000 so'm avans kartaga tushadi." },
+  { icon: Wallet, title: "Pullik xarid — sizga bonus", text: "Do‘stingiz hisobini tasdiqlasa unga 10 000 so‘m; birinchi pullik tarif yoki Med Coin xaridini bajarsa sizga bir marta 5 000 so‘m tushadi." },
 ];
 
 export default function ReferralPage() {
@@ -38,7 +38,7 @@ export default function ReferralPage() {
           Do'stingizni taklif qiling — bonus oling
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Ro'yxatdan o'ting — 10 000 so'm. Har bir taklif qilgan do'stingiz uchun yana 5 000 so'm. Bonus tariflar va Med Coin uchun ishlatiladi, cheklov yo'q.
+          Yangi hisobni tasdiqlang — 10 000 so‘m. Har bir do‘stingizning birinchi pullik xaridi uchun sizga 5 000 so‘m. 5 do‘st — 25 000 so‘m, 10 do‘st — 50 000 so‘m bonus.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg" className="gap-2">
@@ -123,7 +123,7 @@ export default function ReferralPage() {
             <div>
               <TrendingUp className="w-10 h-10 mx-auto mb-3 text-primary" />
               <div className="text-3xl font-bold">5 000 so‘m</div>
-              <div className="text-sm text-muted-foreground mt-1">Sizga har bir taklif uchun</div>
+              <div className="text-sm text-muted-foreground mt-1">Har bir do‘stning birinchi pullik xaridi uchun bir marta</div>
             </div>
             <div>
               <Sparkles className="w-10 h-10 mx-auto mb-3 text-primary" />

@@ -274,6 +274,13 @@
       "when": 1794881850625,
       "tag": "0038_referral_signup_cash_bonuses",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1795056276548,
+      "tag": "0039_paid_referral_cash_rewards",
+      "breakpoints": true
     }
   ]
 }

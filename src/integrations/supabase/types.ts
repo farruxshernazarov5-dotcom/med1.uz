@@ -19094,6 +19094,23 @@ export type Database = {
         Returns: Json
       }
       purge_security_logs: { Args: { _days?: number }; Returns: number }
+      referral_payment_eligible: {
+        Args: {
+          _amount: number
+          _bonus_used: number
+          _currency: string
+          _fulfilled: string
+          _kind: string
+          _package_currency: string
+          _price: number
+          _provider: string
+          _purpose: string
+          _status: string
+          _test: boolean
+          _wallet_paid: number
+        }
+        Returns: boolean
+      }
       refund_ai_credits: {
         Args: {
           _cost: number

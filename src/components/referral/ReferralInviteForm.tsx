@@ -18,12 +18,12 @@ export const ReferralInviteForm = () => {
     return (
       <div className="rounded-2xl border border-border bg-card p-6 text-center space-y-3">
         <p className="font-semibold">Taklif yuborish uchun hisobingizga kiring</p>
-        <p className="text-sm text-muted-foreground">Ro‘yxatdan o‘ting — o‘zingizga 10 000 so‘m, har bir taklif qilgan do‘stingiz uchun 5 000 so‘m.</p>
+        <p className="text-sm text-muted-foreground">Yangi tasdiqlangan hisobga 10 000 so‘m. Har bir do‘stingizning birinchi pullik xaridi uchun sizga 5 000 so‘m.</p>
         <Button asChild><Link to="/auth?mode=register&next=/referral">Ro‘yxatdan o‘tish</Link></Button>
       </div>
     );
   }
-  const text = `${name ? name + ", " : ""}Med1.uz — AI shifokor, tahlillar va klinikalar bir joyda. Havolam orqali ro‘yxatdan o‘tsangiz avans kartangizga 10 000 so‘m bonus tushadi 🎁\n${referralLink}`;
+  const text = `${name ? name + ", " : ""}MED-ALL AI / med1.uz — salomatligingiz uchun AI xizmatlari.\n🎁 Havolam orqali yangi hisob ochib tasdiqlang — avans kartangizga 10 000 so‘m bonus. Tarif va Med Coin xaridiga ishlating.\n🤝 Siz ham do‘stlaringizni taklif qiling: har birining birinchi pullik xaridi uchun 5 000 so‘m bonus oling.\n${referralLink}`;
   const enc = encodeURIComponent(text);
   const digits = phone.replace(/\D/g, "");
   const sms = `sms:${digits ? "+" + (digits.startsWith("998") ? digits : "998" + digits) : ""}?body=${enc}`;
@@ -42,7 +42,7 @@ export const ReferralInviteForm = () => {
         <Button asChild variant="outline"><a href={sms}><Smartphone className="w-4 h-4 mr-1" />SMS</a></Button>
         <Button variant="outline" onClick={copy}><Copy className="w-4 h-4 mr-1" />Nusxa</Button>
       </div>
-      <p className="text-xs text-muted-foreground">Taklif qilgan har bir do‘stingiz ham o‘z havolasini oladi — zanjir davom etadi, siz esa har tasdiqlangan hisob uchun 5 000 so‘m olasiz.</p>
+      <p className="text-xs text-muted-foreground">Har bir do‘st o‘z havolasini oladi. Sizga uning birinchi pullik xaridi uchun bir marta 5 000 so‘m tushadi — ko‘proq haqiqiy taklif, ko‘proq bonus.</p>
     </div>
   );
 };
