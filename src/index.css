@@ -828,3 +828,8 @@
 @keyframes splFade{from{opacity:0}to{opacity:1}}
 @keyframes splLoad{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media (prefers-reduced-motion:reduce){.splash-root *{animation-duration:.01s!important;animation-iteration-count:1!important}}
+
+/* Doctors map popup follows the app theme */
+.doctor-map-popup .leaflet-popup-content-wrapper,
+.doctor-map-popup .leaflet-popup-tip { background: hsl(var(--card)) !important; color: hsl(var(--card-foreground)) !important; }
+.doctor-map-popup .leaflet-popup-close-button { color: hsl(var(--muted-foreground)) !important; }

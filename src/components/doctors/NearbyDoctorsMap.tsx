@@ -134,7 +134,7 @@ export default function NearbyDoctorsMap({ specialty, height = 380, radiusKm = 1
           const yandex = `https://yandex.uz/maps/?rtext=~${d.latitude},${d.longitude}&rtt=auto`;
           return (
             <Marker key={d.id} position={[d.latitude, d.longitude]} icon={doctorIcon(photo, d.name)}>
-              <Popup minWidth={240} maxWidth={280}>
+              <Popup minWidth={190} maxWidth={210} autoPanPadding={[12, 12]} className="doctor-map-popup">
                 <div className="space-y-2 text-xs">
                   <div className="flex items-center gap-2">
                     {photo ? (
@@ -143,7 +143,7 @@ export default function NearbyDoctorsMap({ specialty, height = 380, radiusKm = 1
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent shrink-0" />
                     )}
                     <div className="min-w-0">
-                      <p className="font-bold text-sm leading-tight text-foreground">{d.name}</p>
+                      <p className="font-bold text-sm leading-tight text-foreground break-words">{d.name}</p>
                       {d.primary_specialty && <p className="text-primary font-medium">{d.primary_specialty}</p>}
                       {d.experience ? <p className="text-muted-foreground">{d.experience} yillik tajriba</p> : null}
                     </div>
