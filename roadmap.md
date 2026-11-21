@@ -1,3 +1,11 @@
+## 2026-11-21 — Referal, O‘zbekiston xaritasi, Uzum
+- [ ] Taklif kodini qo‘lda kiritish, OAuth/telefon qaytishida saqlash va serverda bir marta bog‘lash
+- [ ] Oldingi xaridni tekshirib, 5 000 so‘mlik bonusni foydalanuvchi tasdiqlagan meddigital1995@gmail.com hisobiga biriktirish
+- [ ] Barcha hududlar, GPS, xaritani surish va barcha koordinatali shifokorlarni cheklovsiz sahifalab olish
+- [ ] Uzum Bank rasmiy protokolini tekshirish va xavfsiz ulash; jonli sinov uchun merchant ruxsatlari kerak
+- [ ] Uzum Nasiya 3 oy +12% kalkulyatori va rasmiy oqim; jonli sinov uchun Uzum bergan kirish ma’lumotlari kerak
+- [ ] Testlar, kirgan hisobdagi tekshiruv va yakuniy qolgan to‘siqlar
+
 ## 2026-11-19 — Pullik taklif bonusi
 - [ ] Taklifchiga 5 000 so‘mni ro‘yxatdan o‘tishda emas, do‘stining birinchi tasdiqlangan pullik xaridida berish; takroriy va bonusdan bonus yig‘ishni bloklash
 - [ ] Bir bonus uchun bir e-mail va mavjud ilova/Telegram xabari; marketing matni va panel holatlari
