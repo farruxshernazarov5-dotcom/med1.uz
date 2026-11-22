@@ -20,6 +20,7 @@ import { startNativeOAuth } from "@/lib/nativeOAuth";
 import { nativeGoogleSignIn } from "@/lib/nativeGoogle";
 import { canSaveLogin, hasSavedLogin, loadSavedLogin, saveLogin } from "@/lib/nativeCredentials";
 import { Fingerprint } from "lucide-react";
+import { getStoredReferralCode, storeReferralCode, clearReferralCode } from "@/lib/referralCapture";
 
 const roles = [
   { value: "patient", label: "Bemor", icon: User, desc: "Qabulga yozilish va salomatlik" },
@@ -87,6 +88,15 @@ const AuthPage = () => {
   const safeNext = safeAuthDestination(rawNext);
 
   const inviteCode = searchParams.get("ref") || searchParams.get("invite");
+  const [manualReferral, setManualReferral] = useState(() => inviteCode || getStoredReferralCode() || "");
+  const persistReferral = () => {
+    if (!manualReferral.trim()) { clearReferralCode(); return true; }
+    if (!storeReferralCode(manualReferral)) {
+      toast({ title: "Taklif kodi noto‘g‘ri", description: "4–32 ta harf, raqam, pastki chiziq yoki tire kiriting.", variant: "destructive" });
+      return false;
+    }
+    return true;
+  };
   useEffect(() => {
     // Invite links must not silently drop a visitor into whoever is already signed in on this device.
     if (authLoading || !user || inviteCode) return;
@@ -100,6 +110,7 @@ const AuthPage = () => {
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleOAuthSignIn = async (provider: "google" | "microsoft") => {
+    if (mode === "register" && !persistReferral()) return;
     setSubmitting(true);
     if (mode === "register") setPendingRole(role);
     if (isNativeApp()) {
@@ -235,6 +246,7 @@ const AuthPage = () => {
   };
 
   const handlePhoneSignup = async () => {
+    if (!persistReferral()) return;
     const cleanPhone = regPhone.replace(/\s/g, "");
     if (!fullName.trim()) {
       toast({ title: "Iltimos, ismingizni kiriting", variant: "destructive" });
@@ -358,6 +370,7 @@ const AuthPage = () => {
         }, 300);
       }
     } else {
+      if (!persistReferral()) { setSubmitting(false); return; }
       if (!fullName.trim()) {
         toast({ title: "Iltimos, ismingizni kiriting", variant: "destructive" });
         setSubmitting(false);
@@ -465,6 +478,13 @@ const AuthPage = () => {
             </div>
 
             {/* Google & Microsoft: in the native app the flow continues in the system browser (/app-bridge) */}
+            {mode === "register" && (
+              <div className="mb-4 space-y-2 text-left">
+                <Label htmlFor="referral-code">Taklif kodi (ixtiyoriy)</Label>
+                <Input id="referral-code" value={manualReferral} maxLength={32} autoCapitalize="characters"
+                  onChange={e => setManualReferral(e.target.value.toUpperCase())} placeholder="Taklif kodini kiriting" />
+              </div>
+            )}
             {mode === "login" && savedLogin && (
               <Button type="button" className="mb-3 h-12 w-full gap-2" onClick={() => void quickLogin()} disabled={submitting}>
                 <Fingerprint className="h-5 w-5" /> Barmoq izi / Face ID bilan kirish

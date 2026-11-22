@@ -16,6 +16,7 @@ export interface DoctorCardData {
   primary_specialty?: string | null;
   primary_region?: string | null;
   languages?: string[] | null;
+  distance_km?: number | null;
 }
 
 interface Props {
@@ -102,6 +103,9 @@ const DoctorCard = ({ doctor: d, compact = false, showActions = true }: Props) =
           )}
         </div>
 
+        {d.distance_km != null && (
+          <p className="mt-2 text-xs font-semibold text-primary">Sizdan {d.distance_km.toFixed(1)} km · to‘g‘ri chiziq bo‘yicha</p>
+        )}
         {d.primary_region && (
           <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
             <MapPin className="w-3 h-3 shrink-0" />

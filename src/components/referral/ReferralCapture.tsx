@@ -18,14 +18,18 @@ export default function ReferralCapture() {
   }, [location.pathname, location.search]);
 
   useEffect(() => {
-    if (!user || claimedFor.current === user.id) return;
+    if (!user) { claimedFor.current = null; return; }
+    if (!user.email_confirmed_at && !user.phone_confirmed_at) return;
     // Account older than 30 days can never claim — skip the call.
     if (user.created_at && Date.now() - new Date(user.created_at).getTime() > 30 * 864e5) return;
-    claimedFor.current = user.id;
     const code = getStoredReferralCode();
+    const claimKey = `${user.id}:${code ?? ""}`;
+    if (claimedFor.current === claimKey) return;
+    claimedFor.current = claimKey;
     void (supabase as any).rpc("claim_my_signup_bonus", { _code: code }).then(({ error }: { error: unknown }) => {
       if (!error && code) clearReferralCode();
+      if (error) claimedFor.current = null;
     });
-  }, [user]);
+  }, [user, location.pathname, location.search]);
   return null;
 }

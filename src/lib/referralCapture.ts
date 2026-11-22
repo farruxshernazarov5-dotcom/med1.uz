@@ -11,6 +11,17 @@ export interface ReferralMeta {
   source?: string;
 }
 
+export function storeReferralCode(raw: string): string | null {
+  const code = raw.trim().toUpperCase();
+  if (!/^[A-Z0-9_-]{4,32}$/.test(code)) return null;
+  try {
+    const meta: ReferralMeta = { code, capturedAt: Date.now(), source: window.location.pathname };
+    localStorage.setItem(STORAGE_KEY, code);
+    localStorage.setItem(STORAGE_META_KEY, JSON.stringify(meta));
+    return code;
+  } catch { return null; }
+}
+
 /** Reads ?ref= from current URL (if any) and stores it in localStorage. Returns the code or null. */
 export function captureReferralFromUrl(): string | null {
   if (typeof window === "undefined") return null;
@@ -18,16 +29,7 @@ export function captureReferralFromUrl(): string | null {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get("ref") || params.get("referral") || params.get("invite");
     if (!raw) return null;
-    const code = raw.trim().toUpperCase().slice(0, 32);
-    if (!/^[A-Z0-9_-]{4,32}$/.test(code)) return null;
-    const meta: ReferralMeta = {
-      code,
-      capturedAt: Date.now(),
-      source: document.referrer || window.location.pathname,
-    };
-    localStorage.setItem(STORAGE_KEY, code);
-    localStorage.setItem(STORAGE_META_KEY, JSON.stringify(meta));
-    return code;
+    return storeReferralCode(raw);
   } catch {
     return null;
   }

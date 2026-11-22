@@ -1,3 +1,9 @@
+## 2026-11-22 — Referal xizmat to‘lovi va viloyat/masofa
+- [ ] Tasdiqlangan qabul/xizmat to‘lovi uchun bir martalik 5 000 so‘m referal bonus; bemor soxta holat bilan bonus chiqara olmaydi
+- [ ] Viloyatning to‘liq ko‘rinishi, barcha sahifalar va GPS bo‘yicha global masofa saralashi
+- [ ] Referal kodini qo‘lda kiritish va kirishdan qaytishda saqlash
+- [ ] Bonus/masofa testlari va haqiqiy ma’lumotlar bilan brauzer tekshiruvi
+
 ## 2026-11-21 — Referal, O‘zbekiston xaritasi, Uzum
 - [ ] Taklif kodini qo‘lda kiritish, OAuth/telefon qaytishida saqlash va serverda bir marta bog‘lash
 - [ ] Oldingi xaridni tekshirib, 5 000 so‘mlik bonusni foydalanuvchi tasdiqlagan meddigital1995@gmail.com hisobiga biriktirish
