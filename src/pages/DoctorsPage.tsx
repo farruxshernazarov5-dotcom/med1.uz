@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,8 @@ import AiDoctorFinder from "@/components/doctors/AiDoctorFinder";
 import { useDoctorFavorites } from "@/hooks/useDoctorFavorites";
 import SponsoredAds from "@/components/med1top/SponsoredAds";
 import NewPlatformDoctors from "@/components/doctors/NewPlatformDoctors";
+import { useDoctorLocation } from "@/hooks/useDoctorLocation";
+import { loadDirectoryDoctors, sortByPatientDistance, type DoctorFilters } from "@/lib/doctorDirectory";
 
 const SPECIALTIES = [
   "Гинеколог","Кардиолог","ЛОР (Отоларинголог)","УЗИ-специалист","Хирург",
@@ -46,6 +48,7 @@ const DoctorsPage = () => {
   const [doctors, setDoctors] = useState<DoctorCardData[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [search, setSearch] = useState(initialQ);
   const [serviceQuery, setServiceQuery] = useState(params.get("service") || "");
   const [specialty, setSpecialty] = useState<string>(initialSpecialty);
@@ -53,7 +56,7 @@ const DoctorsPage = () => {
   const [language, setLanguage] = useState<string>("all");
   const [minRating, setMinRating] = useState<string>("0");
   const [minExp, setMinExp] = useState<string>("0");
-  const [sortBy, setSortBy] = useState<string>("rating");
+  const [sortBy, setSortBy] = useState<string>("distance");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -62,13 +65,22 @@ const DoctorsPage = () => {
   const [aiFinderOpen, setAiFinderOpen] = useState(false);
 
   const fav = useDoctorFavorites();
+  const geo = useDoctorLocation();
+  const directoryFilters = useMemo<DoctorFilters>(() => ({
+    specialty: specialty !== "all" ? specialty : undefined,
+    region: region !== "all" ? region : undefined,
+    language: language !== "all" ? language : undefined,
+    minRating: Number(minRating), minExperience: Number(minExp),
+    search, service: serviceQuery, clinicId: clinicIdParam || undefined,
+    favoriteIds: onlyFavs ? fav.ids : undefined,
+  }), [specialty, region, language, minRating, minExp, search, serviceQuery, clinicIdParam, onlyFavs, fav.ids]);
 
   const filtersActive =
     specialty !== "all" || region !== "all" || language !== "all" ||
     minRating !== "0" || minExp !== "0" ||
     search.length > 0 || serviceQuery.length > 0 || !!clinicIdParam || onlyFavs;
 
-  const isBrowsing = filtersActive; // show list only when user searches/filters
+  const isBrowsing = filtersActive || showMap || !!geo.position;
 
   useEffect(() => { setPage(0); }, [search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, onlyFavs]);
 
@@ -86,6 +98,17 @@ const DoctorsPage = () => {
     let cancelled = false;
     (async () => {
       setLoading(true);
+      setLoadError(false);
+      try {
+      if (sortBy === "distance") {
+        const all = await loadDirectoryDoctors(directoryFilters);
+        const ordered = geo.position ? sortByPatientDistance(all, geo.position) : all;
+        if (!cancelled) {
+          setDoctors(ordered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE));
+          setTotal(ordered.length);
+        }
+        return;
+      }
       let q = supabase
         .from("doctors_external")
         .select(SELECT, { count: "exact" })
@@ -111,15 +134,19 @@ const DoctorsPage = () => {
       const sv = serviceQuery.trim();
       if (sv.length >= 2) q = q.contains("services", [sv]);
 
-      const { data, count } = await q;
+      const { data, count, error } = await q;
+      if (error) throw error;
       if (!cancelled) {
         setDoctors((data as DoctorCardData[]) || []);
         setTotal(count || 0);
         setLoading(false);
       }
+      } catch {
+        if (!cancelled) { setDoctors([]); setTotal(0); setLoadError(true); }
+      } finally { if (!cancelled) setLoading(false); }
     })();
     return () => { cancelled = true; };
-  }, [isBrowsing, search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids]);
+  }, [isBrowsing, search, specialty, region, language, minRating, minExp, serviceQuery, sortBy, clinicIdParam, page, onlyFavs, fav.ids, directoryFilters, geo.position]);
 
   const clearFilters = () => {
     setSearch(""); setSpecialty("all"); setRegion("all"); setLanguage("all");
@@ -170,8 +197,8 @@ const DoctorsPage = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-12 pr-2 h-14 rounded-2xl bg-card shadow-md text-base"
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <Button variant={showMap ? "default" : "ghost"} size="sm" onClick={() => setShowMap(!showMap)} className="hidden sm:flex">
+              <div className="flex flex-wrap justify-end gap-1 mt-2">
+                <Button variant={showMap ? "default" : "ghost"} size="sm" onClick={() => setShowMap(!showMap)}>
                   <MapIcon className="w-4 h-4 mr-1" /> Xarita
                 </Button>
                 <Button variant={showFilters ? "default" : "ghost"} size="sm" onClick={() => setShowFilters(!showFilters)}>
@@ -244,6 +271,7 @@ const DoctorsPage = () => {
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger><SelectValue placeholder="Saralash" /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="distance">Masofa bo‘yicha</SelectItem>
                     <SelectItem value="rating">Reyting bo'yicha</SelectItem>
                     <SelectItem value="experience">Tajriba bo'yicha</SelectItem>
                     <SelectItem value="reviews">Sharhlar soni</SelectItem>
@@ -266,7 +294,7 @@ const DoctorsPage = () => {
 
             {showMap && (
               <div className="mt-4 rounded-2xl overflow-hidden border shadow-lg">
-                <NearbyDoctorsMap specialty={specialty !== "all" ? specialty : undefined} height={420} />
+                <NearbyDoctorsMap region={directoryFilters.region} filters={directoryFilters} patientLocation={geo.position} onLocate={geo.request} locating={geo.locating} height={420} />
               </div>
             )}
           </div>
@@ -276,6 +304,8 @@ const DoctorsPage = () => {
       <section className="py-10">
         <div className="container mx-auto px-4 max-w-6xl">
           <NewPlatformDoctors />
+          {sortBy === "distance" && !geo.position && <Button variant="outline" className="mb-4" disabled={geo.locating} onClick={geo.request}><MapIcon className="w-4 h-4 mr-2" />{geo.locating ? "Joylashuv aniqlanmoqda…" : "Masofa uchun joylashuvimni aniqlash"}</Button>}
+          {geo.error && <p role="alert" className="mb-4 text-sm text-destructive">{geo.error}</p>}
 
           {isBrowsing ? (
             <>
@@ -292,7 +322,7 @@ const DoctorsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[...Array(9)].map((_, i) => <Skeleton key={i} className="h-56 rounded-2xl" />)}
                 </div>
-              ) : doctors.length === 0 ? (
+              ) : loadError ? <p role="alert" className="text-destructive">Shifokorlar yuklanmadi. Qayta urinib ko‘ring.</p> : doctors.length === 0 ? (
                 <div className="text-center py-16">
                   <Stethoscope className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
                   <p className="text-lg font-semibold">Shifokor topilmadi</p>

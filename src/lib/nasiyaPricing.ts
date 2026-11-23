@@ -1,0 +1,1 @@
+export { nasiyaThreeMonthQuote, selectNasiyaTariff } from "../../supabase/functions/_shared/nasiya-pricing";

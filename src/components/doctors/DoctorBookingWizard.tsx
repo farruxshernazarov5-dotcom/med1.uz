@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { isNativeApp, openCheckout } from "@/lib/nativeApp";
 import { getClickMiniAppState, installClickMiniApp } from "@/lib/clickMiniApp";
 import { formatUzs } from "@/data/doctorServiceTemplates";
+import NasiyaSummary from "@/components/payments/NasiyaSummary";
 import {
   Calendar, Clock, CreditCard, CheckCircle2, Loader2, ChevronRight, ChevronLeft,
   Banknote, Smartphone, QrCode, Download,
@@ -43,6 +44,7 @@ const PAY_METHODS = [
   { id: "cash", label: "Klinikada naqd/karta", icon: Banknote, hint: "Qabul kuni to'lanadi" },
   { id: "click", label: "Click", icon: Smartphone, hint: "Onlayn to'lov havolasi yuboriladi" },
   { id: "payme", label: "Payme", icon: CreditCard, hint: "Onlayn to'lov havolasi yuboriladi" },
+  { id: "uzum_nasiya", label: "Uzum Nasiya · 3 oy", icon: CreditCard, hint: "+13% · uch oylik muddatli to‘lov" },
 ];
 
 function nextDays(count = 14) {
@@ -83,6 +85,16 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [checkoutUrl, setCheckoutUrl] = useState<string>("");
   const [payState, setPayState] = useState<"idle" | "awaiting" | "paid" | "failed">("idle");
+  const [nasiyaReady, setNasiyaReady] = useState(false);
+
+  useEffect(() => {
+    if (!open || !user) return;
+    let active = true;
+    void supabase.functions.invoke("uzum-nasiya", { body: { action: "availability" } }).then(({ data }) => {
+      if (active) setNasiyaReady(data?.configured === true);
+    });
+    return () => { active = false; };
+  }, [open, user]);
 
   const days = useMemo(() => nextDays(), []);
 
@@ -124,8 +136,9 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   useEffect(() => {
     if (!paymentId || payState !== "awaiting") return;
     const t = setInterval(async () => {
+      if (pay === "uzum_nasiya") await supabase.functions.invoke("uzum-nasiya", { body: { action: "check", payment_id: paymentId } });
       const { data } = await supabase.from("platform_payments").select("status").eq("id", paymentId).maybeSingle();
-      if (data?.status === "paid") {
+      if (data?.status === "paid" || data?.status === "completed") {
         setPayState("paid");
         setBooking((b: any) => (b ? { ...b, payment_status: "paid", status: "confirmed" } : b));
         toast({ title: "To'lov qabul qilindi", description: "Bron tasdiqlandi" });
@@ -135,10 +148,10 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
       }
     }, 5000);
     return () => clearInterval(t);
-  }, [paymentId, payState]);
+  }, [paymentId, payState, pay]);
 
   const startOnlinePayment = async (appointment: any) => {
-    const fn = pay === "payme" ? "payme-create-invoice" : "click-create-invoice";
+    const fn = pay === "uzum_nasiya" ? "uzum-nasiya" : pay === "payme" ? "payme-create-invoice" : "click-create-invoice";
     const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`, {
       method: "POST",
@@ -148,6 +161,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
         apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       },
       body: JSON.stringify({
+        action: "start",
         amount: appointment.price,
         purpose: "doctor_appointment",
         reference_id: appointment.id,
@@ -330,16 +344,17 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
             </div>
             <div className="space-y-2">
               {PAY_METHODS.map((m) => (
-                <button key={m.id} onClick={() => setPay(m.id)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left ${pay === m.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                <Button key={m.id} variant="outline" disabled={m.id === "uzum_nasiya" && !nasiyaReady} onClick={() => setPay(m.id)}
+                  className={`w-full h-auto whitespace-normal flex items-center gap-3 p-3 rounded-lg border text-left ${pay === m.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
                   <m.icon className="w-4 h-4 text-primary" />
                   <div className="flex-1">
                     <p className="text-sm font-medium">{m.label}</p>
-                    <p className="text-[11px] text-muted-foreground">{m.hint}</p>
+                    <p className="text-[11px] text-muted-foreground">{m.id === "uzum_nasiya" && !nasiyaReady ? "Uzum ulanishi kutilmoqda" : m.hint}</p>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
+            <NasiyaSummary amount={service.price} />
             <label className="flex items-start gap-2 text-xs text-muted-foreground">
               <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(!!v)} className="mt-0.5" />
               <span>

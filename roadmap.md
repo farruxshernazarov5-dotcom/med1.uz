@@ -309,3 +309,9 @@
 - [x] Mobil/desktop overflow yo‘q; foto qaytib ko‘rindi va mablag‘ yetishmasa xarid serverda rad etildi
 - [ ] Yakuniy haqiqiy pul xaridi/to‘ldirish — sinov hisobida avans balans 0; foydalanuvchi to‘lovni tasdiqlashi kerak
 - [ ] Native kamera va qolgan barcha AI ichki oqimlari haqiqiy telefonda — yangi APK va qurilma kerak; mahalliy kodni yangilab npx cap sync bajaring
+
+## 2026-11-23 — Xarita, referal, Uzum Nasiya
+- [ ] Viloyat chegarasi va barcha shifokorlarni bemor GPS masofasi bo‘yicha saralash; mobil/desktop sinov
+- [ ] Tasdiqlangan qabul/xizmat to‘lovi uchun bir martalik 5 000 so‘m referal bonusi; server sinovi
+- [ ] Uzum Nasiya 3 oylik +13% hisob va to‘lov oynasi
+- [ ] Uzum Bank/Nasiya haqiqiy to‘lov — provayder kalitlari va sinov tasdig‘i kerak

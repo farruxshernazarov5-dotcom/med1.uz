@@ -23,7 +23,7 @@ export function distanceKm(a: PatientLocation, b: PatientLocation) {
     + Math.cos(a.latitude * rad) * Math.cos(b.latitude * rad) * Math.sin((b.longitude - a.longitude) * rad / 2) ** 2;
   return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(Math.max(0, 1 - x)));
 }
-export function sortByPatientDistance<T extends DirectoryDoctor>(doctors: T[], location: PatientLocation): T[] {
+export function sortByPatientDistance<T extends DirectoryDoctor>(doctors: T[], location: PatientLocation): (T & { distance_km: number | null })[] {
   return doctors.map(d => ({ ...d, distance_km: hasCoordinates(d) ? distanceKm(location, d) : null }))
     .sort((a, b) => (a.distance_km ?? Infinity) - (b.distance_km ?? Infinity) || a.id.localeCompare(b.id));
 }
