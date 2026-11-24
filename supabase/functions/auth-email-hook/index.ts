@@ -1,6 +1,8 @@
 import * as React from 'npm:react@18.3.1'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
 import { createAuthEmailHandler } from 'npm:@lovable.dev/email-js@0.1.0'
+import { verifyWebhookRequest } from 'npm:@lovable.dev/webhooks-js@0.0.3'
+import { resendConfigured, sendViaResend } from '../_shared/resend.ts'
 import { SignupEmail } from '../_shared/email-templates/signup.tsx'
 import { InviteEmail } from '../_shared/email-templates/invite.tsx'
 import { MagicLinkEmail } from '../_shared/email-templates/magic-link.tsx'
@@ -122,12 +124,8 @@ async function handlePreview(req: Request): Promise<Response> {
 
 // The SDK handler owns verification, dispatch, and retry semantics; this file
 // owns only the email decisions: subjects, templates, and per-type props.
-const handler = createAuthEmailHandler({
-  apiKey: Deno.env.get('LOVABLE_API_KEY')!,
-  from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-  senderDomain: SENDER_DOMAIN,
-  sendUrl: Deno.env.get('LOVABLE_SEND_URL'),
-  emails: {
+const AUTH_EMAILS = {
+
     signup: {
       subject: 'Med1.uz — emailingizni tasdiqlang',
       render: (data) =>
@@ -179,8 +177,61 @@ const handler = createAuthEmailHandler({
       render: (data) =>
         React.createElement(ReauthenticationEmail, { token: data.token ?? '' }),
     },
-  },
+} as Record<string, { subject: string; render: (data: any) => React.ReactElement }>
+
+const lovableHandler = createAuthEmailHandler({
+  apiKey: Deno.env.get('LOVABLE_API_KEY')!,
+  from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+  senderDomain: SENDER_DOMAIN,
+  sendUrl: Deno.env.get('LOVABLE_SEND_URL'),
+  emails: AUTH_EMAILS as any,
 })
+
+function parseAuthPayload(raw: unknown) {
+  const p = raw as any
+  if (!p || typeof p !== 'object' || typeof p.version !== 'string' || p.type !== 'auth' ||
+      !p.data || typeof p.data.action_type !== 'string' || typeof p.data.email !== 'string') {
+    throw new Error('Invalid auth email webhook payload')
+  }
+  return p
+}
+
+// Same signed webhook as the SDK handler, but delivered through Resend (med1.uz verified there).
+async function resendHandler(req: Request): Promise<Response> {
+  if (req.method !== 'POST') return Response.json({ error: 'Method not allowed' }, { status: 405 })
+  let event: any
+  try {
+    ({ payload: event } = await verifyWebhookRequest({
+      req, secret: Deno.env.get('LOVABLE_API_KEY')!, parser: parseAuthPayload,
+    }))
+  } catch (e) {
+    console.error('auth webhook verification failed', e instanceof Error ? e.message : e)
+    return Response.json({ error: 'Invalid signature' }, { status: 401 })
+  }
+  if (event.version !== '1') return Response.json({ error: 'Unsupported version' }, { status: 400 })
+  const def = Object.prototype.hasOwnProperty.call(AUTH_EMAILS, event.data.action_type)
+    ? AUTH_EMAILS[event.data.action_type] : undefined
+  if (!def) return Response.json({ error: 'Unknown auth email action type' }, { status: 400 })
+  try {
+    const element = def.render(event.data)
+    const html = await renderAsync(element)
+    const text = await renderAsync(element, { plainText: true })
+    await sendViaResend({
+      to: event.data.email,
+      subject: def.subject,
+      html,
+      text,
+      idempotencyKey: event.run_id ? `auth:${event.run_id}` : undefined,
+      tag: `auth_${event.data.action_type}`,
+    })
+  } catch (e) {
+    console.error('auth email send failed', e instanceof Error ? e.message : e)
+    return Response.json({ error: 'Failed to send email' }, { status: 500 })
+  }
+  return Response.json({ success: true, sent: true })
+}
+
+const handler = (req: Request) => (resendConfigured() ? resendHandler(req) : lovableHandler(req))
 
 Deno.serve(async (req) => {
   const url = new URL(req.url)

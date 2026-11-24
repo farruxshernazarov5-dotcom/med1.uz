@@ -1,4 +1,5 @@
 import { EmailAPIError, sendLovableEmail } from 'npm:@lovable.dev/email-js@0.1.0'
+import { resendConfigured, sendViaResend } from '../resend.ts'
 
 // Server-only: reads LOVABLE_API_KEY. Import from edge functions only.
 // Used by senders that compose their own subject/HTML at send time and
@@ -37,6 +38,19 @@ function htmlToText(html: string): string {
 }
 
 export async function sendRawEmail(options: SendRawEmailOptions): Promise<SendRawEmailResult> {
+  if (resendConfigured()) {
+    await sendViaResend({
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      text: options.text ?? htmlToText(options.html),
+      replyTo: options.replyTo,
+      idempotencyKey: options.idempotencyKey,
+      tag: options.label,
+    })
+    return { sent: true }
+  }
+
   const apiKey = Deno.env.get('LOVABLE_API_KEY')
   if (!apiKey) {
     throw new Error('LOVABLE_API_KEY is not configured')
