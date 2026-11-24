@@ -116,9 +116,85 @@ JAVOBNI FAQAT valid JSON object sifatida ber (markdown, \`\`\`json, izoh, saloml
   "disclaimer": "Bu AI tahlili yakuniy tashxis emas. Radiolog yoki shifokor ko'rigidan o'tish zarur."
 }`;
 
+const BRAIN_NEUROSCAN_EXTENSION = `
+=== NEUROSCAN AI KENGAYTIRILGAN MAYDONLARI (FAQAT BOSH MIYA MRT/KT UCHUN) ===
+Yuqoridagi JSON obyektiga qo'shimcha ravishda "neuroScan" maydonini ham kiriting:
+"neuroScan": {
+  "plane": "axial|sagittal|coronal|unknown",
+  "sequence": "T1|T2|FLAIR|DWI|CT|unknown",
+  "aspectsScore": number|null,
+  "primaryCategory": "Masalan: Normal / Yaxshi sifatli shubha / Xavfli o'sma shubhasi / Ishemik o'zgarish / Gemorragik o'choq / Yallig'lanish",
+  "gradeOrStage": "Faqat klinik asos bo'lsa qisqa daraja (masalan: Fazekas 2, ASPECTS 8/10), aks holda bo'sh satr",
+  "riskDistribution": { "highRisk": 0-100, "benignOrLowRisk": 0-100, "normal": 0-100 },
+  "midlineShiftMm": number|null,
+  "midlineDirection": "none|left|right|unknown",
+  "anatomicalLobe": "Aniq anatomik bo'lak nomi (masalan: Chakka bo'lagi (Temporal)) yoki O'zgarishsiz",
+  "hemisphere": "left|right|bilateral|midline|none",
+  "aiConfidence": 0-100,
+  "regionsOfInterest": [
+    { "id": "ROI-1", "label": "O'choq nomi", "x": 0.0-1.0, "y": 0.0-1.0, "w": 0.05-0.8, "h": 0.05-0.8, "confidence": 0-100, "severity": "normal|mild|moderate|severe" }
+  ]
+}
+MUHIM: Agar tasvirda patologik o'choq ko'rinmasa yoki tasvir tibbiy bosh miya skani bo'lmasa, "regionsOfInterest" bo'sh massiv [] bo'lsin, "midlineShiftMm": 0 yoki null bo'lsin, hech qachon sun'iy o'sma yoki soxta koordinata o'ylab topma. x, y — yuqori chap burchak, w, h — kenglik va balandlik (0 dan 1 gacha normallashtirilgan).`;
+
+function clamp01(v: unknown, fallback = 0): number {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(0, Math.min(1, n));
+}
+
+function normalizeNeuroScan(raw: unknown, riskLevel: string) {
+  if (!raw || typeof raw !== "object") return undefined;
+  const ns = raw as Record<string, unknown>;
+  const rd = (ns.riskDistribution && typeof ns.riskDistribution === "object")
+    ? ns.riskDistribution as Record<string, unknown>
+    : {};
+  const h = Number(rd.highRisk);
+  const b = Number(rd.benignOrLowRisk);
+  const n = Number(rd.normal);
+  const validSum = Number.isFinite(h) && Number.isFinite(b) && Number.isFinite(n) && (h + b + n) > 0;
+  const sum = validSum ? Math.max(0, h) + Math.max(0, b) + Math.max(0, n) : 100;
+  const highRisk = validSum ? Math.round((Math.max(0, h) / sum) * 1000) / 10 : (riskLevel === "critical" ? 78 : riskLevel === "attention" ? 22 : 3);
+  const benignOrLowRisk = validSum ? Math.round((Math.max(0, b) / sum) * 1000) / 10 : (riskLevel === "critical" ? 18 : riskLevel === "attention" ? 58 : 12);
+  const normal = Math.max(0, Math.round((100 - highRisk - benignOrLowRisk) * 10) / 10);
+
+  const rois = Array.isArray(ns.regionsOfInterest)
+    ? ns.regionsOfInterest.slice(0, 6).map((r: any, idx: number) => ({
+        id: String(r?.id ?? `ROI-${idx + 1}`),
+        label: String(r?.label ?? `O'choq #${idx + 1}`),
+        x: clamp01(r?.x, 0.35),
+        y: clamp01(r?.y, 0.35),
+        w: Math.max(0.05, Math.min(0.85, clamp01(r?.w, 0.18))),
+        h: Math.max(0.05, Math.min(0.85, clamp01(r?.h, 0.18))),
+        confidence: Math.max(0, Math.min(100, Math.round(Number(r?.confidence) || 75))),
+        severity: ["normal", "mild", "moderate", "severe"].includes(String(r?.severity)) ? String(r.severity) : "moderate",
+      }))
+    : [];
+
+  const shiftVal = ns.midlineShiftMm === null || ns.midlineShiftMm === undefined || ns.midlineShiftMm === ""
+    ? null
+    : Math.max(0, Math.min(35, Math.round(Number(ns.midlineShiftMm) * 10) / 10));
+
+  return {
+    plane: String(ns.plane ?? "axial"),
+    sequence: String(ns.sequence ?? "unknown"),
+    aspectsScore: Number.isFinite(Number(ns.aspectsScore)) && ns.aspectsScore !== null ? Math.max(0, Math.min(10, Math.round(Number(ns.aspectsScore)))) : null,
+    primaryCategory: String(ns.primaryCategory ?? ""),
+    gradeOrStage: String(ns.gradeOrStage ?? ""),
+    riskDistribution: { highRisk, benignOrLowRisk, normal },
+    midlineShiftMm: Number.isFinite(shiftVal as number) ? shiftVal : null,
+    midlineDirection: ["none", "left", "right", "unknown"].includes(String(ns.midlineDirection)) ? String(ns.midlineDirection) : "unknown",
+    anatomicalLobe: String(ns.anatomicalLobe ?? "Aniqlashtirilmoqda"),
+    hemisphere: ["left", "right", "bilateral", "midline", "none"].includes(String(ns.hemisphere)) ? String(ns.hemisphere) : "none",
+    aiConfidence: Math.max(0, Math.min(100, Math.round(Number(ns.aiConfidence) || 82))),
+    regionsOfInterest: rois,
+  };
+}
+
 function normalizeResult(parsed: Record<string, unknown> | null, content: string, scanType: string, defaultSpecialist: string) {
   const obj = parsed ?? {};
   const assessment = (obj.overallAssessment && typeof obj.overallAssessment === "object") ? obj.overallAssessment as any : {};
+  const riskLevel = ["normal", "attention", "critical"].includes(assessment.riskLevel) ? assessment.riskLevel : "attention";
   return {
     imageType: String(obj.imageType ?? "other"),
     scanModality: String(obj.scanModality ?? scanType ?? "xray"),
@@ -139,7 +215,7 @@ function normalizeResult(parsed: Record<string, unknown> | null, content: string
       })) : [],
     })) : [],
     overallAssessment: {
-      riskLevel: ["normal", "attention", "critical"].includes(assessment.riskLevel) ? assessment.riskLevel : "attention",
+      riskLevel,
       summary: String(assessment.summary ?? obj.summary ?? cleanAiText(content)),
       keyFindings: Array.isArray(assessment.keyFindings) ? assessment.keyFindings.map(String) : [],
     },
@@ -148,6 +224,7 @@ function normalizeResult(parsed: Record<string, unknown> | null, content: string
     followUpStudies: Array.isArray(obj.followUpStudies) ? obj.followUpStudies.map(String) : [],
     urgentAttention: Boolean(obj.urgentAttention),
     disclaimer: String(obj.disclaimer ?? "Bu AI tahlili yakuniy tashxis emas."),
+    ...(obj.neuroScan ? { neuroScan: normalizeNeuroScan(obj.neuroScan, riskLevel) } : {}),
   };
 }
 
@@ -196,7 +273,8 @@ export async function handleRadiologySubmodule(req: Request, subModule: Radiolog
 
     const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
 
-    const systemPrompt = `${BASE_SYSTEM_PROMPT}\n\n${RADIOLOGY_DEPTH}\n\n=== IXTISOS ===\n${config.focus}\n\nMutaxassis: ${config.specialist}`;
+    const neuroExtra = subModule === "brain" ? `\n\n${BRAIN_NEUROSCAN_EXTENSION}` : "";
+    const systemPrompt = `${BASE_SYSTEM_PROMPT}${neuroExtra}\n\n${RADIOLOGY_DEPTH}\n\n=== IXTISOS ===\n${config.focus}\n\nMutaxassis: ${config.specialist}`;
 
     const messages = [
       { role: "system", content: systemPrompt + languageInstructionDetailed(__lang) },

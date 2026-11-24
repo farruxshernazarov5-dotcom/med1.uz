@@ -177,6 +177,7 @@ export function normalizeRadiologyAnalysis(raw: unknown, scanType = "xray") {
     followUpStudies: asStringArray(src.followUpStudies),
     urgentAttention: Boolean(src.urgentAttention),
     disclaimer: String(src.disclaimer ?? "Bu AI tahlili yakuniy tashxis emas."),
+    ...(src.neuroScan && typeof src.neuroScan === "object" ? { neuroScan: src.neuroScan } : {}),
   };
 }
 
