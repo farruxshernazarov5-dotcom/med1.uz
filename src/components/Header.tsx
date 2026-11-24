@@ -10,6 +10,7 @@ import { useCredits } from "@/hooks/useCredits";
 import { useLanguage, LANGUAGE_LABELS } from "@/hooks/useLanguage";
 import type { SupportedLanguage } from "@/i18n/config";
 import logoImg from "@/assets/logo.webp";
+import { currentSubdomain } from "@/lib/subdomains";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,8 +19,9 @@ const Header = () => {
   const { balance } = useCredits();
   const { lang, setLanguage, t } = useLanguage();
   const dashboardPath = getDashboardPath(userRole);
+  const activeSubdomain = currentSubdomain();
 
-  const navItems = [
+  const defaultNavItems = [
     { label: t("nav.medicine"), href: "/medicine" },
     { label: t("nav.health"), href: "/health" },
     { label: t("nav.diseases"), href: "/diseases" },
@@ -40,6 +42,7 @@ const Header = () => {
     { label: "Stomatologiya", href: "/dental" },
     { label: t("nav.partnership"), href: "/partnership" },
   ];
+  const navItems = activeSubdomain.navLinks ?? defaultNavItems;
 
   const languages: SupportedLanguage[] = ["uz", "ru", "en"];
 
@@ -59,11 +62,16 @@ const Header = () => {
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to={activeSubdomain.home} className="flex items-center gap-2">
               <img src={logoImg} alt="Med1.uz logotipi" className="w-10 h-10 rounded-xl object-contain" />
               <span className="font-heading font-bold text-xl text-foreground">
                 Med1<span className="text-gradient">.uz</span>
               </span>
+              {activeSubdomain.badge && (
+                <span className="px-2 py-0.5 text-[11px] font-semibold rounded-md bg-primary/10 text-primary border border-primary/20">
+                  {activeSubdomain.badge}
+                </span>
+              )}
             </Link>
 
             <nav className="hidden lg:flex items-center gap-1">
@@ -72,18 +80,20 @@ const Header = () => {
                   {item.label}
                 </Link>
               ))}
-              <div className="relative group">
-                <button className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-accent">
-                  Ko'proq ▾
-                </button>
-                <div className="absolute top-full right-0 mt-1 bg-card rounded-xl shadow-card-hover border border-border p-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  {navItems.slice(7).map((item) => (
-                    <Link key={item.href} to={item.href} className="block px-3 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors">
-                      {item.label}
-                    </Link>
-                  ))}
+              {navItems.length > 7 && (
+                <div className="relative group">
+                  <button className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-accent">
+                    Ko'proq ▾
+                  </button>
+                  <div className="absolute top-full right-0 mt-1 bg-card rounded-xl shadow-card-hover border border-border p-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                    {navItems.slice(7).map((item) => (
+                      <Link key={item.href} to={item.href} className="block px-3 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-accent rounded-lg transition-colors">
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </nav>
 
             <div className="flex items-center gap-2">

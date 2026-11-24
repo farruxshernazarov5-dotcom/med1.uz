@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   SUBDOMAIN_ROUTING_ENABLED,
   currentSubdomain,
@@ -7,6 +7,25 @@ import {
   redirectTargetForLocation,
   urlForPath,
 } from "@/lib/subdomains";
+
+const BOUNCE_KEY = "med1_sub_redirect";
+const BOUNCE_WINDOW_MS = 5000;
+
+function canSafelyRedirectTo(targetHost: string, currentHost: string): boolean {
+  try {
+    const raw = sessionStorage.getItem(BOUNCE_KEY);
+    if (raw) {
+      const prev = JSON.parse(raw) as { from?: string; to?: string; at?: number };
+      if (prev.from === currentHost && prev.to === targetHost && prev.at && Date.now() - prev.at < BOUNCE_WINDOW_MS) {
+        return false;
+      }
+    }
+    sessionStorage.setItem(BOUNCE_KEY, JSON.stringify({ from: currentHost, to: targetHost, at: Date.now() }));
+  } catch {
+    // sessionStorage unavailable
+  }
+  return true;
+}
 
 /**
  * Subdomen marshrutizatsiyasi:
@@ -16,6 +35,7 @@ import {
  */
 const SubdomainRouter = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 1 + 2: joriy manzilni tekshirish
   useEffect(() => {
@@ -26,13 +46,18 @@ const SubdomainRouter = () => {
     const path = location.pathname;
 
     if (sub.key !== "www" && (path === "/" || path === "")) {
-      window.location.replace(`https://${host}${sub.home}${location.search}`);
+      navigate(`${sub.home}${location.search}${location.hash}`, { replace: true });
       return;
     }
 
     const redirectTarget = redirectTargetForLocation(path, host, location.search, location.hash);
-    if (redirectTarget) window.location.replace(redirectTarget);
-  }, [location.pathname, location.search, location.hash]);
+    if (redirectTarget) {
+      const targetHost = new URL(redirectTarget).host;
+      if (canSafelyRedirectTo(targetHost, host)) {
+        window.location.replace(redirectTarget);
+      }
+    }
+  }, [location.pathname, location.search, location.hash, navigate]);
 
 
   // 3: ichki havolalarni ushlab, kerakli subdomenga yuborish

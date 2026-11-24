@@ -108,7 +108,18 @@ export function returnToClick() {
   window.location.assign('https://my.click.uz');
 }
 
-const MED1_HOSTS = new Set(["med1.uz", "www.med1.uz", "ai.med1.uz", "clinic.med1.uz", "doctors.med1.uz", "admin.med1.uz"]);
+const MED1_HOSTS = new Set([
+  "med1.uz",
+  "www.med1.uz",
+  "my.med1.uz",
+  "ai.med1.uz",
+  "clinic.med1.uz",
+  "dental.med1.uz",
+  "doctors.med1.uz",
+  "help.med1.uz",
+  "verify.med1.uz",
+  "admin.med1.uz",
+]);
 
 /** Click docs require URL last, with nested encoding and transaction_id suffix. */
 export function clickMiniAppReturnUrl(returnUrl: string): string {

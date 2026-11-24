@@ -262,6 +262,7 @@ const App = () => (
                 <Route path="/clinic-link" element={<ClinicLinkPage />} />
                 <Route path="/mobile-classifieds" element={<MobileClassifiedsPage />} />
                 <Route path="/user-guide" element={<UserGuidePage />} />
+                <Route path="/help" element={<UserGuidePage />} />
                 <Route path="/sitemap" element={<SitemapPage />} />
                 <Route path="/symptom-checker" element={<SymptomCheckerPage />} />
                 <Route path="/ai-services" element={<AIServicesPage />} />
