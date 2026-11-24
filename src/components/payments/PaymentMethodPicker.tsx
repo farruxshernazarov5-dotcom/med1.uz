@@ -5,6 +5,7 @@ import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Se
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import PaymentSafetyNotice from "@/components/legal/PaymentSafetyNotice";
 
 export type PaymentMethod = "click" | "payme" | "cash" | "bank";
 
@@ -179,6 +180,7 @@ const PaymentMethodPicker = ({
 
   return (
     <div className={cn("space-y-4", className)}>
+      <PaymentSafetyNotice />
       <div>
         <h4 className="font-semibold text-foreground mb-3">To'lov usulini tanlang</h4>
         <div className="grid gap-2">

@@ -1,3 +1,10 @@
+## 2026-11-24 — Reels va firibgarlikdan ogohlantirish
+- [x] Instagram Reels rasmiy ichki vertikal embed va 4 havola testi; umumiy profil va lenta bitta parserdan foydalanadi
+- [x] Uchta yaratilgan rasm bilan /payment-safety, bosh sahifa e’loni, to‘lov oynasi va yuridik markaz ogohlantirishi
+- [x] Ochiq Markaziy bank va Uzum hujjatlari tekshirildi, manbalar sahifada; shaxsiy shartnoma limitlari topilmadi, bank tasdig‘i da’vo qilinmadi
+- [x] Telefon/kompyuter layout tekshirildi (CDN lokalda ishlamadi, aynan yuklangan rasm baytlari bilan); boshlang‘ich ekran yopilish xatosi tuzatildi; 13 test va build OK
+- [ ] Haqiqiy Instagram ijrosi — lokal tekshiruvda Reels bazasi yuklanmadi; yopiq/o‘chirilgan yoki embed taqiqlangan postni Instagram ochmaydi
+
 ## 2026-11-22 — Referal xizmat to‘lovi va viloyat/masofa
 - [ ] Tasdiqlangan qabul/xizmat to‘lovi uchun bir martalik 5 000 so‘m referal bonus; bemor soxta holat bilan bonus chiqara olmaydi
 - [ ] Viloyatning to‘liq ko‘rinishi, barcha sahifalar va GPS bo‘yicha global masofa saralashi

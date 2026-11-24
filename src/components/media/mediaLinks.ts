@@ -88,8 +88,24 @@ export const isValidUrl = (url: string) => {
   }
 };
 
-/** YouTube / Vimeo uchun embed havolasi (aks holda null) */
+/** Official public-post embeds only; private/deleted posts may be unavailable. */
+export const getInstagramEmbedUrl = (url: string): string | null => {
+  try {
+    const u = new URL(normalizeUrl(url));
+    if (u.protocol !== "https:" || !["instagram.com", "www.instagram.com"].includes(u.hostname)) return null;
+    const match = u.pathname.match(/^\/(reel|reels|p|tv)\/([A-Za-z0-9_-]+)\/?$/);
+    if (!match) return null;
+    const kind = match[1] === "reels" ? "reel" : match[1];
+    return `https://www.instagram.com/${kind}/${match[2]}/embed/`;
+  } catch { return null; }
+};
+
+export const isVerticalVideo = (url: string) => !!getInstagramEmbedUrl(url) || /youtube\.com\/shorts\//i.test(url);
+
+/** YouTube / Vimeo / Instagram uchun embed havolasi (aks holda null) */
 export const getEmbedUrl = (url: string): string | null => {
+  const instagram = getInstagramEmbedUrl(url);
+  if (instagram) return instagram;
   try {
     const u = new URL(normalizeUrl(url));
     const host = u.hostname.replace("www.", "");

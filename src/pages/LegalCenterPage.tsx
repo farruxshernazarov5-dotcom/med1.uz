@@ -14,6 +14,7 @@ import { downloadContractPDF } from "@/utils/downloadContractPDF";
 import { MarkdownView } from "@/lib/markdownRender";
 import privacyPdf from "@/assets/privacy-uz.pdf.asset.json";
 import termsPdf from "@/assets/terms-uz.pdf.asset.json";
+import PaymentSafetyNotice from "@/components/legal/PaymentSafetyNotice";
 
 type Lang = "uz" | "ru" | "en";
 
@@ -183,6 +184,7 @@ export default function LegalCenterPage() {
         </div>
       </div>
 
+      <PaymentSafetyNotice />
       {/* Rasmiy tasdiqlangan hujjatlar */}
       <div className="container mx-auto px-4 pt-6">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5">

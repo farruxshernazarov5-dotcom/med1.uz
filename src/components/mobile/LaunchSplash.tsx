@@ -19,6 +19,10 @@ export default function LaunchSplash() {
   });
 
   useEffect(() => {
+    if (phase === "leave") {
+      const finish = setTimeout(() => setPhase("done"), 650);
+      return () => clearTimeout(finish);
+    }
     if (phase !== "show") return;
     sessionStorage.setItem(SESSION_KEY, "1");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

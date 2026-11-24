@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Link2, Video, Image as ImageIcon } from "lucide-react";
-import { MediaLink, getEmbedUrl, isImageUrl, platformLabel } from "./mediaLinks";
+import { MediaLink, getEmbedUrl, isImageUrl, isVerticalVideo, platformLabel } from "./mediaLinks";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   entityType: string;
@@ -62,16 +63,16 @@ const SocialVideoShowcase = ({ entityType, entityId, includeStaff = false, staff
       )}
 
       {videos.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
           {videos.map((l) => {
             const embed = getEmbedUrl(l.url);
             return (
-              <Card key={l.id}>
+              <Card key={l.id} className="min-w-0 overflow-hidden rounded-lg">
                 <CardContent className="p-3 space-y-2">
                   {embed ? (
-                    <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted">
+                    <div className={`${isVerticalVideo(l.url) ? "aspect-[9/16]" : "aspect-video"} w-full overflow-hidden rounded-lg bg-muted`}>
                       <iframe src={embed} title={l.title || "Video material"} className="w-full h-full" loading="lazy"
-                        allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen />
+                        allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
                     </div>
                   ) : (
                     <a href={l.url} target="_blank" rel="noopener noreferrer"
@@ -85,6 +86,7 @@ const SocialVideoShowcase = ({ entityType, entityId, includeStaff = false, staff
                     <p className="text-sm font-medium truncate">{l.title || "Video material"}</p>
                   </div>
                   {l.description && <p className="text-xs text-muted-foreground line-clamp-2">{l.description}</p>}
+                  {isVerticalVideo(l.url) && <Button asChild variant="ghost" size="sm" className="w-full"><a href={l.url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5" />Instagramda ochish</a></Button>}
                 </CardContent>
               </Card>
             );

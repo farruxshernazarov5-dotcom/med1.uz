@@ -1,0 +1,20 @@
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
+import PaymentSafetySection from "@/components/legal/PaymentSafetySection";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ShieldAlert, ArrowLeft } from "lucide-react";
+
+export default function PaymentSafetyPage() {
+  return <div className="min-h-screen bg-background text-foreground"><SEO title="Xavfsiz to‘lov va firibgarlikdan himoya — Med1.uz" description="SMS kod va karta ma’lumotlarini himoya qilish, shubhali to‘lovlarni aniqlash va bankka murojaat qilish bo‘yicha tavsiyalar." path="/payment-safety" /><Header /><main>
+    <div className="container mx-auto px-4 pt-8"><Button asChild variant="ghost" size="sm"><Link to="/"><ArrowLeft className="h-4 w-4" />Bosh sahifa</Link></Button><h1 className="mt-4 font-heading text-3xl font-bold">To‘lov xavfsizligi</h1><p className="mt-2 max-w-2xl text-muted-foreground">Firibgarlik xavfini kamaytirish, to‘lovni nazorat qilish va shubhali vaziyatda yordam olish.</p></div>
+    <PaymentSafetySection full />
+    <section className="container mx-auto space-y-8 px-4 pb-12">
+      <div className="border-l-4 border-destructive bg-muted/40 p-5"><h2 className="flex items-center gap-2 text-xl font-semibold"><ShieldAlert className="h-5 w-5 text-destructive" />Xavfni bildiruvchi signallar</h2><ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed"><li>SMS kodni, CVV yoki PIN’ni aytish talabi.</li><li>«Hozir to‘lamasangiz hisob bloklanadi» deb shoshiltirish.</li><li>Noma’lum havola, shaxsiy karta yoki o‘zgargan bank rekvizitlari.</li><li>Telefon ekranini ulashish yoki masofadan boshqarish dasturini o‘rnatish talabi.</li><li>Bonus, yutuq yoki pulni qaytarish uchun oldindan to‘lov so‘ralishi.</li></ul></div>
+      <div><h2 className="text-xl font-semibold">Shubhali operatsiya bo‘lsa</h2><ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed"><li>To‘lovni to‘xtating; kod yoki karta ma’lumotlarini yubormang.</li><li>Karta ma’lumotlari oshkor bo‘lgan bo‘lsa, bankning rasmiy ilovasida kartani bloklang va bankka xabar bering.</li><li>Chek, operatsiya raqami, vaqt va yozishmalarni saqlang; ochiq joyda to‘liq karta ma’lumotlarini joylashtirmang.</li><li>MED1.UZ’dagi buyurtma bo‘yicha <Link to="/contact" className="text-secondary underline">aloqa sahifasi</Link> orqali murojaat qiling. Bizga SMS kod, PIN yoki CVV yubormang.</li></ol></div>
+      <div className="border-t border-border pt-6"><h2 className="text-xl font-semibold">Operatsiyalarni cheklash va nazorat qilish</h2><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Bank ilovangizda mavjud bo‘lsa, internet to‘lovlari uchun limit belgilang, operatsiya bildirishnomalarini yoqing va foydalanmayotgan vaqtda internet to‘lovlarini o‘chiring. Bank xavfsizlik tekshiruvi yoki qo‘shimcha tasdiqlash so‘rasa, faqat uning rasmiy kanali orqali bajaring. Rad etilgan to‘lovni ketma-ket takrorlash o‘rniga bank bilan sababini aniqlang.</p><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Internet-ekvayring bo‘yicha bank va savdo korxonasi o‘rtasidagi shartnomada belgilangan cheklovlar hamda bankning tekshiruvlari qo‘llanadi. Ushbu sahifa foydalanuvchilar uchun ogohlantirish bo‘lib, shartnomadagi aniq limitlarni almashtirmaydi va bank tomonidan integratsiya tasdiqlanganini anglatmaydi.</p></div>
+      <p className="border-t border-border pt-4 text-xs text-muted-foreground">Tavsiyalar uchun ochiq manba: <a href="https://cbu.uz/ru/press_center/news/562943/" target="_blank" rel="noopener noreferrer" className="text-secondary underline">Markaziy bankning karta firibgarligi bo‘yicha ogohlantirishi</a>. Bank mahsulotlari bo‘yicha <a href="https://developer.uzumbank.uz/" target="_blank" rel="noopener noreferrer" className="text-secondary underline">Uzum Bank ochiq integratsiya hujjatlari</a>. Shaxsiy ekvayring shartnomasidagi limitlar ochiq hujjatlardan aniqlanmadi.</p>
+    </section>
+  </main><Footer /></div>;
+}

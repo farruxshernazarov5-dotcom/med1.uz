@@ -14,6 +14,8 @@ import { MobileRoleCenter } from "@/components/mobile/MobileRoleCenter";
 
 // Below-the-fold — lazy load to reduce initial bundle & LCP
 const Footer = lazy(() => import("@/components/Footer"));
+const PaymentSafetySection = lazy(() => import("@/components/legal/PaymentSafetySection"));
+const PaymentSafetyNotice = lazy(() => import("@/components/legal/PaymentSafetyNotice"));
 const LeftMenu = lazy(() => import("@/components/LeftMenu"));
 const CenterContent = lazy(() => import("@/components/CenterContent"));
 const RightSidebar = lazy(() => import("@/components/RightSidebar"));
@@ -50,6 +52,7 @@ const Index = () => {
       <div className="no-cinematic relative z-10">
         <Header />
         <SectionTicker />
+        <Suspense fallback={null}><PaymentSafetyNotice /></Suspense>
       </div>
 
       <div className="no-cinematic relative z-10">
@@ -149,6 +152,7 @@ const Index = () => {
           <LazySection minHeight={360}>
             <ContactLocationSection />
           </LazySection>
+          <LazySection minHeight={420}><div className="no-cinematic"><PaymentSafetySection /></div></LazySection>
         </Suspense>
       </div>
 
