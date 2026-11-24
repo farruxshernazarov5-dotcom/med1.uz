@@ -281,6 +281,13 @@
       "when": 1795056276548,
       "tag": "0039_paid_referral_cash_rewards",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1795527290390,
+      "tag": "0040_wallet_names_medcoin_expiry_and_oauth_referral",
+      "breakpoints": true
     }
   ]
 }

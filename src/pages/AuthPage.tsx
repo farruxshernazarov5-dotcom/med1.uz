@@ -89,9 +89,19 @@ const AuthPage = () => {
 
   const inviteCode = searchParams.get("ref") || searchParams.get("invite");
   const [manualReferral, setManualReferral] = useState(() => inviteCode || getStoredReferralCode() || "");
+
+  // Always persist ?ref= / ?invite= immediately on landing, regardless of login/register tab.
+  useEffect(() => {
+    if (inviteCode) {
+      storeReferralCode(inviteCode);
+      setManualReferral((prev) => prev || inviteCode.toUpperCase());
+    }
+  }, [inviteCode]);
+
   const persistReferral = () => {
-    if (!manualReferral.trim()) { clearReferralCode(); return true; }
-    if (!storeReferralCode(manualReferral)) {
+    const raw = (manualReferral || inviteCode || "").trim();
+    if (!raw) { clearReferralCode(); return true; }
+    if (!storeReferralCode(raw)) {
       toast({ title: "Taklif kodi noto‘g‘ri", description: "4–32 ta harf, raqam, pastki chiziq yoki tire kiriting.", variant: "destructive" });
       return false;
     }
@@ -110,28 +120,28 @@ const AuthPage = () => {
   const passwordStrong = mode === "register" ? PASSWORD_RULES.every((r) => r.test(password)) : true;
 
   const handleOAuthSignIn = async (provider: "google" | "microsoft") => {
-    if (mode === "register" && !persistReferral()) return;
+    if ((mode === "register" || manualReferral.trim() || inviteCode) && !persistReferral()) return;
     setSubmitting(true);
     if (mode === "register") setPendingRole(role);
     if (isNativeApp()) {
       if (provider === "google") {
-        // In-app Google account picker — no browser tab.
+        // Try native OS account picker first; if unavailable or rejected by keystore/audience,
+        // seamlessly fall back to the system browser bridge so Google sign-in always works in APK.
         const r = await nativeGoogleSignIn();
         setSubmitting(false);
         if (r.ok) { navigate(safeNext ?? "/dashboard", { replace: true }); return; }
         if (r.reason === "cancelled") return;
-        if (r.reason === "failed") {
-          toast({ title: "Google orqali kirib bo‘lmadi", description: r.message, variant: "destructive" });
-          return;
-        }
-        // Older APK without the native module: fall back to the browser bridge.
       }
-      startNativeOAuth(provider, safeNext);
+      await startNativeOAuth(provider, safeNext);
       setSubmitting(false);
       return;
     }
-    // OAuth must return to a public page; ?next survives the sign-in round trip.
-    const redirectUri = `${window.location.origin}/auth${safeNext ? `?next=${encodeURIComponent(safeNext)}` : ""}`;
+    // OAuth must return to a public page; ?next and ?oauth_ref both survive the sign-in round trip.
+    const qs = new URLSearchParams();
+    if (safeNext) qs.set("next", safeNext);
+    const activeRef = getStoredReferralCode();
+    if (activeRef) qs.set("oauth_ref", activeRef);
+    const redirectUri = `${window.location.origin}/auth${qs.toString() ? `?${qs.toString()}` : ""}`;
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: redirectUri,
     });

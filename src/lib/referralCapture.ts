@@ -27,7 +27,7 @@ export function captureReferralFromUrl(): string | null {
   if (typeof window === "undefined") return null;
   try {
     const params = new URLSearchParams(window.location.search);
-    const raw = params.get("ref") || params.get("referral") || params.get("invite");
+    const raw = params.get("ref") || params.get("referral") || params.get("invite") || params.get("oauth_ref");
     if (!raw) return null;
     return storeReferralCode(raw);
   } catch {

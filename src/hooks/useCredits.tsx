@@ -5,10 +5,19 @@ import { useAuth } from "@/hooks/useAuth";
 import { recordMetric } from "@/lib/perfMonitor";
 import { toast } from "sonner";
 
+export interface CreditBatch {
+  id: string;
+  balance: number;
+  purchased_at: string;
+  expires_at: string;
+  package_name: string | null;
+}
+
 interface CreditInfo {
   balance: number;
   expiresAt: string | null;
   packageTier: "free" | "lite" | "standard" | "premium";
+  batches: CreditBatch[];
   loading: boolean;
   refreshing: boolean;
   initialized: boolean;
@@ -44,6 +53,7 @@ const CreditContext = createContext<CreditInfo>({
   balance: 0,
   expiresAt: null,
   packageTier: "free",
+  batches: [],
   loading: true,
   refreshing: false,
   initialized: false,
@@ -59,6 +69,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
   const [balance, setBalance] = useState<number>(initialCacheMatch ? cached!.balance : 0);
   const [expiresAt, setExpiresAt] = useState<string | null>(initialCacheMatch ? cached!.expiresAt : null);
   const [packageTier, setPackageTier] = useState<CreditInfo["packageTier"]>(initialCacheMatch ? cached?.packageTier ?? "free" : "free");
+  const [batches, setBatches] = useState<CreditBatch[]>([]);
   const [loading, setLoading] = useState<boolean>(!initialCacheMatch);
   const [refreshing, setRefreshing] = useState(false);
   const [initialized, setInitialized] = useState<boolean>(initialCacheMatch);
@@ -66,6 +77,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
   const lastFetchRef = useRef(0);
   const inflightRef = useRef<Promise<void> | null>(null);
   const initializedRef = useRef(initialCacheMatch);
+  const expiryCheckedUserRef = useRef<string | null>(null);
   const firstPaintReportedRef = useRef(false);
   const mountTimeRef = useRef(performance.now());
 
@@ -80,7 +92,8 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
   const fetchCredits = useCallback(async (force = false): Promise<void> => {
     if (!user) {
-      setBalance(0); setExpiresAt(null); setPackageTier("free"); setLoading(false); setRefreshing(false);
+      setBalance(0); setExpiresAt(null); setPackageTier("free"); setBatches([]); setLoading(false); setRefreshing(false);
+      expiryCheckedUserRef.current = null;
       setInitialized(true); initializedRef.current = true;
       try { sessionStorage.removeItem(CACHE_KEY); } catch { /* ignore */ }
       return;
@@ -95,6 +108,12 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
     // Best-effort: claim monthly free 2 Med Coins (idempotent server-side per calendar month)
     try { await supabase.rpc("grant_monthly_free_coins", { _user_id: user.id }); } catch { /* ignore */ }
 
+    // Once per signed-in session, enforce strict expiration and generate proactive 7d/3d/1d warnings
+    if (expiryCheckedUserRef.current !== user.id) {
+      expiryCheckedUserRef.current = user.id;
+      try { await supabase.rpc("expire_and_notify_med_coins", { _user_id: user.id }); } catch { /* ignore */ }
+    }
+
 
 
     const run = (async () => {
@@ -102,7 +121,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
         const now = new Date().toISOString();
         const { data, error } = await supabase
           .from("user_credits")
-          .select("balance, expires_at, package_name")
+          .select("id, balance, purchased_at, expires_at, package_name")
           .eq("user_id", user.id)
           .gt("expires_at", now)
           .gt("balance", 0)
@@ -129,6 +148,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
           return total;
         });
         setExpiresAt(nearest);
+        setBatches((data || []) as CreditBatch[]);
         setPackageTier(detectedTier);
         writeCache({ userId: user.id, balance: total, expiresAt: nearest, packageTier: detectedTier, cachedAt: Date.now() });
       } catch (e) {
@@ -192,7 +212,7 @@ const CreditProviderInner = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <CreditContext.Provider
-      value={{ balance, expiresAt, packageTier, loading, refreshing, initialized, refetch: () => { void fetchCredits(true); } }}
+      value={{ balance, expiresAt, packageTier, batches, loading, refreshing, initialized, refetch: () => { void fetchCredits(true); } }}
     >
       {children}
     </CreditContext.Provider>

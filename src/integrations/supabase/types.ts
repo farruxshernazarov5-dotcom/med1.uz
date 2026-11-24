@@ -18816,6 +18816,10 @@ export type Database = {
       }
       claim_initial_role: { Args: { _role: string }; Returns: string }
       claim_my_payment: { Args: { _payment_id: string }; Returns: Json }
+      claim_my_referral: {
+        Args: { _code: string; _source?: string }
+        Returns: Json
+      }
       claim_my_signup_bonus: { Args: { _code?: string }; Returns: Json }
       claim_push_token: {
         Args: { _platform: string; _token: string }
@@ -18871,6 +18875,10 @@ export type Database = {
       ensure_referral_wallet: {
         Args: { _owner_id: string }
         Returns: undefined
+      }
+      expire_and_notify_med_coins: {
+        Args: { _user_id?: string }
+        Returns: Json
       }
       fulfill_platform_payment: { Args: { _payment_id: string }; Returns: Json }
       generate_referral_code: { Args: { _owner_id: string }; Returns: string }

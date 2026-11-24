@@ -34,7 +34,7 @@ const fmtDate = (s: string) =>
 
 const MedCoinWallet = () => {
   const { user } = useAuth();
-  const { balance, expiresAt, loading: cLoading, refetch } = useCredits();
+  const { balance, expiresAt, batches, loading: cLoading, refetch } = useCredits();
   const { access } = useAiAccess();
 
   const [txs, setTxs] = useState<Tx[]>([]);
@@ -50,7 +50,7 @@ const MedCoinWallet = () => {
       .from("notifications")
       .select("id, type, title, message, is_read, created_at, link")
       .eq("user_id", user.id)
-      .like("type", "medcoin_alert_%")
+      .or("type.like.medcoin_alert_%,type.like.medcoin_expiring_%,type.eq.medcoin_expired")
       .order("created_at", { ascending: false })
       .limit(10);
     setAlerts(data || []);
@@ -109,7 +109,7 @@ const MedCoinWallet = () => {
       .on("postgres_changes", { event: "*", schema: "public", table: "ai_usage", filter: `user_id=eq.${user.id}` }, () => fetchAll())
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, (payload: any) => {
         const n = payload.new;
-        if (n?.type?.startsWith("medcoin_alert_")) {
+        if (n?.type?.startsWith("medcoin_")) {
           toast.warning(n.title, { description: n.message });
           fetchAlerts();
         }
@@ -245,6 +245,61 @@ const MedCoinWallet = () => {
         )}
       </div>
 
+      {/* Active Med Coin batches & expiration schedule */}
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
+          <h2 className="font-bold text-foreground flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-primary" /> Med Coin partiyalari va amal qilish muddatlari
+          </h2>
+          <span className="text-xs text-muted-foreground">Muddati o‘tgan Med Coin avtomatik kuyadi</span>
+        </div>
+        {cLoading ? (
+          <Skeleton className="h-24 w-full" />
+        ) : batches.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Faol Med Coin partiyalari yo‘q. Yangi paket sotib olganingizda har birining olingan va tugash sanasi shu yerda ko‘rinadi.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {batches.map((b) => {
+              const msLeft = new Date(b.expires_at).getTime() - Date.now();
+              const daysLeft = Math.max(0, Math.ceil(msLeft / 86_400_000));
+              const urgent = daysLeft <= 3;
+              const soon = !urgent && daysLeft <= 7;
+              const pkgLabel =
+                b.package_name === "monthly_free_grant"
+                  ? "Oylik bepul Med Coin"
+                  : b.package_name || "Med Coin paketi";
+              return (
+                <div
+                  key={b.id}
+                  className={`flex items-center justify-between gap-3 rounded-lg border p-3 ${
+                    urgent
+                      ? "border-destructive/40 bg-destructive/5"
+                      : soon
+                        ? "border-amber-500/40 bg-amber-500/5"
+                        : "border-border bg-muted/20"
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{pkgLabel}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Olingan: {fmtDate(b.purchased_at)} · Tugaydi: {fmtDate(b.expires_at)}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="font-bold text-foreground">{b.balance} Med Coin</p>
+                    <p className={`text-xs font-medium ${urgent ? "text-destructive" : soon ? "text-amber-600" : "text-muted-foreground"}`}>
+                      {daysLeft <= 1 ? "1 kundan kam qoldi" : `${daysLeft} kun qoldi`}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Balance alerts panel */}
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-3">
@@ -264,7 +319,7 @@ const MedCoinWallet = () => {
         </div>
         {alerts.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Hozircha eslatmalar yo'q. Balans 50% / 25% / 10% / 0% chegaralariga yetganda avtomatik bildirishnoma kelinadi.
+            Hozircha eslatmalar yo‘q. Balans 50% / 25% / 10% / 0% ga tushganda hamda muddat tugashiga 7, 3, 1 kun qolganda avtomatik bildirishnoma yuboriladi.
           </p>
         ) : (
           <div className="space-y-2">

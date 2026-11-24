@@ -2,7 +2,7 @@ import { publicOrigin } from "@/lib/nativeApp";
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { getStoredReferralCode, getStoredReferralMeta, clearReferralCode } from "@/lib/referralCapture";
+import { captureReferralFromUrl, getStoredReferralCode, getStoredReferralMeta, clearReferralCode } from "@/lib/referralCapture";
 import { getPendingRole, clearPendingRole, ROLE_REGISTER_PATH } from "@/lib/pendingRole";
 
 interface AuthContextType {
@@ -34,6 +34,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       supabase.from("profiles").select("full_name, phone, avatar_url, cover_url").eq("user_id", userId).maybeSingle(),
     ]);
     let role = roleRes.data?.role ?? null;
+
+    // Google / Microsoft OAuth va telefon orqali yangi ro'yxatdan o'tganda referal kodni biriktirish.
+    const pendingRef = captureReferralFromUrl() || getStoredReferralCode();
+    if (pendingRef) {
+      const refMeta = getStoredReferralMeta();
+      try {
+        const { data: claimRes } = await supabase.rpc("claim_my_referral", {
+          _code: pendingRef,
+          _source: refMeta?.source ?? "oauth_return",
+        });
+        const res = claimRes as { ok?: boolean; error?: string } | null;
+        if (res?.ok || (res?.error && ["account_too_old", "self_referral", "code_not_found", "invalid_code"].includes(res.error))) {
+          clearReferralCode();
+        }
+      } catch { /* retry on next session hydrate */ }
+    }
 
     // Ro'yxatdan o'tishda tanlangan rolni biriktirish (ayniqsa Google orqali kirishda).
     const pending = getPendingRole();

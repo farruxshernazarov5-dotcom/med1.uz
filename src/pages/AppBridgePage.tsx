@@ -22,6 +22,7 @@ export default function AppBridgePage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [handoffUrl, setHandoffUrl] = useState("");
 
   useEffect(() => {
     if (!validState || loading || user) return;
@@ -42,6 +43,7 @@ export default function AppBridgePage() {
     supabase.auth.stopAutoRefresh();
     const ref = new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0];
     localStorage.removeItem(`sb-${ref}-auth-token`);
+    setHandoffUrl(url);
     setDone(true);
     window.location.href = url;
   };
@@ -56,7 +58,14 @@ export default function AppBridgePage() {
         ) : error ? (
           <p className="mt-3 text-sm text-destructive">{error}</p>
         ) : done ? (
-          <p className="mt-3 text-sm text-muted-foreground">Ilova ochilmoqda… Agar ochilmasa, Med ALL ilovasini qo‘lda oching.</p>
+          <div className="mt-3 space-y-3">
+            <p className="text-sm text-muted-foreground">Ilova ochilmoqda… Agar avtomatik ochilmasa, pastdagi tugmani bosing.</p>
+            {handoffUrl && (
+              <Button asChild className="h-11 w-full">
+                <a href={handoffUrl}>Med ALL ilovasini ochish</a>
+              </Button>
+            )}
+          </div>
         ) : user ? (
           <>
             <p className="mt-3 text-sm text-muted-foreground">{user.email} hisobiga kirdingiz. Davom etish uchun ilovaga qayting.</p>

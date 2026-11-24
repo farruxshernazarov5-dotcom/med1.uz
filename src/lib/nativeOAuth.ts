@@ -21,12 +21,21 @@ function randomState(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export function startNativeOAuth(provider: NativeOAuthProvider, next: string | null): void {
+export async function startNativeOAuth(provider: NativeOAuthProvider, next: string | null): Promise<void> {
   const state = randomState();
   localStorage.setItem(STATE_KEY, JSON.stringify({ state, next: safeAuthDestination(next), at: Date.now() }));
   const url = `${BRIDGE_ORIGIN}/app-bridge?provider=${provider}&state=${state}`;
-  // External origins are opened by Capacitor in the system browser.
-  window.location.href = url;
+  // Open in the OS browser (Chrome Custom Tabs / SFSafariViewController), never inside the WebView
+  // where Google blocks OAuth with 403 disallowed_useragent.
+  try {
+    const { Browser } = await import("@capacitor/browser");
+    await Browser.open({ url, presentationStyle: "popover" });
+    return;
+  } catch {
+    // Fallback for environments where @capacitor/browser is unavailable
+    window.open(url, "_system");
+    window.location.href = url;
+  }
 }
 
 /** Validates the hand-off link and stores the session. Returns the in-app destination or null. */
@@ -44,6 +53,10 @@ export async function completeNativeOAuth(url: string): Promise<string | null> {
     if (!state || state !== saved.state || Date.now() - saved.at > MAX_AGE_MS || !access_token || !refresh_token) return null;
     const { error } = await supabase.auth.setSession({ access_token, refresh_token });
     if (error) return null;
+    try {
+      const { Browser } = await import("@capacitor/browser");
+      await Browser.close();
+    } catch { /* ignore */ }
     return saved.next ?? "/dashboard";
   } catch {
     return null;
