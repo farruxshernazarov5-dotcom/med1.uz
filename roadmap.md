@@ -1,3 +1,8 @@
+## 2026-11-24 — Bank hujjati va kengaytirilgan xavfsizlik tavsiyalari
+- [x] Shartnoma va bank xati tahlil qilindi; 3.2.1, 3.1.4–3.1.5, 3.3.1–3.3.2 va 1-ilovaga tayangan ommaviy izoh; maxfiy rekvizitlar/fayl e’lon qilinmadi, raqamli anti-fraud limitlar shartnomada yo‘q
+- [x] Yana uchta kreativ foto; to‘liq sahifada olti tavsiya, bosh sahifada uchta; PIN’ni internet oynasiga kiritmaslik aniqlashtirildi
+- [x] 384×853 va 1280×1800 ko‘rinishlari tekshirildi, olti rasm dekodlandi, gorizontal toshish yo‘q; lokal CDN o‘rniga aynan yuklangan baytlar ishlatildi; build OK
+
 ## 2026-11-24 — Reels va firibgarlikdan ogohlantirish
 - [x] Instagram Reels rasmiy ichki vertikal embed va 4 havola testi; umumiy profil va lenta bitta parserdan foydalanadi
 - [x] Uchta yaratilgan rasm bilan /payment-safety, bosh sahifa e’loni, to‘lov oynasi va yuridik markaz ogohlantirishi
