@@ -6,6 +6,7 @@ import { enforceAiAccess, refundAiCredits } from "./ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "./ai-instrument.ts";
 import { languageInstructionDetailed, detectLangFromText, normalizeLang } from "./lang.ts";
 import { cleanAiText, parseAiJsonObject } from "./json.ts";
+import { radiologyRequestImages, RADIOLOGY_SERIES_INSTRUCTION } from "./radiology-images.ts";
 
 export const radiologyCorsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -238,6 +239,14 @@ export async function handleRadiologySubmodule(req: Request, subModule: Radiolog
   const config = SUBMODULE_CONFIG[subModule];
 
   try {
+    const __body = await req.json();
+    let pageImages: string[];
+    try { pageImages = radiologyRequestImages(__body); }
+    catch (error) {
+      return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Tasvir xatosi" }), {
+        status: 400, headers: { ...radiologyCorsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const access = await enforceAiAccess(req, serviceId);
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
@@ -248,7 +257,6 @@ export async function handleRadiologySubmodule(req: Request, subModule: Radiolog
     __usageId = access.usageId ?? null;
     __userId = access.userId;
 
-    const __body = await req.json();
     const { imageBase64, imageMimeType, pdfPageImages, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body;
     const __lang = detectLangFromText(clinicalInfo) ?? normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -271,7 +279,7 @@ export async function handleRadiologySubmodule(req: Request, subModule: Radiolog
     if (clinicalInfo) userText += `Klinik ma'lumot: ${clinicalInfo}\n`;
     userText += `\nBu ${config.title} yo'nalishidagi ixtisoslashgan tahlil. JSON formatda javob ber.`;
 
-    const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
+    userText += `\nYuborilgan tasvirlar: ${pageImages.length}. ${RADIOLOGY_SERIES_INSTRUCTION}`;
 
     const neuroExtra = subModule === "brain" ? `\n\n${BRAIN_NEUROSCAN_EXTENSION}` : "";
     const systemPrompt = `${BASE_SYSTEM_PROMPT}${neuroExtra}\n\n${RADIOLOGY_DEPTH}\n\n=== IXTISOS ===\n${config.focus}\n\nMutaxassis: ${config.specialist}`;

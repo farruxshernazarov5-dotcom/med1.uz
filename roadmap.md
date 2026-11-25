@@ -1,3 +1,10 @@
+## 2026-11-25 — Radiologiya ko‘p proyeksiya va PDF
+- [x] Barcha 8 xizmatda bir nechta tasvir/PDF tanlash, qo‘shish va o‘chirish; 12 tasvir/sahifa, har fayl 10 MB
+- [x] Barcha proyeksiyalar bitta tahlilga va PDF ilovalariga; 8 xizmat serveri yangilandi
+- [x] PDF shrift xatosi tuzatildi; hisobda 8 sahifa sinov namunasi bilan PDF yuklandi, xulosa va 3 ilova tekshirildi, telefon/kompyuterda overflow yo‘q
+- [x] Aniqlik/tejamkorlik: proyeksiyalar bitta so‘rovda solishtiriladi; mavjud model/narx o‘zgarmadi, klinik aniqlik kafolatlanmaydi
+- [ ] Haqiqiy AI xulosasi va APK kamera/saqlash sinovi — hisobda Med Coin 0 va tarif ruxsati yo‘q; yangilangan APK/telefon kerak
+
 ## 2026-11-24 — Bank hujjati va kengaytirilgan xavfsizlik tavsiyalari
 - [x] Shartnoma va bank xati tahlil qilindi; 3.2.1, 3.1.4–3.1.5, 3.3.1–3.3.2 va 1-ilovaga tayangan ommaviy izoh; maxfiy rekvizitlar/fayl e’lon qilinmadi, raqamli anti-fraud limitlar shartnomada yo‘q
 - [x] Yana uchta kreativ foto; to‘liq sahifada olti tavsiya, bosh sahifada uchta; PIN’ni internet oynasiga kiritmaslik aniqlashtirildi

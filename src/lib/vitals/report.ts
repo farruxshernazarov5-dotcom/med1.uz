@@ -4,7 +4,7 @@ import { sendPdfToTelegram } from "@/lib/telegramBotLink";
 import { supabase } from "@/integrations/supabase/client";
 import { extractVitalMetrics, scientificSources, topicQuery } from "@/lib/aiReportExtras";
 import { radiologyReportMarkdown } from "@/lib/radiologyReport";
-import reportFont from "@/assets/fonts/medical-unicode-compatible.ttf.asset.json";
+import reportFontUrl from "dejavu-fonts-ttf/ttf/DejaVuSans.ttf?url";
 
 /** Preserve Unicode letters; remove unsupported pictographic glyphs only. */
 const clean = (t: string) =>
@@ -26,10 +26,10 @@ function newCode() {
 
 /** Registers the report so its QR code can be verified; returns null when offline/signed out. */
 async function register(hash: string) {
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) return null;
+  const { data } = await supabase.auth.getSession();
+  if (!data.session?.user) return null;
   const code = newCode();
-  const { error } = await supabase.from("vital_reports").insert({ code, user_id: data.user.id, content_hash: hash });
+  const { error } = await supabase.from("vital_reports").insert({ code, user_id: data.session.user.id, content_hash: hash });
   return error ? null : code;
 }
 
@@ -72,11 +72,13 @@ export const downloadAiReport = (o: { title: string; conclusion: string; name: s
 export async function downloadVitalReport({ summary, conclusion, name, title = "Med AI - Vital ko'rsatkichlar xulosasi", date, metrics, images }: { summary: string; conclusion: string; name: string; title?: string; date?: string; metrics?: ReportMetric[]; images?: string[] }) {
   const [{ jsPDF }, QR, { default: autoTable }] = await Promise.all([import("jspdf"), import("qrcode"), import("jspdf-autotable")]);
   const hash = await sha256(`${summary}\n${conclusion}`);
-  const code = await register(hash);
+  // Optional QR registration must never prevent a local PDF download.
+  const code = await register(hash).catch(() => null);
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const fontResponse = await fetch(reportFont.url);
+  const fontResponse = await fetch(reportFontUrl);
   if (!fontResponse.ok) throw new Error("PDF shriftini yuklab bo'lmadi");
   const bytes = new Uint8Array(await fontResponse.arrayBuffer());
+  if (bytes.length < 12 || bytes[0] !== 0 || bytes[1] !== 1) throw new Error("PDF shrift fayli noto'g'ri. Sahifani yangilab qayta urinib ko'ring.");
   let binary = "";
   for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
   doc.addFileToVFS("MedicalUnicode.ttf", btoa(binary));
@@ -129,7 +131,7 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     doc.addImage(qr, "PNG", PW - 52, y, 36, 36);
     doc.setFontSize(7); doc.setTextColor(10, 37, 64);
     doc.text(code, PW - 34, y + 41, { align: "center" });
-    const { data: pin } = await supabase.rpc("get_document_pin", { _kind: "vital", _code: code });
+    const { data: pin } = await supabase.rpc("get_document_pin", { _kind: "vital", _code: code }).then(result => result, () => ({ data: null }));
     doc.text(typeof pin === "string" ? `Tekshiruv kodi: ${pin}` : "QR orqali tekshiring", PW - 34, y + 45, { align: "center" });
   }
 
@@ -235,7 +237,7 @@ export async function downloadVitalReport({ summary, conclusion, name, title = "
     block(`Yuklangan material ${i + 1}`, "Tahlilga yuborilgan tasvir. AI xulosasi yakuniy radiolog tashxisi emas.");
     const ratio = Math.min(178 / img.naturalWidth, 214 / img.naturalHeight);
     const w = img.naturalWidth * ratio, h = img.naturalHeight * ratio;
-    doc.addImage(image, "JPEG", (PW - w) / 2, y, w, h);
+    doc.addImage(image, image.startsWith("data:image/png") ? "PNG" : "JPEG", (PW - w) / 2, y, w, h);
   }
 
   // Footer on every page

@@ -1,10 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
-import { beginExternalPicker, endExternalPicker } from "@/lib/appLock";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -20,14 +19,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import MedicalDisclaimer from "@/components/MedicalDisclaimer";
-import { downloadAIReport } from "@/utils/downloadAIReport";
 import { useTranslation } from "react-i18next";
 import { withLang } from "@/lib/aiLang";
 import { normalizeRadiologyAnalysis } from "@/lib/aiJson";
-import { pdfToImageBase64Pages } from "@/lib/pdf";
-import RadiologyCamera from "@/components/ai/RadiologyCamera";
+import RadiologyImageUpload from "@/components/ai/RadiologyImageUpload";
+import { prepareRadiologyImages, radiologyImagePayload } from "@/lib/radiologyImages";
 import { radiologyClinicalContext } from "@/lib/radiologyReport";
-import { downloadAiReport } from "@/lib/vitals/report";
+import RadiologyPdfButton from "@/components/ai/RadiologyPdfButton";
+import RadiologyProjectionGallery from "@/components/ai/RadiologyProjectionGallery";
 
 interface AnatomicalStructure {
   name: string;
@@ -91,7 +90,6 @@ const AIRadiologyPage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<"input" | "results">("input");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -100,62 +98,31 @@ const AIRadiologyPage = () => {
   const [patientAge, setPatientAge] = useState("");
   const [patientGender, setPatientGender] = useState("");
   const [clinicalInfo, setClinicalInfo] = useState("");
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [analysis, setAnalysis] = useState<RadiologyAnalysis | null>(null);
   const [reportImages, setReportImages] = useState<string[]>([]);
 
-  const handleFile = useCallback((file: File) => {
-    const allowed = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
-    if (!allowed.includes(file.type)) {
-      toast({ title: "Noto'g'ri format", description: "Faqat PDF, JPG, PNG formatlar qo'llab-quvvatlanadi", variant: "destructive" });
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Fayl juda katta", description: "Maksimal hajm 10MB", variant: "destructive" });
-      return;
-    }
-    setUploadedFile(file);
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = (e) => setFilePreview(e.target?.result as string);
-      reader.readAsDataURL(file);
-    } else {
-      setFilePreview(null);
-    }
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  }, [handleFile]);
-
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve((reader.result as string).split(",")[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  useEffect(() => () => { if (filePreview?.startsWith("blob:")) URL.revokeObjectURL(filePreview); }, [filePreview]);
+  const handleFilesChange = (files: File[]) => {
+    setUploadedFiles(files);
+    setActiveImageIndex(0);
+    setAnalysis(null);
+    setReportImages([]);
+    setFilePreview(null);
+    const first = files.find(file => file.type.startsWith("image/"));
+    if (first) setFilePreview(URL.createObjectURL(first));
+  };
 
   const handleAnalyze = async () => {
-    if (!uploadedFile) return;
+    if (!uploadedFiles.length) return;
     setIsLoading(true);
     window.dispatchEvent(new CustomEvent("med1:ai-processing", { detail: { path: "/ai-radiology" } }));
     try {
-      const pdfPages = uploadedFile.type === "application/pdf"
-        ? await pdfToImageBase64Pages(uploadedFile, 3).catch(() => [])
-        : [];
-      if (uploadedFile.type === "application/pdf" && pdfPages.length === 0) {
-        throw new Error("PDF sahifalarini rasmga aylantirib bo'lmadi. Iltimos, JPG/PNG formatda yuklang.");
-      }
+      const images = await prepareRadiologyImages(uploadedFiles);
       const body = withLang({
-        imageBase64: pdfPages[0] ?? await fileToBase64(uploadedFile),
-        imageMimeType: pdfPages.length > 0 ? "image/jpeg" : uploadedFile.type,
-        pdfPageImages: pdfPages,
+        ...radiologyImagePayload(images),
         scanType,
         bodyPart,
         patientAge,
@@ -165,7 +132,8 @@ const AIRadiologyPage = () => {
       const { data, error } = await supabase.functions.invoke("ai-radiology", { body });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setReportImages(pdfPages.length ? pdfPages.map(p => `data:image/jpeg;base64,${p}`) : filePreview ? [filePreview] : []);
+      setReportImages(images);
+      setActiveImageIndex(0);
       setAnalysis(normalizeRadiologyAnalysis(data, scanType) as RadiologyAnalysis);
       setStep("results");
       window.dispatchEvent(new CustomEvent("med1:ai-result", { detail: { path: "/ai-radiology" } }));
@@ -214,7 +182,8 @@ const AIRadiologyPage = () => {
   const handleReset = () => {
     setStep("input");
     setAnalysis(null);
-    setUploadedFile(null);
+    setUploadedFiles([]);
+    setActiveImageIndex(0);
     setFilePreview(null);
     setReportImages([]);
     setBodyPart("");
@@ -336,57 +305,12 @@ const AIRadiologyPage = () => {
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
                   <Upload className="w-5 h-5 text-primary" /> {scanLabel} tasvirini yuklang
                 </h3>
-                {!uploadedFile ? (
-                  <div
-                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={handleDrop}
-                    onClick={() => { beginExternalPicker(); fileInputRef.current?.click(); }}
-                    className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 hover:bg-muted/30"}`}
-                  >
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                        <Image className="w-8 h-8 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground text-sm">{scanLabel} tasvirini shu yerga tashlang yoki bosing</p>
-                        <p className="text-xs text-muted-foreground mt-1">JPG, PNG, PDF • Maksimal 10MB</p>
-                      </div>
-                      <div className="flex gap-2 mt-2">
-                        <Button variant="outline" size="sm" type="button" onClick={(e) => { e.stopPropagation(); beginExternalPicker(); fileInputRef.current?.click(); }}>
-                          <Upload className="w-4 h-4 mr-1" /> Fayl tanlash
-                        </Button>
-                        <RadiologyCamera onCapture={handleFile} />
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="border border-border rounded-xl p-4 bg-muted/20">
-                    <div className="flex items-start gap-4">
-                      {filePreview ? (
-                        <img src={filePreview} alt={scanLabel} className="w-32 h-32 object-cover rounded-lg border border-border" />
-                      ) : (
-                        <div className="w-32 h-32 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Eye className="w-10 h-10 text-primary" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground text-sm truncate">{uploadedFile.name}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{(uploadedFile.size / 1024 / 1024).toFixed(2)} MB • {uploadedFile.type}</p>
-                        <Badge variant="outline" className="mt-2 text-xs text-green-600">✓ Yuklandi</Badge>
-                      </div>
-                      <Button variant="ghost" size="icon" onClick={() => { setUploadedFile(null); setFilePreview(null); }}>
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-                <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => { endExternalPicker(); const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
+                <RadiologyImageUpload files={uploadedFiles} onChange={handleFilesChange} disabled={isLoading} />
               </div>
 
               <Button
                 onClick={handleAnalyze}
-                disabled={!uploadedFile || isLoading}
+                disabled={!uploadedFiles.length || isLoading}
                 className="w-full bg-hero-gradient text-primary-foreground h-12 text-base font-semibold" size="lg"
               >
                 {isLoading ? <><Loader2 className="w-5 h-5 animate-spin mr-2" /> AI tahlil qilmoqda...</> : <><Eye className="w-5 h-5 mr-2" /> AI {scanLabel} tahlilini boshlash</>}
@@ -396,6 +320,7 @@ const AIRadiologyPage = () => {
 
           {step === "results" && analysis && (
             <div className="space-y-6">
+              <RadiologyProjectionGallery images={reportImages} />
               {/* Urgent */}
               {analysis.urgentAttention && (
                 <div className="bg-red-50 dark:bg-red-950/40 border-2 border-red-300 dark:border-red-700 rounded-xl p-5">
@@ -559,14 +484,7 @@ const AIRadiologyPage = () => {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button onClick={() => void downloadAiReport({
-                  title: "Radiologiya Tahlili",
-                  name: user?.email ?? "",
-                  conclusion: JSON.stringify(analysis),
-                  images: reportImages,
-                }).catch(() => toast({ title: "PDF yaratilmadi", variant: "destructive" }))} variant="outline" className="flex-1">
-                  <Download className="w-4 h-4 mr-2" /> Hisobotni yuklab olish
-                </Button>
+                <RadiologyPdfButton title="Radiologiya Tahlili" name={user?.email ?? ""} analysis={analysis} images={reportImages} />
                 {user && (
                   <Button onClick={handleSave} disabled={isSaving} className="flex-1 bg-hero-gradient text-primary-foreground border-0">
                     {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}

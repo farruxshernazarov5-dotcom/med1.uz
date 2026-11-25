@@ -3,6 +3,7 @@ import { enforceAiAccess, refundAiCredits } from "../_shared/ai-access.ts";
 import { instrumentJson, instrumentError, statusFromHttp } from "../_shared/ai-instrument.ts";
 import { languageInstructionDetailed, detectLangFromText, normalizeLang } from "../_shared/lang.ts";
 import { cleanAiText, parseAiJsonObject } from "../_shared/json.ts";
+import { radiologyRequestImages, RADIOLOGY_SERIES_INSTRUCTION } from "../_shared/radiology-images.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -88,6 +89,14 @@ serve(async (req) => {
   const cost = 25;
 
   try {
+    const __body = await req.json();
+    let pageImages: string[];
+    try { pageImages = radiologyRequestImages(__body); }
+    catch (error) {
+      return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Tasvir xatosi" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const access = await enforceAiAccess(req, serviceId);
     if (!access.allowed) {
       return new Response(JSON.stringify({ error: access.error }), {
@@ -98,7 +107,6 @@ serve(async (req) => {
     __usageId = access.usageId ?? null;
     __userId = access.userId;
 
-    const __body = await req.json(); 
     const { imageBase64, imageMimeType, pdfPageImages, bodyPart, patientAge, patientGender, clinicalInfo, scanType } = __body; 
     const __lang = detectLangFromText(clinicalInfo) ?? normalizeLang(__body?.lang);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -119,7 +127,7 @@ serve(async (req) => {
     if (clinicalInfo) userText += `Klinik ma'lumot: ${clinicalInfo}\n`;
     userText += `\nTasvirni diqqat bilan o'rganib, BARCHA anatomik strukturalar va patologik o'zgarishlarni aniqla. Har bir topilmani lokalizatsiya, o'lcham va xarakteri bilan tavsifla. JSON formatda javob ber.`;
 
-    const pageImages = Array.isArray(pdfPageImages) && pdfPageImages.length > 0 ? pdfPageImages.slice(0, 3) : [imageBase64];
+    userText += `\nYuborilgan tasvirlar: ${pageImages.length}. ${RADIOLOGY_SERIES_INSTRUCTION}`;
 
     const messages = [
       { role: "system", content: SYSTEM_PROMPT + languageInstructionDetailed(__lang) },
