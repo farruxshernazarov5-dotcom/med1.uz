@@ -48,7 +48,7 @@ export async function fetchDoctorCalendar(doctorId: string, days = 14): Promise<
   const last = new Date(today);
   last.setDate(last.getDate() + days - 1);
 
-  const [{ data: avail }, { data: booked }] = await Promise.all([
+  const [{ data: avail, error: availabilityError }, { data: booked, error: bookingError }] = await Promise.all([
     supabase
       .from("doctor_ext_availability")
       .select("weekday, start_time, end_time, slot_minutes")
@@ -62,6 +62,7 @@ export async function fetchDoctorCalendar(doctorId: string, days = 14): Promise<
       .lte("appointment_date", dateKey(last))
       .neq("status", "cancelled"),
   ]);
+  if (availabilityError || bookingError) throw availabilityError ?? bookingError;
 
   const availByDay = new Map<number, any>();
   (avail || []).forEach((r: any) => availByDay.set(r.weekday, r));

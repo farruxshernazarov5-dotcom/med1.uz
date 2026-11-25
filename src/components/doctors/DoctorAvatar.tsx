@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { doctorPhotoCandidates } from "@/lib/doctorPhotos";
 
 interface Props {
   name: string;
@@ -21,17 +22,20 @@ const initials = (name: string) =>
 
 /** Doctor photo with a graceful branded fallback when the image is missing or broken. */
 const DoctorAvatar = ({ name, photoUrl, specialty, className, rounded = "rounded-xl" }: Props) => {
-  const [broken, setBroken] = useState(false);
-  const showImg = !!photoUrl && !broken;
+  const candidates = doctorPhotoCandidates(name, photoUrl);
+  const [failed, setFailed] = useState<string[]>([]);
+  const src = candidates.find(url => !failed.includes(url));
+  const showImg = !!src;
 
   if (showImg) {
     return (
       <img
-        src={photoUrl as string}
+        src={src}
         alt={`${name}${specialty ? ` — ${specialty}` : ""}`}
         loading="lazy"
-        onError={() => setBroken(true)}
-        className={cn("object-cover bg-muted", rounded, className)}
+        referrerPolicy="no-referrer"
+        onError={() => { if (src) setFailed(previous => [...previous, src]); }}
+        className={cn("object-cover bg-muted shrink-0", rounded, className)}
       />
     );
   }
@@ -42,7 +46,7 @@ const DoctorAvatar = ({ name, photoUrl, specialty, className, rounded = "rounded
     <div
       aria-label={name}
       className={cn(
-        "flex items-center justify-center bg-gradient-to-br from-primary/15 to-secondary/15 text-primary font-heading font-bold select-none",
+        "flex shrink-0 items-center justify-center bg-gradient-to-br from-primary/15 to-secondary/15 text-primary font-heading font-bold select-none",
         rounded,
         className,
       )}

@@ -4,6 +4,10 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/integrations/supabase/client";
 import { MapPin, Loader2 } from "lucide-react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
+import { getPatientLocation } from "@/lib/patientGeolocation";
+import { doctorPhotoCandidates } from "@/lib/doctorPhotos";
+import "@/components/doctors/doctorMap.css";
 
 // Fix default icon paths (leaflet bundling issue)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -74,6 +78,8 @@ export function NearbyMap({ height = 360, radiusKm = 15 }: { height?: number; ra
   const [hasLoc, setHasLoc] = useState(false);
   const [loading, setLoading] = useState(true);
   const lastFetchAt = useRef(0);
+  const [locationError, setLocationError] = useState("");
+  const [doctorSlugs, setDoctorSlugs] = useState<Record<string, string>>({});
 
   // Real-time joylashuv kuzatuvi
   useEffect(() => {
@@ -82,11 +88,7 @@ export function NearbyMap({ height = 360, radiusKm = 15 }: { height?: number; ra
       setCenter([p.coords.latitude, p.coords.longitude]);
       setHasLoc(true);
     };
-    navigator.geolocation.getCurrentPosition(onPos, () => null, {
-      enableHighAccuracy: true,
-      maximumAge: 30000,
-      timeout: 10000,
-    });
+    void getPatientLocation().then(p => { setCenter([p.latitude, p.longitude]); setHasLoc(true); }).catch(e => setLocationError(e.message));
     const watchId = navigator.geolocation.watchPosition(onPos, () => null, {
       enableHighAccuracy: true,
       maximumAge: 20000,
@@ -111,6 +113,12 @@ export function NearbyMap({ height = 360, radiusKm = 15 }: { height?: number; ra
       });
       if (!alive) return;
       if (error) console.error("nearby rpc", error);
+      const doctorIds = ((data || []) as NearbyPlace[]).filter(p => p.org_type === "doctor").map(p => p.id);
+      if (doctorIds.length) {
+        const { data: doctors } = await supabase.from("doctors_external").select("id,slug").in("id", doctorIds);
+        if (!alive) return;
+        setDoctorSlugs(Object.fromEntries((doctors ?? []).map(d => [d.id, d.slug])));
+      }
       setPlaces(((data || []) as NearbyPlace[]).filter((p) => p.latitude && p.longitude));
       setLoading(false);
     })();
@@ -160,21 +168,23 @@ export function NearbyMap({ height = 360, radiusKm = 15 }: { height?: number; ra
           </>
         )}
         {places.map((p) => (
-          <Marker key={`${p.org_type}-${p.id}`} position={[p.latitude, p.longitude]} icon={makeIcon(p.org_type)}>
-            <Popup>
+          <Marker key={`${p.org_type}-${p.id}`} position={[p.latitude, p.longitude]} icon={p.org_type === "doctor" && doctorPhotoCandidates(p.name, p.logo_url)[0] ? L.divIcon({ className: "doctor-photo-marker", html: `<div class="doctor-photo-ring"><span>✚</span><img src="${encodeURI(doctorPhotoCandidates(p.name, p.logo_url)[0]).replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer" onerror="this.remove()" /></div>`, iconSize: [44, 52], iconAnchor: [22, 52] }) : makeIcon(p.org_type)}>
+            <Popup autoPan={false}>
               <div className="text-xs">
+                {p.org_type === "doctor" && <DoctorAvatar name={p.name} photoUrl={p.logo_url} className="h-12 w-12 mb-2" />}
                 <p className="font-bold">{p.name}</p>
                 <p className="text-muted-foreground">{TYPE_LABEL[p.org_type] || p.org_type} • {p.distance_km.toFixed(1)} km</p>
                 {p.address && <p className="text-muted-foreground">{p.address}</p>}
                 {p.phone && <a href={`tel:${p.phone}`} className="text-primary underline block">{p.phone}</a>}
                 {DETAIL_PATH[p.org_type] && (
-                  <a href={`${DETAIL_PATH[p.org_type]}/${p.id}`} className="text-primary underline">Batafsil</a>
+                  <a href={p.org_type === "doctor" ? doctorSlugs[p.id] ? `/doctors/ext/${doctorSlugs[p.id]}` : `/doctors?q=${encodeURIComponent(p.name)}` : `${DETAIL_PATH[p.org_type]}/${p.id}`} className="text-primary underline">Batafsil</a>
                 )}
               </div>
             </Popup>
           </Marker>
         ))}
       </MapContainer>
+      {locationError && <p role="alert" className="text-xs text-destructive">{locationError}</p>}
     </div>
   );
 }

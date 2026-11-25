@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { buildSlots, dateKey } from "@/lib/doctorAvailability";
+import DoctorAvatar from "./DoctorAvatar";
 
 import { Stethoscope, Star, Loader2, Sparkles, AlertTriangle, RotateCcw, SlidersHorizontal, CalendarCheck, Wallet, Languages } from "lucide-react";
 
@@ -371,13 +372,7 @@ export default function AiDoctorFinder({ open, onOpenChange, defaultRegion }: Pr
                   return (
                   <Link key={d.id} to={`/doctors/ext/${d.slug}`} onClick={() => onOpenChange(false)}
                     className="flex items-center gap-3 p-2.5 rounded-xl border hover:border-primary/40 transition">
-                    {d.photo_url ? (
-                      <img src={d.photo_url} alt={d.name} loading="lazy" className="w-11 h-11 rounded-lg object-cover" />
-                    ) : (
-                      <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Stethoscope className="w-5 h-5 text-primary" />
-                      </div>
-                    )}
+                    <DoctorAvatar name={d.name} photoUrl={d.photo_url} className="w-11 h-11" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold truncate">{d.name}</p>
                       <p className="text-xs text-primary truncate">{d.primary_specialty}</p>

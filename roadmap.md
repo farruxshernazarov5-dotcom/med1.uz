@@ -1,3 +1,11 @@
+## 2026-11-25 — Shifokor fotosuratlari, mobil kalendar va xarita
+- [x] Fotosuratlar uchun umumiy asl manba/fallback: katalog, profil, xarita, klinika, AI tavsiya, taqqoslash, qabul va tahrirlash; o‘chgan asl surat o‘rniga ism belgisi
+- [x] Mobil kalendar, mahalliy sana, tanlangan vaqtni qabul oynasiga uzatish, jadvalga mos slotlar va yuklanish xatosini ko‘rsatish
+- [x] GPS qayta urinish, qo‘lda tanlangan shahar GPS tomonidan qayta almashtirilmasligi, profil manziliga yaqin masshtab, ochiq marker kartasi saqlanishi
+- [x] 12 test; kirgan hisobda haqiqiy shifokor surati, 26-noyabr 09:00 tanlovi, ochiq popup, GPS (sinov koordinatasi), 384/1280 viloyat ko‘rinishi; build OK
+- [ ] Manbadan o‘chgan fotosuratlarni tiklash — yuborilgan fayldagi asl URL ham 404, shifokorning yangi haqiqiy fotosurati kerak
+- [ ] Haqiqiy telefon GPS/APK sinovi — yangi APK va qurilma kerak; pullik bron yaratilmadi
+
 ## 2026-11-25 — Radiologiya ko‘p proyeksiya va PDF
 - [x] Barcha 8 xizmatda bir nechta tasvir/PDF tanlash, qo‘shish va o‘chirish; 12 tasvir/sahifa, har fayl 10 MB
 - [x] Barcha proyeksiyalar bitta tahlilga va PDF ilovalariga; 8 xizmat serveri yangilandi

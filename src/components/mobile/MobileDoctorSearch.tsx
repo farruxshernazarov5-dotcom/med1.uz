@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useMobileFavorites } from "@/hooks/useMobileFavorites";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
+import DoctorDatePicker from "@/components/doctors/DoctorDatePicker";
+import { collectPages } from "@/lib/doctorDirectory";
 
-type Doctor = { id: string; slug: string; name: string; clinic_id: string | null; primary_specialty: string | null; services: string[] | null };
+type Doctor = { id: string; slug: string; name: string; photo_url: string | null; clinic_id: string | null; primary_specialty: string | null; services: string[] | null };
 type Clinic = { id: string; name: string };
 
 export function MobileDoctorSearch() {
@@ -25,14 +28,18 @@ export function MobileDoctorSearch() {
   useEffect(() => {
     let alive = true;
     void Promise.all([
-      supabase.from("doctors_external").select("id, slug, name, clinic_id, primary_specialty, services").order("name").limit(300),
+      collectPages<Doctor>(async (offset, size) => {
+        const { data, error } = await supabase.from("doctors_external").select("id, slug, name, photo_url, clinic_id, primary_specialty, services").order("id").range(offset, offset + size - 1);
+        if (error) throw error;
+        return data ?? [];
+      }),
       supabase.from("registered_clinics_public").select("id, name").eq("is_active", true).order("name").limit(200),
     ]).then(([doctorResult, clinicResult]) => {
       if (!alive) return;
-      setDoctors((doctorResult.data as Doctor[] | null) ?? []);
+      setDoctors(doctorResult);
       setClinics(((clinicResult.data ?? []).filter((item) => item.id && item.name)) as Clinic[]);
       setLoading(false);
-    });
+    }).catch(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, []);
 
@@ -80,9 +87,9 @@ export function MobileDoctorSearch() {
             <option value="all">Barchasi</option>{clinics.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
           </select>
         </label>
-        <label className="text-xs text-muted-foreground">Qabul sanasi
-          <Input type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(event) => setDate(event.target.value)} className="mt-1" />
-        </label>
+        <div className="min-w-0 text-xs text-muted-foreground">Qabul sanasi
+          <div className="mt-1"><DoctorDatePicker value={date} onChange={setDate} /></div>
+        </div>
         <label className="text-xs text-muted-foreground">Qabul vaqti
           <Input type="time" value={time} onChange={(event) => setTime(event.target.value)} disabled={!date} className="mt-1" />
         </label>
@@ -91,7 +98,7 @@ export function MobileDoctorSearch() {
       {loading ? <div className="space-y-2">{[0, 1, 2].map((item) => <Skeleton key={item} className="h-28 w-full" />)}</div> : visible.length ? visible.map((doctor) => (
         <article key={doctor.id} className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Stethoscope aria-hidden="true" /></span>
+            <DoctorAvatar name={doctor.name} photoUrl={doctor.photo_url} className="h-10 w-10" />
             <div className="min-w-0 flex-1"><h3 className="font-semibold text-foreground">{doctor.name}</h3><p className="text-xs text-primary">{doctor.primary_specialty ?? "Shifokor"}</p></div>
             <Button variant="ghost" size="icon" aria-label={favorites.has("doctor", doctor.id) ? `${doctor.name}ni sevimlilardan olib tashlash` : `${doctor.name}ni sevimlilarga qo‘shish`} onClick={() => void favorites.toggle({ entity_type: "doctor", entity_id: doctor.id, label: doctor.name, route: `/doctors/ext/${doctor.slug}`, metadata: { specialty: doctor.primary_specialty } })}><Heart className={favorites.has("doctor", doctor.id) ? "fill-current text-destructive" : ""} /></Button>
           </div>

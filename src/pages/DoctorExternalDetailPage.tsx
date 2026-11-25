@@ -2,7 +2,8 @@ import DoctorAiTips from "@/components/doctors/DoctorAiTips";
 import DoctorQuickActions from "@/components/doctors/DoctorQuickActions";
 import CompareBar from "@/components/doctors/CompareBar";
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
+import { hasCoordinates, type PatientLocation } from "@/lib/doctorDirectory";
 import { supabase } from "@/integrations/supabase/client";
 import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import Header from "@/components/Header";
@@ -38,20 +39,31 @@ interface Doctor {
 
 const DoctorExternalDetailPage = () => {
   const { slug } = useParams();
+  const [params] = useSearchParams();
+  const [focusLocation, setFocusLocation] = useState<PatientLocation | null>(null);
+  const [pickedSlot, setPickedSlot] = useState({ date: params.get("date") ?? "", time: params.get("time") ?? "" });
   const [doc, setDoc] = useState<Doctor | null>(null);
   const [clinic, setClinic] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [bookOpen, setBookOpen] = useState(false);
+  const [bookOpen, setBookOpen] = useState(params.get("book") === "1");
 
   useEffect(() => {
     (async () => {
       if (!slug) return;
       setLoading(true);
+      setClinic(null); setRelated([]); setFocusLocation(null);
       const { data } = await supabase.from("doctors_external")
         .select("*").eq("slug", slug).maybeSingle();
       if (data) {
         setDoc(data as Doctor);
+        const coordinates: { latitude: number | null; longitude: number | null } = { latitude: data.latitude, longitude: data.longitude };
+        if (hasCoordinates(coordinates)) setFocusLocation(coordinates);
+        else {
+          const { default: locations } = await import("@/data/doctorLocationSources.json");
+          const location = (locations as Record<string, PatientLocation>)[data.id];
+          if (location) setFocusLocation(location);
+        }
         if (data.clinic_id) {
           const { data: cl } = await supabase.from("registered_clinics")
             .select("id,name,address,phone,latitude,longitude,category")
@@ -156,6 +168,8 @@ const DoctorExternalDetailPage = () => {
                 doctorId={doc.id}
                 doctorName={doc.name}
                 doctorSlug={doc.slug}
+                initialDate={pickedSlot.date}
+                initialTime={pickedSlot.time}
                 services={getServiceTemplates(doc.primary_specialty).map((t) => ({ ...t, id: null }))}
               />
             </div>
@@ -183,7 +197,7 @@ const DoctorExternalDetailPage = () => {
               extraServices={doc.services}
             />
 
-            <DoctorAvailabilityCalendar doctorId={doc.id} onPickSlot={() => setBookOpen(true)} />
+            <DoctorAvailabilityCalendar doctorId={doc.id} onPickSlot={(date, time) => { setPickedSlot({ date, time }); setBookOpen(true); }} />
 
             <MyDoctorAppointments doctorId={doc.id} doctorName={doc.name} />
 
@@ -194,7 +208,7 @@ const DoctorExternalDetailPage = () => {
               <h2 className="font-heading font-bold text-lg mb-3 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary" /> Yaqin atrofdagi shifokorlar
               </h2>
-              <NearbyDoctorsMap specialty={doc.primary_specialty || undefined} height={340} />
+              <NearbyDoctorsMap specialty={doc.primary_specialty || undefined} focusLocation={focusLocation} height={420} />
             </div>
 
 
@@ -228,13 +242,7 @@ const DoctorExternalDetailPage = () => {
                 <div className="space-y-3">
                   {related.map(r => (
                     <Link key={r.id} to={`/doctors/ext/${r.slug}`} className="flex items-center gap-3 hover:bg-muted/40 rounded-lg p-2 -m-2 transition">
-                      {r.photo_url ? (
-                        <img src={r.photo_url} alt={r.name} loading="lazy" className="w-10 h-10 rounded-lg object-cover" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Stethoscope className="w-5 h-5 text-primary" />
-                        </div>
-                      )}
+                      <DoctorAvatar name={r.name} photoUrl={r.photo_url} className="w-10 h-10" rounded="rounded-lg" />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{r.name}</p>
                         <p className="text-xs text-muted-foreground truncate">{r.primary_region}</p>

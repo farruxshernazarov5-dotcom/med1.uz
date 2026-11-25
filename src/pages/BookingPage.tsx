@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, Link } from "react-router-dom";
@@ -310,13 +311,7 @@ const BookingPage = () => {
                       )}
                     >
                       <div className="flex items-center gap-2">
-                        {d.photo_url ? (
-                          <img src={d.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Stethoscope className="w-4 h-4 text-primary" />
-                          </div>
-                        )}
+                        <DoctorAvatar name={d.full_name} photoUrl={d.photo_url} className="w-8 h-8" rounded="rounded-full" />
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-foreground text-sm truncate">{d.full_name}</p>
                           <p className="text-xs text-muted-foreground">{d.specialty} • {d.experience_years} yil</p>

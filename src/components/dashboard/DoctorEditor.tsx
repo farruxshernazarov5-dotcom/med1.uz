@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -191,13 +192,7 @@ const DoctorEditor = ({ clinicId, doctors, onRefresh }: DoctorEditorProps) => {
                 className="p-4 flex items-center gap-3 cursor-pointer"
                 onClick={() => setExpandedId(expandedId === d.id ? null : d.id)}
               >
-                {d.photo_url ? (
-                  <img src={d.photo_url} alt={d.full_name} className="w-12 h-12 rounded-full object-cover border-2 border-border" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Stethoscope className="w-5 h-5 text-primary" />
-                  </div>
-                )}
+                <DoctorAvatar name={d.full_name} photoUrl={d.photo_url} className="w-12 h-12 border-2 border-border" rounded="rounded-full" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-foreground truncate">{d.full_name}</p>
@@ -287,13 +282,7 @@ const DoctorEditor = ({ clinicId, doctors, onRefresh }: DoctorEditorProps) => {
           <div className="space-y-4">
             {/* Photo */}
             <div className="flex items-center gap-4">
-              {form.photo_url ? (
-                <img src={form.photo_url} alt="" className="w-16 h-16 rounded-full object-cover border-2 border-border" />
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                  <Camera className="w-6 h-6 text-muted-foreground" />
-                </div>
-              )}
+              <DoctorAvatar name={form.full_name} photoUrl={form.photo_url} className="w-16 h-16 border-2 border-border" rounded="rounded-full" />
               <div>
                 <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
                   {uploading ? "Yuklanmoqda..." : "Rasm yuklash"}

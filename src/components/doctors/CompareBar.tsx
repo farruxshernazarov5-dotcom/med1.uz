@@ -1,4 +1,5 @@
 import DoctorDialogContent from "./DoctorDialogContent";
+import DoctorAvatar from "./DoctorAvatar";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDoctorCompare } from "@/hooks/useDoctorFavorites";
@@ -52,11 +53,7 @@ const CompareBar = ({ aboveActions = false }: { aboveActions?: boolean }) => {
             {rows.map(d => (
               <div key={d.id} className="border rounded-xl p-4 space-y-3">
                 <div className="flex items-start justify-between">
-                  {d.photo_url ? (
-                    <img src={d.photo_url} alt={d.name} className="w-16 h-16 rounded-lg object-cover" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-lg bg-muted" />
-                  )}
+                  <DoctorAvatar name={d.name} photoUrl={d.photo_url} className="w-16 h-16" />
                   <button onClick={() => toggle(d.id)} aria-label="Shifokorni olib tashlash" className="min-h-11 min-w-11 flex items-center justify-center text-muted-foreground hover:text-destructive">
                     <X className="w-4 h-4" />
                   </button>

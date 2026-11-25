@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, MapPin, ArrowRight, Sparkles } from "lucide-react";
+import DoctorAvatar from "./DoctorAvatar";
 
 interface PlatformDoctor {
   id: string;
@@ -55,18 +56,7 @@ const NewPlatformDoctors = ({ limit = 12 }: { limit?: number }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {docs.map((d) => (
           <Card key={d.id} className="p-4 flex items-center gap-3 hover:border-primary/50 transition-colors">
-            {d.photo_url ? (
-              <img
-                src={d.photo_url}
-                alt={`${d.full_name} fotosi`}
-                loading="lazy"
-                className="w-14 h-14 rounded-2xl object-cover bg-muted shrink-0"
-              />
-            ) : (
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Stethoscope className="w-5 h-5 text-primary" />
-              </div>
-            )}
+            <DoctorAvatar name={d.full_name} photoUrl={d.photo_url} className="w-14 h-14" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-semibold text-foreground truncate">{d.full_name}</p>

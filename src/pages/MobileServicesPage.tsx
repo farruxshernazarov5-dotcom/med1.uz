@@ -35,6 +35,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { MobileDoctorSearch } from "@/components/mobile/MobileDoctorSearch";
 import { MobileServiceCatalog } from "@/components/mobile/MobileServiceCatalog";
 import { getDashboardPath } from "@/lib/dashboard";
+import { useDoctorLocation } from "@/hooks/useDoctorLocation";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
+import { doctorPhotoCandidates } from "@/lib/doctorPhotos";
+import "@/components/doctors/doctorMap.css";
 
 type Place = {
   id: string;
@@ -48,6 +52,8 @@ type Place = {
   distance_km: number;
   working_hours?: string | null;
   services?: string[];
+  logo_url?: string | null;
+  slug?: string;
 };
 
 const DEFAULT_CENTER: [number, number] = [41.3111, 69.2797];
@@ -87,6 +93,7 @@ const Recenter = ({ center }: { center: [number, number] }) => {
 
 const isAlwaysOpen = (place: Place) => /24\s*\/\s*7/i.test(place.working_hours ?? "");
 const detailPath = (place: Place) => {
+  if (place.org_type === "doctor") return place.slug ? `/doctors/ext/${place.slug}` : `/doctors?q=${encodeURIComponent(place.name)}`;
   const prefix: Record<string, string> = { clinic: "/clinics", doctor: "/doctors", diagnostics: "/diagnostics", dental: "/dental" };
   return `${prefix[place.org_type] ?? "/clinics"}/${place.id}`;
 };
@@ -112,6 +119,11 @@ const MobileServicesPage = () => {
   const [locationOpen, setLocationOpen] = useState(false);
   const [selected, setSelected] = useState<Place | null>(null);
   const [placeOpen, setPlaceOpen] = useState(false);
+  const geo = useDoctorLocation(false);
+  useEffect(() => { if (section === "services") geo.request(); }, [section, geo.request]);
+  useEffect(() => {
+    if (geo.position) { setCenter([geo.position.latitude, geo.position.longitude]); setCity("Joylashuvim"); setLocationOpen(false); }
+  }, [geo.position]);
 
   useEffect(() => {
     if (section !== "services") return;
@@ -120,11 +132,6 @@ const MobileServicesPage = () => {
     if (cached) {
       try { setPlaces(JSON.parse(cached) as Place[]); setUsingCache(true); } catch { localStorage.removeItem(CACHE_KEY); }
     }
-    navigator.geolocation?.getCurrentPosition(
-      (position) => setCenter([position.coords.latitude, position.coords.longitude]),
-      () => setLocationOpen(true),
-      { enableHighAccuracy: true, maximumAge: 30_000, timeout: 8_000 },
-    );
     (async () => {
       setLoading(true);
       setError(null);
@@ -139,11 +146,16 @@ const MobileServicesPage = () => {
           ? await supabase.from("registered_clinics_public").select("id, working_hours, specialties").in("id", clinicIds)
           : { data: [] };
         const detailMap = new globalThis.Map((clinicDetails.data ?? []).map((item) => [item.id, item]));
+        const doctorIds = nearby.filter(place => place.org_type === "doctor").map(place => place.id);
+        const doctorDetails = doctorIds.length ? await supabase.from("doctors_external").select("id,slug,photo_url").in("id", doctorIds) : { data: [] };
+        const doctorMap = new globalThis.Map((doctorDetails.data ?? []).map(item => [item.id, item]));
         const next = nearby.map((place) => {
           const detail = detailMap.get(place.id);
           const hours = detail?.working_hours;
           return {
             ...place,
+            slug: doctorMap.get(place.id)?.slug,
+            logo_url: doctorMap.get(place.id)?.photo_url ?? place.logo_url,
             working_hours: typeof hours === "string" ? hours : hours && typeof hours === "object" ? Object.values(hours).filter(Boolean).slice(0, 2).join(" • ") : null,
             services: detail?.specialties ?? [],
           };
@@ -207,7 +219,7 @@ const MobileServicesPage = () => {
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={() => openSmartSearch()} aria-label="Aqlli qidiruv"><Search /></Button>
             <Button variant="ghost" size="icon" onClick={() => window.dispatchEvent(new CustomEvent("med1:open-mobile-guide"))} aria-label="Mobil ilova yo‘riqnomasini ochish"><CircleHelp /></Button>
-            {section === "services" && <Button variant="outline" size="sm" onClick={() => setLocationOpen(true)}><MapPin className="h-4 w-4" /> {city}</Button>}
+            {section === "services" && <><Button variant="ghost" size="icon" aria-label="Yaqin xizmatlar uchun joylashuvim" disabled={geo.locating} onClick={geo.request}><LocateFixed className={geo.locating ? "animate-pulse" : ""} /></Button><Button variant="outline" size="sm" onClick={() => setLocationOpen(true)}><MapPin className="h-4 w-4" /> {city}</Button></>}
           </div>
         </div>
         {section === "services" && <div className="mt-3 grid grid-cols-2 rounded-lg bg-muted p-1" aria-label="Ko‘rinish turi">
@@ -256,6 +268,7 @@ const MobileServicesPage = () => {
       </div>
 
       {error && <div className="mx-4 mb-3 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive" role="alert"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /><span className="flex-1">{error}</span><Button variant="outline" size="sm" onClick={() => setReloadKey((value) => value + 1)}><RotateCw /> Qayta</Button></div>}
+      {geo.error && <p role="alert" className="mx-4 mb-3 text-sm text-destructive">{geo.error}</p>}
       {usingCache && !error && <p className="mx-4 mb-3 text-xs text-muted-foreground" role="status">Saqlangan xizmatlar ko‘rsatilmoqda, yangilanmoqda…</p>}
 
       {mode === "map" && (
@@ -263,13 +276,13 @@ const MobileServicesPage = () => {
           <MapContainer center={center} zoom={13} className="h-full w-full" zoomControl={false}>
             <TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <Recenter center={center} />
-            {visible.map((place) => (
-              <Marker key={`${place.org_type}-${place.id}`} position={[place.latitude, place.longitude]} icon={markerIcon} eventHandlers={{ click: () => choosePlace(place) }} />
-            ))}
+            {visible.map((place) => {
+              const photo = place.org_type === "doctor" ? doctorPhotoCandidates(place.name, place.logo_url)[0] : undefined;
+              const icon = photo ? L.divIcon({ className: "doctor-photo-marker", html: `<div class="doctor-photo-ring"><span>✚</span><img src="${encodeURI(photo).replace(/"/g, "%22")}" alt="" referrerpolicy="no-referrer" onerror="this.remove()" /></div>`, iconSize: [44, 52], iconAnchor: [22, 52] }) : markerIcon;
+              return <Marker key={`${place.org_type}-${place.id}`} position={[place.latitude, place.longitude]} icon={icon} eventHandlers={{ click: () => choosePlace(place) }} />;
+            })}
           </MapContainer>
-          <Button size="icon" className="absolute bottom-4 right-4 z-[400] shadow-card" aria-label="Joylashuvimga qaytish" onClick={() => {
-            navigator.geolocation?.getCurrentPosition((p) => setCenter([p.coords.latitude, p.coords.longitude]), () => setLocationOpen(true));
-          }}>
+          <Button size="icon" className="absolute bottom-4 right-4 z-[400] shadow-card" aria-label="Joylashuvimga qaytish" disabled={geo.locating} onClick={geo.request}>
             <LocateFixed />
           </Button>
           {loading && <div className="absolute inset-x-4 top-4 z-[400] rounded-lg border border-border bg-card/95 p-3 text-center text-sm text-muted-foreground" role="status">Xarita natijalari yuklanmoqda…</div>}
@@ -287,9 +300,9 @@ const MobileServicesPage = () => {
           {!loading && visible.map((place) => (
             <article key={`${place.org_type}-${place.id}`} className="rounded-lg border border-border bg-card p-4 shadow-card">
               <div className="flex items-start gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                {place.org_type === "doctor" ? <DoctorAvatar name={place.name} photoUrl={place.logo_url} className="h-11 w-11" /> : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   {place.org_type === "doctor" ? <Stethoscope /> : place.org_type === "pharmacy" ? <Cross /> : <Building2 />}
-                </span>
+                </span>}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <h2 className="text-sm font-bold text-foreground">{place.name}</h2>
@@ -305,7 +318,7 @@ const MobileServicesPage = () => {
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <Button variant="outline" size="sm" onClick={() => choosePlace(place)}>Batafsil</Button>
-                <Button size="sm" asChild><Link to={`/booking?clinic=${place.id}`}>Qabulga yozilish</Link></Button>
+                <Button size="sm" asChild><Link to={place.org_type === "doctor" ? `${detailPath(place)}?book=1` : `/booking?clinic=${place.id}`}>Qabulga yozilish</Link></Button>
               </div>
             </article>
           ))}
@@ -361,7 +374,7 @@ const MobileServicesPage = () => {
                 {selected.phone && <Button variant="outline" className="w-full" asChild><a href={`tel:${selected.phone}`}><Phone /> {selected.phone}</a></Button>}
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="outline" asChild><a href={`https://www.google.com/maps/dir/?api=1&destination=${selected.latitude},${selected.longitude}`} target="_blank" rel="noreferrer"><Navigation /> Marshrut</a></Button>
-                  <Button asChild><Link to={`/booking?clinic=${selected.id}`}>Qabulga yozilish</Link></Button>
+                  <Button asChild><Link to={selected.org_type === "doctor" ? `${detailPath(selected)}?book=1` : `/booking?clinic=${selected.id}`}>Qabulga yozilish</Link></Button>
                 </div>
                 <Button variant="ghost" className="w-full" asChild><Link to={detailPath(selected)}>To‘liq profilni ochish</Link></Button>
               </div>

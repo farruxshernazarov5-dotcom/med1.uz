@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Star, Stethoscope, ArrowRight } from "lucide-react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 
 interface Props {
   /** Russian specialty label as stored in doctors_external.primary_specialty */
@@ -54,13 +55,7 @@ export default function DoctorRecommendations({ specialty, region, limit = 4, ti
         {docs.map(d => (
           <Link key={d.id} to={`/doctors/ext/${d.slug}`}
             className="flex items-center gap-3 p-3 rounded-xl border hover:border-primary/40 hover:bg-muted/40 transition">
-            {d.photo_url ? (
-              <img src={d.photo_url} alt={d.name} loading="lazy" className="w-12 h-12 rounded-lg object-cover shrink-0" />
-            ) : (
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <Stethoscope className="w-6 h-6 text-primary" />
-              </div>
-            )}
+            <DoctorAvatar name={d.name} photoUrl={d.photo_url} className="w-12 h-12" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold truncate">{d.name}</p>
               <p className="text-xs text-primary truncate">{d.primary_specialty}</p>

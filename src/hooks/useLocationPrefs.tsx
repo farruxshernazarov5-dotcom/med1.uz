@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getPatientLocation } from "@/lib/patientGeolocation";
 
 export interface LocationPrefs {
   latitude: number | null;
@@ -57,20 +58,12 @@ export function useLocationPrefs() {
   }, [prefs]);
 
   const detect = useCallback(() => {
-    return new Promise<LocationPrefs>((resolve, reject) => {
-      if (!navigator.geolocation) return reject(new Error("Geolocation yo'q"));
-      setLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const next = { ...prefs, latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-          await save(next);
-          setLoading(false);
-          resolve(next);
-        },
-        (err) => { setLoading(false); reject(err); },
-        { timeout: 10000 }
-      );
-    });
+    setLoading(true);
+    return getPatientLocation().then(async position => {
+      const next = { ...prefs, ...position };
+      await save(next);
+      return next;
+    }).finally(() => setLoading(false));
   }, [prefs, save]);
 
   return { prefs, save, detect, loading };

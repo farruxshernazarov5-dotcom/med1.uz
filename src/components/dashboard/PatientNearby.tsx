@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { clinics as localClinics } from "@/data/clinics";
 import { externalClinics } from "@/data/clinicsExternal";
+import { getPatientLocation } from "@/lib/patientGeolocation";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 
 type ServiceType = "all" | "clinic" | "pharmacy" | "diagnostic" | "lab";
 
@@ -104,23 +106,8 @@ const PatientNearby = () => {
   const getLocation = () => {
     setLocating(true);
     setLocationError("");
-    if (!("geolocation" in navigator)) {
-      setLocationError("Qurilmangiz joylashuvni aniqlashni qo‘llamaydi");
-      setLocating(false);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocating(false);
-      },
-      () => {
-        setUserLocation(null);
-        setLocationError("Yaqin xizmatlarni ko‘rish uchun joylashuvga ruxsat bering");
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, maximumAge: 30000, timeout: 15000 }
-    );
+    void getPatientLocation().then(p => setUserLocation({ lat: p.latitude, lng: p.longitude }))
+      .catch(e => setLocationError(e.message)).finally(() => setLocating(false));
   };
 
   useEffect(() => { getLocation(); }, []);
@@ -211,7 +198,7 @@ const PatientNearby = () => {
         logo_url: o.logo_url || null,
         working_hours: null,
         source: "registered",
-        linkTo: `${ORG_LINK[o.org_type] || "/clinics"}/${o.id}`,
+        linkTo: o.org_type === "doctor" ? `/doctors?q=${encodeURIComponent(o.name)}` : `${ORG_LINK[o.org_type] || "/clinics"}/${o.id}`,
       });
     });
 
@@ -391,7 +378,7 @@ const PatientNearby = () => {
               className="block bg-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-4">
-                {c.logo_url ? (
+                {c.linkTo.startsWith("/doctors") ? <DoctorAvatar name={c.name} photoUrl={c.logo_url} className="w-12 h-12" /> : c.logo_url ? (
                   <img src={c.logo_url} alt="" className="w-12 h-12 rounded-xl object-cover shrink-0" />
                 ) : (
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">

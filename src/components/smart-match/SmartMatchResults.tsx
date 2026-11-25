@@ -1,4 +1,5 @@
 import { SmartMatchResult } from "@/hooks/useSmartMatch";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { Sparkles, MapPin, Star, Tag, AlertTriangle, ChevronRight, Stethoscope } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -127,7 +128,7 @@ export function SmartMatchResults({ result, onTrackClick, compact }: Props) {
                 onClick={() => onTrackClick?.(recommendation_id)}
                 className="flex items-center gap-3 bg-card border border-border hover:border-primary/40 rounded-xl p-2.5"
               >
-                {d.photo_url && <img src={d.photo_url} alt="" loading="lazy" className="w-10 h-10 rounded-full object-cover" />}
+                <DoctorAvatar name={d.full_name} photoUrl={d.photo_url} className="w-10 h-10" rounded="rounded-full" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold line-clamp-1">{d.full_name}</p>
                   <p className="text-xs text-muted-foreground line-clamp-1">{d.specialty}</p>

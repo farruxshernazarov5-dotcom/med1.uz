@@ -1,4 +1,5 @@
 import { signInDestination } from "@/lib/authDestination";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { useState, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -217,13 +218,7 @@ const DoctorRegistrationPage = () => {
             {step === 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  {form.photo_url ? (
-                    <img src={form.photo_url} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-border" />
-                  ) : (
-                    <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                  )}
+                  <DoctorAvatar name={form.full_name} photoUrl={form.photo_url} className="w-20 h-20 border-2 border-border" />
                   <div>
                     <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
                       {uploading ? "Yuklanmoqda..." : "Professional rasm yuklash"}

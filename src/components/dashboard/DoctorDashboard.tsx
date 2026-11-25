@@ -1,4 +1,5 @@
 import OrgGalleryManager from "@/components/media/OrgGalleryManager";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { Images } from "lucide-react";
 import MediaLinksManager from "@/components/media/MediaLinksManager";
 import { Share2 } from "lucide-react";
@@ -263,11 +264,7 @@ const DoctorDashboard = () => {
 
             {/* Photo */}
             <div className="flex items-center gap-4">
-              {form.photo_url ? (
-                <img src={form.photo_url} alt="" className="w-20 h-20 rounded-2xl object-cover border-2 border-border" />
-              ) : (
-                <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center"><Camera className="w-8 h-8 text-muted-foreground" /></div>
-              )}
+              <DoctorAvatar name={form.full_name} photoUrl={form.photo_url} className="w-20 h-20 border-2 border-border" />
               <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
                 {uploading ? "Yuklanmoqda..." : "Rasm o'zgartirish"}
               </Button>

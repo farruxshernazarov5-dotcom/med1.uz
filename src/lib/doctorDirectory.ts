@@ -55,6 +55,8 @@ export async function loadDirectoryDoctors(filters: DoctorFilters = {}): Promise
     if (error) throw error;
     return (data ?? []) as DirectoryDoctor[];
   });
+  const { default: sourceLocations } = await import("@/data/doctorLocationSources.json");
+  const locations: Record<string, { latitude: number; longitude: number; clinic_name: string; clinic_address: string }> = sourceLocations;
   const clinicIds = [...new Set(doctors.flatMap(d => d.clinic_id ? [d.clinic_id] : []))];
   const clinics = new Map<string, { name: string; address: string | null; latitude: number | null; longitude: number | null }>();
   for (let i = 0; i < clinicIds.length; i += 100) {
@@ -65,7 +67,8 @@ export async function loadDirectoryDoctors(filters: DoctorFilters = {}): Promise
   }
   return doctors.map(d => {
     const c = d.clinic_id ? clinics.get(d.clinic_id) : undefined;
-    return { ...d, ...(!hasCoordinates(d) && c && hasCoordinates(c) ? { latitude: c.latitude, longitude: c.longitude } : {}),
-      clinic_name: c?.name, clinic_address: c?.address };
+    const source = locations[d.id];
+    return { ...d, ...(!hasCoordinates(d) ? c && hasCoordinates(c) ? { latitude: c.latitude, longitude: c.longitude } : source ? { latitude: source.latitude, longitude: source.longitude } : {} : {}),
+      clinic_name: c?.name ?? source?.clinic_name, clinic_address: c?.address ?? source?.clinic_address };
   });
 }

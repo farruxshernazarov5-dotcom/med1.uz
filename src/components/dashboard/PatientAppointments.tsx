@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -114,13 +115,7 @@ const PatientAppointments = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Doctor photo */}
                 <div className="shrink-0">
-                  {a.doctors?.photo_url ? (
-                    <img src={a.doctors.photo_url} alt="" className="w-14 h-14 rounded-xl object-cover" />
-                  ) : (
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <User className="w-6 h-6 text-primary" />
-                    </div>
-                  )}
+                  <DoctorAvatar name={a.doctors?.full_name ?? "Shifokor"} photoUrl={a.doctors?.photo_url} className="w-14 h-14" />
                 </div>
 
                 {/* Details */}

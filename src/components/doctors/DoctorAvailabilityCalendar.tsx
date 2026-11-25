@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Loader2 } from "lucide-react";
 import { fetchDoctorCalendar, WEEKDAY_UZ, type DayAvailability } from "@/lib/doctorAvailability";
+import DoctorDatePicker from "./DoctorDatePicker";
 
 interface Props {
   doctorId: string;
@@ -14,10 +15,12 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
   const [days, setDays] = useState<DayAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(0);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let alive = true;
     setLoading(true);
+    setError(false);
     fetchDoctorCalendar(doctorId, 14)
       .then((d) => {
         if (!alive) return;
@@ -25,6 +28,7 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
         const first = d.findIndex((x) => x.freeCount > 0);
         setActive(first >= 0 ? first : 0);
       })
+      .catch(() => { if (alive) setError(true); })
       .finally(() => alive && setLoading(false));
     return () => {
       alive = false;
@@ -45,17 +49,18 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
           <div className="py-8 flex justify-center">
             <Loader2 className="w-5 h-5 animate-spin text-primary" />
           </div>
-        ) : (
+        ) : error ? <p role="alert" className="text-sm text-destructive">Qabul vaqtlari yuklanmadi. Sahifani qayta oching.</p> : (
           <>
+            <DoctorDatePicker value={day?.date ?? ""} dates={days.map(d => d.date)} onChange={date => setActive(days.findIndex(d => d.date === date))} />
             <div className="flex min-w-0 max-w-full gap-2 overflow-x-auto pb-1">
               {days.map((d, i) => {
                 const dt = new Date(`${d.date}T00:00:00`);
                 const isActive = i === active;
                 return (
-                  <button
+                  <Button variant="outline"
                     key={d.date}
                     onClick={() => setActive(i)}
-                    className={`shrink-0 w-16 rounded-xl border px-2 py-2 text-center transition ${
+                    className={`shrink-0 flex-col h-auto w-16 rounded-lg border px-2 py-2 text-center transition ${
                       isActive ? "border-primary bg-primary/10" : "hover:bg-muted/50"
                     } ${d.freeCount === 0 ? "opacity-50" : ""}`}
                   >
@@ -64,7 +69,7 @@ export default function DoctorAvailabilityCalendar({ doctorId, onPickSlot }: Pro
                     <p className="text-[10px] text-medical-green">
                       {d.closed ? "—" : `${d.freeCount} bo‘sh`}
                     </p>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import { useSearchParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -815,11 +816,7 @@ const DoctorCard = ({ doctor }: { doctor: any }) => (
     <CardContent className="p-4">
       <div className="flex gap-3">
         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
-          {doctor.photo_url ? (
-            <img src={doctor.photo_url} alt={doctor.full_name} className="w-full h-full object-cover" />
-          ) : (
-            <Stethoscope className="w-5 h-5 text-primary" />
-          )}
+          <DoctorAvatar name={doctor.full_name} photoUrl={doctor.photo_url} className="w-full h-full" rounded="rounded-full" />
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="text-sm font-semibold text-foreground line-clamp-1">{doctor.full_name}</h4>

@@ -1,4 +1,5 @@
 import DoctorAiTips from "@/components/doctors/DoctorAiTips";
+import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import DoctorQuickActions from "@/components/doctors/DoctorQuickActions";
 import PlatformDoctorRequestForm from "@/components/doctors/PlatformDoctorRequestForm";
 import CompareBar from "@/components/doctors/CompareBar";
@@ -157,17 +158,7 @@ const DoctorProfilePage = () => {
             {/* Header */}
             <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start gap-5">
-                {doctor.photo_url ? (
-                  <img
-                    src={doctor.photo_url}
-                    alt={doctor.full_name}
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border-4 border-card shadow-lg"
-                  />
-                ) : (
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-hero-gradient flex items-center justify-center shadow-lg">
-                    <Stethoscope className="w-12 h-12 text-primary-foreground" />
-                  </div>
-                )}
+                <DoctorAvatar name={doctor.full_name} photoUrl={doctor.photo_url} className="w-24 h-24 md:w-32 md:h-32 border-4 border-card shadow-lg" />
                 <div className="flex-1 min-w-0">
                   <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
                     {doctor.full_name}

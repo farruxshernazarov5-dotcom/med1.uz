@@ -10,6 +10,7 @@ import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DoctorDialogContent from "./DoctorDialogContent";
 import { CalendarClock, Loader2, XCircle, RefreshCw, BellRing, CreditCard } from "lucide-react";
 import { fetchDoctorCalendar, WEEKDAY_UZ, type DayAvailability } from "@/lib/doctorAvailability";
+import DoctorDatePicker from "./DoctorDatePicker";
 
 interface Props {
   doctorId: string;
@@ -62,6 +63,7 @@ export default function MyDoctorAppointments({ doctorId, doctorName }: Props) {
     setCalLoading(true);
     fetchDoctorCalendar(doctorId, 14)
       .then((d) => { setDays(d); setDayIdx(Math.max(0, d.findIndex((x) => x.freeCount > 0))); })
+      .catch(() => { setDays([]); toast({ title: "Qabul vaqtlari yuklanmadi", description: "Oynani qayta ochib urinib ko‘ring.", variant: "destructive" }); })
       .finally(() => setCalLoading(false));
   }, [reschedTarget, doctorId]);
 
@@ -194,6 +196,7 @@ export default function MyDoctorAppointments({ doctorId, doctorName }: Props) {
             <div className="py-8 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
           ) : (
             <div className="space-y-3">
+              <DoctorDatePicker value={days[dayIdx]?.date ?? ""} dates={days.map(d => d.date)} onChange={date => setDayIdx(days.findIndex(d => d.date === date))} />
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {days.map((d, i) => {
                   const dt = new Date(`${d.date}T00:00:00`);

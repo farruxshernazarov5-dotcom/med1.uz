@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { PatientLocation } from "@/lib/doctorDirectory";
+import { getPatientLocation } from "@/lib/patientGeolocation";
 
 /** Patient coordinates stay in memory; distance never uses a guessed city. */
 export function useDoctorLocation(enabled = true) {
@@ -7,14 +8,8 @@ export function useDoctorLocation(enabled = true) {
   const [error, setError] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
   const request = useCallback(() => {
-    if (!navigator.geolocation) { setError("Bu qurilmada joylashuv mavjud emas."); return; }
     setLocating(true); setError(null);
-    navigator.geolocation.getCurrentPosition(p => {
-      setPosition({ latitude: p.coords.latitude, longitude: p.coords.longitude }); setLocating(false);
-    }, e => {
-      setError(e.code === 1 ? "Joylashuvga ruxsat berilmadi. Telefon yoki brauzer sozlamasidan ruxsat bering." : "Joylashuv aniqlanmadi. Qayta urinib ko‘ring.");
-      setLocating(false);
-    }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 15000 });
+    void getPatientLocation().then(setPosition).catch(e => setError(e.message)).finally(() => setLocating(false));
   }, []);
   useEffect(() => {
     if (!enabled) return;

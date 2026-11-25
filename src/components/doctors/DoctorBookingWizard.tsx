@@ -1,5 +1,5 @@
 import DoctorDialogContent from "./DoctorDialogContent";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +15,8 @@ import { isNativeApp, openCheckout } from "@/lib/nativeApp";
 import { getClickMiniAppState, installClickMiniApp } from "@/lib/clickMiniApp";
 import { formatUzs } from "@/data/doctorServiceTemplates";
 import NasiyaSummary from "@/components/payments/NasiyaSummary";
+import DoctorDatePicker from "./DoctorDatePicker";
+import { fetchDoctorCalendar, type DayAvailability } from "@/lib/doctorAvailability";
 import {
   Calendar, Clock, CreditCard, CheckCircle2, Loader2, ChevronRight, ChevronLeft,
   Banknote, Smartphone, QrCode, Download,
@@ -38,6 +40,8 @@ interface Props {
   doctorSlug: string;
   services: BookableService[];
   initialService?: BookableService | null;
+  initialDate?: string;
+  initialTime?: string;
 }
 
 const PAY_METHODS = [
@@ -47,27 +51,7 @@ const PAY_METHODS = [
   { id: "uzum_nasiya", label: "Uzum Nasiya · 3 oy", icon: CreditCard, hint: "+13% · uch oylik muddatli to‘lov" },
 ];
 
-function nextDays(count = 14) {
-  const out: Date[] = [];
-  const d = new Date();
-  for (let i = 1; i <= count; i++) {
-    const x = new Date(d);
-    x.setDate(d.getDate() + i);
-    if (x.getDay() === 0) continue; // yakshanba dam
-    out.push(x);
-  }
-  return out;
-}
-
-const SLOTS = Array.from({ length: 18 }, (_, i) => {
-  const m = 9 * 60 + i * 30;
-  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
-});
-
-const iso = (d: Date) => d.toISOString().slice(0, 10);
-const WD = ["Yak", "Dush", "Sesh", "Chor", "Pay", "Jum", "Shan"];
-
-export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doctorName, doctorSlug, services, initialService }: Props) {
+export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doctorName, doctorSlug, services, initialService, initialDate = "", initialTime = "" }: Props) {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [service, setService] = useState<BookableService | null>(initialService ?? null);
@@ -96,17 +80,28 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     return () => { active = false; };
   }, [open, user]);
 
-  const days = useMemo(() => nextDays(), []);
+  const [calendarDays, setCalendarDays] = useState<DayAvailability[]>([]);
+  const [calendarLoading, setCalendarLoading] = useState(false);
+  const [calendarError, setCalendarError] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    let active = true; setCalendarLoading(true); setCalendarError(false);
+    void fetchDoctorCalendar(doctorId, 14).then(days => { if (active) setCalendarDays(days); })
+      .catch(() => { if (active) { setCalendarDays([]); setCalendarError(true); } })
+      .finally(() => { if (active) setCalendarLoading(false); });
+    return () => { active = false; };
+  }, [open, doctorId]);
+  const chosenDay = calendarDays.find(day => day.date === date);
 
   useEffect(() => {
     if (open) {
       setStep(1);
       setService(initialService ?? null);
       setBooking(null); setQr(""); setAgreed(false);
-      setDate(""); setTime("");
+      setDate(initialDate); setTime(initialTime);
       setPaymentId(null); setCheckoutUrl(""); setPayState("idle");
     }
-  }, [open, initialService]);
+  }, [open, initialService, initialDate, initialTime]);
 
   useEffect(() => {
     if (!user) return;
@@ -240,7 +235,8 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   };
 
 
-  const canNext = step === 1 ? !!service : step === 2 ? !!date && !!time : step === 3 ? !!name.trim() && !!phone : true;
+  const validTime = chosenDay?.slots.some(slot => slot.time === time && !slot.taken && !slot.past && !taken.includes(time));
+  const canNext = step === 1 ? !!service : step === 2 ? !calendarLoading && !calendarError && validTime : step === 3 ? !!name.trim() && !!phone : true;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -285,30 +281,20 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
           <div className="space-y-4">
             <div>
               <p className="text-xs font-semibold mb-2 flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> Sanani tanlang</p>
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                {days.map((d) => {
-                  const v = iso(d);
-                  return (
-                    <button key={v} onClick={() => { setDate(v); setTime(""); }}
-                      className={`shrink-0 w-14 py-2 rounded-xl border text-center ${date === v ? "border-primary bg-primary/10" : "hover:bg-muted/50"}`}>
-                      <p className="text-[10px] text-muted-foreground">{WD[d.getDay()]}</p>
-                      <p className="text-sm font-bold">{d.getDate()}</p>
-                    </button>
-                  );
-                })}
-              </div>
+              {calendarLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : calendarError ? <p role="alert" className="text-sm text-destructive">Qabul vaqtlari yuklanmadi. Oynani qayta oching.</p> : <DoctorDatePicker value={date} dates={calendarDays.filter(day => !day.closed).map(day => day.date)} onChange={value => { setDate(value); setTime(""); }} />}
             </div>
             {date && (
               <div>
                 <p className="text-xs font-semibold mb-2 flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Vaqtni tanlang</p>
                 <div className="grid grid-cols-3 min-[400px]:grid-cols-4 gap-2">
-                  {SLOTS.map((t) => {
-                    const busy = taken.includes(t);
+                  {chosenDay?.slots.map((slot) => {
+                    const t = slot.time;
+                    const busy = slot.taken || slot.past || taken.includes(t);
                     return (
-                      <button key={t} disabled={busy} onClick={() => setTime(t)}
+                      <Button variant="outline" key={t} disabled={busy} onClick={() => setTime(t)}
                         className={`min-h-11 py-2 rounded-lg border text-xs ${busy ? "opacity-40 line-through cursor-not-allowed" : time === t ? "border-primary bg-primary/10 font-bold" : "hover:bg-muted/50"}`}>
                         {t}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
