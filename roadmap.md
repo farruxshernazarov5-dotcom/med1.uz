@@ -1,7 +1,8 @@
 ## 2026-11-26 — Uzum Merchant API webhook
-- [ ] `/check`, `/create`, `/confirm`, `/reverse`, `/status` va Basic Auth; rasmiy xato kodlari, tiyin summasi, serviceId va order UUID validatsiyasi
-- [ ] Serverdagi yagona tranzaksiya holati, atomar tasdiqlash/qaytarish, bir martalik xizmat berish va mavjud to‘lov bildirishnomasi
-- [ ] TAS-IX proksi yo‘llari, maxfiy sozlamalar, unit/DB/edge sinovlari va hujjat
+- [x] `/check`, `/create`, `/confirm`, `/reverse`, `/status` va Basic Auth; rasmiy xato kodlari, tiyin summasi, serviceId va order UUID validatsiyasi
+- [x] Serverdagi yagona tranzaksiya holati, atomar tasdiqlash/qaytarish, 30 daqiqalik himoya, bir martalik xizmat berish va mavjud to‘lov bildirishnomasi
+- [x] TAS-IX proksi fayllari, maxfiy sozlamalar, 4 unit test, rollback DB sikli, Deno tipi, haqiqiy Basic Auth bilan 9 HTTP tekshiruv va hujjat
+- [ ] `pay.med1.uz/uzum/*` hali eski VDS konfiguratsiyasida 404; serverda `cd /root/med1-pay && sudo bash fix-payme-now.sh billing@med1.uz` bajarilgach tashqi URL va haqiqiy bank to‘lovini sinash
 
 ## 2026-11-26 — Har bir pullik to‘lovda rozilik
 - [x] Rasmdagi uch bandli SaaS HMS oynasini har bir to‘lovda qayta ochish; bekor qilish yoki saqlash xatosida to‘lovni boshlamaslik
