@@ -45,7 +45,7 @@ const VISIT_SOURCES: Source[] = [
       address: r.registered_clinics?.address, phone: r.registered_clinics?.phone, price: r.total_price,
     }),
   },
-  { table: "doctor_ext_appointments", label: "Shifokor", select: "id, appointment_date, appointment_time, status, notes, service_name, price", map: (r) => ({ title: "Shifokor qabuli", subtitle: r.service_name, price: r.price }) },
+  { table: "doctor_ext_appointments", label: "Shifokor", select: "id, appointment_date, appointment_time, status, notes, service_name, price, doctors_external(name, primary_specialty, registered_clinics(address, phone))", map: (r) => ({ title: r.doctors_external?.name ?? "Shifokor qabuli", subtitle: [r.doctors_external?.primary_specialty, r.service_name].filter(Boolean).join(" · "), address: r.doctors_external?.registered_clinics?.address, phone: r.doctors_external?.registered_clinics?.phone, price: r.price }) },
   { table: "diagnostics_appointments", label: "Diagnostika", select: "id, appointment_date, appointment_time, status, notes, service_name, staff_name", map: (r) => ({ title: "Diagnostika markazi", subtitle: [r.service_name, r.staff_name].filter(Boolean).join(" · ") || null }) },
   { table: "dental_appointments", label: "Stomatologiya", select: "id, appointment_date, appointment_time, status, notes, doctor_name", map: (r) => ({ title: "Stomatologiya", subtitle: r.doctor_name }) },
   { table: "cosmetology_appointments", label: "Kosmetologiya", select: "id, appointment_date, appointment_time, status, notes", map: () => ({ title: "Kosmetologiya" }) },

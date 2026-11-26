@@ -11,7 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
-import { isNativeApp, openCheckout } from "@/lib/nativeApp";
+import { isNativeApp, openCheckout, publicOrigin } from "@/lib/nativeApp";
+import CalendarEventButton from "./CalendarEventButton";
+import { appointmentCalendarEvent } from "@/lib/calendarEvent";
+import { nasiyaThreeMonthQuote } from "@/lib/nasiyaPricing";
 import { getClickMiniAppState, installClickMiniApp } from "@/lib/clickMiniApp";
 import { formatUzs } from "@/data/doctorServiceTemplates";
 import NasiyaSummary from "@/components/payments/NasiyaSummary";
@@ -48,7 +51,7 @@ const PAY_METHODS = [
   { id: "cash", label: "Klinikada naqd/karta", icon: Banknote, hint: "Qabul kuni to'lanadi" },
   { id: "click", label: "Click", icon: Smartphone, hint: "Onlayn to'lov havolasi yuboriladi" },
   { id: "payme", label: "Payme", icon: CreditCard, hint: "Onlayn to'lov havolasi yuboriladi" },
-  { id: "uzum_nasiya", label: "Uzum Nasiya · 3 oy", icon: CreditCard, hint: "+13% · uch oylik muddatli to‘lov" },
+  { id: "uzum_nasiya", label: "Uzum Nasiya · 3 oy", icon: CreditCard, hint: "Uch oylik muddatli to‘lov" },
 ];
 
 export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doctorName, doctorSlug, services, initialService, initialDate = "", initialTime = "" }: Props) {
@@ -160,7 +163,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
         amount: appointment.price,
         purpose: "doctor_appointment",
         reference_id: appointment.id,
-        return_url: `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`,
+        return_url: `${publicOrigin()}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`,
       }),
     });
     const json = await res.json();
@@ -226,7 +229,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
 
     const appointment: any = Array.isArray(data) ? data[0] : data;
     setBooking(appointment);
-    const url = `${window.location.origin}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`;
+    const url = `${publicOrigin()}/doctors/ext/${doctorSlug}?booking=${appointment.booking_code}`;
     setQr(await QRCode.toDataURL(url, { width: 320, margin: 1 }));
     setStep(5);
     toast({ title: "Qabul bron qilindi", description: `Kod: ${appointment.booking_code}` });
@@ -259,8 +262,8 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
         {step === 1 && (
           <div className="space-y-2">
             {services.map((s, i) => (
-              <button key={s.id ?? i} onClick={() => setService(s)}
-                className={`w-full text-left p-3 rounded-xl border transition ${service?.name === s.name ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+              <Button variant="outline" key={s.id ?? i} onClick={() => setService(s)}
+                className={`block h-auto w-full whitespace-normal text-left p-3 rounded-lg border transition ${service?.name === s.name ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold">{s.name}</p>
@@ -272,7 +275,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
                   </div>
                   <span className="text-sm font-bold text-primary whitespace-nowrap">{formatUzs(s.price)}</span>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -322,11 +325,11 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
 
         {step === 4 && service && (
           <div className="space-y-3">
-            <div className="p-3 rounded-xl bg-muted/40 text-sm space-y-1">
+            <div className="p-3 rounded-lg bg-muted/40 text-sm space-y-2 [&>div]:grid [&>div]:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] [&>div]:gap-3 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
               <div className="flex justify-between"><span className="text-muted-foreground">Xizmat</span><span className="font-medium">{service.name}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Sana</span><span className="font-medium">{date} {time}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Bemor</span><span className="font-medium">{name}</span></div>
-              <div className="flex justify-between border-t pt-1 mt-1"><span className="text-muted-foreground">Jami</span><span className="font-bold text-primary">{formatUzs(service.price)}</span></div>
+              <div className="flex justify-between border-t pt-1 mt-1"><span className="text-muted-foreground">{pay === "uzum_nasiya" ? "Nasiya jami" : "Jami"}</span><span className="font-bold text-primary">{formatUzs(pay === "uzum_nasiya" ? nasiyaThreeMonthQuote(service.price).total : service.price)}</span></div>
             </div>
             <div className="space-y-2">
               {PAY_METHODS.map((m) => (
@@ -340,14 +343,15 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
                 </Button>
               ))}
             </div>
-            <NasiyaSummary amount={service.price} />
-            <label className="flex items-start gap-2 text-xs text-muted-foreground">
-              <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(!!v)} className="mt-0.5" />
+            {pay === "uzum_nasiya" && <NasiyaSummary amount={service.price} />}
+            <div className="flex items-start gap-3 border-t border-border py-4 text-sm text-muted-foreground">
+              <Checkbox id="booking-agreement" checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} className="mt-0.5 h-5 w-5 shrink-0" />
               <span>
+                <label htmlFor="booking-agreement" className="cursor-pointer">Shartlarni qabul qilaman: </label>
                 <Link to="/terms" target="_blank" className="text-primary underline">Foydalanish shartlari</Link>,{" "}
                 <Link to="/privacy" target="_blank" className="text-primary underline">maxfiylik siyosati</Link> va to'lov shartlarini qabul qilaman.
               </span>
-            </label>
+            </div>
           </div>
         )}
 
@@ -361,6 +365,8 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
             {qr && <img src={qr} alt={`Bron kodi ${booking.booking_code}`} className="w-44 h-44 mx-auto rounded-xl border bg-white p-2" />}
             <p className="text-sm font-mono font-bold tracking-widest">{booking.booking_code}</p>
             <div className="text-xs text-muted-foreground">{booking.service_name} · {booking.appointment_date} {String(booking.appointment_time).slice(0, 5)}</div>
+            <CalendarEventButton event={() => appointmentCalendarEvent({ id: booking.id, source: "doctor_ext_appointments", date: booking.appointment_date, time: booking.appointment_time, title: doctorName, subtitle: booking.service_name, duration: booking.duration_minutes })} />
+            <Button asChild variant="link"><Link to={`/doctors/ext/${doctorSlug}?booking=${booking.booking_code}`} onClick={() => onOpenChange(false)}>Qabul va to‘lov ma’lumotlari</Link></Button>
 
             {pay !== "cash" && (
               <div className={`p-3 rounded-xl border text-sm ${
@@ -397,7 +403,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
         )}
 
         {step < 5 && (
-          <div className="sticky bottom-16 lg:bottom-0 flex justify-between gap-2 border-t bg-background py-3 sm:static [&>button]:min-h-11 [&>button:last-child]:flex-1">
+          <div className="relative flex justify-between gap-2 border-t bg-background py-3 [&>button]:min-h-11 [&>button:last-child]:flex-1">
             <Button variant="ghost" size="sm" disabled={step === 1} onClick={() => setStep((s) => s - 1)} className="gap-1">
               <ChevronLeft className="w-4 h-4" /> Orqaga
             </Button>

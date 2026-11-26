@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { isNativeApp } from "@/lib/nativeApp";
+import CalendarEventButton from "@/components/doctors/CalendarEventButton";
+import { reminderCalendarEvent } from "@/lib/calendarEvent";
 import {
   biometricAvailable, cancelReminder, ensureNotificationPermission, isBiometricLockEnabled, isLabAlertsEnabled,
   listReminders, scheduleMedication, snoozeReminder, scheduleTestReminder, ensureExactAlarms, setBiometricLockEnabled, setLabAlertsEnabled, syncAppointmentReminders,
@@ -169,6 +171,7 @@ export const NativeHealthSettings = () => {
           {reminders.filter(r => filter === "all" || r.kind === filter).map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-2 rounded-lg border border-border p-2 text-sm">
               <div className="min-w-0 flex-1"><p className="break-words font-medium">{r.title}</p><p className="text-xs text-muted-foreground break-words">{r.body}</p><p className="text-xs text-primary">{r.time ? `Har kuni ${r.time}` : r.at ? new Date(r.at).toLocaleString("uz-UZ") : ""}</p></div>
+              {(r.time || r.at) && <CalendarEventButton compact event={() => reminderCalendarEvent(r)} />}
               <Button size="icon" variant="ghost" className="shrink-0" title="10 daqiqadan keyin eslatish" aria-label="10 daqiqadan keyin eslatish" onClick={async () => { try { await snoozeReminder(r); await refresh(); toast({ title: "10 daqiqadan keyin eslatiladi" }); } catch { toast({ title: "Eslatma surilmadi", variant: "destructive" }); } }}><Clock className="h-4 w-4" /></Button>
               <Button size="icon" variant="ghost" className="shrink-0" aria-label="Eslatmani o‘chirish" onClick={async () => { try { await cancelReminder(r.id); await refresh(); } catch { toast({ title: "Eslatma o‘chirilmadi", variant: "destructive" }); } }}><Trash2 className="h-4 w-4" /></Button>
             </div>

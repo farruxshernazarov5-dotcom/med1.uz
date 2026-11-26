@@ -1,3 +1,13 @@
+## 2026-11-26 — Telefon kalendari, Jitsi va bron QR
+- [x] Telefon kalendariga qabul va eslatmalarni foydalanuvchi tasdig‘i bilan qo‘shish; umumiy .ics/native editor, tashqi shifokor va klinika bronlari, Qabullarim va eslatmalar
+- [x] Video uchrashuvlarni Jitsi ilovasida ochish, ilova yo‘q bo‘lsa brauzer; qo‘ng‘iroq davomiyligi uydirilmaydi
+- [x] Mobil xavfsizlik rasmlari va MED ALL ochilish yozuvini tiklash; olti HTTPS rasm dekodlandi
+- [x] To‘lov roziligini tugmadan oldinga joylash; +13% hisobni saqlab faqat yakuniy narx/oyliklarni ko‘rsatish
+- [x] QR orqali hisob ruxsatlari bilan qabul, shifokor va to‘lov ma’lumotlarini ochish; native localhost o‘rniga kanonik HTTPS
+- [x] 17 test, build OK; hisobga kirib 27-noyabr 09:00 → to‘lov oynasi, roziliksiz tasdiqlash bloklanishi va belgilaganda ochilishi; brauzerda .ics yuklandi; noma’lum bron QR hisobda rad etildi
+- [ ] Telefon kalendarida Saqlash, o‘rnatilgan Jitsi bilan ikki tomonlama uchrashuv va APK rasmlari — yangilangan APK va haqiqiy qurilma kerak, mahalliy kodni yangilab npx cap sync bajaring
+- [ ] Haqiqiy bron QR orqali qabul/to‘lov ma’lumotlarini o‘qish — sinov hisobida qabul yo‘q; pullik yoki sun’iy bron yaratilmagan
+
 ## 2026-11-25 — Shifokor fotosuratlari, mobil kalendar va xarita
 - [x] Fotosuratlar uchun umumiy asl manba/fallback: katalog, profil, xarita, klinika, AI tavsiya, taqqoslash, qabul va tahrirlash; o‘chgan asl surat o‘rniga ism belgisi
 - [x] Mobil kalendar, mahalliy sana, tanlangan vaqtni qabul oynasiga uzatish, jadvalga mos slotlar va yuklanish xatosini ko‘rsatish

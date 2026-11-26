@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import DoctorAvatar from "@/components/doctors/DoctorAvatar";
+import CalendarEventButton from "@/components/doctors/CalendarEventButton";
+import { appointmentCalendarEvent } from "@/lib/calendarEvent";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigate, Link } from "react-router-dom";
@@ -223,6 +225,7 @@ const BookingPage = () => {
           <p className="text-foreground font-semibold">{form.date} — {form.time}</p>
           {totalPrice > 0 && <p className="text-primary text-xl font-bold mt-2">{totalPrice.toLocaleString()} so'm</p>}
           <p className="text-sm text-muted-foreground mt-4 mb-6">Klinika qabulingizni tez orada tasdiqlaydi</p>
+          <div className="mb-4"><CalendarEventButton event={() => appointmentCalendarEvent({ id: "clinic-booking", source: "appointments", date: form.date, time: form.time, title: selectedDoctor?.full_name || selectedClinic?.name || "Klinika qabuli", subtitle: selectedService?.name || "Konsultatsiya", address: selectedClinic?.address, duration: selectedService?.duration_minutes })} /></div>
           <div className="flex gap-3 justify-center">
             <Button asChild variant="outline"><Link to="/dashboard">Panelga o'tish</Link></Button>
             <Button onClick={() => { setSuccess(false); setStep(1); setForm({ clinic_id: "", doctor_id: "", service_id: "", date: "", time: "", patient_name: profile?.full_name || "", patient_phone: profile?.phone || "", notes: "" }); }} className="bg-hero-gradient text-primary-foreground border-0">Yana yozilish</Button>

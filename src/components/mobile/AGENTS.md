@@ -12,3 +12,4 @@
 - The Med ALL Business edge tab (`BusinessEdgeTab`) is the single global entry to the 10 roles and the classifieds board on web and app, reusing `RoleGrid`/`RoleStoryDialog`.
 - Native back and the restored last screen go through `goBackSafe` and a once-per-launch restore, so Home and back never bounce to a saved screen.
 - The animated launch screen (LaunchSplash) renders at the app root; it plays on every native launch and once per web session, and skips /click, so it never blocks partner entries.
+- Hosted safety image pointers resolve through assetUrl in bundled native apps, because the device's localhost does not serve Lovable CDN paths.

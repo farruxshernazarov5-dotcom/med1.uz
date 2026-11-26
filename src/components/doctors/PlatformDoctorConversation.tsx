@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Eye, ShieldCheck, Loader2, Video } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { isNativeApp } from "@/lib/nativeApp";
+import { openJitsiMeeting } from "@/lib/jitsiMeeting";
 
 export type ConversationRequest = {id:string; patient_name:string; message:string; reply:string|null; meeting_url:string|null; status:string; request_type:string};
 type Message = {id:string; sender_id:string; content:string; is_hidden:boolean};
@@ -48,7 +48,7 @@ export default function PlatformDoctorConversation({request, doctorSide=false, o
   const safeRoom=(()=>{try{const url=new URL(request.meeting_url ?? "");return url.protocol==="https:"&&url.hostname==="meet.jit.si"?url.href:null;}catch{return null;}})();
   const openRoom=async()=>{
     if(!safeRoom)return;
-    try { if(isNativeApp()){const {Browser}=await import("@capacitor/browser");await Browser.open({url:safeRoom});}else window.open(safeRoom,"_blank","noopener,noreferrer"); }
+    try { await openJitsiMeeting(safeRoom); }
     catch {toast({title:"Konferensiya ochilmadi",variant:"destructive"});}
   };
   const bubble=(id:string,content:string,hidden:boolean,mine:boolean)=> <div key={id} className={`max-w-[90%] break-words rounded-lg p-3 text-sm ${mine?"ml-auto bg-primary text-primary-foreground":"mr-auto bg-muted text-foreground"}`}>

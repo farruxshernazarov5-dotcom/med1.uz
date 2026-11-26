@@ -59,6 +59,11 @@ if (!xml.includes('android:host="app-auth"')) {
 }
 
 // Single task keeps one app window when the browser hands the sign-in back.
+// Android package visibility lets AppLauncher detect Jitsi without launching an app store.
+if (!xml.includes('<package android:name="org.jitsi.meet"')) {
+  if (xml.includes("<queries>")) xml = xml.replace("<queries>", '<queries>\n        <package android:name="org.jitsi.meet" />');
+  else xml = xml.replace("<application", '<queries><package android:name="org.jitsi.meet" /></queries>\n    <application');
+}
 xml = xml.replace(/android:launchMode="[^"]*"/, 'android:launchMode="singleTask"');
 
 writeFileSync(file, xml);

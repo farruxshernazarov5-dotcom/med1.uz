@@ -1,12 +1,13 @@
 import DoctorDialogContent from "./DoctorDialogContent";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Video, PhoneOff, Wifi, WifiOff, Timer, Copy } from "lucide-react";
+import { Loader2, Video, PhoneOff, Wifi, WifiOff, Copy } from "lucide-react";
+import { openJitsiMeeting } from "@/lib/jitsiMeeting";
 
 interface Props {
   open: boolean;
@@ -17,28 +18,23 @@ interface Props {
   scheduledAt?: string | null;
 }
 
-type ConnState = "idle" | "creating" | "waiting" | "connecting" | "active" | "ended" | "error";
+type ConnState = "idle" | "creating" | "waiting" | "connecting" | "opened" | "ended" | "error";
 
 const STATE_META: Record<ConnState, { label: string; cls: string }> = {
   idle: { label: "Tayyor", cls: "bg-muted text-muted-foreground" },
   creating: { label: "Xona yaratilmoqda...", cls: "bg-primary/10 text-primary border-primary/20" },
   waiting: { label: "Shifokor kutilmoqda", cls: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" },
   connecting: { label: "Ulanmoqda...", cls: "bg-primary/10 text-primary border-primary/20" },
-  active: { label: "Ulanish faol", cls: "bg-medical-green/10 text-medical-green border-medical-green/20" },
+  opened: { label: "Jitsi ochildi", cls: "bg-primary/10 text-primary border-primary/20" },
   ended: { label: "Yakunlandi", cls: "bg-muted text-muted-foreground" },
   error: { label: "Ulanish xatosi", cls: "bg-destructive/10 text-destructive border-destructive/20" },
 };
-
-const fmt = (s: number) =>
-  `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
 export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorName, appointmentId, scheduledAt }: Props) {
   const { user } = useAuth();
   const [state, setState] = useState<ConnState>("idle");
   const [room, setRoom] = useState<any>(null);
-  const [seconds, setSeconds] = useState(0);
   const [online, setOnline] = useState(navigator.onLine);
-  const startedRef = useRef<number | null>(null);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -47,14 +43,6 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
     window.addEventListener("offline", off);
     return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
   }, []);
-
-  useEffect(() => {
-    if (state !== "active") return;
-    const t = setInterval(() => {
-      if (startedRef.current) setSeconds(Math.floor((Date.now() - startedRef.current) / 1000));
-    }, 1000);
-    return () => clearInterval(t);
-  }, [state]);
 
   const createRoom = useCallback(async () => {
     if (!user) { toast({ title: "Tizimga kirish talab qilinadi", variant: "destructive" }); return; }
@@ -95,33 +83,34 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
   }, [user, doctorId, appointmentId, scheduledAt]);
 
   useEffect(() => {
-    if (open) { setState("idle"); setRoom(null); setSeconds(0); startedRef.current = null; }
+    if (open) { setState("idle"); setRoom(null); }
   }, [open]);
 
   const join = async () => {
     if (!room) return;
     setState("connecting");
-    startedRef.current = Date.now();
-    await supabase.from("doctor_video_rooms")
-      .update({ status: "active", started_at: new Date().toISOString() })
-      .eq("id", room.id);
-    setTimeout(() => setState("active"), 1200);
+    try {
+      await openJitsiMeeting(`https://meet.jit.si/${room.room_code}`);
+      setState("opened");
+    } catch (e) {
+      setState("waiting");
+      toast({ title: "Jitsi ochilmadi", description: e instanceof Error ? e.message : "Qayta urinib ko‘ring", variant: "destructive" });
+    }
   };
 
   const end = async () => {
     if (room) {
       await supabase.from("doctor_video_rooms")
-        .update({ status: "ended", ended_at: new Date().toISOString(), duration_seconds: seconds })
+        .update({ status: "ended", ended_at: new Date().toISOString() })
         .eq("id", room.id);
     }
     setState("ended");
   };
 
-  const jitsiUrl = room ? `https://meet.jit.si/${room.room_code}#userInfo.displayName="Bemor"&config.prejoinPageEnabled=false` : "";
   const meta = STATE_META[state];
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v && state === "active") end(); onOpenChange(v); }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DoctorDialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto max-sm:block max-sm:space-y-4">
         <DialogHeader>
           <DialogTitle className="text-base flex items-center gap-2">
@@ -135,9 +124,6 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
             {online ? <Wifi className="w-3 h-3 text-medical-green" /> : <WifiOff className="w-3 h-3 text-destructive" />}
             {online ? "Internet bor" : "Internet yo'q"}
           </Badge>
-          {(state === "active" || state === "ended") && (
-            <Badge variant="outline" className="gap-1 font-mono"><Timer className="w-3 h-3" /> {fmt(seconds)}</Badge>
-          )}
         </div>
 
         {state === "idle" && (
@@ -153,7 +139,7 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
           <div className="py-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
         )}
 
-        {room && (state === "waiting" || state === "connecting" || state === "active") && (
+        {room && (state === "waiting" || state === "connecting" || state === "opened") && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 p-2.5 rounded-xl bg-muted/40 text-xs">
               <span className="font-mono truncate flex-1">{room.room_code}</span>
@@ -163,28 +149,16 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
               </Button>
             </div>
 
-            {state === "active" ? (
-              <div className="aspect-video rounded-xl overflow-hidden border bg-black">
-                <iframe
-                  title="Video konsultatsiya"
-                  src={jitsiUrl}
-                  allow="camera; microphone; fullscreen; display-capture; autoplay"
-                  className="w-full h-full"
-                />
-              </div>
-            ) : (
               <div className="aspect-video rounded-xl border flex flex-col items-center justify-center gap-2 bg-muted/30">
                 <Loader2 className={`w-6 h-6 text-primary ${state === "connecting" ? "animate-spin" : ""}`} />
                 <p className="text-sm text-muted-foreground">
-                  {state === "connecting" ? "Video ulanmoqda..." : "Xona tayyor — qo'shilishingiz mumkin"}
+                  {state === "connecting" ? "Jitsi ochilmoqda..." : state === "opened" ? "Uchrashuv Jitsi’da davom etadi" : "Xona tayyor — qo'shilishingiz mumkin"}
                 </p>
               </div>
-            )}
 
-            <div className="flex gap-2">
-              {state !== "active" ? (
-                <Button onClick={join} disabled={!online} className="flex-1 gap-2"><Video className="w-4 h-4" /> Qo'shilish</Button>
-              ) : (
+            <div className="flex flex-wrap gap-2">
+                <Button onClick={join} disabled={!online || state === "connecting"} className="flex-1 gap-2"><Video className="w-4 h-4" /> Jitsi’da ochish</Button>
+              {state === "opened" && (
                 <Button variant="destructive" onClick={end} className="flex-1 gap-2"><PhoneOff className="w-4 h-4" /> Yakunlash</Button>
               )}
             </div>
@@ -194,7 +168,6 @@ export default function VideoConsultRoom({ open, onOpenChange, doctorId, doctorN
         {state === "ended" && (
           <div className="text-center space-y-2 py-4">
             <p className="font-semibold">Konsultatsiya yakunlandi</p>
-            <p className="text-sm text-muted-foreground">Davomiyligi: {fmt(seconds)}</p>
             <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>Yopish</Button>
           </div>
         )}

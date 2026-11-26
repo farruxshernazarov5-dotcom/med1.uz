@@ -11,6 +11,8 @@ import DoctorDialogContent from "./DoctorDialogContent";
 import { CalendarClock, Loader2, XCircle, RefreshCw, BellRing, CreditCard } from "lucide-react";
 import { fetchDoctorCalendar, WEEKDAY_UZ, type DayAvailability } from "@/lib/doctorAvailability";
 import DoctorDatePicker from "./DoctorDatePicker";
+import CalendarEventButton from "./CalendarEventButton";
+import { appointmentCalendarEvent } from "@/lib/calendarEvent";
 
 interface Props {
   doctorId: string;
@@ -155,7 +157,8 @@ export default function MyDoctorAppointments({ doctorId, doctorName }: Props) {
                 )}
 
                 {active && (
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <CalendarEventButton compact event={() => appointmentCalendarEvent({ id: r.id, source: "doctor_ext_appointments", title: doctorName ?? "Shifokor qabuli", subtitle: r.service_name, date: r.appointment_date, time: r.appointment_time, duration: r.duration_minutes })} />
                     <Button size="sm" variant="outline" className="gap-1.5 h-8 text-xs"
                       disabled={busy === r.id || r.reschedule_count >= 3}
                       onClick={() => setReschedTarget(r)}>

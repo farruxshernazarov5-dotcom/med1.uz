@@ -15,6 +15,13 @@ import {
   PhoneOff, Mic, MicOff, VideoOff, Activity, Users, TrendingUp, AlertCircle, Trash2, Edit3, Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { openJitsiMeeting } from "@/lib/jitsiMeeting";
+import CalendarEventButton from "@/components/doctors/CalendarEventButton";
+
+const openVideo = async (url: string) => {
+  try { await openJitsiMeeting(url); }
+  catch (e) { toast({ title: "Jitsi ochilmadi", description: e instanceof Error ? e.message : "Qayta urinib ko‘ring", variant: "destructive" }); }
+};
 
 const STATUS_INFO: Record<string, { label: string; color: string; icon: any }> = {
   scheduled: { label: "Rejalashtirilgan", color: "bg-blue-500/10 text-blue-600 border-blue-500/30", icon: Calendar },
@@ -133,6 +140,8 @@ const DocTelemed = ({ doctorId }: Props) => {
   };
 
   const startCall = async (session: any) => {
+    try { await openJitsiMeeting(session.meeting_url); }
+    catch (e) { toast({ title: "Jitsi ochilmadi", description: e instanceof Error ? e.message : "Qayta urinib ko‘ring", variant: "destructive" }); return; }
     const { error } = await supabase.from("doctor_telemed_sessions" as any).update({
       status: "active", started_at: new Date().toISOString()
     } as any).eq("id", session.id);
@@ -389,6 +398,7 @@ const DocTelemed = ({ doctorId }: Props) => {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1.5 mt-3 pt-2 border-t border-border">
+                  {(canStart || isActive) && <CalendarEventButton compact event={() => ({ title: `Med ALL · ${s.patient_name}`, description: "Video konsultatsiya", startDate: sched.getTime(), endDate: sched.getTime() + Number(s.duration_minutes || 30) * 60_000, url: s.meeting_url, alerts: [-1440, -60], skipPrompt: true, icsFileName: `medall-video-${s.id}.ics` })} />}
                   {canStart && (
                     <Button size="sm" className="h-7 text-[10px] bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 flex-1"
                       onClick={() => startCall(s)}>
@@ -397,7 +407,7 @@ const DocTelemed = ({ doctorId }: Props) => {
                   )}
                   {isActive && (
                     <Button size="sm" className="h-7 text-[10px] bg-gradient-to-r from-red-500 to-orange-500 text-white border-0 flex-1 animate-pulse"
-                      onClick={() => { setActiveCall(s); setCallDuration(0); callTimerRef.current = setInterval(() => setCallDuration(d => d + 1), 1000); }}>
+                      onClick={() => { void openVideo(s.meeting_url); setActiveCall(s); setCallDuration(0); callTimerRef.current = setInterval(() => setCallDuration(d => d + 1), 1000); }}>
                       <Activity className="w-3.5 h-3.5 mr-1" /> Davom ettirish
                     </Button>
                   )}
@@ -406,7 +416,7 @@ const DocTelemed = ({ doctorId }: Props) => {
                       <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={() => copyLink(s.meeting_url)}>
                         <Copy className="w-3 h-3 mr-1" /> Havola
                       </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={() => window.open(s.meeting_url, "_blank")}>
+                      <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={() => void openVideo(s.meeting_url)}>
                         <ExternalLink className="w-3 h-3" />
                       </Button>
                     </>
@@ -465,21 +475,11 @@ const DocTelemed = ({ doctorId }: Props) => {
 
               {/* Video frame */}
               <div className="aspect-video bg-slate-950 relative">
-                <iframe
-                  src={`${activeCall.meeting_url}#userInfo.displayName=Doctor`}
-                  className="w-full h-full"
-                  allow="camera; microphone; fullscreen; display-capture; autoplay"
-                />
+                <div className="flex h-full items-center justify-center"><Button onClick={() => void openVideo(activeCall.meeting_url)}><Video className="h-4 w-4" />Jitsi’da uchrashuvni ochish</Button></div>
               </div>
 
               {/* Controls */}
               <div className="flex items-center justify-center gap-3 p-4 bg-slate-800 border-t border-slate-700">
-                <Button size="sm" variant="outline" className="h-10 w-10 p-0 rounded-full bg-slate-700 border-slate-600 text-white hover:bg-slate-600">
-                  <Mic className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="outline" className="h-10 w-10 p-0 rounded-full bg-slate-700 border-slate-600 text-white hover:bg-slate-600">
-                  <Video className="w-4 h-4" />
-                </Button>
                 <Button size="sm" onClick={endCall} className="h-12 px-6 rounded-full bg-red-600 hover:bg-red-700 text-white border-0 gap-2">
                   <PhoneOff className="w-5 h-5" /> Tugatish
                 </Button>
@@ -488,7 +488,7 @@ const DocTelemed = ({ doctorId }: Props) => {
                   <Copy className="w-4 h-4" />
                 </Button>
                 <Button size="sm" variant="outline" className="h-10 w-10 p-0 rounded-full bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-                  onClick={() => window.open(activeCall.meeting_url, "_blank")}>
+                  onClick={() => void openVideo(activeCall.meeting_url)}>
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>

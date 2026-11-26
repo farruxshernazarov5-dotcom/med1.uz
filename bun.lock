@@ -10,6 +10,7 @@
         "@capacitor-community/text-to-speech": "^8.0.2",
         "@capacitor/android": "^8.6.0",
         "@capacitor/app": "^8.1.2",
+        "@capacitor/app-launcher": "8",
         "@capacitor/browser": "^8.0.5",
         "@capacitor/camera": "^8",
         "@capacitor/core": "^8.6.0",
@@ -25,6 +26,7 @@
         "@capgo/capacitor-health": "^8.11.13",
         "@capgo/capacitor-native-biometric": "^8.9.1",
         "@capgo/capacitor-social-login": "^8.7.5",
+        "@ebarooni/capacitor-calendar": "8.12.0",
         "@hookform/resolvers": "^3.10.0",
         "@lovable.dev/cloud-auth-js": "^1.2.1",
         "@lovable.dev/mcp-js": "^3.4.0",
@@ -174,6 +176,8 @@
 
     "@capacitor/app": ["@capacitor/app@8.1.2", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-uKBlsrXH0IdvUn69e/KKYbZ32A06pcrUdG8LWuZ/6y33YMXZXLEEdNSwl+jKS/SrsTWqnePs8EqSWaiQM3mUGA=="],
 
+    "@capacitor/app-launcher": ["@capacitor/app-launcher@8.0.1", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-23D8zi74sn7kxvISix8qYwgqdxGJN+4NImcNGvHen98LB1zb4eZfkJvFvp7pwntxGw4OjIE7yuf4wbzZxQHpog=="],
+
     "@capacitor/browser": ["@capacitor/browser@8.0.5", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-qqcEjUqs9kG1naF+tsD8rERuZ3wuIfXzvoIJEERHI4RNWwNSUqAHHduaKhkyb+t01VyVPa0ydx0mZ/eOskk2Ug=="],
 
     "@capacitor/camera": ["@capacitor/camera@8.2.6", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-jzvrMrEKs5ACw1/HmcgN5XwSlXYF+/xRKzWtBUESQs5ePf3tTfnR8Nk/p+aSEgay8yZEI0aZQ+2/1xDwMCdV2w=="],
@@ -211,6 +215,8 @@
     "@chevrotain/types": ["@chevrotain/types@11.1.2", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@chevrotain/types/-/types-11.1.2.tgz", {}, "sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw=="],
 
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.10.2", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@drizzle-team/brocli/-/brocli-0.10.2.tgz", {}, "sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w=="],
+
+    "@ebarooni/capacitor-calendar": ["@ebarooni/capacitor-calendar@8.12.0", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-LmZyCi2Byf8O2HD+sBPWMTygmGyysW9b5GDfTs4kKU1dZ3SgTWcBFnpTTYk83LIva4nco4meo1V9V5px9pgBiA=="],
 
     "@esbuild-kit/core-utils": ["@esbuild-kit/core-utils@3.3.2", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@esbuild-kit/core-utils/-/core-utils-3.3.2.tgz", { "dependencies": { "esbuild": "~0.18.20", "source-map-support": "^0.5.21" } }, "sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ=="],
 

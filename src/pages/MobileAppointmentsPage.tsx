@@ -22,6 +22,8 @@ import { NotificationsFeed } from "@/components/mobile/NotificationsFeed";
 import { subscribeFeed } from "@/lib/notificationsFeed";
 import { cn } from "@/lib/utils";
 import { signInDestination } from "@/lib/authDestination";
+import CalendarEventButton from "@/components/doctors/CalendarEventButton";
+import { appointmentCalendarEvent } from "@/lib/calendarEvent";
 import f1 from "@/assets/mobile-service-stories/doctors-2.webp";
 import f2 from "@/assets/mobile-service-stories/diagnostics-3.webp";
 import f3 from "@/assets/mobile-service-stories/ai-report-analysis-2.webp";
@@ -362,6 +364,7 @@ const MobileAppointmentsPage = ({ click = false }: { click?: boolean }) => {
                 {visit.notes && <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">{visit.notes}</p>}
               </div>
               <div className="grid gap-2 pt-2">
+                {isVisitOpen(visit) && <CalendarEventButton event={() => appointmentCalendarEvent(visit)} />}
                 {isVisitOpen(visit) && <Button variant="outline" onClick={() => { setVisit(null); setPanel("reminders"); }}><Bell /> Eslatmani sozlash</Button>}
                 {visit.cancellable && <Button variant="outline" className="border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => void cancelVisit(visit)}><XCircle /> Qabulni bekor qilish</Button>}
                 <Button asChild><Link to="/doctors" onClick={() => setVisit(null)}><CalendarPlus /> Yangi qabulga yozilish</Link></Button>

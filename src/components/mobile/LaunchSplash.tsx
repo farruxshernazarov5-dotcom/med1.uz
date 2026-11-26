@@ -61,12 +61,12 @@ export default function LaunchSplash() {
         <path d="M0 30 H80 L95 30 L105 8 L118 52 L130 18 L140 30 H200 L210 22 L220 30 H300" />
       </svg>
 
-      <h1 className="mt-3 flex gap-1 text-3xl font-extrabold tracking-[0.25em] splash-word">
+      <h1 className="mt-3 flex items-center justify-center gap-2 font-heading text-4xl font-extrabold splash-word">
         {word.split("").map((c, i) => (
           <span key={i} style={{ animationDelay: `${1.1 + i * 0.07}s` }}>{c === " " ? "\u00A0" : c}</span>
         ))}
       </h1>
-      <p className="mt-2 text-xs tracking-[0.35em] uppercase splash-tag">Sog‘ligingiz — AI himoyasida</p>
+      <p className="mt-3 px-4 text-center text-xs uppercase splash-tag">Sog‘ligingiz — AI himoyasida</p>
       <div className="splash-bar mt-8"><i /></div>
     </div>
   );

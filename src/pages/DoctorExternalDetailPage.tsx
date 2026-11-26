@@ -25,6 +25,7 @@ import DoctorVerifiedReviews from "@/components/doctors/DoctorVerifiedReviews";
 import DoctorBookingWizard from "@/components/doctors/DoctorBookingWizard";
 import DoctorAvailabilityCalendar from "@/components/doctors/DoctorAvailabilityCalendar";
 import MyDoctorAppointments from "@/components/doctors/MyDoctorAppointments";
+import BookingDetailsDialog from "@/components/doctors/BookingDetailsDialog";
 
 import { getServiceTemplates } from "@/data/doctorServiceTemplates";
 
@@ -39,7 +40,7 @@ interface Doctor {
 
 const DoctorExternalDetailPage = () => {
   const { slug } = useParams();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const [focusLocation, setFocusLocation] = useState<PatientLocation | null>(null);
   const [pickedSlot, setPickedSlot] = useState({ date: params.get("date") ?? "", time: params.get("time") ?? "" });
   const [doc, setDoc] = useState<Doctor | null>(null);
@@ -110,6 +111,8 @@ const DoctorExternalDetailPage = () => {
         path={`/doctors/ext/${doc.slug}`}
       />
       <Header />
+
+      <BookingDetailsDialog code={params.get("booking")} doctorId={doc.id} doctorName={doc.name} slug={doc.slug} specialty={doc.primary_specialty} address={clinic?.address} onClose={() => { const next = new URLSearchParams(params); next.delete("booking"); setParams(next, { replace: true }); }} />
 
       <section className="bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-8">
         <div className="container mx-auto px-4 max-w-5xl">
