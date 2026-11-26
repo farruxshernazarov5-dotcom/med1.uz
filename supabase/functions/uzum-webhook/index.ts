@@ -1,64 +1,260 @@
-// Uzum Bank webhook. Standart PREPARE / CONFIRM / CANCEL callback.
-// Auth: HMAC-SHA256 imzo `x-uzum-signature` sarlavhasida (raw_body ustidan).
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Uzum Bank Merchant API — /check, /create, /confirm, /reverse, /status.
+// Protocol: POST application/json + Basic Auth; amounts are integer tiyin.
+// Docs: https://developer.uzumbank.uz/uz/merchant
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { z } from "npm:zod@3.25.76";
+import { notifyPaymentPaid } from "../_shared/payment-notify.ts";
+import {
+  expectedUzumServiceId,
+  uzumMethodFromPath,
+  uzumOrderIdFromParams,
+  uzumResponseData,
+  verifyUzumBasicAuth,
+} from "../_shared/uzum-merchant.ts";
 
-const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, content-type, x-uzum-signature" };
-const json = (status: number, body: unknown) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+const MAX_BODY_BYTES = 64 * 1024;
+const serviceIdSchema = z.number().int().positive().max(Number.MAX_SAFE_INTEGER);
+const timestampSchema = z.number().int().positive().max(Number.MAX_SAFE_INTEGER);
+const baseShape = { serviceId: serviceIdSchema, timestamp: timestampSchema };
+const checkSchema = z.object({ ...baseShape, params: z.record(z.unknown()) }).passthrough();
+const createSchema = z.object({
+  ...baseShape,
+  transId: z.string().uuid(),
+  params: z.record(z.unknown()),
+  amount: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+}).passthrough();
+const confirmSchema = z.object({
+  ...baseShape,
+  transId: z.string().uuid(),
+  paymentSource: z.string().min(1).max(64),
+  tariff: z.string().max(64).nullish(),
+  processingReferenceNumber: z.string().max(128).nullish(),
+  phone: z.string().min(1).max(32),
+  cardType: z.number().int().positive().optional(),
+}).passthrough();
+const transactionSchema = z.object({ ...baseShape, transId: z.string().uuid() }).passthrough();
 
-async function hmacSha256Hex(key: string, msg: string): Promise<string> {
-  const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(msg));
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, "0")).join("");
+type PaymentRow = {
+  id: string;
+  amount: number;
+  status: string;
+  purpose: string;
+  user_id: string;
+  metadata: Record<string, unknown> | null;
+};
+
+function json(status: number, body: unknown) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
+}
+
+function protocolError(errorCode: string, details: Record<string, unknown> = {}) {
+  return json(400, { status: "FAILED", timestamp: Date.now(), errorCode, ...details });
+}
+
+function validationErrorCode(error: z.ZodError): "10002" | "10005" {
+  const missing = error.issues.some((issue) =>
+    issue.code === "invalid_type" && "received" in issue && issue.received === "undefined"
+  );
+  return missing ? "10005" : "10002";
+}
+
+function configuredServiceId(value: string | undefined): number | null {
+  if (!value) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const method = uzumMethodFromPath(new URL(req.url).pathname);
+  if (!method) return json(404, { status: "FAILED", errorCode: "10003" });
+  if (req.method !== "POST") return protocolError("10003", { serviceId: 0 });
+
+  const username = Deno.env.get("UZUM_BASIC_AUTH_USERNAME") ?? "";
+  const password = Deno.env.get("UZUM_BASIC_AUTH_PASSWORD") ?? "";
+  if (!username || !password) {
+    console.error("uzum-webhook: Basic Auth credentials are not configured");
+    return protocolError("99999");
+  }
+  if (!verifyUzumBasicAuth(req.headers.get("Authorization"), username, password)) {
+    return protocolError("10001");
+  }
+
+  const liveServiceId = configuredServiceId(Deno.env.get("UZUM_SERVICE_ID"));
+  const sandboxServiceId = configuredServiceId(Deno.env.get("UZUM_SERVICE_ID_SANDBOX")) ?? liveServiceId;
+  if (!liveServiceId && !sandboxServiceId) {
+    console.error("uzum-webhook: service ID is not configured");
+    return protocolError("99999");
+  }
+
+  const raw = await req.text();
+  if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) return protocolError("10002");
+  let input: unknown;
   try {
-    const raw = await req.text();
-    const secret = Deno.env.get("UZUM_SECRET_KEY") || "";
-    const provided = req.headers.get("x-uzum-signature") || "";
-    if (!secret) return json(503, { error: -9, error_note: "not configured" });
-    const expected = await hmacSha256Hex(secret, raw);
-    if (!provided || provided.toLowerCase() !== expected.toLowerCase()) return json(401, { error: 0, error_note: "invalid signature" });
+    input = JSON.parse(raw || "null");
+  } catch {
+    return protocolError("10002");
+  }
 
-    const body = JSON.parse(raw || "{}");
-    const { action, order_id, transaction_id, amount, service_id } = body;
-    if (!order_id) return json(400, { error: -1, error_note: "order_id required" });
+  const admin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
 
-    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const { data: p } = await admin.from("platform_payments").select("id,amount,status,metadata").eq("id", order_id).maybeSingle();
-    if (!p) return json(404, { error: -1, error_note: "order not found" });
+  const loadPayment = async (orderId: string) => {
+    const { data, error } = await admin
+      .from("platform_payments")
+      .select("id,amount,status,purpose,user_id,metadata")
+      .eq("id", orderId)
+      .eq("provider", "uzum")
+      .maybeSingle();
+    if (error) throw error;
+    return data as PaymentRow | null;
+  };
 
-    const meta: any = p.metadata || {};
-    const expectedTiyin = Math.round(Number(p.amount) * 100);
-    if (amount && Math.abs(Number(amount) - expectedTiyin) > 0) return json(400, { error: -2, error_note: "amount mismatch" });
+  const paymentServiceMatches = (payment: PaymentRow, serviceId: number) => {
+    const expected = expectedUzumServiceId(payment.metadata, liveServiceId, sandboxServiceId);
+    return expected !== null && expected === serviceId;
+  };
 
-    if (action === "PREPARE" || action === "check") {
-      if (p.status !== "pending") return json(409, { error: -3, error_note: "not pending" });
-      return json(200, { error: 0, transaction_id: order_id, amount: expectedTiyin });
+  try {
+    if (method === "check") {
+      const parsed = checkSchema.safeParse(input);
+      if (!parsed.success) return protocolError(validationErrorCode(parsed.error));
+      const { serviceId, params } = parsed.data;
+      if (serviceId !== liveServiceId && serviceId !== sandboxServiceId) return protocolError("10006");
+      const orderId = uzumOrderIdFromParams(params);
+      if (!orderId) return protocolError("10007");
+      const payment = await loadPayment(orderId);
+      if (!payment || !paymentServiceMatches(payment, serviceId)) return protocolError("10007");
+      if (["paid", "completed"].includes(payment.status)) return protocolError("10008");
+      if (payment.status !== "pending") return protocolError("10009");
+      return json(200, {
+        serviceId,
+        timestamp: Date.now(),
+        status: "OK",
+        data: uzumResponseData(payment.id),
+      });
     }
-    if (action === "CONFIRM" || action === "perform") {
-      if (p.status === "paid") return json(200, { error: 0, transaction_id, state: 2 });
-      if (p.status !== "pending") return json(409, { error: -3, error_note: "not pending" });
-      await admin.from("platform_payments").update({
-        status: "paid",
-        paid_at: new Date().toISOString(),
-        provider_transaction_id: transaction_id || order_id,
-        metadata: { ...meta, uzum_service_id: service_id, uzum_confirmed_at: Date.now() },
-      }).eq("id", p.id);
-      await admin.from("audit_logs").insert({ action: "payment_completed", entity_type: "platform_payments", entity_id: p.id, details: { provider: "uzum", transaction_id } });
-      return json(200, { error: 0, transaction_id, state: 2 });
+
+    if (method === "create") {
+      const parsed = createSchema.safeParse(input);
+      if (!parsed.success) return protocolError(validationErrorCode(parsed.error));
+      const { serviceId, transId, params, amount } = parsed.data;
+      if (serviceId !== liveServiceId && serviceId !== sandboxServiceId) return protocolError("10006");
+      const orderId = uzumOrderIdFromParams(params);
+      if (!orderId) return protocolError("10007");
+      const payment = await loadPayment(orderId);
+      if (!payment || !paymentServiceMatches(payment, serviceId)) return protocolError("10007");
+      if (["paid", "completed"].includes(payment.status)) return protocolError("10008");
+      if (payment.status !== "pending") return protocolError("10009");
+
+      const transTime = Date.now();
+      const { data: result, error } = await admin.rpc("uzum_payment_transition", {
+        _action: "create",
+        _trans_id: transId,
+        _payment_id: payment.id,
+        _service_id: serviceId,
+        _amount_tiyin: amount,
+        _event_time: transTime,
+      });
+      if (error) throw error;
+      if (!result?.ok) return protocolError(String(result?.error_code ?? "99999"));
+      return json(200, {
+        serviceId,
+        transId,
+        status: "CREATED",
+        transTime: Number(result.trans_time),
+        data: uzumResponseData(payment.id),
+        amount: Number(result.amount_tiyin),
+      });
     }
-    if (action === "CANCEL" || action === "cancel") {
-      await admin.from("platform_payments").update({
-        status: p.status === "paid" ? "refunded" : "cancelled",
-        metadata: { ...meta, uzum_cancelled_at: Date.now(), cancel_reason: body.reason },
-      }).eq("id", p.id);
-      return json(200, { error: 0, transaction_id, state: -1 });
+
+    if (method === "confirm") {
+      const parsed = confirmSchema.safeParse(input);
+      if (!parsed.success) return protocolError(validationErrorCode(parsed.error));
+      const { serviceId, transId, paymentSource } = parsed.data;
+      const confirmTime = Date.now();
+      const { data: result, error } = await admin.rpc("uzum_payment_transition", {
+        _action: "confirm",
+        _trans_id: transId,
+        _service_id: serviceId,
+        _event_time: confirmTime,
+        _payment_source: paymentSource,
+      });
+      if (error) throw error;
+      if (!result?.ok) return protocolError(String(result?.error_code ?? "99999"), { serviceId, transId });
+
+      await notifyPaymentPaid(admin, {
+        provider: "uzum",
+        amount: Number(result.amount),
+        purpose: String(result.purpose),
+        paymentId: String(result.payment_id),
+        userId: String(result.user_id),
+        transactionId: transId,
+      });
+      return json(200, {
+        serviceId,
+        transId,
+        status: "CONFIRMED",
+        confirmTime: Number(result.confirm_time),
+        data: uzumResponseData(String(result.payment_id)),
+        amount: Number(result.amount_tiyin),
+      });
     }
-    return json(400, { error: -1, error_note: `unknown action: ${action}` });
-  } catch (err) {
-    console.error("uzum-webhook error", err);
-    return json(500, { error: -9, error_note: err instanceof Error ? err.message : String(err) });
+
+    if (method === "reverse") {
+      const parsed = transactionSchema.safeParse(input);
+      if (!parsed.success) return protocolError(validationErrorCode(parsed.error));
+      const { serviceId, transId } = parsed.data;
+      const reverseTime = Date.now();
+      const { data: result, error } = await admin.rpc("uzum_payment_transition", {
+        _action: "reverse",
+        _trans_id: transId,
+        _service_id: serviceId,
+        _event_time: reverseTime,
+      });
+      if (error) throw error;
+      if (!result?.ok) return protocolError(String(result?.error_code ?? "99999"), { serviceId, transId });
+      return json(200, {
+        serviceId,
+        transId,
+        status: "REVERSED",
+        reverseTime: Number(result.reverse_time),
+        data: uzumResponseData(String(result.payment_id)),
+        amount: Number(result.amount_tiyin),
+      });
+    }
+
+    const parsed = transactionSchema.safeParse(input);
+    if (!parsed.success) return protocolError(validationErrorCode(parsed.error));
+    const { serviceId, transId } = parsed.data;
+    const { data: transaction, error } = await admin
+      .from("uzum_transactions")
+      .select("trans_id,payment_id,service_id,amount_tiyin,status,trans_time,confirm_time,reverse_time")
+      .eq("trans_id", transId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!transaction || Number(transaction.service_id) !== serviceId) {
+      return protocolError("10014", { serviceId, transId });
+    }
+    return json(200, {
+      serviceId,
+      transId,
+      status: transaction.status,
+      transTime: Number(transaction.trans_time),
+      confirmTime: transaction.confirm_time === null ? null : Number(transaction.confirm_time),
+      reverseTime: transaction.reverse_time === null ? null : Number(transaction.reverse_time),
+      data: uzumResponseData(String(transaction.payment_id)),
+      amount: Number(transaction.amount_tiyin),
+    });
+  } catch (error) {
+    console.error("uzum-webhook error", error instanceof Error ? error.message : String(error));
+    return protocolError("99999");
   }
 });

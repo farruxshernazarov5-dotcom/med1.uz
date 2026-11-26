@@ -98,7 +98,7 @@ Skript o'zi:
 1. hostname va DNS'ni tiklaydi;
 2. nginx'ni o'rnatadi (kerak bo'lsa);
 3. barcha eski/buzuq `pay.med1*` konfiguratsiyalarni o'chiradi;
-4. yagona toza konfiguratsiyani yozadi (marker `2026-09-02-v4`);
+4. yagona toza konfiguratsiyani yozadi (marker `2026-11-26-v5`);
 5. `nginx -t` + reload, so'ng certbot orqali HTTPS'ni tiklaydi;
 6. barcha yo'llarni self-test qiladi.
 
@@ -115,21 +115,21 @@ curl -i https://pay.med1.uz/click-prepare
 curl -i https://pay.med1.uz/click-complete
 curl -s -X POST https://pay.med1.uz/payme -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"CheckPerformTransaction","params":{}}'
-curl -i -X POST https://pay.med1.uz/uzum -H 'Content-Type: application/json' -d '{}'
+curl -i -X POST https://pay.med1.uz/uzum/check -H 'Content-Type: application/json' -d '{}'
 ```
 
 Kutilgan natijalar:
 
 | Yo'l | Kutilgan |
 |---|---|
-| `/health` | 200 va `"config":"2026-09-02-v4"` |
+| `/health` | 200 va `"config":"2026-11-26-v5"` |
 | `/` | 302 → `https://med1.uz/payment/success` |
 | `/click/prepare`, `/click/complete` | 200, `"ok":true` |
 | `/click-prepare`, `/click-complete` | 200 (eski aliaslar) |
 | `/payme` | JSON-RPC javob, kalitsiz so'rovda `"code":-32504` |
-| `/uzum` | 404 emas (backend javobi) |
+| `/uzum/check`, `/create`, `/confirm`, `/reverse`, `/status` | 404 emas; kalitsiz POST `400`, `"errorCode":"10001"` |
 
-`"config":"2026-09-02-v4"` ko'rinmasa — eski konfiguratsiya hali ishlayapti,
+`"config":"2026-11-26-v5"` ko'rinmasa — eski konfiguratsiya hali ishlayapti,
 2-qadamni qayta bajarib skriptni qaytadan ishga tushiring.
 
 ---
@@ -143,7 +143,7 @@ Kutilgan natijalar:
 | Click (eski aliaslar) | `/click-prepare`, `/click-complete` | o'sha funksiyalar |
 | Click webhook | `https://pay.med1.uz/click/webhook` | `click-webhook` |
 | Payme (Paycom) | `https://pay.med1.uz/payme` (`/payme/`, `/api/payme`) | `payme-webhook` |
-| Uzum Bank | `https://pay.med1.uz/uzum` (`/uzum/`, `/api/uzum`) | `uzum-webhook` |
+| Uzum Bank | Base: `https://pay.med1.uz/uzum`; metodlar: `/check`, `/create`, `/confirm`, `/reverse`, `/status` (`/api/uzum` aliasi ham bor) | `uzum-webhook` |
 | Umumiy webhook | `/payment/webhook`, `/api/payment` | `payment-webhook` |
 
 Kabinetlarga qo'yiladigan qiymatlar:
@@ -160,7 +160,10 @@ PAYME  → Endpoint: https://pay.med1.uz/payme
          Valyuta: UZS (860), tiyinda
          Whitelist IP: 89.39.95.5
 
-UZUM   → Endpoint: https://pay.med1.uz/uzum
+UZUM   → Base URL: https://pay.med1.uz/uzum
+         Methods: POST /check, /create, /confirm, /reverse, /status
+         Auth: Uzum bergan Basic Auth login/parol (Secrets'da)
+         Account parameter: order_id (UUID), summa tiyinda
          Whitelist IP: 89.39.95.5
 ```
 
@@ -185,4 +188,4 @@ UZUM   → Endpoint: https://pay.med1.uz/uzum
   tekshiruvi faqat backend funksiyalarida bajariladi.
 - Sertifikat avtomatik yangilanadi: `systemctl status certbot.timer`.
 - Konfiguratsiya versiyasi Super Admin → To'lov testi panelida ham tekshiriladi
-  (`proxy:health` qatori marker `2026-09-02-v4` ni kutadi).
+  (`proxy:health` qatori marker `2026-11-26-v5` ni kutadi).

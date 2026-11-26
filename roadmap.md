@@ -1,3 +1,8 @@
+## 2026-11-26 — Uzum Merchant API webhook
+- [ ] `/check`, `/create`, `/confirm`, `/reverse`, `/status` va Basic Auth; rasmiy xato kodlari, tiyin summasi, serviceId va order UUID validatsiyasi
+- [ ] Serverdagi yagona tranzaksiya holati, atomar tasdiqlash/qaytarish, bir martalik xizmat berish va mavjud to‘lov bildirishnomasi
+- [ ] TAS-IX proksi yo‘llari, maxfiy sozlamalar, unit/DB/edge sinovlari va hujjat
+
 ## 2026-11-26 — Har bir pullik to‘lovda rozilik
 - [x] Rasmdagi uch bandli SaaS HMS oynasini har bir to‘lovda qayta ochish; bekor qilish yoki saqlash xatosida to‘lovni boshlamaslik
 - [x] Shifokor/klinika broni, umumiy to‘lovlar, QR, avansdan Med Coin va Med1 TOP oqimlarini ulash; AI va bemor invoyslaridagi mavjud oynalar qayta belgilanadi

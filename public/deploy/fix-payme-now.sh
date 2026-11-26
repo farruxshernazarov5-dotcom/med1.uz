@@ -7,7 +7,7 @@ set -euo pipefail
 SB="https://wiqcfyecdmararxqdmfk.supabase.co/functions/v1"
 SB_HOST="wiqcfyecdmararxqdmfk.supabase.co"
 CONF=/etc/nginx/sites-available/pay.med1.uz.conf
-MARKER="2026-09-02-v4"
+MARKER="2026-11-26-v5"
 EMAIL="${EMAIL:-billing@med1.uz}"
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -103,7 +103,8 @@ EOF
            "/click/complete click-complete" "/click-complete click-complete" \
            "/click/webhook click-webhook" \
            "/payme payme-webhook" "/payme/ payme-webhook" "/api/payme payme-webhook" \
-           "/uzum uzum-webhook" "/uzum/ uzum-webhook" "/api/uzum uzum-webhook" \
+           "/uzum/check uzum-webhook/check" "/uzum/create uzum-webhook/create" "/uzum/confirm uzum-webhook/confirm" "/uzum/reverse uzum-webhook/reverse" "/uzum/status uzum-webhook/status" \
+           "/api/uzum/check uzum-webhook/check" "/api/uzum/create uzum-webhook/create" "/api/uzum/confirm uzum-webhook/confirm" "/api/uzum/reverse uzum-webhook/reverse" "/api/uzum/status uzum-webhook/status" \
            "/payment/webhook payment-webhook" "/api/payment payment-webhook"; do
     set -- $p
     echo "    location = $1 {"
@@ -127,7 +128,7 @@ certbot --nginx --non-interactive --agree-tos --redirect \
 nginx -t && systemctl reload nginx
 
 echo "==> 6/6 self-test"
-for u in /health / /click/prepare /click/complete /click-prepare /click-complete /payme /uzum; do
+for u in /health / /click/prepare /click/complete /click-prepare /click-complete /payme /uzum/check /uzum/create /uzum/confirm /uzum/reverse /uzum/status; do
   code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://127.0.0.1$u" -H 'Host: pay.med1.uz' -H 'Content-Type: application/json' -d '{}')
   echo "  $u -> $code"
 done

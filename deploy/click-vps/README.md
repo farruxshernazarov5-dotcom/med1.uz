@@ -71,7 +71,7 @@ GET readiness javoblari `200` bo'lishi kerak. Haqiqiy POST imzosi va to'lov zanj
 `pay.med1.uz` bosh sahifasining 404 qaytarishi eski Nginx konfiguratsiyasi hali serverga qo'llanganini bildiradi. `sudo ./install.sh billing@med1.uz` ni qayta ishga tushirgach bosh sahifa `https://med1.uz/payment/success` ga yo'naladi va eski `/click-prepare`, `/click-complete` aliaslari ham ishlaydi.
 
 Joriy server holatini aniq ajratish uchun `/health` javobida
-`"config":"2026-09-02-v3"` bo'lishi shart. Bu marker yo'q bo'lsa repodagi yangi
+`"config":"2026-11-26-v5"` bo'lishi shart. Bu marker yo'q bo'lsa repodagi yangi
 konfiguratsiya VPS'ga hali o'rnatilmagan.
 
 VDS'ni noldan sozlash, fayllarni topish, 404 xatosini yo'qotish va barcha
@@ -92,3 +92,11 @@ yoki `sudo ./install.sh billing@med1.uz` ni qayta ishga tushiring.
 
 Kalitsiz POST so'rovga `{"error":{"code":-32504,...}}` javobi kelsa — endpoint
 to'g'ri ishlayapti va Payme'ga berishga tayyor.
+
+## 6. Uzum Merchant API metodlari
+
+Uzum kabinetiga base URL sifatida `https://pay.med1.uz/uzum` beriladi. Uzum unga
+`/check`, `/create`, `/confirm`, `/reverse` va `/status` metodlarini qo'shib POST
+so'rov yuboradi. Barcha yo'llar `Authorization: Basic ...` sarlavhasini o'zgartirmasdan
+`uzum-webhook` funksiyasiga uzatiladi. Kalitsiz so'rov `400` va `"errorCode":"10001"`
+qaytarsa proksi va Basic Auth himoyasi ishlayapti.

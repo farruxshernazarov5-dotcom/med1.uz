@@ -152,6 +152,9 @@ export default function PaymentSandboxPage() {
               <div className="text-xs text-muted-foreground space-y-1">
                 <div>Invoice fn: <code className="text-foreground">{p.invoiceFn}</code></div>
                 <div>Webhook fn: <code className="text-foreground">{p.webhookFn}</code></div>
+                {p.id === "uzum" && (
+                  <div className="font-mono">/check · /create · /confirm · /reverse · /status</div>
+                )}
               </div>
               <Button
                 className="w-full"

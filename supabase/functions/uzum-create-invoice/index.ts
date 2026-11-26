@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       reference_id,
       package_id: priced.packageId,
       status: "pending",
-      metadata: { return_url, environment, package_code: packageCode },
+      metadata: { return_url, environment, package_code: packageCode, uzum_service_id: serviceId },
     }).select().single();
     if (payErr) throw payErr;
 

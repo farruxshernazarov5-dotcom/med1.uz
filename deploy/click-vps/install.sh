@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 DOMAIN="pay.med1.uz"
 EXPECTED_IP="89.39.95.5"
-MARKER="2026-09-02-v4"
+MARKER="2026-11-26-v5"
 EMAIL="${1:-}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -82,13 +82,15 @@ if [[ "${PAYME_BODY}" != *'"code":-32504'* ]]; then
 fi
 echo "/payme: OK (backend avtorizatsiya javobi olindi)"
 
-UZUM_STATUS="$(curl --silent --output /dev/null --write-out '%{http_code}' --request POST \
-  --header 'Content-Type: application/json' --data '{}' "https://${DOMAIN}/uzum")"
-if [[ "${UZUM_STATUS}" == "404" ]]; then
-  echo "Xato: /uzum proxy yo'li ishlamayapti (404)" >&2
-  exit 1
-fi
-echo "/uzum: OK (${UZUM_STATUS})"
+for UZUM_METHOD in check create confirm reverse status; do
+  UZUM_STATUS="$(curl --silent --output /dev/null --write-out '%{http_code}' --request POST \
+    --header 'Content-Type: application/json' --data '{}' "https://${DOMAIN}/uzum/${UZUM_METHOD}")"
+  if [[ "${UZUM_STATUS}" == "404" ]]; then
+    echo "Xato: /uzum/${UZUM_METHOD} proxy yo'li ishlamayapti (404)" >&2
+    exit 1
+  fi
+  echo "/uzum/${UZUM_METHOD}: OK (${UZUM_STATUS})"
+done
 
 ROOT_STATUS="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "https://${DOMAIN}/")"
 if [[ "${ROOT_STATUS}" != "302" ]]; then

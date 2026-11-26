@@ -18366,6 +18366,56 @@ export type Database = {
         }
         Relationships: []
       }
+      uzum_transactions: {
+        Row: {
+          amount_tiyin: number
+          confirm_time: number | null
+          created_at: string
+          payment_id: string
+          payment_source: string | null
+          reverse_time: number | null
+          service_id: number
+          status: string
+          trans_id: string
+          trans_time: number
+          updated_at: string
+        }
+        Insert: {
+          amount_tiyin: number
+          confirm_time?: number | null
+          created_at?: string
+          payment_id: string
+          payment_source?: string | null
+          reverse_time?: number | null
+          service_id: number
+          status?: string
+          trans_id: string
+          trans_time: number
+          updated_at?: string
+        }
+        Update: {
+          amount_tiyin?: number
+          confirm_time?: number | null
+          created_at?: string
+          payment_id?: string
+          payment_source?: string | null
+          reverse_time?: number | null
+          service_id?: number
+          status?: string
+          trans_id?: string
+          trans_time?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uzum_transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "platform_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vaccination_records: {
         Row: {
           actual_date: string | null
@@ -19205,6 +19255,30 @@ export type Database = {
           _usage_id: string
         }
         Returns: undefined
+      }
+      uzum_payment_transition: {
+        Args: {
+          _action: string
+          _amount_tiyin?: number
+          _event_time?: number
+          _payment_id?: string
+          _payment_source?: string
+          _service_id?: number
+          _trans_id: string
+        }
+        Returns: Json
+      }
+      uzum_payment_transition_v1: {
+        Args: {
+          _action: string
+          _amount_tiyin?: number
+          _event_time?: number
+          _payment_id?: string
+          _payment_source?: string
+          _service_id?: number
+          _trans_id: string
+        }
+        Returns: Json
       }
       verify_contract_by_hash: {
         Args: { _hash_id: string }
