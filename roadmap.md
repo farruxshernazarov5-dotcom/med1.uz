@@ -1,3 +1,8 @@
+## 2026-11-26 — Har bir pullik to‘lovda rozilik
+- [x] Rasmdagi uch bandli SaaS HMS oynasini har bir to‘lovda qayta ochish; bekor qilish yoki saqlash xatosida to‘lovni boshlamaslik
+- [x] Shifokor/klinika broni, umumiy to‘lovlar, QR, avansdan Med Coin va Med1 TOP oqimlarini ulash; AI va bemor invoyslaridagi mavjud oynalar qayta belgilanadi
+- [x] 4 rozilik testi; hisobda mobil/desktop AI xaridi, uch rozilik bazadan qayta o‘qildi, keyingi to‘lovda belgilar bo‘sh; haqiqiy to‘lov yaratilmadi
+
 ## 2026-11-26 — Telefon kalendari, Jitsi va bron QR
 - [x] Telefon kalendariga qabul va eslatmalarni foydalanuvchi tasdig‘i bilan qo‘shish; umumiy .ics/native editor, tashqi shifokor va klinika bronlari, Qabullarim va eslatmalar
 - [x] Video uchrashuvlarni Jitsi ilovasida ochish, ilova yo‘q bo‘lsa brauzer; qo‘ng‘iroq davomiyligi uydirilmaydi

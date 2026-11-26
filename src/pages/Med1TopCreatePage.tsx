@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -28,6 +29,7 @@ import {
 } from "@/lib/med1Top";
 
 const Med1TopCreatePage = () => {
+  const { requestLegal, legalModal } = usePaymentLegalGate("med1_top_payment");
   const { user } = useAuth();
   const { lang } = useLanguage();
   const L = lang as Lang;
@@ -138,6 +140,7 @@ const Med1TopCreatePage = () => {
       toast({ title: "Reklama shartlarini qabul qiling", variant: "destructive" });
       return;
     }
+    if (!(await requestLegal())) return;
     setBusy(true);
     try {
       const { data: campaign, error } = await supabase
@@ -203,6 +206,7 @@ const Med1TopCreatePage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {legalModal}
       <SEO
         title="Med1 TOP — reklama berish va TOP o'ringa chiqish"
         description="Klinika, shifokor yoki tibbiy brendingiz uchun Med1 TOP auksionida taklif bering: hududiy target, moderatsiya, real-time statistika."

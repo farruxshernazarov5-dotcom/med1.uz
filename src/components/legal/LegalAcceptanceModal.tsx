@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,17 +35,21 @@ export const LegalAcceptanceModal = ({ open, onOpenChange, variant, onAccepted, 
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => { if (open) setChecks({}); }, [open]);
+
   const allChecked = docs.every((d) => checks[d.type]);
 
   const handleAccept = async () => {
+    if (!allChecked || submitting) return;
     setSubmitting(true);
     try {
       for (const d of docs) {
-        await accept(d.type, context);
+        const saved = await accept(d.type, context);
+        if (!saved) throw new Error("Rozilik saqlanmadi");
       }
       toast.success("Shartlar qabul qilindi");
-      onOpenChange(false);
       onAccepted?.();
+      onOpenChange(false);
     } catch {
       toast.error("Xatolik yuz berdi");
     } finally {
@@ -54,8 +58,8 @@ export const LegalAcceptanceModal = ({ open, onOpenChange, variant, onAccepted, 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+    <Dialog open={open} onOpenChange={value => { if (!submitting) onOpenChange(value); }}>
+      <DialogContent className="max-w-lg max-h-[90dvh] overflow-y-auto" onEscapeKeyDown={event => { if (submitting) event.preventDefault(); }} onPointerDownOutside={event => { if (submitting) event.preventDefault(); }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
@@ -80,7 +84,9 @@ export const LegalAcceptanceModal = ({ open, onOpenChange, variant, onAccepted, 
                   <Checkbox
                     checked={!!checks[d.type]}
                     onCheckedChange={(v) => setChecks((p) => ({ ...p, [d.type]: !!v }))}
-                    className="mt-0.5"
+                    disabled={submitting}
+                    aria-label={d.label}
+                    className="mt-0.5 rounded-full"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -102,7 +108,7 @@ export const LegalAcceptanceModal = ({ open, onOpenChange, variant, onAccepted, 
         </ScrollArea>
 
         <div className="flex gap-2 pt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1">Bekor qilish</Button>
+          <Button variant="outline" disabled={submitting} onClick={() => onOpenChange(false)} className="flex-1">Bekor qilish</Button>
           <Button onClick={handleAccept} disabled={!allChecked || submitting} className="flex-1">
             {submitting ? "Saqlanmoqda..." : "Qabul qilaman"}
           </Button>

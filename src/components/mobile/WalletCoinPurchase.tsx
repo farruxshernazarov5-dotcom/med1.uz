@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { useEffect, useRef, useState } from 'react';
 import { Coins, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Link } from 'react-router-dom';
 
 type Package = { code: string; name_uz: string; price: number; coin_amount: number; bonus_coins: number; duration_days: number };
 export default function WalletCoinPurchase({ balance, onPurchased }: { balance: number; onPurchased: () => void }) {
+  const { requestLegal, legalModal } = usePaymentLegalGate("wallet_medcoin_purchase");
   const [packages, setPackages] = useState<Package[]>([]);
   const [selected, setSelected] = useState('');
   const [busy, setBusy] = useState(false);
@@ -27,6 +29,7 @@ export default function WalletCoinPurchase({ balance, onPurchased }: { balance: 
   const pkg = packages.find(p => p.code === selected);
   const buy = async () => {
     if (!pkg || busy) return;
+    if (!(await requestLegal())) return;
     setBusy(true);
     try {
       const { data, error } = await supabase.rpc('purchase_medcoin_from_wallet', { _package_code: pkg.code, _idempotency_key: key.current });
@@ -39,6 +42,7 @@ export default function WalletCoinPurchase({ balance, onPurchased }: { balance: 
     finally { setBusy(false); }
   };
   return <section className="space-y-3 rounded-lg border border-border bg-card p-4">
+    {legalModal}
     <h2 className="flex items-center gap-2 font-bold"><Coins className="h-5 w-5 text-primary" />Avans kartadan Med Coin</h2>
     {loading ? <Loader2 className="animate-spin" /> : error ? <p role="alert" className="text-sm text-destructive">Paketlar yuklanmadi. Sahifani qayta oching.</p> : <div className="grid gap-2 sm:grid-cols-3">{packages.map(p => <Button key={p.code} variant={selected === p.code ? 'default' : 'outline'} disabled={busy} className="h-auto flex-col gap-1 p-3" onClick={() => { setSelected(p.code); setComplete(null); key.current = crypto.randomUUID(); }}>
       <span className="font-bold">{p.coin_amount + p.bonus_coins} Med Coin</span><span>{Number(p.price).toLocaleString('uz-UZ')} so‘m</span><span className="text-xs">{p.duration_days} kun</span>

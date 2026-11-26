@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import DoctorAvatar from "@/components/doctors/DoctorAvatar";
 import CalendarEventButton from "@/components/doctors/CalendarEventButton";
 import { appointmentCalendarEvent } from "@/lib/calendarEvent";
@@ -37,6 +38,7 @@ const generateTimeSlots = (start: string, end: string, intervalMin = 30): string
 };
 
 const BookingPage = () => {
+  const { requestLegal, legalModal } = usePaymentLegalGate("clinic_appointment");
   const { user, profile, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [clinics, setClinics] = useState<any[]>([]);
@@ -144,6 +146,7 @@ const BookingPage = () => {
       toast({ title: "Iltimos, barcha majburiy maydonlarni to'ldiring", variant: "destructive" });
       return;
     }
+    if (totalPrice > 0 && !(await requestLegal())) return;
     setSubmitting(true);
     const { error } = await supabase.from("appointments").insert({
       patient_id: user.id,
@@ -238,6 +241,7 @@ const BookingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {legalModal}
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2">Onlayn qabulga yozilish</h1>

@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,7 @@ const PaymentMethodPicker = ({
   packageCode,
   org,
 }: PaymentMethodPickerProps) => {
+  const { requestLegal, legalModal } = usePaymentLegalGate(purpose);
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
   const [loading, setLoading] = useState(false);
   const [botLoading, setBotLoading] = useState(false);
@@ -162,12 +164,12 @@ const PaymentMethodPicker = ({
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (onBeforeConfirm) {
       onBeforeConfirm(runConfirm);
       return;
     }
-    runConfirm();
+    if (await requestLegal()) runConfirm();
   };
 
   const allMethods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string }[] = [
@@ -180,6 +182,7 @@ const PaymentMethodPicker = ({
 
   return (
     <div className={cn("space-y-4", className)}>
+      {legalModal}
       <PaymentSafetyNotice />
       <div>
         <h4 className="font-semibold text-foreground mb-3">To'lov usulini tanlang</h4>
@@ -287,7 +290,7 @@ const PaymentMethodPicker = ({
         <Button
           type="button"
           variant="outline"
-          onClick={sendToBot}
+          onClick={async () => { if (await requestLegal()) await sendToBot(); }}
           disabled={botLoading}
           className="w-full gap-2"
         >

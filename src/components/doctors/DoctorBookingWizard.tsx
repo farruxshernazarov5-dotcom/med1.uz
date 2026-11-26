@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import DoctorDialogContent from "./DoctorDialogContent";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { isNativeApp, openCheckout, publicOrigin } from "@/lib/nativeApp";
 import CalendarEventButton from "./CalendarEventButton";
@@ -65,7 +65,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   const [phone, setPhone] = useState("+998");
   const [notes, setNotes] = useState("");
   const [pay, setPay] = useState("cash");
-  const [agreed, setAgreed] = useState(false);
+  const { requestLegal, legalModal } = usePaymentLegalGate("doctor_appointment");
   const [saving, setSaving] = useState(false);
   const [booking, setBooking] = useState<any>(null);
   const [qr, setQr] = useState<string>("");
@@ -100,7 +100,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     if (open) {
       setStep(1);
       setService(initialService ?? null);
-      setBooking(null); setQr(""); setAgreed(false);
+      setBooking(null); setQr("");
       setDate(initialDate); setTime(initialTime);
       setPaymentId(null); setCheckoutUrl(""); setPayState("idle");
     }
@@ -195,7 +195,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
       toast({ title: "Telefon formati: +998XXXXXXXXX", variant: "destructive" }); return;
     }
     if (!name.trim()) { toast({ title: "Ismingizni kiriting", variant: "destructive" }); return; }
-    if (!agreed) { toast({ title: "To'lov va foydalanish shartlarini qabul qiling", variant: "destructive" }); return; }
+    if (!(await requestLegal())) return;
 
     setSaving(true);
     // Atomic slot booking — prevents double booking at the database level
@@ -242,6 +242,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   const canNext = step === 1 ? !!service : step === 2 ? !calendarLoading && !calendarError && validTime : step === 3 ? !!name.trim() && !!phone : true;
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DoctorDialogContent className="max-w-lg max-h-[92vh] overflow-y-auto max-sm:block max-sm:space-y-4">
         <DialogHeader>
@@ -344,14 +345,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
               ))}
             </div>
             {pay === "uzum_nasiya" && <NasiyaSummary amount={service.price} />}
-            <div className="flex items-start gap-3 border-t border-border py-4 text-sm text-muted-foreground">
-              <Checkbox id="booking-agreement" checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} className="mt-0.5 h-5 w-5 shrink-0" />
-              <span>
-                <label htmlFor="booking-agreement" className="cursor-pointer">Shartlarni qabul qilaman: </label>
-                <Link to="/terms" target="_blank" className="text-primary underline">Foydalanish shartlari</Link>,{" "}
-                <Link to="/privacy" target="_blank" className="text-primary underline">maxfiylik siyosati</Link> va to'lov shartlarini qabul qilaman.
-              </span>
-            </div>
+
           </div>
         )}
 
@@ -412,7 +406,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
                 Keyingi <ChevronRight className="w-4 h-4" />
               </Button>
             ) : (
-              <Button size="sm" disabled={saving || !agreed} onClick={submit} className="gap-2">
+              <Button size="sm" disabled={saving} onClick={submit} className="gap-2">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} Tasdiqlash
               </Button>
             )}
@@ -425,5 +419,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
         )}
       </DoctorDialogContent>
     </Dialog>
+    {legalModal}
+    </>
   );
 }

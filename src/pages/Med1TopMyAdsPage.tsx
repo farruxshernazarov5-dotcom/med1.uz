@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -15,6 +16,7 @@ import { type AdCampaign, formatSum, statusTone } from "@/lib/med1Top";
 const FILTERS = ["all", "active", "pending", "pending_payment", "expired"] as const;
 
 const Med1TopMyAdsPage = () => {
+  const { requestLegal, legalModal } = usePaymentLegalGate("med1_top_payment");
   const { user, loading: authLoading } = useAuth();
   const [rows, setRows] = useState<AdCampaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,7 @@ const Med1TopMyAdsPage = () => {
   );
 
   const pay = async (ad: AdCampaign, provider: "click" | "payme" = "click") => {
+    if (!(await requestLegal())) return;
     setBusy(ad.id);
     try {
       const { data, error } = await supabase.functions.invoke(
@@ -108,6 +111,7 @@ const Med1TopMyAdsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {legalModal}
       <SEO title="Reklamalarim — Med1 TOP kabineti" description="Med1 TOP reklama kampaniyalaringiz, takliflar, to'lovlar va real-time statistika." path="/med1-top/my" noindex />
       <Header />
       <main className="container mx-auto px-4 py-8">

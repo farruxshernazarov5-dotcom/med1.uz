@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { openCheckout, publicOrigin } from "@/lib/nativeApp";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ const ClickPayButton = ({
   className = "",
   disabled = false,
 }: ClickPayButtonProps) => {
+  const { requestLegal, legalModal } = usePaymentLegalGate(purpose);
   const [loading, setLoading] = useState(false);
 
   const handlePay = async () => {
@@ -39,6 +41,7 @@ const ClickPayButton = ({
       toast({ title: "Xatolik", description: "Noto'g'ri summa", variant: "destructive" });
       return;
     }
+    if (!(await requestLegal())) return;
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("click-create-invoice", {
@@ -68,6 +71,8 @@ const ClickPayButton = ({
   };
 
   return (
+    <>
+    {legalModal}
     <Button
       onClick={handlePay}
       variant={variant}
@@ -81,6 +86,7 @@ const ClickPayButton = ({
         <span className="ml-1 font-bold">{amount.toLocaleString("uz-UZ")} so'm</span>
       )}
     </Button>
+    </>
   );
 };
 

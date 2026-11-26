@@ -1,3 +1,4 @@
+import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { publicOrigin } from "@/lib/nativeApp";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -45,6 +46,7 @@ const QRPayButton = ({
   size = "default",
   className = "",
 }: QRPayButtonProps) => {
+  const { requestLegal, legalModal } = usePaymentLegalGate(purpose);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number | null>(amount ?? null);
   const [custom, setCustom] = useState("");
@@ -69,6 +71,7 @@ const QRPayButton = ({
       toast({ title: "Summani tanlang", description: "Eng kam summa 1 000 so'm", variant: "destructive" });
       return;
     }
+    if (!(await requestLegal())) return;
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("payme-create-invoice", {
@@ -107,6 +110,8 @@ const QRPayButton = ({
   };
 
   return (
+    <>
+    {legalModal}
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={variant} size={size} className={`gap-2 ${className}`}>
@@ -240,6 +245,7 @@ const QRPayButton = ({
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
