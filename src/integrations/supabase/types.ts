@@ -19224,6 +19224,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      reset_uzum_sandbox_test_orders: {
+        Args: { _order_id?: string }
+        Returns: Json
+      }
       revoke_my_clinic_link: { Args: { _id: string }; Returns: undefined }
       revoke_referral_reward: {
         Args: { _reason?: string; _referral_id: string }

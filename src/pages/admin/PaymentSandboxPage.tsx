@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Loader2, CreditCard, ExternalLink, ShieldCheck, AlertTriangle } from "lucide-react";
 import ClickTestPanel from "@/components/admin/payments/ClickTestPanel";
 import PaymeAdminPanel from "@/components/admin/payments/PaymeAdminPanel";
+import UzumSandboxOrdersPanel from "@/components/admin/payments/UzumSandboxOrdersPanel";
 
 
 type Provider = "click" | "payme" | "uzum";
@@ -118,6 +119,8 @@ export default function PaymentSandboxPage() {
       <ClickTestPanel />
 
       <PaymeAdminPanel />
+
+      <UzumSandboxOrdersPanel />
 
       <Card>
 
