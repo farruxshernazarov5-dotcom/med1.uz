@@ -59,7 +59,7 @@ export const LegalAcceptanceModal = ({ open, onOpenChange, variant, onAccepted, 
 
   return (
     <Dialog open={open} onOpenChange={value => { if (!submitting) onOpenChange(value); }}>
-      <DialogContent className="max-w-lg max-h-[90dvh] overflow-y-auto" onEscapeKeyDown={event => { if (submitting) event.preventDefault(); }} onPointerDownOutside={event => { if (submitting) event.preventDefault(); }}>
+      <DialogContent className="z-[90] max-w-lg max-h-[90dvh] overflow-y-auto" onEscapeKeyDown={event => { if (submitting) event.preventDefault(); }} onPointerDownOutside={event => { if (submitting) event.preventDefault(); }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
