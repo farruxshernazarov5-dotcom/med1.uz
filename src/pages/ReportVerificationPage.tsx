@@ -101,6 +101,7 @@ const PaymentVerificationPage = () => {
         purpose: payment.purpose,
         purposeLabel: PURPOSE_LABELS[payment.purpose] || payment.purpose,
         provider: payment.provider,
+        status: payment.status,
         referenceId: payment.reference_id,
         paidAt: payment.paid_at ? new Date(payment.paid_at) : new Date(payment.created_at),
       });

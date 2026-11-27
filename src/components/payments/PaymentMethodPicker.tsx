@@ -1,12 +1,14 @@
 import { usePaymentLegalGate } from "@/hooks/usePaymentLegalGate";
 import { openCheckout, publicOrigin } from "@/lib/nativeApp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Send } from "lucide-react";
+import { Loader2, CreditCard, Banknote, Building2, Copy, CheckCircle, Wallet, Send, AlertTriangle, RefreshCw, Clock, XCircle, FileText, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import PaymentSafetyNotice from "@/components/legal/PaymentSafetyNotice";
+import { formatUzumPaymentError, getPaymentStatusMeta, normalizePaymentStatus, type CanonicalPaymentStatus } from "@/lib/paymentStatus";
+import { downloadPaymentReceipt } from "@/utils/downloadPaymentReceipt";
 
 export type PaymentMethod = "click" | "payme" | "uzum" | "cash" | "bank";
 
@@ -61,6 +63,40 @@ const PaymentMethodPicker = ({
   const [method, setMethod] = useState<PaymentMethod>(allowed[0]);
   const [loading, setLoading] = useState(false);
   const [botLoading, setBotLoading] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [uzumSession, setUzumSession] = useState<{
+    paymentId: string;
+    checkoutUrl: string;
+    status: CanonicalPaymentStatus;
+    rawStatus: string;
+  } | null>(null);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [downloadingReceipt, setDownloadingReceipt] = useState(false);
+
+  const refreshUzumStatus = async (paymentId: string) => {
+    setCheckingStatus(true);
+    try {
+      const { data } = await supabase
+        .from("platform_payments")
+        .select("status")
+        .eq("id", paymentId)
+        .maybeSingle();
+      if (data?.status) {
+        const next = normalizePaymentStatus(data.status);
+        setUzumSession((prev) => (prev && prev.paymentId === paymentId ? { ...prev, status: next, rawStatus: data.status } : prev));
+      }
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!uzumSession || uzumSession.status !== "pending") return;
+    const timer = window.setInterval(() => {
+      void refreshUzumStatus(uzumSession.paymentId);
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, [uzumSession]);
 
   const extraBody = {
     package_code: packageCode,
@@ -116,6 +152,7 @@ const PaymentMethodPicker = ({
       toast({ title: "Xatolik", description: "Noto'g'ri summa", variant: "destructive" });
       return;
     }
+    setPayError(null);
     setLoading(true);
     try {
       const fnName =
@@ -139,16 +176,53 @@ const PaymentMethodPicker = ({
         throw new Error(payload?.error || (context?.status === 401 ? "To'lov uchun tizimga qayta kiring" : error.message));
       }
       if (!data?.checkout_url) throw new Error("Checkout URL olinmadi");
+      if (provider === "uzum" && data?.payment?.id) {
+        setUzumSession({
+          paymentId: String(data.payment.id),
+          checkoutUrl: String(data.checkout_url),
+          status: "pending",
+          rawStatus: "pending",
+        });
+      }
       await openCheckout(data.checkout_url);
       setLoading(false);
     } catch (err: any) {
       const providerName = provider === "payme" ? "Payme" : provider === "uzum" ? "Uzum Bank" : "Click";
+      const friendlyError =
+        provider === "uzum"
+          ? formatUzumPaymentError(err?.message)
+          : err?.message || `${providerName} bilan bog'lanib bo'lmadi`;
+      setPayError(friendlyError);
       toast({
         title: "To'lov xatoligi",
-        description: err?.message || `${providerName} bilan bog'lanib bo'lmadi`,
+        description: friendlyError,
         variant: "destructive",
       });
       setLoading(false);
+    }
+  };
+
+  const handleDownloadUzumReceipt = async () => {
+    if (!uzumSession) return;
+    setDownloadingReceipt(true);
+    try {
+      await downloadPaymentReceipt({
+        paymentId: uzumSession.paymentId,
+        amount,
+        currency: "UZS",
+        purpose,
+        purposeLabel: purpose,
+        provider: "uzum",
+        status: uzumSession.rawStatus,
+        referenceId,
+        paidAt: new Date(),
+        format: "a4",
+      });
+      toast({ title: "Chek yuklandi", description: "PDF chek muvaffaqiyatli saqlandi" });
+    } catch (err: any) {
+      toast({ title: "Chek yuklanmadi", description: err?.message || "Xatolik", variant: "destructive" });
+    } finally {
+      setDownloadingReceipt(false);
     }
   };
 
@@ -201,7 +275,10 @@ const PaymentMethodPicker = ({
               <button
                 key={m.id}
                 type="button"
-                onClick={() => setMethod(m.id)}
+                onClick={() => {
+                  setMethod(m.id);
+                  setPayError(null);
+                }}
                 className={cn(
                   "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all",
                   active
@@ -269,6 +346,88 @@ const PaymentMethodPicker = ({
           </p>
         </div>
       )}
+
+      {payError && (
+        <div role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 p-3.5 text-sm space-y-2.5">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <p className="font-semibold text-destructive">
+                {method === "uzum" ? "Uzum Bank to'lovi amalga oshmadi" : "To'lov amalga oshmadi"}
+              </p>
+              <p className="text-xs text-foreground/85">{payError}</p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={handleConfirm}
+            disabled={loading}
+            className="w-full gap-2 border-destructive/40 text-destructive hover:bg-destructive/10"
+          >
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+            Qayta urinish
+          </Button>
+        </div>
+      )}
+
+      {uzumSession && method === "uzum" && (() => {
+        const meta = getPaymentStatusMeta(uzumSession.rawStatus);
+        return (
+          <div
+            className={cn(
+              "rounded-xl border p-3.5 text-sm space-y-2.5",
+              meta.key === "paid" && "border-green-500/40 bg-green-500/10",
+              meta.key === "pending" && "border-amber-500/40 bg-amber-500/10",
+              meta.key === "cancelled" && "border-destructive/40 bg-destructive/10"
+            )}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 font-semibold">
+                {meta.key === "paid" && <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />}
+                {meta.key === "pending" && <Clock className="w-4 h-4 text-amber-600 shrink-0" />}
+                {meta.key === "cancelled" && <XCircle className="w-4 h-4 text-destructive shrink-0" />}
+                <span>Uzum Bank to'lov holati</span>
+              </div>
+              <span
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-bold",
+                  meta.key === "paid" && "bg-green-600 text-white",
+                  meta.key === "pending" && "bg-amber-500 text-white",
+                  meta.key === "cancelled" && "bg-destructive text-destructive-foreground"
+                )}
+              >
+                {meta.label}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">{meta.description}</p>
+            <div className="flex flex-wrap gap-2">
+              {meta.key === "pending" && (
+                <>
+                  <Button type="button" size="sm" variant="outline" className="gap-1.5" onClick={() => void openCheckout(uzumSession.checkoutUrl)}>
+                    <ExternalLink className="w-3.5 h-3.5" /> Uzum Bankni ochish
+                  </Button>
+                  <Button type="button" size="sm" variant="outline" className="gap-1.5" disabled={checkingStatus} onClick={() => void refreshUzumStatus(uzumSession.paymentId)}>
+                    {checkingStatus ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                    Holatni tekshirish
+                  </Button>
+                </>
+              )}
+              {meta.key === "cancelled" && (
+                <Button type="button" size="sm" className="gap-1.5 bg-[#7000FF] hover:bg-[#5B00D6] text-white" disabled={loading} onClick={handleConfirm}>
+                  {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                  Qayta urinish
+                </Button>
+              )}
+              <Button type="button" size="sm" variant="ghost" className="gap-1.5" disabled={downloadingReceipt} onClick={handleDownloadUzumReceipt}>
+                {downloadingReceipt ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
+                Chek ({meta.label})
+              </Button>
+            </div>
+          </div>
+        );
+      })()}
 
       <Button
         onClick={handleConfirm}

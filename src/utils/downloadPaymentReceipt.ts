@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import QRCode from "qrcode";
 import { generateStampDataUrl } from "./generatePaymentStamp";
 import logoUrl from "@/assets/logo.webp";
+import { getPaymentStatusMeta } from "@/lib/paymentStatus";
 
 export type ReceiptFormat = "a4" | "thermal" | "both";
 
@@ -12,6 +13,7 @@ export interface PaymentReceiptData {
   purpose: string;
   purposeLabel: string;
   provider: string;
+  status?: string | null;
   referenceId?: string | null;
   paidAt: Date;
   payerName?: string;
@@ -37,6 +39,10 @@ const COLORS = {
   border: [226, 232, 240] as [number, number, number],
   green: [34, 197, 94] as [number, number, number],
   greenSoft: [220, 252, 231] as [number, number, number],
+  amber: [217, 119, 6] as [number, number, number],
+  amberSoft: [254, 243, 199] as [number, number, number],
+  red: [220, 38, 38] as [number, number, number],
+  redSoft: [254, 226, 226] as [number, number, number],
 };
 
 const SLOGAN = "Sog'lig'ingiz — bizning ustuvor vazifamiz";
@@ -143,16 +149,21 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(255, 255, 255);
   // Company logo and contact text remain exclusively inside the top header.
 
-  // SUCCESS BADGE
+  // STATUS BADGE (Muvaffaqiyatli / Kutilmoqda / Bekor qilingan)
+  const statusMeta = getPaymentStatusMeta(data.status ?? "paid");
+  const badgeBg =
+    statusMeta.key === "paid" ? COLORS.greenSoft : statusMeta.key === "cancelled" ? COLORS.redSoft : COLORS.amberSoft;
+  const badgeFg =
+    statusMeta.key === "paid" ? COLORS.green : statusMeta.key === "cancelled" ? COLORS.red : COLORS.amber;
   let y = 64;
-  doc.setFillColor(...COLORS.greenSoft);
-  doc.setDrawColor(...COLORS.green);
+  doc.setFillColor(...badgeBg);
+  doc.setDrawColor(...badgeFg);
   doc.setLineWidth(0.4);
   doc.roundedRect(margin, y, pageW - margin * 2, 14, 2, 2, "FD");
-  doc.setTextColor(...COLORS.green);
+  doc.setTextColor(...badgeFg);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("TO'LOV MUVAFFAQIYATLI QABUL QILINDI", pageW / 2, y + 9, { align: "center" });
+  doc.text(statusMeta.receiptBanner, pageW / 2, y + 9, { align: "center" });
 
   // SUMMA KARTASI
   y += 22;
@@ -232,6 +243,7 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
 
   if (data.serviceName) drawRow("Xizmat nomi", data.serviceName, { bold: true });
   drawRow("To'lov maqsadi", data.purposeLabel);
+  drawRow("To'lov holati", statusMeta.label, { bold: true });
   if (data.planName) drawRow("Tarif rejasi", data.planName);
   if (data.billingCycle) drawRow("To'lov turi", cycleLabel[data.billingCycle] || data.billingCycle);
   drawRow("To'langan sana va vaqt", data.paidAt.toLocaleString("uz-UZ"));
@@ -387,11 +399,16 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
   doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(...COLORS.muted);
   doc.text(data.paidAt.toLocaleString("uz-UZ"), W / 2, y, { align: "center" }); y += 4;
 
-  // SUCCESS
-  doc.setFillColor(...COLORS.greenSoft); doc.setDrawColor(...COLORS.green); doc.setLineWidth(0.3);
+  // STATUS
+  const statusMeta = getPaymentStatusMeta(data.status ?? "paid");
+  const badgeBg =
+    statusMeta.key === "paid" ? COLORS.greenSoft : statusMeta.key === "cancelled" ? COLORS.redSoft : COLORS.amberSoft;
+  const badgeFg =
+    statusMeta.key === "paid" ? COLORS.green : statusMeta.key === "cancelled" ? COLORS.red : COLORS.amber;
+  doc.setFillColor(...badgeBg); doc.setDrawColor(...badgeFg); doc.setLineWidth(0.3);
   doc.roundedRect(M, y, innerW, 7, 1.5, 1.5, "FD");
-  doc.setTextColor(...COLORS.green); doc.setFont("helvetica", "bold"); doc.setFontSize(8);
-  doc.text("MUVAFFAQIYATLI TO'LANDI", W / 2, y + 4.7, { align: "center" }); y += 10;
+  doc.setTextColor(...badgeFg); doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+  doc.text(statusMeta.thermalBanner, W / 2, y + 4.7, { align: "center" }); y += 10;
 
   // SUMMA
   doc.setTextColor(...COLORS.muted); doc.setFont("helvetica", "normal"); doc.setFontSize(7);
@@ -416,6 +433,7 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
 
   if (data.serviceName) row("Xizmat", data.serviceName);
   row("Maqsad", data.purposeLabel);
+  row("Holat", statusMeta.label);
   if (data.planName) row("Tarif", data.planName);
   if (data.billingCycle) row("Turi", cycleLabel[data.billingCycle] || data.billingCycle);
   row("Sana", data.paidAt.toLocaleString("uz-UZ"));

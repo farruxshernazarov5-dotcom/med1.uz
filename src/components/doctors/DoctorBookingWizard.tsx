@@ -18,6 +18,7 @@ import { nasiyaThreeMonthQuote } from "@/lib/nasiyaPricing";
 import { getClickMiniAppState, installClickMiniApp } from "@/lib/clickMiniApp";
 import { formatUzs } from "@/data/doctorServiceTemplates";
 import NasiyaSummary from "@/components/payments/NasiyaSummary";
+import { formatUzumPaymentError } from "@/lib/paymentStatus";
 import DoctorDatePicker from "./DoctorDatePicker";
 import { fetchDoctorCalendar, type DayAvailability } from "@/lib/doctorAvailability";
 import {
@@ -73,6 +74,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [checkoutUrl, setCheckoutUrl] = useState<string>("");
   const [payState, setPayState] = useState<"idle" | "awaiting" | "paid" | "failed">("idle");
+  const [payError, setPayError] = useState<string | null>(null);
   const [nasiyaReady, setNasiyaReady] = useState(false);
 
   useEffect(() => {
@@ -150,6 +152,7 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   }, [paymentId, payState, pay]);
 
   const startOnlinePayment = async (appointment: any) => {
+    setPayError(null);
     const fn =
       pay === "uzum_nasiya"
         ? "uzum-nasiya"
@@ -177,7 +180,9 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
     const json = await res.json();
     if (!res.ok || !json.checkout_url) {
       setPayState("failed");
-      toast({ title: "To'lov havolasi yaratilmadi", description: json.error || "Qayta urinib ko'ring", variant: "destructive" });
+      const friendly = pay === "uzum" ? formatUzumPaymentError(json.error) : json.error || "Qayta urinib ko'ring";
+      setPayError(friendly);
+      toast({ title: "To'lov havolasi yaratilmadi", description: friendly, variant: "destructive" });
       return;
     }
     setPaymentId(json.payment?.id ?? null);
@@ -376,11 +381,23 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
                 : payState === "failed" ? "bg-destructive/10 border-destructive/20"
                 : "bg-yellow-500/10 border-yellow-500/20"}`}>
                 {payState === "paid" ? (
-                  <p className="font-medium text-medical-green">To'lov qabul qilindi — bron tasdiqlandi ✓</p>
+                  <div className="space-y-1">
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Muvaffaqiyatli</Badge>
+                    <p className="font-medium text-medical-green">To'lov qabul qilindi — bron tasdiqlandi ✓</p>
+                  </div>
                 ) : payState === "failed" ? (
-                  <p className="font-medium text-destructive">To'lov amalga oshmadi. Bron bekor qilindi.</p>
+                  <div className="space-y-2">
+                    <Badge variant="destructive">Bekor qilingan</Badge>
+                    <p className="font-medium text-destructive">
+                      {payError || (pay === "uzum" ? "Uzum Bank to'lovi bekor qilindi yoki amalga oshmadi." : "To'lov amalga oshmadi.")}
+                    </p>
+                    <Button size="sm" variant="outline" className="gap-2" onClick={() => void startOnlinePayment(booking)}>
+                      <CreditCard className="w-4 h-4" /> Qayta urinish
+                    </Button>
+                  </div>
                 ) : (
                   <div className="space-y-2">
+                    <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Kutilmoqda</Badge>
                     <p className="flex items-center justify-center gap-2 text-yellow-700">
                       <Loader2 className="w-4 h-4 animate-spin" /> To'lov kutilmoqda...
                     </p>
