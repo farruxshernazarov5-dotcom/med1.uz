@@ -76,7 +76,7 @@ const OrgCoinCard = ({ orgType, orgId, orgName, contractId }: OrgCoinCardProps) 
                   purpose={`org_med_coin:${orgType}`}
                   packageCode={selected.code}
                   org={{ id: orgId || "", type: orgType, name: orgName || undefined, contractId }}
-                  allowed={["click", "payme"]}
+                  allowed={["click", "payme", "uzum"]}
                 />
               </div>
             )}

@@ -51,6 +51,7 @@ const PAY_METHODS = [
   { id: "cash", label: "Klinikada naqd/karta", icon: Banknote, hint: "Qabul kuni to'lanadi" },
   { id: "click", label: "Click", icon: Smartphone, hint: "Onlayn to'lov havolasi yuboriladi" },
   { id: "payme", label: "Payme", icon: CreditCard, hint: "Onlayn to'lov havolasi yuboriladi" },
+  { id: "uzum", label: "Uzum Bank", icon: CreditCard, hint: "Uzum Bank orqali tezkor onlayn to'lov" },
   { id: "uzum_nasiya", label: "Uzum Nasiya · 3 oy", icon: CreditCard, hint: "Uch oylik muddatli to‘lov" },
 ];
 
@@ -149,7 +150,14 @@ export default function DoctorBookingWizard({ open, onOpenChange, doctorId, doct
   }, [paymentId, payState, pay]);
 
   const startOnlinePayment = async (appointment: any) => {
-    const fn = pay === "uzum_nasiya" ? "uzum-nasiya" : pay === "payme" ? "payme-create-invoice" : "click-create-invoice";
+    const fn =
+      pay === "uzum_nasiya"
+        ? "uzum-nasiya"
+        : pay === "uzum"
+          ? "uzum-create-invoice"
+          : pay === "payme"
+            ? "payme-create-invoice"
+            : "click-create-invoice";
     const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`, {
       method: "POST",

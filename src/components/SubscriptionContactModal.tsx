@@ -159,7 +159,7 @@ const SubscriptionContactModal = ({
                     amount={numericPrice}
                     purpose={`subscription:${category || "general"}:${planName || ""}`}
                     referenceId={`SUB-${Date.now()}`}
-                    allowed={["click", "payme", "cash", "bank"]}
+                    allowed={["click", "payme", "uzum", "cash", "bank"]}
                   />
                 ) : (
                   <p className="text-sm text-center text-amber-700">To‘lov shartnoma imzolanib, tekshirilgandan keyin ochiladi.</p>

@@ -114,6 +114,14 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 mt-12 pt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs">
+            <span className="text-primary-foreground/70">Qabul qilinadigan to‘lov tizimlari:</span>
+            {["Click", "Payme", "Uzum Bank", "UZCARD", "HUMO"].map((name) => (
+              <span key={name} className="rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-2.5 py-0.5 font-medium text-primary-foreground">
+                {name}
+              </span>
+            ))}
+          </div>
           <p className="mb-4 text-center text-sm text-primary-foreground/85">Ogoh bo‘ling: SMS kod, PIN va CVV’ni hech kimga bermang. <Link to="/payment-safety" className="underline underline-offset-4">Firibgarlikdan himoya</Link></p>
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-primary-foreground/80 mb-4">
             {legalLinks.map((l) => (

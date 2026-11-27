@@ -185,7 +185,7 @@ const PatientPayments = () => {
                 purpose={`${payDialog.item._src === "Stomatologiya" ? "dental" : "clinic"}_invoice:${payDialog.item.id}`}
                 referenceId={payDialog.item._invoice || payDialog.item.id}
                 returnUrl={`${window.location.origin}/dashboard?paid=1`}
-                allowed={["click", "payme", "cash", "bank"]}
+                allowed={["click", "payme", "uzum", "cash", "bank"]}
                 bankDetails={{ recipient: payDialog.item._name }}
                 onBeforeConfirm={guardPaymentTerms}
               />

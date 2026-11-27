@@ -607,7 +607,7 @@ Quyidagi shakl to'ldirilib, info@med1.uz manziliga yuboriladi:
 | **Toifa** | **Maqsad** | **Uzatiladigan ma'lumot** |
 |----|----|----|
 | Bulutli hosting | Ma'lumotlarni saqlash va ishlov berish | Barcha texnik va amaliy ma'lumotlar (shifrlangan) |
-| To'lov provayderi | To'lovni amalga oshirish | Summa, buyurtma ID, maskalangan karta |
+| To'lov provayderlari (Click, Payme, Uzum Bank) | To'lovni amalga oshirish | Summa, buyurtma ID, maskalangan karta |
 | SMS / push provayder | Kod va bildirishnoma yuborish | Telefon raqami, xabar matni |
 | Elektron pochta xizmati | Xat yuborish | E-mail manzili, xat matni |
 | Analitika | Foydalanish statistikasi | Depersonalizatsiya qilingan texnik ma'lumot |

@@ -200,7 +200,7 @@ export default function CashWalletPanel(){
           <h2 className="font-bold">Balansni to‘ldirish</h2>
           <div className="grid grid-cols-2 gap-2">{sums.map(s=><Button key={s} variant={amount===s?'default':'outline'} onClick={()=>setAmount(s)}>{s.toLocaleString('uz-UZ')} so‘m</Button>)}</div>
           <Input type="number" min={10000} max={100000000} value={amount} onChange={e=>setAmount(Number(e.target.value))} aria-label="To‘ldirish summasi"/>
-          <PaymentMethodPicker amount={amount} purpose="cash_wallet_topup" referenceId={`wallet-${user?.id}`} returnUrl={`${publicOrigin()}${window.location.pathname.startsWith("/click")?"/click/profile":"/mobile-profile"}?section=cash_wallet`} allowed={['click','payme']}/>
+          <PaymentMethodPicker amount={amount} purpose="cash_wallet_topup" referenceId={`wallet-${user?.id}`} returnUrl={`${publicOrigin()}${window.location.pathname.startsWith("/click")?"/click/profile":"/mobile-profile"}?section=cash_wallet`} allowed={['click','payme','uzum']}/>
         </section>
       )}
 

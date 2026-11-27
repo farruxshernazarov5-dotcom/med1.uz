@@ -55,12 +55,12 @@ const Med1TopMyAdsPage = () => {
     [rows],
   );
 
-  const pay = async (ad: AdCampaign, provider: "click" | "payme" = "click") => {
+  const pay = async (ad: AdCampaign, provider: "click" | "payme" | "uzum" = "click") => {
     if (!(await requestLegal())) return;
     setBusy(ad.id);
     try {
       const { data, error } = await supabase.functions.invoke(
-        provider === "payme" ? "payme-create-invoice" : "click-create-invoice",
+        provider === "payme" ? "payme-create-invoice" : provider === "uzum" ? "uzum-create-invoice" : "click-create-invoice",
         {
           body: {
             amount: Number(ad.bid_amount),
@@ -190,6 +190,10 @@ const Med1TopMyAdsPage = () => {
                         <Button size="sm" onClick={() => void pay(ad, "payme")} disabled={busy === ad.id} className="bg-[#33CCCC] hover:bg-[#2BB3B3] text-white">
                           {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
                           Payme orqali to'lash
+                        </Button>
+                        <Button size="sm" onClick={() => void pay(ad, "uzum")} disabled={busy === ad.id} className="bg-[#7000FF] hover:bg-[#5B00D6] text-white">
+                          {busy === ad.id ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Wallet className="w-3.5 h-3.5 mr-1" />}
+                          Uzum Bank orqali to'lash
                         </Button>
                       </>
                     ) : null}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildUzumPaymentUrl,
   expectedUzumServiceId,
   uzumMethodFromPath,
   uzumOrderIdFromParams,
@@ -41,5 +42,22 @@ describe("Uzum Merchant API protocol", () => {
     expect(expectedUzumServiceId({ environment: "sandbox" }, 101202, 999999)).toBe(999999);
     expect(expectedUzumServiceId({ environment: "live" }, 101202, 999999)).toBe(101202);
     expect(expectedUzumServiceId({}, null, null)).toBeNull();
+  });
+
+  it("builds the official Uzum Bank open-service payment URL with tiyin amount and redirectUrl", () => {
+    const url = new URL(
+      buildUzumPaymentUrl({
+        serviceId: 498615308,
+        paymentId: ORDER_ID,
+        amountTiyin: 5000000,
+        returnUrl: "https://med1.uz/payment/success?payment_id=abc&provider=uzum",
+      }),
+    );
+    expect(url.origin).toBe("https://www.uzumbank.uz");
+    expect(url.pathname).toBe("/open-service");
+    expect(url.searchParams.get("serviceId")).toBe("498615308");
+    expect(url.searchParams.get("order_id")).toBe(ORDER_ID);
+    expect(url.searchParams.get("amount")).toBe("5000000");
+    expect(url.searchParams.get("redirectUrl")).toBe("https://med1.uz/payment/success?payment_id=abc&provider=uzum");
   });
 });

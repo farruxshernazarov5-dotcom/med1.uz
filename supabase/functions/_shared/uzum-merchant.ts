@@ -65,3 +65,18 @@ export function expectedUzumServiceId(
 export function uzumResponseData(paymentId: string) {
   return { order_id: { value: paymentId } };
 }
+
+export function buildUzumPaymentUrl(input: {
+  serviceId: number;
+  paymentId: string;
+  amountTiyin: number;
+  returnUrl: string;
+}): string {
+  const params = new URLSearchParams({
+    serviceId: String(input.serviceId),
+    order_id: input.paymentId,
+    amount: String(input.amountTiyin),
+    redirectUrl: input.returnUrl,
+  });
+  return `https://www.uzumbank.uz/open-service?${params.toString()}`;
+}

@@ -1,8 +1,9 @@
 import { resolvePackagePrice, safeReturnUrl } from "../_shared/payment-guard.ts";
-// Uzum Bank (Apelsin / Uzum Pay) checkout invoice generator.
-// Foydalanuvchi uchun invoice yaratadi va Uzum checkout URL qaytaradi.
-// Docs: https://developer.uzumbank.uz/docs/checkout
+// Uzum Bank Merchant API payment link generator.
+// Foydalanuvchi uchun platform_payments buyurtmasini yaratadi va Uzum Bank open-service havolasini qaytaradi.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireSubscriptionContract } from "../_shared/subscription-contract.ts";
+import { buildUzumPaymentUrl } from "../_shared/uzum-merchant.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,12 @@ const corsHeaders = {
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+function parseServiceId(raw: string | undefined): number | null {
+  if (!raw) return null;
+  const parsed = Number(raw.trim());
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -39,34 +46,73 @@ Deno.serve(async (req) => {
 
     if (!rawAmount || rawAmount <= 0 || rawAmount > 100_000_000) return json(400, { error: "Noto'g'ri summa" });
 
-    const merchantId = environment === "sandbox"
-      ? Deno.env.get("UZUM_MERCHANT_ID_SANDBOX") || Deno.env.get("UZUM_MERCHANT_ID")
-      : Deno.env.get("UZUM_MERCHANT_ID");
-    const serviceId = environment === "sandbox"
-      ? Deno.env.get("UZUM_SERVICE_ID_SANDBOX") || Deno.env.get("UZUM_SERVICE_ID")
-      : Deno.env.get("UZUM_SERVICE_ID");
-    if (!merchantId || !serviceId) return json(500, { error: "Uzum merchant sozlanmagan" });
+    const liveServiceId = parseServiceId(Deno.env.get("UZUM_SERVICE_ID"));
+    const sandboxServiceId = parseServiceId(Deno.env.get("UZUM_SERVICE_ID_SANDBOX")) ?? liveServiceId;
+    const serviceId = environment === "sandbox" ? sandboxServiceId : liveServiceId;
+    if (!serviceId) return json(503, { error: "Uzum Bank xizmat ID sozlanmagan" });
 
     const admin = createClient(supabaseUrl, serviceKey);
+    const contractGate = await requireSubscriptionContract(admin, userId, purpose);
+    if (!contractGate.allowed) {
+      return json(403, {
+        error: "Pullik obunadan oldin elektron shartnomani imzolash shart",
+        code: "CONTRACT_REQUIRED",
+        contract_slug: contractGate.slug,
+      });
+    }
+
     const packageCode = body?.package_code ? String(body.package_code) : null;
     const priced = await resolvePackagePrice(admin, packageCode, rawAmount);
     if (!priced.ok) return json(400, { error: priced.error });
-    if (!priced.packageId) {
-      const { data: isAdmin } = await admin.rpc("has_role", { _user_id: userId, _role: "admin" });
-      if (!(environment === "sandbox" && isAdmin)) return json(400, { error: "Paket topilmadi" });
-    }
     const amount = priced.amount;
-    const { data: payment, error: payErr } = await admin.from("platform_payments").insert({
-      user_id: userId,
-      provider: "uzum",
-      amount,
-      purpose,
-      reference_id,
-      package_id: priced.packageId,
-      status: "pending",
-      metadata: { return_url, environment, package_code: packageCode, uzum_service_id: serviceId },
-    }).select().single();
-    if (payErr) throw payErr;
+    const pkg = priced.packageId ? { id: priced.packageId } : null;
+
+    const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const { data: reuse } = await admin
+      .from("platform_payments")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("provider", "uzum")
+      .eq("purpose", purpose)
+      .eq("amount", amount)
+      .eq("status", "pending")
+      .is("provider_transaction_id", null)
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let payment = reuse as { id: string } | null;
+    if (!payment) {
+      const { data: created, error: payErr } = await admin
+        .from("platform_payments")
+        .insert({
+          user_id: userId,
+          provider: "uzum",
+          amount,
+          purpose,
+          reference_id,
+          package_id: pkg?.id ?? null,
+          status: "pending",
+          metadata: {
+            return_url,
+            environment,
+            contract_id: body?.contract_id ? String(body.contract_id) : contractGate.contractId,
+            package_code: packageCode,
+            uzum_service_id: serviceId,
+            org_id: body?.org_id ? String(body.org_id) : undefined,
+            org_type: body?.org_type ? String(body.org_type) : undefined,
+            org_name: body?.org_name ? String(body.org_name) : undefined,
+          },
+        })
+        .select("id")
+        .single();
+      if (payErr) throw payErr;
+      payment = created;
+    } else if (pkg?.id) {
+      await admin.from("platform_payments").update({ package_id: pkg.id }).eq("id", payment.id);
+    }
+    if (!payment) return json(500, { error: "To'lov buyurtmasi yaratilmadi" });
 
     const returnWithId = (() => {
       try {
@@ -81,10 +127,14 @@ Deno.serve(async (req) => {
     })();
 
     const amountTiyin = Math.round(amount * 100);
-    const host = environment === "sandbox" ? "https://test-checkout.uzumbank.uz" : "https://checkout.uzumbank.uz";
-    const checkout_url = `${host}/pay?merchant_id=${encodeURIComponent(merchantId)}&service_id=${encodeURIComponent(serviceId)}&amount=${amountTiyin}&order_id=${payment.id}&return_url=${encodeURIComponent(returnWithId)}`;
+    const checkout_url = buildUzumPaymentUrl({
+      serviceId,
+      paymentId: payment.id,
+      amountTiyin,
+      returnUrl: returnWithId,
+    });
 
-    return json(200, { ok: true, payment, checkout_url, environment });
+    return json(200, { ok: true, payment, checkout_url, amount_tiyin: amountTiyin, environment });
   } catch (err) {
     console.error("uzum-create-invoice error:", err);
     return json(500, { error: "Server xatolik" });

@@ -42,6 +42,13 @@ const PaymentSuccessPage = () => {
   const { userRole } = useAuth();
   const paymentId = params.get("payment_id") || params.get("merchant_trans_id");
   const provider = (params.get("provider") || "click").toLowerCase();
+  const providerLabel = (value: string) => {
+    const p = value.toLowerCase();
+    if (p === "uzum") return "Uzum Bank";
+    if (p === "payme") return "Payme";
+    if (p === "click") return "Click";
+    return value;
+  };
 
   const [status, setStatus] = useState<Status>("loading");
   const [payment, setPayment] = useState<PaymentRow | null>(null);
@@ -175,7 +182,7 @@ const PaymentSuccessPage = () => {
               <div>
                 <h1 className="text-2xl font-bold text-foreground">To'lov qayta ishlanmoqda</h1>
                 <p className="text-muted-foreground text-sm mt-1">
-                  {provider === "click" ? "Click" : provider} tasdig'ini kutmoqdamiz... ({polls + 1}/15)
+                  {providerLabel(provider)} tasdig'ini kutmoqdamiz... ({polls + 1}/15)
                 </p>
               </div>
             </>
@@ -238,7 +245,7 @@ const PaymentSuccessPage = () => {
                   </span>
                 }
               />
-              <Row label="Provider" value={<span className="capitalize">{payment.provider}</span>} />
+              <Row label="Provider" value={<span>{providerLabel(payment.provider)}</span>} />
               {payment.reference_id && <Row label="Reference" value={<span className="font-mono text-xs">{payment.reference_id}</span>} />}
               <Row label="Tranzaksiya ID" value={<span className="font-mono text-[10px] break-all">{payment.id}</span>} />
               {payment.paid_at && (

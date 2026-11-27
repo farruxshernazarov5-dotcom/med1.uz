@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import PaymentSafetyNotice from "@/components/legal/PaymentSafetyNotice";
 
-export type PaymentMethod = "click" | "payme" | "cash" | "bank";
+export type PaymentMethod = "click" | "payme" | "uzum" | "cash" | "bank";
 
 interface PaymentMethodPickerProps {
   amount: number;
@@ -51,7 +51,7 @@ const PaymentMethodPicker = ({
   onCashSelected,
   onBankSelected,
   bankDetails,
-  allowed = ["click", "payme", "cash", "bank"],
+  allowed = ["click", "payme", "uzum", "cash", "bank"],
   onBeforeConfirm,
   className = "",
   packageCode,
@@ -111,14 +111,19 @@ const PaymentMethodPicker = ({
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleOnlinePay = async (provider: "click" | "payme") => {
+  const handleOnlinePay = async (provider: "click" | "payme" | "uzum") => {
     if (!amount || amount <= 0) {
       toast({ title: "Xatolik", description: "Noto'g'ri summa", variant: "destructive" });
       return;
     }
     setLoading(true);
     try {
-      const fnName = provider === "payme" ? "payme-create-invoice" : "click-create-invoice";
+      const fnName =
+        provider === "payme"
+          ? "payme-create-invoice"
+          : provider === "uzum"
+            ? "uzum-create-invoice"
+            : "click-create-invoice";
       const { data, error } = await supabase.functions.invoke(fnName, {
         body: {
           amount,
@@ -137,9 +142,10 @@ const PaymentMethodPicker = ({
       await openCheckout(data.checkout_url);
       setLoading(false);
     } catch (err: any) {
+      const providerName = provider === "payme" ? "Payme" : provider === "uzum" ? "Uzum Bank" : "Click";
       toast({
         title: "To'lov xatoligi",
-        description: err?.message || `${provider === "payme" ? "Payme" : "Click"} bilan bog'lanib bo'lmadi`,
+        description: err?.message || `${providerName} bilan bog'lanib bo'lmadi`,
         variant: "destructive",
       });
       setLoading(false);
@@ -147,7 +153,7 @@ const PaymentMethodPicker = ({
   };
 
   const runConfirm = () => {
-    if (method === "click" || method === "payme") return handleOnlinePay(method);
+    if (method === "click" || method === "payme" || method === "uzum") return handleOnlinePay(method);
     if (method === "cash") {
       onCashSelected?.();
       toast({
@@ -172,11 +178,12 @@ const PaymentMethodPicker = ({
     if (await requestLegal()) runConfirm();
   };
 
-  const allMethods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string }[] = [
-    { id: "click", label: "Click", desc: "Online to'lov • bir necha soniyada", icon: CreditCard, color: "text-[#00B4E5]" },
-    { id: "payme", label: "Payme", desc: "Payme orqali xavfsiz online to'lov", icon: Wallet, color: "text-[#33CCCC]" },
-    { id: "cash", label: "Naqd", desc: "Kassa yoki administrator orqali", icon: Banknote, color: "text-green-600" },
-    { id: "bank", label: "Bank o'tkazma", desc: "Yuridik shaxslar uchun", icon: Building2, color: "text-blue-600" },
+  const allMethods: { id: PaymentMethod; label: string; desc: string; icon: any; color: string; badge?: string }[] = [
+    { id: "click", label: "Click", desc: "Online to'lov • bir necha soniyada", icon: CreditCard, color: "text-[#00B4E5] bg-[#00B4E5]/10" },
+    { id: "payme", label: "Payme", desc: "Payme orqali xavfsiz online to'lov", icon: Wallet, color: "text-[#33CCCC] bg-[#33CCCC]/10" },
+    { id: "uzum", label: "Uzum Bank", desc: "Uzum Bank ilovasi orqali tezkor online to'lov", icon: Wallet, color: "text-[#7000FF] bg-[#7000FF]/10", badge: "UZUM" },
+    { id: "cash", label: "Naqd", desc: "Kassa yoki administrator orqali", icon: Banknote, color: "text-green-600 bg-green-500/10" },
+    { id: "bank", label: "Bank o'tkazma", desc: "Yuridik shaxslar uchun", icon: Building2, color: "text-blue-600 bg-blue-500/10" },
   ];
   const methods = allMethods.filter(m => allowed.includes(m.id));
 
@@ -202,11 +209,18 @@ const PaymentMethodPicker = ({
                     : "border-border hover:border-primary/50 bg-card"
                 )}
               >
-                <div className={cn("w-10 h-10 rounded-lg bg-muted flex items-center justify-center", m.color)}>
-                  <Icon className="w-5 h-5" />
+                <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center shrink-0", m.color)}>
+                  {m.id === "uzum" ? <span className="font-heading font-extrabold text-base leading-none">U</span> : <Icon className="w-5 h-5" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground text-sm">{m.label}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-foreground text-sm">{m.label}</p>
+                    {m.badge && (
+                      <span className="rounded-full bg-[#7000FF]/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-[#7000FF]">
+                        {m.badge}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">{m.desc}</p>
                 </div>
                 {active && <CheckCircle className="w-5 h-5 text-primary shrink-0" />}
@@ -263,14 +277,15 @@ const PaymentMethodPicker = ({
         className={cn(
           "w-full gap-2",
           method === "click" && "bg-[#00B4E5] hover:bg-[#0098C2] text-white",
-          method === "payme" && "bg-[#33CCCC] hover:bg-[#2BB3B3] text-white"
+          method === "payme" && "bg-[#33CCCC] hover:bg-[#2BB3B3] text-white",
+          method === "uzum" && "bg-[#7000FF] hover:bg-[#5B00D6] text-white"
         )}
       >
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : method === "click" ? (
           <CreditCard className="w-5 h-5" />
-        ) : method === "payme" ? (
+        ) : method === "payme" || method === "uzum" ? (
           <Wallet className="w-5 h-5" />
         ) : method === "cash" ? (
           <Banknote className="w-5 h-5" />
@@ -279,6 +294,7 @@ const PaymentMethodPicker = ({
         )}
         {method === "click" && "Click orqali to'lash"}
         {method === "payme" && "Payme orqali to'lash"}
+        {method === "uzum" && "Uzum Bank orqali to'lash"}
         {method === "cash" && "Naqd to'lovni tasdiqlash"}
         {method === "bank" && "Bank o'tkazmani tasdiqlash"}
         {amount > 0 && (
@@ -286,7 +302,7 @@ const PaymentMethodPicker = ({
         )}
       </Button>
 
-      {(method === "click" || method === "payme") && (
+      {(method === "click" || method === "payme" || method === "uzum") && (
         <Button
           type="button"
           variant="outline"

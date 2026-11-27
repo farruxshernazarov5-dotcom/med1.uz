@@ -57,7 +57,7 @@ const Med1TopCreatePage = () => {
   const [busy, setBusy] = useState(false);
   const [advice, setAdvice] = useState<string>("");
   const [adviceBusy, setAdviceBusy] = useState(false);
-  const [provider, setProvider] = useState<"click" | "payme">("click");
+  const [provider, setProvider] = useState<"click" | "payme" | "uzum">("click");
 
   useEffect(() => {
     fetchAuctionState().then(setAuction).catch(() => setAuction([]));
@@ -181,14 +181,17 @@ const Med1TopCreatePage = () => {
         body: { action: "moderate", campaign_id: campaign.id, lang },
       });
 
-      const { data: pay, error: payErr } = await supabase.functions.invoke(provider === "payme" ? "payme-create-invoice" : "click-create-invoice", {
+      const { data: pay, error: payErr } = await supabase.functions.invoke(
+        provider === "payme" ? "payme-create-invoice" : provider === "uzum" ? "uzum-create-invoice" : "click-create-invoice",
+        {
         body: {
           amount: bid,
           purpose: `med1_ad:${placement.code}`,
           reference_id: campaign.id,
           return_url: `${publicOrigin()}/med1-top/my`,
         },
-      });
+      },
+      );
       if (payErr) throw payErr;
 
       if (pay?.checkout_url) {
@@ -367,19 +370,32 @@ const Med1TopCreatePage = () => {
 
         <div className="mb-3">
           <p className="text-sm font-semibold mb-2">To'lov tizimini tanlang</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <Button type="button" variant={provider === "click" ? "default" : "outline"} onClick={() => setProvider("click")}>
               Click
             </Button>
             <Button type="button" variant={provider === "payme" ? "default" : "outline"} onClick={() => setProvider("payme")}>
               Payme
             </Button>
+            <Button
+              type="button"
+              variant={provider === "uzum" ? "default" : "outline"}
+              className={provider === "uzum" ? "bg-[#7000FF] hover:bg-[#5B00D6] text-white border-[#7000FF]" : ""}
+              onClick={() => setProvider("uzum")}
+            >
+              Uzum Bank
+            </Button>
           </div>
         </div>
 
-        <Button onClick={submit} disabled={busy} size="lg" className="w-full">
+        <Button
+          onClick={submit}
+          disabled={busy}
+          size="lg"
+          className={provider === "uzum" ? "w-full bg-[#7000FF] hover:bg-[#5B00D6] text-white" : "w-full"}
+        >
           {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wallet className="w-4 h-4 mr-2" />}
-          {provider === "payme" ? "Payme" : "Click"} bilan to'lovga o'tish — {formatSum(bid)} <ArrowRight className="w-4 h-4 ml-1" />
+          {provider === "payme" ? "Payme" : provider === "uzum" ? "Uzum Bank" : "Click"} bilan to'lovga o'tish — {formatSum(bid)} <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
         <p className="text-xs text-muted-foreground mt-3 text-center">
           CREATE → PAYMENT → CONFIRMATION → MODERATION → PUBLISH

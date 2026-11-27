@@ -93,12 +93,13 @@ serve(async (req) => {
       return res.ok && json?.checkout_url ? String(json.checkout_url) : null;
     };
 
-    const [clickUrl, paymeUrl] = await Promise.all([
+    const [clickUrl, paymeUrl, uzumUrl] = await Promise.all([
       invoke("click-create-invoice"),
       invoke("payme-create-invoice"),
+      invoke("uzum-create-invoice"),
     ]);
 
-    if (!clickUrl && !paymeUrl) {
+    if (!clickUrl && !paymeUrl && !uzumUrl) {
       return new Response(JSON.stringify({ error: "To'lov havolasi yaratilmadi" }), {
         status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -107,6 +108,7 @@ serve(async (req) => {
     const buttons: { text: string; url: string }[][] = [];
     if (clickUrl) buttons.push([{ text: "💳 Click orqali to'lash", url: clickUrl }]);
     if (paymeUrl) buttons.push([{ text: "🟢 Payme orqali to'lash", url: paymeUrl }]);
+    if (uzumUrl) buttons.push([{ text: "🟣 Uzum Bank orqali to'lash", url: uzumUrl }]);
 
     const text =
       `💰 <b>MED1.UZ — to'lov havolasi</b>\n\n` +
@@ -140,7 +142,7 @@ serve(async (req) => {
       });
     }
 
-    return new Response(JSON.stringify({ success: true, click_url: clickUrl, payme_url: paymeUrl }), {
+    return new Response(JSON.stringify({ success: true, click_url: clickUrl, payme_url: paymeUrl, uzum_url: uzumUrl }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

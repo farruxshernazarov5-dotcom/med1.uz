@@ -551,7 +551,7 @@ Akseptdan so'ng ushbu hujjat Operator va Foydalanuvchi o'rtasidagi yozma shaklda
 
 8.2. Operator narxlarni bir tomonlama o'zgartirishga haqli. Yangi narx e'lon qilingan paytdan boshlab yangi buyurtmalarga nisbatan qo'llaniladi va allaqachon to'langan xizmatlarga ta'sir qilmaydi.
 
-8.3. To'lov usullari: bank kartalari (UZCARD, HUMO, VISA, Mastercard), mobil to'lov tizimlari, bank o'tkazmasi, Platforma hisobidagi mablag' (depozit), Med-Coin bilan qisman qoplash.
+8.3. To'lov usullari: bank kartalari (UZCARD, HUMO, VISA, Mastercard), milliy mobil to'lov tizimlari (Click, Payme, Uzum Bank), bank o'tkazmasi, Platforma hisobidagi mablag' (depozit), Med-Coin bilan qisman qoplash.
 
 8.4. To'lov Operator hisobvarag'iga yoki to'lov agenti hisobiga mablag' tushgan paytdan bajarilgan hisoblanadi.
 

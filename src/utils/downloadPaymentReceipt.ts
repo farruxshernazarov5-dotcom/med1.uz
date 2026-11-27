@@ -185,7 +185,7 @@ async function renderA4(doc: jsPDF, data: PaymentReceiptData) {
   doc.setTextColor(...COLORS.accent);
   doc.setFont("helvetica", "bold");
   // Provider matnini sig'dirish uchun avtomatik shrift
-  const providerText = data.provider.toUpperCase();
+  const providerText = data.provider.toLowerCase() === "uzum" ? "UZUM BANK" : data.provider.toUpperCase();
   let providerSize = 14;
   doc.setFontSize(providerSize);
   while (providerSize > 8 && doc.getTextWidth(providerText) > halfW) {
@@ -399,7 +399,7 @@ async function drawThermalContent(doc: jsPDF, data: PaymentReceiptData, logoData
   doc.setTextColor(...COLORS.primary); doc.setFont("helvetica", "bold"); doc.setFontSize(15);
   doc.text(fmtMoney(data.amount, data.currency), W / 2, y, { align: "center" }); y += 5;
   doc.setTextColor(...COLORS.accent); doc.setFontSize(9);
-  doc.text(data.provider.toUpperCase(), W / 2, y, { align: "center" }); y += 4;
+  doc.text(data.provider.toLowerCase() === "uzum" ? "UZUM BANK" : data.provider.toUpperCase(), W / 2, y, { align: "center" }); y += 4;
 
   doc.setDrawColor(...COLORS.border); doc.setLineDashPattern([0.6, 0.6], 0);
   doc.line(M, y, W - M, y); doc.setLineDashPattern([], 0); y += 3;
