@@ -1,7 +1,16 @@
 // Shared server-side guards for checkout creation.
 
 const ALLOWED_RETURN_HOSTS = new Set([
-  "med1.uz", "www.med1.uz", "ai.med1.uz", "admin.med1.uz", "clinic.med1.uz", "doctors.med1.uz",
+  "med1.uz",
+  "www.med1.uz",
+  "my.med1.uz",
+  "ai.med1.uz",
+  "admin.med1.uz",
+  "clinic.med1.uz",
+  "doctors.med1.uz",
+  "dental.med1.uz",
+  "help.med1.uz",
+  "verify.med1.uz",
 ]);
 
 /** Returns a safe return URL (only Med1 domains / Lovable preview), or null. */
@@ -9,9 +18,11 @@ export function safeReturnUrl(raw: unknown, fallback = "https://med1.uz/payment/
   const value = raw ? String(raw) : fallback;
   try {
     const u = new URL(value);
-    const isLocal = u.hostname === "localhost";
+    const host = u.hostname.toLowerCase();
+    const isLocal = host === "localhost" || host === "127.0.0.1";
     if (u.protocol !== "https:" && !isLocal) return null;
-    if (!isLocal && !ALLOWED_RETURN_HOSTS.has(u.hostname) && !u.hostname.endsWith(".lovable.app")) return null;
+    const isAllowedLovable = host.endsWith(".lovable.app") || host.endsWith(".lovableproject.com");
+    if (!isLocal && !ALLOWED_RETURN_HOSTS.has(host) && !isAllowedLovable) return null;
     return u.toString();
   } catch {
     return null;
