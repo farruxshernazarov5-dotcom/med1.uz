@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
     const rawAmount = Number(body?.amount);
     const purpose = String(body?.purpose || "ai_subscription");
     const reference_id = body?.reference_id ? String(body.reference_id) : null;
-    const return_url = body?.return_url ? String(body.return_url) : "https://med1.uz/payment/success";
+    const return_url = safeReturnUrl(body?.return_url);
 
     if (!rawAmount || rawAmount <= 0 || rawAmount > 100000000) {
       return new Response(JSON.stringify({ error: "Noto'g'ri summa" }), {
@@ -52,12 +52,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    try {
-      const parsedReturnUrl = new URL(return_url);
-      const allowedHosts = new Set(["med1.uz", "www.med1.uz", "localhost"]);
-      if (parsedReturnUrl.protocol !== "https:" && parsedReturnUrl.hostname !== "localhost") throw new Error();
-      if (!allowedHosts.has(parsedReturnUrl.hostname) && !parsedReturnUrl.hostname.endsWith(".lovable.app")) throw new Error();
-    } catch {
+    if (!return_url) {
       return new Response(JSON.stringify({ error: "Qaytish manzili ruxsat etilmagan" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
