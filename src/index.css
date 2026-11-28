@@ -108,6 +108,15 @@
     --aurora-purple: 250 100% 69%;
     --aurora-cyan: 190 95% 65%;
 
+    /* Verified service partner brand tokens */
+    --brand-click: 216 100% 50%;
+    --brand-payme: 186 82% 42%;
+    --brand-uzum: 266 100% 50%;
+    --brand-uzum-bg: 82 86% 65%;
+    --brand-nasiya-bg: 13 100% 66%;
+    --brand-anor: 340 85% 32%;
+    --brand-hambi: 213 73% 24%;
+
     /* Professional Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(213, 73%, 15%), hsl(216, 59%, 26%), hsl(214, 84%, 56%));
     --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%), hsl(213, 30%, 97%));

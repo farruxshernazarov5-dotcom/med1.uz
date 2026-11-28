@@ -1,3 +1,8 @@
+## 2026-11-28 — Biz haqimizda: xizmatlar va to‘lov qo‘llanmalari
+- [x] Hambi, Click Super App, Click, Payme, Uzum Bank, Anor Bank va Uzum Nasiya foydalanuvchi tasdig‘i bilan rasmiy hamkor sifatida; brend kartalari va yetti alohida maqola
+- [x] Uch kreativ foto, mobil/desktop ko‘rinish, haqiqiy integratsiya holati, xavfsizlik izohlari va Nasiya ichki ustamasini ommaga chiqarmaslik
+- [x] SEO/HowTo, 4 test, barcha yetti maqola va rasm dekodlash, mobil/desktop overflow va build tekshiruvi
+
 ## 2026-11-26 — Uzum Merchant API webhook
 - [x] `/check`, `/create`, `/confirm`, `/reverse`, `/status` va Basic Auth; rasmiy xato kodlari, tiyin summasi, serviceId va order UUID validatsiyasi
 - [x] Serverdagi yagona tranzaksiya holati, atomar tasdiqlash/qaytarish, 30 daqiqalik himoya, bir martalik xizmat berish va mavjud to‘lov bildirishnomasi

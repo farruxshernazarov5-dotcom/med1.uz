@@ -10,6 +10,7 @@ import {
 import founderImg from "@/assets/founder-farrukh.webp";
 import seoImg from "@/assets/seo-javokhir.webp";
 import missionImg from "@/assets/about-mission.webp";
+import PaymentEcosystem from "@/components/about/PaymentEcosystem";
 
 const milestones = [
   { year: "2018", title: "Loyiha asos solinishi", desc: "Med1.uz g'oyasi tug'ildi — O'zbekiston tibbiyotini raqamlashtirish maqsadida", icon: Lightbulb },
@@ -60,6 +61,9 @@ const AboutPage = () => {
           <p className="text-lg text-primary-foreground/80 max-w-2xl leading-relaxed">
             Med1.uz — O'zbekistonning yetakchi tibbiy ma'lumotlar portali. 2018-yildan beri tibbiyot sohasini raqamlashtirish va shaffoflikni ta'minlash yo'lida xizmat qilmoqdamiz.
           </p>
+          <a href="#hamkorlar" className="mt-7 inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 bg-primary-foreground/10 px-5 py-2.5 text-sm font-semibold text-primary-foreground backdrop-blur-sm transition-colors hover:bg-primary-foreground/20">
+            Rasmiy hamkorlar va foydalanish qo‘llanmalari
+          </a>
         </div>
       </section>
 
@@ -92,6 +96,8 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
+
+      <PaymentEcosystem />
 
       {/* Jamoa */}
       <section className="py-16 bg-accent/30">

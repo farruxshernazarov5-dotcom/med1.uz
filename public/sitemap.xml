@@ -91,6 +91,41 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://med1.uz/payment-guides/hambi</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://med1.uz/payment-guides/click-super-app</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://med1.uz/payment-guides/click</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://med1.uz/payment-guides/payme</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://med1.uz/payment-guides/uzum-bank</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://med1.uz/payment-guides/anor-bank</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://med1.uz/payment-guides/uzum-nasiya</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://med1.uz/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
