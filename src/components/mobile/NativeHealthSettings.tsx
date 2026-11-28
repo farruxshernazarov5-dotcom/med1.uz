@@ -74,7 +74,7 @@ export const NativeHealthSettings = () => {
       <div className="space-y-4">
         <Card><CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
           <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-          <span>Telefonga keladigan dori va qabul eslatmalari hamda Face ID / barmoq izi bilan kirish <b className="text-foreground">Med1.uz mobil ilovasida</b> ishlaydi. Saytda esa qabul yaqinlashganda va tahlil tayyor bo‘lganda shu sahifada ogohlantirish chiqadi.</span>
+          <span>Telefonga keladigan dori va qabul eslatmalari hamda Face ID / barmoq izi bilan kirish <b className="text-foreground">MED ALL mobil ilovasida</b> ishlaydi. Saytda esa qabul yaqinlashganda va tahlil tayyor bo‘lganda shu sahifada ogohlantirish chiqadi.</span>
         </CardContent></Card>
         <LabAlertsCard />
       </div>

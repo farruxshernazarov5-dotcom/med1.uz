@@ -213,7 +213,7 @@ const MobileServicesPage = () => {
       <header className="sticky top-0 z-30 border-b border-border bg-card/95 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] backdrop-blur-xl">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium text-primary">Med1.uz</p>
+            <p className="text-xs font-medium text-primary">MED ALL</p>
             <h1 className="text-xl font-bold text-foreground">Xizmatlar</h1>
           </div>
           <div className="flex items-center gap-1">

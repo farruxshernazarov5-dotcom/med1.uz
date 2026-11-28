@@ -8,6 +8,13 @@ describe("payment guide registry", () => {
     expect(paymentGuides.every((guide) => guide.partnership === "official")).toBe(true);
   });
 
+  it("assigns a distinct cover image to every partner guide and uses MED ALL app branding", () => {
+    expect(new Set(paymentGuides.map((guide) => guide.image)).size).toBe(7);
+    const text = paymentGuides.map((g) => `${g.summary} ${g.note} ${g.actionLabel ?? ""} ${g.steps.map((s) => `${s.title} ${s.text}`).join(" ")}`).join(" ");
+    expect(text).toContain("MED ALL");
+    expect(text).not.toMatch(/\bMed1(\.uz)?\b/);
+  });
+
   it("marks only Click, Payme and Uzum Bank as direct online payment methods", () => {
     expect(paymentGuides.filter((guide) => guide.availability === "To‘lovda mavjud").map((guide) => guide.paymentMethod)).toEqual(["click", "payme", "uzum"]);
   });

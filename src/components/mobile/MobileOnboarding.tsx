@@ -54,7 +54,7 @@ export const MobileOnboarding = () => {
         </div>
         <div className="relative flex h-full flex-col px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))]">
           <div className="flex items-center justify-between gap-4">
-            <p className="text-sm font-extrabold">Med1.uz</p>
+            <p className="text-sm font-extrabold">MED ALL</p>
             <div className="flex flex-1 gap-1.5" aria-label={`${step + 1} / ${STEPS.length}`}>
               {STEPS.map((item, index) => <span key={item.title} className={`h-1 flex-1 rounded-full ${index <= step ? "bg-background" : "bg-background/30"}`} />)}
             </div>
@@ -68,7 +68,7 @@ export const MobileOnboarding = () => {
             <DialogDescription id="mobile-guide-description" className="mt-3 max-w-md text-base leading-relaxed text-primary-foreground/85">{current.description}</DialogDescription>
             <div className="mt-6 grid grid-cols-[auto_1fr] gap-2">
               <Button variant="secondary" size="icon" className="h-12" disabled={step === 0} onClick={() => { void hapticTap(); setStep((value) => value - 1); }} aria-label="Oldingi bosqich"><ChevronLeft /></Button>
-              {step === STEPS.length - 1 ? <Button size="lg" className="h-12 bg-background text-foreground hover:bg-background/90" onClick={finish}>Med1.uz’ni boshlash</Button> : <Button size="lg" className="h-12 bg-background text-foreground hover:bg-background/90" onClick={() => { void hapticTap(); setStep((value) => value + 1); }}>Keyingi <ChevronRight /></Button>}
+              {step === STEPS.length - 1 ? <Button size="lg" className="h-12 bg-background text-foreground hover:bg-background/90" onClick={finish}>MED ALL’ni boshlash</Button> : <Button size="lg" className="h-12 bg-background text-foreground hover:bg-background/90" onClick={() => { void hapticTap(); setStep((value) => value + 1); }}>Keyingi <ChevronRight /></Button>}
             </div>
             <p className="mt-3 text-center text-xs text-primary-foreground/65">Keyinroq yuqoridagi “?” orqali qayta ko‘rishingiz mumkin.</p>
           </div>

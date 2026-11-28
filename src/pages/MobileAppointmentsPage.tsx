@@ -32,7 +32,7 @@ import f4 from "@/assets/mobile-service-stories/ai-doctor-chat-3.webp";
 const GUIDE_KEY = "med1_appointments_guide_seen_v1";
 const GUIDE = [
   { image: f1, eyebrow: "1-qadam", title: "Qabulga bir necha bosishda yoziling", text: "Shifokor yoki klinikani tanlang, qulay vaqtni belgilang — qabul shu yerda paydo bo‘ladi." },
-  { image: f2, eyebrow: "2-qadam", title: "Tahlil natijasidan xabardor bo‘ling", text: "Med1 bilan ulangan laboratoriya natijalari shu yerda ko‘rinadi. Ilova ochiq paytda tayyor natijalarni tekshirib, xabar beramiz." },
+  { image: f2, eyebrow: "2-qadam", title: "Tahlil natijasidan xabardor bo‘ling", text: "MED ALL bilan ulangan laboratoriya natijalari shu yerda ko‘rinadi. Ilova ochiq paytda tayyor natijalarni tekshirib, xabar beramiz." },
   { image: f3, eyebrow: "3-qadam", title: "AI xulosalari saqlanadi", text: "Har bir xulosani sana va xizmat turi bo‘yicha topib, to‘liq o‘qishingiz mumkin." },
   { image: f4, eyebrow: "4-qadam", title: "Eslatmalar va foydali maslahatlar", text: "Qabul va dori eslatmalarini yoqing, “Foydali maslahatlar”dan bilim oling." },
 ];
@@ -57,7 +57,7 @@ const fmtDay = (key: string) => {
 const EMPTY: Record<Panel, { title: string; hint: string; cta: string; to: string }> = {
   upcoming: { title: "Kelgusi qabul yo‘q", hint: "Shifokor yoki klinikani tanlab, qulay vaqtga yoziling — qabul shu yerda ko‘rinadi va eslatma keladi.", cta: "Shifokor tanlash", to: "/doctors" },
   past: { title: "Qabullar tarixi bo‘sh", hint: "Klinika, shifokor, diagnostika va stomatologiyadagi barcha tashriflaringiz shu yerda yig‘iladi.", cta: "Qabulga yozilish", to: "/doctors" },
-  labs: { title: "Tahlil natijalari yo‘q", hint: "Med1 hisobingizga bog‘langan laboratoriya natijalari shu yerda chiqadi. Boshqa klinika dasturi alohida ulanishi kerak. Tahlil varag‘ini AI bilan ham tekshirishingiz mumkin.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
+  labs: { title: "Tahlil natijalari yo‘q", hint: "MED ALL hisobingizga bog‘langan laboratoriya natijalari shu yerda chiqadi. Boshqa klinika dasturi alohida ulanishi kerak. Tahlil varag‘ini AI bilan ham tekshirishingiz mumkin.", cta: "Tahlilni tekshirish", to: "/ai-report-analysis" },
   ai: { title: "AI xulosalari hali yo‘q", hint: "Istalgan Med AI xizmatidan foydalaning — bergan javoblari avtomatik shu yerda saqlanadi.", cta: "AI xizmatlarini ochish", to: "/ai-services" },
   reminders: { title: "", hint: "", cta: "", to: "/" },
   notifications: { title: "", hint: "", cta: "", to: "/" },

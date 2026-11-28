@@ -12,16 +12,31 @@ export default function PaymentEcosystem() {
             <Handshake className="h-4 w-4" /> Rasmiy hamkorlar
           </div>
           <h2 id="payment-ecosystem-title" className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">Ishonchli xizmatlar. Tushunarli to‘lovlar.</h2>
-          <p className="mt-4 leading-relaxed text-muted-foreground">Med1.uz foydalanuvchilari tanish bank, to‘lov va raqamli xizmatlar orqali tibbiy xizmatlardan qulay foydalanadi. Har bir hamkor uchun amaliy qo‘llanma tayyorladik.</p>
+          <p className="mt-4 leading-relaxed text-muted-foreground">MED ALL ilovasi foydalanuvchilari tanish bank, to‘lov va raqamli xizmatlar orqali tibbiy xizmatlardan qulay foydalanadi. Har bir hamkor uchun amaliy qo‘llanma tayyorladik.</p>
         </div>
 
-        <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
-          {paymentGuides.map((guide) => (
-            <Link key={guide.slug} to={`/payment-guides/${guide.slug}`} className="group flex min-h-28 flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-card px-3 py-5 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-secondary/40 hover:shadow-card" aria-label={`${guide.name} qo‘llanmasini ochish`}>
-              <PartnerLogo brand={guide.brand} compact />
-              <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground"><BadgeCheck className="h-3.5 w-3.5 text-secondary" /> Rasmiy hamkor</span>
-            </Link>
-          ))}
+        <div className="partner-marquee-stage relative mb-12 overflow-hidden rounded-3xl border border-border/80 py-6 shadow-sm" aria-label="Rasmiy hamkorlar logotiplari">
+          <div className="pointer-events-none absolute inset-0 bg-grid-tech opacity-20" aria-hidden="true" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-background/90 to-transparent sm:w-20" aria-hidden="true" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-background/90 to-transparent sm:w-20" aria-hidden="true" />
+          <div className="partner-marquee-track relative flex w-max gap-4 px-2">
+            {[0, 1].map((dup) => (
+              <div key={dup} className="flex shrink-0 items-stretch gap-4" aria-hidden={dup === 1 || undefined}>
+                {paymentGuides.map((guide) => (
+                  <Link
+                    key={`${dup}-${guide.slug}`}
+                    to={`/payment-guides/${guide.slug}`}
+                    tabIndex={dup === 1 ? -1 : undefined}
+                    aria-label={dup === 0 ? `${guide.name} qo‘llanmasini ochish` : undefined}
+                    className="group flex min-h-24 w-48 shrink-0 flex-col items-center justify-center gap-2.5 rounded-2xl border border-border/80 bg-card/90 px-4 py-4 text-center shadow-sm backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-secondary/50 hover:bg-card hover:shadow-card sm:w-52"
+                  >
+                    <PartnerLogo brand={guide.brand} compact />
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground"><BadgeCheck className="h-3.5 w-3.5 text-secondary" /> Rasmiy hamkor</span>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">

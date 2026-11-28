@@ -19,14 +19,14 @@ export default function PaymentGuidePage() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title={`${guide.name} orqali Med1.uz’dan qanday foydalaniladi?`}
+        title={`${guide.name} orqali MED ALL’dan qanday foydalaniladi?`}
         description={guide.summary}
         path={path}
         ogType="article"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "HowTo",
-          name: `${guide.name} orqali Med1.uz’dan foydalanish`,
+          name: `${guide.name} orqali MED ALL’dan foydalanish`,
           description: guide.summary,
           url: `https://med1.uz${path}`,
           step: guide.steps.map((step, index) => ({ "@type": "HowToStep", position: index + 1, name: step.title, text: step.text })),

@@ -11,7 +11,7 @@ const CATEGORY_BENEFITS = {
   ai: ["Kerakli ma’lumotni bir joyda kiriting", "Natijani tushunarli shaklda ko‘ring", "Muhim holatda shifokorga murojaat qiling"],
   knowledge: ["Ishonchli tibbiy ma’lumotni qidiring", "Murakkab atamalarni sodda tilda o‘qing", "Kerakli mavzuga tez o‘ting"],
   publications: ["Hujjat va nashr ma’lumotini ko‘ring", "Haqiqiyligini tekshiring", "Tasdiqlangan manbaga o‘ting"],
-  business: ["Xizmatingizni Med1.uz’da taqdim eting", "Mijozlar bilan ishlashni boshqaring", "Natijalarni bitta joyda kuzating"],
+  business: ["Xizmatingizni MED ALL’da taqdim eting", "Mijozlar bilan ishlashni boshqaring", "Natijalarni bitta joyda kuzating"],
   cabinet: ["Shaxsiy ishlaringizni xavfsiz boshqaring", "Muhim ma’lumotlarga tez qayting", "Barcha amallarni bitta kabinetda bajaring"],
 } as const;
 
@@ -37,7 +37,7 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
   if (!service) return null;
   const Icon = service.icon;
   const benefits = service.story?.benefits ?? CATEGORY_BENEFITS[service.category];
-  const eyebrow = service.story?.eyebrow ?? "Med1.uz xizmati";
+  const eyebrow = service.story?.eyebrow ?? "MED ALL xizmati";
   const description = service.story?.hook ?? `${service.description}. Xizmat imkoniyatlarini ko‘ring va kerakli amalni shu yerdan boshlang.`;
   const openService = () => {
     void hapticTap();
@@ -70,13 +70,13 @@ export const MobileServiceDetail = ({ service, open, onOpenChange }: Props) => {
               <span className={`flex h-11 w-11 items-center justify-center rounded-lg border border-background/30 shadow-card ${service.tone}`}><Icon className="h-5 w-5" /></span>
               <div>
                 <p className="text-xs font-bold uppercase text-primary-foreground">{eyebrow}</p>
-                <p className="text-[11px] text-primary-foreground/75">Med1.uz xizmati{service.badge ? ` · ${service.badge}` : ""}</p>
+                <p className="text-[11px] text-primary-foreground/75">MED ALL xizmati{service.badge ? ` · ${service.badge}` : ""}</p>
               </div>
             </div>
             <DialogTitle className="max-w-[19rem] text-3xl font-extrabold leading-tight text-primary-foreground">{service.title}</DialogTitle>
             <DialogDescription id="service-detail-description" className="mt-2 max-w-md text-sm font-medium leading-relaxed text-primary-foreground">{description}</DialogDescription>
 
-            <div className="mt-3 grid grid-cols-2 gap-2" aria-label="Med1.uz ko‘rsatkichlari">
+            <div className="mt-3 grid grid-cols-2 gap-2" aria-label="MED ALL ko‘rsatkichlari">
               {service.story?.proof && (
                 <div className="rounded-lg border border-primary-foreground/20 bg-primary/35 px-3 py-2">
                   <p className="text-xl font-extrabold leading-none text-primary-foreground">{service.story.proof.value}</p>

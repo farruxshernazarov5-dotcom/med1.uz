@@ -57,7 +57,7 @@ export const NotificationsFeed = () => {
     const ok = webNotifyGranted() || (await requestWebNotify());
     setWeb(ok);
     playReminderChime();
-    if (ok) showWebNotification("🔔 Med1.uz sinov bildirishnomasi", "Bildirishnomalar ishlayapti", "/mobile-appointments?panel=notifications");
+    if (ok) showWebNotification("🔔 MED ALL sinov bildirishnomasi", "Bildirishnomalar ishlayapti", "/mobile-appointments?panel=notifications");
   };
 
   const unread = items.filter((i) => !i.is_read).length;

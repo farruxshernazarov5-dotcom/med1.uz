@@ -57,7 +57,7 @@ export const MobileServiceCatalog = ({ dashboardPath, onOpenNearby, onOpenDoctor
       <div className="relative overflow-hidden border-b border-border bg-card px-4 pb-5 pt-4">
         <div className="pointer-events-none absolute inset-0 bg-ai-gradient opacity-[0.07]" aria-hidden="true" />
         <div className="relative">
-          <p className="text-xs font-semibold text-primary">Med1.uz ekotizimi</p>
+          <p className="text-xs font-semibold text-primary">MED ALL ekotizimi</p>
           <h2 className="mt-1 text-2xl font-bold text-foreground">Barcha xizmatlar</h2>
           <p className="mt-1 text-sm text-muted-foreground">Kerakli xizmatni qidiring yoki toifadan tanlang.</p>
           <div className="relative mt-4">

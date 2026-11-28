@@ -842,3 +842,31 @@
 .doctor-map-popup .leaflet-popup-content-wrapper,
 .doctor-map-popup .leaflet-popup-tip { background: hsl(var(--card)) !important; color: hsl(var(--card-foreground)) !important; }
 .doctor-map-popup .leaflet-popup-close-button { color: hsl(var(--muted-foreground)) !important; }
+
+/* Official partner logo marquee on animated ambient background */
+.partner-marquee-stage {
+  background: linear-gradient(120deg, hsl(var(--primary) / 0.08), hsl(var(--secondary) / 0.14), hsl(var(--accent) / 0.25), hsl(var(--primary) / 0.08));
+  background-size: 240% 240%;
+  animation: partnerBgShift 14s ease-in-out infinite;
+}
+.partner-marquee-track {
+  animation: partnerMarquee 30s linear infinite;
+  will-change: transform;
+}
+.partner-marquee-stage:hover .partner-marquee-track,
+.partner-marquee-stage:focus-within .partner-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes partnerBgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes partnerMarquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .partner-marquee-stage,
+  .partner-marquee-track { animation: none; }
+  .partner-marquee-stage { overflow-x: auto; }
+}

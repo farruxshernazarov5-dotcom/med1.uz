@@ -12,7 +12,7 @@ const COPY: Record<PermissionKind, { title: string; description: string }> = {
     title: "Bildirishnoma ruxsati kerak",
     description:
       "Dori ichish va shifokor qabuli eslatmalari ishlamasi uchun telefon bildirishnomalarga ruxsat bermagan. " +
-      "Qayta urinib ko‘ring yoki telefon sozlamalaridan Med1.uz uchun bildirishnomani yoqing.",
+      "Qayta urinib ko‘ring yoki telefon sozlamalaridan MED ALL uchun bildirishnomani yoqing.",
   },
   biometric: {
     title: "Biometrik tasdiqlash ishlamadi",
